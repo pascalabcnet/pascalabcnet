@@ -1,0 +1,36 @@
+//PABCNETC
+%PREFIX%=PABCNETC_
+
+ERROR_INVALID_DIRECTORY=Error: Invalid direcory
+FULL_ERROR_LIST=Full error list:
+OK_{0}MS_{1}LINES=OK {0}ms ({1}lines)
+TOTAL{0}_FILES{1}_LINES_{2}_TIME{3}=Total: {0} files ({1}kb,{2}lines). Time: {3}ms
+TOTAL{0}_SUCCESS{1}_PROCENT{2}=Totoal {0}, compiled {1} ({2}%)
+COMPILING_ASSEMBLY{0}=Compiling assembly {0}...
+RESTARTING_COMPILER=Loading core...
+ERROR_PARSERS_NOT_FOUND=Error: Parsers not found!
+CONNECTED_PARSERS=Connected parsers: 
+CONNECTED_CONVERSIONS=Connected conversions: 
+STARTING=Starting...
+COMMANDLINEISABSENT=Command line is absent
+FILEISABSENT{0}=File {0} is absent
+COMPILEERRORS=Compile errors:
+
+HELP=16LINES
+Command line args: 
+pabcnetc source_file_name [target_file_name [dll|exe|winexe]]
+Commands:([x] -> x - default value)
+? 			- Help
+cd <dir>  		- Change current directory to <dir>
+<file name> 		- Compile file
+<files mask> 		- Compile files
+Reset 			- Reloading compiler
+ResetOnCompile=<0|1> 	- Reset compiler before compilation [0]
+Rebuild=<0|1> 		- Recompile PCU files [0]
+Debug=<0|1> 		- Debug: create PDB files [0]
+OutDir=<output directory>-Set output directory
+OutType=<dll|exe|winexe>- Set output type [exe]
+ClrScr 			- Clear screen
+ShowAllMessages=<0|1>	- Show all compiler messages [0]
+Language=<n> 		- Sets language, where n:
+                

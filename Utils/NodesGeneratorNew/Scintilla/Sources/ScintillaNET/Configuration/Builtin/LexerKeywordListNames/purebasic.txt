@@ -1,0 +1,4 @@
+PureBasic Keywords
+PureBasic PreProcessor Keywords
+user defined 1
+user defined 2

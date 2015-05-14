@@ -1,0 +1,1 @@
+uses u_arithm6; begin end.

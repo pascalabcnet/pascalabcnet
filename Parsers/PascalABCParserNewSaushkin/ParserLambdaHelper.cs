@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using PascalABCCompiler.SyntaxTree;
+
+namespace PascalABCSavParser
+{
+    public class ParserLambdaHelper
+    {
+        private int lambda_num = 0;
+        public List<function_lambda_definition> lambdaDefinitions;
+        public static string lambdaPrefix = "<>lambda";
+
+        public ParserLambdaHelper()
+        {
+            lambdaDefinitions = new List<function_lambda_definition>();
+        }
+
+        public string CreateLambdaName()
+        {
+            lambda_num++;
+            return lambdaPrefix + lambda_num.ToString();
+        }
+
+        public bool IsLambdaName(ident id)
+        {
+            return id.name.StartsWith(lambdaPrefix);
+        }
+    }
+}

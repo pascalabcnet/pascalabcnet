@@ -1,0 +1,4 @@
+uses robot;
+
+begin
+end.

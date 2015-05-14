@@ -1,0 +1,7 @@
+Keywords
+Operators
+Attributes
+Standard Functions
+Standard Packages
+Standard Types
+User Words

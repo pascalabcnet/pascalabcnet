@@ -1,0 +1,1 @@
+uses u_compare1; begin end.

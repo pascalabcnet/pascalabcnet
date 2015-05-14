@@ -1,0 +1,6 @@
+MODULE Second;
+CONST a,b : INTEGER;
+VAR x,y,z : INTEGER;
+BEGIN x := a + b, y := a - b, z := a * b
+END Second.
+

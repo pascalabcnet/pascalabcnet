@@ -1,0 +1,8 @@
+#autoit keywords
+#autoit functions
+#autoit macros
+#autoit Sent keys
+#autoit Pre-processors
+#autoit Special
+#autoit Expand
+#autoit UDF

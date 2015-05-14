@@ -1,0 +1,31 @@
+
+5 мест в этой паке и в файле NetHelper.cs помечены комментариями
+//For SymbolTable DEBUGGING
+Эти места нужны только для отладки таблицы символов.
+Из основной программы их нужно выкинуть.
+Так же только для отладки нужен файл SubsWrapClasses.cs.
+Он так же не нужен в основной программе.
+
+Все 5 мест полностью.
+
+1:
+//For SymbolTable DEBUGGING
+private NetIntScope _nis;
+
+2:
+//For SymbolTable DEBUGGING
+_nis=new NetIntScope(this);
+_sc=_nis;
+
+3:
+//For SymbolTable DEBUGGING
+private NetIntTypeScope _nits;
+
+4:
+//For SymbolTable DEBUGGING
+_nits=new NetIntTypeScope(this);
+_sc=_nits;
+
+5:
+//For SymbolTable DEBUGGING
+protected object _sc;

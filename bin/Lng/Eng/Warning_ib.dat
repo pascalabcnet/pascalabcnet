@@ -1,0 +1,8 @@
+﻿%PREFIX%=WARNING_
+USE_VAR_{0}_WITHOUT_ASSIGN=Use of unassigned local variable '{0}'
+UNUSED_VAR_{0}=The variable '{0}' is declared but never used
+UNUSED_FIELD_{0}=The field '{0}' is declared but never used
+UNUSED_PARAM_{0}=The parameter '{0}' is never used
+ASS_WITHOUT_USE_{0}=The variable '{0}' is assigned but its value is never used
+UNREACHABLE_CODE_DETECTED=Unreachable code detected
+UNDEFINED_RETURN_VALUE_{0}=Return value of function '{0}' is not to be set

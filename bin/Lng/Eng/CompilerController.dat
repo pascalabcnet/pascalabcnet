@@ -1,0 +1,19 @@
+//CompilerController
+
+%PREFIX%=VPP_COMPCONTR_
+
+NAME=Compiler controller
+DESCRIPTION=Compiler controller
+FORMNAME=Compiler controller
+DISABLE_PCU_READ=Disable reading PCU (Rebuild)
+DISABLE_ADD_STANDART_UNTS=Disable adding standart modules
+DISABLE_SEMANTIC_ANALYSIS=Disable semantic analysis
+DISABLE_PCU_SAVING=Disable saving PCU
+DISABLE_CODE_GENERATION=Disable code generation
+DISABLE_SKIP_PCU_ERRORS=Disable skip PCU files errors
+DISABLE_SKIP_INTERNALERRORS_IF_SYNTAXTREE_IS_CORRUPT=Disable skip internal errors if tree is corrupt
+RUN_ILDASM=Run ILDASM
+RUN_DBGCLR=Run DbgCLR
+RESTART_COMPILER=Reload compiler
+COMPILER_MESSAGES=Compiler messages
+NOT_USE_REMOTE_COMPILER=Not run the compiler in a separate process

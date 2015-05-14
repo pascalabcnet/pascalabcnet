@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file was created by NSISDialogDesigner 1.1.3.0
+http://coolsoft.altervista.org/nsisdialogdesigner
+Do not edit manually!
+-->
+<Dialog Name="PABCWorkNETDriveChoose" Title="Рабочая папка PABCWork.NET" Subtitle="Выберите путь к рабочей папке PABCWork.NET" Style="none" ExStyle="none">
+  <DirRequest Name="DirRequest1" Location="12, 80" Text="C:\PABCWork.NET" TabIndex="0" Style="none" ExStyle="none" onChange="PABCWorkNET_Path_Changed" />
+  <Label Name="Label1" Location="12, 54" Size="241, 23" Text="Путь к рабочей папке PABCWork.NET" TabIndex="1" Style="none" ExStyle="none" />
+</Dialog>

@@ -1,0 +1,480 @@
+//
+//MainForm
+%PREFIX%=VP_MF_
+//MainMenu
+MR_FILE=File
+M_NEW=New
+M_NEW_ADV=Create
+M_NEW_ASP=Create Aspect
+M_UNIT_WITH_FORM=Form
+M_FORM_PROGRAM=Main program for current form
+M_OPEN=Open...
+M_SAVE=Save
+M_SAVEAS=Save As...
+M_SAVEALL=Save All
+M_CLOSE=Close
+M_CLOSEALLBUTTHIS=Close All But This
+M_PRINT=Print...
+M_RECENTFILES=Recent Files
+M_RECENTPROJECTS=Recent Projects
+M_EXIT=Exit
+
+MR_EDIT=Edit
+M_UNDO=Undo
+M_REDO=Redo
+M_CUT=Cut
+M_COPY=Copy
+M_PASTE=Paste
+M_FIND=Find...
+M_FINDNEXT=Find Next
+M_REPLACE=Replace...
+M_BOOKMARS=Bookmarks
+M_TOGGLEBOOKMARK=Toggle Bookmark
+M_GOTONEXTBOOKMARK=Next Bookmark
+M_GOTOPREVBOOKMARK=Previouns Bookmark
+M_CLEARBOOKMARKS=Clear All Bookmarks
+M_DELETE=Delete
+                
+MR_SERVICE=Tools
+M_OPTIONS=Options...
+
+MR_VIEW=View
+M_BOTTOMPANEL=Bottom Panel
+M_OUTPUTWINDOW=Output Window
+M_CLEAROUTPUT=Clear Output
+M_NAVIGBACK=Navigate Backward
+M_NAVIGFORW=Navigate Forward
+M_STYLE=Interface Style...
+M_GOTO_LINE=Goto Line...
+M_SELECT_ALL=Select All
+M_INTELLISENSEPANEL=Quick Class Browser Panel
+M_TOOLBOX=Toolbox
+M_PROPERTIES=Properties
+M_PROJECTEXPLORER=Project Explorer
+
+MR_INTELLISENSE=Code Analysis
+M_GENERATE_REALIZATION=Generate Realization
+
+MR_PROJECT=Project
+M_ADD_FORM=Add Form
+M_ADD_NEW_FILE=Add New File
+M_ADD_EXIST_FILE=Add Existing File
+M_ADD_REFERENCE=Add Reference
+M_PROJECT_PROPERTIES=Properties
+
+MR_PROGRAM=Program
+M_RUN_DEBUG=Run
+M_RUN_NODEBUG=Run without IDE
+M_BUILD=Build
+M_REBUILD=Rebulid
+M_STOP=Stop
+M_ADD_EXPR=Add Watch
+M_DELETE_EXPR=Delete Watch
+M_CLEAR_ALL=Clear All
+M_RUN_PARAMETERS=Command Line Arguments...
+M_ARGUMENTS=Arguments
+
+MR_DESIGNER=Designer
+M_VIEW_CODE=View Code
+M_SHOW_PROPERTIES=Properties
+M_SHOW_GRID=Show Grid
+M_SNAP_TO_GRID=Snap to Grid
+M_ALIGN=Align 
+M_ALIGN_LEFTS=Lefts
+M_ALIGN_RIGHTS=Rights
+M_ALIGN_TOPS=Tops
+M_ALIGN_BOTTOMS=Bottoms
+M_ALIGN_MIDDLES=Horizontal Centers
+M_ALIGN_CENTERS=Vertical Centers
+M_ALIGN_TO_GRID=To Grid
+M_CENTER=Center
+M_CENTER_HORIZONTALLY=Horizontally
+M_CENTER_VERTICALLY=Vertically
+M_Z_ORDER=Z-order
+M_BRING_TO_FRONT=Bring to Front
+M_SEND_TO_BACK=Send to Back
+M_TAB_ORDER=Tab Order
+M_SIZE_TO=Size to
+M_SIZE_TO_CONTROL=Control
+M_SIZE_TO_CONTROL_WIDTH=Control Width
+M_SIZE_TO_CONTROL_HEIGHT=Control Height
+M_SIZE_TO_GRID=Grid
+M_PROGRAM_TAB=Code
+M_FORM_TAB=Designer
+M_COMMON_COMPONENTS=Common
+M_VISUAL_COMPONENTS=Visual
+M_DATA_COMPONENTS=Data
+M_NON_VISUAL_COMPONENTS=Non Visual
+NOTHING_SELECTED=Nothing selected
+{0}_COMPONENTS1_SELECTED={0} component is selected
+{0}_COMPONENTS2_SELECTED={0} components are selected
+{0}_COMPONENTS5_SELECTED={0} components are selected
+
+MR_DEBUG=Debug
+M_DEBUGSTART=Start Debugging
+M_DEBUGCONT=Continue
+M_DEBUGSTOP=Break
+M_STEPOUT=Step Out
+M_STEPOVER=Step Over
+M_STEPIN=Step In
+M_RUNTOCUR=Run to Cursor
+M_ENDDEBUG=Stop Debugging
+
+M_GOTO_DEFINITION=Go To Declaration
+M_GOTO_REALIZATION=Go To Definition
+M_FIND_ALL_REFERENCES=Find References
+M_RENAME=Rename
+M_FORMAT=Format Code
+M_SAMPLES=Samples
+
+TP_WARNINGLIST=Warnings
+TP_VARLIST=Local Variables
+TP_WATCHLIST=Watch List
+TP_FIND_SYMBOL_RESULTS=Search Results
+CLMN_VAR=Var
+CLMN_TYPE=Type
+CLMN_VALUE=Value
+
+TP_IMMEDIATE_WINDOW=Immediate Window
+
+RF_RENAME=Rename
+RF_ENTER_NEW_NAME=Enter the new name of the member
+RF_OK=OK
+RF_CANCEL=Cancel
+
+M_DELETE_BREAKPOINT=Remove
+M_BREAKPOINT_CONDITION=Condition...
+
+M_BREAKPOINT_CONDITION_FORM=Breakpoint Condition
+M_CONDITION2=Condition:
+M_IF_TRUE=Is true
+M_IF_CHANGED=Changed
+
+WT_EXPR=Expression
+WT_TYPE=Type
+WT_VALUE=Value
+
+MR_PLUGINS=Plugins
+
+MR_OPTIONS=Options
+M_COMPILEROPTIONS=Compiler Options
+M_VIEWOPTIONS=View
+
+MR_HELP=Help
+M_HELP=Contens
+M_DOTNET_HELP=.NET Framework Help (MSDN)
+M_EXAMPLES=Examples
+M_MAINFEATURES=Main Features
+M_ABOUT=About
+M_OPENSAMPLES=Samples
+M_OPENTUTORIAL=Learn PascalABC.NET
+
+M_SET_ACTIVE=Set Active
+
+TP_OUTPUTWINDOW=Output Window 
+TP_ERRORSLIST=Error List 
+TP_COMPILERMESSAGES=Compiler Messages
+
+SB_LN=Ln
+SB_COL=Col
+
+TS_RUN=Run
+
+FROM_METADATA=Metadata
+AT_SELECT=Application Type
+AT_CONSOLE=Console
+AT_WINDOWS=Windows
+AT_DLL=DLL
+
+RUN_DLL_WARNING_TEXT=Cannot run DLL
+
+RUN_PCU_WARNING_TEXT=Cannot run compiled unit
+
+SAVE_CHANGES_IN_FILE{0}=Save changes in file '{0}' ?
+SAVE_CHANGES_IN_PROJECT{0}=Save changes in project '{0}' ?
+
+SHOULD_CREATE_FORM_FIRST=Create main form firstly 
+CAN_NOT_GENERATE_CODE=It is impossible to generate source code.\r\nPerhaps pseudo-comments are deleted
+CODE_GENERATION_UNSUCCEFULL=Source code generation is unsuccessful due to syntax errors
+CAN_NOT_NAVIGATE_TO_EVENT_HANDLER=It is impossible to navigate event handler due to syntax errors
+FORM_DESIGNER=Form designer
+TOOLBOX_LOADING_UNSUCCEFULL=Toolbox loading is unsuccessful
+
+CT_STANDARD_ELEMENTS=Common Controls
+CT_CONTAINERS=Containers
+CT_MENUS_PANES=Menus & Toolbar
+CT_DATA=Data
+CT_COMPONENTS=Components
+CT_PRINTING=Printing
+CT_DIALOG_WINDOWS=Dialogs
+
+FTS_LOADING=Loading...
+FTS_KILLPROCESS=Kill process...
+FTS_CANCELLOADING=Abort loading...
+
+ER_NUM=
+ER_LINE=Line
+ER_FILE=File Name
+ER_DESCRIPTION=Description
+ER_PATH=File Path
+ER_COPY=Copy
+
+MSGTYPE=[VisualPascalABCNET]
+ERROR_CREATING_WORKDIR_{0}_{1}=Work directory '{0}' creating error : {1}
+
+INPUT=Input Data:
+INPUT_OK=Enter
+
+OW_RUNTIME_EXCEPTION{0}_MESSAGE{1}=Runtime exception: {0}: {1}
+OW_RUNTIME_EXCEPTION_STACKTRACE{0}=2LINES
+Stack trace:
+{0}
+
+ERRORLIST_RUNTIME_EXCEPTION_MESSAGE{0}=Runtime exception: {0}
+
+EXCEPTION_IN_START_EXE{0}=Error occured under attempt to run exe {0}. Perhaps, exe-files are denied to run from this disk. To solve problem redirect exe saving to another disk (Service->Options->Compiler options) 
+
+ERROR_FILE_EXISTS_IN_CODEPAGES=It is impossible to save file with this name, because another file with tiis name is opened
+
+SAVE_FILE_ERROR_TEXT{0}=Error at save file {0}
+
+FILE_ALREADY_EXISTS{0}=File {0} already exists
+TOO_LONG_FILE_NAME{0}=Too long file name
+PROJECT_NAME_EMPTY=Project name is empty
+FILE_NAME_EMPTY=File name is empty
+PROJECT_DIRECTORY_EMPTY=Project directory is empty
+DIRECTORY_ALREADY_EXISTS{0}=Directory {0} already exists
+ERROR_IN_FILE_CREATION=Error during file creation
+ERROR_IN_PROJECT_CREATION=Error during project creation
+ERROR_IN_PATH=Illegal symbols in file path
+PROJECT_TEMPLATE_NOT_SELECTED=Project type not selected
+FILE_TEMPLATE_NOT_SELECTED=File type not selected
+TOO_OLD_PROJECT_FILE_VERSION=Unable to open the project of earlier version. Try to re-create a project 
+MAJOR_VERSION_MUST_BE_SET=Major version must be set
+MAJOR_VERSION_LESS_ZERO=Major version must be non negative
+MAJOR_VERSION_MUST_BE_INT=Major version must be non negative integer
+MINOR_VERSION_MUST_BE_SET=Minor version must be set
+MINOR_VERSION_LESS_ZERO=Minor version must be non negative
+MINOR_VERSION_MUST_BE_INT=Minor version must be non negative integer
+BUILD_VERSION_MUST_BE_SET=Build version must be set
+BUILD_VERSION_LESS_ZERO=Build version must be non negative
+BUILD_VERSION_MUST_BE_INT=Build version must be non negative integer
+REVISION_VERSION_MUST_BE_SET=Revision version must be set
+REVISION_VERSION_LESS_ZERO=Revision version must be non negative
+REVISION_VERSION_MUST_BE_INT=Revision version must be non negative integer
+ERROR_OPEN_PROJECT=Error during project open
+CHANGED_FILE=Changed file
+FILE_CHANGED_MESSAGE=File has been changed by another program. Download it again?
+FILE_NOT_EXIST_MESSAGE=No file on disk. Leave it open in the editor?
+INVALID_SOURCE_FILE_NAME=Invalid characters in file name
+INVALID_SOURCE_FILE_EXTENSION=Invalid file extension
+CANNOT_EXCLUDE_MAIN_FILE=Can not exclude main file from the project
+M_NEW_PROJECT=New Project
+M_OPEN_PROJECT=Open Project...
+M_CLOSE_PROJECT=Close Project
+PRJ_NEW_PROJECT=New Project
+PRJ_PROJECT_TYPES=Project Templates
+PRJ_PROJECT_NAME=Project Name
+PRJ_PROJECT_DIR=Project Directory
+PRJ_CONSOLE_APP=Console Application
+PRJ_WINFORMS_APP=Windows Forms Application
+PRJ_CLASS_LIBRARY=Class Library
+PRJ_PROJECT_EXPLORER=Project Explorer
+PRJ_REFERENCES=References
+PRJ_PROJECT_REFERENCES=References
+PRJ_ADD_REFERENCE=Add Reference
+PRJ_GAC=GAC
+PRJ_ASSEMBLIES=Assemblies
+PRJ_COMPONENT_NAME=Assembly Name
+PRJ_VERSION=Version
+PRJ_OPEN_FILE=Open 
+PRJ_SHOW_FORM=Open Form
+PRJ_VIEW_CODE=View Code
+PRJ_EXCLUDE=Exclude from Project
+PRJ_RENAME=Rename
+PRJ_BUILD=Build
+PRJ_BUILD_ALL=Build All
+PRJ_RUN=Run
+PRJ_ADD=Add
+PRJ_NEW_FILE=New File
+PRJ_EXIST_FILE=Existing File
+PRJ_FORM=Form
+PRJ_PROPERTIES=Properties
+PRJ_REMOVE=Remove
+PRJ_FILE_NAME=File Name
+PRJ_TEMPLATES=Project Templates
+PRJ_UNIT=Unit
+PRJ_SEARCH=Search...
+PRJ_COM=COM
+PRJ_PATH=Path
+PRJ_COM_NAME=COM name
+PRJ_PROJECT_PROPERTIES=Project Properties
+PRJ_DEBUG_RELEASE=Configuration
+PRJ_DEBUG=Debug
+PRJ_RELEASE=Release
+PRJ_ENVIRONMENT_RUNMODE=Running under the IDE
+PRJ_DELETE_EXE=Delete EXE after run
+PRJ_DELETE_PDB=Delete PDB after run
+PRJ_OUTPUT_DIR=Output files generate to directory
+PRJ_BROWSE=Browse
+PRJ_COMMAND_LINE_ARGS=Command line args
+PRJ_APP_ICON=Application icon
+PRJ_APP_VERSION=Application version
+PRJ_APP_INFO=Application info
+PRJ_PRODUCT=Product name
+PRJ_VER_MAJOR=Major version
+PRJ_VER_MINOR=Minor version
+PRJ_VER_BUILD=Build version
+PRJ_VER_REVISION=Revision version
+PRJ_COMPANY=Company
+PRJ_TRADEMARK=Trademark
+PRJ_COPYRIGHT=Copyright
+PRJ_GENERATE_XML_DOC=Generate XML doc
+
+//Options
+%PREFIX%=VP_OC_VIEWOPTIONS_
+NAME=General
+DESCRIPTION=General
+LANGUAGE=Language
+REDIRECT_OUTPUT=Redirect output
+ERRORS_STRATEGY=Show errors
+ES_ALL=All
+ES_FIRSTONLY=First only
+ES_FIRSTSEMANTICANDSYNTAX=First semantic and syntax
+EDITOR_OPTIONS=Editor
+SHOW_DEBUG_PLAY_PAUSE_BUTTONS=Show additional debug buttons
+PASUSE_IN_RUNMODE_IF_CONSOLE=Make pause after a console program ends execution 
+SAVE_FILES_IF_COMPILATOIN_OK=Save files if compilation was successful
+
+%PREFIX%=VP_OC_EDITOROPTIONS_
+NAME=Text Editor
+DESCRIPTION=Text Editor Options 
+ERROR_CURSOR_POS=Position cursor by error
+SHOW_LINES_NUM=Show line numbers
+SHOW_MATH_BRACKET=Highlight matching bracket
+SHOW_MATCH_OPERATOR_BRACKET=Highlight matching operator bracket
+ENABLE_FOLDING=Enable folding
+FONT=Font
+FONT_SIZE=Font size
+EP_BEGIN=Goto begin
+EP_END=Goto end
+EP_SELECTBEGIN=Select and goto begin
+EP_SELECTEND=Select and goto end
+CONVERT_TABS_TO_SPACES=Convert tabs to spaces
+GOTO_ERRORPOS_IN_STANDART_MODULES=Goto error position in standard units
+
+%PREFIX%=VP_OPTIONSFORM_
+FORMTEXT=Options
+
+//Intellisense options
+%PREFIX%=VP_OC_INTELLISENSEOPTIONS_
+NAME=Code Completion
+DESCRIPTION=Code Completion
+ALLOW_CODE_COMPLETION=Enable code completion
+CODE_COMPLETION_HINT=Show tooltip when moving mouse over expression
+CODE_COMPLETION_DOT=Show tooltip when writing dot
+CODE_COMPLETION_PARAMS=Show tooltip when writing method calls
+CODE_COMPLETION_KEYPRESSED=Show tooltip by key pressing
+SHOW_INTELLISENCE_PANEL=Show quick class browser panel
+NAMESPACE_VISIBLE_RANGE=Level of nesting namespaces (0 - all)
+
+//CompilerOptions
+%PREFIX%=VP_OC_COMPILEROPTIONS_
+NAME=Compiler Options
+DESCRIPTION=Compiler Options
+OUTPUT_FILE_TYPE=Output file type
+GENERATE_PDP_FILES=Generate debug information
+USE_OUTPUT_DIRECTORY=Generate output files to directory
+BROWSE=Browse...
+
+ENVORIMENT_RUNMODE=Environment Runmode
+DELETE_EXE=Delete EXE after run
+DELETE_PDB=Delete PDB after run
+USE_DLL_FOR_SYSTEM_UNITS=Accelerate run from IDE
+
+//AboutBox
+%PREFIX%=VP_ABOUTBOXFORM_
+FORMTEXT=About PascalABC.NET
+VERSION=Version
+PROJECT_ADMIN=Project manager:
+PROJECT_ADMIN_FIO=Mikhalkovich S.S.
+DEVELOPERS=Developers
+DEVELOPERS1=Bondarev I.V. (Germany)
+DEVELOPERS2=Tkachuk A.V.
+DEVELOPERS3=Ivanov S.O.
+MADEIN=Russia, SFedU, mechmath; Germany
+CORE=Core:
+VISUAL=Visual:
+COMPONENTS=Components
+TESTING_SYSTEM=Testing system:
+TYPE=Type
+NAME=Name
+VERSION=Version
+COPYRIGHT=
+
+//Find Form
+%PREFIX%=VP_FINDFORM_
+FORMTEXT=Find
+L_FIND=Find what:
+G_OPTIONS=Options
+MATH_CASE=Match case
+MATH_WHOLE_WORD=Match whole word
+SEARCH_UP=Search up
+USE_REGEX=Regular expressions
+FINDNEXT=Find Next
+
+//Replace Form
+%PREFIX%=VP_REPLACEFORM_
+FORMTEXT=Replace
+L_FIND=Find what:
+L_REPLACETO=Replace to
+G_OPTIONS=Options
+MATH_CASE=Math case
+MATH_WHOLE_WORD=Math whole word
+SEARCH_UP=Search up
+USE_REGEX=Regular expressions
+FINDNEXT=Find Next
+REPLACE=Replace
+REPLACEALL=Replace All
+REGEXPERR{0}=Error in regular expression. {0}
+
+//ReplaceConfirmDialog Form
+%PREFIX%=VP_REPLACECONFIRMDLGFORM_
+REPLACE{0}TO{1}=Replace '{0}' to '{1}' ?
+
+//GotoLineForm
+%PREFIX%=VP_GOTOLINEFORM_
+FORMTEXT=Go to Line Number
+GOTO_LINE_{0}_{1}=Line number ({0} - {1}):
+
+%PREFIX%=EXPR_VALUE_
+UNDEFINED_VALUE=Undefined value
+UNDEFINED_TYPE=Undefined type
+SYNTAX_ERROR_IN_EXPR=Syntax error in expression
+INCOMPATIBLE_TYPES_IN_EXPRESSION=Incompatible types in expression
+OPERATOR_{0}_NOT_IN_TYPE=Cannot apply operator '{0}' to this type
+WRONG_NUMBER_ARGUMENTS_IN_{0}=Invalid number of arguments in the call '{0}'
+WRONG_TYPE_OF_ARGUMENT_IN_{0}=Invalid argument type in the call '{0}'
+UNKNOWN_NAME_{0}=Undefined name '{0}'
+WRONG_TYPE_IN_INDEXER=Invalid type in indexer expression
+WRONG_INDEXERS_NUMBER=Invalid number of indexers
+NO_INDEXER_PROPERTY=Expression hasn't indexer property
+NAME_{0}_IS_NOT_STATIC='{0}' isn't a static member
+VARIABLE_EXPECTED_TYPE_{0}_FOUND='{0}' must be a variable
+LOWER_BOUND_GREATER_THAN_UPPER_BOUND=Lower bound is greater than upper bound
+INVALID_EXPRESSION_TYPE_IN_DIAPASON=Invalid expression type in subrange
+NO_SUITABLE_METHOD=No suitable method for such arguments
+
+%PREFIX%=DEBUG_VIEW_
+RAW_VIEW=Raw view
+BASE=Base
+MODULE=Globals
+PRIVATE=Private
+STATIC=Static
+PRIVATE_STATIC=Private static
+TOO_LONG_EVALUATION=Too long evaluated
+
+%PREFIX%=CODE_COMPLETION_
+RETURN=Returns
+PARAMETERS=Parameters
+DESCRIPTION=Description

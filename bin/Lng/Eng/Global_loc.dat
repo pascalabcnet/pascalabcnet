@@ -1,0 +1,14 @@
+!PASCALABCNET_FORUM=PascalABC.NET forum
+!PASCALABCNET_SITE=PascalABC.NET site
+!PASCALABCNET_DEVELOPERS=Developers
+!DEVELOPERS=Developers:
+!OK=OK
+!CANCEL=Cancel
+!YES=Yes
+!NO=No
+!ALL=All
+!CONFIRM=Confirm
+!ERROR=Error
+!FILE_NOT_FOUND{0}=File "{0}" not found.
+!WARNING=Warning
+!ERROR_ON_CREATE_DIRECORY=Error when creating directory

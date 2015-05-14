@@ -1,0 +1,1 @@
+uses u_string2; begin end.

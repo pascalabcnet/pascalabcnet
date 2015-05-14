@@ -1,0 +1,6 @@
+Sections
+Keywords
+Parameters
+Preprocessor directives
+Pascal keywords
+User defined keywords

@@ -1,0 +1,19 @@
+//PythonABCParser.dll
+%PREFIX%=PYTHONABCPARSER_
+
+EXPECTED{0}=Ожидалось {0}
+OPERATOR_NOT_IMPLEMET_TO_THIS_OPEAND_TYPE=Операция не применима к операндам данного типа
+STATEMENT_EXPECTED=Ожидался оператор
+LEFT_SIDE_ASSIGN_MUST_BE_VARIABLE=Левая часть оператора присваивания должна быть переменной
+PROCEDURE_CANNOT_HAVE_RETURNED_VALUE=Процедура не может иметь возвращаемого значения
+EXPECTED_{0}_BUT_FOUND_{1}=Ожидалось '{0}', а встречено '{1}'
+NONTERMINALTOKEN_{0}_RETURN_NULL=Cинтаксическая конструкция вида '{0}' не поддерживается текущей версией парсера
+
+ONE_EOF=Ожидался конец файла
+ONE_TKIDENTIFIER=Ожидался идентификатор
+ONE_OPERATOR=Ожидался оператор
+ONE_STMT=Ожидался оператор
+
+PROGRAM_ERROR=Ошибка в программе
+FORMALLIST_ERROR=Список параметров задан неверно
+EXPRESSION_EXPECTED=Ожидалось выражение

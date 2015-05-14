@@ -1,0 +1,1 @@
+uses u_boolean1; begin end.

@@ -1,0 +1,2 @@
+%PREFIX%=WARNING_
+OVERRIDE_OR_REINTRODUCE_EXPECTED='override' or 'reintroduce' expected

@@ -1,0 +1,4 @@
+%PREFIX%=RUNTIME_EXCEPTION
+Attempted to divide by zero.=Attempted to divide by zero
+Process is terminated due to StackOverflowException.=Process is terminated due to StackOverflowException
+Index was outside the bounds of the array.=Index out of the bounds of the array

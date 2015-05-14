@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- Inline DTD for defining the structure of the confiuguration xml -->
+<!--
+<!DOCTYPE ReaderFactory [
+  <!ELEMENT ReaderFactory (ReaderConfig)>
+  <!ELEMENT Reader EMPTY>
+  <!ATTLIST Reader name CDATA #IMPLIED>
+  <!ATTLIST Reader FileExtension CDATA #REQUIRED>
+  <!ATTLIST Reader ReaderClassName CDATA #REQUIRED>
+  <!ATTLIST Reader AssemblyName CDATA #REQUIRED>
+]>
+-->
+<!-- The configuration data for the Reader Factory to map the file extension with the respective readers -->
+<ReaderFactory>
+  <ReaderConfig>
+    <Reader name="CTL Reader" FileExtension=".ctl" ReaderClassName="Microsoft.VisualStudio.PerformanceTools.ConcurrencyPlugins.MockEtwConnection" AssemblyName="ConcurrencyPlugins.dll" />
+  </ReaderConfig>
+</ReaderFactory>

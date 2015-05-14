@@ -1,0 +1,5 @@
+DEFAULT	= 0
+COMMAND	= 1
+TAG		= 2
+MATH	= 3
+COMMENT	= 4

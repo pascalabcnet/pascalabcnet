@@ -1,0 +1,35 @@
+//InternalErrorReport Plugin
+
+%PREFIX%=VPP_IER_
+NAME=Report a bug
+DESCRIPTION=Reporting bugs to developers
+
+%PREFIX%=VPP_IER_ERRORREPORT_
+FORMNAME=Reporting bugs to developers
+CONTACT_INFORMATION=Contacts:
+EMAIL_ADRESS=E-mails:
+OK_BUTTON=OK
+ERROR_SEND_INFO=8LINES
+Your information on the error that occurred in the compiler can help us in the development process.
+If you think that the compiler has been a mistake, you can post a message on the forum, or send email to any of the emails below.
+
+It is desirable that your error description contained:
+1. Report error.
+2. Description of the sequence of actions that caused the error.
+3. The source code of program, in that the error has occurred.
+4. Information about compiler version, target platform, etc. Copy the text, located below and paste to the top post.
+
+%PREFIX%=VPP_IER_INTERNALERRORREPORT_
+COMPILER_INTERNAL_ERROR=Compiler internal error
+IN_A_COMPILE_TIME_INTTERNAL_COMPILER_ERROR=An internal error has occurred:
+SAVE_REPORT_AS=Save report as...
+SEND_TO_EMAIL=Result file send to email
+CLOSE=Close
+ADD_YUOR_COMMENT_HERE=3LINES
+//Here you can add your comment
+
+
+SEND_RPEPORT_AUTORS=2LINES
+You can send error report to PascalABC.NET developers. 
+To create ZIP-archive with error files press botton "Save report as..."
+

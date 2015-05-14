@@ -1,0 +1,1 @@
+uses u_sokrbool1; begin end.

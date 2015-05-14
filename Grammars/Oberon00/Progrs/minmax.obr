@@ -1,0 +1,8 @@
+MODULE MinMax;
+CONST a,b : INTEGER; 
+VAR min,max : INTEGER;
+BEGIN
+IF a<b THEN min := a, max := b
+ELSE min := b, max := a END
+END MinMax.
+

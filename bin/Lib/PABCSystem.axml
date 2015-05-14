@@ -1,0 +1,1361 @@
+<?xml version="1.0"?>
+<AspectFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <TreeRoot>
+    <Items>
+      <PointOfInterest>
+        <Name>Раздел интерфейса</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>MaxShortInt = shortint.MaxValue;</Text>
+            <Name>Стандартные константы</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>object   = System.Object;</Text>
+            <Name>Стандартные типы</Name>
+            <Items>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>List&lt;T&gt; = System.Collections.Generic.List&lt;T&gt;;</Text>
+                <Name>Классы коллекций</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>List</string>
+                    <string>&lt;</string>
+                    <string>T</string>
+                    <string>&gt;</string>
+                    <string>=</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>Generic</string>
+                    <string>.</string>
+                    <string>List</string>
+                    <string>&lt;</string>
+                    <string>T</string>
+                    <string>&gt;</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Field</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>Action0 = System.Action;</Text>
+                <Name>Action, Func и Predicate</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>Action0</string>
+                    <string>=</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Action</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Field</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>Regex = System.Text.RegularExpressions.Regex;</Text>
+                <Name>Regex</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>Regex</string>
+                    <string>=</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Text</string>
+                    <string>.</string>
+                    <string>RegularExpressions</string>
+                    <string>.</string>
+                    <string>Regex</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Field</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>PBoolean  = ^boolean;//bool</Text>
+                <Name>Типы указателей</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>PBoolean</string>
+                    <string>=</string>
+                    <string>^</string>
+                    <string>boolean</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Field</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>Text = class</Text>
+                <Name>Класс текстового файла</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>Text</string>
+                    <string>=</string>
+                    <string>class</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Class</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>TypedSet = class (System.Collections.IEnumerable)</Text>
+                <Name>Класс стандартного множества</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>TypedSet</string>
+                    <string>=</string>
+                    <string>class</string>
+                    <string>(</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>IEnumerable</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Class</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>AbstractBinaryFile = class</Text>
+                <Name>Класс AbstractBinaryFile</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>AbstractBinaryFile</string>
+                    <string>=</string>
+                    <string>class</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Class</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>TypedFile = sealed class(AbstractBinaryFile)</Text>
+                <Name>Класс TypedFile</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>TypedFile</string>
+                    <string>=</string>
+                    <string>sealed</string>
+                    <string>class</string>
+                    <string>(</string>
+                    <string>AbstractBinaryFile</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Class</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>BinaryFile = sealed class(AbstractBinaryFile)</Text>
+                <Name>Класс BinaryFile</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>BinaryFile</string>
+                    <string>=</string>
+                    <string>sealed</string>
+                    <string>class</string>
+                    <string>(</string>
+                    <string>AbstractBinaryFile</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Class</ParserClassName>
+              </PointOfInterest>
+            </Items>
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>object</string>
+                <string>=</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Object</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Field</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Union(s1, s2: TypedSet): TypedSet;</Text>
+            <Name>Функции работы со стандартными множествами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Union</string>
+                <string>(</string>
+                <string>s1</string>
+                <string>,</string>
+                <string>s2</string>
+                <string>:</string>
+                <string>TypedSet</string>
+                <string>)</string>
+                <string>:</string>
+                <string>TypedSet</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                  read - readln</Text>
+            <Name>Подпрограммы ввода read</Name>
+            <Items>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>procedure Read(f: Text);</Text>
+                <Name>Ввод из текстового файла</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>procedure</string>
+                    <string>Read</string>
+                    <string>(</string>
+                    <string>f</string>
+                    <string>:</string>
+                    <string>Text</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>MethodHeader</ParserClassName>
+              </PointOfInterest>
+            </Items>
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                  write - writeln</Text>
+            <Name>Подпрограммы ввода write</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>procedure Print(params args: array of object);</Text>
+            <Name>Процедуры Print</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Print</string>
+                <string>(</string>
+                <string>params</string>
+                <string>args</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>object</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>procedure Assign(f: Text; name: string);</Text>
+            <Name>Подпрограммы для работы с текстовыми файлами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Assign</string>
+                <string>(</string>
+                <string>f</string>
+                <string>:</string>
+                <string>Text</string>
+                <string>;</string>
+                <string>name</string>
+                <string>:</string>
+                <string>string</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>procedure Assign(f: AbstractBinaryFile; name: string);</Text>
+            <Name>Подпрограммы для работы с двоичными файлами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Assign</string>
+                <string>(</string>
+                <string>f</string>
+                <string>:</string>
+                <string>AbstractBinaryFile</string>
+                <string>;</string>
+                <string>name</string>
+                <string>:</string>
+                <string>string</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function FilePos(f: TypedFile): int64;</Text>
+            <Name>Подпрограммы для работы с типизированными файлами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>FilePos</string>
+                <string>(</string>
+                <string>f</string>
+                <string>:</string>
+                <string>TypedFile</string>
+                <string>)</string>
+                <string>:</string>
+                <string>int64</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function FilePos(f: BinaryFile): int64;</Text>
+            <Name>Подпрограммы для работы с бестиповыми файлами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>FilePos</string>
+                <string>(</string>
+                <string>f</string>
+                <string>:</string>
+                <string>BinaryFile</string>
+                <string>)</string>
+                <string>:</string>
+                <string>int64</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function ParamCount: integer;</Text>
+            <Name>Cистемные подпрограммы</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>ParamCount</string>
+                <string>:</string>
+                <string>integer</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function ExtractFileName(fname: string): string;</Text>
+            <Name>Функции для работы с именами файлов</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>ExtractFileName</string>
+                <string>(</string>
+                <string>fname</string>
+                <string>:</string>
+                <string>string</string>
+                <string>)</string>
+                <string>:</string>
+                <string>string</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Sign(x: shortint): integer;</Text>
+            <Name>Математические подпрограммы</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Sign</string>
+                <string>(</string>
+                <string>x</string>
+                <string>:</string>
+                <string>shortint</string>
+                <string>)</string>
+                <string>:</string>
+                <string>integer</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Chr(a: byte): char;</Text>
+            <Name>Подпрограммы для работы с символами и строками</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Chr</string>
+                <string>(</string>
+                <string>a</string>
+                <string>:</string>
+                <string>byte</string>
+                <string>)</string>
+                <string>:</string>
+                <string>char</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>procedure Inc(var i: integer);</Text>
+            <Name>Общие подпрограммы</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Inc</string>
+                <string>(</string>
+                <string>var</string>
+                <string>i</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Low(i: System.Array): integer;</Text>
+            <Name>Подпрограммы для работы с динамическими массивами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Low</string>
+                <string>(</string>
+                <string>i</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Array</string>
+                <string>)</string>
+                <string>:</string>
+                <string>integer</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Range(a,b: integer): IEnumerable&lt;integer&gt;;</Text>
+            <Name>Подпрограммы для работы с последовательностями</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Range</string>
+                <string>(</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+                <string>:</string>
+                <string>IEnumerable</string>
+                <string>&lt;</string>
+                <string>integer</string>
+                <string>&gt;</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                Tuples</Text>
+            <Name>Подпрограммы для работы с Tuplами</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                Dict</Text>
+            <Name>Подпрограммы работы со словарями</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>CurrentIOSystem: IOSystem;</Text>
+            <Name>Общедоступные переменные</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>CurrentIOSystem</string>
+                <string>:</string>
+                <string>IOSystem</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Field</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>implementation</Text>
+        <Name>Раздел реализации</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>PAS_TreeNode</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Подсистема ввода-вывода</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>/// Интерфейс подсистемы ввода/вывода</Text>
+            <Name>Интерфейс IOSystem подсистемы ввода/вывода</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>IOStandardSystem = class(IOSystem)</Text>
+            <Name>IOStandardSystem  = class(IOSystem)</Name>
+            <Items>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function IOStandardSystem.peek: integer;</Text>
+                <Name>IOStandardSystem - реализация</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>function</string>
+                    <string>IOStandardSystem</string>
+                    <string>.</string>
+                    <string>peek</string>
+                    <string>:</string>
+                    <string>integer</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+            </Items>
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>IOStandardSystem</string>
+                <string>=</string>
+                <string>class</string>
+                <string>(</string>
+                <string>IOSystem</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Class</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Функции Seq</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Seq&lt;T&gt;(params a: array of T): array of T;</Text>
+            <Name>Seq - интерфейс</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Seq</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>a</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>sequence</string>
+                <string>of</string>
+                <string>T</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Seq&lt;T&gt;(params a: array of T): array of T;</Text>
+            <Name>Seq - реализация</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Seq</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>a</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>sequence</string>
+                <string>of</string>
+                <string>T</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Обработка ошибок в PABCSystem</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>WRITELN_IN_BINARYFILE_ERROR_MESSAGE = 'Операция Writeln не применима к бинарным файлам';</Text>
+            <Name>Константы ошибок</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>WRITELN_IN_BINARYFILE_ERROR_MESSAGE</string>
+                <string>=</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Field</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function GetTranslation(message: string): string;</Text>
+            <Name>GetTranslation</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>GetTranslation</string>
+                <string>(</string>
+                <string>message</string>
+                <string>:</string>
+                <string>string</string>
+                <string>)</string>
+                <string>:</string>
+                <string>string</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Ввод-вывод в текстовый файл</Name>
+        <Items>
+          <PointOfInterest>
+            <Name>read (f: Text ...</Name>
+            <Items>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>procedure read(f: Text);</Text>
+                <Name>read(f: Text)</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>procedure</string>
+                    <string>read</string>
+                    <string>(</string>
+                    <string>f</string>
+                    <string>:</string>
+                    <string>Text</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function read_lexem(f: Text): string;</Text>
+                <Name>read_lexem</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>function</string>
+                    <string>read_lexem</string>
+                    <string>(</string>
+                    <string>f</string>
+                    <string>:</string>
+                    <string>Text</string>
+                    <string>)</string>
+                    <string>:</string>
+                    <string>string</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>procedure read(f: Text; var x: string);</Text>
+                <Name>procedure read(f: Text; var x: string);</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>procedure</string>
+                    <string>read</string>
+                    <string>(</string>
+                    <string>f</string>
+                    <string>:</string>
+                    <string>Text</string>
+                    <string>;</string>
+                    <string>var</string>
+                    <string>x</string>
+                    <string>:</string>
+                    <string>string</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+            </Items>
+            <Context />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>write (f: Text ...</Name>
+            <Items>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>procedure write(f: Text);</Text>
+                <Name>procedure write(f: Text);</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>procedure</string>
+                    <string>write</string>
+                    <string>(</string>
+                    <string>f</string>
+                    <string>:</string>
+                    <string>Text</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>procedure write(f: Text; val: object);</Text>
+                <Name>procedure write(f: Text; val: object);</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>procedure</string>
+                    <string>write</string>
+                    <string>(</string>
+                    <string>f</string>
+                    <string>:</string>
+                    <string>Text</string>
+                    <string>;</string>
+                    <string>val</string>
+                    <string>:</string>
+                    <string>object</string>
+                    <string>)</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+            </Items>
+            <Context />
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Методы расширения</Name>
+        <Items>
+          <PointOfInterest>
+            <Name>Методы расширения для string</Name>
+            <Items>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>//    Linq ext</Text>
+                <Name>Extension methods for String 1</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>PAS_TreeNode</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>// Extension methods for String</Text>
+                <Name>Операции со строками как методы расширения</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>PAS_TreeNode</ParserClassName>
+              </PointOfInterest>
+              <PointOfInterest>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function string.ReadInteger(var from: integer): integer;</Text>
+                <Name>Extension methods for String 3 - read</Name>
+                <Items />
+                <Note />
+                <Context>
+                  <ArrayOfString>
+                    <string>function</string>
+                    <string>string</string>
+                    <string>.</string>
+                    <string>ReadInteger</string>
+                    <string>(</string>
+                    <string>var</string>
+                    <string>from</string>
+                    <string>:</string>
+                    <string>integer</string>
+                    <string>)</string>
+                    <string>:</string>
+                    <string>integer</string>
+                  </ArrayOfString>
+                  <ArrayOfString />
+                </Context>
+                <ParserClassName>Method</ParserClassName>
+              </PointOfInterest>
+            </Items>
+            <Context />
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>// Extension methods for BigInteger</Text>
+            <Name>Extension methods for BigInteger</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>// Extension methods for IEnumerable&lt;T&gt;</Text>
+            <Name>Extension methods for IEnumerable&lt;T&gt;</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Операции</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>procedure string.operator+=(var left: string; right: string);</Text>
+            <Name>Операции над строками</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>string</string>
+                <string>.</string>
+                <string>operator</string>
+                <string>+</string>
+                <string>=</string>
+                <string>(</string>
+                <string>var</string>
+                <string>left</string>
+                <string>:</string>
+                <string>string</string>
+                <string>;</string>
+                <string>right</string>
+                <string>:</string>
+                <string>string</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function System.Collections.Generic.IEnumerable&lt;T&gt;.operator+(a,b: IEnumerable&lt;T&gt;): IEnumerable&lt;T&gt;;</Text>
+            <Name>Операции с IEnumerable&lt;T&gt;</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>.</string>
+                <string>IEnumerable</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>.</string>
+                <string>operator</string>
+                <string>+</string>
+                <string>(</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>IEnumerable</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>)</string>
+                <string>:</string>
+                <string>IEnumerable</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger);</Text>
+            <Name>Операции с BigInteger</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>BigInteger</string>
+                <string>.</string>
+                <string>operator</string>
+                <string>+</string>
+                <string>=</string>
+                <string>(</string>
+                <string>var</string>
+                <string>p</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>;</string>
+                <string>q</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function StructuredObjectToString(o: Object; n: integer := 0): string;</Text>
+        <Name>StructuredObjectToString</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>function</string>
+            <string>StructuredObjectToString</string>
+            <string>(</string>
+            <string>o</string>
+            <string>:</string>
+            <string>Object</string>
+            <string>;</string>
+            <string>n</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>:</string>
+            <string>=</string>
+            <string>0</string>
+            <string>)</string>
+            <string>:</string>
+            <string>string</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать</Text>
+        <Name>read_lexem</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>function</string>
+            <string>read_lexem</string>
+            <string>:</string>
+            <string>string</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Ident&lt;T1&gt;(x: T1): T1;</Text>
+        <Name>Функция Ident</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>function</string>
+            <string>Ident</string>
+            <string>&lt;</string>
+            <string>T</string>
+            <string>&gt;</string>
+            <string>(</string>
+            <string>x</string>
+            <string>:</string>
+            <string>T</string>
+            <string>)</string>
+            <string>:</string>
+            <string>T</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Copy(a: &amp;Array): &amp;Array;</Text>
+        <Name>function Copy(a: &amp;Array)</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>function</string>
+            <string>Copy</string>
+            <string>(</string>
+            <string>a</string>
+            <string>:</string>
+            <string>&amp;Array</string>
+            <string>)</string>
+            <string>:</string>
+            <string>&amp;Array</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>procedure Sort(a: &amp;Array);</Text>
+        <Name>procedure Sort</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>procedure</string>
+            <string>Sort</string>
+            <string>(</string>
+            <string>a</string>
+            <string>:</string>
+            <string>&amp;Array</string>
+            <string>)</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>MethodHeader</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>BigInteger</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>// Extension methods for BigInteger</Text>
+            <Name>Операции с BigInteger</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>PAS_TreeNode</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Abs(x: BigInteger): BigInteger;</Text>
+            <Name>Abs</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Abs</string>
+                <string>(</string>
+                <string>x</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>)</string>
+                <string>:</string>
+                <string>BigInteger</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Power(x: BigInteger; y: integer): BigInteger;</Text>
+            <Name>Power</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Power</string>
+                <string>(</string>
+                <string>x</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>;</string>
+                <string>y</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+                <string>:</string>
+                <string>BigInteger</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Sqr(x: BigInteger): BigInteger;</Text>
+            <Name>Sqr</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Sqr</string>
+                <string>(</string>
+                <string>x</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>)</string>
+                <string>:</string>
+                <string>BigInteger</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Odd(i: BigInteger): boolean;</Text>
+            <Name>Odd</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Odd</string>
+                <string>(</string>
+                <string>i</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>)</string>
+                <string>:</string>
+                <string>boolean</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Max(a, b: BigInteger): BigInteger;</Text>
+            <Name>Max</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Max</string>
+                <string>(</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>)</string>
+                <string>:</string>
+                <string>BigInteger</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Min(a, b: BigInteger): BigInteger;</Text>
+            <Name>Min</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>function</string>
+                <string>Min</string>
+                <string>(</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>BigInteger</string>
+                <string>)</string>
+                <string>:</string>
+                <string>BigInteger</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+    </Items>
+    <Context />
+  </TreeRoot>
+</AspectFile>

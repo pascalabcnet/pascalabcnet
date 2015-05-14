@@ -1,0 +1,10 @@
+//Syntax Tree Visualisator Plugin
+%PREFIX%=VPP_SYNTRV_
+
+NAME=Syntax tree
+FORMNAME=Syntax tree visualisator
+DESCRIPTION=Syntax tree visualisator
+CHOSEN_SYNTAX_TREE=Selected syntax tree:
+SHOW_ALL_TREES=Show all
+M_BUILD=Build current
+M_REBUILD=Rebuild all

@@ -1,0 +1,9 @@
+//Source Text Formater Plugin
+
+%PREFIX%=VPP_STF_
+NAME=Фоматирование текста программы
+DESCRIPTION=Фоматирование текста программы
+FORMNAME=Фоматирование текста программы
+CHOSEN_SYNTAX_TREE=Выбранное синтаксическое дерево:
+M_BUILD=Построить текущее
+M_REBUILD=Построить все

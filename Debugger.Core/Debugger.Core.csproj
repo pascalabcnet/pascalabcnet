@@ -1,0 +1,461 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Debugger.Core</RootNamespace>
+    <AssemblyName>Debugger.Core</AssemblyName>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>114294784</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>PdbOnly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <NoWarn>108</NoWarn>
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>..\bin\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ISymWrapper" />
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.TXT" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Configuration\GlobalAssemblyInfo.cs" />
+    <Compile Include="Src\Breakpoints\Breakpoint.cs" />
+    <Compile Include="Src\Breakpoints\BreakpointEventArgs.cs" />
+    <Compile Include="Src\Breakpoints\NDebugger-Breakpoints.cs" />
+    <Compile Include="Src\Debugger\DebugeeState.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\DebuggerEventArgs.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\MessageEventArgs.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\PausedReason.cs" />
+    <Compile Include="Src\Debugger\DebuggerObject.cs" />
+    <Compile Include="Src\Debugger\ExceptionEventArgs.cs" />
+    <Compile Include="Src\Debugger\Exceptions.cs" />
+    <Compile Include="Src\Debugger\IExpirable.cs" />
+    <Compile Include="Src\Debugger\IMutable.cs" />
+    <Compile Include="Src\Debugger\Internal\ManagedCallback.cs" />
+    <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
+    <Compile Include="Src\Debugger\Internal\ManagedCallbackSwitch.cs" />
+    <Compile Include="Src\Debugger\Internal\MTA2STA.cs" />
+    <Compile Include="Src\Debugger\NamespaceDoc.cs" />
+    <Compile Include="Src\Debugger\NDebugger.cs" />
+    <Compile Include="Src\Debugger\PauseSession.cs" />
+    <Compile Include="Src\Debugger\Process-StateControl.cs" />
+    <Compile Include="Src\Debugger\StackFrame.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebug.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugChainReason.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugClass.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugCreateProcessFlags.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugExceptionCallbackType.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugExceptionUnwindCallbackType.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugHandleType.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugIntercept.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugInternalFrameType.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugMappingResult.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugMDAFlags.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugRegister.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugStepReason.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugThreadState.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugUnmappedStop.cs" />
+    <Compile Include="Src\Interop\CorDebug\CorDebugUserState.cs" />
+    <Compile Include="Src\Interop\CorDebug\COR_DEBUG_STEP_RANGE.cs" />
+    <Compile Include="Src\Interop\CorDebug\EmbeddedCLRCorDebug.cs" />
+    <Compile Include="Src\Interop\CorDebug\EmbeddedCLRCorDebugClass.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebug.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugAppDomain.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugAppDomain2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugAppDomainEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugArrayValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugAssembly.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugAssemblyEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugBoxValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugBreakpoint.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugBreakpointEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugChain.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugChainEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugClass.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugClass2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugCode.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugCodeEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugContext.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugController.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugEditAndContinueSnapshot.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugErrorInfoEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugEval.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugEval2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugFrame.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugFrameEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugFunction.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugFunction2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugFunctionBreakpoint.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugGenericValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugHandleValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugHeapValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugHeapValue2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugILFrame.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugILFrame2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugInternalFrame.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugManagedCallback.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugManagedCallback2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugMDA.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugModule.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugModule2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugModuleBreakpoint.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugModuleEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugNativeFrame.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugObjectEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugObjectValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugObjectValue2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugProcess.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugProcess2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugProcessEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugReferenceValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugRegisterSet.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugStepper.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugStepper2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugStepperEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugStringValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugThread.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugThread2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugThreadEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugType.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugTypeEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugUnmanagedCallback.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugValue.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugValue2.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugValueBreakpoint.cs" />
+    <Compile Include="Src\Interop\CorDebug\ICorDebugValueEnum.cs" />
+    <Compile Include="Src\Interop\CorDebug\ISequentialStream.cs" />
+    <Compile Include="Src\Interop\CorDebug\IStream.cs" />
+    <Compile Include="Src\Interop\CorDebug\tagSTATSTG.cs" />
+    <Compile Include="Src\Interop\CorDebug\_COR_IL_MAP.cs" />
+    <Compile Include="Src\Interop\CorDebug\_COR_VERSION.cs" />
+    <Compile Include="Src\Interop\CorDebug\_FILETIME.cs" />
+    <Compile Include="Src\Interop\CorDebug\_LARGE_INTEGER.cs" />
+    <Compile Include="Src\Interop\CorDebug\_SECURITY_ATTRIBUTES.cs" />
+    <Compile Include="Src\Interop\CorDebug\_ULARGE_INTEGER.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymAddrKind.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymBinder_deprecated.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymBinder_deprecatedClass.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymBinder_SxS.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymBinder_SxSClass.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymReader_deprecated.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymReader_deprecatedClass.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymReader_SxS.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymReader_SxSClass.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymSearchPolicyAttributes.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymVarFlag.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymWriter_deprecated.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymWriter_deprecatedClass.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymWriter_SxS.cs" />
+    <Compile Include="Src\Interop\CorSym\CorSymWriter_SxSClass.cs" />
+    <Compile Include="Src\Interop\CorSym\ISequentialStream.cs" />
+    <Compile Include="Src\Interop\CorSym\IStream.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedBinder.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedDispose.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedDocument.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedDocumentWriter.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedMethod.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedNamespace.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedReader.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedReaderSymbolSearchInfo.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedScope.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedSymbolSearchInfo.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedVariable.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedWriter.cs" />
+    <Compile Include="Src\Interop\CorSym\ISymUnmanagedWriter2.cs" />
+    <Compile Include="Src\Interop\CorSym\tagSTATSTG.cs" />
+    <Compile Include="Src\Interop\CorSym\_FILETIME.cs" />
+    <Compile Include="Src\Interop\CorSym\_LARGE_INTEGER.cs" />
+    <Compile Include="Src\Interop\CorSym\_ULARGE_INTEGER.cs" />
+    <Compile Include="Src\Interop\Enums\ClassFieldAttribute.cs" />
+    <Compile Include="Src\Interop\Enums\CorCallingConvention.cs" />
+    <Compile Include="Src\Interop\Enums\CorElementType.cs" />
+    <Compile Include="Src\Interop\Enums\CorMethodAttr.cs" />
+    <Compile Include="Src\Interop\Enums\CorTokenType.cs" />
+    <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
+    <Compile Include="Src\Interop\MetaData\IMetaDataImport.cs" />
+    <Compile Include="Src\Modules\Module.cs" />
+    <Compile Include="Src\Modules\ModuleEventArgs.cs" />
+    <Compile Include="Src\Modules\Process-Modules.cs" />
+    <Compile Include="Src\Tests\IgnoreAttribute.cs" />
+    <Compile Include="Src\Tests\SummaryOnlyAttribute.cs" />
+    <Compile Include="Src\Threads\Exception.cs" />
+    <Compile Include="Src\Threads\ExceptionType.cs" />
+    <Compile Include="Src\Threads\FrameID.cs" />
+    <Compile Include="Src\Threads\Function.cs" />
+    <Compile Include="Src\Threads\NDebugger-Processes.cs" />
+    <Compile Include="Src\Threads\Process-Threads.cs" />
+    <Compile Include="Src\Threads\Process.cs" />
+    <Compile Include="Src\Threads\ProcessEventArgs.cs" />
+    <Compile Include="Src\Threads\SourcecodeSegment.cs" />
+    <Compile Include="Src\Threads\Stepper.cs" />
+    <Compile Include="Src\Threads\StepperEventArgs.cs" />
+    <Compile Include="Src\Threads\Thread.cs" />
+    <Compile Include="Src\Threads\ThreadEventArgs.cs" />
+    <Compile Include="Src\Util\HighPrecisionTimer.cs" />
+    <Compile Include="Src\Util\Lists.cs" />
+    <Compile Include="Src\Variables\Evals\Eval.cs" />
+    <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
+    <Compile Include="Src\Variables\Evals\Process-Evals.cs" />
+    <Compile Include="Src\Variables\Types\BindingFlags.cs" />
+    <Compile Include="Src\Variables\Types\DebugType-Helpers.cs" />
+    <Compile Include="Src\Variables\Types\DebugType.cs" />
+    <Compile Include="Src\Variables\Types\FieldInfo.cs" />
+    <Compile Include="Src\Variables\Types\MemberInfo.cs" />
+    <Compile Include="Src\Variables\Types\MethodInfo.cs" />
+    <Compile Include="Src\Variables\Types\PropertyInfo.cs" />
+    <Compile Include="Src\Variables\Values\NamedValue.cs" />
+    <Compile Include="Src\Variables\Values\NamedValueCollection.cs" />
+    <Compile Include="Src\Variables\Values\Value-Array.cs" />
+    <Compile Include="Src\Variables\Values\Value-Common.cs" />
+    <Compile Include="Src\Variables\Values\Value-Helpers.cs" />
+    <Compile Include="Src\Variables\Values\Value-Object.cs" />
+    <Compile Include="Src\Variables\Values\Value-Primitive.cs" />
+    <Compile Include="Src\Variables\Values\Value.cs" />
+    <Compile Include="Src\Variables\Values\ValueEventArgs.cs" />
+    <Compile Include="Src\Variables\Variables\ArrayElement.cs" />
+    <Compile Include="Src\Variables\Variables\LocalVariable.cs" />
+    <Compile Include="Src\Variables\Variables\MemberValue.cs" />
+    <Compile Include="Src\Variables\Variables\MethodArgument.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebug.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugChainReason.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugClass.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugCreateProcessFlags.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugHandleType.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugIntercept.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugInternalFrameType.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugMappingResult.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugMDAFlags.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugRegister.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugThreadState.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugUnmappedStop.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\CorDebugUserState.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\EmbeddedCLRCorDebug.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\EmbeddedCLRCorDebugClass.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebug.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugAppDomain.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugAppDomain2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugAppDomainEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugArrayValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugAssembly.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugAssemblyEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugBoxValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugBreakpoint.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugBreakpointEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugChain.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugChainEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugClass.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugClass2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugCode.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugCodeEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugContext.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugController.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugEditAndContinueSnapshot.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugErrorInfoEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugEval.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugEval2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugFrame.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugFrameEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugFunction.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugFunction2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugFunctionBreakpoint.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugGenericValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugHandleValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugHeapValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugHeapValue2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugILFrame.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugILFrame2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugInternalFrame.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugManagedCallback.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugManagedCallback2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugMDA.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugModule.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugModule2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugModuleBreakpoint.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugModuleEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugNativeFrame.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugObjectEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugObjectValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugObjectValue2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugProcess.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugProcess2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugProcessEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugReferenceValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugRegisterSet.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugStepper.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugStepper2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugStepperEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugStringValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugThread.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugThread2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugThreadEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugType.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugTypeEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugUnmanagedCallback.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugValue2.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugValueBreakpoint.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ICorDebugValueEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\ISequentialStream.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\Autogenerated\IStream.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugArrayValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugChain.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugChainEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrame.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugFrameEnum.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugGenericValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugModule.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugStepper.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugStringValue.cs" />
+    <Compile Include="Src\Wrappers\CorDebug\ICorDebugTypeEnum.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymAddrKind.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymBinder_deprecated.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymBinder_deprecatedClass.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymBinder_SxS.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymBinder_SxSClass.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymReader_deprecated.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymReader_deprecatedClass.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymReader_SxS.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymReader_SxSClass.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymSearchPolicyAttributes.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymVarFlag.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymWriter_deprecated.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymWriter_deprecatedClass.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymWriter_SxS.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\CorSymWriter_SxSClass.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISequentialStream.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\IStream.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedBinder.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedDispose.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedDocument.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedDocumentWriter.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedMethod.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedNamespace.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedReader.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedReaderSymbolSearchInfo.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedScope.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedSymbolSearchInfo.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedVariable.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedWriter.cs" />
+    <Compile Include="Src\Wrappers\CorSym\Autogenerated\ISymUnmanagedWriter2.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedBinder.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedDocument.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedMethod.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedReader.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedScope.cs" />
+    <Compile Include="Src\Wrappers\CorSym\ISymUnmanagedVariable.cs" />
+    <Compile Include="Src\Wrappers\CorSym\SequencePoint.cs" />
+    <Compile Include="Src\Wrappers\ICorDebugManagedCallbacks.cs" />
+    <Compile Include="Src\Wrappers\MetaData\FieldProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\MetaData.cs" />
+    <Compile Include="Src\Wrappers\MetaData\MethodProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\ParamProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\PropertyProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\TypeDefProps.cs" />
+    <Compile Include="Src\Wrappers\MetaData\TypeRefProps.cs" />
+    <Compile Include="Src\Wrappers\NativeMethods.cs" />
+    <Compile Include="Src\Wrappers\ResourceManager.cs" />
+    <Compile Include="Src\Wrappers\Util.cs" />
+    <Compile Include="Src\Wrappers\_SECURITY_ATTRIBUTES.cs" />
+    <None Include="app.config" />
+    <None Include="Src\Stepping.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="docs\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

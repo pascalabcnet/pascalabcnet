@@ -1,0 +1,480 @@
+﻿//
+//MainForm
+%PREFIX%=VP_MF_
+//MainMenu
+MR_FILE=Файл
+M_NEW=Новый
+M_NEW_ADV=Создать
+M_NEW_ASP=Создать аспект
+M_UNIT_WITH_FORM=Форму
+M_FORM_PROGRAM=Основную программу для текущей формы
+M_OPEN=Открыть...
+M_SAVE=Сохранить
+M_SAVEAS=Сохранить как...
+M_SAVEALL=Сохранить все
+M_CLOSE=Закрыть
+M_CLOSEALLBUTTHIS=Закрыть все, кроме текущего
+M_PRINT=Печать...
+M_RECENTFILES=Последние файлы
+M_RECENTPROJECTS=Последние проекты
+M_EXIT=Выход
+
+MR_EDIT=Правка
+M_UNDO=Отменить
+M_REDO=Восстановить
+M_CUT=Вырезать
+M_COPY=Копировать
+M_PASTE=Вставить
+M_FIND=Найти...
+M_FINDNEXT=Найти далее
+M_REPLACE=Заменить...
+M_BOOKMARS=Закладки
+M_TOGGLEBOOKMARK=Поставить закладку
+M_GOTONEXTBOOKMARK=Перейти к следующей
+M_GOTOPREVBOOKMARK=Перейти к предыдущей
+M_CLEARBOOKMARKS=Удалить все закладки
+M_DELETE=Удалить
+
+MR_SERVICE=Сервис
+M_OPTIONS=Настройки...
+
+MR_VIEW=Вид
+M_BOTTOMPANEL=Нижняя панель
+M_OUTPUTWINDOW=Окно вывода
+M_CLEAROUTPUT=Очистить вывод
+M_NAVIGBACK=Перейти назад
+M_NAVIGFORW=Перейти вперед
+M_STYLE=Стиль интерфейса...
+M_GOTO_LINE=Перейти к строке...
+M_SELECT_ALL=Выделить все
+M_INTELLISENSEPANEL=Панель навигации по коду
+M_TOOLBOX=Палитра
+M_PROPERTIES=Инспектор объектов
+M_PROJECTEXPLORER=Структура проекта
+
+MR_INTELLISENSE=Анализ кода
+M_GENERATE_REALIZATION=Сгенерировать реализацию
+
+MR_PROJECT=Проект
+M_ADD_FORM=Добавить форму
+M_ADD_NEW_FILE=Добавить новый файл
+M_ADD_EXIST_FILE=Добавить существующий файл
+M_ADD_REFERENCE=Подключить сборку
+M_PROJECT_PROPERTIES=Свойства проекта
+
+MR_PROGRAM=Программа
+M_RUN_DEBUG=Выполнить
+M_RUN_NODEBUG=Выполнить без связи с оболочкой
+M_BUILD=Компилировать
+M_REBUILD=Перекомпилировать все
+M_STOP=Завершить
+M_ADD_EXPR=Добавить выражение
+M_DELETE_EXPR=Удалить выражение
+M_CLEAR_ALL=Очистить все
+M_RUN_PARAMETERS=Параметры командной строки...
+M_ARGUMENTS=Параметры
+
+MR_DESIGNER=Дизайнер
+M_VIEW_CODE=Просмотреть код
+M_SHOW_PROPERTIES=Свойства
+M_SHOW_GRID=Показывать сетку
+M_SNAP_TO_GRID=Привязывать к сетке
+M_ALIGN=Выровнять по
+M_ALIGN_LEFTS=левому краю
+M_ALIGN_RIGHTS=правому краю
+M_ALIGN_TOPS=верхнему краю
+M_ALIGN_BOTTOMS=нижнему краю
+M_ALIGN_MIDDLES=горизонтальному центру
+M_ALIGN_CENTERS=вертикальному центру
+M_ALIGN_TO_GRID=сетке
+M_CENTER=Центрировать
+M_CENTER_HORIZONTALLY=по горизонтали
+M_CENTER_VERTICALLY=по вертикали
+M_Z_ORDER=Визуальный порядок
+M_BRING_TO_FRONT=Поместить вперед
+M_SEND_TO_BACK=Отправить назад
+M_TAB_ORDER=Порядок табуляции
+M_SIZE_TO=Привести размер к
+M_SIZE_TO_CONTROL=размеру компонента
+M_SIZE_TO_CONTROL_WIDTH=ширине компонента
+M_SIZE_TO_CONTROL_HEIGHT=высоте компонента
+M_SIZE_TO_GRID=сетке
+M_PROGRAM_TAB=Код
+M_FORM_TAB=Дизайнер
+M_COMMON_COMPONENTS=Обычные
+M_VISUAL_COMPONENTS=Визуальные
+M_DATA_COMPONENTS=Базы данных
+M_NON_VISUAL_COMPONENTS=Невизуальные
+NOTHING_SELECTED=Нет выбранных компонентов
+{0}_COMPONENTS1_SELECTED={0} компонент выбран
+{0}_COMPONENTS2_SELECTED={0} компонента выбраны
+{0}_COMPONENTS5_SELECTED={0} компонентов выбраны
+
+MR_DEBUG=Отладка
+M_DEBUGSTART=Начать отладку
+M_DEBUGCONT=Продолжить
+M_DEBUGSTOP=Пауза
+M_STEPOUT=Шаг с выходом из подпрограммы
+M_STEPOVER=Шаг без входа в подпрограмму
+M_STEPIN=Шаг с входом в подпрограмму
+M_RUNTOCUR=Идти к курсору
+M_ENDDEBUG=Завершить отладку
+
+M_GOTO_DEFINITION=Перейти к определению
+M_GOTO_REALIZATION=Перейти к реализации
+M_FIND_ALL_REFERENCES=Найти все ссылки
+M_RENAME=Переименовать
+M_FORMAT=Форматировать код
+M_SAMPLES=Примеры
+
+TP_WARNINGLIST=Предупреждения
+TP_VARLIST=Локальные переменные
+TP_WATCHLIST=Просмотр выражений
+TP_FIND_SYMBOL_RESULTS=Результат поиска символов
+CLMN_VAR=Переменная
+CLMN_TYPE=Тип
+CLMN_VALUE=Значение
+
+TP_IMMEDIATE_WINDOW=Окно Immediate
+
+RF_RENAME=Переименование
+RF_ENTER_NEW_NAME=Введите новое имя
+RF_OK=ОК
+RF_CANCEL=Отмена
+
+M_DELETE_BREAKPOINT=Удалить
+M_BREAKPOINT_CONDITION=Условие...
+
+M_BREAKPOINT_CONDITION_FORM=Условие
+M_CONDITION2=Условие:
+M_IF_TRUE=Истина
+M_IF_CHANGED=Изменено
+
+WT_EXPR=Выражение
+WT_TYPE=Тип
+WT_VALUE=Значение
+
+MR_PLUGINS=Модули
+
+MR_OPTIONS=Настройки
+M_COMPILEROPTIONS=Опции комиляции
+M_VIEWOPTIONS=Вид
+
+MR_HELP=Помощь
+M_HELP=Справка
+M_DOTNET_HELP=Документация по .NET (MSDN)
+M_EXAMPLES=Примеры
+M_MAINFEATURES=Коротко о главном
+M_ABOUT=O программе
+M_OPENSAMPLES=Примеры
+M_OPENTUTORIAL=Изучаем PascalABC.NET
+
+M_SET_ACTIVE=Сделать активным
+
+TP_OUTPUTWINDOW=Окно вывода 
+TP_ERRORSLIST=Список ошибок 
+TP_COMPILERMESSAGES=Сообщения компилятора 
+
+SB_LN=Строка
+SB_COL=Столбец
+
+TS_RUN=Запущен
+
+FROM_METADATA=метаданные
+AT_SELECT=Тип приложения
+AT_CONSOLE=Консольное
+AT_WINDOWS=Оконное
+AT_DLL=Динамическая библиотека
+
+RUN_DLL_WARNING_TEXT=Невозможно запустить динамическую библиотеку 
+
+RUN_PCU_WARNING_TEXT=Невозможно запустить откомпилированный модуль
+
+SAVE_CHANGES_IN_FILE{0}=Сохранить изменения в файле '{0}' ?
+SAVE_CHANGES_IN_PROJECT{0}=Сохранить изменения в проекте '{0}' ?
+
+SHOULD_CREATE_FORM_FIRST=Сначала создайте форму, для которой следует сгенерировать основной файл
+CAN_NOT_GENERATE_CODE=Невозможно сгенерировать исходный код.\r\nВозможно, были удалены псевдокомментарии
+CODE_GENERATION_UNSUCCEFULL=Исходный код сгенерирован неполностью из-за синтаксических ошибок в тексте модуля
+CAN_NOT_NAVIGATE_TO_EVENT_HANDLER=Невозможно перейти к обработчику из-за синтаксических ошибок в тексте модуля
+FORM_DESIGNER=Дизайнер форм
+TOOLBOX_LOADING_UNSUCCEFULL=Не удалось загрузить панель инструментов
+
+CT_STANDARD_ELEMENTS=Стандартные элементы управления
+CT_CONTAINERS=Контейнеры
+CT_MENUS_PANES=Меню и панели инструментов
+CT_DATA=Данные
+CT_COMPONENTS=Компоненты
+CT_PRINTING=Печать
+CT_DIALOG_WINDOWS=Диалоговые окна
+
+FTS_LOADING=загрузка...
+FTS_KILLPROCESS=завершение программ...
+FTS_CANCELLOADING=отмена загрузки...
+
+ER_NUM=
+ER_LINE=Строка
+ER_FILE=Файл
+ER_DESCRIPTION=Описание
+ER_PATH=Путь
+ER_COPY=Копировать
+
+MSGTYPE=[VisualPascalABCNET]
+ERROR_CREATING_WORKDIR_{0}_{1}=Ошибка при создании рабочего каталога '{0}' : {1}
+
+INPUT=Ввод данных:
+INPUT_OK=Ввести
+
+OW_RUNTIME_EXCEPTION{0}_MESSAGE{1}=Ошибка времени выполнения: {0}: {1}
+OW_RUNTIME_EXCEPTION_STACKTRACE{0}=2LINES
+Стек:
+{0}
+
+ERRORLIST_RUNTIME_EXCEPTION_MESSAGE{0}=Ошибка времени выполнения: {0}
+
+EXCEPTION_IN_START_EXE{0}=При попытке запуска файла {0} произошла ошибка. Возможно, запуск exe файлов с этого диска запрещен. Для устранения проблемы перенаправьте сохранение exe файлов на другой диск (Сервис->Опции компиляции) 
+
+ERROR_FILE_EXISTS_IN_CODEPAGES=Нельзя сохранить файл под таким именем, т.к. этот файл уже открыт
+
+SAVE_FILE_ERROR_TEXT{0}=Ошибка при сохраннении файла {0}
+
+FILE_ALREADY_EXISTS{0}=Файл с именем {0} уже существует
+TOO_LONG_FILE_NAME{0}=Слишком длинное имя файла
+PROJECT_NAME_EMPTY=Необходимо указать имя проекта
+FILE_NAME_EMPTY=Необходимо указать имя файла
+PROJECT_DIRECTORY_EMPTY=Необходимо указать папку проекта
+DIRECTORY_ALREADY_EXISTS{0}=Папка {0} уже существует
+ERROR_IN_FILE_CREATION=Ошибка при создании файла
+ERROR_IN_PROJECT_CREATION=Ошибка при создании проекта
+ERROR_IN_PATH=Недопустимые символы в пути файла
+PROJECT_TEMPLATE_NOT_SELECTED=Не выбран тип проекта
+FILE_TEMPLATE_NOT_SELECTED=Не выбран шаблон файла
+TOO_OLD_PROJECT_FILE_VERSION=Невозможно открыть проект ранней версии. Попробуйте создать проект заново
+MAJOR_VERSION_MUST_BE_SET=Не задан основной номер версии
+MAJOR_VERSION_LESS_ZERO=Основной номер версии должен быть неотрицательным целым числом
+MAJOR_VERSION_MUST_BE_INT=Основной номер версии должен быть неотрицательным целым числом
+MINOR_VERSION_MUST_BE_SET=Не задан дополнительный номер версии
+MINOR_VERSION_LESS_ZERO=Дополнительный номер версии должен быть неотрицательным целым числом
+MINOR_VERSION_MUST_BE_INT=Дополнительный номер версии должен быть неотрицательным целым числом
+BUILD_VERSION_MUST_BE_SET=Не задан номер построения
+BUILD_VERSION_LESS_ZERO=Номер построения должен быть неотрицательным целым числом
+BUILD_VERSION_MUST_BE_INT=Номер построения должен быть неотрицательным целым числом
+REVISION_VERSION_MUST_BE_SET=Не задан номер редакции
+REVISION_VERSION_LESS_ZERO=Номер редакции должен быть неотрицательным целым числом
+REVISION_VERSION_MUST_BE_INT=Номер редакции должен быть неотрицательным целым числом
+ERROR_OPEN_PROJECT=Ошибка при открытии проекта
+CHANGED_FILE=Измененный файл
+FILE_CHANGED_MESSAGE=Файл был изменен другой программой. Загрузить его заново?
+FILE_NOT_EXIST_MESSAGE=Файл отсутствует на диске. Оставить его открытым в редакторе?
+INVALID_SOURCE_FILE_NAME=Недопустимые символы в имени файла
+INVALID_SOURCE_FILE_EXTENSION=Недопустимое расширение файла
+CANNOT_EXCLUDE_MAIN_FILE=Нельзя исключать основной файл из проекта 
+M_NEW_PROJECT=Новый проект
+M_OPEN_PROJECT=Открыть проект...
+M_CLOSE_PROJECT=Закрыть проект
+PRJ_NEW_PROJECT=Новый проект
+PRJ_PROJECT_TYPES=Типы проектов
+PRJ_PROJECT_NAME=Имя проекта
+PRJ_PROJECT_DIR=Папка проекта
+PRJ_CONSOLE_APP=Консольное приложение
+PRJ_WINFORMS_APP=Приложение Windows Forms
+PRJ_CLASS_LIBRARY=Библиотека
+PRJ_PROJECT_EXPLORER=Структура проекта
+PRJ_REFERENCES=Подключение сборок
+PRJ_PROJECT_REFERENCES=Подключенные сборки
+PRJ_ADD_REFERENCE=Добавить сборку
+PRJ_GAC=GAC
+PRJ_ASSEMBLIES=Поиск сборок
+PRJ_COMPONENT_NAME=Имя сборки
+PRJ_VERSION=Версия
+PRJ_OPEN_FILE=Открыть
+PRJ_SHOW_FORM=Открыть форму
+PRJ_VIEW_CODE=Показать код
+PRJ_EXCLUDE=Исключить из проекта
+PRJ_RENAME=Переименовать
+PRJ_BUILD=Собрать
+PRJ_BUILD_ALL=Собрать все
+PRJ_RUN=Выполнить
+PRJ_ADD=Добавить
+PRJ_NEW_FILE=Новый файл
+PRJ_EXIST_FILE=Существующий файл
+PRJ_FORM=Форму
+PRJ_PROPERTIES=Свойства
+PRJ_REMOVE=Удалить
+PRJ_FILE_NAME=Имя файла
+PRJ_TEMPLATES=Шаблоны
+PRJ_UNIT=Модуль
+PRJ_SEARCH=Поиск...
+PRJ_COM=COM
+PRJ_PATH=Путь
+PRJ_COM_NAME=COM-объект
+PRJ_PROJECT_PROPERTIES=Свойства проекта
+PRJ_DEBUG_RELEASE=Конфигурация
+PRJ_DEBUG=Debug
+PRJ_RELEASE=Release
+PRJ_ENVIRONMENT_RUNMODE=Выполнение из-под оболочки
+PRJ_DELETE_EXE=Удалять EXE-файл после выполнения
+PRJ_DELETE_PDB=Удалять PDB-файл после выполнения
+PRJ_OUTPUT_DIR=Выходные файлы генерировать в папку
+PRJ_BROWSE=Обзор
+PRJ_COMMAND_LINE_ARGS=Параметры командной строки
+PRJ_APP_ICON=Иконка приложения
+PRJ_APP_VERSION=Версия приложения
+PRJ_APP_INFO=Информация о приложении
+PRJ_PRODUCT=Название продукта
+PRJ_VER_MAJOR=Основной номер
+PRJ_VER_MINOR=Дополнительный номер
+PRJ_VER_BUILD=Номер билда
+PRJ_VER_REVISION=Номер редакции
+PRJ_COMPANY=Компания
+PRJ_TRADEMARK=Торговая марка
+PRJ_COPYRIGHT=Copyright
+PRJ_GENERATE_XML_DOC=Генерировать XML документацию
+
+//Options
+%PREFIX%=VP_OC_VIEWOPTIONS_
+NAME=Общие
+DESCRIPTION=Общие
+LANGUAGE=Язык
+REDIRECT_OUTPUT=Перенаправлять вывод на консоль в окно вывода
+ERRORS_STRATEGY=Показывать ошибки
+ES_ALL=Все
+ES_FIRSTONLY=Первую синтаксическую или первую семантическую
+ES_FIRSTSEMANTICANDSYNTAX=Первую синтаксическую и первую семантическую
+EDITOR_OPTIONS=Редактор
+SHOW_DEBUG_PLAY_PAUSE_BUTTONS=Показывать дополнительные кнопки управления отладкой
+PASUSE_IN_RUNMODE_IF_CONSOLE=Делать паузу после завершения консольной программы
+SAVE_FILES_IF_COMPILATOIN_OK=Сохранять файлы если компиляция прошла успешно
+
+%PREFIX%=VP_OC_EDITOROPTIONS_
+NAME=Редактор
+DESCRIPTION=Настройки редактора
+ERROR_CURSOR_POS=При ошибке позиционировать курсор
+SHOW_LINES_NUM=Показывать номера строк
+SHOW_MATH_BRACKET=Подсвечивать парные скобки
+SHOW_MATCH_OPERATOR_BRACKET=Подсвечивать парные операторные скобки
+ENABLE_FOLDING=Разрешить сворачивание кода 
+FONT_SIZE=Размер шрифта
+FONT=Шрифт
+EP_BEGIN=в начало
+EP_END=в конец
+EP_SELECTBEGIN=выделить и в начало
+EP_SELECTEND=выделить и в конец
+CONVERT_TABS_TO_SPACES=Конвертировать Tab в пробелы
+GOTO_ERRORPOS_IN_STANDART_MODULES=Переходить к месту ошибки в стандартных модулях
+
+%PREFIX%=VP_OPTIONSFORM_
+FORMTEXT=Настройки
+
+//Intellisense options
+%PREFIX%=VP_OC_INTELLISENSEOPTIONS_
+NAME=Intellisense
+DESCRIPTION=Анализ кода времени разработки (Intellisense)
+ALLOW_CODE_COMPLETION=Включен
+CODE_COMPLETION_HINT=Подсказка при наведении мышью
+CODE_COMPLETION_DOT=Подсказка по точке
+CODE_COMPLETION_PARAMS=Подсказка параметров функций
+CODE_COMPLETION_KEYPRESSED=Подсказка по нажатию клавиши
+SHOW_INTELLISENCE_PANEL=Панель навигации по исходному коду
+NAMESPACE_VISIBLE_RANGE=Вложенность пространств имен (0 - все)
+
+//CompilerOptions
+%PREFIX%=VP_OC_COMPILEROPTIONS_
+NAME=Опции компиляции
+DESCRIPTION=Опции компиляции
+OUTPUT_FILE_TYPE=Тип выходного файла
+GENERATE_PDP_FILES=Генерировать отладочную информацию (Debug-версия)
+USE_OUTPUT_DIRECTORY=Выходные файлы генерировать в папку
+BROWSE=Обзор...
+
+ENVORIMENT_RUNMODE=Выполнение из-под оболочки
+DELETE_EXE=Удалять EXE файл после выполнения
+DELETE_PDB=Удалять отладочную информацию после выполнения
+USE_DLL_FOR_SYSTEM_UNITS=Ускорять запуск из-под оболочки
+
+//AboutBox
+%PREFIX%=VP_ABOUTBOXFORM_
+FORMTEXT=O программе
+VERSION=Версия
+PROJECT_ADMIN=Руководитель проекта:
+PROJECT_ADMIN_FIO=Михалкович С.С.
+DEVELOPERS=Разработчики
+DEVELOPERS1=Бондарев И.В. (Германия)
+DEVELOPERS2=Ткачук А.В.
+DEVELOPERS3=Иванов С.О.
+MADEIN=Россия, ЮФУ, мехмат; Германия
+CORE=Ядро:
+VISUAL=Oболочка:
+COMPONENTS=Компоненты
+TESTING_SYSTEM=Система тестирования:
+TYPE=Тип
+NAME=Имя
+VERSION=Версия
+COPYRIGHT=
+
+//Find Form
+%PREFIX%=VP_FINDFORM_
+FORMTEXT=Поиск
+L_FIND=Искать
+G_OPTIONS=Параметры
+MATH_CASE=Учитывать регистр
+MATH_WHOLE_WORD=Слово целиком
+SEARCH_UP=Искать вверх
+USE_REGEX=Регулярные выражения
+FINDNEXT=Искать далее
+
+//Replace Form
+%PREFIX%=VP_REPLACEFORM_
+FORMTEXT=Замена
+L_FIND=Искать
+L_REPLACETO=Заменить на
+G_OPTIONS=Параметры поиска
+MATH_CASE=Учитывать регистр
+MATH_WHOLE_WORD=Слово целиком
+SEARCH_UP=Искать вверх
+USE_REGEX=Регулярные выражения
+FINDNEXT=Искать далее
+REPLACE=Заменить
+REPLACEALL=Заменить все
+REGEXPERR{0}=Неправильное регулярное выражение. {0}
+
+//ReplaceConfirmDialog Form
+%PREFIX%=VP_REPLACECONFIRMDLGFORM_
+REPLACE{0}TO{1}=Заменить вхождение '{0}' на '{1}' ?
+
+//GotoLineForm
+%PREFIX%=VP_GOTOLINEFORM_
+FORMTEXT=Перейти к строке
+GOTO_LINE_{0}_{1}=Номер строки ({0} - {1}):
+
+%PREFIX%=EXPR_VALUE_
+UNDEFINED_VALUE=Неопределенное значение
+UNDEFINED_TYPE=Неопределенный тип
+SYNTAX_ERROR_IN_EXPR=Синтаксическая ошибка в выражении
+INCOMPATIBLE_TYPES_IN_EXPRESSION=Несовместимые типы в выражении
+OPERATOR_{0}_NOT_IN_TYPE=Оператор '{0}' неприменим к данному типу
+WRONG_NUMBER_ARGUMENTS_IN_{0}=Неправильное число параметров в вызове '{0}'
+WRONG_TYPE_OF_ARGUMENT_IN_{0}=Недопустимый тип аргумента в вызове '{0}'
+UNKNOWN_NAME_{0}=Неизвестное имя '{0}'
+WRONG_TYPE_IN_INDEXER=Неправильный тип выражения в индексаторе
+WRONG_INDEXERS_NUMBER=Неверное число индексаторов
+NO_INDEXER_PROPERTY=Выражение не имеет индексного свойства
+NAME_{0}_IS_NOT_STATIC='{0}' не является статическим членом
+VARIABLE_EXPECTED_TYPE_{0}_FOUND=Символ '{0}' должен быть переменной
+LOWER_BOUND_GREATER_THAN_UPPER_BOUND=Нижняя граница превышает верхнюю
+INVALID_EXPRESSION_TYPE_IN_DIAPASON=Недопустимый тип для диапазона
+NO_SUITABLE_METHOD=Нет подходящего метода для таких аргументов
+
+%PREFIX%=DEBUG_VIEW_
+RAW_VIEW=Неформатированный вид
+BASE=Базовый класс
+MODULE=Глобальные переменные
+PRIVATE=Приватные члены
+STATIC=Статические члены
+PRIVATE_STATIC=Приватные статические члены
+TOO_LONG_EVALUATION=Слишком долго вычисляется
+
+%PREFIX%=CODE_COMPLETION_
+RETURN=Возвращает:
+PARAMETERS=Параметры:
+DESCRIPTION=Описание:

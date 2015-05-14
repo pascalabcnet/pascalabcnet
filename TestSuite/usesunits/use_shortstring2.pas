@@ -1,0 +1,1 @@
+uses u_shortstring2; begin end.

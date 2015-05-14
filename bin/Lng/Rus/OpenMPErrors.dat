@@ -1,0 +1,13 @@
+%PREFIX%=OMPERROR_
+UNKNOWN_DIRECTIVE=Неизвестная директива OpenMP. Параллельная конструкция не была построена
+ERROR_IN_CLAUSE_PARAMETERS=Ошибка в параметрах опции директивы OpenMP. Опция проигнорирована
+IN_CLAUSE_PARAMETERS_REPEATED_VARS=Повторно используемые переменные в опциях директивы OpenMP
+ERROR_IN_CLAUSE= Неизвестная опция директивы OpenMP
+DEPENDENCE_BETWEEN_OCCURRENCE=Нельзя распараллелить цикл, так как существуют циклически порожденные зависимости между вхождениями переменных
+REDUCTION_WITH_LOOPVAR_{0}=Ошибка директивы OpenMP: редукция по переменной цикла '{0}'
+UNKNOWN_VARNAME_{0}=Ошибка директивы OpenMP: нет переменной с именем '{0}'
+NAME_IS_NOT_VAR_{0}=Ошибка директивы OpenMP: '{0}'  не является переменной
+IS_NOT_POSSIBLE_REDUCTION_WITH_THIS_VAR_{0}=Ошибка директивы OpenMP: невозможна редукция по переменной '{0}' 
+PARALLELIZATION_SECTIONS_NOT_AVAILABLE=Распараллеливание секций недоступно
+PARALLELIZATION_FOR_NOT_AVAILABLE=Распараллеливание циклов for недоступно
+OMP_NOT_AVAILABLE=Подсистема OpenMP недоступна

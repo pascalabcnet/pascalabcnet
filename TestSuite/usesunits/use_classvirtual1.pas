@@ -1,0 +1,1 @@
+uses u_classvirtual1; begin end.

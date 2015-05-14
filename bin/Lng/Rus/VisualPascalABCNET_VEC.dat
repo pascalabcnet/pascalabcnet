@@ -1,0 +1,53 @@
+﻿//VisualPascalABCNET.VisualEnvironmentCompiler
+
+%PREFIX%=VP_VEC_
+DIALOGS_FILTER_PART_{0}{1}|{1}|=Программы на {0} ({1})|{1}|
+DIALOGS_PROJECT_FILTER_PART_{0}{1}|{1}|=Проекты на {0} ({1})|{1}|
+DIALOGS_FILTER_PARTALL_{0}|{0}|{1}=Все поддерживаемые ({0})|{0}|{1}
+DIALOGS_FILTER_ALLFILES=Все файлы
+DIALOGS_FILTER_ALLPROJECTS=Все проекты
+DIALOGS_FILTER_ICO_FILES=Файлы иконок (ico)
+ASSEMBLIES=Исполняемые модули
+
+CM_LANGUAGE_{0}=Язык {0}
+CM_OK_{0}MS=OK {0}ms
+CM_{0}_ERROS={0} ошибок
+
+LOAD_PLUGINS=Загружаю плагины...
+PLUGINS_NOTFOUND=Нет плагинов.
+PLUGINS_LOADING_ERRORS=При загрузке плагинов произошли ошибки:
+
+STATE_START_COMPILING_ASSEMBLY{0}=Старт компиляции сборки {0}...
+STATE_BEGINCOMPILEFILE{0}=Начало компиляции {0}...
+STATE_COMPILEINTERFACE{0}=Компиляция interface {0}...
+STATE_COMPILEIMPLEMENTATION{0}=Компиляция implementation {0}...
+STATE_ENDCOMPILEFILE{0}=Конец компиляции {0}.
+STATE_CODEGENERATION{0}=Генерация кода {0}...
+STATE_READDLL{0}=Чтение {0}... 
+STATE_SAVEPCUFILE{0}=Сохранение {0}...
+STATE_READPCUFILE{0}=Чтение {0}...
+STATE_COMPILATIONFINISHED{0}=Компиляция завершена {0}.
+STATE_RELOADING=Загружаю ядро...
+STATE_PCUREADINGERROR{0}=Сбой при чтении {0}
+STATE_PCUWRITINGERROR{0}=Сбой при записи {0}
+STATE_SEMANTICTREECONVERSION{0}=Обработка с помощью преобразования {0}...
+STATE_SEMANTICTREECONVERTERCONNECTED{0}=Подключено преобразование "{0}"
+STATE_READY=Готов
+
+STATETEXT_BEGINCOMPILEFILE{0}=Компиляция {0}...
+STATETEXT_CODEGENERATION{0}=Генерация кода {0}...
+STATETEXT_{0}_ERROS={0} ошибок
+STATETEXT_COMPILATION_SUCCESS_{0}LINES=Компиляция прошла успешно ({0} строк)
+STATETEXT_COMPILATION_SUCCESS_{0}LINES_{1}WARNINGS=Компиляция прошла успешно ({0} строк), {1} предупреждений
+STATETEXT_RELOADING=Загрузка...
+STATETEXT_READY=Готов
+STATETEXT_FINDREFERNCES=Поиск...
+STATETEXT_FINDREFERNCES_RESULT{0}=Найдено {0} ссылок
+STATETEXT_NOTFOUND=Ничего не найдено
+
+SUPPORTED_LANGUAGES=Подключены входные языки:
+PARSER_CONNECTED{0}{1}=Подключен парсер {0} ({1})
+PARSER_CONNECTED{0}=Подключен парсер {0}
+
+REMOTE_COMPILER_PREFIX=[pabcnetc.exe]
+LOCAL_COMPILER_PREFIX=[local]

@@ -1,0 +1,13 @@
+%PREFIX%=OMPERROR_
+UNKNOWN_DIRECTIVE=Unknown directive OpenMP. Parallel construction is not builded
+ERROR_IN_CLAUSE_PARAMETERS=Error in option of OpenMP directive. Option ignored
+IN_CLAUSE_PARAMETERS_REPEATED_VARS=Re-used variables in the options of OpenMP directives
+ERROR_IN_CLAUSE= Unknown option of OpenMP directive. Option ignored
+DEPENDENCE_BETWEEN_OCCURRENCE=It is not possible to parallelize the loop, since there are cyclically generated relationship between the occurrences of variables
+REDUCTION_WITH_LOOPVAR_{0}=Error of OpenMP directive: a reduction with the loop variable '{0}'
+UNKNOWN_VARNAME_{0}=Error of OpenMP directive: there is no variable '{0}'
+NAME_IS_NOT_VAR_{0}=Error of OpenMP directive: '{0}'  is not a variable
+IS_NOT_POSSIBLE_REDUCTION_WITH_THIS_VAR_{0}=Error of OpenMP directive: it is not possible reduction with this variable '{0}' 
+PARALLELIZATION_SECTIONS_NOT_AVAILABLE=Parallelization of the sections is not available
+PARALLELIZATION_FOR_NOT_AVAILABLE=Parallelization of the for is not available
+OMP_NOT_AVAILABLE=OpenMP subsystem is unavailable

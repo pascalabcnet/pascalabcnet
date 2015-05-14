@@ -1,0 +1,1 @@
+gppg.exe /no-lines /verbose /conflicts /gplex python_yacc.y

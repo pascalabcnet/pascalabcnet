@@ -1,0 +1,1 @@
+uses u_stringfunctions1; begin end.

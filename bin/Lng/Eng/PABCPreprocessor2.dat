@@ -1,0 +1,27 @@
+%PREFIX%=PABCPreprocessor2_
+
+EXPECTED{0}=Expected '{0}'
+EXPECTED_{0}_BUT_FOUND_{1}=Expexted '{0}' but found '{1}'
+EOF=(End of file)
+_directive=Directive
+
+INCLUDE_FILE_{0}_NOTFOUND=File '{0}' not found
+CIRCULAR_INCLUDE_{0}=Circular include '{0}'
+ERROR_IN_DEFINE_SYNTAX=Error in $define syntax
+ERROR_IN_INCLUDE_SYNTAX=Error in $include syntax
+NAME_IS_DEFINED_{0}=Name is defined '{0}'
+NAME_WAS_NOT_DEFINED_{0}=Name was not defined '{0}'
+INVALID_INTEGER_EXPRESSION=Invalid integer expression
+UNEXPEXTED_ENDIF_DIRECTIVE=Unexpected $endif directive
+UNEXPEXTED_ELSE_DIRECTIVE=Unexpected $else directive
+ENDIF_DIRECTIVE_EXPEXTED=Expected $endif
+SYNTAX_ERROR_IN_DIRECTIVE_{0}=Error in directive '{0}'
+UNKNOWN_DIRECTIVE_{0}=Unknown directive '{0}'
+UNEXPECTED_SPACES_IN_DIRECTIVE_{0}=Unexpected spaces in directive '{0}'
+UNEXPECTED_ASPDATA_DIRECTIVE_{0}=Unexpected directive '{0}'
+DOUBLE_ASPDATA_DIRECTIVE_{0}=Aspect already defined '{0}'
+ERROR_ASPDATA_DIRECTIVE_{0}=Error in directive '{0}' params
+ASPBEGINEND_ERROR_IN_DIRECTIVE_{0}=Error in matches ASP and ENDASP in '{0}'
+
+ONE_DIRECTIVE=Directive
+ONE__DIRECTIVE=Directive

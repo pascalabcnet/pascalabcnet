@@ -1,0 +1,37 @@
+﻿/*
+http://en.wikipedia.org/wiki/PL/0
+  The PL/0 language is a simplified version of the general-purpose 
+programming language Pascal, intended as an educational programming language. 
+It serves as an example of how to construct a compiler. It was originally 
+introduced in the book, Algorithms + Data Structures = Programs, by 
+Niklaus Wirth in 1975. It features quite limited language constructs: 
+there are no real numbers, very few basic arithmetic operations and no 
+control-flow constructs other than "if" and "while" blocks. 
+While these limitations make writing real applications in this language 
+impractical, it helps the compiler remain compact and simple.
+
+Special satatements:
+
+? ident - Readln(ident)
+! expr  - Writeln(expr)
+
+*/
+
+CONST MAX = 1000;
+
+VAR i,j;
+
+PROCEDURE Fibonachi;
+VAR t;
+WHILE j+j<MAX DO BEGIN
+  t := i;
+  i := j;
+  j := t + i;
+  ! j; 
+END;
+
+BEGIN
+  i := 0;
+  j := 1;
+  CALL Fibonachi;
+END.

@@ -1,0 +1,161 @@
+[b]
+begin
+  |
+end;
+
+[be]
+begin
+  |
+end.
+
+[i]
+integer
+
+[s]
+string
+
+[bo]
+boolean
+
+[f]
+for |:= to do
+
+[fb]
+for |:= to do
+begin
+
+end;
+
+[fore]
+foreach |:  in  do
+
+[foreb]
+foreach |:  in  do
+begin
+
+end;
+
+[if]
+if | then
+
+[ifb]
+if | then
+begin
+
+end;
+
+[ifeb]
+if | then
+begin
+
+end
+else
+begin
+
+end;
+
+[case]
+case | of
+  : ;
+  : ;
+end;
+
+[class]
+type | = class
+end;
+  
+[w]
+while | do
+
+[wb]
+while | do
+begin
+
+end;
+
+[r]
+repeat
+  |
+until ;
+
+[pr]
+procedure |();
+begin
+
+end;
+
+[fu]
+function |(): ;
+begin
+
+end;
+
+[ar]
+array[1..|] of ;
+
+[try]
+try
+  |
+except
+
+end;
+
+[tryo]
+try
+  |
+except
+  on e: Exception do
+end;
+
+[tryf]
+try
+  |
+finally
+
+end;
+
+[program]
+program <filename>;
+
+begin
+  |
+end.
+
+[library]
+library <filename>;
+
+begin
+  |
+end.
+
+[unit]
+unit <filename>;
+
+interface
+  |
+implementation
+
+begin
+
+end.
+
+[gr]
+uses GraphABC;
+
+begin
+  |
+end.
+
+[wf]
+{$reference 'System.Windows.Forms.dll'}
+{$reference 'System.Drawing.dll'}
+
+uses 
+  System, System.Windows.Forms;
+
+begin
+  |Application.Run(new Form);
+end.
+
+[ref]
+reference '|'

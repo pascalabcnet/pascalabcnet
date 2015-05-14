@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScintillaNET>
+	<Language Name="vbscript">
+		<AutoComplete FillUpCharacters=".([" SingleLineAccept="True" IsCaseSensitive="False">
+			<List>
+				addhandler addressof andalso alias and ansi as assembly attribute auto begin boolean byref byte byval call case catch
+				cbool cbyte cchar cdate cdec cdbl char cint class clng cobj compare const continue cshort csng cstr ctype currency date
+				decimal declare default delegate dim do double each else elseif end enum erase error event exit explicit false finally
+				for friend function get gettype global gosub goto handles if implement implements imports in inherits integer interface
+				is let lib like load long loop lset me mid mod module mustinherit mustoverride mybase myclass namespace new next not
+				nothing notinheritable notoverridable object on option optional or orelse overloads overridable overrides paramarray
+				preserve private property protected public raiseevent readonly redim rem removehandler rset resume return select set
+				shadows shared short single static step stop string structure sub synclock then throw to true try type typeof unload
+				unicode until variant wend when while with withevents writeonly xor
+			</List>
+		</AutoComplete>
+
+		<Indentation TabWidth="4" />
+
+		<Lexer LineCommentPrefix="'">
+			<Keywords List="0" Inherit="False">
+				addhandler addressof andalso alias and ansi as assembly attribute auto begin boolean byref byte byval call case catch
+				cbool cbyte cchar cdate cdec cdbl char cint class clng cobj compare const continue cshort csng cstr ctype currency date
+				decimal declare default delegate dim do double each else elseif end enum erase error event exit explicit false finally
+				for friend function get gettype global gosub goto handles if implement implements imports in inherits integer interface
+				is let lib like load long loop lset me mid mod module mustinherit mustoverride mybase myclass namespace new next not
+				nothing notinheritable notoverridable object on option optional or orelse overloads overridable overrides paramarray
+				preserve private property protected public raiseevent readonly redim rem removehandler rset resume return select set
+				shadows shared short single static step stop string structure sub synclock then throw to true try type typeof unload
+				unicode until variant wend when while with withevents writeonly xor
+			</Keywords>
+		</Lexer>
+	</Language>
+</ScintillaNET>

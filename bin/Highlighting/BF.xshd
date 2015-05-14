@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!-- syntaxdefinition for BF (c) DarkStar 2006 -->
+
+<SyntaxDefinition name = "BF" extensions = ".bf">
+	
+	<Environment> 
+		<Default      color = "Green" bgcolor = "White"/>
+	</Environment> 
+
+	<Properties>
+		<Property name="LineComment" value=";"/>
+	</Properties>
+
+        <Digits name = "Digits" bold = "false" italic = "false" color = "Green"/>
+
+	<RuleSets>
+		<RuleSet ignorecase="true">
+			<Delimiters>&lt;&gt;-+[].,</Delimiters>
+			
+		  	<Span name = "LineComment" bold = "false" italic = "false" color = "Green" stopateol = "true">
+			   	<Begin>;@!/@</Begin>
+		  	</Span>
+
+		<KeyWords name = "Jump" bold = "true" italic = "false" color = "Black">
+        		<Key word = "[" />
+        		<Key word = "]" />
+      		</KeyWords>
+      			<KeyWords name = "IO" bold = "false" italic = "false" color = "Red">
+			<Key word = "." />
+			<Key word = "," />
+      		</KeyWords>
+      		<KeyWords name = "IncDecValue" bold = "false" italic = "false" color = "Blue">
+			<Key word = "+" />
+			<Key word = "-" />
+      		</KeyWords>
+      		<KeyWords name = "LeftRight" bold = "false" italic = "false" color = "Green">
+			<Key word = "&lt;" />
+			<Key word = "&gt;" />
+      		</KeyWords>
+      
+		</RuleSet>
+
+	</RuleSets>
+</SyntaxDefinition>

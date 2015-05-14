@@ -1,0 +1,1235 @@
+
+namespace PascalABCCompiler.SyntaxTree
+{
+
+	public interface IVisitor
+	{
+		///<summary>
+		///Method to visit syntax_tree_node.
+		///</summary>
+		///<param name="_syntax_tree_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(syntax_tree_node _syntax_tree_node);
+		///<summary>
+		///Method to visit expression.
+		///</summary>
+		///<param name="_expression">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(expression _expression);
+		///<summary>
+		///Method to visit statement.
+		///</summary>
+		///<param name="_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(statement _statement);
+		///<summary>
+		///Method to visit statement_list.
+		///</summary>
+		///<param name="_statement_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(statement_list _statement_list);
+		///<summary>
+		///Method to visit ident.
+		///</summary>
+		///<param name="_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(ident _ident);
+		///<summary>
+		///Method to visit assign.
+		///</summary>
+		///<param name="_assign">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(assign _assign);
+		///<summary>
+		///Method to visit bin_expr.
+		///</summary>
+		///<param name="_bin_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(bin_expr _bin_expr);
+		///<summary>
+		///Method to visit un_expr.
+		///</summary>
+		///<param name="_un_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(un_expr _un_expr);
+		///<summary>
+		///Method to visit const_node.
+		///</summary>
+		///<param name="_const_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(const_node _const_node);
+		///<summary>
+		///Method to visit bool_const.
+		///</summary>
+		///<param name="_bool_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(bool_const _bool_const);
+		///<summary>
+		///Method to visit int32_const.
+		///</summary>
+		///<param name="_int32_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(int32_const _int32_const);
+		///<summary>
+		///Method to visit double_const.
+		///</summary>
+		///<param name="_double_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(double_const _double_const);
+		///<summary>
+		///Method to visit subprogram_body.
+		///</summary>
+		///<param name="_subprogram_body">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(subprogram_body _subprogram_body);
+		///<summary>
+		///Method to visit addressed_value.
+		///</summary>
+		///<param name="_addressed_value">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(addressed_value _addressed_value);
+		///<summary>
+		///Method to visit type_definition.
+		///</summary>
+		///<param name="_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_definition _type_definition);
+		///<summary>
+		///Method to visit roof_dereference.
+		///</summary>
+		///<param name="_roof_dereference">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(roof_dereference _roof_dereference);
+		///<summary>
+		///Method to visit named_type_reference.
+		///</summary>
+		///<param name="_named_type_reference">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(named_type_reference _named_type_reference);
+		///<summary>
+		///Method to visit variable_definitions.
+		///</summary>
+		///<param name="_variable_definitions">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(variable_definitions _variable_definitions);
+		///<summary>
+		///Method to visit ident_list.
+		///</summary>
+		///<param name="_ident_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(ident_list _ident_list);
+		///<summary>
+		///Method to visit var_def_statement.
+		///</summary>
+		///<param name="_var_def_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(var_def_statement _var_def_statement);
+		///<summary>
+		///Method to visit declaration.
+		///</summary>
+		///<param name="_declaration">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(declaration _declaration);
+		///<summary>
+		///Method to visit declarations.
+		///</summary>
+		///<param name="_declarations">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(declarations _declarations);
+		///<summary>
+		///Method to visit program_tree.
+		///</summary>
+		///<param name="_program_tree">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(program_tree _program_tree);
+		///<summary>
+		///Method to visit program_name.
+		///</summary>
+		///<param name="_program_name">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(program_name _program_name);
+		///<summary>
+		///Method to visit string_const.
+		///</summary>
+		///<param name="_string_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(string_const _string_const);
+		///<summary>
+		///Method to visit expression_list.
+		///</summary>
+		///<param name="_expression_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(expression_list _expression_list);
+		///<summary>
+		///Method to visit dereference.
+		///</summary>
+		///<param name="_dereference">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(dereference _dereference);
+		///<summary>
+		///Method to visit indexer.
+		///</summary>
+		///<param name="_indexer">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(indexer _indexer);
+		///<summary>
+		///Method to visit for_node.
+		///</summary>
+		///<param name="_for_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(for_node _for_node);
+		///<summary>
+		///Method to visit repeat_node.
+		///</summary>
+		///<param name="_repeat_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(repeat_node _repeat_node);
+		///<summary>
+		///Method to visit while_node.
+		///</summary>
+		///<param name="_while_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(while_node _while_node);
+		///<summary>
+		///Method to visit if_node.
+		///</summary>
+		///<param name="_if_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(if_node _if_node);
+		///<summary>
+		///Method to visit ref_type.
+		///</summary>
+		///<param name="_ref_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(ref_type _ref_type);
+		///<summary>
+		///Method to visit diapason.
+		///</summary>
+		///<param name="_diapason">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(diapason _diapason);
+		///<summary>
+		///Method to visit indexers_types.
+		///</summary>
+		///<param name="_indexers_types">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(indexers_types _indexers_types);
+		///<summary>
+		///Method to visit array_type.
+		///</summary>
+		///<param name="_array_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(array_type _array_type);
+		///<summary>
+		///Method to visit label_definitions.
+		///</summary>
+		///<param name="_label_definitions">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(label_definitions _label_definitions);
+		///<summary>
+		///Method to visit procedure_attribute.
+		///</summary>
+		///<param name="_procedure_attribute">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(procedure_attribute _procedure_attribute);
+		///<summary>
+		///Method to visit typed_parameters.
+		///</summary>
+		///<param name="_typed_parameters">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typed_parameters _typed_parameters);
+		///<summary>
+		///Method to visit formal_parameters.
+		///</summary>
+		///<param name="_formal_parameters">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(formal_parameters _formal_parameters);
+		///<summary>
+		///Method to visit procedure_attributes_list.
+		///</summary>
+		///<param name="_procedure_attributes_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(procedure_attributes_list _procedure_attributes_list);
+		///<summary>
+		///Method to visit procedure_header.
+		///</summary>
+		///<param name="_procedure_header">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(procedure_header _procedure_header);
+		///<summary>
+		///Method to visit function_header.
+		///</summary>
+		///<param name="_function_header">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(function_header _function_header);
+		///<summary>
+		///Method to visit procedure_definition.
+		///</summary>
+		///<param name="_procedure_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(procedure_definition _procedure_definition);
+		///<summary>
+		///Method to visit type_declaration.
+		///</summary>
+		///<param name="_type_declaration">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_declaration _type_declaration);
+		///<summary>
+		///Method to visit type_declarations.
+		///</summary>
+		///<param name="_type_declarations">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_declarations _type_declarations);
+		///<summary>
+		///Method to visit simple_const_definition.
+		///</summary>
+		///<param name="_simple_const_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(simple_const_definition _simple_const_definition);
+		///<summary>
+		///Method to visit typed_const_definition.
+		///</summary>
+		///<param name="_typed_const_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typed_const_definition _typed_const_definition);
+		///<summary>
+		///Method to visit const_definition.
+		///</summary>
+		///<param name="_const_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(const_definition _const_definition);
+		///<summary>
+		///Method to visit consts_definitions_list.
+		///</summary>
+		///<param name="_consts_definitions_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(consts_definitions_list _consts_definitions_list);
+		///<summary>
+		///Method to visit unit_name.
+		///</summary>
+		///<param name="_unit_name">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(unit_name _unit_name);
+		///<summary>
+		///Method to visit unit_or_namespace.
+		///</summary>
+		///<param name="_unit_or_namespace">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(unit_or_namespace _unit_or_namespace);
+		///<summary>
+		///Method to visit uses_unit_in.
+		///</summary>
+		///<param name="_uses_unit_in">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(uses_unit_in _uses_unit_in);
+		///<summary>
+		///Method to visit uses_list.
+		///</summary>
+		///<param name="_uses_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(uses_list _uses_list);
+		///<summary>
+		///Method to visit program_body.
+		///</summary>
+		///<param name="_program_body">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(program_body _program_body);
+		///<summary>
+		///Method to visit compilation_unit.
+		///</summary>
+		///<param name="_compilation_unit">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(compilation_unit _compilation_unit);
+		///<summary>
+		///Method to visit unit_module.
+		///</summary>
+		///<param name="_unit_module">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(unit_module _unit_module);
+		///<summary>
+		///Method to visit program_module.
+		///</summary>
+		///<param name="_program_module">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(program_module _program_module);
+		///<summary>
+		///Method to visit hex_constant.
+		///</summary>
+		///<param name="_hex_constant">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(hex_constant _hex_constant);
+		///<summary>
+		///Method to visit get_address.
+		///</summary>
+		///<param name="_get_address">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(get_address _get_address);
+		///<summary>
+		///Method to visit case_variant.
+		///</summary>
+		///<param name="_case_variant">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(case_variant _case_variant);
+		///<summary>
+		///Method to visit case_node.
+		///</summary>
+		///<param name="_case_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(case_node _case_node);
+		///<summary>
+		///Method to visit method_name.
+		///</summary>
+		///<param name="_method_name">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(method_name _method_name);
+		///<summary>
+		///Method to visit dot_node.
+		///</summary>
+		///<param name="_dot_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(dot_node _dot_node);
+		///<summary>
+		///Method to visit empty_statement.
+		///</summary>
+		///<param name="_empty_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(empty_statement _empty_statement);
+		///<summary>
+		///Method to visit goto_statement.
+		///</summary>
+		///<param name="_goto_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(goto_statement _goto_statement);
+		///<summary>
+		///Method to visit labeled_statement.
+		///</summary>
+		///<param name="_labeled_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(labeled_statement _labeled_statement);
+		///<summary>
+		///Method to visit with_statement.
+		///</summary>
+		///<param name="_with_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(with_statement _with_statement);
+		///<summary>
+		///Method to visit method_call.
+		///</summary>
+		///<param name="_method_call">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(method_call _method_call);
+		///<summary>
+		///Method to visit pascal_set_constant.
+		///</summary>
+		///<param name="_pascal_set_constant">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pascal_set_constant _pascal_set_constant);
+		///<summary>
+		///Method to visit array_const.
+		///</summary>
+		///<param name="_array_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(array_const _array_const);
+		///<summary>
+		///Method to visit write_accessor_name.
+		///</summary>
+		///<param name="_write_accessor_name">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(write_accessor_name _write_accessor_name);
+		///<summary>
+		///Method to visit read_accessor_name.
+		///</summary>
+		///<param name="_read_accessor_name">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(read_accessor_name _read_accessor_name);
+		///<summary>
+		///Method to visit property_accessors.
+		///</summary>
+		///<param name="_property_accessors">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_accessors _property_accessors);
+		///<summary>
+		///Method to visit simple_property.
+		///</summary>
+		///<param name="_simple_property">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(simple_property _simple_property);
+		///<summary>
+		///Method to visit index_property.
+		///</summary>
+		///<param name="_index_property">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(index_property _index_property);
+		///<summary>
+		///Method to visit class_members.
+		///</summary>
+		///<param name="_class_members">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(class_members _class_members);
+		///<summary>
+		///Method to visit access_modifer_node.
+		///</summary>
+		///<param name="_access_modifer_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(access_modifer_node _access_modifer_node);
+		///<summary>
+		///Method to visit class_body.
+		///</summary>
+		///<param name="_class_body">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(class_body _class_body);
+		///<summary>
+		///Method to visit class_definition.
+		///</summary>
+		///<param name="_class_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(class_definition _class_definition);
+		///<summary>
+		///Method to visit default_indexer_property_node.
+		///</summary>
+		///<param name="_default_indexer_property_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(default_indexer_property_node _default_indexer_property_node);
+		///<summary>
+		///Method to visit known_type_definition.
+		///</summary>
+		///<param name="_known_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(known_type_definition _known_type_definition);
+		///<summary>
+		///Method to visit set_type_definition.
+		///</summary>
+		///<param name="_set_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(set_type_definition _set_type_definition);
+		///<summary>
+		///Method to visit try_statement.
+		///</summary>
+		///<param name="_try_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_statement _try_statement);
+		///<summary>
+		///Method to visit on_exception.
+		///</summary>
+		///<param name="_on_exception">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(on_exception _on_exception);
+		///<summary>
+		///Method to visit on_exception_list.
+		///</summary>
+		///<param name="_on_exception_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(on_exception_list _on_exception_list);
+		///<summary>
+		///Method to visit try_finally_statement.
+		///</summary>
+		///<param name="_try_finally_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_finally_statement _try_finally_statement);
+		///<summary>
+		///Method to visit try_except_statement.
+		///</summary>
+		///<param name="_try_except_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_except_statement _try_except_statement);
+		///<summary>
+		///Method to visit record_const_definition.
+		///</summary>
+		///<param name="_record_const_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(record_const_definition _record_const_definition);
+		///<summary>
+		///Method to visit record_const.
+		///</summary>
+		///<param name="_record_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(record_const _record_const);
+		///<summary>
+		///Method to visit record_type.
+		///</summary>
+		///<param name="_record_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(record_type _record_type);
+		///<summary>
+		///Method to visit enum_type_definition.
+		///</summary>
+		///<param name="_enum_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(enum_type_definition _enum_type_definition);
+		///<summary>
+		///Method to visit char_const.
+		///</summary>
+		///<param name="_char_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(char_const _char_const);
+		///<summary>
+		///Method to visit raise_statement.
+		///</summary>
+		///<param name="_raise_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(raise_statement _raise_statement);
+		///<summary>
+		///Method to visit sharp_char_const.
+		///</summary>
+		///<param name="_sharp_char_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(sharp_char_const _sharp_char_const);
+		///<summary>
+		///Method to visit literal_const_line.
+		///</summary>
+		///<param name="_literal_const_line">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(literal_const_line _literal_const_line);
+		///<summary>
+		///Method to visit string_num_definition.
+		///</summary>
+		///<param name="_string_num_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(string_num_definition _string_num_definition);
+		///<summary>
+		///Method to visit variant.
+		///</summary>
+		///<param name="_variant">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(variant _variant);
+		///<summary>
+		///Method to visit variant_list.
+		///</summary>
+		///<param name="_variant_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(variant_list _variant_list);
+		///<summary>
+		///Method to visit variant_type.
+		///</summary>
+		///<param name="_variant_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(variant_type _variant_type);
+		///<summary>
+		///Method to visit variant_types.
+		///</summary>
+		///<param name="_variant_types">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(variant_types _variant_types);
+		///<summary>
+		///Method to visit variant_record_type.
+		///</summary>
+		///<param name="_variant_record_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(variant_record_type _variant_record_type);
+		///<summary>
+		///Method to visit procedure_call.
+		///</summary>
+		///<param name="_procedure_call">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(procedure_call _procedure_call);
+		///<summary>
+		///Method to visit class_predefinition.
+		///</summary>
+		///<param name="_class_predefinition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(class_predefinition _class_predefinition);
+		///<summary>
+		///Method to visit nil_const.
+		///</summary>
+		///<param name="_nil_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(nil_const _nil_const);
+		///<summary>
+		///Method to visit file_type_definition.
+		///</summary>
+		///<param name="_file_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(file_type_definition _file_type_definition);
+		///<summary>
+		///Method to visit constructor.
+		///</summary>
+		///<param name="_constructor">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(constructor _constructor);
+		///<summary>
+		///Method to visit destructor.
+		///</summary>
+		///<param name="_destructor">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(destructor _destructor);
+		///<summary>
+		///Method to visit inherited_method_call.
+		///</summary>
+		///<param name="_inherited_method_call">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(inherited_method_call _inherited_method_call);
+		///<summary>
+		///Method to visit typecast_node.
+		///</summary>
+		///<param name="_typecast_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typecast_node _typecast_node);
+		///<summary>
+		///Method to visit interface_node.
+		///</summary>
+		///<param name="_interface_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(interface_node _interface_node);
+		///<summary>
+		///Method to visit implementation_node.
+		///</summary>
+		///<param name="_implementation_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(implementation_node _implementation_node);
+		///<summary>
+		///Method to visit diap_expr.
+		///</summary>
+		///<param name="_diap_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(diap_expr _diap_expr);
+		///<summary>
+		///Method to visit block.
+		///</summary>
+		///<param name="_block">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(block _block);
+		///<summary>
+		///Method to visit proc_block.
+		///</summary>
+		///<param name="_proc_block">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(proc_block _proc_block);
+		///<summary>
+		///Method to visit array_of_named_type_definition.
+		///</summary>
+		///<param name="_array_of_named_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(array_of_named_type_definition _array_of_named_type_definition);
+		///<summary>
+		///Method to visit array_of_const_type_definition.
+		///</summary>
+		///<param name="_array_of_const_type_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(array_of_const_type_definition _array_of_const_type_definition);
+		///<summary>
+		///Method to visit literal.
+		///</summary>
+		///<param name="_literal">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(literal _literal);
+		///<summary>
+		///Method to visit case_variants.
+		///</summary>
+		///<param name="_case_variants">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(case_variants _case_variants);
+		///<summary>
+		///Method to visit diapason_expr.
+		///</summary>
+		///<param name="_diapason_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(diapason_expr _diapason_expr);
+		///<summary>
+		///Method to visit var_def_list.
+		///</summary>
+		///<param name="_var_def_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(var_def_list _var_def_list);
+		///<summary>
+		///Method to visit record_type_parts.
+		///</summary>
+		///<param name="_record_type_parts">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(record_type_parts _record_type_parts);
+		///<summary>
+		///Method to visit property_array_default.
+		///</summary>
+		///<param name="_property_array_default">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_array_default _property_array_default);
+		///<summary>
+		///Method to visit property_interface.
+		///</summary>
+		///<param name="_property_interface">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_interface _property_interface);
+		///<summary>
+		///Method to visit property_parameter.
+		///</summary>
+		///<param name="_property_parameter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_parameter _property_parameter);
+		///<summary>
+		///Method to visit property_parameter_list.
+		///</summary>
+		///<param name="_property_parameter_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(property_parameter_list _property_parameter_list);
+		///<summary>
+		///Method to visit inherited_ident.
+		///</summary>
+		///<param name="_inherited_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(inherited_ident _inherited_ident);
+		///<summary>
+		///Method to visit format_expr.
+		///</summary>
+		///<param name="_format_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(format_expr _format_expr);
+		///<summary>
+		///Method to visit initfinal_part.
+		///</summary>
+		///<param name="_initfinal_part">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(initfinal_part _initfinal_part);
+		///<summary>
+		///Method to visit token_info.
+		///</summary>
+		///<param name="_token_info">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(token_info _token_info);
+		///<summary>
+		///Method to visit raise_stmt.
+		///</summary>
+		///<param name="_raise_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(raise_stmt _raise_stmt);
+		///<summary>
+		///Method to visit op_type_node.
+		///</summary>
+		///<param name="_op_type_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(op_type_node _op_type_node);
+		///<summary>
+		///Method to visit file_type.
+		///</summary>
+		///<param name="_file_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(file_type _file_type);
+		///<summary>
+		///Method to visit known_type_ident.
+		///</summary>
+		///<param name="_known_type_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(known_type_ident _known_type_ident);
+		///<summary>
+		///Method to visit exception_handler.
+		///</summary>
+		///<param name="_exception_handler">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(exception_handler _exception_handler);
+		///<summary>
+		///Method to visit exception_ident.
+		///</summary>
+		///<param name="_exception_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(exception_ident _exception_ident);
+		///<summary>
+		///Method to visit exception_handler_list.
+		///</summary>
+		///<param name="_exception_handler_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(exception_handler_list _exception_handler_list);
+		///<summary>
+		///Method to visit exception_block.
+		///</summary>
+		///<param name="_exception_block">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(exception_block _exception_block);
+		///<summary>
+		///Method to visit try_handler.
+		///</summary>
+		///<param name="_try_handler">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_handler _try_handler);
+		///<summary>
+		///Method to visit try_handler_finally.
+		///</summary>
+		///<param name="_try_handler_finally">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_handler_finally _try_handler_finally);
+		///<summary>
+		///Method to visit try_handler_except.
+		///</summary>
+		///<param name="_try_handler_except">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_handler_except _try_handler_except);
+		///<summary>
+		///Method to visit try_stmt.
+		///</summary>
+		///<param name="_try_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(try_stmt _try_stmt);
+		///<summary>
+		///Method to visit inherited_message.
+		///</summary>
+		///<param name="_inherited_message">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(inherited_message _inherited_message);
+		///<summary>
+		///Method to visit external_directive.
+		///</summary>
+		///<param name="_external_directive">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(external_directive _external_directive);
+		///<summary>
+		///Method to visit using_list.
+		///</summary>
+		///<param name="_using_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(using_list _using_list);
+		///<summary>
+		///Method to visit oberon_import_module.
+		///</summary>
+		///<param name="_oberon_import_module">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_import_module _oberon_import_module);
+		///<summary>
+		///Method to visit oberon_module.
+		///</summary>
+		///<param name="_oberon_module">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_module _oberon_module);
+		///<summary>
+		///Method to visit oberon_ident_with_export_marker.
+		///</summary>
+		///<param name="_oberon_ident_with_export_marker">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker);
+		///<summary>
+		///Method to visit oberon_exit_stmt.
+		///</summary>
+		///<param name="_oberon_exit_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_exit_stmt _oberon_exit_stmt);
+		///<summary>
+		///Method to visit jump_stmt.
+		///</summary>
+		///<param name="_jump_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(jump_stmt _jump_stmt);
+		///<summary>
+		///Method to visit oberon_procedure_receiver.
+		///</summary>
+		///<param name="_oberon_procedure_receiver">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_procedure_receiver _oberon_procedure_receiver);
+		///<summary>
+		///Method to visit oberon_procedure_header.
+		///</summary>
+		///<param name="_oberon_procedure_header">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_procedure_header _oberon_procedure_header);
+		///<summary>
+		///Method to visit oberon_withstmt_guardstat.
+		///</summary>
+		///<param name="_oberon_withstmt_guardstat">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat);
+		///<summary>
+		///Method to visit oberon_withstmt_guardstat_list.
+		///</summary>
+		///<param name="_oberon_withstmt_guardstat_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list);
+		///<summary>
+		///Method to visit oberon_withstmt.
+		///</summary>
+		///<param name="_oberon_withstmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(oberon_withstmt _oberon_withstmt);
+		///<summary>
+		///Method to visit loop_stmt.
+		///</summary>
+		///<param name="_loop_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(loop_stmt _loop_stmt);
+		///<summary>
+		///Method to visit foreach_stmt.
+		///</summary>
+		///<param name="_foreach_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(foreach_stmt _foreach_stmt);
+		///<summary>
+		///Method to visit addressed_value_funcname.
+		///</summary>
+		///<param name="_addressed_value_funcname">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(addressed_value_funcname _addressed_value_funcname);
+		///<summary>
+		///Method to visit named_type_reference_list.
+		///</summary>
+		///<param name="_named_type_reference_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(named_type_reference_list _named_type_reference_list);
+		///<summary>
+		///Method to visit template_param_list.
+		///</summary>
+		///<param name="_template_param_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(template_param_list _template_param_list);
+		///<summary>
+		///Method to visit template_type_reference.
+		///</summary>
+		///<param name="_template_type_reference">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(template_type_reference _template_type_reference);
+		///<summary>
+		///Method to visit int64_const.
+		///</summary>
+		///<param name="_int64_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(int64_const _int64_const);
+		///<summary>
+		///Method to visit uint64_const.
+		///</summary>
+		///<param name="_uint64_const">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(uint64_const _uint64_const);
+		///<summary>
+		///Method to visit new_expr.
+		///</summary>
+		///<param name="_new_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(new_expr _new_expr);
+		///<summary>
+		///Method to visit type_definition_list.
+		///</summary>
+		///<param name="_type_definition_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_definition_list _type_definition_list);
+		///<summary>
+		///Method to visit where_definition.
+		///</summary>
+		///<param name="_where_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(where_definition _where_definition);
+		///<summary>
+		///Method to visit where_definition_list.
+		///</summary>
+		///<param name="_where_definition_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(where_definition_list _where_definition_list);
+		///<summary>
+		///Method to visit sizeof_operator.
+		///</summary>
+		///<param name="_sizeof_operator">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(sizeof_operator _sizeof_operator);
+		///<summary>
+		///Method to visit typeof_operator.
+		///</summary>
+		///<param name="_typeof_operator">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(typeof_operator _typeof_operator);
+		///<summary>
+		///Method to visit compiler_directive.
+		///</summary>
+		///<param name="_compiler_directive">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(compiler_directive _compiler_directive);
+		///<summary>
+		///Method to visit operator_name_ident.
+		///</summary>
+		///<param name="_operator_name_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(operator_name_ident _operator_name_ident);
+		///<summary>
+		///Method to visit var_statement.
+		///</summary>
+		///<param name="_var_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(var_statement _var_statement);
+		///<summary>
+		///Method to visit question_colon_expression.
+		///</summary>
+		///<param name="_question_colon_expression">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(question_colon_expression _question_colon_expression);
+		///<summary>
+		///Method to visit expression_as_statement.
+		///</summary>
+		///<param name="_expression_as_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(expression_as_statement _expression_as_statement);
+		///<summary>
+		///Method to visit c_scalar_type.
+		///</summary>
+		///<param name="_c_scalar_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(c_scalar_type _c_scalar_type);
+		///<summary>
+		///Method to visit c_module.
+		///</summary>
+		///<param name="_c_module">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(c_module _c_module);
+		///<summary>
+		///Method to visit declarations_as_statement.
+		///</summary>
+		///<param name="_declarations_as_statement">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(declarations_as_statement _declarations_as_statement);
+		///<summary>
+		///Method to visit array_size.
+		///</summary>
+		///<param name="_array_size">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(array_size _array_size);
+		///<summary>
+		///Method to visit enumerator.
+		///</summary>
+		///<param name="_enumerator">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(enumerator _enumerator);
+		///<summary>
+		///Method to visit enumerator_list.
+		///</summary>
+		///<param name="_enumerator_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(enumerator_list _enumerator_list);
+		///<summary>
+		///Method to visit c_for_cycle.
+		///</summary>
+		///<param name="_c_for_cycle">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(c_for_cycle _c_for_cycle);
+		///<summary>
+		///Method to visit switch_stmt.
+		///</summary>
+		///<param name="_switch_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(switch_stmt _switch_stmt);
+		///<summary>
+		///Method to visit type_definition_attr_list.
+		///</summary>
+		///<param name="_type_definition_attr_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_definition_attr_list _type_definition_attr_list);
+		///<summary>
+		///Method to visit type_definition_attr.
+		///</summary>
+		///<param name="_type_definition_attr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(type_definition_attr _type_definition_attr);
+		///<summary>
+		///Method to visit lock_stmt.
+		///</summary>
+		///<param name="_lock_stmt">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(lock_stmt _lock_stmt);
+		///<summary>
+		///Method to visit compiler_directive_list.
+		///</summary>
+		///<param name="_compiler_directive_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(compiler_directive_list _compiler_directive_list);
+		///<summary>
+		///Method to visit compiler_directive_if.
+		///</summary>
+		///<param name="_compiler_directive_if">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(compiler_directive_if _compiler_directive_if);
+		///<summary>
+		///Method to visit documentation_comment_list.
+		///</summary>
+		///<param name="_documentation_comment_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(documentation_comment_list _documentation_comment_list);
+		///<summary>
+		///Method to visit documentation_comment_tag.
+		///</summary>
+		///<param name="_documentation_comment_tag">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(documentation_comment_tag _documentation_comment_tag);
+		///<summary>
+		///Method to visit documentation_comment_tag_param.
+		///</summary>
+		///<param name="_documentation_comment_tag_param">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(documentation_comment_tag_param _documentation_comment_tag_param);
+		///<summary>
+		///Method to visit documentation_comment_section.
+		///</summary>
+		///<param name="_documentation_comment_section">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(documentation_comment_section _documentation_comment_section);
+		///<summary>
+		///Method to visit token_taginfo.
+		///</summary>
+		///<param name="_token_taginfo">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(token_taginfo _token_taginfo);
+		///<summary>
+		///Method to visit declaration_specificator.
+		///</summary>
+		///<param name="_declaration_specificator">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(declaration_specificator _declaration_specificator);
+		///<summary>
+		///Method to visit ident_with_templateparams.
+		///</summary>
+		///<param name="_ident_with_templateparams">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(ident_with_templateparams _ident_with_templateparams);
+		///<summary>
+		///Method to visit template_type_name.
+		///</summary>
+		///<param name="_template_type_name">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(template_type_name _template_type_name);
+		///<summary>
+		///Method to visit default_operator.
+		///</summary>
+		///<param name="_default_operator">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(default_operator _default_operator);
+		///<summary>
+		///Method to visit bracket_expr.
+		///</summary>
+		///<param name="_bracket_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(bracket_expr _bracket_expr);
+		///<summary>
+		///Method to visit attribute.
+		///</summary>
+		///<param name="_attribute">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(attribute _attribute);
+		///<summary>
+		///Method to visit simple_attribute_list.
+		///</summary>
+		///<param name="_simple_attribute_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(simple_attribute_list _simple_attribute_list);
+		///<summary>
+		///Method to visit attribute_list.
+		///</summary>
+		///<param name="_attribute_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(attribute_list _attribute_list);
+		///<summary>
+		///Method to visit function_lambda_definition.
+		///</summary>
+		///<param name="_function_lambda_definition">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(function_lambda_definition _function_lambda_definition);
+		///<summary>
+		///Method to visit function_lambda_call.
+		///</summary>
+		///<param name="_function_lambda_call">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(function_lambda_call _function_lambda_call);
+		///<summary>
+		///Method to visit semantic_check.
+		///</summary>
+		///<param name="_semantic_check">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(semantic_check _semantic_check);
+		///<summary>
+		///Method to visit lambda_inferred_type.
+		///</summary>
+		///<param name="_lambda_inferred_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(lambda_inferred_type _lambda_inferred_type);
+	}
+
+
+}
+

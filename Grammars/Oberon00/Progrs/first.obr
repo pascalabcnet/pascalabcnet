@@ -1,0 +1,6 @@
+MODULE First;
+CONST a,b : BOOLEAN;
+VAR x,y,z : BOOLEAN;
+BEGIN x := a & b; y := ~a OR b; z := a # b
+END First.
+

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://schemas.microsoft.com/vs/profiler/ProfilingTasks/1.0"
+	targetNamespace="http://schemas.microsoft.com/vs/profiler/ProfilingTasks/1.0"
+	elementFormDefault="unqualified"
+	attributeFormDefault="unqualified">
+
+  <!-- Definition of the XML file types -->
+  
+  <xs:complexType name="ProfilingTasksType">
+    <xs:sequence>
+      <xs:element name="Task" type="TaskType"  minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TaskType">
+    <xs:sequence>
+      <xs:element name="EtwProvider" type="EtwProviderType"  minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="Name" type="xs:string" use="required"/>
+  </xs:complexType>
+
+    <xs:simpleType name="XmlProviderLevel">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Always" />
+            <xs:enumeration value="Critical" />
+            <xs:enumeration value="Error" />
+            <xs:enumeration value="Warning" />
+            <xs:enumeration value="Informational" />
+            <xs:enumeration value="Verbose" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="EtwProviderType">
+    <xs:attribute name="Name"             type="xs:string"        use="required" />
+    <xs:attribute name="GUID"             type="xs:string"        use="optional" default="{00000000-0000-0000-0000-000000000000}"/>
+    <xs:attribute name="Level"            type="XmlProviderLevel" use="optional" default="Verbose"/>
+    <xs:attribute name="HexKeywords"      type="xs:string"        use="optional" default="00000000"/>
+
+    <!-- Stacks are collected for kernel provider only  -->
+    <xs:attribute name="KernelMode"       type="xs:boolean"       use="optional" default="false"/>
+    <xs:attribute name="KernelStackHexKeywords" type="xs:string"  use="optional" default="00000000"/>
+
+    <!-- CLR data collection is optional  -->
+    <xs:attribute name="CLR" type="xs:boolean" use="optional" default="false"/>
+
+    </xs:complexType>
+
+  <!-- Real body of the XML file -->
+  
+  <xs:element name="ProfilingTasks" type="ProfilingTasksType"/>
+  
+  </xs:schema>

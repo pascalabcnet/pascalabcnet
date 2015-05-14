@@ -1,0 +1,17 @@
+﻿//Compiler error messages
+
+%PREFIX%=COMPILATIONERROR_
+PROGRAM_MODULE_EXPECTED=Ожидалась программа, а встречен модуль
+UNIT_MODULE_EXPECTED=Ожидался модуль, а встречена программа
+READ_PCU{0}_ERROR=Ошибка чтения PCU файла '{0}'
+ASSEMBLY_{0}_NOT_FOUND=Сборка '{0}' не найдена
+UNIT_{0}_NOT_FOUND=Модуль '{0}' не найден
+SOURCE_FILE_{0}_NOT_FOUND=Файл '{0}' не найден
+NO_ACCESS_TO_FILE{0}=Не могу получить доступ к файлу '{0}'
+CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=Циклическая связь с модулем '{0}'
+UNDEFINED_SEMANTIC_ERROR{0}=Неопределенная семантическая ошибка : {0} 
+RESOURCEFILE_{0}_NOT_FOUND=Файл '{0}' не найден
+DUPLICATE_USES_UNIT{0}=Повторное подключение модуля {0} в секции uses
+
+%PREFIX%=
+COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Внутренняя ошибка компилятора в модуле {0} :'{1}'

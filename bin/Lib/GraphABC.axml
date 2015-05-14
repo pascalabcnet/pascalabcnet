@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+<AspectFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <TreeRoot>
+    <Items>
+      <PointOfInterest>
+        <Name>Рисование графиков Draw</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>procedure Draw(f: Func&lt;real,real&gt;; a,b: real; x1,y1,x2,y2: integer);</Text>
+            <Name>Интерфейс процедур Draw</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Draw</string>
+                <string>(</string>
+                <string>f</string>
+                <string>:</string>
+                <string>Func</string>
+                <string>&lt;</string>
+                <string>real</string>
+                <string>,</string>
+                <string>real</string>
+                <string>&gt;</string>
+                <string>;</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>real</string>
+                <string>;</string>
+                <string>x1</string>
+                <string>,</string>
+                <string>y1</string>
+                <string>,</string>
+                <string>x2</string>
+                <string>,</string>
+                <string>y2</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>MethodHeader</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>procedure Draw(f: Func&lt;real,real&gt;; a,b: real; x1,y1,x2,y2: integer);</Text>
+            <Name>Реализация процедур Draw</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Draw</string>
+                <string>(</string>
+                <string>f</string>
+                <string>:</string>
+                <string>Func</string>
+                <string>&lt;</string>
+                <string>real</string>
+                <string>,</string>
+                <string>real</string>
+                <string>&gt;</string>
+                <string>;</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>real</string>
+                <string>;</string>
+                <string>x1</string>
+                <string>,</string>
+                <string>y1</string>
+                <string>,</string>
+                <string>x2</string>
+                <string>,</string>
+                <string>y2</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Context />
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\GraphABC.pas</FileName>
+        <Text>implementation</Text>
+        <Name>implementation модуля</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>IOGraphABCSystem = class(IOStandardSystem)</Text>
+            <Name>IOGraphABCSystem</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>IOGraphABCSystem</string>
+                <string>=</string>
+                <string>class</string>
+                <string>(</string>
+                <string>IOStandardSystem</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Class</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>procedure LoadWindow(fname: string);</Text>
+            <Name>procedure LoadWindow с исправлениями Абрамяна</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>LoadWindow</string>
+                <string>(</string>
+                <string>fname</string>
+                <string>:</string>
+                <string>string</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+          <PointOfInterest>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>MainThread: Thread;</Text>
+            <Name>Раздел переменных</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>MainThread</string>
+                <string>:</string>
+                <string>Thread</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Field</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Note />
+        <Context>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>PAS_TreeNode</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\GraphABC.pas</FileName>
+        <Text>procedure Draw(fname: string; x,y: integer);</Text>
+        <Name>Draw для рисунка</Name>
+        <Items>
+          <PointOfInterest>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>procedure Draw(fname: string; x,y: integer);</Text>
+            <Name>Draw для рисунка - реаплизация</Name>
+            <Items />
+            <Note />
+            <Context>
+              <ArrayOfString>
+                <string>procedure</string>
+                <string>Draw</string>
+                <string>(</string>
+                <string>fname</string>
+                <string>:</string>
+                <string>string</string>
+                <string>;</string>
+                <string>x</string>
+                <string>,</string>
+                <string>y</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+              </ArrayOfString>
+              <ArrayOfString />
+            </Context>
+            <ParserClassName>Method</ParserClassName>
+          </PointOfInterest>
+        </Items>
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>procedure</string>
+            <string>Draw</string>
+            <string>(</string>
+            <string>fname</string>
+            <string>:</string>
+            <string>string</string>
+            <string>;</string>
+            <string>x</string>
+            <string>,</string>
+            <string>y</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>)</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\GraphABC.pas</FileName>
+        <Text>procedure SetPixel(x,y: integer; c: Color);</Text>
+        <Name>Реализация графических примитивов</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>procedure</string>
+            <string>SetPixel</string>
+            <string>(</string>
+            <string>x</string>
+            <string>,</string>
+            <string>y</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>;</string>
+            <string>c</string>
+            <string>:</string>
+            <string>Color</string>
+            <string>)</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+      <PointOfInterest>
+        <FileName>\GraphABC.pas</FileName>
+        <Text>procedure System.Drawing.Rectangle.MoveTo(x,y: integer);</Text>
+        <Name>MoveTo - extension method for Rectangle</Name>
+        <Items />
+        <Note />
+        <Context>
+          <ArrayOfString>
+            <string>procedure</string>
+            <string>System</string>
+            <string>.</string>
+            <string>Drawing</string>
+            <string>.</string>
+            <string>Rectangle</string>
+            <string>.</string>
+            <string>MoveTo</string>
+            <string>(</string>
+            <string>x</string>
+            <string>,</string>
+            <string>y</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>)</string>
+          </ArrayOfString>
+          <ArrayOfString />
+        </Context>
+        <ParserClassName>Method</ParserClassName>
+      </PointOfInterest>
+    </Items>
+    <Context />
+  </TreeRoot>
+</AspectFile>

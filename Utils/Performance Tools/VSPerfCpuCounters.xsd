@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://schemas.microsoft.com/vs/profiler/PerfCounters/1.0" 
+  xmlns="http://schemas.microsoft.com/vs/profiler/PerfCounters/1.0"
+	elementFormDefault="unqualified"
+	attributeFormDefault="unqualified">
+
+  <xs:annotation>
+    <xs:documentation xml:lang="en">
+	Visual Studio Profiler Performance Counters Schema. Copyright (C) 2005 Microsoft Corporation.
+    </xs:documentation>
+  </xs:annotation>
+
+  <!-- Types defintion -->
+  
+  <xs:simpleType name="P4Group">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BPU"/>
+      <xs:enumeration value="MS"/>
+      <xs:enumeration value="FLAME"/>
+      <xs:enumeration value="IQ"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <xs:complexType name="HWCounter">
+      <xs:attribute name="Name"        type="xs:string" use="required" />
+      <xs:attribute name="DisplayName" type="xs:string" use="required" />
+      <xs:attribute name="Description" type="xs:string" use="required" />
+      <xs:attribute name="Reload"      type="xs:unsignedLong" use="required" />
+      <xs:attribute name="PerfEvtSel"  type="xs:unsignedLong" use="optional" />
+      <xs:attribute name="ESCR"        type="xs:unsignedLong" use="optional" />
+      <xs:attribute name="CCCR"        type="xs:unsignedLong" use="optional" />
+      <xs:attribute name="Group"       type="P4Group" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="HWCategory">
+    <xs:sequence>
+      <xs:element name="Counter" type="HWCounter" minOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="Name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="HWFamily">
+    <xs:sequence>
+      <xs:element name="Category" type="HWCategory" minOccurs="1" />
+    </xs:sequence>
+    <xs:attribute name="Name" type="xs:string" use="required" />
+  </xs:complexType>
+
+  <!-- Real body of the XML file -->
+
+  <xs:element name="Family" type="HWFamily"/>
+  <xs:element name="Category" type="HWCategory"/>
+
+</xs:schema>

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <unit name="CRT"> Модуль для работы с консолью
+</unit>
+  <members>
+    <member name="M:SetWindowTitle(System.String)">Задает заголовок консольного окна
+</member>
+    <member name="M:SetWindowCaption(System.String)">Задает заголовок консольного окна
+</member>
+    <member name="M:ShowCursor">Показывает курсор если он скрыт
+</member>
+    <member name="M:HideCursor">Скрывает курсор
+</member>
+    <member name="M:ReadKey">Считыват нажатую клавишу
+</member>
+    <member name="M:KeyPressed">Возвращает true если была нажата клавиша. Считать символ можно спомощью функции ReadKey
+</member>
+    <member name="M:WindowWidth">Возвращает высоту экрана
+</member>
+    <member name="M:WindowHeight">Возвращает ширину экрана
+</member>
+    <member name="M:WhereX">Возвращает Х-координату курсора
+</member>
+    <member name="M:WhereY">Возвращает Y-координату курсора
+</member>
+    <member name="M:GotoXY(System.Int32,System.Int32)">Преводит курсор в координаты (x,y)
+</member>
+    <member name="M:ClrScr">Очищает экран, заполняя его текущим цветом фона
+</member>
+    <member name="M:TextBackground(System.Int32)">Задает цвет фона выводимого текста
+</member>
+    <member name="M:TextColor(System.Int32)">Задает цвет выводимого текста
+</member>
+    <member name="M:ClearLine">Очищает линию на которой установлен курсор
+</member>
+    <member name="M:Delay(System.Int32)"> Делает паузу на ms миллисекунд
+</member>
+  </members>
+</doc>

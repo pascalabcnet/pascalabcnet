@@ -1,0 +1,9 @@
+//PT4 Provider Plugin
+
+%PREFIX%=VPP_PT4PROVIDER_
+D_NAME=View tasks
+L_NAME=Create program template
+R_NAME=View results
+D_DESCRIPTION=View tasks
+L_DESCRIPTION=Create program template
+R_DESCRIPTION=View results

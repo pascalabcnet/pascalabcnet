@@ -1,0 +1,29 @@
+uses System, System.IO;
+
+procedure CopyNoSVN(fromdir, todir: string);
+begin
+  Console.WriteLine(string.Format('Create directory {0}',todir));
+  if not Directory.Exists(todir) then
+    Directory.CreateDirectory(todir);
+  var files := Directory.GetFiles(fromdir,'*.*');
+  foreach f:string in files do begin
+    var fn := todir + '\' + Path.GetFileName(f);
+    Console.WriteLine(string.Format('Copy {0}',fn));
+    File.Copy(f, fn);    
+  end;
+  var dirs := Directory.GetDirectories(fromdir);
+  foreach d:string in dirs do begin
+    var dd := Path.GetFileName(d);
+    if (dd<>'.svn') and (dd<>'..') then
+      CopyNoSVN(d, todir+ '\' + dd);
+  end;
+end;
+
+begin
+  if CommandLineArgs.Length<2 then begin
+    Console.WriteLine('GetSamples formdir todir');
+    //return; Error!
+    exit;
+  end;  
+  CopyNoSVN(Path.GetDirectoryName(GetEXEFileName)+'\'+CommandLineArgs[0],Path.GetDirectoryName(GetEXEFileName)+'\'+CommandLineArgs[1]);
+end.

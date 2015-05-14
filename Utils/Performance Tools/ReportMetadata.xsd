@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns="http://schemas.microsoft.com/vs/profiler/ReportMetadata/1.0"
+	targetNamespace="http://schemas.microsoft.com/vs/profiler/ReportMetadata/1.0"
+	elementFormDefault="unqualified"
+	attributeFormDefault="unqualified">
+
+  <!-- Definition of the XML file types -->
+
+  <xs:complexType name="MetadataType">
+   <xs:sequence>
+      <xs:element name="TaskName" type="xs:string"  minOccurs="1" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <!-- Real body of the XML file -->
+  
+  <xs:element name="Metadata" type="MetadataType" />
+  
+</xs:schema>

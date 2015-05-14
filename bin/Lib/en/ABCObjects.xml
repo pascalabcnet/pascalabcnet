@@ -1,0 +1,388 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <unit name="ABCObjects">Модуль реализует векторные графические объекты с возможностью масштабирования, наложения друг на друга, 
+создания составных графических объектов и многократного их вложения друг в друга. 
+Каждый векторный графический объект перерисовывает себя при перемещении, изменении размеров 
+и частичном перекрытии другими объектами.
+</unit>
+  <members>
+    <member name="T:ContainerABC"> Контейнер графических объектов. Сам является графическим объектом
+</member>
+    <member name="M:ContainerABC.#ctor(System.Int32,System.Int32)">Создает пустой контейнер графических объектов в позиции (x,y)
+Для его наполнения следует использовать метод Add. Координаты всех помещаемых 
+в него графических объектов пересчитываются относительно точки (x,y)
+</member>
+    <member name="M:ContainerABC.#ctor(ABCObjects.ContainerABC)">Создает контейнер графических объектов - копию контейнера графических объектов g
+</member>
+    <member name="M:ContainerABC.Add(ABCObjects.ObjectABC)">Добавляет в контейнер графический объект g
+</member>
+    <member name="M:ContainerABC.Remove(ABCObjects.ObjectABC)">Удаляет из контейнера графический объект g
+</member>
+    <member name="M:ContainerABC.UnLink(ABCObjects.ObjectABC)">Отсоединяет от контейнера графический объект g. 
+Объект g перестает иметь владельца и продолжает отображаться на экране в той же позиции
+</member>
+    <member name="M:ContainerABC.PtInside(System.Int32,System.Int32)">Принадлежит ли точка внутренности одного из графических объектов в контейнере
+</member>
+    <member name="M:ContainerABC.Clone0"> Возвращает клон контейнера графических объектов
+</member>
+    <member name="M:ContainerABC.Clone"> Возвращает клон контейнера графических объектов
+</member>
+    <member name="P:ContainerABC.Count"> Количество графических объектов в контейнере
+</member>
+    <member name="P:ContainerABC.Objects"> Массив графических объектов в контейнере
+</member>
+    <member name="T:ObjectABC"> Базовый класс для всех графических объектов
+</member>
+    <member name="M:ObjectABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает графический объект размера (w,h) цвета cl с координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:ObjectABC.#ctor(ABCObjects.ObjectABC)"> Создает графический объект - копию объекта g
+</member>
+    <member name="M:ObjectABC.Destroy"> Уничтожает графический объект
+</member>
+    <member name="M:ObjectABC.MoveTo(System.Int32,System.Int32)"> Перемещает левый верхний угол графического объекта к точке (x,y)
+</member>
+    <member name="M:ObjectABC.MoveOn(System.Int32,System.Int32)"> Перемещает графический объект на вектор (a,b)
+</member>
+    <member name="M:ObjectABC.Move"> Перемещает графический объект на вектор, задаваемый свойствами dx,dy
+</member>
+    <member name="M:ObjectABC.Scale(System.Double)"> Масштабирует графический объект в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+</member>
+    <member name="M:ObjectABC.ToFront"> Переносит графический объект на передний план
+</member>
+    <member name="M:ObjectABC.ToBack"> Переносит графический объект на задний план
+</member>
+    <member name="M:ObjectABC.Bounds"> Возвращает прямоугольник, определяющий границы графического объекта
+</member>
+    <member name="M:ObjectABC.PtInside(System.Int32,System.Int32)"> Возвращает True, если точка (x,y) находится внутри графического объекта, и False в противном случае
+</member>
+    <member name="M:ObjectABC.Intersect(ABCObjects.ObjectABC)"> Возвращает True, если изображение данного графического объекта пересекается с изображением 
+графического объекта g, и False в противном случае. Белый цвет считается прозрачным и не принадлежащим объекту
+</member>
+    <member name="M:ObjectABC.IntersectRect(System.Drawing.Rectangle)"> Возвращает True, если прямоугольник графического объекта пересекается прямоугольником r, и False в противном случае
+</member>
+    <member name="M:ObjectABC.Clone0"> Возвращает клон графического объекта
+</member>
+    <member name="M:ObjectABC.Clone"> Возвращает клон графического объекта
+</member>
+    <member name="P:ObjectABC.Left"> Отступ графического объекта от левого края 
+</member>
+    <member name="P:ObjectABC.Top"> Отступ графического объекта от верхнего края 
+</member>
+    <member name="P:ObjectABC.Width"> Ширина графического объекта 
+</member>
+    <member name="P:ObjectABC.Height"> Высота  графического объекта
+</member>
+    <member name="P:ObjectABC.dx">x-координата вектора перемещения объекта при вызове метода Move.
+По умолчанию установлено в 0. Для неподвижных объектов может быть использовано 
+для хранения любой дополнительной информации, связанной с объектом
+</member>
+    <member name="P:ObjectABC.dy"> y-координата вектора перемещения объекта при вызове метода Move.
+По умолчанию установлено в 0. Для неподвижных объектов может быть использовано 
+для хранения любой дополнительной информации, связанной с объектом
+</member>
+    <member name="P:ObjectABC.Center"> Центр графического объекта
+</member>
+    <member name="P:ObjectABC.Position"> Левый верхний угол графического объекта
+</member>
+    <member name="P:ObjectABC.Visible"> Видим ли  графический объект
+</member>
+    <member name="P:ObjectABC.Color"> Цвет графического объекта
+</member>
+    <member name="P:ObjectABC.FontColor"> Цвет шрифта графического объекта
+</member>
+    <member name="P:ObjectABC.Text"> Текст внутри графического объекта
+</member>
+    <member name="P:ObjectABC.TextVisible"> Видимость текста внутри графического объекта
+</member>
+    <member name="P:ObjectABC.TextScale"> Масштаб текста относительно размеров графического объекта,  0&lt;=TextScale&lt;=1. 
+При TextScale=1 текст занимает всю ширину или высоту объекта. По умолчанию TextScale=0.8
+</member>
+    <member name="P:ObjectABC.FontName"> Имя шрифта для вывода свойства Text
+</member>
+    <member name="P:ObjectABC.FontStyle"> Стиль шрифта для вывода свойства Text
+</member>
+    <member name="P:ObjectABC.Number"> Целое число, выводимое в центре графического объекта. Для вывода используется свойство Text
+</member>
+    <member name="P:ObjectABC.RealNumber"> Вещественное число, выводимое в центре графического объекта. Для вывода используется свойство Text.
+Вещественное число выводится с одним знаком после десятичной точки
+</member>
+    <member name="P:ObjectABC.Owner">Владелец графического объекта, ответственный также за перерисовку графического объекта внутри себя (по умолчанию nil) 
+</member>
+    <member name="T:BoundedObjectABC"> Базовый класс для всех замкнутых графических объектов
+</member>
+    <member name="M:BoundedObjectABC.SetDrawSettings"> Устанавливает атрибуты пера и кисти перед рисованием
+</member>
+    <member name="M:BoundedObjectABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает замкнутый графический объект размера (w,h) цвета cl с координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:BoundedObjectABC.#ctor(ABCObjects.BoundedObjectABC)"> Создает замкнутый графический объект - копию объекта g
+</member>
+    <member name="P:BoundedObjectABC.BorderColor"> Цвет границы 
+</member>
+    <member name="P:BoundedObjectABC.BorderWidth"> Ширина границы
+</member>
+    <member name="P:BoundedObjectABC.Filled"> Заполнена ли внутренность объекта (по умолчанию True)
+</member>
+    <member name="P:BoundedObjectABC.Bordered"> Имеет ли объект границу (по умолчанию True)
+</member>
+    <member name="T:RectangleABC"> Класс графических объектов "Прямоугольник"
+</member>
+    <member name="M:RectangleABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает прямоугольник размера (w,h) цвета cl с координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:RectangleABC.#ctor(ABCObjects.RectangleABC)"> Создает прямоугольник - копию прямоугольника g
+</member>
+    <member name="M:RectangleABC.Clone0"> Возвращает клон прямоугольника
+</member>
+    <member name="M:RectangleABC.Clone"> Возвращает клон прямоугольника
+</member>
+    <member name="T:SquareABC"> Класс графических объектов "Квадрат"
+</member>
+    <member name="M:SquareABC.#ctor(System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает квадрат размера w цвета cl с координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:SquareABC.#ctor(ABCObjects.SquareABC)"> Создает квадрат - копию квадрата g
+</member>
+    <member name="M:SquareABC.Scale(System.Double)"> Масштабирует квадрат в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+</member>
+    <member name="M:SquareABC.Clone0"> Возвращает клон квадрата
+</member>
+    <member name="M:SquareABC.Clone"> Возвращает клон квадрата
+</member>
+    <member name="T:EllipseABC"> Класс графических объектов "Эллипс"
+</member>
+    <member name="M:EllipseABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает эллипс размера (w,h) цвета cl с координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:EllipseABC.#ctor(ABCObjects.EllipseABC)"> Создает эллипс - копию эллипса g
+</member>
+    <member name="M:EllipseABC.Clone0"> Возвращает клон эллипса
+</member>
+    <member name="M:EllipseABC.Clone"> Возвращает клон эллипса
+</member>
+    <member name="T:CircleABC"> Класс графических объектов "Круг"
+</member>
+    <member name="M:CircleABC.#ctor(System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает круг радиуса r цвета cl с координатами центра (x,y)
+</member>
+    <member name="M:CircleABC.#ctor(ABCObjects.CircleABC)"> Создает круг - копию круга g
+</member>
+    <member name="M:CircleABC.Scale(System.Double)"> Масштабирует круг в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+</member>
+    <member name="M:CircleABC.Clone0"> Возвращает клон круга
+</member>
+    <member name="M:CircleABC.Clone"> Возвращает клон круга
+</member>
+    <member name="P:CircleABC.Radius"> Радиус круга
+</member>
+    <member name="T:RoundRectABC"> Класс графических объектов "Прямоугольник со скругленными краями"
+</member>
+    <member name="M:RoundRectABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает прямоугольник со скругленными краями размера (w,h), цветом cl, радиусом скругления r и координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:RoundRectABC.#ctor(ABCObjects.RoundRectABC)"> Создает прямоугольник со скругленными краями - копию прямоугольника со скругленными краями g
+</member>
+    <member name="M:RoundRectABC.Clone0"> Возвращает клон прямоугольника со скругленными краями
+</member>
+    <member name="M:RoundRectABC.Clone"> Возвращает клон прямоугольника со скругленными краями
+</member>
+    <member name="P:RoundRectABC.Radius"> Радиус скругления углов
+</member>
+    <member name="T:RoundSquareABC"> Класс графических объектов "Квадрат со скругленными краями"
+</member>
+    <member name="M:RoundSquareABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает квадрат со скругленными краями размера w, цвета cl с радиусом скругления r и координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:RoundSquareABC.#ctor(ABCObjects.RoundSquareABC)"> Создает квадрат со скругленными краями - копию квадрата со скругленными краями g
+</member>
+    <member name="M:RoundSquareABC.Scale(System.Double)"> Масштабирует квадрат в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+</member>
+    <member name="M:RoundSquareABC.Clone0"> Возвращает клон квадрата со скругленными краями
+</member>
+    <member name="M:RoundSquareABC.Clone"> Возвращает клон квадрата со скругленными краями
+</member>
+    <member name="T:TextABC"> Класс графических объектов "Текст"
+</member>
+    <member name="M:TextABC.#ctor(System.Int32,System.Int32,System.Int32,System.String,System.Drawing.Color)"> Создает текстовый объект с текстом txt размера pt пунктов, цветом cl и координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:TextABC.#ctor(ABCObjects.TextABC)"> Создает текстовый объект - копию текстового объекта g
+</member>
+    <member name="M:TextABC.Clone0"> Возвращает клон текстового объекта
+</member>
+    <member name="M:TextABC.Clone"> Возвращает клон текстового объекта
+</member>
+    <member name="P:TextABC.FontSize"> Размер шрифта в пунктах
+</member>
+    <member name="P:TextABC.TransparentBackground"> Прозрачен ли фон текстового объекта
+</member>
+    <member name="P:TextABC.BackgroundColor"> Цвет фона текстового объекта
+</member>
+    <member name="T:RegularPolygonABC"> Класс графических объектов "Правильный многоугольник"
+</member>
+    <member name="M:RegularPolygonABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает правильный многоугольник с nn вершинами, радиусом r, цветом cl и координатами центра (x,y)
+</member>
+    <member name="M:RegularPolygonABC.#ctor(ABCObjects.RegularPolygonABC)"> Создает правильный многоугольник - копию правильного многоугольника g
+</member>
+    <member name="M:RegularPolygonABC.PtInside(System.Int32,System.Int32)"> Находится ли точка (x,y) внутри правильного многоугольника
+</member>
+    <member name="M:RegularPolygonABC.Scale(System.Double)"> Масштабирует правильный многоугольник в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+</member>
+    <member name="M:RegularPolygonABC.Clone0"> Возвращает клон правильного многоугольника
+</member>
+    <member name="M:RegularPolygonABC.Clone"> Возвращает клон правильного многоугольника
+</member>
+    <member name="P:RegularPolygonABC.Count"> Количество вершин правильного многоугольника
+</member>
+    <member name="P:RegularPolygonABC.Radius"> Радиус правильного многоугольника
+</member>
+    <member name="P:RegularPolygonABC.Angle"> Угол поворота (в градусах)
+</member>
+    <member name="T:StarABC"> Класс графических объектов "Звезда"
+</member>
+    <member name="M:StarABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Создает звезду с nn вершинами, радиусом r, внутренним радиусом r1, цветом cl и координатами центра (x,y)
+</member>
+    <member name="M:StarABC.#ctor(ABCObjects.StarABC)"> Создает звезду - копию звезды g
+</member>
+    <member name="M:StarABC.PtInside(System.Int32,System.Int32)"> Принадлежит ли точка внутренности объекта
+</member>
+    <member name="M:StarABC.Scale(System.Double)"> Масштабирует звезду в f раз (f&gt;1 - увеличение, 0&lt;f&lt;1 - уменьшение)
+</member>
+    <member name="M:StarABC.Clone0"> Возвращает клон звезды
+</member>
+    <member name="M:StarABC.Clone"> Возвращает клон звезды
+</member>
+    <member name="P:StarABC.InternalRadius"> Внутренний радиус
+</member>
+    <member name="T:PictureABC"> Класс графических объектов "Рисунок"
+</member>
+    <member name="M:PictureABC.#ctor(System.Int32,System.Int32,System.String)"> Создает рисунок с координатами левого верхнего угла (x,y), считывая его из файла fname 
+</member>
+    <member name="M:PictureABC.#ctor(System.Int32,System.Int32,GraphABC.Picture)"> Создает рисунок с координатами левого верхнего угла (x,y), считывая его из объекта p
+</member>
+    <member name="M:PictureABC.#ctor(ABCObjects.PictureABC)"> Создает рисунок - копию рисунка g
+</member>
+    <member name="M:PictureABC.ChangePicture(System.String)"> Меняет изображение рисунка, считывая его из файла fname
+</member>
+    <member name="M:PictureABC.ChangePicture(GraphABC.Picture)"> Меняет изображение рисунка, считывая его из объекта p
+</member>
+    <member name="M:PictureABC.Save(System.String)"> Сохраняет рисунок в файл fname
+</member>
+    <member name="M:PictureABC.FlipVertical"> Зеркально отображает рисунок относительно вертикальной оси
+</member>
+    <member name="M:PictureABC.FlipHorizontal"> Зеркально отображает рисунок относительно горизонтальной оси
+</member>
+    <member name="M:PictureABC.Clone0"> Возвращает клон рисунка
+</member>
+    <member name="M:PictureABC.Clone"> Возвращает клон рисунка
+</member>
+    <member name="P:PictureABC.Transparent"> Прозрачен ли рисунок
+</member>
+    <member name="P:PictureABC.TransparentColor"> Цвет, считающийся прозрачным
+</member>
+    <member name="P:PictureABC.ScaleX"> Масштаб рисунка по оси X относительно исходного изображения. При отрицательных значениях 
+происходит зеркальное отражение относительно вертикальной оси
+</member>
+    <member name="P:PictureABC.ScaleY"> Масштаб рисунка по оси Y относительно исходного изображения. При отрицательных значениях 
+происходит зеркальное отражение относительно вертикальной оси
+</member>
+    <member name="T:MultiPictureABC"> Класс графических объектов "Набор рисунков"
+</member>
+    <member name="M:MultiPictureABC.#ctor(System.Int32,System.Int32,System.String)"> Создает набор рисунков, состоящий из одного рисунка, загружая его из файла с именем fname. 
+После создания рисунок отображается на экране в позиции (x,y). Остальные рисунки добавляются методом Add
+</member>
+    <member name="M:MultiPictureABC.#ctor(System.Int32,System.Int32,GraphABC.Picture)"> Создает набор рисунков, состоящий из одного рисунка, хранящегося в переменной p
+После создания рисунок отображается на экране в позиции (x,y). Остальные рисунки добавляются методом Add
+</member>
+    <member name="M:MultiPictureABC.#ctor(System.Int32,System.Int32,System.Int32,GraphABC.Picture)"> Создает набор рисунков из объекта p типа Picture. Объект p должен хранить 
+последовательность изображений одного размера, расположенных по горизонтали. 
+Каждое изображение считается имеющим ширину w. Если ширина рисунка в объекте p не кратна w, 
+то возникает исключение. После создания первый рисунок из набора отображается на экране в позиции (x,y)
+</member>
+    <member name="M:MultiPictureABC.#ctor(System.Int32,System.Int32,System.Int32,System.String)"> Создает набор рисунков, загружая его из файла fname. Файл должен хранить 
+последовательность изображений одного размера, расположенных по горизонтали. 
+Каждое изображение считается имеющим ширину w. Если ширина рисунка в файле fname не кратна w, 
+то возникает исключение. После создания первый рисунок из набора отображается на экране в позиции (x,y)
+</member>
+    <member name="M:MultiPictureABC.#ctor(ABCObjects.MultiPictureABC)"> Создает набор рисунков - копию набора рисунков g
+</member>
+    <member name="M:MultiPictureABC.Add(System.String)"> Добавляет рисунок к набору, загружая его из файла fname. 
+ Рисунок должен иметь те же размеры, что и все рисунки из набора
+</member>
+    <member name="M:MultiPictureABC.ChangePicture(System.String)"> Меняет набор рисунков на набор, состоящий из одного рисунка, загружая его из файла с именем fname
+</member>
+    <member name="M:MultiPictureABC.ChangePicture(System.Int32,System.String)"> Меняет набор рисунков на набор, загружая его из файла с именем fname.
+Файл должен хранить последовательность изображений одного размера, 
+расположенных по горизонтали. Каждое изображение считается имеющим ширину w
+</member>
+    <member name="M:MultiPictureABC.NextPicture">Циклически переходит к следующему рисунку из набора
+</member>
+    <member name="M:MultiPictureABC.PrevPicture">Циклически переходит к предыдующему рисунку из набора
+</member>
+    <member name="M:MultiPictureABC.Clone0"> Возвращает клон набора рисунков
+</member>
+    <member name="M:MultiPictureABC.Clone"> Возвращает клон набора рисунков
+</member>
+    <member name="P:MultiPictureABC.CurrentPicture">Номер текущего рисунка (нумерация с 1)
+</member>
+    <member name="P:MultiPictureABC.Count">Количество рисунков в наборе
+</member>
+    <member name="T:BoardABC"> Класс графических объектов "Доска"
+</member>
+    <member name="M:BoardABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)">Создает доску nx на ny клеток цвета cl с размером клетки (ssxx,ssyy) в позиции (x,y). 
+</member>
+    <member name="M:BoardABC.#ctor(ABCObjects.BoardABC)">Создает доску - копию доски g
+</member>
+    <member name="M:BoardABC.Clone0"> Возвращает клон доски
+</member>
+    <member name="M:BoardABC.Clone"> Возвращает клон доски
+</member>
+    <member name="P:BoardABC.DimX">Количество клеток доски по горизонтали
+</member>
+    <member name="P:BoardABC.DimY">Количество клеток доски по вертикали
+</member>
+    <member name="P:BoardABC.CellSizeX">Размер клетки по горизонтали 
+</member>
+    <member name="P:BoardABC.CellSizeY">Размер клетки по вертикали
+</member>
+    <member name="T:ObjectBoardABC"> Класс графических объектов "Доска с объектами"
+</member>
+    <member name="M:ObjectBoardABC.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)">Создает доску с объектами nx на ny клеток цвета cl с размером клетки (ssxx,ssyy) в позиции (x,y). 
+</member>
+    <member name="M:ObjectBoardABC.#ctor(ABCObjects.ObjectBoardABC)">Создает доску с объектами - копию доски g
+</member>
+    <member name="M:ObjectBoardABC.DestroyObject(System.Int32,System.Int32)"> Удаляет объект в клетке с координатами (x,y)
+</member>
+    <member name="M:ObjectBoardABC.SwapObjects(System.Int32,System.Int32,System.Int32,System.Int32)"> Меняет местами объекты в клетках с координатами (x1,y1) и (x2,y2)
+</member>
+    <member name="M:ObjectBoardABC.Clone0"> Возвращает клон доски с объектами
+</member>
+    <member name="M:ObjectBoardABC.Clone"> Возвращает клон доски с объектами
+</member>
+    <member name="P:ObjectBoardABC.Items"> Объект в клетке с координатами (x,y)
+</member>
+    <member name="T:UIElementABC"> Тип элемента управления ABCObject
+</member>
+    <member name="T:ObjectsABCArray"> Тип массива графических объектов
+</member>
+    <member name="P:ObjectsABCArray.Items"> i-тый графический объект на экране
+</member>
+    <member name="P:ObjectsABCArray.Count"> Количество графических объектов на экране
+</member>
+    <member name="M:LockDrawingObjects"> Блокирует рисование графических объектов. Возможна лишь перерисовка 
+всего экрана вместе со всеми графическими объектами на нем вызовом RedrawObjects 
+</member>
+    <member name="M:UnLockDrawingObjects"> Разблокирует рисование графических объектов
+</member>
+    <member name="M:RedrawObjects"> Перерисовывает все графическое окно вместе со всеми графическими объектами на нем 
+</member>
+    <member name="M:ToFront(ABCObjects.ObjectABC)"> Переносит графический объект g на передний план
+</member>
+    <member name="M:ToBack(ABCObjects.ObjectABC)"> Переносит графический объект g на задний план
+</member>
+    <member name="M:ObjectsCount"> Количество графических объектов
+</member>
+    <member name="M:ObjectUnderPoint(System.Int32,System.Int32)"> Графический объект под точкой (x,y)
+</member>
+    <member name="M:ObjectUnderPoint(System.Drawing.Point)"> Графический объект под точкой p
+</member>
+    <member name="M:SwapPositions(ABCObjects.ObjectABC,ABCObjects.ObjectABC)"> Поменять позиции графических олбъектов o1 и o2
+</member>
+    <member name="M:UIElementUnderPoint(System.Int32,System.Int32)"> Элемент управления ABCObject под точкой (x,y)
+</member>
+    <member name="V:Objects"> Массив графических объектов
+</member>
+  </members>
+</doc>

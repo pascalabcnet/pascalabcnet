@@ -1,0 +1,12 @@
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\bin\Debug\ScintillaNET.dll
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\bin\Debug\ScintillaNET.pdb
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.FindReplaceDialog.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.IncrementalSearcher.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.GoToDialog.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.Properties.Resources.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.SnippetChooser.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ResGen.read.1.tlog
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ResGen.write.1.tlog
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.dll
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator\Scintilla\Sources\ScintillaNET\obj\Debug\ScintillaNET.pdb

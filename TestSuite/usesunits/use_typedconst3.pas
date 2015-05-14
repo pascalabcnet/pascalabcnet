@@ -1,0 +1,1 @@
+uses u_typedconst3; begin end.

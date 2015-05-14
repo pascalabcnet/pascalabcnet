@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ProfilingTasks xmlns="http://schemas.microsoft.com/vs/profiler/ProfilingTasks/1.0"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:noNamespaceSchemaLocation="file:ProfilingTasks.xsd">
+
+    <!--
+===============================================================================================================================
+    Providers can be found by running 'logman query providers'.
+    The exising schema allows fine tuning of the provider data by setting its Level and HexKeywords.
+    For example:
+    
+  <Task xmlns="" Name="ASP.NET">
+    <EtwProvider Name="ASP.NET Events" GUID="{AFF081FE-0247-4275-9C4E-021F3DC1DA35}" Level="Verbose" HexKeywords="00000000"/>
+  </Task>
+
+  or 
+
+  <Task xmlns="" Name="Network">
+    <EtwProvider Name="Network Location Awareness Trace" GUID="{1AC55562-D4FF-4BC5-8EF3-A18E07C4668E}"/>
+    <EtwProvider Name="Network Profile Manager" GUID="{D9131565-E1DD-4C9E-A728-951999C2ADB5}"/>
+  </Task>
+
+
+   Kernel mode provider is specified through KernelMode="true" and expects keywords for events and another keywords
+   for specifying events with stacks.
+   
+===============================================================================================================================
+    -->
+
+  <!-- CPU profiling task -->
+  <Task xmlns="" Name="CPU">
+    <!-- Enable ImageLoad, Process, Thread, Profile events of kernel mode provider; capture stacks for Profile only -->
+    <EtwProvider Name="KernelModeProvider" KernelMode="true" HexKeywords="01000007" KernelStackHexKeywords="01000000" CLR="true"/>
+  </Task>
+
+  <!-- Time profiling task -->
+  <Task xmlns="" Name="Timing">
+    <EtwProvider Name="JavaScript Provider" GUID="{13C4A47C-89D4-4031-8F6B-E612E5EB73DA}"/>
+    <!-- Enable Process events of kernel mode provider -->
+    <EtwProvider Name="KernelModeProvider" KernelMode="true" HexKeywords="00000001"/>
+  </Task>
+
+</ProfilingTasks>
+       

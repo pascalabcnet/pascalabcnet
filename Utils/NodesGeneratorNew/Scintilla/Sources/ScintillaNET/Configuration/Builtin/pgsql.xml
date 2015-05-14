@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ScintillaNET>
+	<Language Name="pgsql">
+		<Lexer LexerName="sql" LineCommentPrefix="--" StreamCommentPrefix="/* " StreamCommentSuffix=" /*" >
+			<Properties>
+				<Property Name="fold.comment" Value="1" />
+			</Properties>
+			<!--Keyword list 0 Postgresql SQL Keywords (Style WORD) -->
+			<Keywords List="0">
+				if select loop abort absolute access action ada add admin after
+				aggregate alias allocate alter analyse analyze and are
+				as asc asensitive backward  before  begin  between  case
+				assertion  assignment  asymmetric at atomic authorization
+				both breadth by c cache call called cardinality cascade
+				cascaded cast catalog catalog_name chain characteristics
+				character_set_catalog character_set_name character_set_schema
+				check checked checkpoint class class_origin clob close cluster
+				cobol collate collation collation_catalog collation_name collation_schema
+				column column_name command_function command_function_code comment commit
+				committed completion condition_number connect connection connection_name
+				constraint constraints constraint_catalog constraint_name constraint_schema
+				constructor contains continue conversion copy corresponding create createdb
+				createuser cross cube current current_path current_role cursor cursor_name cycle data
+				database datetime_interval_code datetime_interval_precision day deallocate dec declare
+				default deferrable deferred defined definer delete delimiter delimiters depth deref desc
+				describe descriptor destroy destructor deterministic diagnostics dictionary disconnect dispatch
+				distinct do domain drop dynamic dynamic_function dynamic_function_code each else elsif elseif encoding
+				encrypted end equals escape except exception exclusive exec execute existing explain external
+				false fetch final first for force foreign fortran forward found free freeze from full function
+				general generated get global go goto grant granted group grouping handler having hierarchy hold
+				hour identity ignore ilike immediate immutable implementation implicit increment index indicator
+				infix  inherits initialize initially inner inout input insensitive insert instance instantiable
+				instead int intersect into invoker is isnull isolation iterate join key key_member
+				key_type lancompiler language large last lateral leading left less level like limit
+				listen load local location locator lock map match maxvalue message_length message_octet_length
+				message_text method minute minvalue mode modifies modify module month more move mumps name names
+				national natural nchar nclob new next no nocreatedb nocreateuser none not nothing notify notnull
+				null nullable number object of off offset oids old on only open operation operator option options
+				or order ordinality out outer output overlaps overriding owner pad parameter parameters parameter_mode
+				parameter_name parameter_ordinal_position parameter_specific_catalog parameter_specific_name parameter_specific_schema
+				partial pascal password pendant placing pli postfix precision prefix preorder prepare preserve primary prior
+				privileges procedural procedure public read reads recheck recursive ref references referencing reindex relative
+				rename repeatable reset restrict result return returned_length returned_octet_length returned_sqlstate returns
+				revoke right role rollback rollup routine routine_catalog routine_name routine_schema row rows row_count
+				rule savepoint scale schema schema_name scope scroll search second section security self sensitive sequence
+				serializable server_name session set setof sets share show similar simple size source space specific specifictype
+				specific_name sqlcode sqlerror sqlexception sqlstate sqlwarning stable start state statement static statistics stdin
+				stdout storage strict structure style subclass_origin sublist symmetric sysid system system_user
+				table table_name temp template temporary terminate than then timezone_hour timezone_minute to
+				toast trailing transaction transactions_committed transactions_rolled_back transaction_active
+				transform transforms translation treat trigger_catalog trigger_name trigger_schema true truncate
+				trusted type uncommitted under unencrypted union unique unknown unlisten unnamed unnest until
+				update usage user_defined_type_catalog user_defined_type_name user_defined_type_schema using
+				vacuum valid validator value values variable varying verbose view volatile when whenever where
+				with without work write year zone
+			</Keywords>
+
+			<!--Keyword list 4 Postgresql Types (Style WORD2)  -->
+			<Keywords List="1">
+				smallint integer bigint decimal numeric real double serial bigserial character varchar char
+				text bytea timestamp interval date time boolean point line lseg box path polygon circle
+				cidr inet macaddr bit bitvar array oid regproc regprocedure regoper regoperator
+				regclass regtype any anyarray anyelement cstring internal language_handler record
+				trigger void opaque refcursor binary blob int4 int2 int8 float float4 float8
+			</Keywords>
+
+			<Keywords List="2">
+
+			</Keywords>
+
+			<!--Keyword list 3 Postgresql Exceptions (Style SQLPLUS) -->
+			<Keywords List="3">
+
+				body successful_completion warning dynamic_result_sets_returned implicit_zero_bit_padding null_value_eliminated_in_set_function privilege_not_granted privilege_not_revoked string_data_right_truncation deprecated_feature no_data
+				no_additional_dynamic_result_sets_returned sql_statement_not_yet_complete connection_exception connection_does_not_exist connection_failure sqlclient_unable_to_establish_sqlconnection
+				sqlserver_rejected_establishment_of_sqlconnection transaction_resolution_unknown protocol_violation triggered_action_exception feature_not_supported invalid_transaction_initiation locator_exception invalid_locator_specification invalid_grantor
+				invalid_grant_operation invalid_role_specification cardinality_violation data_exception array_subscript_error character_not_in_repertoire datetime_field_overflow division_by_zero
+				error_in_assignment escape_character_conflict indicator_overflow interval_field_overflow invalid_argument_for_logarithm invalid_argument_for_power_function invalid_argument_for_width_bucket_function
+				invalid_character_value_for_cast invalid_datetime_format invalid_escape_character invalid_escape_octet invalid_escape_sequence invalid_indicator_parameter_value invalid_limit_value invalid_parameter_value
+				invalid_regular_expression invalid_time_zone_displacement_value invalid_use_of_escape_character most_specific_type_mismatch null_value_not_allowed null_value_no_indicator_parameter numeric_value_out_of_range string_data_length_mismatch
+				substring_error trim_error unterminated_c_string zero_length_character_string floating_point_exception invalid_text_representation invalid_binary_representation bad_copy_file_format untranslatable_character integrity_constraint_violation restrict_violation
+				not_null_violation foreign_key_violation unique_violation check_violation invalid_cursor_state invalid_transaction_state active_sql_transaction branch_transaction_already_active
+				held_cursor_requires_same_isolation_level inappropriate_access_mode_for_branch_transaction inappropriate_isolation_level_for_branch_transaction no_active_sql_transaction_for_branch_transaction read_only_sql_transaction
+				schema_and_data_statement_mixing_not_supported no_active_sql_transaction in_failed_sql_transaction invalid_sql_statement_name triggered_data_change_violation invalid_authorization_specification
+				dependent_privilege_descriptors_still_exist dependent_objects_still_exist invalid_transaction_termination sql_routine_exception function_executed_no_return_statement modifying_sql_data_not_permitted
+				prohibited_sql_statement_attempted reading_sql_data_not_permitted invalid_cursor_name external_routine_exception containing_sql_not_permitted external_routine_invocation_exception
+				invalid_sqlstate_returned trigger_protocol_violated srf_protocol_violated savepoint_exception invalid_savepoint_specification invalid_catalog_name invalid_schema_name
+				transaction_rollback transaction_integrity_constraint_violation serialization_failure statement_completion_unknown deadlock_detected syntax_error_or_access_rule_violation syntax_error insufficient_privilege cannot_coerce grouping_error
+				invalid_foreign_key invalid_name name_too_long reserved_name datatype_mismatch indeterminate_datatype wrong_object_type undefined_column undefined_function undefined_table
+				undefined_parameter undefined_object duplicate_column duplicate_cursor duplicate_database duplicate_function duplicate_prepared_statement duplicate_schema duplicate_table
+				duplicate_alias duplicate_object ambiguous_column ambiguous_function ambiguous_parameter ambiguous_alias invalid_column_reference invalid_column_definition
+				invalid_cursor_definition invalid_database_definition invalid_function_definition invalid_prepared_statement_definition invalid_schema_definition invalid_table_definition invalid_object_definition with_check_option_violation
+				insufficient_resources disk_full out_of_memory too_many_connections program_limit_exceeded statement_too_complex too_many_columns too_many_arguments
+				object_not_in_prerequisite_state object_in_use cant_change_runtime_param lock_not_available operator_intervention query_canceled admin_shutdown
+				crash_shutdown cannot_connect_now io_error undefined_file duplicate_file config_file_error
+				lock_file_exists plpgsql_error raise_exception internal_error data_corrupted index_corrupted
+			</Keywords>
+
+			<!--Keyword list 4 Postgresql System tables  (Style USER1)-->
+			<Keywords List="4">
+				pg_aggregate pg_am pg_amop pg_amproc pg_attrdef pg_attribute pg_authid pg_auth_members pg_autovacuum
+				pg_cast pg_class pg_constraint pg_conversion pg_database pg_depend pg_description pg_enum pg_index pg_inherits
+				sysmembers pg_language pg_largeobject pg_listener pg_namespace pg_opclass pg_operator pg_opfamily
+				pg_pltemplate pg_proc pg_rewrite pg_shdepend pg_shdescription pg_statistic pg_tablespace
+				pg_trigger pg_ts_config pg_ts_config_map sysdownloadlist pg_ts_dict pg_ts_parser pg_ts_template pg_type pg_cursors
+				pg_group pg_indexes pg_locks pg_prepared_statements pg_prepared_xacts pg_roles pg_rules pg_settings
+				pg_shadow pg_stats pg_tables pg_timezone_abbrevs pg_timezone_names pg_user pg_views
+			</Keywords>
+
+			<!--Keyword list 5 Postgresql System tables  (Style USER2)-->
+			<Keywords List="5">
+				abs cbrt ceil ceiling degrees exp floor ln log mod pi power radians random round setseed sign sqrt
+				trunc width_bucket acos asin atan atan2 cos cot sin tan bit_length char_length character_length
+				convert lower octet_length overlay position substring trim upper ascii btrim chr decode encode
+				initcap length lpad ltrim md5 pg_client_encoding quote_ident quote_literal replace rpad rtrim
+				split_part strpos substr to_ascii to_hex translate get_byte set_byte get_bit set_bit to_char
+				to_date to_timestamp to_number age date_part date_trunc extract now timeofday isfinite
+				area box_intersect center diameter height isclosed isopen npoints pclose popen radius
+				width broadcast host masklen set_masklen netmask hostmask network abbrev family nextval
+				currval setval coalesce nullif array_cat array_append array_prepend array_dims array_lower
+				array_upper array_to_string string_to_array avg bit_and bit_or bool_and bool_or count
+				every max min stddev sum variance exists in some all generate_series current_database
+				current_schema current_schemas inet_client_addr inet_client_port inet_server_addr
+				inet_server_port version has_table_privilege has_database_privilege has_function_privilege
+				has_language_privilege has_schema_privilege has_tablespace_privilege pg_table_is_visible
+				pg_type_is_visible pg_function_is_visible pg_operator_is_visible pg_opclass_is_visible
+				pg_conversion_is_visible format_type pg_get_viewdef pg_get_ruledef pg_get_indexdef
+				pg_get_triggerdef pg_get_constraintdef pg_get_expr pg_get_userbyid pg_get_serial_sequence
+				pg_tablespace_databases obj_description col_description current_setting set_config
+				pg_cancel_backend pg_start_backup pg_stop_backup current_user current_date current_time
+				current_timestamp localtime localtimestamp session_user user
+			</Keywords>
+
+
+			<!--Keyword list 6  (Style USER3)-->
+			<Keywords List="6">
+
+			</Keywords>
+
+			<!--Keyword list 7  (Style USER4)-->
+			<Keywords List="7">
+
+			</Keywords>
+		</Lexer>
+		<Styles>
+
+			<Style Name="DOCUMENT_DEFAULT"/>
+
+			<!--Keyword list 0 PostgreSQL Keywords  -->
+			<Style Name="WORD"	ForeColor="black" bold="true" />
+
+			<!--Keyword list 1 PostgreSQL Types  -->
+			<Style Name="WORD2"	ForeColor="teal" bold="true" />
+
+			<!--Keyword list 3 PostgreSQL Exceptions  -->
+			<Style Name="SQLPLUS"	ForeColor="red" bold="true" italic="true" />
+
+			<!--Keyword list 4 Postgresql System tables  -->
+
+			<Style Name="USER1"	ForeColor="#FFA36B" bold="true"/>
+
+			<!--Keyword list 5  PostgreSQL Functions-->
+			<Style Name="USER2"	ForeColor="purple" bold ="true" />
+
+			<!--Keyword list 6  -->
+			<Style Name="USER3"	ForeColor="black" />
+
+			<!--Keyword list 7  -->
+			<Style Name="USER4"	ForeColor="black" />
+
+			<!--Comments,operators etc  -->
+			<Style Name="QUOTEDIDENTIFIER"	ForeColor="blue" />
+			<Style Name="STRING"	ForeColor="blue" />
+			<Style Name="OPERATOR"	ForeColor="#ff00ff" />
+			<Style Name="NUMBER"	ForeColor="#ff00ff" bold="true" />
+			<Style Name="COMMENTLINE"	ForeColor="green" bold="true" italic="true" />
+			<Style Name="COMMENTDOC"	ForeColor="green" bold="true" italic="true" />
+			<Style Name="COMMENT"	ForeColor="green" bold="true" italic="true" />
+
+		</Styles>
+	</Language>
+</ScintillaNET>
+

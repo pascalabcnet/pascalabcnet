@@ -1,0 +1,1 @@
+..\Utils\IncrementVresion\IncrementVresion.exe ..\Configuration\Version.defs COREVERSION 1

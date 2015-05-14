@@ -1,0 +1,745 @@
+syntax_tree_node
+	SourceContext source_context
+
+statement_list->statement
+	List<statement> subnodes
+	syntax_tree_node left_logical_bracket
+	syntax_tree_node right_logical_bracket
+
+expression->statement
+
+assign->expression
+	addressed_value to
+	expression from
+	Operators operator_type
+
+bin_expr->addressed_value
+	expression left
+	expression right
+	Operators operation_type
+
+un_expr->addressed_value
+	expression subnode
+	Operators operation_type
+
+const_node->addressed_value
+
+bool_const->const_node
+	bool val
+
+int32_const->const_node
+	Int32 val
+
+double_const->const_node
+	double val
+
+statement->declaration
+
+subprogram_body->syntax_tree_node
+	statement_list subprogram_code
+	declarations subprogram_defs
+
+ident->addressed_value_funcname
+	string name
+
+addressed_value->expression
+
+type_definition->declaration
+	type_definition_attr_list attr_list
+
+named_type_reference->type_definition
+	List<ident> names
+
+variable_definitions->declaration
+	List<var_def_statement> var_definitions
+
+ident_list->syntax_tree_node
+	List<ident> idents
+
+var_def_statement->declaration
+	ident_list vars
+	type_definition vars_type
+	expression inital_value
+	definition_attribute var_attr
+	bool is_event
+
+declaration->syntax_tree_node
+	attribute_list attributes
+
+declarations->syntax_tree_node
+	List<declaration> defs
+
+program_tree->syntax_tree_node
+	List<compilation_unit> compilation_units
+
+program_name->syntax_tree_node
+	ident prog_name
+
+string_const->literal
+	string Value
+
+expression_list->expression
+	List<expression> expressions
+
+dereference->addressed_value_funcname
+	addressed_value dereferencing_value
+
+roof_dereference->dereference
+
+indexer->dereference
+	expression_list indexes
+
+for_node->statement
+	ident loop_variable
+	expression initial_value
+	expression finish_value
+	statement statements
+	for_cycle_type cycle_type
+	expression increment_value
+	type_definition type_name
+	bool create_loop_variable
+
+repeat_node->statement
+	statement statements
+	expression expr
+
+while_node->statement
+	expression expr
+	statement statements
+	WhileCycleType CycleType
+
+if_node->statement
+	expression condition
+	statement then_body
+	statement else_body
+
+ref_type->type_definition
+	type_definition pointed_to
+
+diapason->type_definition
+	expression left
+	expression right
+
+indexers_types->type_definition
+	List<type_definition> indexers
+
+array_type->type_definition
+	indexers_types indexers
+	type_definition elemets_types
+
+label_definitions->declaration
+	ident_list labels
+
+procedure_attribute->ident
+	proc_attribute attribute_type
+
+typed_parametres->declaration
+	ident_list idents
+	type_definition vars_type
+	parametr_kind param_kind
+	expression inital_value
+
+formal_parametres->syntax_tree_node
+	List<typed_parametres> params_list
+
+procedure_attributes_list->syntax_tree_node
+	List<procedure_attribute> proc_attributes
+
+procedure_header->type_definition
+	formal_parametres parametres
+	procedure_attributes_list proc_attributes
+	method_name name
+	bool of_object
+	bool class_keyword
+	ident_list template_args
+	where_definition_list where_defs
+
+function_header->procedure_header
+	type_definition return_type
+
+procedure_definition->declaration
+	procedure_header proc_header
+	proc_block proc_body
+
+type_declaration->declaration
+	ident type_name
+	type_definition type_def
+
+type_declarations->declaration
+	List<type_declaration> types_decl
+
+simple_const_definition->const_definition
+
+typed_const_definition->const_definition
+	type_definition const_type
+
+const_definition->declaration
+	ident const_name
+	expression const_value
+
+consts_definitions_list->declaration
+	List<const_definition> const_defs
+
+unit_name->syntax_tree_node
+	ident idunit_name
+	UnitHeaderKeyword HeaderKeyword
+
+unit_or_namespace->syntax_tree_node
+	ident_list name
+
+uses_unit_in->unit_or_namespace
+	string_const in_file
+
+uses_list->syntax_tree_node
+	List<unit_or_namespace> units
+
+program_body->syntax_tree_node
+	uses_list used_units
+	declarations program_definitions
+	statement_list program_code
+	using_list using_list
+
+compilation_unit->syntax_tree_node
+	string file_name
+	List<compiler_directive> compiler_directives
+	LanguageId Language
+
+unit_module->compilation_unit
+	unit_name unit_name
+	interface_node interface_part
+	implementation_node implementation_part
+	statement_list initialization_part
+	statement_list finalization_part
+
+program_module->compilation_unit
+	program_name program_name
+	uses_list used_units
+	block program_block
+	using_list using_namespaces
+
+hex_constant->int64_const
+
+get_address->addressed_value_funcname
+	addressed_value address_of
+
+case_variant->statement
+	expression_list conditions
+	statement exec_if_true
+
+case_node->statement
+	expression param
+	case_variants conditions
+	statement else_statement
+
+method_name->syntax_tree_node
+	ident class_name
+	ident meth_name
+	ident explicit_interface_name
+
+dot_node->addressed_value_funcname
+	addressed_value left
+	addressed_value right
+
+empty_statement->statement
+
+goto_statement->statement
+	ident label
+
+labeled_statement->statement
+	ident label_name
+	statement to_statement
+
+with_statement->statement
+	statement what_do
+	expression_list do_with
+
+method_call->dereference
+	expression_list parametres
+
+pascal_set_constant->addressed_value
+	expression_list values
+
+array_const->expression
+	expression_list elements
+
+write_accessor_name->syntax_tree_node
+	ident accessor_name
+
+read_accessor_name->syntax_tree_node
+	ident accessor_name
+
+property_accessors->syntax_tree_node
+	read_accessor_name read_accessor
+	write_accessor_name write_accessor
+
+simple_property->declaration
+	ident property_name
+	type_definition property_type
+	expression index_expression
+	property_accessors accessors
+	property_array_default array_default
+	property_parameter_list parameter_list
+	definition_attribute attr
+
+index_property->simple_property
+	formal_parametres property_parametres
+	default_indexer_property_node is_default
+
+class_members->syntax_tree_node
+	List<declaration> members
+	access_modifer_node access_mod
+
+access_modifer_node->syntax_tree_node
+	access_modifer access_level
+
+class_body->syntax_tree_node
+	List<class_members> class_def_blocks
+
+class_definition->type_definition
+	named_type_reference_list class_parents
+	class_body body
+	class_keyword keyword
+	ident_list template_args
+	where_definition_list where_section
+	class_attribute attribute
+
+default_indexer_property_node->syntax_tree_node
+
+known_type_definition->type_definition
+	known_type tp
+	ident unit_name
+
+set_type_definition->type_definition
+	type_definition of_type
+
+try_statement->statement
+	statement_list statements
+
+on_exception->syntax_tree_node
+	ident exception_var_name
+	ident exception_type_name
+	statement stat
+
+on_exception_list->syntax_tree_node
+	List<on_exception> on_exceptions
+
+try_finally_statement->try_statement
+	statement_list finally_statements
+
+try_except_statement->try_statement
+	on_exception_list on_except
+	statement_list else_statements
+
+record_const_definition->statement
+	ident name
+	expression val
+
+record_const->expression
+	List<record_const_definition> rec_consts
+
+record_type->type_definition
+	record_type_parts parts
+	type_definition base_type
+
+enum_type_definition->type_definition
+	enumerator_list enumerators
+
+char_const->literal
+	char cconst
+
+raise_statement->statement
+	expression excep
+
+sharp_char_const->literal
+	int char_num
+
+literal_const_line->literal
+	List<literal> literals
+
+string_num_definition->type_definition
+	expression num_of_symbols
+	ident name
+
+variant->syntax_tree_node
+	ident_list vars
+	type_definition vars_type
+
+variant_list->syntax_tree_node
+	List<variant> vars
+
+variant_type->syntax_tree_node
+	expression_list case_exprs
+	record_type_parts parts
+
+variant_types->syntax_tree_node
+	List<variant_type> vars
+
+variant_record_type->syntax_tree_node
+	ident var_name
+	type_definition var_type
+	variant_types vars
+
+procedure_call->statement
+	addressed_value func_name
+
+class_predefinition->type_declaration
+	ident class_name
+
+nil_const->const_node
+
+file_type_definition->type_definition
+	type_definition elem_type
+
+constructor->procedure_header
+
+destructor->procedure_header
+
+inherited_method_call->statement
+	ident method_name
+	expression_list exprs
+
+typecast_node->addressed_value
+	addressed_value expr
+	type_definition type_def
+	op_typecast cast_op
+
+interface_node->syntax_tree_node
+	declarations interface_definitions
+	uses_list uses_modules
+	using_list using_namespaces
+
+implementation_node->syntax_tree_node
+	uses_list uses_modules
+	declarations implementation_definitions
+	using_list using_namespaces
+
+diap_expr->expression
+	expression left
+	expression right
+
+block->proc_block
+	declarations defs
+	statement_list program_code
+
+proc_block->syntax_tree_node
+
+array_of_named_type_definition->type_definition
+	named_type_reference type_name
+
+array_of_const_type_definition->type_definition
+
+literal->const_node
+
+case_variants->syntax_tree_node
+	List<case_variant> variants
+
+diapason_expr->expression
+	expression left
+	expression right
+
+var_def_list->syntax_tree_node
+	List<var_def_statement> vars
+
+record_type_parts->syntax_tree_node
+	var_def_list fixed_part
+	variant_record_type variant_part
+
+property_array_default->syntax_tree_node
+
+property_interface->syntax_tree_node
+	property_parameter_list parameter_list
+	type_definition property_type
+	expression index_expression
+
+property_parameter->syntax_tree_node
+	ident_list names
+	type_definition type
+
+property_parameter_list->syntax_tree_node
+	List<property_parameter> parameters
+
+inherited_ident->ident
+
+format_expr->addressed_value
+	expression expr
+	expression format1
+	expression format2
+
+initfinal_part->syntax_tree_node
+	statement_list initialization_sect
+	statement_list finalization_sect
+
+token_info->syntax_tree_node
+	string text
+
+raise_stmt->statement
+	expression expr
+	expression address
+
+op_type_node->token_info
+	Operators type
+
+file_type->type_definition
+	type_definition file_of_type
+
+known_type_ident->ident
+	known_type type
+
+exception_handler->syntax_tree_node
+	ident variable
+	named_type_reference type_name
+	statement statements
+
+exception_ident->syntax_tree_node
+	ident variable
+	named_type_reference type_name
+
+exception_handler_list->syntax_tree_node
+	List<exception_handler> handlers
+
+exception_block->syntax_tree_node
+	statement_list stmt_list
+	exception_handler_list handlers
+	statement_list else_stmt_list
+
+try_handler->syntax_tree_node
+
+try_handler_finally->try_handler
+	statement_list stmt_list
+
+try_handler_except->try_handler
+	exception_block except_block
+
+try_stmt->statement
+	statement_list stmt_list
+	try_handler handler
+
+inherited_message->statement
+
+external_directive->proc_block
+	expression modulename
+	expression name
+
+using_list->syntax_tree_node
+	List<unit_or_namespace> namespaces
+
+oberon_import_module->unit_or_namespace
+	ident new_name
+
+oberon_module->compilation_unit
+	ident first_name
+	ident second_name
+	uses_list import_list
+	declarations definitions
+	statement_list module_code
+
+oberon_ident_with_export_marker->ident
+	oberon_export_marker marker
+
+oberon_exit_stmt->statement
+	string text
+
+jump_stmt->statement
+	expression expr
+	JumpStmtType JumpType
+
+oberon_procedure_receiver->syntax_tree_node
+	parametr_kind param_kind
+	ident receiver_name
+	ident receiver_typename
+
+oberon_procedure_header->function_header
+	oberon_procedure_receiver receiver
+	ident first_name
+	ident second_name
+
+oberon_withstmt_guardstat->syntax_tree_node
+	addressed_value name
+	type_definition type_name
+	statement stmt
+
+oberon_withstmt_guardstat_list->syntax_tree_node
+	List<oberon_withstmt_guardstat> guardstats
+
+oberon_withstmt->statement
+	oberon_withstmt_guardstat_list quardstat_list
+	statement else_stmt
+
+loop_stmt->statement
+	statement stmt
+
+foreach_stmt->statement
+	ident identifier
+	type_definition type_name
+	expression in_what
+	statement stmt
+
+addressed_value_funcname->addressed_value
+
+named_type_reference_list->syntax_tree_node
+	List<named_type_reference> types
+
+template_param_list->dereference
+	List<type_definition> params_list
+
+template_type_reference->named_type_reference
+	named_type_reference name
+	template_param_list params_list
+
+int64_const->const_node
+	Int64 val
+
+uint64_const->const_node
+	UInt64 val
+
+new_expr->addressed_value
+	type_definition type
+	expression_list params_list
+	bool new_array
+	array_const array_init_expr
+
+type_definition_list->syntax_tree_node
+	List<type_definition> defs
+
+where_definition->syntax_tree_node
+	ident_list names
+	type_definition_list types
+
+where_definition_list->syntax_tree_node
+	List<where_definition> defs
+
+sizeof_operator->addressed_value
+	type_definition type_def
+	expression expr
+
+typeof_operator->addressed_value
+	named_type_reference type_name
+
+compiler_directive->syntax_tree_node
+	token_info Name
+	token_info Directive
+
+operator_name_ident->ident
+	Operators operator_type
+
+var_statement->statement
+	var_def_statement var_def
+
+question_colon_expression->addressed_value
+	expression condition
+	expression ret_if_true
+	expression ret_if_false
+
+expression_as_statement->statement
+	expression expr
+
+c_scalar_type->type_definition
+	c_scalar_type_name scalar_name
+	c_scalar_sign sign
+
+c_module->compilation_unit
+	declarations defs
+	uses_list used_units
+
+declarations_as_statement->statement
+	declarations defs
+
+array_size->type_definition
+	expression max_value
+
+enumerator->syntax_tree_node
+	ident name
+	expression value
+
+enumerator_list->syntax_tree_node
+	List<enumerator> enumerators
+
+c_for_cycle->statement
+	statement expr1
+	expression expr2
+	expression expr3
+	statement stmt
+
+switch_stmt->statement
+	expression condition
+	statement stmt
+	SwitchPartType Part
+
+type_definition_attr_list->syntax_tree_node
+	List<type_definition_attr> attributes
+
+type_definition_attr->type_definition
+	definition_attribute attr
+
+lock_stmt->statement
+	expression lock_object
+	statement stmt
+
+compiler_directive_list->compiler_directive
+	List<compiler_directive> directives
+
+compiler_directive_if->compiler_directive
+	compiler_directive if_part
+	compiler_directive elseif_part
+
+documentation_comment_list->syntax_tree_node
+	List<documentation_comment_section> sections
+
+documentation_comment_tag->syntax_tree_node
+	string name
+	List<documentation_comment_tag_param> parameters
+	string text
+
+documentation_comment_tag_param->syntax_tree_node
+	string name
+	string value
+
+documentation_comment_section->syntax_tree_node
+	List<documentation_comment_tag> tags
+	string text
+
+token_taginfo->token_info
+	object tag
+
+declaration_specificator->type_definition
+	DeclarationSpecificator specificator
+	string name
+
+ident_with_templateparams->addressed_value_funcname
+	addressed_value_funcname name
+	template_param_list template_params
+
+template_type_name->ident
+	ident_list template_args
+
+default_operator->addressed_value
+	named_type_reference type_name
+
+bracket_expr->addressed_value
+	expression expr
+
+attribute->syntax_tree_node
+	ident qualifier
+	named_type_reference type
+	expression_list arguments
+
+simple_attribute_list->syntax_tree_node
+	List<attribute> attributes
+
+attribute_list->syntax_tree_node
+	List<simple_attribute_list> attributes
+
+function_lambda_definition->expression
+	ident_list ident_list
+	type_definition return_type
+	formal_parametres formal_parametres
+	statement proc_body
+	procedure_definition proc_definition
+	expression_list parametres
+	string lambda_name
+	List<object> defs
+
+function_lambda_call->expression
+	function_lambda_definition f_lambda_def
+	expression_list parametres
+

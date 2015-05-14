@@ -1,0 +1,1 @@
+uses u_arrayofset1; begin end.

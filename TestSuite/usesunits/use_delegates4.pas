@@ -1,0 +1,1 @@
+uses u_delegates4; begin end.

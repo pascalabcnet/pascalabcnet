@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="CoverageDSPriv" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="CoverageDSPriv" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="CoverageDSPriv" msprop:Generator_DataSetName="CoverageDSPriv">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="Module" msprop:Generator_UserTableName="Module" msprop:Generator_RowDeletedName="ModuleRowDeleted" msprop:Generator_RowChangedName="ModuleRowChanged" msprop:Generator_RowClassName="ModuleRow" msprop:Generator_RowChangingName="ModuleRowChanging" msprop:Generator_RowEvArgName="ModuleRowChangeEvent" msprop:Generator_RowEvHandlerName="ModuleRowChangeEventHandler" msprop:Generator_TableClassName="ModuleDataTable" msprop:Generator_TableVarName="tableModule" msprop:Generator_RowDeletingName="ModuleRowDeleting" msprop:Generator_TablePropName="Module">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="ModuleName" msprop:Generator_UserColumnName="ModuleName" msprop:Generator_ColumnPropNameInRow="ModuleName" msprop:Generator_ColumnVarNameInTable="columnModuleName" msprop:Generator_ColumnPropNameInTable="ModuleNameColumn" type="xs:string" />
+              <xs:element name="ImageSize" msprop:Generator_UserColumnName="ImageSize" msprop:Generator_ColumnPropNameInRow="ImageSize" msprop:Generator_ColumnVarNameInTable="columnImageSize" msprop:Generator_ColumnPropNameInTable="ImageSizeColumn" type="xs:unsignedInt" />
+              <xs:element name="ImageLinkTime" msprop:Generator_UserColumnName="ImageLinkTime" msprop:Generator_ColumnPropNameInRow="ImageLinkTime" msprop:Generator_ColumnVarNameInTable="columnImageLinkTime" msprop:Generator_ColumnPropNameInTable="ImageLinkTimeColumn" type="xs:unsignedInt" />
+              <xs:element name="LinesCovered" msprop:Generator_UserColumnName="LinesCovered" msprop:Generator_ColumnPropNameInRow="LinesCovered" msprop:Generator_ColumnVarNameInTable="columnLinesCovered" msprop:Generator_ColumnPropNameInTable="LinesCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+              <xs:element name="LinesPartiallyCovered" msprop:Generator_UserColumnName="LinesPartiallyCovered" msprop:Generator_ColumnPropNameInRow="LinesPartiallyCovered" msprop:Generator_ColumnVarNameInTable="columnLinesPartiallyCovered" msprop:Generator_ColumnPropNameInTable="LinesPartiallyCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+              <xs:element name="LinesNotCovered" msprop:Generator_UserColumnName="LinesNotCovered" msprop:Generator_ColumnPropNameInRow="LinesNotCovered" msprop:Generator_ColumnVarNameInTable="columnLinesNotCovered" msprop:Generator_ColumnPropNameInTable="LinesNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+              <xs:element name="BlocksCovered" msprop:Generator_UserColumnName="BlocksCovered" msprop:Generator_ColumnPropNameInRow="BlocksCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksCovered" msprop:Generator_ColumnPropNameInTable="BlocksCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+              <xs:element name="BlocksNotCovered" msprop:Generator_UserColumnName="BlocksNotCovered" msprop:Generator_ColumnPropNameInRow="BlocksNotCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksNotCovered" msprop:Generator_ColumnPropNameInTable="BlocksNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+              <xs:element name="NamespaceTable" msprop:Generator_UserTableName="NamespaceTable" msprop:Generator_RowDeletedName="NamespaceTableRowDeleted" msprop:Generator_RowChangedName="NamespaceTableRowChanged" msprop:Generator_RowClassName="NamespaceTableRow" msprop:Generator_RowChangingName="NamespaceTableRowChanging" msprop:Generator_RowEvArgName="NamespaceTableRowChangeEvent" msprop:Generator_RowEvHandlerName="NamespaceTableRowChangeEventHandler" msprop:Generator_TableClassName="NamespaceTableDataTable" msprop:Generator_TableVarName="tableNamespaceTable" msprop:Generator_RowDeletingName="NamespaceTableRowDeleting" msprop:Generator_TablePropName="NamespaceTable" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="BlocksCovered" msprop:Generator_UserColumnName="BlocksCovered" msprop:Generator_ColumnPropNameInRow="BlocksCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksCovered" msprop:Generator_ColumnPropNameInTable="BlocksCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                    <xs:element name="BlocksNotCovered" msprop:Generator_UserColumnName="BlocksNotCovered" msprop:Generator_ColumnPropNameInRow="BlocksNotCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksNotCovered" msprop:Generator_ColumnPropNameInTable="BlocksNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                    <xs:element name="LinesCovered" msprop:Generator_UserColumnName="LinesCovered" msprop:Generator_ColumnPropNameInRow="LinesCovered" msprop:Generator_ColumnVarNameInTable="columnLinesCovered" msprop:Generator_ColumnPropNameInTable="LinesCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                    <xs:element name="LinesNotCovered" msprop:Generator_UserColumnName="LinesNotCovered" msprop:Generator_ColumnPropNameInRow="LinesNotCovered" msprop:Generator_ColumnVarNameInTable="columnLinesNotCovered" msprop:Generator_ColumnPropNameInTable="LinesNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                    <xs:element name="LinesPartiallyCovered" msprop:Generator_UserColumnName="LinesPartiallyCovered" msprop:Generator_ColumnPropNameInRow="LinesPartiallyCovered" msprop:Generator_ColumnVarNameInTable="columnLinesPartiallyCovered" msprop:Generator_ColumnPropNameInTable="LinesPartiallyCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                    <xs:element name="ModuleName" msprop:Generator_UserColumnName="ModuleName" msprop:Generator_ColumnPropNameInRow="ModuleName" msprop:Generator_ColumnVarNameInTable="columnModuleName" msprop:Generator_ColumnPropNameInTable="ModuleNameColumn" type="xs:string" minOccurs="0" />
+                    <xs:element name="NamespaceKeyName" msprop:Generator_UserColumnName="NamespaceKeyName" msprop:Generator_ColumnPropNameInRow="NamespaceKeyName" msprop:Generator_ColumnVarNameInTable="columnNamespaceKeyName" msprop:Generator_ColumnPropNameInTable="NamespaceKeyNameColumn" type="xs:string" />
+                    <xs:element name="NamespaceName" msprop:Generator_UserColumnName="NamespaceName" msprop:Generator_ColumnPropNameInRow="NamespaceName" msprop:Generator_ColumnVarNameInTable="columnNamespaceName" msprop:Generator_ColumnPropNameInTable="NamespaceNameColumn" type="xs:string" minOccurs="0" />
+                    <xs:element name="Class" msprop:Generator_UserTableName="Class" msprop:Generator_RowDeletedName="ClassRowDeleted" msprop:Generator_RowChangedName="ClassRowChanged" msprop:Generator_RowClassName="ClassRow" msprop:Generator_RowChangingName="ClassRowChanging" msprop:Generator_RowEvArgName="ClassRowChangeEvent" msprop:Generator_RowEvHandlerName="ClassRowChangeEventHandler" msprop:Generator_TableClassName="ClassDataTable" msprop:Generator_TableVarName="tableClass" msprop:Generator_RowDeletingName="ClassRowDeleting" msprop:Generator_TablePropName="Class" minOccurs="0" maxOccurs="unbounded">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="ClassKeyName" msprop:Generator_UserColumnName="ClassKeyName" msprop:Generator_ColumnPropNameInRow="ClassKeyName" msprop:Generator_ColumnVarNameInTable="columnClassKeyName" msprop:Generator_ColumnPropNameInTable="ClassKeyNameColumn" type="xs:string" />
+                          <xs:element name="ClassName" msprop:Generator_UserColumnName="ClassName" msprop:Generator_ColumnPropNameInRow="ClassName" msprop:Generator_ColumnVarNameInTable="columnClassName" msprop:Generator_ColumnPropNameInTable="ClassNameColumn" type="xs:string" />
+                          <xs:element name="LinesCovered" msprop:Generator_UserColumnName="LinesCovered" msprop:Generator_ColumnPropNameInRow="LinesCovered" msprop:Generator_ColumnVarNameInTable="columnLinesCovered" msprop:Generator_ColumnPropNameInTable="LinesCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                          <xs:element name="LinesNotCovered" msprop:Generator_UserColumnName="LinesNotCovered" msprop:Generator_ColumnPropNameInRow="LinesNotCovered" msprop:Generator_ColumnVarNameInTable="columnLinesNotCovered" msprop:Generator_ColumnPropNameInTable="LinesNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                          <xs:element name="LinesPartiallyCovered" msprop:Generator_UserColumnName="LinesPartiallyCovered" msprop:Generator_ColumnPropNameInRow="LinesPartiallyCovered" msprop:Generator_ColumnVarNameInTable="columnLinesPartiallyCovered" msprop:Generator_ColumnPropNameInTable="LinesPartiallyCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                          <xs:element name="BlocksCovered" msprop:Generator_UserColumnName="BlocksCovered" msprop:Generator_ColumnPropNameInRow="BlocksCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksCovered" msprop:Generator_ColumnPropNameInTable="BlocksCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                          <xs:element name="BlocksNotCovered" msprop:Generator_UserColumnName="BlocksNotCovered" msprop:Generator_ColumnPropNameInRow="BlocksNotCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksNotCovered" msprop:Generator_ColumnPropNameInTable="BlocksNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" />
+                          <xs:element name="NamespaceKeyName" msprop:Generator_UserColumnName="NamespaceKeyName" msprop:Generator_ColumnVarNameInTable="columnNamespaceKeyName" msprop:Generator_ColumnPropNameInRow="NamespaceKeyName" msprop:Generator_ColumnPropNameInTable="NamespaceKeyNameColumn" type="xs:string" minOccurs="0" />
+                          <xs:element name="Method" msprop:Generator_UserTableName="Method" msprop:Generator_RowDeletedName="MethodRowDeleted" msprop:Generator_RowChangedName="MethodRowChanged" msprop:Generator_RowClassName="MethodRow" msprop:Generator_RowChangingName="MethodRowChanging" msprop:Generator_RowEvArgName="MethodRowChangeEvent" msprop:Generator_RowEvHandlerName="MethodRowChangeEventHandler" msprop:Generator_TableClassName="MethodDataTable" msprop:Generator_TableVarName="tableMethod" msprop:Generator_RowDeletingName="MethodRowDeleting" msprop:Generator_TablePropName="Method" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="MethodKeyName" msprop:Generator_UserColumnName="MethodKeyName" msprop:Generator_ColumnPropNameInRow="MethodKeyName" msprop:Generator_ColumnVarNameInTable="columnMethodKeyName" msprop:Generator_ColumnPropNameInTable="MethodKeyNameColumn" type="xs:string" msdata:Ordinal="0" />
+                                <xs:element name="MethodName" msprop:Generator_UserColumnName="MethodName" msprop:Generator_ColumnPropNameInRow="MethodName" msprop:Generator_ColumnVarNameInTable="columnMethodName" msprop:Generator_ColumnPropNameInTable="MethodNameColumn" type="xs:string" msdata:Ordinal="1" />
+                                <xs:element name="MethodFullName" msprop:Generator_UserColumnName="MethodFullName" msprop:Generator_ColumnPropNameInRow="MethodFullName" msprop:Generator_ColumnVarNameInTable="columnMethodFullName" msprop:Generator_ColumnPropNameInTable="MethodFullNameColumn" type="xs:string" minOccurs="0" msdata:Ordinal="2" />
+                                <xs:element name="LinesCovered" msprop:Generator_UserColumnName="LinesCovered" msprop:Generator_ColumnPropNameInRow="LinesCovered" msprop:Generator_ColumnVarNameInTable="columnLinesCovered" msprop:Generator_ColumnPropNameInTable="LinesCoveredColumn" type="xs:unsignedInt" minOccurs="0" msdata:Ordinal="3" />
+                                <xs:element name="LinesPartiallyCovered" msprop:Generator_UserColumnName="LinesPartiallyCovered" msprop:Generator_ColumnPropNameInRow="LinesPartiallyCovered" msprop:Generator_ColumnVarNameInTable="columnLinesPartiallyCovered" msprop:Generator_ColumnPropNameInTable="LinesPartiallyCoveredColumn" type="xs:unsignedInt" minOccurs="0" msdata:Ordinal="4" />
+                                <xs:element name="LinesNotCovered" msprop:Generator_UserColumnName="LinesNotCovered" msprop:Generator_ColumnPropNameInRow="LinesNotCovered" msprop:Generator_ColumnVarNameInTable="columnLinesNotCovered" msprop:Generator_ColumnPropNameInTable="LinesNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" msdata:Ordinal="5" />
+                                <xs:element name="BlocksCovered" msprop:Generator_UserColumnName="BlocksCovered" msprop:Generator_ColumnPropNameInRow="BlocksCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksCovered" msprop:Generator_ColumnPropNameInTable="BlocksCoveredColumn" type="xs:unsignedInt" minOccurs="0" msdata:Ordinal="6" />
+                                <xs:element name="BlocksNotCovered" msprop:Generator_UserColumnName="BlocksNotCovered" msprop:Generator_ColumnPropNameInRow="BlocksNotCovered" msprop:Generator_ColumnVarNameInTable="columnBlocksNotCovered" msprop:Generator_ColumnPropNameInTable="BlocksNotCoveredColumn" type="xs:unsignedInt" minOccurs="0" msdata:Ordinal="7" />
+                                <xs:element name="Lines" msprop:Generator_UserTableName="Lines" msprop:Generator_RowDeletedName="LinesRowDeleted" msprop:Generator_RowChangedName="LinesRowChanged" msprop:Generator_RowClassName="LinesRow" msprop:Generator_RowChangingName="LinesRowChanging" msprop:Generator_RowEvArgName="LinesRowChangeEvent" msprop:Generator_RowEvHandlerName="LinesRowChangeEventHandler" msprop:Generator_TableClassName="LinesDataTable" msprop:Generator_TableVarName="tableLines" msprop:Generator_RowDeletingName="LinesRowDeleting" msprop:Generator_TablePropName="Lines" minOccurs="0" maxOccurs="unbounded">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element name="LnStart" msprop:Generator_UserColumnName="LnStart" msprop:Generator_ColumnPropNameInRow="LnStart" msprop:Generator_ColumnVarNameInTable="columnLnStart" msprop:Generator_ColumnPropNameInTable="LnStartColumn" type="xs:unsignedInt" msdata:Ordinal="0" />
+                                      <xs:element name="ColStart" msprop:Generator_UserColumnName="ColStart" msprop:Generator_ColumnPropNameInRow="ColStart" msprop:Generator_ColumnVarNameInTable="columnColStart" msprop:Generator_ColumnPropNameInTable="ColStartColumn" type="xs:unsignedInt" msdata:Ordinal="1" />
+                                      <xs:element name="LnEnd" msprop:Generator_UserColumnName="LnEnd" msprop:Generator_ColumnPropNameInRow="LnEnd" msprop:Generator_ColumnVarNameInTable="columnLnEnd" msprop:Generator_ColumnPropNameInTable="LnEndColumn" type="xs:unsignedInt" msdata:Ordinal="2" />
+                                      <xs:element name="ColEnd" msprop:Generator_UserColumnName="ColEnd" msprop:Generator_ColumnPropNameInRow="ColEnd" msprop:Generator_ColumnVarNameInTable="columnColEnd" msprop:Generator_ColumnPropNameInTable="ColEndColumn" type="xs:unsignedInt" msdata:Ordinal="3" />
+                                      <xs:element name="Coverage" msprop:Generator_UserColumnName="Coverage" msprop:Generator_ColumnPropNameInRow="Coverage" msprop:Generator_ColumnVarNameInTable="columnCoverage" msprop:Generator_ColumnPropNameInTable="CoverageColumn" type="xs:unsignedInt" msdata:Ordinal="4" />
+                                      <xs:element name="SourceFileID" msprop:Generator_UserColumnName="SourceFileID" msprop:Generator_ColumnPropNameInRow="SourceFileID" msprop:Generator_ColumnVarNameInTable="columnSourceFileID" msprop:Generator_ColumnPropNameInTable="SourceFileIDColumn" type="xs:unsignedInt" msdata:Ordinal="5" />
+                                      <xs:element name="LineID" msprop:Generator_UserColumnName="LineID" msprop:Generator_ColumnPropNameInRow="LineID" msprop:Generator_ColumnVarNameInTable="columnLineID" msprop:Generator_ColumnPropNameInTable="LineIDColumn" type="xs:unsignedInt" msdata:Ordinal="7" />
+                                    </xs:sequence>
+                                    <xs:attribute name="MethodKeyName" msprop:Generator_UserColumnName="MethodKeyName" msprop:Generator_ColumnPropNameInRow="MethodKeyName" msprop:Generator_ColumnVarNameInTable="columnMethodKeyName" msprop:Generator_ColumnPropNameInTable="MethodKeyNameColumn" type="xs:string" use="prohibited" />
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="ClassKeyName" msprop:Generator_UserColumnName="ClassKeyName" msprop:Generator_ColumnPropNameInRow="ClassKeyName" msprop:Generator_ColumnVarNameInTable="columnClassKeyName" msprop:Generator_ColumnPropNameInTable="ClassKeyNameColumn" type="xs:string" use="prohibited" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="SourceFileNames" msprop:Generator_UserTableName="SourceFileNames" msprop:Generator_RowDeletedName="SourceFileNamesRowDeleted" msprop:Generator_RowChangedName="SourceFileNamesRowChanged" msprop:Generator_RowClassName="SourceFileNamesRow" msprop:Generator_RowChangingName="SourceFileNamesRowChanging" msprop:Generator_RowEvArgName="SourceFileNamesRowChangeEvent" msprop:Generator_RowEvHandlerName="SourceFileNamesRowChangeEventHandler" msprop:Generator_TableClassName="SourceFileNamesDataTable" msprop:Generator_TableVarName="tableSourceFileNames" msprop:Generator_RowDeletingName="SourceFileNamesRowDeleting" msprop:Generator_TablePropName="SourceFileNames">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SourceFileID" msprop:Generator_UserColumnName="SourceFileID" msprop:Generator_ColumnPropNameInRow="SourceFileID" msprop:Generator_ColumnVarNameInTable="columnSourceFileID" msprop:Generator_ColumnPropNameInTable="SourceFileIDColumn" type="xs:unsignedInt" />
+              <xs:element name="SourceFileName" msprop:Generator_UserColumnName="SourceFileName" msprop:Generator_ColumnPropNameInRow="SourceFileName" msprop:Generator_ColumnVarNameInTable="columnSourceFileName" msprop:Generator_ColumnPropNameInTable="SourceFileNameColumn" type="xs:string" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="LineID" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//Lines" />
+      <xs:field xpath="LineID" />
+    </xs:unique>
+    <xs:unique name="MethodKey" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//Method" />
+      <xs:field xpath="MethodKeyName" />
+    </xs:unique>
+    <xs:unique name="ClassKey" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//Class" />
+      <xs:field xpath="ClassKeyName" />
+    </xs:unique>
+    <xs:unique name="NamespaceKeyName" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//NamespaceTable" />
+      <xs:field xpath="NamespaceKeyName" />
+    </xs:unique>
+    <xs:unique name="ModuleKey" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//Module" />
+      <xs:field xpath="ModuleName" />
+    </xs:unique>
+    <xs:unique name="SourceFileIDKey" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//SourceFileNames" />
+      <xs:field xpath="SourceFileID" />
+    </xs:unique>
+    <xs:keyref name="Module_Namespace" refer="ModuleKey" msdata:IsNested="true" msprop:rel_Generator_UserRelationName="Module_Namespace" msprop:rel_Generator_RelationVarName="relationModule_Namespace" msprop:rel_Generator_UserChildTable="NamespaceTable" msprop:rel_Generator_UserParentTable="Module" msprop:rel_Generator_ParentPropName="ModuleRow" msprop:rel_Generator_ChildPropName="GetNamespaceTableRows">
+      <xs:selector xpath=".//NamespaceTable" />
+      <xs:field xpath="ModuleName" />
+    </xs:keyref>
+    <xs:keyref name="Namespace_Class" refer="NamespaceKeyName" msdata:IsNested="true" msprop:rel_Generator_UserRelationName="Namespace_Class" msprop:rel_Generator_RelationVarName="relationNamespace_Class" msprop:rel_Generator_UserChildTable="Class" msprop:rel_Generator_UserParentTable="NamespaceTable" msprop:rel_Generator_ParentPropName="NamespaceTableRow" msprop:rel_Generator_ChildPropName="GetClassRows">
+      <xs:selector xpath=".//Class" />
+      <xs:field xpath="NamespaceKeyName" />
+    </xs:keyref>
+    <xs:keyref name="Class_Method" refer="ClassKey" msdata:IsNested="true" msprop:rel_Generator_UserRelationName="Class_Method" msprop:rel_Generator_RelationVarName="relationClass_Method" msprop:rel_Generator_UserChildTable="Method" msprop:rel_Generator_UserParentTable="Class" msprop:rel_Generator_ParentPropName="ClassRow" msprop:rel_Generator_ChildPropName="GetMethodRows">
+      <xs:selector xpath=".//Method" />
+      <xs:field xpath="@ClassKeyName" />
+    </xs:keyref>
+    <xs:keyref name="SourceFileNames_Lines" refer="SourceFileIDKey" msdata:ConstraintOnly="true">
+      <xs:selector xpath=".//Lines" />
+      <xs:field xpath="SourceFileID" />
+    </xs:keyref>
+    <xs:keyref name="Method_Lines" refer="MethodKey" msdata:IsNested="true" msprop:rel_Generator_UserRelationName="Method_Lines" msprop:rel_Generator_RelationVarName="relationMethod_Lines" msprop:rel_Generator_UserChildTable="Lines" msprop:rel_Generator_UserParentTable="Method" msprop:rel_Generator_ParentPropName="MethodRow" msprop:rel_Generator_ChildPropName="GetLinesRows">
+      <xs:selector xpath=".//Lines" />
+      <xs:field xpath="@MethodKeyName" />
+    </xs:keyref>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,52 @@
+﻿//PascalABCParser.dll
+%PREFIX%=PASCALABCPARSER_
+
+FOUND{0}=Встречено {0}, а 
+FOUNDEOF=Встречен конец файла, а 
+EXPECTED{0}=Ожидалось {0}
+EXPECTED{1}=ожидалось {1}
+EXPECTEDR{1}=ожидался {1}
+EXPECTEDBEGIN=ожидался раздел описаний или begin
+
+WITHOUT_INIT_AND_SIZE=Пропущен размер динамического массива
+
+OPERATOR_NOT_IMPLEMET_TO_THIS_OPEAND_TYPE=Операция не применима к операндам данного типа
+STATEMENT_EXPECTED=Ожидался оператор
+LEFT_SIDE_ASSIGN_MUST_BE_VARIABLE=Левая часть оператора присваивания должна быть переменной
+PROCEDURE_CANNOT_HAVE_RETURNED_VALUE=Процедура не может иметь возвращаемого значения
+EXPECTED_{0}_BUT_FOUND_{1}=Ожидалось '{0}', а встречено '{1}'
+NONTERMINALTOKEN_{0}_RETURN_NULL=Cинтаксическая конструкция вида '{0}' не поддерживается текущей версией парсера
+SEMICOLON_BEFORE_ELSE=Перед else нельзя ставить точку с запятой
+UNEXPECTED_SYMBOL{0}=Неожиданный символ '{0}'
+UNSUPPORTED_OLD_DIRECTIVES=Директивы компилятора в стиле # более не поддерживаются. Используйте директивы в стиле {$ }
+INCLUDE_COULDNT_OPEN_FILE{0}=Директива компилятора $include: нельзя открыть файл '{0}'
+INCLUDE_EMPTY_FILE=Директива компилятора $include: не указано имя файла 
+UNNECESSARY $endif=Лишний $endif
+ENDIF_ABSENT=Незакрытая директива $ifdef или $ifndef - отсутствует $endif
+UNNECESSARY $else=Лишний $else
+
+EOF1=конец файла
+EOF=(конец файла)
+TKIDENTIFIER=идентификатор
+TKINTEGER=число
+OPERATOR=оператор
+TKSEMICOLON=';'
+TKCOLON=':'
+TKCOMMA=','
+TKPOINT='.'
+TKASSIGN=':='
+TKEQUAL='='
+TKDOTDOT='..'
+TKROUNDOPEN='('
+TKROUNDCLOSE=')'
+TKDO=do
+EXPR=выражение
+STMT=оператор
+
+ONE_EOF=Ожидался конец файла
+ONE_TKIDENTIFIER=Ожидался идентификатор
+ONE_OPERATOR=Ожидался оператор
+ONE_STMT=Ожидался оператор
+
+DUPLICATE_NAMES_IN_ANON_TYPE=Анонимный тип не может содержать поля с одинаковыми именами
+BAD_ANON_TYPE=Неверное определение имени поля анонимного типа

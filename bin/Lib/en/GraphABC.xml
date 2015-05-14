@@ -1,0 +1,515 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <unit name="GraphABC">Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
+</unit>
+  <members>
+    <member name="T:GraphABCException"> Тип исключения GraphABC  
+</member>
+    <member name="T:GraphABCPen"> Тип пера GraphABC
+</member>
+    <member name="P:GraphABCPen.NETPen"> Текущее перо .NET
+</member>
+    <member name="P:GraphABCPen.Color"> Цвет пера
+</member>
+    <member name="P:GraphABCPen.Width"> Ширина пера
+</member>
+    <member name="P:GraphABCPen.Style"> Стиль пера
+</member>
+    <member name="P:GraphABCPen.Mode"> Режим пера
+</member>
+    <member name="P:GraphABCPen.X"> X-координата текущей позиции пера
+</member>
+    <member name="P:GraphABCPen.Y"> Y-координата текущей позиции пера
+</member>
+    <member name="T:GraphABCBrush"> Тип кисти GraphABC
+</member>
+    <member name="P:GraphABCBrush.NETBrush"> Текущая кисть .NET
+</member>
+    <member name="P:GraphABCBrush.Color"> Цвет кисти
+</member>
+    <member name="P:GraphABCBrush.Style"> Стиль кисти
+</member>
+    <member name="P:GraphABCBrush.Hatch"> Штриховка кисти
+</member>
+    <member name="P:GraphABCBrush.HatchBackgroundColor"> Цвет заднего плана штриховой кисти
+</member>
+    <member name="P:GraphABCBrush.GradientSecondColor"> Второй цвет градиентной кисти
+</member>
+    <member name="T:GraphABCFont"> Тип шрифта GraphABC
+</member>
+    <member name="P:GraphABCFont.NETFont"> Текущий шрифт .NET
+</member>
+    <member name="P:GraphABCFont.Color"> Цвет шрифта
+</member>
+    <member name="P:GraphABCFont.Style"> Стиль шрифта
+</member>
+    <member name="P:GraphABCFont.Size"> Размер шрифта в пунктах
+</member>
+    <member name="P:GraphABCFont.Name"> Наименование шрифта
+</member>
+    <member name="M:GraphABCCoordinate.SetTransform(System.Double,System.Double,System.Double,System.Double,System.Double)"> Устанавливает параметры системы координат
+</member>
+    <member name="M:GraphABCCoordinate.SetOrigin(System.Int32,System.Int32)"> Устанавливает начало системы координат
+</member>
+    <member name="M:GraphABCCoordinate.SetScale(System.Double,System.Double)"> Устанавливает масштаб системы координат
+</member>
+    <member name="M:GraphABCCoordinate.SetScale(System.Double)"> Устанавливает масштаб системы координат
+</member>
+    <member name="M:GraphABCCoordinate.SetMathematic"> Устанавливает правую систему координат (ось OY направлена вверх, ось OX - вправо)
+</member>
+    <member name="M:GraphABCCoordinate.SetStandard"> Устанавливает левую систему координат (ось OY направлена вниз, ось OX - вправо)
+</member>
+    <member name="P:GraphABCCoordinate.OriginX"> X-координата начала координат относительно левого верхнего угла окна
+</member>
+    <member name="P:GraphABCCoordinate.OriginY"> Y-координата начала координат относительно левого верхнего угла окна
+</member>
+    <member name="P:GraphABCCoordinate.Origin"> Координаты начала координат относительно левого верхнего угла окна
+</member>
+    <member name="P:GraphABCCoordinate.Angle"> Угол поворота системы координат
+</member>
+    <member name="P:GraphABCCoordinate.ScaleX"> Масштаб системы координат по оси X
+</member>
+    <member name="P:GraphABCCoordinate.ScaleY"> Масштаб системы координат по оси Y
+</member>
+    <member name="P:GraphABCCoordinate.Scale"> Масштаб системы координат по обоим осям
+</member>
+    <member name="P:GraphABCCoordinate.Matrix"> Матрица 3x3 преобразований координат
+</member>
+    <member name="M:GraphABCWindow.Clear"> Очищает графическое окно белым цветом
+</member>
+    <member name="M:GraphABCWindow.Clear(System.Drawing.Color)"> Очищает графическое окно цветом c
+</member>
+    <member name="M:GraphABCWindow.SetSize(System.Int32,System.Int32)"> Устанавливает размеры клиентской части графического окна в пикселах
+</member>
+    <member name="M:GraphABCWindow.SetPos(System.Int32,System.Int32)"> Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
+</member>
+    <member name="M:GraphABCWindow.Init(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Устанавливает положение, размеры и цвет графического окна
+</member>
+    <member name="M:GraphABCWindow.Save(System.String)"> Сохраняет содержимое графического окна в файл с именем fname
+</member>
+    <member name="M:GraphABCWindow.Load(System.String)"> Восстанавливает содержимое графического окна из файла с именем fname
+</member>
+    <member name="M:GraphABCWindow.Fill(System.String)"> Заполняет содержимое графического окна обоями из файла с именем fname
+</member>
+    <member name="M:GraphABCWindow.Close"> Закрывает графическое окно и завершает приложение
+</member>
+    <member name="M:GraphABCWindow.Minimize"> Сворачивает графическое окно
+</member>
+    <member name="M:GraphABCWindow.Maximize"> Максимизирует графическое окно
+</member>
+    <member name="M:GraphABCWindow.Normalize"> Возвращает графическое окно к нормальному размеру
+</member>
+    <member name="M:GraphABCWindow.CenterOnScreen"> Центрирует графическое окно по центру экрана
+</member>
+    <member name="M:GraphABCWindow.Center"> Возвращает центр графического окна
+</member>
+    <member name="P:GraphABCWindow.Left"> Отступ графического окна от левого края экрана в пикселах
+</member>
+    <member name="P:GraphABCWindow.Top"> Отступ графического окна от верхнего края экрана в пикселах
+</member>
+    <member name="P:GraphABCWindow.Width"> Ширина клиентской части графического окна в пикселах
+</member>
+    <member name="P:GraphABCWindow.Height"> Высота клиентской части графического окна в пикселах
+</member>
+    <member name="P:GraphABCWindow.Caption"> Заголовок графического окна
+</member>
+    <member name="P:GraphABCWindow.Title"> Заголовок графического окна
+</member>
+    <member name="P:GraphABCWindow.IsFixedSize"> Имеет ли графическое окно фиксированный размер
+</member>
+    <member name="T:Picture"> Тип рисунка GraphABC
+</member>
+    <member name="M:Picture.#ctor(System.Int32,System.Int32)"> Создает рисунок размера w на h пикселей
+</member>
+    <member name="M:Picture.#ctor(System.String)"> Создает рисунок из файла с именем fname
+</member>
+    <member name="M:Picture.#ctor(System.Drawing.Rectangle)"> Создает рисунок из прямоугольника r графического окна
+</member>
+    <member name="M:Picture.Load(System.String)"> Загружает рисунок из файла с именем fname
+</member>
+    <member name="M:Picture.Save(System.String)"> Сохраняет рисунок в файл с именем fname
+</member>
+    <member name="M:Picture.SetSize(System.Int32,System.Int32)"> Устанавливает размер рисунка w на h пикселей
+</member>
+    <member name="M:Picture.Intersect(GraphABC.Picture)"> Возвращает True, если изображение данного рисунка пересекается с изображением рисунка p, и False в противном случае. Белый цвет считается прозрачным
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32)"> Выводит рисунок в позиции (x,y)
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Drawing.Graphics)"> Выводит рисунок в позиции (x,y) на поверхность рисования g
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h)
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Graphics)"> Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования g
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Drawing.Rectangle)"> Выводит часть рисунка, заключенную в прямоугольнике r, в позиции (x,y)
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Drawing.Rectangle,System.Drawing.Graphics)"> Выводит часть рисунка, заключенную в прямоугольнике r, в позиции (x,y) на поверхность рисования g
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Rectangle)"> Выводит часть рисунка, заключенную в прямоугольнике r, в позиции (x,y), масштабируя его к размеру (w,h)
+</member>
+    <member name="M:Picture.Draw(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Rectangle,System.Drawing.Graphics)"> Выводит часть рисунка, заключенную в прямоугольнике r, в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования g
+</member>
+    <member name="M:Picture.CopyRect(System.Drawing.Rectangle,GraphABC.Picture,System.Drawing.Rectangle)"> Копирует прямоугольник src рисунка p в прямоугольник dst текущего рисунка
+</member>
+    <member name="M:Picture.CopyRect(System.Drawing.Rectangle,System.Drawing.Bitmap,System.Drawing.Rectangle)"> Копирует прямоугольник src битового образа bmp в прямоугольник dst текущего рисунка
+</member>
+    <member name="M:Picture.FlipHorizontal"> Зеркально отображает рисунок относительно горизонтальной оси симметрии
+</member>
+    <member name="M:Picture.FlipVertical"> Зеркально отображает рисунок относительно вертикальной оси симметрии 
+</member>
+    <member name="M:Picture.SetPixel(System.Int32,System.Int32,System.Drawing.Color)"> Закрашивает пиксел (x,y) рисунка цветом c 
+</member>
+    <member name="M:Picture.PutPixel(System.Int32,System.Int32,System.Drawing.Color)"> Закрашивает пиксел (x,y) рисунка цветом c 
+</member>
+    <member name="M:Picture.GetPixel(System.Int32,System.Int32)"> Возвращает цвет пиксела (x,y) рисунка
+</member>
+    <member name="M:Picture.Line(System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке отрезок от точки (x1,y1) до точки (x2,y2)
+</member>
+    <member name="M:Picture.Line(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Выводит на рисунке отрезок от точки (x1,y1) до точки (x2,y2) цветом c
+</member>
+    <member name="M:Picture.FillCircle(System.Int32,System.Int32,System.Int32)"> Заполняет на рисунке внутренность окружности с центром (x,y) и радиусом r
+</member>
+    <member name="M:Picture.DrawCircle(System.Int32,System.Int32,System.Int32)"> Выводит на рисунке окружность с центром (x,y) и радиусом r
+</member>
+    <member name="M:Picture.FillEllipse(System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет на рисунке внутренность эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.DrawEllipse(System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке границу эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.FillRectangle(System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет на рисунке внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.FillRect(System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет на рисунке внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.DrawRectangle(System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке границу ы прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.Circle(System.Int32,System.Int32,System.Int32)"> Выводит на рисунке заполненную окружность с центром (x,y) и радиусом r
+</member>
+    <member name="M:Picture.Ellipse(System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке заполненный эллипс, ограниченный прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.Rectangle(System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке заполненный прямоугольник, заданный координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Picture.RoundRect(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке заполненный прямоугольник со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</member>
+    <member name="M:Picture.Arc(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:Picture.FillPie(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет на рисунке внутренность сектора окружности, ограниченного дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:Picture.DrawPie(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:Picture.Pie(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Выводит на рисунке заполненный сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:Picture.DrawPolygon(System.Drawing.Point[])"> Выводит на рисунке замкнутую ломаную по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Picture.FillPolygon(System.Drawing.Point[])"> Заполняет на рисунке многоугольник, координаты вершин которого заданы в массиве points
+</member>
+    <member name="M:Picture.Polygon(System.Drawing.Point[])"> Выводит на рисунке заполненный многоугольник, координаты вершин которого заданы в массиве points
+</member>
+    <member name="M:Picture.Polyline(System.Drawing.Point[])"> Выводит на рисунке ломаную по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Picture.Curve(System.Drawing.Point[])"> Выводит на рисунке кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Picture.DrawClosedCurve(System.Drawing.Point[])"> Выводит на рисунке замкнутую кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Picture.FillClosedCurve(System.Drawing.Point[])"> Заполняет на рисунке замкнутую кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Picture.ClosedCurve(System.Drawing.Point[])"> Выводит на рисунке заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Picture.TextOut(System.Int32,System.Int32,System.String)"> Выводит на рисунке строку s в прямоугольник к координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:Picture.FloodFill(System.Int32,System.Int32,System.Drawing.Color)"> Заливает на рисунке область одного цвета цветом c, начиная с точки (x,y).
+</member>
+    <member name="M:Picture.Clear"> Очищает рисунок белым цветом
+</member>
+    <member name="M:Picture.Clear(System.Drawing.Color)"> Очищает рисунок цветом c
+</member>
+    <member name="P:Picture.Width"> Ширина рисунка в пикселах
+</member>
+    <member name="P:Picture.Height"> Высота рисунка в пикселах
+</member>
+    <member name="P:Picture.Transparent"> Прозрачность рисунка; прозрачный цвет задается свойством TransparentColor
+</member>
+    <member name="P:Picture.TransparentColor"> Прозрачный цвет рисунка. Должна быть установлена прозрачность Transparent := True
+</member>
+    <member name="T:Color"> Тип цвета
+</member>
+    <member name="T:Point"> Тип точки
+</member>
+    <member name="M:SetPixel(System.Int32,System.Int32,System.Drawing.Color)"> Закрашивает пиксел с координатами (x,y) цветом c
+</member>
+    <member name="M:PutPixel(System.Int32,System.Int32,System.Drawing.Color)"> Закрашивает пиксел с координатами (x,y) цветом c
+</member>
+    <member name="M:GetPixel(System.Int32,System.Int32)"> Возвращает цвет пиксела с координатами (x,y)
+</member>
+    <member name="M:MoveTo(System.Int32,System.Int32)"> Устанавливает текущую позицию рисования в точку (x,y)
+</member>
+    <member name="M:LineTo(System.Int32,System.Int32)"> Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
+</member>
+    <member name="M:LineTo(System.Int32,System.Int32,System.Drawing.Color)"> Рисует отрезок от текущей позиции до точки (x,y) цветом c. Текущая позиция переносится в точку (x,y)
+</member>
+    <member name="M:Line(System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует отрезок от точки (x1,y1) до точки (x2,y2)
+</member>
+    <member name="M:Line(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Рисует отрезок от точки (x1,y1) до точки (x2,y2) цветом c
+</member>
+    <member name="M:FillCircle(System.Int32,System.Int32,System.Int32)"> Заполняет внутренность окружности с центром (x,y) и радиусом r
+</member>
+    <member name="M:DrawCircle(System.Int32,System.Int32,System.Int32)"> Рисует окружность с центром (x,y) и радиусом r
+</member>
+    <member name="M:FillEllipse(System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет внутренность эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:DrawEllipse(System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует границу эллипса, ограниченного прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:FillRectangle(System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:FillRect(System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет внутренность прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:DrawRectangle(System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует границу прямоугольника, заданного координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:FillRoundRect(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет внутренность прямоугольника со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</member>
+    <member name="M:DrawRoundRect(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует границу прямоугольника со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</member>
+    <member name="M:Circle(System.Int32,System.Int32,System.Int32)"> Рисует заполненную окружность с центром (x,y) и радиусом r
+</member>
+    <member name="M:Ellipse(System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует заполненный эллипс, ограниченный прямоугольником, заданным координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:Rectangle(System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует заполненный прямоугольник, заданный координатами противоположных вершин (x1,y1) и (x2,y2)
+</member>
+    <member name="M:RoundRect(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует заполненный прямоугольник со скругленными краями; (x1,y1) и (x2,y2) задают пару противоположных вершин, а w и h – ширину и высоту эллипса, используемого для скругления краев
+</member>
+    <member name="M:Arc(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:FillPie(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Заполняет внутренность сектора окружности, ограниченного дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:DrawPie(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:Pie(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"> Рисует заполненный сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+</member>
+    <member name="M:DrawPolygon(System.Drawing.Point[])"> Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:FillPolygon(System.Drawing.Point[])"> Заполняет многоугольник, координаты вершин которого заданы в массиве points
+</member>
+    <member name="M:Polygon(System.Drawing.Point[])"> Рисует заполненный многоугольник, координаты вершин которого заданы в массиве points
+</member>
+    <member name="M:Polyline(System.Drawing.Point[])"> Рисует ломаную по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:Curve(System.Drawing.Point[])"> Рисует кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:DrawClosedCurve(System.Drawing.Point[])"> Рисует замкнутую кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:FillClosedCurve(System.Drawing.Point[])"> Заполняет замкнутую кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:ClosedCurve(System.Drawing.Point[])"> Рисует заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
+</member>
+    <member name="M:TextOut(System.Int32,System.Int32,System.String)"> Выводит строку s в прямоугольник к координатами левого верхнего угла (x,y)
+</member>
+    <member name="M:FloodFill(System.Int32,System.Int32,System.Drawing.Color)"> Заливает область одного цвета цветом c, начиная с точки (x,y).
+</member>
+    <member name="M:RGB(System.Byte,System.Byte,System.Byte)"> Возвращает цвет, который содержит красную (r), зеленую (g) и синюю (b) составляющие (r,g и b - в диапазоне от 0 до 255)
+</member>
+    <member name="M:ARGB(System.Byte,System.Byte,System.Byte,System.Byte)"> Возвращает цвет, который содержит красную (r), зеленую (g) и синюю (b) составляющие и прозрачность (a) (a,r,g,b - в диапазоне от 0 до 255)
+</member>
+    <member name="M:RedColor(System.Byte)"> Возвращает красный цвет с интенсивностью r (r - в диапазоне от 0 до 255)
+</member>
+    <member name="M:GreenColor(System.Byte)"> Возвращает зеленый цвет с интенсивностью g (g - в диапазоне от 0 до 255)
+</member>
+    <member name="M:BlueColor(System.Byte)"> Возвращает синий цвет с интенсивностью b (b - в диапазоне от 0 до 255)
+</member>
+    <member name="M:clRandom"> Возвращает случайный цвет
+</member>
+    <member name="M:GetRed(System.Drawing.Color)"> Возвращает красную составляющую цвета
+</member>
+    <member name="M:GetGreen(System.Drawing.Color)"> Возвращает зеленую составляющую цвета
+</member>
+    <member name="M:GetBlue(System.Drawing.Color)"> Возвращает синюю составляющую цвета
+</member>
+    <member name="M:SetPenColor(System.Drawing.Color)"> Устанавливает цвет текущего пера
+</member>
+    <member name="M:PenColor"> Возвращает цвет текущего пера
+</member>
+    <member name="M:SetPenWidth(System.Int32)"> Устанавливает ширину текущего пера
+</member>
+    <member name="M:PenWidth"> Возвращает ширину текущего пера
+</member>
+    <member name="M:SetPenStyle(System.Drawing.Drawing2D.DashStyle)"> Устанавливает стиль текущего пера
+</member>
+    <member name="M:PenStyle"> Возвращает стиль текущего пера
+</member>
+    <member name="M:SetPenMode(System.Int32)"> Устанавливает режим текущего пера
+</member>
+    <member name="M:PenMode"> Возвращает режим текущего пера
+</member>
+    <member name="M:PenX"> Возвращают x-координату текущей позиции рисования
+</member>
+    <member name="M:PenY"> Возвращают y-координату текущей позиции рисования
+</member>
+    <member name="M:SetBrushColor(System.Drawing.Color)"> Устанавливает цвет текущей кисти
+</member>
+    <member name="M:BrushColor"> Возвращает цвет текущей кисти
+</member>
+    <member name="M:SetBrushStyle(GraphABC.BrushStyleType)"> Устанавливает цвет текущей кисти
+</member>
+    <member name="M:BrushStyle"> Возвращает цвет текущей кисти
+</member>
+    <member name="M:SetBrushHatch(System.Drawing.Drawing2D.HatchStyle)"> Устанавливает штриховку текущей кисти
+</member>
+    <member name="M:BrushHatch"> Возвращает штриховку текущей кисти
+</member>
+    <member name="M:SetHatchBrushBackgroundColor(System.Drawing.Color)"> Устанавливает цвет заднего плана текущей штриховой кисти
+</member>
+    <member name="M:HatchBrushBackgroundColor"> Возвращает цвет заднего плана текущей штриховой кисти
+</member>
+    <member name="M:SetGradientBrushSecondColor(System.Drawing.Color)"> Устанавливает второй цвет текущей градиентной кисти
+</member>
+    <member name="M:GradientBrushSecondColor"> Возвращает второй цвет текущей градиентной кисти
+</member>
+    <member name="M:SetFontSize(System.Int32)"> Устанавливает размер текущего шрифта в пунктах
+</member>
+    <member name="M:FontSize"> Возвращает размер текущего шрифта в пунктах
+</member>
+    <member name="M:SetFontName(System.String)"> Устанавливает имя текущего шрифта
+</member>
+    <member name="M:FontName"> Возвращает имя текущего шрифта
+</member>
+    <member name="M:SetFontColor(System.Drawing.Color)"> Устанавливает цвет текущего шрифта
+</member>
+    <member name="M:FontColor"> Возвращает цвет текущего шрифта
+</member>
+    <member name="M:SetFontStyle(GraphABC.FontStyleType)"> Устанавливает стиль текущего шрифта
+</member>
+    <member name="M:FontStyle"> Возвращает стиль текущего шрифта
+</member>
+    <member name="M:TextWidth(System.String)"> Возвращает ширину строки s в пикселях при текущих настройках шрифта
+</member>
+    <member name="M:TextHeight(System.String)"> Возвращает высоту строки s в пикселях при текущих настройках шрифта
+</member>
+    <member name="M:ClearWindow"> Очищает графическое окно белым цветом
+</member>
+    <member name="M:ClearWindow(System.Drawing.Color)"> Очищает графическое окно цветом c
+</member>
+    <member name="M:WindowWidth"> Возвращает ширину клиентской части графического окна в пикселах
+</member>
+    <member name="M:WindowHeight"> Возвращает высоту клиентской части графического окна в пикселах
+</member>
+    <member name="M:WindowLeft"> Возвращает отступ графического окна от левого края экрана в пикселах
+</member>
+    <member name="M:WindowTop"> Возвращает отступ графического окна от верхнего края экрана в пикселах
+</member>
+    <member name="M:WindowCenter"> Возвращает центр графического окна 
+</member>
+    <member name="M:WindowIsFixedSize"> Возвращает True, если графическое окно имеет фиксированный размер, и False в противном случае 
+</member>
+    <member name="M:SetWindowWidth(System.Int32)"> Устанавливает ширину клиентской части графического окна в пикселах
+</member>
+    <member name="M:SetWindowHeight(System.Int32)"> Устанавливает высоту клиентской части графического окна в пикселах
+</member>
+    <member name="M:SetWindowLeft(System.Int32)"> Устанавливает отступ графического окна от левого края экрана в пикселах
+</member>
+    <member name="M:SetWindowTop(System.Int32)"> Устанавливает отступ графического окна от верхнего края экрана в пикселах
+</member>
+    <member name="M:SetWindowIsFixedSize(System.Boolean)"> Устанавливает, имеет ли графическое окно фиксированный размер
+</member>
+    <member name="M:SetWindowSize(System.Int32,System.Int32)"> Устанавливает размеры клиентской части графического окна в пикселах
+</member>
+    <member name="M:SetWindowPos(System.Int32,System.Int32)"> Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
+</member>
+    <member name="M:GraphBoxWidth"> Возвращает ширину графического компонента в пикселах (по умолчанию совпадает с WindowWidth)
+</member>
+    <member name="M:GraphBoxHeight"> Возвращает высоту графического компонента в пикселах (по умолчанию совпадает с WindowHeight)
+</member>
+    <member name="M:GraphBoxLeft"> Возвращает отступ графического компонента от левого края окна в пикселах
+</member>
+    <member name="M:GraphBoxTop"> Возвращает отступ графического компонента от верхнего края окна в пикселах
+</member>
+    <member name="M:WindowCaption"> Возвращает заголовок графического окна
+</member>
+    <member name="M:WindowTitle"> Возвращает заголовок графического окна
+</member>
+    <member name="M:SetWindowCaption(System.String)"> Устанавливает заголовок графического окна
+</member>
+    <member name="M:SetWindowTitle(System.String)"> Устанавливает заголовок графического окна
+</member>
+    <member name="M:InitWindow(System.Int32,System.Int32,System.Int32,System.Int32,System.Drawing.Color)"> Устанавливает ширину и высоту клиентской части графического окна в пикселах
+</member>
+    <member name="M:SaveWindow(System.String)"> Сохраняет содержимое графического окна в файл с именем fname
+</member>
+    <member name="M:LoadWindow(System.String)"> Восстанавливает содержимое графического окна из файла с именем fname
+</member>
+    <member name="M:FillWindow(System.String)"> Заполняет содержимое графического окна обоями из файла с именем fname
+</member>
+    <member name="M:CloseWindow"> Закрывает графическое окно и завершает приложение
+</member>
+    <member name="M:ScreenWidth"> Возвращает ширину экрана в пикселях
+</member>
+    <member name="M:ScreenHeight"> Возвращает высоту экрана в пикселях
+</member>
+    <member name="M:CenterWindow"> Центрирует графическое окно по центру экрана
+</member>
+    <member name="M:MaximizeWindow"> Максимизирует графическое окно
+</member>
+    <member name="M:MinimizeWindow"> Сворачивает графическое окно
+</member>
+    <member name="M:NormalizeWindow"> Возвращает графическое окно к нормальному размеру
+</member>
+    <member name="M:Redraw"> Перерисовывает содержимое графического окна. Вызывается в паре с LockDrawing
+</member>
+    <member name="M:FullRedraw">--
+</member>
+    <member name="M:LockDrawing"> Блокирует рисование на графическом окне. Перерисовка графического окна выполняется с помощью Redraw
+</member>
+    <member name="M:UnlockDrawing"> Снимает блокировку рисования на графическом окне и осуществляет его перерисовку
+</member>
+    <member name="M:SetSmoothing(System.Boolean)"> Устанавливает режим сглаживания
+</member>
+    <member name="M:SetSmoothingOn"> Включает режим сглаживания
+</member>
+    <member name="M:SetSmoothingOff"> Выключает режим сглаживания
+</member>
+    <member name="M:SmoothingIsOn"> Возвращает True, если режим сглаживания установлен
+</member>
+    <member name="M:LockGraphics"> Блокирует прорисовку графики. Вызывается для синхронизации
+</member>
+    <member name="M:UnLockGraphics"> Разблокирует прорисовку графики. Вызывается для синхронизации
+</member>
+    <member name="M:SetCoordinateOrigin(System.Int32,System.Int32)"> Устанавливает начало координат в точку (x0,y0)
+</member>
+    <member name="M:SetCoordinateScale(System.Double,System.Double)"> Устанавливает масштаб системы координат 
+</member>
+    <member name="M:SetCoordinateAngle(System.Double)"> Устанавливает поворот системы координат 
+</member>
+    <member name="M:InitGraphABC"> Инициализирует графическое окно. Используется для внутренних целей
+</member>
+    <member name="M:Window"> Возвращает окно графического приложения
+</member>
+    <member name="M:MainForm"> Возвращает главную форму графического приложения
+</member>
+    <member name="M:GraphABCControl"> Возвращает графический компонент
+</member>
+    <member name="M:Pen"> Возвращает текущее перо
+</member>
+    <member name="M:Brush"> Возвращает текущую кисть
+</member>
+    <member name="M:Font"> Возвращает текущий шрифт
+</member>
+    <member name="V:OnMouseDown"> Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+</member>
+    <member name="V:OnMouseUp"> Событие отжатия кнопки мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если отжата левая кнопка мыши, и 2, если отжата правая кнопка мыши
+</member>
+    <member name="V:OnMouseMove"> Событие перемещения мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 0, если кнопка мыши не нажата, 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
+</member>
+    <member name="V:OnKeyDown"> Событие нажатия клавиши
+</member>
+    <member name="V:OnKeyUp"> Событие отжатия клавиши
+</member>
+    <member name="V:OnKeyPress"> Событие нажатия символьной клавиши
+</member>
+    <member name="V:OnResize"> Событие изменения размера графического окна
+</member>
+    <member name="V:OnClose"> Событие закрытия графического окна
+</member>
+    <member name="V:RedrawProc"> Процедурная переменная перерисовки графического окна. Если равна nil, то используется стандартная перерисовка
+</member>
+    <member name="V:DrawInBuffer"> Следует ли рисовать во внеэкранном буфере
+</member>
+    <member name="V:Coordinate"> Система координат GraphABC
+</member>
+  </members>
+</doc>

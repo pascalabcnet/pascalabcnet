@@ -1,0 +1,1 @@
+uses u_pointers6; begin end.

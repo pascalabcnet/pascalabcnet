@@ -1,0 +1,714 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <unit name="PABCSystem"> System unit
+</unit>
+  <members>
+    <member name="T:Text"> Text file type
+</member>
+    <member name="T:IOSystem"> Input/output interface
+</member>
+    <member name="T:BadGenericInstanceParameterException">Базовый класс для исключений, бросаемых при создании инстанции generic-типа
+</member>
+    <member name="T:CanNotUseTypeForPointersException">Бросается если тип непригоден для указателей
+</member>
+    <member name="T:CanNotUseTypeForTypedFilesException">The exception that is thrown when a type is unsuitable for typed files
+</member>
+    <member name="T:CanNotUseTypeForFilesException">The exception that is thrown when a type is unsuitable for files
+</member>
+    <member name="T:object"> Base type of objects
+</member>
+    <member name="T:exception"> Base type of exceptions
+</member>
+    <member name="T:decimal"> Represents 128-bit floating-point number
+</member>
+    <member name="M:Union(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:Subtract(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:Include(PABCSystem.TypedSet@,System.Object)">- Include(var s : set of T; el : T)
+Include element in set s
+</member>
+    <member name="M:Exclude(PABCSystem.TypedSet@,System.Object)">- Exclude(var s : set of T; el : T)
+Remove element from set s
+</member>
+    <member name="M:Intersect(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CreateSet(System.Object[])">--
+</member>
+    <member name="M:CreateSet">--
+</member>
+    <member name="M:CreateBoundedSet(System.Object,System.Object)">--
+</member>
+    <member name="M:InSet(System.Object,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CreateDiapason(System.Int32,System.Int32)">--
+</member>
+    <member name="M:CreateObjDiapason(System.Object,System.Object)">--
+</member>
+    <member name="M:CompareSetEquals(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CompareSetInEquals(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CompareSetLess(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CompareSetGreaterEqual(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CompareSetLessEqual(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:CompareSetGreater(PABCSystem.TypedSet,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:ClipSet(PABCSystem.TypedSet@,System.Object,System.Object)">--
+</member>
+    <member name="M:AssignSet(PABCSystem.TypedSet@,PABCSystem.TypedSet)">--
+</member>
+    <member name="M:ClipSetFunc(PABCSystem.TypedSet,System.Object,System.Object)">--
+</member>
+    <member name="M:AssignSetWithBounds(PABCSystem.TypedSet@,PABCSystem.TypedSet,System.Object,System.Object)">--
+</member>
+    <member name="M:TypedSetInit(PABCSystem.TypedSet@)">--
+</member>
+    <member name="M:TypedSetInitWithBounds(PABCSystem.TypedSet@,System.Object,System.Object)">--
+</member>
+    <member name="M:read">- read(a,b,...)
+ Reads a,b,... from the standard input stream
+</member>
+    <member name="M:read(System.Int32@)">--
+</member>
+    <member name="M:read(System.Double@)">--
+</member>
+    <member name="M:read(System.Char@)">--
+</member>
+    <member name="M:read(System.String@)">--
+</member>
+    <member name="M:read(System.Byte@)">--
+</member>
+    <member name="M:read(System.SByte@)">--
+</member>
+    <member name="M:read(System.Int16@)">--
+</member>
+    <member name="M:read(System.UInt16@)">--
+</member>
+    <member name="M:read(System.UInt32@)">--
+</member>
+    <member name="M:read(System.Int64@)">--
+</member>
+    <member name="M:read(System.UInt64@)">--
+</member>
+    <member name="M:read(System.Single@)">--
+</member>
+    <member name="M:ReadShortString(System.String@,System.Int32)">--
+</member>
+    <member name="M:ReadShortStringFromFile(PABCSystem.Text,System.String@,System.Int32)">--
+</member>
+    <member name="M:readln">- readln(a,b,...)
+ Reads a,b,... from the standard input stream and goes to next line
+</member>
+    <member name="M:read(PABCSystem.Text)">- read(f,a,b,...)
+ Reads a,b, .. from the text file f
+</member>
+    <member name="M:read(PABCSystem.Text,System.Int32@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.Double@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.Char@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.String@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.Byte@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.SByte@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.Int16@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.UInt16@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.UInt32@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.Int64@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.UInt64@)">--
+</member>
+    <member name="M:read(PABCSystem.Text,System.Single@)">--
+</member>
+    <member name="M:readln(PABCSystem.Text)">- readln(f: Text; a,b,...)
+ Reads a,b, .. from the text file f and goes to next line
+</member>
+    <member name="M:write">- write(a,b,...)
+ Writes a,b,... to standart output stream
+</member>
+    <member name="M:write(System.Object)">--
+</member>
+    <member name="M:write(System.Object,System.Object)">--
+</member>
+    <member name="M:write(System.Object[])">--
+</member>
+    <member name="M:writeln">- writeln(a,b,...)
+ Writes a,b,... to standart output stream and appends newline
+</member>
+    <member name="M:writeln(System.Object)">--
+</member>
+    <member name="M:writeln(System.Object,System.Object)">--
+</member>
+    <member name="M:writeln(System.Object[])">--
+</member>
+    <member name="M:write(PABCSystem.Text)">- write(f: Text; a,b,...)
+ Writes a,b,... to text file f
+</member>
+    <member name="M:write(PABCSystem.Text,System.Object)">--
+</member>
+    <member name="M:write(PABCSystem.Text,System.Object[])">--
+</member>
+    <member name="M:writeln(PABCSystem.Text)">- writeln(f: Text; a,b,...)
+ Writes a,b,... to text file f and appends newline
+</member>
+    <member name="M:writeln(PABCSystem.Text,System.Object)">--
+</member>
+    <member name="M:writeln(PABCSystem.Text,System.Object[])">--
+</member>
+    <member name="M:WriteFormat(System.String,System.Object[])"> Выводит значения args согласно форматной строке formatstr
+</member>
+    <member name="M:WritelnFormat(System.String,System.Object[])"> Выводит значения args согласно форматной строке formatstr и осуществляет переход на новую строку
+</member>
+    <member name="M:WriteFormat(PABCSystem.Text,System.String,System.Object[])"> Выводит значения args в текстовый файл f согласно форматной строке formatstr
+</member>
+    <member name="M:WritelnFormat(PABCSystem.Text,System.String,System.Object[])"> Выводит значения args в текстовый файл f согласно форматной строке formatstr
+и осуществляет переход на новую строку
+</member>
+    <member name="M:Assign(PABCSystem.Text,System.String)"> Assigns
+</member>
+    <member name="M:AssignFile(PABCSystem.Text,System.String)"> Связывает файловую переменную f с именем файла name
+</member>
+    <member name="M:Close(PABCSystem.Text)"> Closes the file f
+</member>
+    <member name="M:CloseFile(PABCSystem.Text)"> Closes the file f
+</member>
+    <member name="M:Reset(PABCSystem.Text)"> Opens a file for reading
+</member>
+    <member name="M:Rewrite(PABCSystem.Text)"> Opens a file for writing
+</member>
+    <member name="M:Append(PABCSystem.Text)"> Opens a text file for appending
+</member>
+    <member name="M:Eof(PABCSystem.Text)"> Returns True when end of file has been reached
+</member>
+    <member name="M:Eoln(PABCSystem.Text)"> Returns True when end of line in file has been reached
+</member>
+    <member name="M:SeekEof(PABCSystem.Text)"> Пропускает пробельные символы, после чего возвращает True, если достигнут конец файла f
+</member>
+    <member name="M:SeekEoln(PABCSystem.Text)"> Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки в файле f
+</member>
+    <member name="M:Flush(PABCSystem.Text)"> Записывает содержимое буфера файла на диск
+</member>
+    <member name="M:Erase(PABCSystem.Text)"> Удаляет файл, связанный с файловой переменной f
+</member>
+    <member name="M:Rename(PABCSystem.Text,System.String)"> Renames file
+</member>
+    <member name="M:TextFileInit(PABCSystem.Text@)">--
+</member>
+    <member name="M:Assign(PABCSystem.AbstractBinaryFile,System.String)">- Assign(f: file of T; name: string)
+ Связывает файловую переменную f с именем файла name
+</member>
+    <member name="M:AssignFile(PABCSystem.AbstractBinaryFile,System.String)">- AssignFile(f: file of T; name: string)
+ Связывает файловую переменную f с именем файла name
+</member>
+    <member name="M:Close(PABCSystem.AbstractBinaryFile)">- Close(f: file of T)
+ Closes a file
+</member>
+    <member name="M:CloseFile(PABCSystem.AbstractBinaryFile)">- CloseFile(f: file of T)
+ Closes a file
+</member>
+    <member name="M:Reset(PABCSystem.AbstractBinaryFile)">- Reset(f: file of T)
+ Opens a binary file for reading and writing
+</member>
+    <member name="M:Rewrite(PABCSystem.AbstractBinaryFile)">- Rewrite(f: file of T)
+ Opens a binary file for reading and writing
+</member>
+    <member name="M:Truncate(PABCSystem.AbstractBinaryFile)">- Truncate(f: file of T)
+ Усекает двоичный файл f, отбрасывая все элементы с позиции файлового указателя
+</member>
+    <member name="M:Eof(PABCSystem.AbstractBinaryFile)">- Eof(f: file of T)
+ Returns True when end of file has been reached
+</member>
+    <member name="M:Erase(PABCSystem.AbstractBinaryFile)">- Erase(f: file of T)
+ Удаляет файл, связанный с файловой переменной f
+</member>
+    <member name="M:Rename(PABCSystem.AbstractBinaryFile,System.String)">- Rename(f: file of T; newname: string)
+ Переименовывает файл, связаный с файловой переменной f, давая ему имя newname. 
+</member>
+    <member name="M:Write(PABCSystem.AbstractBinaryFile,System.Object[])">- write(f: file; a,b,...)
+ Выводит значения a,b,... в нетипизированный файл f
+</member>
+    <member name="M:Writeln(PABCSystem.AbstractBinaryFile)">--
+</member>
+    <member name="M:Writeln(PABCSystem.AbstractBinaryFile,System.Object)">--
+</member>
+    <member name="M:Writeln(PABCSystem.AbstractBinaryFile,System.Object[])">--
+</member>
+    <member name="M:FilePos(PABCSystem.TypedFile)">- FilePos(f : file of T): int64
+ Возвращает текущую позицию файлового указателя в типизированном файле f 
+</member>
+    <member name="M:FileSize(PABCSystem.TypedFile)">- FileSize(f : file of T): int64
+ Returns a number of records in typed file f 
+</member>
+    <member name="M:Seek(PABCSystem.TypedFile,System.Int64)">- Seek(f : file of T; n : int64)
+ Sets the file position   
+</member>
+    <member name="M:TypedFileInit(PABCSystem.TypedFile@,System.Type,System.Int32)">--
+</member>
+    <member name="M:TypedFileInitWithShortString(PABCSystem.TypedFile@,System.Type,System.Int32)">--
+</member>
+    <member name="M:TypedFileRead(PABCSystem.TypedFile)">--
+</member>
+    <member name="M:FilePos(PABCSystem.BinaryFile)">- FilePos(f : file): int64
+ Returns the current file position in the file f 
+</member>
+    <member name="M:FileSize(PABCSystem.BinaryFile)">- FileSize(f : file): int64
+ Возвращает количество байт в нетипизированном файле f 
+</member>
+    <member name="M:Seek(PABCSystem.BinaryFile,System.Int64)">- Seek(f : file; n : int64)
+ Устанавливает текущую позицию файлового указателя в нетипизированном файле f на байт с номером n  
+</member>
+    <member name="M:BinaryFileInit(PABCSystem.BinaryFile@)">--
+</member>
+    <member name="M:BinaryFileRead(PABCSystem.BinaryFile@,System.Type)">--
+</member>
+    <member name="M:ParamCount"> Returns the number of command line arguments
+</member>
+    <member name="M:ParamStr(System.Int32)"> Возвращает i-тый параметр командной строки
+</member>
+    <member name="M:GetDir"> Returns the current directory
+</member>
+    <member name="M:ChDir(System.String)"> Changes the current directory
+</member>
+    <member name="M:MkDir(System.String)"> Creates a directory
+</member>
+    <member name="M:RmDir(System.String)"> Removes a directory
+</member>
+    <member name="M:CreateDir(System.String)"> Creates a directory. Returns True, if the directory has been successfully created
+</member>
+    <member name="M:DeleteFile(System.String)"> Deletes a file. If the file cannot be deleted, function returns False
+</member>
+    <member name="M:GetCurrentDir"> Returns the current working directory
+</member>
+    <member name="M:RemoveDir(System.String)"> Deletes a specified directory. Returns True, if the directory has been deleted successfully
+</member>
+    <member name="M:RenameFile(System.String,System.String)"> Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован
+</member>
+    <member name="M:SetCurrentDir(System.String)"> Устанавивает текущий каталог. Возвращает True, если каталог успешно удален
+</member>
+    <member name="M:ChangeFileNameExtension(System.String,System.String)"> Changes the extension of a path string
+</member>
+    <member name="M:FileExists(System.String)"> Gets a value indicating whether a file exists
+</member>
+    <member name="M:Assert(System.Boolean)"> Checks for a condition and displays a message if the condition is false
+</member>
+    <member name="M:Assert(System.Boolean,System.String)"> Checks for a condition and displays the message mes if the condition is false
+</member>
+    <member name="M:DiskFree(System.String)"> Возвращает свободное место в байтах на диске с именем diskname
+</member>
+    <member name="M:DiskSize(System.String)"> Возвращает размер в байтах на диске с именем diskname
+</member>
+    <member name="M:DiskFree(System.Int32)"> Возвращает свободное место в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
+</member>
+    <member name="M:DiskSize(System.Int32)"> Возвращает размер в байтах на диске disk. disk=0 - текущий диск, disk=1 - диск A: , disk=2 - диск B: и т.д.
+</member>
+    <member name="M:ExtractFileName(System.String)"> Выделяет имя файла из полного имени файла fname
+</member>
+    <member name="M:ExtractFileExt(System.String)"> Выделяет расширение из полного имени файла fname
+</member>
+    <member name="M:ExtractFilePath(System.String)"> Returns the directory name for the specified path string
+</member>
+    <member name="M:ExtractFileDir(System.String)"> Выделяет имя диска и путь из полного имени файла fname
+</member>
+    <member name="M:ExtractFileDrive(System.String)"> Выделяет путь из полного имени файла fname
+</member>
+    <member name="M:ExpandFileName(System.String)"> Возвращает полное имя файла fname
+</member>
+    <member name="M:Sign(System.Int32)"> Returns a value indicating the sign of x
+</member>
+    <member name="M:Sign(System.UInt32)"> Returns a value indicating the sign of x
+</member>
+    <member name="M:Sign(System.Int64)"> Returns a value indicating the sign of x
+</member>
+    <member name="M:Sign(System.UInt64)"> Returns a value indicating the sign of x
+</member>
+    <member name="M:Sign(System.Double)"> Returns a value indicating the sign of x
+</member>
+    <member name="M:Abs(System.Int32)"> Returns the absolute value of number x
+</member>
+    <member name="M:Abs(System.UInt32)"> Returns the absolute value of number x
+</member>
+    <member name="M:Abs(System.Int64)"> Returns the absolute value of number x
+</member>
+    <member name="M:Abs(System.UInt64)"> Returns the absolute value of number x
+</member>
+    <member name="M:Abs(System.Double)"> Returns the absolute value of number x
+</member>
+    <member name="M:Sin(System.Double)"> Returns the sine of number x
+</member>
+    <member name="M:Sinh(System.Double)"> Returns the hyperbolic sine of number x
+</member>
+    <member name="M:Cos(System.Double)"> Returns the cosine of number x
+</member>
+    <member name="M:Cosh(System.Double)"> Returns the hyperbolic cosine of number x
+</member>
+    <member name="M:Tan(System.Double)"> Returns the tangent of the number x
+</member>
+    <member name="M:Tanh(System.Double)"> Returns the hyperbolic tangent of number x
+</member>
+    <member name="M:ArcSin(System.Double)"> Returns the number whose sine is number x
+</member>
+    <member name="M:ArcCos(System.Double)"> Returns the number whose cose is number x
+</member>
+    <member name="M:ArcTan(System.Double)"> Returns the number whose tangent is number x
+</member>
+    <member name="M:Exp(System.Double)"> Returns e raised to number x
+</member>
+    <member name="M:Ln(System.Double)"> Returns the logarithm of number x
+</member>
+    <member name="M:Log2(System.Double)"> Returns the base 2 logarithm of number x
+</member>
+    <member name="M:Log10(System.Double)"> Returns the base 10 logarithm of number x
+</member>
+    <member name="M:LogN(System.Double,System.Double)"> Returns the specified base logarithm of number x
+</member>
+    <member name="M:Sqrt(System.Double)"> Returns the square root of number x
+</member>
+    <member name="M:Sqr(System.Int32)"> Returns the square of a number x
+</member>
+    <member name="M:Sqr(System.UInt32)"> Returns the square of a number x
+</member>
+    <member name="M:Sqr(System.Int64)"> Returns the square of a number x
+</member>
+    <member name="M:Sqr(System.UInt64)"> Returns the square of number x
+</member>
+    <member name="M:Sqr(System.Double)"> Returns the square of number x
+</member>
+    <member name="M:Power(System.Double,System.Double)"> Returns x raised to y
+</member>
+    <member name="M:Round(System.Double)"> Returns the nearest integer number for x 
+</member>
+    <member name="M:Trunc(System.Double)"> Returns the integral part of number x
+</member>
+    <member name="M:Int(System.Double)"> Returns the integral part of number x
+</member>
+    <member name="M:Frac(System.Double)"> Возвращает дробную часть числа x
+</member>
+    <member name="M:Floor(System.Double)"> Returns the greatest integer lesser than or equal to the number x
+</member>
+    <member name="M:Ceil(System.Double)"> Returns the smallest integer greater than or equal to the number x
+</member>
+    <member name="M:RadToDeg(System.Double)"> Переводит радианы в градусы
+</member>
+    <member name="M:DegToRad(System.Double)"> Переводит градусы в радианы
+</member>
+    <member name="M:Randomize"> Ничего не делает. Для совместмости
+</member>
+    <member name="M:Randomize(System.Int32)"> Инициализирует датчик псевдослучайных чисел, используя значение seed. При одном и том же seed генерируются одинаковые псевдослучайные последовательности
+</member>
+    <member name="M:Random(System.Int32)"> Returns a integer random number between 0 and MaxValue-1
+</member>
+    <member name="M:Random(System.Int32,System.Int32)"> Returns a integer random number between a and b
+</member>
+    <member name="M:Random"> Returns a random number between 0.0 and 1.0
+</member>
+    <member name="M:Max(System.Int32,System.Int32)"> Returns the larger of two specified numbers
+</member>
+    <member name="M:Max(System.UInt32,System.UInt32)"> Returns the larger of two specified numbers
+</member>
+    <member name="M:Max(System.Int64,System.Int64)"> Returns the larger of two specified numbers
+</member>
+    <member name="M:Max(System.UInt64,System.UInt64)"> Returns the larger of two specified numbers
+</member>
+    <member name="M:Max(System.Double,System.Double)"> Returns the larger of two specified numbers
+</member>
+    <member name="M:Min(System.Int32,System.Int32)"> Returns the lesser of two specified numbers
+</member>
+    <member name="M:Min(System.UInt32,System.UInt32)"> Returns the lesser of two specified numbers
+</member>
+    <member name="M:Min(System.Int64,System.Int64)"> Returns the lesser of two specified numbers
+</member>
+    <member name="M:Min(System.UInt64,System.UInt64)"> Returns the lesser of two specified numbers
+</member>
+    <member name="M:Min(System.Double,System.Double)"> Returns the lesser of two specified numbers
+</member>
+    <member name="M:Odd(System.Int32)"> Returns True, when i is odd
+</member>
+    <member name="M:Odd(System.UInt32)"> Returns True, when i is odd
+</member>
+    <member name="M:Odd(System.Int64)"> Returns True, when i is odd
+</member>
+    <member name="M:Odd(System.UInt64)"> Returns True, when i is odd
+</member>
+    <member name="M:Low(System.Array)">- Low(i : array): integer
+</member>
+    <member name="M:High(System.Array)">- High(i : array): integer
+</member>
+    <member name="M:Chr(System.Byte)"> Преобразует код в символ в кодировке Windows
+</member>
+    <member name="M:Ord(System.Char)"> Преобразует символ в код в кодировке Windows
+</member>
+    <member name="M:Ord(System.Int32)"> Возвращает порядковый номер значения a
+</member>
+    <member name="M:Ord(System.UInt32)"> Возвращает порядковый номер значения a
+</member>
+    <member name="M:Ord(System.Int64)"> Возвращает порядковый номер значения a
+</member>
+    <member name="M:Ord(System.UInt64)"> Возвращает порядковый номер значения a
+</member>
+    <member name="M:Ord(System.Boolean)"> Возвращает порядковый номер значения a
+</member>
+    <member name="M:ChrUnicode(System.UInt16)"> Преобразует код в символ в кодировке Unicode
+</member>
+    <member name="M:OrdUnicode(System.Char)"> Преобразует символ в код в кодировке Unicode
+</member>
+    <member name="M:UpperCase(System.Char)"> Converts the value of character to its uppercase equivalent
+</member>
+    <member name="M:LowerCase(System.Char)"> Converts the value of character to its lowercase equivalent
+</member>
+    <member name="M:UpCase(System.Char)"> Converts the value of character to its uppercase equivalent
+</member>
+    <member name="M:LowCase(System.Char)"> Converts the value of character to its lowercase equivalent
+</member>
+    <member name="M:Str(System.Int32,System.String@)"> Converts the integer value i to its string representation
+</member>
+    <member name="M:Str(System.UInt32,System.String@)">--
+</member>
+    <member name="M:Str(System.Int64,System.String@)">--
+</member>
+    <member name="M:Str(System.UInt64,System.String@)">--
+</member>
+    <member name="M:Str(System.Double,System.String@)"> Converts the floating-point value r to its string representation
+</member>
+    <member name="M:Str(System.String,System.String@)">--
+</member>
+    <member name="M:Pos(System.String,System.String)"> Reports the index of the first occurrence of substring subs in the string s. If not found, returns 0
+</member>
+    <member name="M:PosEx(System.String,System.String,System.Int32)"> Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
+</member>
+    <member name="M:Length(System.String)"> Returns length of string 
+</member>
+    <member name="M:SetLength(System.String@,System.Int32)"> Устанавливает длину строки s равной n
+</member>
+    <member name="M:SetLengthForShortString(System.String@,System.Int32,System.Int32)">--
+</member>
+    <member name="M:Insert(System.String,System.String@,System.Int32)"> Вставляет подстроку source в строку s с позиции index
+</member>
+    <member name="M:InsertInShortString(System.String,System.String@,System.Int32,System.Int32)">--
+</member>
+    <member name="M:Delete(System.String@,System.Int32,System.Int32)"> Удаляет из строки s count символов с позиции index
+</member>
+    <member name="M:Copy(System.String,System.Int32,System.Int32)"> Возвращает подстроку строки s длины count с позиции index
+</member>
+    <member name="M:Concat(System.String[])">-Concat(s1,s2,...): string 
+ Возвращает строку, являющуюся результатом слияния строк s1,s2,...
+</member>
+    <member name="M:Concat(System.String,System.String)"> Возвращает строку, являющуюся результатом слияния строк s1 и s2
+</member>
+    <member name="M:LowerCase(System.String)"> Возвращает строку в нижнем регистре
+</member>
+    <member name="M:UpperCase(System.String)"> Возвращает строку в верхнем регистре
+</member>
+    <member name="M:StringOfChar(System.Char,System.Int32)"> Возвращает строку, состоящую из count символов ch
+</member>
+    <member name="M:ReverseString(System.String)"> Возвращает инвертированную строку
+</member>
+    <member name="M:CompareStr(System.String,System.String)"> Сравнивает строки. Возвращает значение &lt; 0 если s1&lt;s2, &gt; 0 если s1&gt;s2 и = 0 если s1=s2
+</member>
+    <member name="M:LeftStr(System.String,System.Int32)"> Возвращает первые count символов строки s
+</member>
+    <member name="M:RightStr(System.String,System.Int32)"> Возвращает последние count символов строки s
+</member>
+    <member name="M:Trim(System.String)"> Возвращает строку с удаленными начальными и конечными пробелами
+</member>
+    <member name="M:TrimLeft(System.String)"> Возвращает строку с удаленными начальными пробелами
+</member>
+    <member name="M:TrimRight(System.String)"> Возвращает строку с удаленными конечными пробелами
+</member>
+    <member name="M:StrToInt(System.String)"> Преобразует строковое представление целого числа к числовому значению
+</member>
+    <member name="M:StrToInt64(System.String)"> Преобразует строковое представление целого числа к числовому значению
+</member>
+    <member name="M:StrToFloat(System.String)"> Преобразует строковое представление вещественного числа к числовому значению
+</member>
+    <member name="M:TryStrToInt(System.String,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</member>
+    <member name="M:TryStrToInt64(System.String,System.Int64@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</member>
+    <member name="M:TryStrToFloat(System.String,System.Double@)"> Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</member>
+    <member name="M:TryStrToFloat(System.String,System.Single@)"> Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+</member>
+    <member name="M:Val(System.String,System.Int32@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.SByte@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.Int16@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.Int64@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.Byte@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.UInt16@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.UInt32@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.UInt64@,System.Int32@)"> Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.Double@,System.Int32@)"> Преобразует строковое представление s вещественного числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:Val(System.String,System.Single@,System.Int32@)"> Преобразует строковое представление s вещественного числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err&gt;0
+</member>
+    <member name="M:IntToStr(System.Int32)"> Converts the value of the specified integer to its equivalent string representation
+</member>
+    <member name="M:IntToStr(System.Int64)"> Converts the value of the specified 64-bit integer to its equivalent string representation
+</member>
+    <member name="M:FloatToStr(System.Double)"> Converts the value of the specified double-precision floating point number to its equivalent string representation
+</member>
+    <member name="M:Format(System.String,System.Object[])"> Возвращает отформатированную строку, построенную по форматной строке fmtstr и списку форматиуемых параметров pars
+</member>
+    <member name="M:Inc(System.Int32@)"> Increases the value of variable i by 1
+</member>
+    <member name="M:Inc(System.Int32@,System.Int32)"> Increases the value of variable i by n
+</member>
+    <member name="M:Dec(System.Int32@)"> Decreases the value of variable i by 1
+</member>
+    <member name="M:Dec(System.Int32@,System.Int32)"> Decreases the value of variable i by n
+</member>
+    <member name="M:Inc(System.Char@)"> Increases the symbol code c by 1
+</member>
+    <member name="M:Inc(System.Char@,System.Int32)"> Increases the symbol code c by n
+</member>
+    <member name="M:Dec(System.Char@)"> Decreases the symbol code c by 1
+</member>
+    <member name="M:Dec(System.Char@,System.Int32)"> Decreases the symbol code c by n
+</member>
+    <member name="M:Inc(System.Byte@)">--
+</member>
+    <member name="M:Inc(System.Byte@,System.Int32)">--
+</member>
+    <member name="M:Dec(System.Byte@)">--
+</member>
+    <member name="M:Dec(System.Byte@,System.Int32)">--
+</member>
+    <member name="M:succ(System.Int32)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.Boolean)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.Byte)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.SByte)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.Int16)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.UInt16)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.UInt32)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.Int64)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.UInt64)"> Returns next element of ordinal type
+</member>
+    <member name="M:succ(System.Char)"> Returns next element of ordinal type
+</member>
+    <member name="M:pred(System.Boolean)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.Byte)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.SByte)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.Int16)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.UInt16)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.Int32)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.UInt32)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.Int64)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.UInt64)"> Returns previous element for ordinal type
+</member>
+    <member name="M:pred(System.Char)"> Returns previous element for ordinal type
+</member>
+    <member name="M:Halt"> Завершает работу программы
+</member>
+    <member name="M:Halt(System.Int32)"> Завершает работу программы, возвращая код ошибки exitCode
+</member>
+    <member name="M:cls"> Для совместимости с Pascal ABC. Не выполняет никаких действий
+</member>
+    <member name="M:Sleep(System.Int32)"> Makes a pause for ms milliseconds
+</member>
+    <member name="M:GetEXEFileName"> Returns name of the executing file
+</member>
+    <member name="M:PointerToString(System.Void*)"> Converts the value of pointer type to its equivalent string representation
+</member>
+    <member name="M:Copy``1(``0[])"> Creates a copy of dynamic array 
+</member>
+    <member name="M:Swap``1(``0@,``0@)"> Changes the values of variables
+</member>
+    <member name="M:FormatValue(System.Object,System.Int32)">--
+</member>
+    <member name="M:FormatValue(System.Int32,System.Int32)">--
+</member>
+    <member name="M:FormatValue(System.Double,System.Int32)">--
+</member>
+    <member name="M:FormatValue(System.Double,System.Int32,System.Int32)">--
+</member>
+    <member name="M:StringDefaultPropertySet(System.String@,System.Int32,System.Char)">--
+</member>
+    <member name="M:CheckCanUsePointerOnType(System.Type)">Проверяет возможность использования указателей на тип T
+</member>
+    <member name="M:CheckCanUseTypeForBinaryFiles(System.Type)">Проверяет возможность записи типа T в файл
+</member>
+    <member name="M:CheckCanUseTypeForTypedFiles(System.Type)">Проверяет возможность создания file of T
+</member>
+    <member name="M:RuntimeDetermineType(System.Type)">Определяет специальные типы
+</member>
+    <member name="M:RuntimeInitialize(System.Byte,System.Object)">Возвращает объект класса в зависимости от значения kind
+</member>
+    <member name="M:GetRuntimeSize``1">Вычисление размера типа на этапе выполнения
+</member>
+    <member name="M:WINAPI_TerminateProcess(System.IntPtr,System.Int32)">--
+</member>
+    <member name="V:CommandLineArgs"> Contains the command-line arguments
+</member>
+    <member name="V:CurrentIOSystem"> Represents the current input/output system
+</member>
+    <member name="V:IsConsoleApplication"> Принимает значение True, если приложение имеет консольное окно
+</member>
+    <member name="C:MaxShortInt"> Represents the largest possible value of shortint type
+</member>
+    <member name="C:MaxByte"> Represents the largest possible value of byte type
+</member>
+    <member name="C:MaxSmallInt"> Represents the largest possible value of smallint type
+</member>
+    <member name="C:MaxWord"> Represents the largest possible value of word type
+</member>
+    <member name="C:MaxLongWord"> Represents the largest possible value of longword type
+</member>
+    <member name="C:MaxInt64"> Represents the largest possible value of int64 type
+</member>
+    <member name="C:MaxUInt64"> Represents the largest possible value of uint64 type
+</member>
+    <member name="C:MaxDouble"> Represents the largest possible value of double type
+</member>
+    <member name="C:MinDouble"> Represents the smallest possible value of double type
+</member>
+    <member name="C:MaxReal"> Represents the largest possible value of real type
+</member>
+    <member name="C:MinReal"> Represents the smallest possible value of real type
+</member>
+    <member name="C:MaxSingle"> Represents the largest possible value of single type
+</member>
+    <member name="C:MinSingle"> Represents the smallest possible value of single type
+</member>
+    <member name="C:MaxInt"> Represents the largest possible value of integer type 
+</member>
+    <member name="C:Pi"> The constant pi
+</member>
+    <member name="C:E"> The constant e
+</member>
+    <member name="C:__IS_SYSTEM_MODULE">--
+</member>
+  </members>
+</doc>

@@ -1,0 +1,1 @@
+uses u_arithm2; begin end.

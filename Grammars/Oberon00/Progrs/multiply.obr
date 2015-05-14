@@ -1,0 +1,9 @@
+MODULE Multiply;
+CONST a,b : INTEGER;
+VAR x,y,z,n : INTEGER;
+BEGIN n := 8; x := a; y := b; z := 0;
+WHILE n # 0 DO
+IF ODD x THEN z := z + y END;
+x := x / 2, y := y * 2, n := n - 1
+END
+END Multiply.

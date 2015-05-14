@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Concurrency>
+  
+  <ViewPlugin name="PPASummary" ClassName="Microsoft.VisualStudio.PerformanceTools.ConcurrencyPlugins.MockSummaryViewRegistrationData" AssemblyName="ConcurrencyPlugins.dll" ViewerName="PPASummary"/>
+  <ViewerPlugin name="PPASummary" ClassName="Microsoft.VisualStudio.PerformanceTools.ConcurrencyPlugins.MockSummaryViewerRegistrationData" AssemblyName="ConcurrencyPlugins.dll" HasDataMethod="ProviderHasData"/>
+
+</Concurrency>

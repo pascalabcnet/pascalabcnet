@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ScintillaNET>
+	<Language Name="python">
+		<AutoComplete FillUpCharacters=".([" SingleLineAccept="True" IsCaseSensitive="False">
+			<List>and as assert break class continue def del elif else except exec finally for from global if import in is lambda None not or pass print raise return triple try while with yield</List>
+		</AutoComplete>
+
+		<Indentation TabWidth="4" UseSpaces="True" />
+
+		<Lexer LineCommentPrefix="#">	
+			<Keywords List="0" Inherit="False">
+				and as assert break class continue def del elif else except exec finally for from global if import in is lambda None not or pass print raise return triple try while with yield
+			</Keywords>
+
+			<Properties>
+				<Property Name="tab.timmy.whinge.level" Value="1" />
+			</Properties>
+		</Lexer>
+	</Language>
+</ScintillaNET> 

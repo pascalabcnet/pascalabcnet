@@ -1,0 +1,15 @@
+﻿!PASCALABCNET_FORUM=Форум системы программирования PascalABC.NET
+!PASCALABCNET_SITE=Сайт PascalABC.NET
+!PASCALABCNET_DEVELOPERS=Разработчики
+!DEVELOPERS=Ведущие разработчики:
+!OK=ОК
+!CANCEL=Отмена
+!YES=Да
+!NO=Нет
+!ALL=Все
+!CONFIRM=Подтверждение
+!ERROR=Ошибка
+!FILE_NOT_FOUND{0}=Файл "{0}" не найден.
+!PROJECT_NOT_FOUND{0}=Проект "{0}" не найден.
+!WARNING=Предупреждение
+!ERROR_ON_CREATE_DIRECORY=Ошибка при создании папки

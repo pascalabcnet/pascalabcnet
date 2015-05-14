@@ -1,0 +1,210 @@
+using System;
+using System.IO;
+using PascalABCCompiler.SyntaxTree;
+
+namespace PascalABCCompiler.Errors
+{
+	public class Error:Exception
+	{
+		public Error(string Message)
+            : base(Message)
+        {
+        }
+
+        public virtual bool MustThrow
+        {
+            get
+            {
+                return true;
+            }
+        }
+
+        public Error()
+        {
+        }
+	}
+    public class LocatedError:Error
+	{
+        protected SourceContext source_context = null;
+        protected SourceLocation sourceLocation = null;
+        public string fileName = null;
+        public LocatedError(string Message, string fileName)
+            : base(Message)
+        {
+            this.fileName = fileName;
+        }
+
+        public LocatedError(string Message)
+            : base(Message)
+        {
+        }
+
+        public LocatedError()
+        {
+        }
+
+        public override string ToString()
+        {
+            /*string pos=null;
+            if (source_context != null)
+                pos = "(" + source_context.begin_position.line_num + "," + source_context.begin_position.column_num + ")";
+            string fn = null;
+            if (FileName != null)
+                fn = Path.GetFileName(FileName);
+            return string.Format(StringResources.Get("PARSER_ERRORS_COMPILATION_ERROR{0}{1}{2}"), fn, pos, Message);
+             */
+            return (new CompilerInternalError("Errors.ToString",new Exception(string.Format("Не переопеределена {0}.ToString",this.GetType())))).ToString();
+        }
+
+        public virtual SourceLocation SourceLocation
+        {
+            get
+            {
+                if(sourceLocation!=null)
+                    return sourceLocation;
+                if (SourceContext != null)
+                    return new SourceLocation(FileName, SourceContext.begin_position.line_num, SourceContext.begin_position.column_num, SourceContext.end_position.line_num, SourceContext.end_position.column_num);
+                return null;
+            }
+        }
+
+
+        public virtual SourceContext SourceContext
+        {
+            get
+            {
+                return source_context;
+            }
+        }
+
+        public virtual string FileName
+        {
+            get
+            {
+                return fileName;
+            }
+        }
+	}
+	
+    public class CommonCompilerError : Errors.LocatedError
+    {
+    	public CommonCompilerError(string mes, string fileName, int line, int col):base(mes,fileName)
+    	{
+    		this.sourceLocation = new SourceLocation(fileName,line,col,line,col);
+    		this.source_context = new SyntaxTree.SourceContext(line,col,line,col);
+    	}
+        public override string ToString()
+        {
+            return string.Format("{0} ({1},{2}): {3}", Path.GetFileName(sourceLocation.FileName), sourceLocation.BeginPosition.Line, sourceLocation.BeginPosition.Column,this.Message);
+        }
+    }
+    
+    public class CompilerWarning : Errors.LocatedError
+    {
+    	public CompilerWarning()
+    	{
+    		
+    	}
+    	
+    	public CompilerWarning(string Message, string fileName)
+            : base(Message)
+        {
+            this.fileName = fileName;
+        }
+    	
+    	public override string Message
+        {
+            get
+            {
+                return (this.ToString());
+            }
+        }
+    }
+	
+    public class CommonWarning : CompilerWarning
+    {
+    	string _mes;
+    	
+    	public CommonWarning(string mes, string fileName, int line, int col):base(mes,fileName)
+    	{
+    		this.sourceLocation = new SourceLocation(fileName,line,col,line,col);
+    		this.source_context = new SyntaxTree.SourceContext(line,col,line,col);
+    		_mes = mes;
+    	}
+    	
+		public override string Message
+        {
+            get
+            {
+                return _mes;
+            }
+        }
+    }
+    
+    public class SyntaxError : LocatedError
+    {
+        public syntax_tree_node bad_node;
+        public SyntaxError(string Message, string fileName, PascalABCCompiler.SyntaxTree.SourceContext _source_context, PascalABCCompiler.SyntaxTree.syntax_tree_node _bad_node)
+            : base(Message, fileName)
+        {
+            source_context = _source_context;
+            if (source_context != null && source_context.FileName != null)
+                base.fileName = source_context.FileName;
+            bad_node = _bad_node;
+            //Console.WriteLine(ToString());
+        }
+        public override string ToString()
+        {
+            string snode="";
+            /*if (bad_node == null)
+                snode = " (bad_node==null)";
+            else
+                snode = " (bad_node==" + bad_node.ToString() + ")";*/
+            string pos;
+            if (source_context == null)
+                pos = "(?,?)";
+            else
+                pos = "(" + source_context.begin_position.line_num + "," + source_context.begin_position.column_num + ")";
+            return Path.GetFileName(FileName) + pos + ": Синтаксическая ошибка :  " + Message + snode;
+        }
+
+        public override SourceContext SourceContext
+        {
+            get
+            {
+                return source_context;
+            }
+        }
+        public override SourceLocation SourceLocation
+        {
+            get
+            {
+                if (source_context == null)
+                    return null;
+                return new SourceLocation(fileName,
+                    source_context.begin_position.line_num,source_context.begin_position.column_num,
+                    source_context.end_position.line_num, source_context.end_position.column_num);
+            }
+        }
+
+    }
+
+    public class CompilerInternalError : Error
+    {
+        public Exception exception = null;
+        public string Module;
+        public CompilerInternalError(string module, Exception exc)
+            : base(exc.ToString())
+        {
+            Module = module;
+            exception = exc;
+        }
+        public override string ToString()
+        {
+            return String.Format(StringResources.Get("COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}"), Module, Message);
+        }
+    }
+
+
+
+}

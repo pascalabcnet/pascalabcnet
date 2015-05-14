@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Oberon00Alone", "Oberon00Alone.csproj", "{4DD13462-DCB4-4C3E-B777-7FEA90CEA9D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4DD13462-DCB4-4C3E-B777-7FEA90CEA9D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DD13462-DCB4-4C3E-B777-7FEA90CEA9D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DD13462-DCB4-4C3E-B777-7FEA90CEA9D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DD13462-DCB4-4C3E-B777-7FEA90CEA9D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

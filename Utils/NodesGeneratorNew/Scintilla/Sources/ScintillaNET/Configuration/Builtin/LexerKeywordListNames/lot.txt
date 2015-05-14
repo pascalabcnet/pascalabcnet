@@ -1,0 +1,7 @@
+DEFAULT	= 0
+HEADER	= 1
+BREAK	= 2
+SET		= 3
+PASS	= 4
+FAIL	= 5
+ABORT	= 6

@@ -1,0 +1,48 @@
+goldbuilder
+
+     
+Format 
+    goldbuilder [options] Grammar [CGT-file] [Log-File] 
+    
+Version
+    2.4.3 and later
+     
+Overview 
+    The Builder is the main component of the GOLD Parsing System. The main duty 
+    of the Builder is to read a source grammar written in the GOLD 
+    Meta-Language, produce the LALR and DFA parse tables, and, finally, save 
+    this information to Compiled Grammar Table file.  
+    
+    This program does not create any on-screen text. This allows the program to 
+    be easily be called from other applications. To check whether a grammar was 
+    successly analyzed, check the content of the generated log file. 
+     
+Details 
+    Options
+        -details, +details
+            If this flag is set true, the log file will contain details about 
+            how the Grammar file was interpreted. This option defaults to 
+            true.
+
+        -export, +export
+            If this field is specified, the program will export the generated 
+            tables to the log. This feature is identical to the Export to
+            Formatted Text feature in the Windows version of the Builder. If 
+            a critical error is found in the grammar, this feature is 
+            automatically activated. This option defaults to false.
+
+    Grammar 
+        Required. The grammar file. 
+    
+    CGT File 
+        Optional. If this field is left blank, the goldbuilder program will 
+        automatically create a filename using the grammar's filename. The new
+        filename will contain the same base, but will have the .cgt extension.
+        For example, if the grammar filename is "test.grm", the file 
+        "test.cgt" will be created. 
+        
+    Log File 
+        Optional. Like the CGT File field, if left blank, the goldbuilder 
+        program will automatically create a file. In this case, the 
+        extension will be .log      
+   

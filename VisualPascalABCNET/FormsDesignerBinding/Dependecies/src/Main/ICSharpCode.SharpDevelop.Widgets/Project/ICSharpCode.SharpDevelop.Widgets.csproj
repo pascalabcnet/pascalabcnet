@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.SharpDevelop.Widgets</RootNamespace>
+    <AssemblyName>ICSharpCode.SharpDevelop.Widgets</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8035765F-D51F-4A0C-A746-2FD100E19419}</ProjectGuid>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>136577024</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Configuration\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="CollapsiblePanel.cs" />
+    <Compile Include="ColorHelper.cs" />
+    <Compile Include="ColorPicker.xaml.cs">
+      <DependentUpon>ColorPicker.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="CustomWindowsFormsHost.cs" />
+    <Compile Include="DragListener.cs" />
+    <Compile Include="ListViewSorting\AbstractListViewParseableColumnComparer.cs" />
+    <Compile Include="ListViewSorting\AbstractListViewSubItemComparer.cs" />
+    <Compile Include="ListViewSorting\ListViewIntegerParseColumnComparer.cs" />
+    <Compile Include="ListViewSorting\ListViewMultipleColumnsComparer.cs" />
+    <Compile Include="ListViewSorting\ListViewTextColumnComparer.cs" />
+    <Compile Include="ListViewSorting\IListViewItemComparer.cs" />
+    <Compile Include="ListViewSorting\ListViewItemSorter.cs" />
+    <Compile Include="MouseWheelHandler.cs" />
+    <Compile Include="MyersDiff\Edit.cs" />
+    <Compile Include="MyersDiff\ISequence.cs" />
+    <Compile Include="MyersDiff\MyersDiffAlgorithm.cs" />
+    <Compile Include="MyersDiff\StringSequence.cs" />
+    <Compile Include="MyersDiff\Utils.cs" />
+    <Compile Include="NumericUpDown.cs">
+      <DependentUpon>NumericUpDown.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Picker.cs" />
+    <Compile Include="RadioButtonGroup.cs" />
+    <Compile Include="RelayCommand.cs" />
+    <Compile Include="Resources\BitmapResources.cs" />
+    <Compile Include="SideBar\SideBar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SideBar\SideTab.cs" />
+    <Compile Include="SideBar\SideTabItem.cs" />
+    <Compile Include="DesignTimeSupport\DropDownEditor.cs" />
+    <Compile Include="DesignTimeSupport\DropDownEditorListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StackPanelWithSpacing.cs" />
+    <Compile Include="UniformGridWithSpacing.cs" />
+    <Compile Include="ViewModelBase.cs" />
+    <Compile Include="ZoomButtons.cs">
+      <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ZoomScrollViewer.cs">
+      <DependentUpon>ZoomScrollViewer.xaml</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Resources\Icons.16x16.SortAscending.png" />
+    <EmbeddedResource Include="Resources\Icons.16x16.SortDescending.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="ColorPicker.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="NumericUpDown.xaml" />
+    <Page Include="themes\generic.xaml" />
+    <Page Include="ZoomScrollViewer.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images" />
+    <Folder Include="MyersDiff" />
+    <Folder Include="themes" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\ZoomIn.png" />
+    <Resource Include="Images\ZoomOut.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

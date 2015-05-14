@@ -1,0 +1,1 @@
+uses u_fileofarr1; begin end.

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CollectionPlan>
+  <StartupInfo>
+    <LogFileName/>
+    <!-- Write .tdlog files to the default directory (we don't use them) -->
+    <LogFileDirectory useDefault="true"/>
+    <DeleteLogOnExit>true</DeleteLogOnExit>
+    <DisconnectFromLoggerAfterConfiguration>true</DisconnectFromLoggerAfterConfiguration>
+  </StartupInfo>
+  <DetourInstrumentation enabled="true">
+    <ProcessList isExclusionList="true"/>
+    <AppDomainList isExclusionList="true"/>
+    <ModuleList isExclusionList="true"/>
+    <ModuleSpecifications>
+      <ModuleSpecification Id="Detours" Version="12.0.0.0" PublicKeyToken="b03f5f7f11d50a3a">Microsoft.VisualStudio.PerformanceTools.Detours.dll</ModuleSpecification>
+      <ModuleSpecification Id="System.Data">System.Data.dll</ModuleSpecification>
+      <ModuleSpecification Id="System.Data.SqlServerCe">System.Data.SqlServerCe.dll</ModuleSpecification>
+      <ModuleSpecification Id="System.Web">System.Web.dll</ModuleSpecification>
+    </ModuleSpecifications>
+    <DetourSpecifications>
+      <!-- SqlCommand.ExecuteReader -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.SqlClient.SqlCommand</TypeName>
+          <MethodName>ExecuteReader</MethodName>
+          <MethodId>System.Data.SqlClient.SqlCommand.ExecuteReader(System.Data.CommandBehavior,System.String):System.Data.SqlClient.SqlDataReader</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCommand.ExecuteNonQuery -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.SqlClient.SqlCommand</TypeName>
+          <MethodName>ExecuteNonQuery</MethodName>
+          <MethodId>System.Data.SqlClient.SqlCommand.ExecuteNonQuery():System.Int32</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCommand.ExecuteScalar -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.SqlClient.SqlCommand</TypeName>
+          <MethodName>ExecuteScalar</MethodName>
+          <MethodId>System.Data.SqlClient.SqlCommand.ExecuteScalar():System.Object</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCommand.ExecuteXmlReader -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.SqlClient.SqlCommand</TypeName>
+          <MethodName>ExecuteXmlReader</MethodName>
+          <MethodId>System.Data.SqlClient.SqlCommand.ExecuteXmlReader():System.Xml.XmlReader</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- OdbcCommand.ExecuteReader -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.Odbc.OdbcCommand</TypeName>
+          <MethodName>ExecuteReader</MethodName>
+          <MethodId>System.Data.Odbc.OdbcCommand.ExecuteReader(System.Data.CommandBehavior):System.Data.Odbc.OdbcDataReader</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- OdbcCommand.ExecuteNonQuery -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.Odbc.OdbcCommand</TypeName>
+          <MethodName>ExecuteNonQuery</MethodName>
+          <MethodId>System.Data.Odbc.OdbcCommand.ExecuteNonQuery():System.Int32</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- OdbcCommand.ExecuteScalar -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.Odbc.OdbcCommand</TypeName>
+          <MethodName>ExecuteScalar</MethodName>
+          <MethodId>System.Data.Odbc.OdbcCommand.ExecuteScalar():System.Object</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- OleDbCommand.ExecuteReader -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.OleDb.OleDbCommand</TypeName>
+          <MethodName>ExecuteReader</MethodName>
+          <MethodId>System.Data.OleDb.OleDbCommand.ExecuteReader(System.Data.CommandBehavior):System.Data.OleDb.OleDbDataReader</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- OleDbCommand.ExecuteNonQuery -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.OleDb.OleDbCommand</TypeName>
+          <MethodName>ExecuteNonQuery</MethodName>
+          <MethodId>System.Data.OleDb.OleDbCommand.ExecuteNonQuery():System.Int32</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- OleDbCommand.ExecuteScalar -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data</ModuleSpecification>
+          <TypeName>System.Data.OleDb.OleDbCommand</TypeName>
+          <MethodName>ExecuteScalar</MethodName>
+          <MethodId>System.Data.OleDb.OleDbCommand.ExecuteScalar():System.Object</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCeCommand.ExecuteReader -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data.SqlServerCe</ModuleSpecification>
+          <TypeName>System.Data.SqlServerCe.SqlCeCommand</TypeName>
+          <MethodName>ExecuteReader</MethodName>
+          <MethodId>System.Data.SqlServerCe.SqlCeCommand.ExecuteReader(System.Data.CommandBehavior):System.Data.SqlServerCe.SqlCeDataReader</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCeCommand.ExecuteNonQuery -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data.SqlServerCe</ModuleSpecification>
+          <TypeName>System.Data.SqlServerCe.SqlCeCommand</TypeName>
+          <MethodName>ExecuteNonQuery</MethodName>
+          <MethodId>System.Data.SqlServerCe.SqlCeCommand.ExecuteNonQuery():System.Int32</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCeCommand.ExecuteScalar -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data.SqlServerCe</ModuleSpecification>
+          <TypeName>System.Data.SqlServerCe.SqlCeCommand</TypeName>
+          <MethodName>ExecuteScalar</MethodName>
+          <MethodId>System.Data.SqlServerCe.SqlCeCommand.ExecuteScalar():System.Object</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- SqlCeCommand.ExecuteResultSet -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Data.SqlServerCe</ModuleSpecification>
+          <TypeName>System.Data.SqlServerCe.SqlCeCommand</TypeName>
+          <MethodName>ExecuteResultSet</MethodName>
+          <MethodId>System.Data.SqlServerCe.SqlCeCommand.ExecuteResultSet(System.Data.SqlServerCe.ResultSetOptions,System.Data.SqlServerCe.SqlCeResultSet):System.Data.SqlServerCe.SqlCeResultSet</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>DbCommandExecuteDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.DbCommandExecuteDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- System.Web.HttpApplication+ThreadContext.Enter -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Web</ModuleSpecification>
+          <TypeName>System.Web.HttpApplication+ThreadContext</TypeName>
+          <MethodName>Enter</MethodName>
+          <MethodId>System.Web.HttpApplication+ThreadContext.Enter(System.Boolean):System.Void</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>ThreadContextEnterDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.ThreadContextEnterDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+      <!-- System.Web.HttpApplication+ThreadContext.Leave -->
+      <DetourSpecification>
+        <UserMethod>
+          <ModuleSpecification>System.Web</ModuleSpecification>
+          <TypeName>System.Web.HttpApplication+ThreadContext</TypeName>
+          <MethodName>Leave</MethodName>
+          <MethodId>System.Web.HttpApplication+ThreadContext.Leave():System.Void</MethodId>
+        </UserMethod>
+        <DetourMethod>
+          <ModuleSpecification>Detours</ModuleSpecification>
+          <TypeName>Microsoft.VisualStudio.PerformanceTools.Detours.Detours</TypeName>
+          <MethodName>ThreadContextLeaveDetour</MethodName>
+          <MethodId>Microsoft.VisualStudio.PerformanceTools.Detours.Detours.ThreadContextLeaveDetour():System.Void</MethodId>
+        </DetourMethod>
+        <Options/>
+      </DetourSpecification>
+    </DetourSpecifications>
+  </DetourInstrumentation>
+</CollectionPlan>

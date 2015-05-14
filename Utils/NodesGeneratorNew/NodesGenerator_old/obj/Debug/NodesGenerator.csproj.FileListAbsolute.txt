@@ -1,0 +1,27 @@
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\bin\Debug\NodesGenerator.exe.config
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\bin\Debug\NodesGenerator.exe
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\bin\Debug\NodesGenerator.pdb
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.csprojResolveAssemblyReference.cache
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.Form1.resources
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.method_editor.resources
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.node_def.resources
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.simple_node_editor.resources
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.subnode_editor.resources
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.template_form.resources
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.csproj.GenerateResource.Cache
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.exe
+D:\PascalABC.NET\!PABC_SVN\Utils\NodesGenerator\obj\Debug\NodesGenerator.pdb
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\bin\Debug\NodesGenerator.exe.config
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.exe
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.pdb
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\bin\Debug\NodesGenerator.exe
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\bin\Debug\NodesGenerator.pdb
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.Form1.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.method_editor.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.node_def.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.simple_node_editor.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.subnode_editor.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\NodesGenerator.template_form.resources
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\GenerateResource.read.1.tlog
+C:\Users\Vlad Zola Jr2\Documents\Visual Studio 2010\Projects\NodesGenerator_old\obj\Debug\GenerateResource.write.1.tlog

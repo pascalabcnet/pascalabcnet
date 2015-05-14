@@ -1,0 +1,7 @@
+MODULE Log;
+CONST a,b : INTEGER;
+VAR x,y : INTEGER;
+BEGIN x := 0; y := a;
+WHILE y # 0 DO x := x + 1, y := y / 2 END
+END Log.
+

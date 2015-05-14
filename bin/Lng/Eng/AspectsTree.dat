@@ -1,0 +1,13 @@
+//Aspects Tree Plugin
+
+%PREFIX%=VPP_ASPTRV_
+NAME=Aspects
+DESCRIPTION=Aspects visualizer
+FORMNAME=Aspects
+M_BUILD=Build aspects
+M_COMPILE=Build and compile
+SAVE=Save
+SAVE_CURRENT=Save current
+CREATE_TEMPLATE=Create template
+INSERT_AUTHOR=Aspects by author
+INSERT_VERSION=Aspects by version

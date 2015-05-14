@@ -1,0 +1,1 @@
+uses u_arrays1; begin end.

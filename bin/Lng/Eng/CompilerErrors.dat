@@ -1,0 +1,17 @@
+//Compiler error messages
+%PREFIX%=COMPILATIONERROR_
+
+PROGRAM_MODULE_EXPECTED=Program expected but unit found
+UNIT_MODULE_EXPECTED=Unit expected but program found
+READ_PCU{0}_ERROR=Error at reading PCU file '{0}'
+ASSEMBLY_{0}_NOT_FOUND=Assembly '{0}' not found
+UNIT_{0}_NOT_FOUND=Unit '{0}' not found
+SOURCE_FILE_{0}_NOT_FOUND=File '{0}' not found
+NO_ACCESS_TO_FILE{0}=No access to the file '{0}'
+CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=Cyclic unit reference with unit '{0}'
+UNDEFINED_SEMANTIC_ERROR{0}=Undefined semantic error : {0}
+RESOURCEFILE_{0}_NOT_FOUND=Resource file '{0}' not found
+DUPLICATE_USES_UNIT{0}=Duplicate identifier '{0}' in uses section
+
+%PREFIX%=
+COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Internal compiler error in module {0} :'{1}'

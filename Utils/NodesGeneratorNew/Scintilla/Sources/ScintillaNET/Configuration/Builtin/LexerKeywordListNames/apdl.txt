@@ -1,0 +1,6 @@
+processors
+commands
+slashommands
+starcommands
+arguments
+functions

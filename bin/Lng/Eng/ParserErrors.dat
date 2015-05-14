@@ -1,0 +1,12 @@
+//Parser errors in PascalABCCompiler.Errors
+%PREFIX%=PARSER_ERRORS_
+
+BAD_FLOAT=Too big (small) number
+BAD_INT=Too big (small) number
+BAD_HEX=Bad hex number
+UNEXPECTED_SYMBOL{0}=Unexpected symbol '{0}'
+BAD_EXPR=Bad exprssion
+EXPECTED{0}={0} expected
+BIG_CHAR_NUMBER=Too big char const
+BAD_SOURCEFILE{0}_EXT=Can not choose parser for file '{0}'
+COMPILATION_ERROR{0}{1}{2}={0}{1} Compilation error: {2}

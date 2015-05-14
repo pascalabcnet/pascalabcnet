@@ -1,0 +1,4 @@
+Primary keywords and identifiers
+Secondary keywords and identifiers
+Documentation comment keywords
+Type definitions and aliases

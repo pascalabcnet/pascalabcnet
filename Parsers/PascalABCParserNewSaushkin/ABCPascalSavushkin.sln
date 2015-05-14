@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSavushkinParser", "PascalABCSavushkinParser.csproj", "{1443F539-DCC7-4491-B4FD-B716C739DB3C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1443F539-DCC7-4491-B4FD-B716C739DB3C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
