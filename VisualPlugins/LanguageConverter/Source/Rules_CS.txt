@@ -1,0 +1,183 @@
+@namespace :: 
+$namespace name *BlockBegin *BlockBody 
+${ *BlockBegin *BlockBody *BlockBody
+ $public $class name *BlockBegin *BlockBody
+ ${ *BlockBegin
+ body
+ *BlockEnd *BlockBody $}
+ *BlockEnd *BlockBody $}
+
+@class :: 
+access_modifier_type $class name *BlockBegin *BlockBody 
+${
+ *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $} 
+
+@struct :: 
+access_modifier_type $struct name *BlockBegin *BlockBody 
+${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@function :: 
+$public $static type name $( parameters $) *BlockBegin *BlockBody 
+${
+ *BlockBegin 
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@return :: 
+$return expr
+
+@array_indexing :: 
+expr $[ expr $]
+
+@function_call :: 
+name $( parameters $)
+
+@comp_method_call ::  
+obj_name $. name $( parameters $)
+
+@comp_stat_method_call ::  
+name $( parameters $)
+
+@comm_stat_method_call ::  
+type $. name $( parameters $)
+
+@type_of :: 
+$typeof $( type $)
+
+@if :: 
+$if $( parameters $)
+ *BlockBegin *BlockBody 
+${
+ ${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@for :: 
+$for $( body $)
+ *BlockBegin *BlockBody 
+${
+ ${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@while :: 
+$while $( body $)
+ *BlockBegin *BlockBody 
+${
+ ${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@repeat :: 
+$do
+ *BlockBegin *BlockBody 
+${
+${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+ $while $( parameters $)
+
+@namespace_var :: 
+$public $static type name
+
+@var :: 
+type name
+
+@var_init :: 
+type name $= body
+
+@const :: 
+$public $const type name
+
+@statements :: 
+body
+
+@statements_nested :: *BlockBegin *BlockBody 
+${
+ *BlockBegin
+ body 
+ *BlockEnd 
+ *BlockBody $}
+
+@binop_assign :: 
+expr $= expr
+
+@binop_add :: 
+expr $+ expr
+
+@binop_subtract :: 
+expr $- expr
+
+@binop_mult :: 
+expr $* expr
+
+@binop_div :: 
+expr $/ expr
+
+@unop_plus :: 
+$+ expr
+
+@unop_minus :: 
+$- expr
+
+@binop_mod :: 
+expr $% expr
+
+@binop_eq :: 
+expr $== expr
+
+@binop_gr :: 
+expr $> expr
+
+@binop_sm :: 
+expr $< expr
+
+@binop_greq :: 
+expr $>= expr
+
+@binop_smeq :: 
+expr $<= expr
+
+@binop_and :: 
+expr $&& expr
+
+@binop_or :: 
+expr $|| expr
+
+@binop_xor :: 
+expr $^ expr
+
+@unop_inc :: 
+$++ expr
+
+@unop_dec :: 
+$-- expr
+
+@unop_unmin :: 
+$- $( expr $)
+
+@unop_not :: 
+$not expr
+
+@binop_shl :: 
+expr $<< expr
+
+@binop_shr :: 
+expr $>> expr
+
