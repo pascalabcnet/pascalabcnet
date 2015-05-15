@@ -219,7 +219,8 @@ begin
   for var i := 0 to files.Length - 1 do
   begin
     try
-      &File.Delete(files[i]);
+      if Path.GetFileName(files[i]) <> '.gitignore' then
+        &File.Delete(files[i]);
     except
     end;
   end;

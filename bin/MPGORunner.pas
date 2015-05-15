@@ -6,7 +6,8 @@ begin
   var files := Directory.GetFiles(Path.Combine(pabcpath, 'OptimizedAssemblies'));
   foreach var s in files do
   begin
-    &File.Delete(s);
+    if Path.GetFileName(s) <> '.gitignore' then
+      &File.Delete(s);
   end;
   var mpgo := Path.Combine(pabcpath,'Utils\Performance Tools\mpgo.exe');
   psi.FileName := mpgo;
