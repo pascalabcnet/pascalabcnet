@@ -1464,7 +1464,7 @@ procedure Reverse<T>(a: array of T; index,length: integer);
 function CopyWithSize(source, dest: &Array): &Array;
 
 // -----------------------------------------------------
-//                Sequences
+//              Sequences and dynamic arrays
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a,b: integer): sequence of integer;
@@ -1475,13 +1475,21 @@ function Range(a,b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a,b,step: integer): sequence of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
-function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
-function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
+function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
+/// Возвращает последовательность из n случайных целых элементов
+function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
+/// Возвращает последовательность из n случайных вещественных элементов
+function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): sequence of real;
 /// Возвращает массив, заполненный указанными элементами
 function Arr<T>(params a: array of T): array of T;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
+/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
+function ArrGen<T>(first: T; next: Func<T,T>; count: integer): array of T;
+/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
+function ArrGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): array of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
 function SeqGen<T>(first: T; next: Func<T,T>; count: integer): sequence of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему 
@@ -1489,11 +1497,7 @@ function SeqGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): sequenc
 /// Возвращает последовательность элементов с начальным значением first, функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
 function SeqWhile<T>(first: T; next: Func<T,T>; pred: Predicate<T>): sequence of T;
 /// Возвращает последовательность элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности 
-function SeqWhile<T>(first,second: T; next: Func<T,T,T>; pred: Predicate<T>): sequence of T;
-/// Возвращает массив из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
-function ArrGen<T>(first: T; next: Func<T,T>; count: integer): array of T;
-/// Возвращает массив из count элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему 
-function ArrGen<T>(first,second: T; next: Func<T,T,T>; count: integer): array of T;
+function SeqWhile<T>(first,second: T; next: Func2<T,T,T>; pred: Predicate<T>): sequence of T;
 /// Возвращает массив из count элементов x 
 function ArrFill<T>(x: T; count: integer): array of T;
 /// Возвращает массив из count элементов, заполненных значениями f(i)
@@ -1502,6 +1506,7 @@ function ArrFill<T>(count: integer; f: Func<integer,T>): array of T;
 function SeqFill<T>(x: T; count: integer): sequence of T;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i)
 function SeqFill<T>(count: integer; f: Func<integer,T>): sequence of T;
+
 /// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает матрицу размера m x n, заполненную случайными вещественными значениями
@@ -1509,19 +1514,32 @@ function MatrixRandomReal(m: integer := 5; n: integer := 5; a: integer := 0; b: 
 
 
 /// Возвращает массив из n целых, введенных с клавиатуры
-function ReadSeqInteger(n: integer): array of integer;
+function ReadArrInteger(n: integer): array of integer;
 /// Возвращает массив из n вещественных, введенных с клавиатуры
-function ReadSeqReal(n: integer): array of real;
+function ReadArrReal(n: integer): array of real;
 /// Возвращает массив из n строк, введенных с клавиатуры
-function ReadSeqString(n: integer): array of string;
+function ReadArrString(n: integer): array of string;
 
 /// Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры
-function ReadSeqInteger(const prompt: string; n: integer): array of integer;
+function ReadArrInteger(const prompt: string; n: integer): array of integer;
 /// Выводит приглашение к вводу и возвращает массив из n вещественных, введенных с клавиатуры
-function ReadSeqReal(const prompt: string; n: integer): array of real;
+function ReadArrReal(const prompt: string; n: integer): array of real;
 /// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
-function ReadSeqString(const prompt: string; n: integer): array of string;
+function ReadArrString(const prompt: string; n: integer): array of string;
 
+/// Возвращает последовательность из n целых, введенных с клавиатуры
+function ReadSeqInteger(n: integer): sequence of integer;
+/// Возвращает последовательность из n вещественных, введенных с клавиатуры
+function ReadSeqReal(n: integer): sequence of real;
+/// Возвращает последовательность из n строк, введенных с клавиатуры
+function ReadSeqString(n: integer): sequence of string;
+
+/// Выводит приглашение к вводу и возвращает последовательность из n целых, введенных с клавиатуры
+function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
+/// Выводит приглашение к вводу и возвращает последовательность из n вещественных, введенных с клавиатуры
+function ReadSeqReal(const prompt: string; n: integer): sequence of real;
+/// Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры
+function ReadSeqString(const prompt: string; n: integer): sequence of string;
 // -----------------------------------------------------
 //                       Tuples
 // -----------------------------------------------------
@@ -3090,18 +3108,28 @@ begin
   Result := System.Linq.Enumerable.Range(0, n).Select(ar.f);
 end;
 
-function SeqRandom(n: integer; a: integer; b: integer): array of integer;
+function ArrRandom(n: integer; a: integer; b: integer): array of integer;
 begin
   Result := new integer[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := Random(a,b);
 end;
 
-function SeqRandomReal(n: integer; a: real; b: real): array of real;
+function ArrRandomReal(n: integer; a: real; b: real): array of real;
 begin
   Result := new real[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := Random()*(b-a)+a;
+end;
+
+function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
+begin
+  Result := Range(1,n).Select(i->Random(a,b))
+end;
+
+function SeqRandomReal(n: integer; a: real; b: real): sequence of real;
+begin
+  Result := Range(1,n).Select(i->Random()*(b-a)+a)
 end;
 
 function Arr<T>(params a: array of T): array of T;
@@ -3247,7 +3275,7 @@ begin
   Result := a;
 end;
 
-function ArrGen<T>(first,second: T; next: Func<T,T,T>; count: integer): array of T;
+function ArrGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): array of T;
 begin
   if count<2 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_1));
@@ -3271,7 +3299,7 @@ begin
   Result := a;
 end;
 
-function ListWhile<T>(first,second: T; next: Func<T,T,T>; pred: Predicate<T>): List<T>;
+function ListWhile<T>(first,second: T; next: Func2<T,T,T>; pred: Predicate<T>): List<T>;
 begin
   var a := new List<T>;
   var x := first;
@@ -3323,44 +3351,78 @@ begin
 end;
 
 
-function ReadSeqInteger(n: integer): array of integer;
+function ReadArrInteger(n: integer): array of integer;
 begin
   Result := new integer[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := ReadInteger;
 end;
 
-function ReadSeqInteger(const prompt: string; n: integer): array of integer;
+function ReadArrInteger(const prompt: string; n: integer): array of integer;
 begin
   Print(prompt);
-  Result := ReadSeqInteger(n);
+  Result := ReadArrInteger(n);
 end;
 
-function ReadSeqReal(n: integer): array of real;
+function ReadArrReal(n: integer): array of real;
 begin
   Result := new real[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := ReadReal;
 end;
 
-function ReadSeqReal(const prompt: string; n: integer): array of real;
+function ReadArrReal(const prompt: string; n: integer): array of real;
 begin
   Print(prompt);
-  Result := ReadSeqReal(n);
+  Result := ReadArrReal(n);
 end;
 
-function ReadSeqString(n: integer): array of string;
+function ReadArrString(n: integer): array of string;
 begin
   Result := new string[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := ReadString;
 end;
 
-function ReadSeqString(const prompt: string; n: integer): array of string;
+function ReadArrString(const prompt: string; n: integer): array of string;
+begin
+  Print(prompt);
+  Result := ReadArrString(n);
+end;
+
+function ReadSeqInteger(n: integer): sequence of integer;
+begin
+  Result := Range(1,n).Select(i->ReadInteger());
+end;
+
+function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
+begin
+  Print(prompt);
+  Result := ReadSeqInteger(n);
+end;
+
+function ReadSeqReal(n: integer): sequence of real;
+begin
+  Result := Range(1,n).Select(i->ReadReal());
+end;
+
+function ReadSeqReal(const prompt: string; n: integer): sequence of real;
+begin
+  Print(prompt);
+  Result := ReadSeqReal(n);
+end;
+
+function ReadSeqString(n: integer): sequence of string;
+begin
+  Result := Range(1,n).Select(i->ReadString());
+end;
+
+function ReadSeqString(const prompt: string; n: integer): sequence of string;
 begin
   Print(prompt);
   Result := ReadSeqString(n);
 end;
+
 
 function Rec<T1,T2>(x1: T1; x2: T2): Tuple<T1,T2>;
 begin

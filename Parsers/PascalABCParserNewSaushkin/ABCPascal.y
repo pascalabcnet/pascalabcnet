@@ -1092,7 +1092,7 @@ type_ref
 		{ $$ = $1; }
     | template_type
 		{ $$ = $1; }
-    ;
+	    ;
 
 template_type
     : simple_type_identifier template_type_params    
@@ -1637,7 +1637,7 @@ method_decl_withattr
         }
     | attribute_declarations method_decl
         {  
-			($2 as procedure_definition).proc_header.attributes = $1 as attribute_list;
+			($2 as declaration).attributes = $1 as attribute_list;
 			$$ = $2;
      }
     ;
