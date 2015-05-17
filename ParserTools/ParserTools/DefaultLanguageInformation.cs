@@ -996,28 +996,58 @@ namespace PascalABCCompiler.Parsers
 			}
 			return s;
 		}
-		
+
+        protected string getLambdaRepresentation(ICompiledTypeScope scope, bool has_return_value)
+        {
+            StringBuilder sb = new StringBuilder();
+            ITypeScope[] instances = scope.GenericInstances;
+            List<string> parameters = new List<string>();
+            if (instances != null && instances.Length > 0)
+            {
+                foreach (ITypeScope ts in instances)
+                    parameters.Add(GetSimpleDescriptionWithoutNamespace(ts));
+            }
+            else
+            {
+                foreach (Type t in scope.CompiledType.GetGenericArguments())
+                    parameters.Add(t.Name);
+            }
+            if (has_return_value)
+            {
+                if (parameters.Count > 1)
+                {
+                    if (parameters.Count > 2)
+                        sb.Append("(" + string.Join(",", parameters.GetRange(0, parameters.Count - 1).ToArray()) + ")->" + parameters[parameters.Count - 1]);
+                    else
+                        sb.Append(parameters[0] + "->" + parameters[1]);
+                }
+            }
+            else
+            {
+                if (parameters.Count > 0)
+                {
+                    if (parameters.Count > 1)
+                        sb.Append("(" + string.Join(",", parameters.ToArray()) + ")->()");
+                    else
+                        sb.Append(parameters[0] + "->()");
+                }
+            }
+            return sb.ToString();
+        }
+
 		protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
 		{
-            if (scope.CompiledType.FullName == "System.Func`2")
+            if (scope.CompiledType.FullName != null && scope.CompiledType.FullName.Contains("System.Func`"))
             {
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length == 2)
-                {
-                    return GetSimpleDescriptionWithoutNamespace(instances[0]) + "->" + GetSimpleDescriptionWithoutNamespace(instances[1]);
-                }
-                else
-                    return "T->T1";
+                return getLambdaRepresentation(scope, true);
             }
-            else if (scope.CompiledType.FullName == "System.Action`1")
+            else if (scope.CompiledType.FullName != null && scope.CompiledType.FullName.Contains("System.Action`"))
             {
-                ITypeScope[] instances = scope.GenericInstances;
-                if (instances != null && instances.Length == 1)
-                {
-                    return GetSimpleDescriptionWithoutNamespace(instances[0]) + "->()";   
-                }
-                else
-                    return "T->()";
+                return getLambdaRepresentation(scope, false);
+            }
+            else if (scope.CompiledType.FullName != null && scope.CompiledType.FullName.Contains("System.Predicate`1"))
+            {
+                return getLambdaRepresentation(scope, false);
             }
             else
             {
