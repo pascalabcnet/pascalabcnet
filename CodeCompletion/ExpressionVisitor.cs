@@ -81,20 +81,33 @@ namespace CodeCompletion
 			}
 			if (ret_tn != null && ret_tn is ElementScope && (ret_tn as ElementScope).sc is ProcType)
 			{
-				if (by_dot) if (((ret_tn as ElementScope).sc as ProcType).target.return_type != null) ret_tn = new ElementScope(((ret_tn as ElementScope).sc as ProcType).target.return_type);
-							else ret_tn = null;
+				if (by_dot) 
+                    if (((ret_tn as ElementScope).sc as ProcType).target.return_type != null) 
+                        ret_tn = new ElementScope(((ret_tn as ElementScope).sc as ProcType).target.return_type);
+					else 
+                        ret_tn = null;
 			}
 			else if (ret_tn != null && ret_tn is ElementScope && (ret_tn as ElementScope).sc is ProcScope)
 			{
-				if (by_dot) if (((ret_tn as ElementScope).sc as ProcScope).return_type != null) ret_tn = new ElementScope(((ret_tn as ElementScope).sc as ProcScope).return_type);
-							else ret_tn = null;
+				if (by_dot) 
+                    if (((ret_tn as ElementScope).sc as ProcScope).return_type != null) 
+                        ret_tn = new ElementScope(((ret_tn as ElementScope).sc as ProcScope).return_type);
+					else 
+                        ret_tn = null;
 			}
-			else if (ret_tn != null && ret_tn is ProcScope) 
-				if ((ret_tn as ProcScope).return_type == null) 
-				{
-					if (by_dot) ret_tn = null;
-				}
-			else if (by_dot) ret_tn = new ElementScope((ret_tn as ProcScope).return_type);
+            else if (ret_tn != null && ret_tn is ElementScope && (ret_tn as ElementScope).sc is CompiledScope && ((ret_tn as ElementScope).sc as CompiledScope).CompiledType.BaseType == typeof(MulticastDelegate))
+            {
+                ProcScope invoke_meth = ((ret_tn as ElementScope).sc as CompiledScope).FindNameOnlyInThisType("Invoke") as ProcScope;
+                if (invoke_meth != null)
+                    ret_tn = new ElementScope(invoke_meth.return_type);
+            }
+            else if (ret_tn != null && ret_tn is ProcScope)
+                if ((ret_tn as ProcScope).return_type == null)
+                {
+                    if (by_dot) ret_tn = null;
+                }
+                else if (by_dot) 
+                    ret_tn = new ElementScope((ret_tn as ProcScope).return_type);
 				
 				//else ret_scope = (ret_scope as ElementScope).sc as ProcScope;
 			return ret_tn;
@@ -133,6 +146,14 @@ namespace CodeCompletion
         		}
 				else if (ret_names[i] is ProcScope)
 					proces.Add(ret_names[i] as ProcScope);
+                else if (ret_names[i] is ElementScope && (ret_names[i] as ElementScope).sc is CompiledScope)
+                {
+                    //ProcType pt = new ProcType();
+                    CompiledScope cs = (ret_names[i] as ElementScope).sc as CompiledScope;
+                    ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
+                    if (ps != null)
+                        proces.Add(ps);
+                }
 			}
 			return proces;
 		}
@@ -842,9 +863,9 @@ namespace CodeCompletion
 			ret_names.Clear();
 			search_all = true;
 			_method_call.dereferencing_value.visit(this);
-			search_all = false;
+            search_all = false;
 			SymScope[] names = ret_names.ToArray();
-			if (names.Length > 0 && names[0] is ElementScope && (names[0] as ElementScope).sc is ProcType)
+            if (names.Length > 0 && names[0] is ElementScope && ((names[0] as ElementScope).sc is ProcType || (names[0] as ElementScope).sc is CompiledScope))
 			{
 				ret_tn = names[0];
 				return;

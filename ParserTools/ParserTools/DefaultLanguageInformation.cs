@@ -999,25 +999,48 @@ namespace PascalABCCompiler.Parsers
 		
 		protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
 		{
-			string s = GetFullTypeName(scope.CompiledType);
-			ITypeScope[] instances = scope.GenericInstances;
-			if (instances != null && instances.Length > 0)
-			{
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				int ind = s.IndexOf('<');
-				if (ind != -1) sb.Append(s.Substring(0,ind));
-				else
-				sb.Append(s);
-				sb.Append('<');
-				for (int i=0; i<instances.Length; i++)
-				{
-					sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
-					if (i < instances.Length - 1) sb.Append(',');
-				}
-				sb.Append('>');
-				s = sb.ToString();
-			}
-			return s;
+            if (scope.CompiledType.FullName == "System.Func`2")
+            {
+                ITypeScope[] instances = scope.GenericInstances;
+                if (instances != null && instances.Length == 2)
+                {
+                    return GetSimpleDescriptionWithoutNamespace(instances[0]) + "->" + GetSimpleDescriptionWithoutNamespace(instances[1]);
+                }
+                else
+                    return "T->T1";
+            }
+            else if (scope.CompiledType.FullName == "System.Action`1")
+            {
+                ITypeScope[] instances = scope.GenericInstances;
+                if (instances != null && instances.Length == 1)
+                {
+                    return GetSimpleDescriptionWithoutNamespace(instances[0]) + "->()";   
+                }
+                else
+                    return "T->()";
+            }
+            else
+            {
+                string s = GetFullTypeName(scope.CompiledType);
+                ITypeScope[] instances = scope.GenericInstances;
+                if (instances != null && instances.Length > 0)
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    int ind = s.IndexOf('<');
+                    if (ind != -1) sb.Append(s.Substring(0, ind));
+                    else
+                        sb.Append(s);
+                    sb.Append('<');
+                    for (int i = 0; i < instances.Length; i++)
+                    {
+                        sb.Append(GetSimpleDescriptionWithoutNamespace(instances[i]));
+                        if (i < instances.Length - 1) sb.Append(',');
+                    }
+                    sb.Append('>');
+                    s = sb.ToString();
+                }
+                return s;
+            }
 		}
 		
 		protected virtual string GetDescriptionForArray(IArrayScope scope)
@@ -1441,8 +1464,11 @@ namespace PascalABCCompiler.Parsers
                 sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
             else
                 sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
-			sb.Append(".");
-			sb.Append(scope.Name);
+            if (scope.Name != "Invoke")
+            {
+                sb.Append(".");
+                sb.Append(scope.Name);
+            }
 			if (scope.CompiledMethod.GetGenericArguments().Length > 0)
 			{
 				Type[] tt = scope.CompiledMethod.GetGenericArguments();

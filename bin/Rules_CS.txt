@@ -1,0 +1,184 @@
+@namespace :: 
+$namespace *BW name *BlockBegin *BlockBody 
+${ *BlockBegin *BlockBody *BlockBody
+ $public *BW $class *BW name *BlockBegin *BlockBody
+ ${ *BlockBegin
+ body
+ *BlockEnd *BlockBody $}
+ *BlockEnd *BlockBody $}
+
+@class :: 
+access_modifier_type *BW $class *BW name *BlockBegin *BlockBody 
+${
+ *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $} 
+
+@struct :: 
+access_modifier_type *BW $struct *BW name *BlockBegin *BlockBody 
+${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@function :: 
+$public *BW $static *BW type *BW name $( parameters $) *BlockBegin *BlockBody 
+${
+ *BlockBegin  
+ body 
+ *BlockEnd
+ *BlockBody $}
+
+@return :: 
+$return *BW expr
+
+@array_indexing :: 
+expr $[ expr $]
+
+@function_call :: 
+name $( parameters $)
+
+@comp_method_call ::  
+expr $. name $( parameters $)
+
+@comp_stat_method_call ::  
+name $( parameters $)
+
+@comm_stat_method_call ::  
+type $. name $( parameters $)
+
+@type_of :: 
+$typeof $( type $)
+
+@if :: 
+$if $( parameters $) 
+ body 
+ 
+ @if_else :: 
+$if $( parameters $) 
+ body *BlockBegin *BlockBody 
+ $else *BlockBegin *BlockBody 
+ body 
+ 
+
+@for :: 
+$for $( body $)
+ body 
+ 
+@while :: 
+$while $( body $) 
+ body 
+
+
+@repeat :: 
+$do
+ *BlockBegin *BlockBody 
+${
+  *BlockBegin
+ body 
+ *BlockEnd
+ *BlockBody $}
+ $while $( parameters $)
+
+@namespace_var :: 
+$public *BW $static *BW type *BW name
+
+@var :: 
+type *BW name
+
+@var_init :: 
+type *BW name $= body
+
+@const :: 
+$public *BW $const *BW type *BW name
+
+@statements :: 
+body
+
+@statements_nested :: *BlockBegin *BlockBody 
+${
+ *BlockBegin
+ body 
+ *BlockEnd 
+ *BlockBody $}
+
+@binop_assign :: 
+expr *BW $= *BW expr
+
+@binop_add :: 
+expr *BW $+ *BW expr
+
+@binop_subtract :: 
+expr *BW $- *BW expr
+
+@binop_mult :: 
+expr *BW $* *BW expr
+
+@binop_div :: 
+expr $/ expr
+
+@unop_plus :: 
+$+ expr
+
+@unop_minus :: 
+$- expr
+
+@binop_mod :: 
+expr $% expr
+
+@binop_eq :: 
+expr *BW $== *BW expr
+
+@binop_gr :: 
+expr *BW $> *BW expr
+
+@binop_sm :: 
+expr *BW $< *BW expr
+
+@binop_greq :: 
+expr *BW $>= *BW expr
+
+@binop_smeq :: 
+expr *BW $<= *BW expr
+
+@binop_and :: 
+expr *BW $&& *BW expr
+
+@binop_or :: 
+expr *BW $|| *BW expr
+
+@binop_xor :: 
+expr $^ expr
+
+@unop_inc :: 
+$++ expr
+
+@unop_dec :: 
+$-- expr
+
+@unop_unmin :: 
+$- $( expr $)
+
+@unop_not :: 
+$! expr
+
+@binop_shl :: 
+expr $<< expr
+
+@binop_shr :: 
+expr $>> expr
+
+@constructor_call :: 
+$new *BW type $( parameters $) 
+
+@var_locblock :: 
+name
+
+@variable_reference :: 
+name
+
+@locvariable_reference :: 
+name 
+
