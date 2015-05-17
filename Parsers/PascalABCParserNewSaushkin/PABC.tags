@@ -292,7 +292,6 @@
     <name value="type_decl_type" />
     <name value="type_ref" />
     <name value="template_type" />
-    <name value="simple_type" />
     <name value="pointer_type" />
     <name value="structured_type" />
     <name value="unpacked_structured_type" />
@@ -303,6 +302,7 @@
     <name value="procedural_type" />
     <name value="object_type" />
     <name value="record_type" />
+    <name value="proc_type_decl" />
   </tag>
   <tag value="Ключевые слова">
     <name value="meth_modificator" />

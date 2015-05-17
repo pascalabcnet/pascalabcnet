@@ -6,10 +6,12 @@ yaccGen=D:\PascalABC.NET\!PABC_SVN1\Parsers\PascalABCParserNewSaushkin\GPLex_GPP
 lexGenOpt=/unicode
 yaccGenOpt=/gplex
 useGenOpt=False
-scriptWorkingDir=D:\PascalABC.NET\!PABC_SVN1\Parsers\PascalABCParserNewSaushkin
+scriptWorkingDir=D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin
 script=
-"D:\PascalABC.NET\!PABC_SVN1\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gplex.exe" /unicode "D:\PascalABC.NET\!PABC_SVN1\Parsers\PascalABCParserNewSaushkin\ABCPascal.lex"
-"D:\PascalABC.NET\!PABC_SVN1\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe" /no-lines /gplex "D:\PascalABC.NET\!PABC_SVN1\Parsers\PascalABCParserNewSaushkin\ABCPascal.y"
+"D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gplex.exe" /unicode "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.lex"
+"D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe" /no-lines /gplex "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y"
+
+
 
 
 
