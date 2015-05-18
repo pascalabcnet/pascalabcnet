@@ -50,3 +50,4 @@ ONE_STMT=Ожидался оператор
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Анонимный тип не может содержать поля с одинаковыми именами
 BAD_ANON_TYPE=Неверное определение имени поля анонимного типа
+ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=Одинокий типовой параметр не должен заключаться в скобки
