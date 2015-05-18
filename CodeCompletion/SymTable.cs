@@ -4562,7 +4562,12 @@ namespace CodeCompletion
         internal static TypeScope get_type_instance(Type t, List<TypeScope> generic_args)
         {
             if (t.IsGenericParameter)
-                return generic_args[t.GenericParameterPosition];
+            {
+                if (t.GenericParameterPosition < generic_args.Count)
+                    return generic_args[t.GenericParameterPosition];
+                else
+                    return generic_args[0];
+            }
             if (t.IsArray)
                 return new ArrayScope(get_type_instance(t.GetElementType(), generic_args), null);
             if (t.ContainsGenericParameters)
@@ -4574,8 +4579,16 @@ namespace CodeCompletion
                 {
                     if (args[i].IsGenericParameter)
                     {
-                        typ.generic_params.Add(generic_args[args[i].GenericParameterPosition].si.name);
-                        typ.AddGenericInstanciation(generic_args[args[i].GenericParameterPosition]);
+                        if (args[i].GenericParameterPosition < generic_args.Count)
+                        {
+                            typ.generic_params.Add(generic_args[args[i].GenericParameterPosition].si.name);
+                            typ.AddGenericInstanciation(generic_args[args[i].GenericParameterPosition]);
+                        }
+                        else if (i<generic_args.Count)
+                        {
+                            typ.generic_params.Add(generic_args[i].si.name);
+                            typ.AddGenericInstanciation(generic_args[i]);
+                        }
                     }
                     else
                     {
@@ -6276,7 +6289,7 @@ namespace CodeCompletion
             }
             if (mi.ReturnType != typeof(void))
             {
-                if (generic_args != null && mi.GetGenericArguments().Length == 0)
+                if (generic_args != null /*&& mi.GetGenericArguments().Length == 0*/)
                 {
                     this.return_type = CompiledScope.get_type_instance(mi.ReturnType, declaringType.instances);
                 }

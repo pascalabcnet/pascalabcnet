@@ -35,7 +35,7 @@ namespace PascalABCCompiler.Parsers
         /// <param name="scope"></param>
         /// <returns></returns>
     	string GetShortTypeName(ICompiledConstructorScope scope);
-    	string GetShortTypeName(Type t);
+        string GetShortTypeName(Type t, bool noalias = false);
         /// <summary>
         /// Получить представление массива рамерности rank
         /// </summary>
