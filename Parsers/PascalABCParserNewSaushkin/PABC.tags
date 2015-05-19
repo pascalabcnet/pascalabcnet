@@ -303,6 +303,7 @@
     <name value="object_type" />
     <name value="record_type" />
     <name value="proc_type_decl" />
+    <name value="simple_type" />
   </tag>
   <tag value="Ключевые слова">
     <name value="meth_modificator" />

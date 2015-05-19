@@ -448,6 +448,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new closure_substituting_node();
 				case 213:
 					return new sequence_type();
+				case 214:
+					return new modern_proc_type();
 			}
 			return null;
 		}
@@ -3803,6 +3805,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_type_definition(_sequence_type);
 			_sequence_type.elements_type = _read_node() as type_definition;
+		}
+
+
+		public void visit(modern_proc_type _modern_proc_type)
+		{
+			read_modern_proc_type(_modern_proc_type);
+		}
+
+		public void read_modern_proc_type(modern_proc_type _modern_proc_type)
+		{
+			read_type_declaration(_modern_proc_type);
+			_modern_proc_type.aloneparam = _read_node() as ident;
+			_modern_proc_type.el = _read_node() as enumerator_list;
+			_modern_proc_type.res = _read_node() as ident;
 		}
 
 	}

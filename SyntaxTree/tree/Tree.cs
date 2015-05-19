@@ -28165,6 +28165,188 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public class modern_proc_type : type_declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public modern_proc_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public modern_proc_type(ident _aloneparam,enumerator_list _el,ident _res)
+		{
+			this._aloneparam=_aloneparam;
+			this._el=_el;
+			this._res=_res;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public modern_proc_type(ident _aloneparam,enumerator_list _el,ident _res,SourceContext sc)
+		{
+			this._aloneparam=_aloneparam;
+			this._el=_el;
+			this._res=_res;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public modern_proc_type(ident _type_name,type_definition _type_def,ident _aloneparam,enumerator_list _el,ident _res)
+		{
+			this._type_name=_type_name;
+			this._type_def=_type_def;
+			this._aloneparam=_aloneparam;
+			this._el=_el;
+			this._res=_res;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public modern_proc_type(ident _type_name,type_definition _type_def,ident _aloneparam,enumerator_list _el,ident _res,SourceContext sc)
+		{
+			this._type_name=_type_name;
+			this._type_def=_type_def;
+			this._aloneparam=_aloneparam;
+			this._el=_el;
+			this._res=_res;
+			source_context = sc;
+		}
+
+		protected ident _aloneparam;
+		protected enumerator_list _el;
+		protected ident _res;
+
+		///<summary>
+		///
+		///</summary>
+		public ident aloneparam
+		{
+			get
+			{
+				return _aloneparam;
+			}
+			set
+			{
+				_aloneparam=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public enumerator_list el
+		{
+			get
+			{
+				return _el;
+			}
+			set
+			{
+				_el=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident res
+		{
+			get
+			{
+				return _res;
+			}
+			set
+			{
+				_res=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 5;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override object this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return type_name;
+					case 1:
+						return type_def;
+					case 2:
+						return aloneparam;
+					case 3:
+						return el;
+					case 4:
+						return res;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						type_name = (ident)value;
+						break;
+					case 1:
+						type_def = (type_definition)value;
+						break;
+					case 2:
+						aloneparam = (ident)value;
+						break;
+					case 3:
+						el = (enumerator_list)value;
+						break;
+					case 4:
+						res = (ident)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

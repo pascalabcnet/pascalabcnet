@@ -6017,6 +6017,45 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(modern_proc_type _modern_proc_type)
+		{
+			bw.Write((Int16)214);
+			write_modern_proc_type(_modern_proc_type);
+		}
+
+		public void write_modern_proc_type(modern_proc_type _modern_proc_type)
+		{
+			write_type_declaration(_modern_proc_type);
+			if (_modern_proc_type.aloneparam == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_modern_proc_type.aloneparam.visit(this);
+			}
+			if (_modern_proc_type.el == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_modern_proc_type.el.visit(this);
+			}
+			if (_modern_proc_type.res == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_modern_proc_type.res.visit(this);
+			}
+		}
+
 	}
 
 

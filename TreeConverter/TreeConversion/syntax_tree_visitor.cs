@@ -17730,6 +17730,21 @@ namespace PascalABCCompiler.TreeConverter
             var tr = new template_type_reference(new named_type_reference(l), new template_param_list(_sequence_type.elements_type, _sequence_type.elements_type.source_context), _sequence_type.source_context);
             visit(tr);
         }
+        public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)
+        {
+            if (_modern_proc_type.aloneparam != null && _modern_proc_type.el == null && _modern_proc_type.res != null)
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Func"));
+                var t = new template_param_list();
+                t.Add(new named_type_reference(_modern_proc_type.aloneparam,_modern_proc_type.aloneparam.source_context));
+                t.Add(new named_type_reference(_modern_proc_type.res,_modern_proc_type.res.source_context));
+                t.source_context = _modern_proc_type.source_context;
+                var ttr = new template_type_reference(new named_type_reference(l), t, _modern_proc_type.source_context);
+                visit(ttr);
+            }
+        }
     }
 
 }

@@ -1701,6 +1701,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(closure_substituting_node _closure_substituting_node)
+		{
+		}
+
+		public virtual void post_do_visit(closure_substituting_node _closure_substituting_node)
+		{
+		}
+
+		public virtual void pre_do_visit(sequence_type _sequence_type)
+		{
+		}
+
+		public virtual void post_do_visit(sequence_type _sequence_type)
+		{
+		}
+
+		public virtual void pre_do_visit(modern_proc_type _modern_proc_type)
+		{
+		}
+
+		public virtual void post_do_visit(modern_proc_type _modern_proc_type)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			pre_do_visit(_syntax_tree_node);
@@ -1964,7 +1988,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			pre_do_visit(_array_type);
 			visit(array_type.indexers);
-			visit(array_type.elemets_types);
+			visit(array_type.elements_type);
 			post_do_visit(_array_type);
 		}
 
@@ -3233,6 +3257,7 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(function_lambda_definition.parameters);
 			for (int i = 0; i < defs.Count; i++)
 				visit(function_lambda_definition.defs[i]);
+			visit(function_lambda_definition.substituting_node);
 			post_do_visit(_function_lambda_definition);
 		}
 
@@ -3314,6 +3339,29 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(matching_expression.left);
 			visit(matching_expression.right);
 			post_do_visit(_matching_expression);
+		}
+
+		public override void visit(closure_substituting_node _closure_substituting_node)
+		{
+			pre_do_visit(_closure_substituting_node);
+			visit(closure_substituting_node.substitution);
+			post_do_visit(_closure_substituting_node);
+		}
+
+		public override void visit(sequence_type _sequence_type)
+		{
+			pre_do_visit(_sequence_type);
+			visit(sequence_type.elements_type);
+			post_do_visit(_sequence_type);
+		}
+
+		public override void visit(modern_proc_type _modern_proc_type)
+		{
+			pre_do_visit(_modern_proc_type);
+			visit(modern_proc_type.aloneparam);
+			visit(modern_proc_type.el);
+			visit(modern_proc_type.res);
+			post_do_visit(_modern_proc_type);
 		}
 	}
 

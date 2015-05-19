@@ -1140,14 +1140,7 @@ simple_type
 		}
 	| identifier tkArrow identifier
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Func"));
-            var t = new template_param_list();
-            t.Add(new named_type_reference($1,@1));
-            t.Add(new named_type_reference($3,@3));
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
+    		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
     | tkRoundOpen tkRoundClose tkArrow identifier
     	{

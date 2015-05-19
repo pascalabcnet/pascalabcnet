@@ -860,6 +860,10 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual void visit(sequence_type _sequence_type)
 		{
 		}
+
+		public virtual void visit(modern_proc_type _modern_proc_type)
+		{
+		}
 	}
 
 
