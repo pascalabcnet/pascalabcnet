@@ -695,7 +695,7 @@ namespace PascalABCCompiler.VBNETParser
             return ctn.FullName;
         }
 
-        public override string GetShortTypeName(Type ctn)
+        public override string GetShortTypeName(Type ctn, bool noalias=true)
         {
             TypeCode tc = Type.GetTypeCode(ctn);
             if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition)
