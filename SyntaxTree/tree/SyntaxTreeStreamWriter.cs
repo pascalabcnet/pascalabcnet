@@ -6026,7 +6026,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_modern_proc_type(modern_proc_type _modern_proc_type)
 		{
-			write_type_declaration(_modern_proc_type);
+			write_type_definition(_modern_proc_type);
 			if (_modern_proc_type.aloneparam == null)
 			{
 				bw.Write((byte)0);

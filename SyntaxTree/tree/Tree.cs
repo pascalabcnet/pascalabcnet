@@ -28169,7 +28169,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class modern_proc_type : type_declaration
+	public class modern_proc_type : type_definition
 	{
 
 		///<summary>
@@ -28204,10 +28204,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(ident _type_name,type_definition _type_def,ident _aloneparam,enumerator_list _el,ident _res)
+		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,ident _res)
 		{
-			this._type_name=_type_name;
-			this._type_def=_type_def;
+			this._attr_list=_attr_list;
 			this._aloneparam=_aloneparam;
 			this._el=_el;
 			this._res=_res;
@@ -28216,10 +28215,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(ident _type_name,type_definition _type_def,ident _aloneparam,enumerator_list _el,ident _res,SourceContext sc)
+		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,ident _res,SourceContext sc)
 		{
-			this._type_name=_type_name;
-			this._type_def=_type_def;
+			this._attr_list=_attr_list;
 			this._aloneparam=_aloneparam;
 			this._el=_el;
 			this._res=_res;
@@ -28283,7 +28281,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 5;
+				return 4;
 			}
 		}
 		///<summary>
@@ -28298,14 +28296,12 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return type_name;
+						return attr_list;
 					case 1:
-						return type_def;
-					case 2:
 						return aloneparam;
-					case 3:
+					case 2:
 						return el;
-					case 4:
+					case 3:
 						return res;
 				}
 				return null;
@@ -28317,18 +28313,15 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						type_name = (ident)value;
+						attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						type_def = (type_definition)value;
-						break;
-					case 2:
 						aloneparam = (ident)value;
 						break;
-					case 3:
+					case 2:
 						el = (enumerator_list)value;
 						break;
-					case 4:
+					case 3:
 						res = (ident)value;
 						break;
 				}

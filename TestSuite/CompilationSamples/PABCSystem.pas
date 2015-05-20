@@ -792,13 +792,13 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 ///и осуществляет переход на новую строку
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
-/// Выводит значения args на экран, разделяя их пробелами
+/// Выводит значения args на экран, выводя после каждого значения пробел
 procedure Print(params args: array of object);
-/// Выводит значения args на экран, разделяя их пробелами, и переходит на новую строчку
+/// Выводит значения args на экран, выводя после каждого значения пробел, и переходит на новую строчку
 procedure Println(params args: array of object);
-/// Выводит значения args в текстовый файл f, разделяя их пробелами
+/// Выводит значения args в текстовый файл f, выводя после каждого значения пробел
 procedure Print(f: Text; params args: array of object);
-/// Выводит значения args в текстовый файл f, разделяя их пробелами, и переходит на новую строчку
+/// Выводит значения args в текстовый файл f, выводя после каждого значения пробел, и переходит на новую строчку
 procedure Println(f: Text; params args: array of object);
 
 // -----------------------------------------------------
@@ -849,25 +849,29 @@ procedure Rename(f: Text; newname: string);
 ///--
 procedure TextFileInit(var f: Text);
 
-/// Считывает строки файла
+/// Считывает строки из файла и превращает их в последовательность строк
 function ReadLines(path: string): sequence of string;
-/// Считывает строки файла с кодировкой en
+/// Считывает строки из файла с кодировкой en и превращает их в последовательность строк 
 function ReadLines(path: string; en: Encoding): sequence of string;
-/// Считывает строки файла
+/// Считывает строки из файла в массив строк
 function ReadAllLines(path: string): array of string;
-/// Считывает строки файла с кодировкой en
+/// Считывает строки из файла с кодировкой en в массив строк 
 function ReadAllLines(path: string; en: Encoding): array of string;
 /// Считывает содержимое файла в строку
 function ReadAllText(path: string): string;
 /// Считывает содержимое файла с кодировкой en в строку
 function ReadAllText(path: string; en: Encoding): string;
-/// Записывает строки в файл
-procedure WriteAllLines(path: string; ss: sequence of string);
-/// Записывает строки в файл с кодировкой en 
-procedure WriteAllLines(path: string; ss: sequence of string; en: Encoding);
-/// Создает новый файл, записывает в него содержимое строки и закрывает файл
+/// Создает новый файл, записывает в него строки из последовательности
+procedure WriteLines(path: string; ss: sequence of string);
+/// Создает новый файл с кодировкой en, записывает в него строки из последовательности 
+procedure WriteLines(path: string; ss: sequence of string; en: Encoding);
+/// Создает новый файл, записывает в него строки из массива
+procedure WriteAllLines(path: string; ss: array of string);
+/// Создает новый файл с кодировкой en, записывает в него строки из массива  
+procedure WriteAllLines(path: string; ss: array of string; en: Encoding);
+/// Создает новый файл, записывает в него содержимое строки 
 procedure WriteAllText(path: string; s: string);
-/// Создает новый файл с кодировкой en, записывает в него содержимое строки и закрывает файл
+/// Создает новый файл с кодировкой en, записывает в него содержимое строки 
 procedure WriteAllText(path: string; s: string; en: Encoding);
 
 // -----------------------------------------------------
@@ -5033,12 +5037,22 @@ begin
   Result := System.IO.File.ReadAllText(path,en);
 end;
 
-procedure WriteAllLines(path: string; ss: sequence of string);
+procedure WriteLines(path: string; ss: sequence of string);
+begin
+  WriteLines(path,ss,Encoding.GetEncoding(1251));
+end;
+
+procedure WriteLines(path: string; ss: sequence of string; en: Encoding);
+begin
+  System.IO.File.WriteAllLines(path,ss,en);
+end;
+
+procedure WriteAllLines(path: string; ss: array of string);
 begin
   WriteAllLines(path,ss,Encoding.GetEncoding(1251));
 end;
 
-procedure WriteAllLines(path: string; ss: sequence of string; en: Encoding);
+procedure WriteAllLines(path: string; ss: array of string; en: Encoding);
 begin
   System.IO.File.WriteAllLines(path,ss,en);
 end;

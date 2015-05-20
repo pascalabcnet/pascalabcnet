@@ -17732,17 +17732,62 @@ namespace PascalABCCompiler.TreeConverter
         }
         public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)
         {
-            if (_modern_proc_type.aloneparam != null && _modern_proc_type.el == null && _modern_proc_type.res != null)
+            if (_modern_proc_type.res != null)
             {
                 var l = new List<ident>();
                 l.Add(new ident("System"));
                 l.Add(new ident("Func"));
                 var t = new template_param_list();
-                t.Add(new named_type_reference(_modern_proc_type.aloneparam,_modern_proc_type.aloneparam.source_context));
-                t.Add(new named_type_reference(_modern_proc_type.res,_modern_proc_type.res.source_context));
+                if (_modern_proc_type.aloneparam != null)
+                    t.Add(new named_type_reference(_modern_proc_type.aloneparam, _modern_proc_type.aloneparam.source_context));
+                if (_modern_proc_type.el != null)
+                {
+                    var en = _modern_proc_type.el;
+                    if (en.enumerators.Count == 1)
+                        AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    for (int i = 0; i < en.enumerators.Count; i++)
+                    {
+                        if (en.enumerators[i].value != null)
+                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                        t.Add(new named_type_reference(en.enumerators[i].name, en.enumerators[i].name.source_context));
+                    }
+                }
+                t.Add(new named_type_reference(_modern_proc_type.res, _modern_proc_type.res.source_context));
                 t.source_context = _modern_proc_type.source_context;
                 var ttr = new template_type_reference(new named_type_reference(l), t, _modern_proc_type.source_context);
                 visit(ttr);
+            }
+            else if (_modern_proc_type.aloneparam != null || _modern_proc_type.el != null)
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Action"));
+                var t = new template_param_list();
+                if (_modern_proc_type.aloneparam != null)
+                    t.Add(new named_type_reference(_modern_proc_type.aloneparam, _modern_proc_type.aloneparam.source_context));
+                if (_modern_proc_type.el != null)
+                {
+                    var en = _modern_proc_type.el;
+                    if (en.enumerators.Count == 1)
+                        AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
+                    for (int i = 0; i < en.enumerators.Count; i++)
+                    {
+                        if (en.enumerators[i].value != null)
+                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+                        t.Add(new named_type_reference(en.enumerators[i].name, en.enumerators[i].name.source_context));
+                    }
+                }
+                t.source_context = _modern_proc_type.source_context;
+                var ttr = new template_type_reference(new named_type_reference(l), t, _modern_proc_type.source_context);
+                visit(ttr);
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Action"));
+                var ntr = new named_type_reference(l);
+                visit(ntr);
             }
         }
     }

@@ -1138,74 +1138,6 @@ simple_type
         { 
 			$$ = new enum_type_definition($2 as enumerator_list, @$);  
 		}
-	| identifier tkArrow identifier
-    	{
-    		$$ = new modern_proc_type($1,null,$3,@$);            
-    	}
-    | tkRoundOpen tkRoundClose tkArrow identifier
-    	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Func"));
-            var t = new template_param_list();
-            t.Add(new named_type_reference($4,@4));
-            t.source_context = @4;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
-    	}
-    | tkRoundOpen enumeration_id_list tkRoundClose tkArrow identifier
-    	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Func"));
-            var t = new template_param_list();
-            var en = $2 as enumerator_list;
-            if (en.enumerators.Count == 1)
-            	parsertools.AddErrorFromResource("ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES",en.enumerators[0].name.source_context);
-            for (int i=0; i<en.enumerators.Count; i++)
-            {
-            	if (en.enumerators[i].value != null)
-            		parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",en.enumerators[i].name.source_context);            		            		
-            	t.Add(new named_type_reference(en.enumerators[i].name,en.enumerators[i].name.source_context));
-            }
-            t.Add(new named_type_reference($5,@5));
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
-    	}
-    | identifier tkArrow tkRoundOpen tkRoundClose
-    	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Action"));
-            var t = new template_param_list();
-            t.Add(new named_type_reference($1,@1));
-            t.source_context = @1;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
-    	}
-    | tkRoundOpen tkRoundClose tkArrow tkRoundOpen tkRoundClose
-    	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Action"));
-            $$ = new named_type_reference(l,@$);
-    	}
-    | tkRoundOpen enumeration_id_list tkRoundClose tkArrow tkRoundOpen tkRoundClose
-    	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Action"));
-            var t = new template_param_list();
-            var en = $2 as enumerator_list;
-            if (en.enumerators.Count == 1)
-            	parsertools.AddErrorFromResource("ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES",en.enumerators[0].name.source_context);
-            for (int i=0; i<en.enumerators.Count; i++)
-            {
-            	if (en.enumerators[i].value != null)
-            		parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",en.enumerators[i].name.source_context);            		            		
-            	t.Add(new named_type_reference(en.enumerators[i].name,en.enumerators[i].name.source_context));
-            }
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
-    	}    
     ;
 
 range_expr
@@ -1406,67 +1338,30 @@ proc_type_decl
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
         }
-/*    | identifier tkArrow identifier
+	| identifier tkArrow identifier
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Func"));
-            var t = new template_param_list();
-            t.Add(new named_type_reference($1,@1));
-            t.Add(new named_type_reference($3,@3));
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
+    		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
     | tkRoundOpen tkRoundClose tkArrow identifier
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Func"));
-            var t = new template_param_list();
-            t.Add(new named_type_reference($4,@4));
-            t.source_context = @4;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
+    		$$ = new modern_proc_type(null,null,$4,@$);
     	}
-    | tkRoundOpen identifier tkComma template_param_list tkRoundClose tkArrow identifier
+    | tkRoundOpen enumeration_id_list tkRoundClose tkArrow identifier
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Func"));
-            var t = $4 as template_param_list;
-            t.Add(new named_type_reference($7,@7));
-           	t.params_list.Insert(0,new named_type_reference($2,@2));
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
+    		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}
     | identifier tkArrow tkRoundOpen tkRoundClose
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Action"));
-            var t = new template_param_list();
-            t.Add(new named_type_reference($1,@1));
-            t.source_context = @1;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
+    		$$ = new modern_proc_type($1,null,null,@$);
     	}
     | tkRoundOpen tkRoundClose tkArrow tkRoundOpen tkRoundClose
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Action"));
-            var t = new template_param_list();
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
+    		$$ = new modern_proc_type(null,null,null,@$);
     	}
-    | tkRoundOpen identifier tkComma template_param_list tkRoundClose tkArrow tkRoundOpen tkRoundClose
+    | tkRoundOpen enumeration_id_list tkRoundClose tkArrow tkRoundOpen tkRoundClose
     	{
-            var l = new List<ident>();
-            l.Add(new ident("System"));
-            l.Add(new ident("Action"));
-            var t = $4 as template_param_list;
-           	t.params_list.Insert(0,new named_type_reference($2,@2));
-            t.source_context = @$;
-            $$ = new template_type_reference(new named_type_reference(l), t, @$);
-    	}*/
+    		$$ = new modern_proc_type(null,$2 as enumerator_list,null,@$);
+    	}    
     ;
 
 object_type

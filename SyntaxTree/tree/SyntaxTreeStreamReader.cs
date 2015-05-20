@@ -3815,7 +3815,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_modern_proc_type(modern_proc_type _modern_proc_type)
 		{
-			read_type_declaration(_modern_proc_type);
+			read_type_definition(_modern_proc_type);
 			_modern_proc_type.aloneparam = _read_node() as ident;
 			_modern_proc_type.el = _read_node() as enumerator_list;
 			_modern_proc_type.res = _read_node() as ident;
