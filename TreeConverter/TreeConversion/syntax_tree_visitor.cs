@@ -16112,7 +16112,7 @@ namespace PascalABCCompiler.TreeConverter
             return adrv;
         }
 
-        private base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc)
+        private base_function_call create_constructor_call(type_node tn, expressions_list exprs, location loc, Tuple<bool, List<SyntaxTree.expression>> lambdas_info = null)
         {
             if (tn.IsInterface)
             {
@@ -16126,17 +16126,193 @@ namespace PascalABCCompiler.TreeConverter
             delete_inherited_constructors(ref si, tn);
             if (si == null)
                 AddError(loc, "CONSTRUCTOR_NOT_FOUND");
-            function_node fn = null;
+            function_node fnn = null;
             try
             {
-                fn = convertion_data_and_alghoritms.select_function(exprs, si, loc);
+                #region Если встретились лямбды в фактических параметрах, то выбираем нужную функцию из перегруженных, выводим типы, отмечаем флаг в лямбдах, говорящий о том, что мы их реально обходим 
+                //lroman//
+                if (lambdas_info != null && lambdas_info.Item1)
+                {
+                    LambdaHelper.processingLambdaParametersForTypeInference++;
+                    var syntax_nodes_parameters = lambdas_info.Item2;
+
+                    // SSM 21.05.14 - попытка обработать перегруженные функции с параметрами-лямбдами с различными возвращаемыми значениями
+                    function_node_list spf = null;
+                    try
+                    {
+                        function_node fn = convertion_data_and_alghoritms.select_function(exprs, si, loc,
+                                                                                          syntax_nodes_parameters);
+                        int exprCounter = 0;
+                        foreach (SyntaxTree.expression en in syntax_nodes_parameters)
+                        {
+                            if (!(en is SyntaxTree.function_lambda_definition))
+                            {
+                                exprCounter++;
+                                continue;
+                            }
+                            else
+                            {
+                                LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type,
+                                                                   en as SyntaxTree.function_lambda_definition, this);
+                                exprs[exprCounter] = convert_strong(en);
+                                exprCounter++;
+                            }
+                        }
+                    }
+                    catch (SeveralFunctionsCanBeCalled sf)
+                    {
+                        spf = sf.set_of_possible_functions;
+                            // Возможны несколько перегруженных версий - надо выводить дальше в надежде что какие-то уйдут и останется одна
+                    }
+
+                    Exception lastmultex = null;
+                    if (spf != null) // пытаемся инстанцировать одну за другой и ошибки гасим try
+                    {
+                        // exprs - глобальная, поэтому надо копировать
+                        int spfnum = -1;
+                            // первый номер правильно инстанцированной. Если потом встретился второй, то тоже ошибка
+                        for (int i = 0; i < spf.Count; i++)
+                        {
+                            function_node fn = spf[i];
+                            try
+                            {
+                                int exprCounter = 0;
+                                expressions_list exprs1 = new expressions_list();
+                                exprs1.AddRange(exprs); // сделали копию
+
+                                foreach (SyntaxTree.expression en in syntax_nodes_parameters)
+                                {
+                                    if (!(en is SyntaxTree.function_lambda_definition))
+                                    {
+                                        exprCounter++;
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        var fld = en as SyntaxTree.function_lambda_definition;
+
+                                        var lambdaName = fld.lambda_name; //lroman Сохранять имя необходимо
+                                        var fl = fld.lambda_visit_mode;
+
+                                        // запомнили типы параметров лямбды - SSM
+                                        object[] realparamstype = new object[fld.formal_parameters.params_list.Count];
+                                            // здесь хранятся выведенные типы лямбд или null если типы явно заданы
+                                        for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                        {
+                                            var laminftypeK =
+                                                fld.formal_parameters.params_list[k].vars_type as
+                                                SyntaxTree.lambda_inferred_type;
+                                            if (laminftypeK == null)
+                                                realparamstype[k] = null;
+                                            else realparamstype[k] = laminftypeK.real_type;
+                                        }
+
+                                        // запоминаем реальный тип возвращаемого значения если он не указан явно (это должен быть any_type или null если он указан явно) - он может измениться при следующем вызове, поэтому мы его восстановим
+                                        var restype = fld.return_type as SyntaxTree.lambda_inferred_type;
+                                        object realrestype = null;
+                                        if (restype != null)
+                                            realrestype = restype.real_type;
+
+                                        LambdaHelper.InferTypesFromVarStmt(fn.parameters[exprCounter].type, fld, this);
+                                        fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
+                                            //lroman
+                                        fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName);
+                                            // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
+
+                                        //contextChanger.SaveContextAndUpToNearestDefSect();
+                                        try
+                                        {
+                                            exprs1[exprCounter] = convert_strong(en);
+                                        }
+                                        finally
+                                        {
+                                            // восстанавливаем сохраненный тип возвращаемого значения
+                                            if (restype != null)
+                                                restype.real_type = realrestype;
+                                            // восстанавливаем сохраненные типы параметров лямбды, которые не были заданы явно
+                                            for (var k = 0; k < fld.formal_parameters.params_list.Count; k++)
+                                            {
+                                                var laminftypeK =
+                                                    fld.formal_parameters.params_list[k].vars_type as
+                                                    SyntaxTree.lambda_inferred_type;
+                                                if (laminftypeK != null)
+                                                    laminftypeK.real_type = realparamstype[k];
+                                            }
+
+                                            fld.lambda_name = lambdaName; //lroman Восстанавливаем имена
+                                            fld.lambda_visit_mode = fl;
+                                        }
+
+                                        //contextChanger.RestoreCurrentContext();
+                                        exprCounter++;
+                                    }
+                                }
+                                if (spfnum >= 0)
+                                    // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                                {
+                                    spfnum = -2;
+                                    break;
+                                }
+
+                                spfnum = i;
+                                for (int j = 0; j < exprs.Count; j++) // копируем назад если всё хорошо
+                                    exprs[j] = exprs1[j];
+                            }
+                            catch (Exception e)
+                            {
+                                // если сюда попали, значит, не вывели типы в лямбде и надо эту инстанцию пропускать
+                                //contextChanger.RestoreCurrentContext();
+                                lastmultex = e;
+                                context.converted_namespace.functions.remove_at(
+                                    context.converted_namespace.functions.Count - 1);
+                            }
+                        }
+                        if (spfnum == -2)
+                            // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                            throw new SeveralFunctionsCanBeCalled(loc, spf);
+                        if (spfnum == -1) // было много, но ни одна не подошла из-за лямбд
+                        {
+                            throw lastmultex;
+                            //throw new NoFunctionWithSameArguments(subloc2, false);
+                        }
+
+                        var kk = 0;
+                        foreach (SyntaxTree.expression en in syntax_nodes_parameters)
+                            //lroman окончательно подставить типы в лямбды
+                        {
+                            if (!(en is SyntaxTree.function_lambda_definition))
+                            {
+                                kk++;
+                                continue;
+                            }
+                            else
+                            {
+                                LambdaHelper.InferTypesFromVarStmt(spf[spfnum].parameters[kk].type,
+                                                                   en as SyntaxTree.function_lambda_definition, this);
+                                exprs[kk] = convert_strong(en);
+                                kk++;
+                            }
+                        }
+                    }
+                    // SSM 21.05.14 end
+                    LambdaHelper.processingLambdaParametersForTypeInference--;
+
+                    fnn = convertion_data_and_alghoritms.select_function(exprs, si, loc);
+                }
+                    //lroman//
+                    #endregion
+
+                else
+                {
+                    fnn = convertion_data_and_alghoritms.select_function(exprs, si, loc);
+                }
             }
             catch (NoFunctionWithSameParametresNum e)
             {
                 e.is_constructor = true;
                 throw;
             }
-            return create_static_method_call_with_params(fn, loc, tn, false, exprs);
+            return create_static_method_call_with_params(fnn, loc, tn, false, exprs);
         }
 		
         private expression_node clip_expression_if_need(expression_node expr, type_node tn)
@@ -16187,8 +16363,24 @@ namespace PascalABCCompiler.TreeConverter
             check_for_type_allowed(tn,get_location(_new_expr.type));
             location loc = get_location(_new_expr);
             expressions_list exprs = null;
+            var lambdas_are_in_parameters = false;
+            var syntax_nodes_parameters = _new_expr.params_list == null
+                                              ? new List<expression>()
+                                              : _new_expr.params_list.expressions;
+
             if (_new_expr.params_list != null)
-                exprs = convert_expression_list(_new_expr.params_list.expressions);
+            {
+                exprs = new expressions_list();
+                foreach (SyntaxTree.expression en in _new_expr.params_list.expressions)
+                {
+                    if (en is SyntaxTree.function_lambda_definition)
+                    {
+                        lambdas_are_in_parameters = true;
+                        ((SyntaxTree.function_lambda_definition)en).lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
+                    }
+                    exprs.AddElement(convert_strong(en));
+                }
+            }
             else
                 exprs = new expressions_list();
             if (_new_expr.new_array)
@@ -16265,7 +16457,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 
             }
-            return_value(create_constructor_call(tn, exprs, get_location(_new_expr.type)));
+            return_value(create_constructor_call(tn, exprs, get_location(_new_expr.type), new Tuple<bool, List<expression>>(lambdas_are_in_parameters, syntax_nodes_parameters)));
         }
 
         public override void visit(SyntaxTree.type_definition_list node)

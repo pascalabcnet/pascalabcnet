@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  SSM
-// DateTime: 20.05.2015 10:41:59
-// UserName: ?????????
-// Input file <D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Machine:  POMAH
+// DateTime: 20.05.2015 11:32:46
+// UserName: ?????
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -56,7 +56,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -68,7 +68,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -5277,30 +5277,73 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                     tkRoundClose, lambda_type_ref, tkArrow, 
                 //                     lambda_function_body
 {
-            var loc = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]);
-			var idList = new ident_list(ValueStack[ValueStack.Depth-7].id, loc);
-			var otherFormalPars = ValueStack[ValueStack.Depth-5].stn as typed_parameters;
-			for (int j = 0; j < otherFormalPars.idents.idents.Count; j++)
-				idList.idents.Add(otherFormalPars.idents.idents[j]);
-			var parsType = otherFormalPars.vars_type;
-			var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), loc);
-			CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
+            var typed_pars = ValueStack[ValueStack.Depth-5].stn as typed_parameters;
+			if (typed_pars.vars_type is lambda_inferred_type)
+			{
+				var formal_pars = new formal_parameters();
+				var idd = ValueStack[ValueStack.Depth-7].id as ident;
+				var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+				var new_typed_pars = new typed_parameters(new ident_list(idd, idd.source_context), lambda_inf_type, parametr_kind.none, null, idd.source_context);
+				formal_pars.Add(new_typed_pars);
+				foreach (var id in typed_pars.idents.idents)
+				{
+					lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+					new_typed_pars = new typed_parameters(new ident_list(id, id.source_context), lambda_inf_type, parametr_kind.none, null, id.source_context);
+					formal_pars.Add(new_typed_pars);
+				}
+				formal_pars.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]);
+				CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
+			}
+			else
+			{		
+				var loc = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]);
+				var idList = new ident_list(ValueStack[ValueStack.Depth-7].id, loc);
+				var otherFormalPars = ValueStack[ValueStack.Depth-5].stn as typed_parameters;
+				for (int j = 0; j < otherFormalPars.idents.idents.Count; j++)
+					idList.idents.Add(otherFormalPars.idents.idents[j]);
+				var parsType = otherFormalPars.vars_type;
+				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), loc);
+				CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
+			}
 		}
         break;
       case 747: // func_decl_lambda -> tkRoundOpen, identifier, tkComma, lambda_simple_fp_sect, 
                 //                     tkSemiColon, full_lambda_fp_list, tkRoundClose, 
                 //                     lambda_type_ref, tkArrow, lambda_function_body
 {
-            var loc = LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7]);
-			var idList = new ident_list(ValueStack[ValueStack.Depth-9].id, loc);
-			var otherFormalPars = ValueStack[ValueStack.Depth-7].stn as typed_parameters;
-			for (int j = 0; j < otherFormalPars.idents.idents.Count; j++)
-				idList.idents.Add(otherFormalPars.idents.idents[j]);
-			var parsType = otherFormalPars.vars_type;
-			var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]));
-			for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list.Count; i++)
-				formalPars.Add((ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list[i]);
-			CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
+            var typed_pars = ValueStack[ValueStack.Depth-7].stn as typed_parameters;
+			if (typed_pars.vars_type is lambda_inferred_type)
+			{
+				var formal_pars = new formal_parameters();
+				var idd = ValueStack[ValueStack.Depth-9].id as ident;
+				var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+				var new_typed_pars = new typed_parameters(new ident_list(idd, idd.source_context), lambda_inf_type, parametr_kind.none, null, idd.source_context);
+				formal_pars.Add(new_typed_pars);
+				foreach (var id in typed_pars.idents.idents)
+				{
+					lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+					new_typed_pars = new typed_parameters(new ident_list(id, id.source_context), lambda_inf_type, parametr_kind.none, null, id.source_context);
+					formal_pars.Add(new_typed_pars);
+				}
+				for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list.Count; i++)
+					formal_pars.Add((ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list[i]);		
+					
+				formal_pars.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]);
+				CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
+			}
+			else
+			{			
+				var loc = LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7]);
+				var idList = new ident_list(ValueStack[ValueStack.Depth-9].id, loc);
+				var otherFormalPars = ValueStack[ValueStack.Depth-7].stn as typed_parameters;
+				for (int j = 0; j < otherFormalPars.idents.idents.Count; j++)
+					idList.idents.Add(otherFormalPars.idents.idents[j]);
+				var parsType = otherFormalPars.vars_type;
+				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]));
+				for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list.Count; i++)
+					formalPars.Add((ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list[i]);
+				CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
+			}
 		}
         break;
       case 748: // func_decl_lambda -> expl_func_decl_lambda
@@ -5346,7 +5389,22 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 755: // full_lambda_fp_list -> lambda_simple_fp_sect
 {
-			CurrentSemanticValue.stn = new formal_parameters(ValueStack[ValueStack.Depth-1].stn as typed_parameters, CurrentLocationSpan);
+			var typed_pars = ValueStack[ValueStack.Depth-1].stn as typed_parameters;
+			if (typed_pars.vars_type is lambda_inferred_type)
+			{
+				CurrentSemanticValue.stn = new formal_parameters();
+				foreach (var id in typed_pars.idents.idents)
+				{
+					var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+					var new_typed_pars = new typed_parameters(new ident_list(id, id.source_context), lambda_inf_type, parametr_kind.none, null, id.source_context);
+					(CurrentSemanticValue.stn as formal_parameters).Add(new_typed_pars);
+				}
+				CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
+			}
+			else
+			{
+				CurrentSemanticValue.stn = new formal_parameters(typed_pars, CurrentLocationSpan);
+			}
 		}
         break;
       case 756: // full_lambda_fp_list -> full_lambda_fp_list, tkSemiColon, lambda_simple_fp_sect

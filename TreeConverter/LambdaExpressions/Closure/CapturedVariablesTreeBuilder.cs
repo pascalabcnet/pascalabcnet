@@ -106,7 +106,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(new_expr newExpr)
         {
-            if (_currentLambdaScopeNode != null && newExpr.params_list != null)
+            if (newExpr.params_list != null && newExpr.params_list.expressions != null)
             {
                 foreach (var expr in newExpr.params_list.expressions)
                 {
