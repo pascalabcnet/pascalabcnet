@@ -251,7 +251,7 @@ namespace PascalABCCompiler.Parsers
 			return "Create";
 		}
 		
-		public virtual string GetFullTypeName(ICompiledTypeScope scope)
+		public virtual string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true)
 		{
 			return GetFullTypeName(scope.CompiledType);
 		}
@@ -374,11 +374,11 @@ namespace PascalABCCompiler.Parsers
 			return sb.ToString();
 		}
 		
-		protected virtual string GetFullTypeName(Type ctn)
+		protected virtual string GetFullTypeName(Type ctn, bool no_alias=true)
 		{
 			TypeCode tc = Type.GetTypeCode(ctn);
 			if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter) 
-				return "T";
+				return ctn.Name;
             if (!ctn.IsEnum)
             {
                 switch (tc)
@@ -405,12 +405,15 @@ namespace PascalABCCompiler.Parsers
             }
             else 
                 return ctn.FullName;
-            if (ctn.Name.Contains("Func`"))
-                return getLambdaRepresentation(ctn, true, new List<string>());
-            else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
-                return getLambdaRepresentation(ctn, false, new List<string>());
-            else if (ctn.Name == "IEnumerable`1")
-                return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0]);
+            if (!no_alias)
+            {
+                if (ctn.Name.Contains("Func`"))
+                    return getLambdaRepresentation(ctn, true, new List<string>());
+                else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
+                    return getLambdaRepresentation(ctn, false, new List<string>());
+                else if (ctn.Name == "IEnumerable`1")
+                    return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
+            }
 			if (ctn.Name.Contains("`"))
 			{
 				int len = ctn.GetGenericArguments().Length;
@@ -783,7 +786,7 @@ namespace PascalABCCompiler.Parsers
 			return sb.ToString();
 		}
 		
-		public virtual string GetShortTypeName(Type ctn, bool noalias=false)
+		public virtual string GetShortTypeName(Type ctn, bool noalias=true)
 		{
 			TypeCode tc = Type.GetTypeCode(ctn);
 			if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition && ctn.IsGenericParameter) 
@@ -822,12 +825,22 @@ namespace PascalABCCompiler.Parsers
                     else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
                         return getLambdaRepresentation(ctn, false, new List<string>());
                     else if (ctn.Name == "IEnumerable`1")
-                        return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0]);
+                        return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
                 }
 				int len = ctn.GetGenericArguments().Length;
 				System.Text.StringBuilder sb = new System.Text.StringBuilder();
 				sb.Append(ctn.Name.Substring(0,ctn.Name.IndexOf('`')));
 				sb.Append('<');
+                if (!noalias)
+                {
+                    Type[] gen_ps = ctn.GetGenericArguments();
+                    for (int i = 0; i < len; i++)
+                    {
+                        sb.Append(gen_ps[i].Name);
+                        if (i < len - 1)
+                            sb.Append(',');
+                    }
+                }
 				sb.Append('>');
 				/*sb.Append('<');
 				for (int i=0; i<len; i++)
@@ -1012,26 +1025,51 @@ namespace PascalABCCompiler.Parsers
 			return s;
 		}
 
-        protected string getLambdaRepresentation(Type t, bool has_return_value, List<string> parameters)
+        protected bool isIdentifier(string str)
+        {
+            foreach (char c in str)
+            {
+                if (!char.IsLetterOrDigit(c))
+                    return false;
+            }
+            return true;
+        }
+
+        protected string getLambdaRepresentation(Type t, bool has_return_value, List<string> parameters, Dictionary<string, string> generic_param_args=null)
         {
             StringBuilder sb = new StringBuilder();
-            if (parameters.Count != t.GetGenericArguments().Length)
+            if (parameters.Count != t.GetGenericArguments().Length || true)
             {
                 List<string> old_parameters = parameters;
                 parameters = new List<string>();
                 int ind = 0;
                 foreach (Type generic_arg in t.GetGenericArguments())
                 {
-                    if (generic_arg.IsGenericParameter && ind < old_parameters.Count)
+                    if (generic_arg.IsGenericParameter)
                     {
-                        parameters.Add(old_parameters[ind]);
-                        ind++;
+                        if (generic_param_args != null)
+                        {
+                            if (generic_param_args.ContainsKey(generic_arg.Name))
+                                parameters.Add(generic_param_args[generic_arg.Name]);
+                            else
+                                parameters.Add(generic_arg.Name);
+                        }
+                        else if (ind < old_parameters.Count)
+                        {
+                            parameters.Add(old_parameters[ind]);
+                            ind++;
+                        }
                     }
                     else
-                        parameters.Add(GetShortTypeName(generic_arg));
+                        //parameters.Add(GetShortTypeName(generic_arg, false));
+                        parameters.Add(get_type_instance(generic_arg,parameters,generic_param_args));
                 }
             }
-
+            foreach (string parameter in parameters)
+            {
+                if (!isIdentifier(parameter))
+                    return get_type_instance(t, parameters, generic_param_args, true);
+            }
             if (has_return_value)
             {
                 if (parameters.Count > 2)
@@ -1341,9 +1379,9 @@ namespace PascalABCCompiler.Parsers
 				inst_type = get_type_instance(scope.CompiledField.FieldType,scope.GenericArgs);
 			}
 			if (!scope.CompiledField.IsLiteral)
-				sb.Append(GetShortTypeName(scope.CompiledField.DeclaringType, true) +"."+ scope.CompiledField.Name + ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
+				sb.Append(GetShortTypeName(scope.CompiledField.DeclaringType) +"."+ scope.CompiledField.Name + ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
 			else
-				sb.Append("const "+GetShortTypeName(scope.CompiledField.DeclaringType, true) +"."+ scope.CompiledField.Name + ": "+GetSimpleDescription(scope.Type));
+				sb.Append("const "+GetShortTypeName(scope.CompiledField.DeclaringType) +"."+ scope.CompiledField.Name + ": "+GetSimpleDescription(scope.Type));
 			//if (scope.CompiledField.IsStatic) sb.Append("; static");
 			if (scope.IsReadOnly) sb.Append("; readonly");
 			sb.Append(';');
@@ -1412,7 +1450,7 @@ namespace PascalABCCompiler.Parsers
 				Type t = (scope.Type as ICompiledTypeScope).CompiledType;
 				inst_type = get_type_instance(t,scope.GenericArgs);
 			}
-			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType, true) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope)+ ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
+			sb.Append("property "+ GetShortTypeName(scope.CompiledProperty.DeclaringType) +"."+ scope.CompiledProperty.Name + get_indexer_for_prop(scope)+ ": "+(inst_type != null?inst_type:GetSimpleDescription(scope.Type)));
 			if (acc != null)
 			//if (acc.IsStatic) sb.Append("; static");
 			if (acc.IsVirtual) sb.Append("; virtual");
@@ -1432,25 +1470,46 @@ namespace PascalABCCompiler.Parsers
             return true;
 		}
 
-        private string get_type_instance(Type t, List<string> generic_args)
+        private string get_type_instance(Type t, List<string> generic_args, Dictionary<string, string> generic_param_args=null, bool no_alias=false)
         {
             if (t.IsGenericParameter)
             {
-                if (t.GenericParameterPosition < generic_args.Count)
+                if (generic_param_args != null)
+                {
+                    if (generic_param_args.ContainsKey(t.Name))
+                        return generic_param_args[t.Name];
+                    else
+                        return t.Name;
+                }
+                else if (t.GenericParameterPosition < generic_args.Count)
                     return generic_args[t.GenericParameterPosition];
                 else
                     return t.Name;
             }
             if (t.IsArray)
-                return "array of " + get_type_instance(t.GetElementType(), generic_args);
+                return "array of " + get_type_instance(t.GetElementType(), generic_args, generic_param_args, no_alias);
             if (t.ContainsGenericParameters)
             {
-                if (t.Name == "IEnumerable`1")
-                    return "sequence of " + (generic_args.Count>0?generic_args[0]:"T");
-                else if (t.Name.Contains("Func`"))
-                    return getLambdaRepresentation(t, true, generic_args);
-                else if (t.Name.Contains("Action`") || t.Name.Contains("Predicate`"))
-                    return getLambdaRepresentation(t, false, generic_args);
+                if (!no_alias)
+                {
+                    if (t.Name == "IEnumerable`1")
+                    {
+                        Type tt = t.GetGenericArguments()[0];
+                        if (generic_param_args != null)
+                        {
+                            if (tt.IsGenericParameter && generic_param_args.ContainsKey(tt.Name))
+                                return "sequence of " + generic_param_args[tt.Name];
+                            else
+                                return "sequence of " + GetShortTypeName(tt, false);
+                        }
+                        else 
+                            return "sequence of " + (generic_args.Count>0?generic_args[0]:GetShortTypeName(tt, false));
+                    }
+                    else if (t.Name.Contains("Func`"))
+                        return getLambdaRepresentation(t, true, generic_args, generic_param_args);
+                    else if (t.Name.Contains("Action`") || t.Name.Contains("Predicate`"))
+                        return getLambdaRepresentation(t, false, generic_args, generic_param_args);
+                }
                 string name = GetShortTypeName(t);
                 StringBuilder sb = new StringBuilder();
                 int ind = name.IndexOf('<');
@@ -1463,20 +1522,27 @@ namespace PascalABCCompiler.Parsers
                 {
                     if (args[i].IsGenericParameter)
                     {
-                        if (args[i].GenericParameterPosition < generic_args.Count)
+                        if (generic_param_args != null)
+                        {
+                            if (generic_param_args.ContainsKey(args[i].Name))
+                                sb.Append(generic_param_args[args[i].Name]);
+                            else
+                                sb.Append(args[i].Name);
+                        }
+                        else if (args[i].GenericParameterPosition < generic_args.Count)
                             sb.Append(generic_args[args[i].GenericParameterPosition]);
                         else
                             sb.Append(args[i].Name);
                     }
                     else
-                        sb.Append(get_type_instance(args[i], generic_args));
+                        sb.Append(get_type_instance(args[i], generic_args, generic_param_args));
                     if (i < args.Length - 1)
                         sb.Append(',');
                 }
                 sb.Append('>');
                 return sb.ToString();
             }
-            return GetFullTypeName(t);
+            return GetFullTypeName(t, false);
         }
 
         public virtual string GetDescriptionForCompiledMethod(MethodInfo mi)
@@ -1552,27 +1618,52 @@ namespace PascalABCCompiler.Parsers
             else
                 sb.Append("function ");
             if (!scope.IsExtension)
-                sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType, true));
+                sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
             else
-                sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType, true));
+                sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
             if (scope.Name != "Invoke")
             {
                 sb.Append(".");
                 sb.Append(scope.Name);
             }
+            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
+            Dictionary<string, string> generic_param_args = null;
             if (scope.CompiledMethod.GetGenericArguments().Length > 0)
             {
+                generic_param_args = new Dictionary<string, string>();
                 Type[] tt = scope.CompiledMethod.GetGenericArguments();
+                Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
+                for (int i = 0; i < pis.Length; i++)
+                {
+                    if (i == 0 && scope.IsExtension)
+                    {
+                        Type[] class_generic_args = pis[i].ParameterType.GetGenericArguments();
+                        for (int j = 0; j < class_generic_args.Length; j++)
+                        {
+                            class_generic_table.Add(class_generic_args[i].Name, j);
+                        }
+                    }
+                }
                 sb.Append('<');
                 for (int i = 0; i < tt.Length; i++)
                 {
-                    sb.Append(tt[i].Name);
+                    if (class_generic_table.ContainsKey(tt[i].Name))
+                    {
+                        int ind = class_generic_table[tt[i].Name];
+                        if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
+                        {
+                            sb.Append(scope.GenericArgs[ind]);
+                            generic_param_args.Add(tt[i].Name, scope.GenericArgs[ind]);
+                        }
+                    }
+                    else
+                        sb.Append(tt[i].Name);
                     if (i < tt.Length - 1) sb.Append(',');
                 }
                 sb.Append('>');
             }
             sb.Append('(');
-            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
+            
             for (int i = 0; i < pis.Length; i++)
             {
                 if (i == 0 && scope.IsExtension)
@@ -1586,24 +1677,24 @@ namespace PascalABCCompiler.Parsers
                 string inst_type = null;
                 if (!pis[i].ParameterType.IsByRef)
                 {
-                    if (scope.GenericArgs != null /*&& scope.CompiledMethod.GetGenericArguments().Length == 0*/)
+                    if (scope.GenericArgs != null)
                     {
-                        inst_type = get_type_instance(pis[i].ParameterType, scope.GenericArgs);
+                        inst_type = get_type_instance(pis[i].ParameterType, scope.GenericArgs, generic_param_args);
                     }
                     if (inst_type == null)
-                        sb.Append(GetShortTypeName(pis[i].ParameterType));
+                        sb.Append(GetShortTypeName(pis[i].ParameterType, false));
                     else
                         sb.Append(inst_type);
                 }
                 else
                 {
                     Type t = pis[i].ParameterType.GetElementType();
-                    if (scope.GenericArgs != null /*&& scope.CompiledMethod.GetGenericArguments().Length == 0*/)
+                    if (scope.GenericArgs != null)
                     {
-                        inst_type = get_type_instance(t, scope.GenericArgs);
+                        inst_type = get_type_instance(t, scope.GenericArgs, generic_param_args);
                     }
                     if (inst_type == null)
-                        sb.Append(GetShortTypeName(t));
+                        sb.Append(GetShortTypeName(t, false));
                     else
                         sb.Append(inst_type);
                 }
@@ -1614,12 +1705,12 @@ namespace PascalABCCompiler.Parsers
             string ret_inst_type = null;
             if (scope.ReturnType != null)
             {
-                if (scope.GenericArgs != null /*&& scope.CompiledMethod.GetGenericArguments().Length == 0*/)
+                if (scope.GenericArgs != null)
                 {
-                    ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, scope.GenericArgs);
+                    ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, scope.GenericArgs, generic_param_args);
                 }
                 if (ret_inst_type == null)
-                    sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType));
+                    sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
                 else
                     sb.Append(": " + ret_inst_type);
             }
@@ -3222,7 +3313,7 @@ namespace PascalABCCompiler.Parsers
 			return null;
 		}
 		
-		protected override string GetFullTypeName(Type ctn)
+		protected override string GetFullTypeName(Type ctn, bool no_alias=true)
 		{
 			TypeCode tc = Type.GetTypeCode(ctn);
 			if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition) 

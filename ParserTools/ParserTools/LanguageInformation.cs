@@ -35,7 +35,7 @@ namespace PascalABCCompiler.Parsers
         /// <param name="scope"></param>
         /// <returns></returns>
     	string GetShortTypeName(ICompiledConstructorScope scope);
-        string GetShortTypeName(Type t, bool noalias = false);
+        string GetShortTypeName(Type t, bool noalias = true);
         /// <summary>
         /// Получить представление массива рамерности rank
         /// </summary>
@@ -46,7 +46,7 @@ namespace PascalABCCompiler.Parsers
     	/// <summary>
     	/// Получить длинное имя откомпилированного типа
     	/// </summary>
-    	string GetFullTypeName(ICompiledTypeScope scope);
+    	string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true);
     	string GetSynonimDescription(ITypeScope scope);
     	string GetSynonimDescription(ITypeSynonimScope scope);
     	string GetSynonimDescription(IProcScope scope);

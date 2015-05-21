@@ -649,7 +649,7 @@ namespace PascalABCCompiler.VBNETParser
             return scope.Name;
         }
 
-        protected override string GetFullTypeName(Type ctn)
+        protected override string GetFullTypeName(Type ctn, bool no_alias=true)
         {
             TypeCode tc = Type.GetTypeCode(ctn);
             if (ctn.FullName == null && !ctn.IsArray && !ctn.IsGenericTypeDefinition)

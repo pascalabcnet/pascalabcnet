@@ -3973,6 +3973,10 @@ namespace CodeCompletion
             ttr.params_list.params_list.Add(_sequence_type.elements_type);
             visit(ttr);
         }
+        public override void visit(modern_proc_type _modern_proc_type)
+        {
+            
+        }
     }
 }
 

@@ -80,24 +80,24 @@ namespace CodeCompletion
         /// </summary>
         public SymInfo[] GetName(expression expr, string str, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, ref SymScope root)
         {
-        	if (stv.cur_scope == null) return null;
-        	if (col +1 > str.Length)
-        		col -= str.Length;
-        	SymScope si = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
-        	if (si == null) 
-        	{
-        		si = stv.FindScopeByLocation(line,col+1);
-        		if (si == null)
-        		return null;
-        	}
+            if (stv.cur_scope == null) return null;
+            if (col + 1 > str.Length)
+                col -= str.Length;
+            SymScope si = stv.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            if (si == null)
+            {
+                si = stv.FindScopeByLocation(line, col + 1);
+                if (si == null)
+                    return null;
+            }
             SetCurrentUsedAssemblies();
-        	ExpressionVisitor ev = new ExpressionVisitor(expr, si, stv);
+            ExpressionVisitor ev = new ExpressionVisitor(expr, si, stv);
             si = ev.GetScopeOfExpression(true, false);
-        	root = si;
-        	if (si is ElementScope) root = (si as ElementScope).sc;
-        	else if (si is ProcScope) root = (si as ProcScope).return_type;
-        	if (si != null)
-        	{
+            root = si;
+            if (si is ElementScope) root = (si as ElementScope).sc;
+            else if (si is ProcScope) root = (si as ProcScope).return_type;
+            if (si != null)
+            {
                 if (!(si is TypeScope) && !(si is NamespaceScope))
                 {
                     SymInfo[] syms = si.GetNamesAsInObject(ev);
@@ -107,7 +107,7 @@ namespace CodeCompletion
                     List<SymInfo> lst = new List<SymInfo>();
                     lst.AddRange(syms);
                     if (ext_syms != null)
-                    lst.AddRange(ext_syms);
+                        lst.AddRange(ext_syms);
                     RestoreCurrentUsedAssemblies();
                     return lst.ToArray();
                 }
@@ -126,9 +126,9 @@ namespace CodeCompletion
                         return (si as NamespaceScope).GetNames(ev, keyword);
                     }
                 }
-        	}
+            }
             RestoreCurrentUsedAssemblies();
-        	return null;
+            return null;
         }
         
         public SymInfo[] GetOverridableMethods(int line, int col)

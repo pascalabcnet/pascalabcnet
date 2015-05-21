@@ -5761,6 +5761,7 @@ namespace CodeCompletion
                 //case semantic_node_type.compiled_event: return new CompiledScope(null,(si.sym_info as compiled_event).event_info.);
                 //case semantic_node_type.compiled_event: return new CompiledScope(null,(si.sym_info as compiled_event).
             }
+            
             return names;
         }
 
