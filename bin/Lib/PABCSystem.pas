@@ -3001,8 +3001,8 @@ begin
   Result := Self;  
 end;
 
-/// ¬озвращает строковое представление последовательности, использу€ delim в качестве разделител€
-function System.Collections.Generic.IEnumerable<T>.ToStr(delim: string := ' '): string;
+/// ѕреобразует элементы последовательности в строковое представление, после чего объедин€ет их в строку, использу€ delim в качестве разделител€
+function System.Collections.Generic.IEnumerable<T>.JoinIntoString(delim: string := ' '): string;
 begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
@@ -3013,7 +3013,8 @@ begin
   Result := sb.ToString;  
 end;
 
-procedure System.Collections.Generic.IEnumerable<T>.&For_Each(action: Action<T>);
+/// ѕримен€ет действие к каждому элементу последовательности
+procedure System.Collections.Generic.IEnumerable<T>.&ForEach(action: Action<T>);
 begin
   foreach x: T in Self do
     action(x);

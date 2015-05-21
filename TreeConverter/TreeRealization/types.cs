@@ -3975,8 +3975,9 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (bfn.simple_function_node.return_value_type != dii.return_value_type)
                 {
-                    if (!(bfn.ret_type is lambda_any_type_node)) //lroman//
-                        continue;
+                    if (!type_table.is_derived(dii.return_value_type, bfn.simple_function_node.return_value_type)) // SSM 21/05/15
+                        if (!(bfn.ret_type is lambda_any_type_node)) //lroman//
+                            continue;
                 }
                 bool find_eq = true;
                 int i=0;
