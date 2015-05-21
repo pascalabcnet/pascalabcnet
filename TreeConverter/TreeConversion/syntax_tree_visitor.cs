@@ -17944,7 +17944,7 @@ namespace PascalABCCompiler.TreeConverter
                         t.Add(new named_type_reference(en.enumerators[i].name, en.enumerators[i].name.source_context));
                     }
                 }
-                t.Add(new named_type_reference(_modern_proc_type.res, _modern_proc_type.res.source_context));
+                t.Add(_modern_proc_type.res, _modern_proc_type.res.source_context);
                 t.source_context = _modern_proc_type.source_context;
                 var ttr = new template_type_reference(new named_type_reference(l), t, _modern_proc_type.source_context);
                 visit(ttr);

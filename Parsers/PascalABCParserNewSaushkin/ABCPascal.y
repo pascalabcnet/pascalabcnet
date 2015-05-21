@@ -1249,7 +1249,7 @@ unpacked_structured_type
     ;
     
 sequence_type
-	: tkSequence tkOf type_ref
+	: tkSequence tkOf template_param
 		{
 			$$ = new sequence_type($3,@$);
 		}
@@ -1338,15 +1338,15 @@ proc_type_decl
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
         }
-	| identifier tkArrow identifier
+	| identifier tkArrow template_param
     	{
     		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
-    | tkRoundOpen tkRoundClose tkArrow identifier
+    | tkRoundOpen tkRoundClose tkArrow template_param
     	{
     		$$ = new modern_proc_type(null,null,$4,@$);
     	}
-    | tkRoundOpen enumeration_id_list tkRoundClose tkArrow identifier
+    | tkRoundOpen enumeration_id_list tkRoundClose tkArrow template_param
     	{
     		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}

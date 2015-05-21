@@ -28183,7 +28183,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(ident _aloneparam,enumerator_list _el,ident _res)
+		public modern_proc_type(ident _aloneparam,enumerator_list _el,type_definition _res)
 		{
 			this._aloneparam=_aloneparam;
 			this._el=_el;
@@ -28193,7 +28193,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(ident _aloneparam,enumerator_list _el,ident _res,SourceContext sc)
+		public modern_proc_type(ident _aloneparam,enumerator_list _el,type_definition _res,SourceContext sc)
 		{
 			this._aloneparam=_aloneparam;
 			this._el=_el;
@@ -28204,7 +28204,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,ident _res)
+		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,type_definition _res)
 		{
 			this._attr_list=_attr_list;
 			this._aloneparam=_aloneparam;
@@ -28215,7 +28215,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,ident _res,SourceContext sc)
+		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,type_definition _res,SourceContext sc)
 		{
 			this._attr_list=_attr_list;
 			this._aloneparam=_aloneparam;
@@ -28226,7 +28226,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		protected ident _aloneparam;
 		protected enumerator_list _el;
-		protected ident _res;
+		protected type_definition _res;
 
 		///<summary>
 		///
@@ -28261,7 +28261,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public ident res
+		public type_definition res
 		{
 			get
 			{
@@ -28322,7 +28322,7 @@ namespace PascalABCCompiler.SyntaxTree
 						el = (enumerator_list)value;
 						break;
 					case 3:
-						res = (ident)value;
+						res = (type_definition)value;
 						break;
 				}
 			}

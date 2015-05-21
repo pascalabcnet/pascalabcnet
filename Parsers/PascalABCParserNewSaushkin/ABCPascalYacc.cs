@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  POMAH
-// DateTime: 20.05.2015 11:32:46
-// UserName: ?????
-// Input file <ABCPascal.y>
+// Machine:  SSM
+// DateTime: 21.05.2015 23:36:52
+// UserName: ?????????
+// Input file <D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -56,7 +56,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from ABCPascal.y
+  // Verbatim content from D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -68,7 +68,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from ABCPascal.y
+  // End verbatim content from D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -299,7 +299,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[147] = new State(-214);
     states[148] = new State(new int[]{128,43,73,45,74,46,68,48,66,49},new int[]{-243,149,-153,150,-118,152,-123,44,-124,47,-261,153});
     states[149] = new State(-216);
-    states[150] = new State(new int[]{7,140,108,145,106,-217,87,-217},new int[]{-260,151});
+    states[150] = new State(new int[]{7,140,108,145,106,-217,87,-217,112,-217,9,-217,10,-217,96,-217,105,-217,79,-217,72,-217,71,-217,70,-217,69,-217,85,-217,88,-217,26,-217,91,-217,25,-217,2,-217,122,-217,73,-217,74,-217,12,-217,11,-217},new int[]{-260,151});
     states[151] = new State(-213);
     states[152] = new State(-232);
     states[153] = new State(-218);
@@ -444,7 +444,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[292] = new State(-207);
     states[293] = new State(new int[]{7,140,108,145,112,-219,9,-219,10,-219,96,-219,105,-219,79,-219,72,-219,71,-219,70,-219,69,-219,85,-219,88,-219,26,-219,91,-219,25,-219,2,-219,87,-219,122,-219,73,-219,74,-219,12,-219,11,-219,8,-226,104,-226,103,-226,116,-226,117,-226,118,-226,119,-226,115,-226,6,-226,102,-226,101,-226,113,-226,114,-226},new int[]{-260,151});
     states[294] = new State(new int[]{112,295,7,-232,108,-232,9,-232,10,-232,8,-232,104,-232,103,-232,116,-232,117,-232,118,-232,119,-232,115,-232,6,-232,102,-232,101,-232,113,-232,114,-232,96,-232,105,-232,79,-232,72,-232,71,-232,70,-232,69,-232,85,-232,88,-232,26,-232,91,-232,25,-232,2,-232,87,-232,122,-232,73,-232,74,-232,12,-232,11,-232});
-    states[295] = new State(new int[]{8,297,128,43,73,45,74,46,68,48,66,49},new int[]{-118,296,-123,44,-124,47});
+    states[295] = new State(new int[]{8,297,128,43,73,45,74,46,68,48,66,49},new int[]{-243,296,-153,150,-118,152,-123,44,-124,47,-261,153});
     states[296] = new State(-263);
     states[297] = new State(new int[]{9,298});
     states[298] = new State(-266);
@@ -594,7 +594,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[442] = new State(new int[]{9,477,128,43,73,45,74,46,68,48,66,49,15,264,16,269,11,340,137,131,139,132,138,133,129,127,130,128,47,351,126,352,8,358,120,378,102,191,101,192,127,382},new int[]{-78,438,-72,443,-73,307,-11,325,-9,333,-12,314,-118,482,-123,44,-124,47,-225,337,-257,338,-208,339,-15,349,-137,350,-139,125,-138,129,-172,380,-234,384,-210,385,-71,483});
     states[443] = new State(new int[]{9,444,87,449});
     states[444] = new State(new int[]{112,445,9,-221,10,-221,96,-221,105,-221,79,-221,72,-221,71,-221,70,-221,69,-221,85,-221,88,-221,26,-221,91,-221,25,-221,2,-221,87,-221,122,-221,73,-221,74,-221,12,-221,11,-221});
-    states[445] = new State(new int[]{8,447,128,43,73,45,74,46,68,48,66,49},new int[]{-118,446,-123,44,-124,47});
+    states[445] = new State(new int[]{8,447,128,43,73,45,74,46,68,48,66,49},new int[]{-243,446,-153,150,-118,152,-123,44,-124,47,-261,153});
     states[446] = new State(-265);
     states[447] = new State(new int[]{9,448});
     states[448] = new State(-268);
@@ -627,7 +627,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[475] = new State(-315);
     states[476] = new State(-755);
     states[477] = new State(new int[]{112,478});
-    states[478] = new State(new int[]{8,480,128,43,73,45,74,46,68,48,66,49},new int[]{-118,479,-123,44,-124,47});
+    states[478] = new State(new int[]{8,480,128,43,73,45,74,46,68,48,66,49},new int[]{-243,479,-153,150,-118,152,-123,44,-124,47,-261,153});
     states[479] = new State(-264);
     states[480] = new State(new int[]{9,481});
     states[481] = new State(-267);
@@ -712,7 +712,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[560] = new State(-255);
     states[561] = new State(-245);
     states[562] = new State(new int[]{49,563});
-    states[563] = new State(new int[]{128,299,73,45,74,46,68,48,66,49,137,131,139,132,138,133,102,191,101,192,129,127,130,128,8,442,127,488,18,493,39,501,40,550,27,558,65,562,56,565,35,570,30,572},new int[]{-241,564,-237,292,-153,293,-118,294,-123,44,-124,47,-80,422,-87,441,-88,440,-15,433,-172,434,-137,436,-139,125,-138,129,-224,486,-217,487,-244,490,-245,491,-242,492,-235,499,-27,500,-232,549,-100,557,-101,561,-195,567,-193,568,-192,569,-261,576});
+    states[563] = new State(new int[]{128,43,73,45,74,46,68,48,66,49},new int[]{-243,564,-153,150,-118,152,-123,44,-124,47,-261,153});
     states[564] = new State(-246);
     states[565] = new State(new int[]{18,493,39,501,40,550,27,558,65,562},new int[]{-245,566,-242,492,-235,499,-27,500,-232,549,-100,557,-101,561});
     states[566] = new State(-240);
@@ -1625,7 +1625,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     rules[243] = new Rule(-245, new int[]{-232});
     rules[244] = new Rule(-245, new int[]{-100});
     rules[245] = new Rule(-245, new int[]{-101});
-    rules[246] = new Rule(-101, new int[]{65,49,-241});
+    rules[246] = new Rule(-101, new int[]{65,49,-243});
     rules[247] = new Rule(-242, new int[]{18,11,-136,12,49,-241});
     rules[248] = new Rule(-242, new int[]{-235});
     rules[249] = new Rule(-235, new int[]{18,49,-241});
@@ -1642,9 +1642,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     rules[260] = new Rule(-192, new int[]{35,-98});
     rules[261] = new Rule(-192, new int[]{30,-98});
     rules[262] = new Rule(-192, new int[]{30,-98,5,-240});
-    rules[263] = new Rule(-192, new int[]{-118,112,-118});
-    rules[264] = new Rule(-192, new int[]{8,9,112,-118});
-    rules[265] = new Rule(-192, new int[]{8,-72,9,112,-118});
+    rules[263] = new Rule(-192, new int[]{-118,112,-243});
+    rules[264] = new Rule(-192, new int[]{8,9,112,-243});
+    rules[265] = new Rule(-192, new int[]{8,-72,9,112,-243});
     rules[266] = new Rule(-192, new int[]{-118,112,8,9});
     rules[267] = new Rule(-192, new int[]{8,9,112,8,9});
     rules[268] = new Rule(-192, new int[]{8,-72,9,112,8,9});
@@ -3176,7 +3176,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 245: // unpacked_structured_type -> sequence_type
 { CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td; }
         break;
-      case 246: // sequence_type -> tkSequence, tkOf, type_ref
+      case 246: // sequence_type -> tkSequence, tkOf, template_param
 {
 			CurrentSemanticValue.td = new sequence_type(ValueStack[ValueStack.Depth-1].td,CurrentLocationSpan);
 		}
@@ -3253,20 +3253,20 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			CurrentSemanticValue.td = new function_header(ValueStack[ValueStack.Depth-3].stn as formal_parameters, null, null, null, ValueStack[ValueStack.Depth-1].td as type_definition, CurrentLocationSpan);
         }
         break;
-      case 263: // proc_type_decl -> identifier, tkArrow, identifier
+      case 263: // proc_type_decl -> identifier, tkArrow, template_param
 {
-    		CurrentSemanticValue.td = new modern_proc_type(ValueStack[ValueStack.Depth-3].id,null,ValueStack[ValueStack.Depth-1].id,CurrentLocationSpan);            
+    		CurrentSemanticValue.td = new modern_proc_type(ValueStack[ValueStack.Depth-3].id,null,ValueStack[ValueStack.Depth-1].td,CurrentLocationSpan);            
     	}
         break;
-      case 264: // proc_type_decl -> tkRoundOpen, tkRoundClose, tkArrow, identifier
+      case 264: // proc_type_decl -> tkRoundOpen, tkRoundClose, tkArrow, template_param
 {
-    		CurrentSemanticValue.td = new modern_proc_type(null,null,ValueStack[ValueStack.Depth-1].id,CurrentLocationSpan);
+    		CurrentSemanticValue.td = new modern_proc_type(null,null,ValueStack[ValueStack.Depth-1].td,CurrentLocationSpan);
     	}
         break;
       case 265: // proc_type_decl -> tkRoundOpen, enumeration_id_list, tkRoundClose, tkArrow, 
-                //                   identifier
+                //                   template_param
 {
-    		CurrentSemanticValue.td = new modern_proc_type(null,ValueStack[ValueStack.Depth-4].stn as enumerator_list,ValueStack[ValueStack.Depth-1].id,CurrentLocationSpan);
+    		CurrentSemanticValue.td = new modern_proc_type(null,ValueStack[ValueStack.Depth-4].stn as enumerator_list,ValueStack[ValueStack.Depth-1].td,CurrentLocationSpan);
     	}
         break;
       case 266: // proc_type_decl -> identifier, tkArrow, tkRoundOpen, tkRoundClose
