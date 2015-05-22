@@ -1338,7 +1338,11 @@ proc_type_decl
         { 
 			$$ = new function_header($2 as formal_parameters, null, null, null, $4 as type_definition, @$);
         }
-	| identifier tkArrow template_param
+	| simple_type_identifier tkArrow template_param // эти 2 правила нельзя объединять в одно template_param - будет конфликт
+    	{
+    		$$ = new modern_proc_type($1,null,$3,@$);            
+    	}
+	| template_type tkArrow template_param
     	{
     		$$ = new modern_proc_type($1,null,$3,@$);            
     	}
@@ -1350,7 +1354,11 @@ proc_type_decl
     	{
     		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}
-    | identifier tkArrow tkRoundOpen tkRoundClose
+    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose
+    	{
+    		$$ = new modern_proc_type($1,null,null,@$);
+    	}
+    | template_type tkArrow tkRoundOpen tkRoundClose
     	{
     		$$ = new modern_proc_type($1,null,null,@$);
     	}

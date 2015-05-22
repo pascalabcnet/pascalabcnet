@@ -28183,7 +28183,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(ident _aloneparam,enumerator_list _el,type_definition _res)
+		public modern_proc_type(type_definition _aloneparam,enumerator_list _el,type_definition _res)
 		{
 			this._aloneparam=_aloneparam;
 			this._el=_el;
@@ -28193,7 +28193,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(ident _aloneparam,enumerator_list _el,type_definition _res,SourceContext sc)
+		public modern_proc_type(type_definition _aloneparam,enumerator_list _el,type_definition _res,SourceContext sc)
 		{
 			this._aloneparam=_aloneparam;
 			this._el=_el;
@@ -28204,7 +28204,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,type_definition _res)
+		public modern_proc_type(type_definition_attr_list _attr_list,type_definition _aloneparam,enumerator_list _el,type_definition _res)
 		{
 			this._attr_list=_attr_list;
 			this._aloneparam=_aloneparam;
@@ -28215,7 +28215,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public modern_proc_type(type_definition_attr_list _attr_list,ident _aloneparam,enumerator_list _el,type_definition _res,SourceContext sc)
+		public modern_proc_type(type_definition_attr_list _attr_list,type_definition _aloneparam,enumerator_list _el,type_definition _res,SourceContext sc)
 		{
 			this._attr_list=_attr_list;
 			this._aloneparam=_aloneparam;
@@ -28224,14 +28224,14 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
-		protected ident _aloneparam;
+		protected type_definition _aloneparam;
 		protected enumerator_list _el;
 		protected type_definition _res;
 
 		///<summary>
 		///
 		///</summary>
-		public ident aloneparam
+		public type_definition aloneparam
 		{
 			get
 			{
@@ -28316,7 +28316,7 @@ namespace PascalABCCompiler.SyntaxTree
 						attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						aloneparam = (ident)value;
+						aloneparam = (type_definition)value;
 						break;
 					case 2:
 						el = (enumerator_list)value;

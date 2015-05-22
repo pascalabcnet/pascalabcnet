@@ -17931,7 +17931,7 @@ namespace PascalABCCompiler.TreeConverter
                 l.Add(new ident("Func"));
                 var t = new template_param_list();
                 if (_modern_proc_type.aloneparam != null)
-                    t.Add(new named_type_reference(_modern_proc_type.aloneparam, _modern_proc_type.aloneparam.source_context));
+                    t.Add(_modern_proc_type.aloneparam);
                 if (_modern_proc_type.el != null)
                 {
                     var en = _modern_proc_type.el;
@@ -17956,7 +17956,7 @@ namespace PascalABCCompiler.TreeConverter
                 l.Add(new ident("Action"));
                 var t = new template_param_list();
                 if (_modern_proc_type.aloneparam != null)
-                    t.Add(new named_type_reference(_modern_proc_type.aloneparam, _modern_proc_type.aloneparam.source_context));
+                    t.Add(_modern_proc_type.aloneparam);
                 if (_modern_proc_type.el != null)
                 {
                     var en = _modern_proc_type.el;

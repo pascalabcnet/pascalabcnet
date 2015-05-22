@@ -17,9 +17,6 @@
     <name value="record_const" />
     <name value="const_term" />
     <name value="const_set" />
-    <name value="range_expr" />
-    <name value="range_term" />
-    <name value="range_factor" />
     <name value="typed_const_or_new" />
     <name value="allowable_expr_as_stmt" />
     <name value="expr" />
@@ -105,7 +102,6 @@
     <name value="abc_decl_sect" />
     <name value="template_param" />
     <name value="one_attribute" />
-    <name value="enumeration_id" />
     <name value="simple_type_or_" />
     <name value="class_attribute" />
     <name value="base_class_name" />
@@ -305,6 +301,8 @@
     <name value="proc_type_decl" />
     <name value="simple_type" />
     <name value="sequence_type" />
+    <name value="enumeration_id" />
+    <name value="template_param" />
   </tag>
   <tag value="Ключевые слова">
     <name value="meth_modificator" />
