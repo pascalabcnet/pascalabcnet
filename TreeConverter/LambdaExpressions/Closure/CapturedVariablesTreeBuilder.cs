@@ -147,10 +147,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                 return;
             }
 
-            if (!(si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
-                si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
-                si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                si.sym_info.semantic_node_type == semantic_node_type.class_field) && _currentLambdaScopeNode != null) 
+            var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field;
+
+            if (!(acceptableVarType) && _currentLambdaScopeNode != null) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                 return;
@@ -178,7 +180,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             if (_scopesCapturedVarsNodesDictionary.TryGetValue(scopeIndex, out scope))
             {
                 var prScope = scope as CapturedVariablesTreeNodeProcedureScope;
-                if (prScope != null)
+                if (prScope != null && acceptableVarType)
                 {
                     if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
                     {
@@ -218,7 +220,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 }
 
                 var clScope = scope as CapturedVariablesTreeNodeClassScope;
-                if (clScope != null)
+                if (clScope != null && acceptableVarType)
                 {
                     var field = clScope.VariablesDefinedInScope.Find(var => var.SymbolInfo == si);
 
