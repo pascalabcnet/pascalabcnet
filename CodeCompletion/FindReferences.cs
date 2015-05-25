@@ -1448,7 +1448,7 @@ namespace CodeCompletion
 
         public override void visit(enumerator _enumerator)
         {
-
+            
         }
 
         public override void visit(enumerator_list _enumerator_list)
@@ -1590,6 +1590,24 @@ namespace CodeCompletion
         public override void visit(sequence_type _sequence_type)
         {
             _sequence_type.visit(this);
+        }
+        public override void visit(modern_proc_type _modern_proc_type)
+        {
+            if (_modern_proc_type.aloneparam != null)
+            {
+                _modern_proc_type.aloneparam.visit(this);
+                if (_modern_proc_type.res != null)
+                    _modern_proc_type.res.visit(this);
+            }
+            else
+            {
+                foreach (enumerator en in _modern_proc_type.el.enumerators)
+                {
+                    new named_type_reference(en.name.name, en.source_context).visit(this);
+                }
+                if (_modern_proc_type.res != null)
+                    _modern_proc_type.res.visit(this);
+            }
         }
     }
 }

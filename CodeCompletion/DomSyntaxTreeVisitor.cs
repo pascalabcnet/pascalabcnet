@@ -3975,7 +3975,29 @@ namespace CodeCompletion
         }
         public override void visit(modern_proc_type _modern_proc_type)
         {
-            
+            template_type_reference ttr = new template_type_reference();
+            List<ident> names = new List<ident>();
+            names.Add(new ident("System"));
+            names.Add(new ident("Func"));
+            ttr.name = new named_type_reference(names);
+            ttr.source_context = _modern_proc_type.source_context;
+            ttr.params_list = new template_param_list();
+            if (_modern_proc_type.aloneparam != null)
+            {
+                ttr.params_list.params_list.Add(_modern_proc_type.aloneparam);
+                if (_modern_proc_type.res != null)
+                    ttr.params_list.params_list.Add(_modern_proc_type.res);
+            }
+            else
+            {
+                foreach (enumerator en in _modern_proc_type.el.enumerators)
+                {
+                    ttr.params_list.params_list.Add(new named_type_reference(en.name.name));
+                }
+                if (_modern_proc_type.res != null)
+                    ttr.params_list.params_list.Add(_modern_proc_type.res);
+            }
+            visit(ttr);
         }
     }
 }
