@@ -73,7 +73,7 @@ namespace VisualPascalABC
             // btnOk
             // 
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(164, 307);
+            this.btnOk.Location = new System.Drawing.Point(163, 282);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(78, 25);
             this.btnOk.TabIndex = 0;
@@ -83,7 +83,7 @@ namespace VisualPascalABC
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(253, 307);
+            this.btnCancel.Location = new System.Drawing.Point(250, 282);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 25);
             this.btnCancel.TabIndex = 1;
@@ -185,6 +185,7 @@ namespace VisualPascalABC
             this.label3.Size = new System.Drawing.Size(86, 13);
             this.label3.TabIndex = 31;
             this.label3.Text = "PRJ_APP_ICON";
+            this.label3.Visible = false;
             // 
             // tbAppIcon
             // 
@@ -192,6 +193,7 @@ namespace VisualPascalABC
             this.tbAppIcon.Name = "tbAppIcon";
             this.tbAppIcon.Size = new System.Drawing.Size(236, 20);
             this.tbAppIcon.TabIndex = 32;
+            this.tbAppIcon.Visible = false;
             // 
             // button1
             // 
@@ -202,6 +204,7 @@ namespace VisualPascalABC
             this.button1.TabIndex = 33;
             this.button1.Text = "...";
             this.button1.UseVisualStyleBackColor = false;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // pbAppIcon
@@ -211,6 +214,7 @@ namespace VisualPascalABC
             this.pbAppIcon.Size = new System.Drawing.Size(32, 32);
             this.pbAppIcon.TabIndex = 34;
             this.pbAppIcon.TabStop = false;
+            this.pbAppIcon.Visible = false;
             // 
             // groupBox1
             // 
@@ -386,7 +390,7 @@ namespace VisualPascalABC
             // cbGenerateXmlDoc
             // 
             this.cbGenerateXmlDoc.AutoSize = true;
-            this.cbGenerateXmlDoc.Location = new System.Drawing.Point(6, 271);
+            this.cbGenerateXmlDoc.Location = new System.Drawing.Point(6, 229);
             this.cbGenerateXmlDoc.Name = "cbGenerateXmlDoc";
             this.cbGenerateXmlDoc.Size = new System.Drawing.Size(168, 17);
             this.cbGenerateXmlDoc.TabIndex = 37;
@@ -397,7 +401,7 @@ namespace VisualPascalABC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(333, 344);
+            this.ClientSize = new System.Drawing.Size(333, 324);
             this.Controls.Add(this.cbGenerateXmlDoc);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.groupBox1);

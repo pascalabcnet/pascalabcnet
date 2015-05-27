@@ -87,16 +87,9 @@
       <HintPath>FormsDesignerBinding\Libs\ICSharpCode.SharpDevelop.Widgets.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.TextEditor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=4d61825e8dd49f1a, processorArchitecture=MSIL" />
-    <Reference Include="NETXP.Controls, Version=3.0.5600.2205, Culture=neutral, PublicKeyToken=8c338532f03bf201">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files\Dacris Software\NetXP 3.0\Assembly\NETXP.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="NETXP.Controls.Bars, Version=3.0.5600.2205, Culture=neutral, PublicKeyToken=8c338532f03bf201" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Tasks" />
-    <Reference Include="NETXP.Library, Version=3.0.5600.2205, Culture=neutral, PublicKeyToken=8c338532f03bf201" />
-    <Reference Include="NETXP.Win32, Version=3.0.5600.2205, Culture=neutral, PublicKeyToken=8c338532f03bf201" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />

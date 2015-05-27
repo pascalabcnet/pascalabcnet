@@ -1617,22 +1617,15 @@ namespace PascalABCCompiler.Parsers
                 sb.Append("procedure ");
             else
                 sb.Append("function ");
+            Dictionary<string, string> generic_param_args = null;
+            Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
+            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
+            Type[] tt = scope.CompiledMethod.GetGenericArguments();
             if (!scope.IsExtension)
                 sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
             else
-                sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
-            if (scope.Name != "Invoke")
-            {
-                sb.Append(".");
-                sb.Append(scope.Name);
-            }
-            ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
-            Dictionary<string, string> generic_param_args = null;
-            if (scope.CompiledMethod.GetGenericArguments().Length > 0)
             {
                 generic_param_args = new Dictionary<string, string>();
-                Type[] tt = scope.CompiledMethod.GetGenericArguments();
-                Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
                 for (int i = 0; i < pis.Length; i++)
                 {
                     if (i == 0 && scope.IsExtension)
@@ -1642,10 +1635,21 @@ namespace PascalABCCompiler.Parsers
                         {
                             class_generic_table.Add(class_generic_args[i].Name, j);
                         }
+                        break;
                     }
                 }
+                sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
+            }
+            if (scope.Name != "Invoke")
+            {
+                sb.Append(".");
+                sb.Append(scope.Name);
+            }
+
+            if (scope.CompiledMethod.GetGenericArguments().Length > 0)
+            {
                 sb.Append('<');
-                for (int i = 0; i < tt.Length; i++)
+                for (int i = 1; i < tt.Length; i++)
                 {
                     if (class_generic_table.ContainsKey(tt[i].Name))
                     {

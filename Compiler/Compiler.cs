@@ -1846,7 +1846,7 @@ namespace PascalABCCompiler
                         cdo.TradeMark = project.trademark;
                     if (!string.IsNullOrEmpty(project.copyright))
                         cdo.Copyright = project.copyright;
-                    if (!string.IsNullOrEmpty(project.app_icon))
+                    if (!string.IsNullOrEmpty(project.app_icon) && false)
                     {
                         //cdo.MainResourceFileName = project.app_icon;
                         string rc_file = Path.GetFileNameWithoutExtension(project.app_icon) + ".rc";
