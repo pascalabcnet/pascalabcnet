@@ -2239,7 +2239,6 @@ end;
 procedure TypedSet.AssignSetFrom(s: TypedSet);
 begin
   ht := s.ht.Clone() as Hashtable;
-  //copy_ht := s.ht;
   Clip;
 end;
 
@@ -2279,12 +2278,10 @@ begin
   while i.MoveNext do
     if not (i.Current is IComparable) then
     begin
-      //if IsInDiapason(i.Current) then
       result := (added ? result + ',' : '') + FormatStr(i.Current);
       added := true;
     end
     else
-    //if IsInDiapason(i.Current) then
     begin
       if (t <> nil) and (t <> i.Current.GetType) then
       begin

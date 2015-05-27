@@ -1354,7 +1354,7 @@ proc_type_decl
     	{
     		$$ = new modern_proc_type(null,$2 as enumerator_list,$5,@$);
     	}
-    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose
+    | simple_type_identifier tkArrow tkRoundOpen tkRoundClose // эти 2 правила нельзя объединять в одно template_param - будет конфликт
     	{
     		$$ = new modern_proc_type($1,null,null,@$);
     	}
