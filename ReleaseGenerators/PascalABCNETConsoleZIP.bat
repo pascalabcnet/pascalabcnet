@@ -4,5 +4,6 @@ del ..\Release\PACNETConsole.zip
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip Lib\*.pcu
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip Lng\*.dat
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip Lng\*.LanguageName
+..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip doc\*.*
 cd ..\ReleaseGenerators
 ..\utils\pkzipc\pkzipc.exe -add -nozip -dir ..\Release\PABCNETC.zip install_pabcnetc.bat
