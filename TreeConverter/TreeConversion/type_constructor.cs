@@ -1,4 +1,6 @@
-﻿//Конструирует типы массивов и делегатов (и enum-ов).
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+//Конструирует типы массивов и делегатов (и enum-ов).
 
 //В этом файле присутсвует существенное дублирование кода(~500строк). 
 //TODO Разобраться и избавиться от дублирования

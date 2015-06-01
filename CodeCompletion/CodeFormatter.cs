@@ -1,4 +1,6 @@
-﻿/*
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+/*
  * algoritm formatirovanija sledujushij:
  * po sintaksicheskomu derevu stroitsja generiruetsja tekst programmy
  * vse chto nahoditsja mezhdu uzlami sintaksicheskogo dereva takzhe uchityvaetsja

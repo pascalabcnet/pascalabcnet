@@ -1,17 +1,6 @@
-﻿ /***************************************************************************
- *                                Compiler.cs
- *                            -------------------
- *   создан				: 08.11.2006
- *   copyright			: (C) 2006,2007 MiksCompilerTeam
- *   редактор			: DarkStar
- *   email				: darkstarta@freemail.ru
- *
- *   версия				: 2.0 
- *
- *
- ***************************************************************************/
-
-/***************************************************************************
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+ /***************************************************************************
  *   
  *   Управляющий блок компилятора, алгоритм компиляции модулей
  *   Зависит от Errors,SyntaxTree,SemanticTree,Parsers,TreeConvertor,

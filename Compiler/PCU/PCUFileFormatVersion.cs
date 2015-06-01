@@ -1,4 +1,6 @@
-﻿//ѕри внесении изменений в структуру PCU файла версию увеличить на 1
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+//ѕри внесении изменений в структуру PCU файла версию увеличить на 1
 
 namespace PascalABCCompiler.PCU
 {

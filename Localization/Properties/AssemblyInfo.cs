@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +10,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("PascalABCCompiler.Localization")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DSS")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Localization")]
-[assembly: AssemblyCopyright("Copyright © DSS 2006")]
+[assembly: AssemblyCopyright("Copyright © 2005-2015 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

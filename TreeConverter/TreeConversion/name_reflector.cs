@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 //Отображение типов операторов узлов синтаксического дерева в имена методов.
 using System;
 

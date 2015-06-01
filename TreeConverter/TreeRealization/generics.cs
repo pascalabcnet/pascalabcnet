@@ -1,4 +1,6 @@
-﻿//Здесь описана реализация generic-типов
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+//Здесь описана реализация generic-типов
 //Файлом владеет ssyy.
 
 using System;

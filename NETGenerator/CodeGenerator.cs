@@ -1,16 +1,5 @@
-/***************************************************************************
- *                             GodeGenerators.cs
- *                            -------------------
- *   создан				: 26.04.2006
- *   copyright			: (C) 2006 MiksCompilerTeam
- *   редактор			: Иван
- *   email				: 
- *
- *   версия				: 1.0.0 26.04.2006 23:14:34 
- *
- *
- ***************************************************************************/
-
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 /***************************************************************************
  *   
  *   Интерфейс доступа к кодогенераторам для Compiler   

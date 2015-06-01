@@ -1,4 +1,6 @@
-﻿//Инициализация системной библиотеки
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+//Инициализация системной библиотеки
 using System;
 
 using PascalABCCompiler.TreeRealization;
