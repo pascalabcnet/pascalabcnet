@@ -1,1 +1,1 @@
-Copyright (C) 2005-2015 by Stanislav Mihalkovich, Ivan Bondarev
+Copyright (C) 2005-2015 by Ivan Bondarev, Stanislav Mihalkovich
