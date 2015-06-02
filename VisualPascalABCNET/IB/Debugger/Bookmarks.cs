@@ -1,3 +1,6 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+// This is a modified file from SharpDevelop project (Copyright (c) AlphaSierraPapa)
 using System;
 using System.Collections;
 using System.Collections.Generic;
