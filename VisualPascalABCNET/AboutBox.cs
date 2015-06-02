@@ -130,7 +130,7 @@ namespace VisualPascalABC
             if (comp != null)
             {
                 Assembly a = Assembly.GetAssembly(comp.GetType());
-                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "(c) PascalABCCompiler Team 2005,2014"));
+                dgvModules.Items.Add(MakeItem("Core", "PascalABCCompiler.Core", a.GetName().Version.ToString(), "(c) Ivan Bondarev, Stanislav Mihalkovich 2005,2015"));
                 foreach (PascalABCCompiler.Parsers.IParser parser in comp.ParsersController.Parsers)
                     dgvModules.Items.Add(MakeItem("Parser",parser.Name, parser.Version, parser.Copyright));
                 foreach (PascalABCCompiler.SemanticTreeConverters.ISemanticTreeConverter conv in comp.SemanticTreeConvertersController.SemanticTreeConverters)
@@ -142,11 +142,7 @@ namespace VisualPascalABC
 
             dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"ICSharpCode.TextEditor.dll"))));
             dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"Debugger.Core.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"WeifenLuo.WinFormsUI.Docking.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"NETXP.Controls.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"NETXP.Controls.Bars.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"NETXP.Library.dll"))));
-            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"NETXP.Win32.dll"))));
+            dgvModules.Items.Add(MakeItem(Assembly.LoadFile(Path.Combine(apppatch,"WeifenLuo.WinFormsUI.Docking.dll")))); 
             ActiveControl = button1;
             /*lbComponents.Items.Clear();
             PascalABCCompiler.Compiler comp = (Owner as Form1).VisualEnvironmentCompiler.Compiler;
