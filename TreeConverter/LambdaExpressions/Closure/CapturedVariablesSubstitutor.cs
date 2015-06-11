@@ -232,6 +232,34 @@ namespace TreeConverter.LambdaExpressions.Closure
             SubstituteInNode(currentBlock, node);
         }
         
+        private List<CapturedVariablesTreeNodeLambdaScope> GetNestedLambdasToBeAddedToThisClass(CapturedVariablesTreeNode scope)
+        {
+            var res = new List<CapturedVariablesTreeNodeLambdaScope>();
+
+            foreach (var child in scope.ChildNodes)
+            {
+                var childAsLambda = child as CapturedVariablesTreeNodeLambdaScope;
+                if (childAsLambda == null)
+                {
+                    res.AddRange(GetNestedLambdasToBeAddedToThisClass(child));
+                }
+                else
+                {
+                    if (childAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.HasValue)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        res.Add(childAsLambda);
+                        res.AddRange(GetNestedLambdasToBeAddedToThisClass(childAsLambda));
+                    }
+                }
+            }
+
+            return res;
+        }
+
         private void SubstituteLambdas()
         {
             for (var i = 0; i < _lambdasToBeAddedAsMethods.Count; i++)
@@ -239,10 +267,19 @@ namespace TreeConverter.LambdaExpressions.Closure
                 if (_lambdasToBeAddedAsMethods[i].ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod != null)
                 {
                     var classDef = _generatedScopeClassesInfo[_lambdasToBeAddedAsMethods[i].ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value];
-
+                    
                     if (classDef.CorrespondingTreeNode is CapturedVariablesTreeNodeClassScope)
                     {
                         continue;
+                    }
+                    
+                    var otherLambdasToBeAddedAsMethods =
+                        GetNestedLambdasToBeAddedToThisClass(_lambdasToBeAddedAsMethods[i]);
+                    classDef.NestedLambdas.AddRange(otherLambdasToBeAddedAsMethods);
+
+                    foreach (var oltaam in otherLambdasToBeAddedAsMethods)
+                    {
+                        oltaam.LambdaDefinition.substituting_node = new ident(oltaam.LambdaDefinition.lambda_name);
                     }
 
                     var left = new ident(classDef.GeneratedSubstitutingFieldName);
@@ -250,10 +287,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                     var lambdaDef = _lambdasToBeAddedAsMethods[i].LambdaDefinition;
                     lambdaDef.substituting_node = new dot_node(left, new ident(lambdaDef.lambda_name));
 
-                    var classDecl = (class_definition)classDef.ClassDeclaration.type_def;
+                    /*var classDecl = (class_definition)classDef.ClassDeclaration.type_def;
                     var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDef);
 
-                    classDecl.body.Add(SyntaxTreeBuilder.BuildOneMemberSection(procDecl));
+                    classDecl.body.Add(SyntaxTreeBuilder.BuildOneMemberSection(procDecl));*/
                 }
             }
         }
@@ -366,6 +403,44 @@ namespace TreeConverter.LambdaExpressions.Closure
                         }
                     }
 
+                }
+            }
+        }
+
+        private void SubstituteLambdaParameters()
+        {
+            var lambdaScopes =
+                _capturedVarsTreeNodesDictionary.Where(n => n.Value is CapturedVariablesTreeNodeLambdaScope)
+                                                .Select(n => (CapturedVariablesTreeNodeLambdaScope)n.Value)
+                                                .ToList();
+
+            foreach (var lambdaScope in lambdaScopes)
+            {
+                CapturedVariablesSubstitutionClassGenerator.ScopeClassDefinition generatedClass;
+                if (_generatedScopeClassesInfo.TryGetValue(lambdaScope.ScopeIndex, out generatedClass))
+                {
+
+                    var nodesToAdd = new List<statement>();
+                    nodesToAdd.Add(generatedClass.GeneratedVarStatementForScope);
+                    if (generatedClass.AssignNodeForUpperClassFieldInitialization != null)
+                    {
+                        nodesToAdd.Add(generatedClass.AssignNodeForUpperClassFieldInitialization);
+                    }
+
+                    var variables = lambdaScope
+                        .VariablesDefinedInScope
+                        .Where(l => l.ReferencingLambdas.Count > 0)
+                        .Select(var => ((IVAriableDefinitionNode) var.SymbolInfo.sym_info).name.ToLower())
+                        .ToList();
+
+                    foreach (var variable in variables)
+                    {
+                        var assignStmt = new assign(new dot_node(new ident(generatedClass.GeneratedSubstitutingFieldName),
+                                                                    new ident(variable)), new ident(variable));
+                        nodesToAdd.Add(assignStmt);
+                    }
+
+                    ((statement_list)lambdaScope.LambdaDefinition.proc_body).subnodes.InsertRange(0, nodesToAdd);
                 }
             }
         }
@@ -489,16 +564,105 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
-        private void VisitClassDefinitions()
+        private Tuple<type_declaration, List<procedure_definition>> CreateTypeDeclarationWithForwardDeclaration(type_declaration cl)
+        {
+            var oldClDef = (class_definition) cl.type_def;
+            var classDef = SyntaxTreeBuilder.BuildClassDefinition(true);
+            var typeDeclaration = new type_declaration(cl.type_name, classDef);
+            classDef.where_section = oldClDef.where_section;
+            var procedures = new List<procedure_definition>();
+            var classMembers = new class_members(access_modifer.public_modifer);
+            classDef.body.class_def_blocks.Add(classMembers);
+
+            foreach (var member in oldClDef.body.class_def_blocks.SelectMany(x => x.members))
+            {
+                if (member is var_def_statement)
+                {
+                    classMembers.Add(member);
+                }
+                else
+                {
+                    var procDef = (procedure_definition) member;
+                    if (procDef.proc_header is constructor)
+                    {
+                        classMembers.Add(procDef);
+                        continue;
+                    }
+                    procedure_header procHeader;
+                    if (procDef.proc_header is function_header)
+                    {
+                        var fh = (function_header) procDef.proc_header;
+                        procHeader = new function_header
+                            {
+                                name = new method_name(fh.name.meth_name.name),
+                                source_context = fh.source_context,
+                                parameters = fh.parameters,
+                                of_object = fh.of_object,
+                                class_keyword = fh.class_keyword
+                            };
+                        ((function_header)procHeader).return_type = fh.return_type;
+                    }
+                    else
+                    {
+                        procHeader = new procedure_header
+                            {
+                                name = new method_name(procDef.proc_header.name.meth_name.name),
+                                source_context = procDef.proc_header.source_context,
+                                parameters = procDef.proc_header.parameters,
+                                of_object = procDef.proc_header.of_object,
+                                class_keyword = procDef.proc_header.class_keyword
+                            };
+                    }
+
+                    procDef.proc_header.name.class_name = cl.type_name;
+                    procedures.Add(procDef);
+                    classMembers.Add(procHeader);
+                }
+            }
+
+            return new Tuple<type_declaration, List<procedure_definition>>(typeDeclaration, procedures);
+        }
+
+        private List<procedure_definition> VisitClassDefinitions()
         {
             _visitor.context.SaveContextAndUpToGlobalLevel();
             _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase;
 
-            foreach (var clDecl in _generatedScopeClassesInfo.Where(cd => !(cd.Value.CorrespondingTreeNode is CapturedVariablesTreeNodeClassScope)))
+            var procedures = new List<procedure_definition>();
+            var lambdaGroups =
+                _lambdasToBeAddedAsMethods.GroupBy(l => l.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod)
+                                          .ToDictionary(x => x.Key, x => x.ToList());
+            foreach (var clDecl in _generatedScopeClassesInfo.Where(cd => !(cd.Value.CorrespondingTreeNode is CapturedVariablesTreeNodeClassScope)).OrderBy(cd => cd.Key))
             {
-                _visitor.visit(clDecl.Value.ClassDeclaration);
-            }
+                var lambdas = clDecl.Value.NestedLambdas;
+                List<CapturedVariablesTreeNodeLambdaScope> ls;
+                if (lambdaGroups.TryGetValue(clDecl.Key, out ls))
+                {
+                    lambdas = lambdas.Concat(ls).ToList();
+                }
+                var classDecl = (class_definition)clDecl.Value.ClassDeclaration.type_def;
+                foreach (var lambdaDef in lambdas)
+                {
+                    var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDef.LambdaDefinition);
+                    classDecl.body.Add(SyntaxTreeBuilder.BuildOneMemberSection(procDecl));
+                }
 
+                var cl = CreateTypeDeclarationWithForwardDeclaration(clDecl.Value.ClassDeclaration);
+                procedures.AddRange(cl.Item2);
+                _visitor.visit(cl.Item1);
+            }
+            
+            _visitor.context.RestoreCurrentContext();
+            _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
+
+            return procedures;
+        }
+
+        private void VisitProceduresOfClasses(List<procedure_definition> procedures)
+        {
+            _visitor.context.SaveContextAndUpToGlobalLevel();
+            _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase;
+            procedures.ForEach(p => _visitor.visit(p));
             _visitor.context.RestoreCurrentContext();
             _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
         }
@@ -581,9 +745,15 @@ namespace TreeConverter.LambdaExpressions.Closure
             /* Предусмотреть случай, когда захвата переменных не происходит, но мы все равно находимся в лямбде - это нужно сделать на FinishPhase в syntax_tree_visitor
             /* Не забыть про where секцию */
 
-            for (var i = 0; i < _lambdasToBeAddedAsMethods.Count; i++)
+            var nestedLambdas = new List<CapturedVariablesTreeNodeLambdaScope>();
+            foreach (var cl in _generatedScopeClassesInfo.Where(cd => !(cd.Value.CorrespondingTreeNode is CapturedVariablesTreeNodeClassScope)))
             {
-                var lambdaDef = _lambdasToBeAddedAsMethods[i].LambdaDefinition;
+                nestedLambdas.AddRange(cl.Value.NestedLambdas);
+            }
+
+            foreach (CapturedVariablesTreeNodeLambdaScope t in _lambdasToBeAddedAsMethods.Concat(nestedLambdas))
+            {
+                var lambdaDef = t.LambdaDefinition;
                 if (lambdaDef.formal_parameters != null && lambdaDef.formal_parameters.params_list.Count > 0)
                 {
                     for (var j = 0; j < lambdaDef.formal_parameters.params_list.Count; j++)
@@ -716,8 +886,17 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             get
             {
-                return _visitor.context.top_function != null && _visitor.context.top_function.generic_params != null ||
-                       _visitor.context._ctn != null && _visitor.context._ctn.generic_params != null;
+                var funcStackAsList = _visitor.context.func_stack == null
+                                          ? null
+                                          : _visitor.context.func_stack.CloneInternalStack().ToList();
+
+                var funcIsGeneric = false;
+                if (funcStackAsList != null)
+                {
+                    funcIsGeneric = funcStackAsList.FirstOrDefault(f => f.generic_params != null) != null;
+                }
+
+                return funcIsGeneric || _visitor.context._ctn != null && _visitor.context._ctn.generic_params != null;
 
             }
         }
@@ -738,11 +917,19 @@ namespace TreeConverter.LambdaExpressions.Closure
                     res.AddRange(_visitor.context._ctn.generic_params.Select(par => new ident(par.name)));
                 }
 
-                if (_visitor.context.top_function != null && _visitor.context.top_function.generic_params != null)
-                {
-                    res.AddRange(_visitor.context.top_function.generic_params.Select(par => new ident(par.name)));
-                }
+                var funcStackAsList = _visitor.context.func_stack == null
+                                          ? null
+                                          : _visitor.context.func_stack.CloneInternalStack().ToList();
 
+                if (funcStackAsList != null)
+                {
+                    var funcGeneric = funcStackAsList.FirstOrDefault(f => f.generic_params != null);
+                    if (funcGeneric != null)
+                    {
+                        res.AddRange(funcGeneric.generic_params.Select(par => new ident(par.name)));
+                    }
+                }
+                
                 return res;
             }
         }
@@ -856,14 +1043,16 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             OnLeave += OnNodeLeave;
             ProcessNode(statementList);
-            SubstituteTypesInCaseOfGenerics();
             SubstituteLambdas();
+            SubstituteTypesInCaseOfGenerics();
             AddPropertiesToConvertingClass();
-            VisitClassDefinitions();
+            var procedures = VisitClassDefinitions();
             SubstituteVariablesDeclarations();
             SubstituteForLoopVariables();
             SubstituteForEachLoopVariables();
             SubstituteVarDefInProcedure(statementList);
+            //SubstituteLambdaParameters();
+            VisitProceduresOfClasses(procedures);
         }
     }
 }

@@ -20,7 +20,8 @@ namespace TreeConverter.LambdaExpressions.Closure
         private static int _generatedClassCounter; 
         private static int _generatedUpperClassCounter;
         private readonly Dictionary<SubstitutionKey, dot_node> _substitutions;
-
+        private readonly List<LambdaReferencesSubstitutionInfo> _lambdaIdReferences = new List<LambdaReferencesSubstitutionInfo>(); 
+        private readonly List<RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo> _rewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo = new List<RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo>(); 
         public static void Reset()
         {
             _generatedClassCounter = 0;
@@ -57,6 +58,8 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             private const string GeneratedSubstitutingFieldPrefix = "<>local_variables_"; //это поле для того, чтобы заменять в текущем блоке, где захватывались переменные, левую часть dot_node
             private static int _generatedSubstitutingFieldCounter;
+
+            public List<CapturedVariablesTreeNodeLambdaScope> NestedLambdas { get; set; }
 
             public syntax_tree_node CorrespondingSyntaxTreeNode
             {
@@ -129,7 +132,23 @@ namespace TreeConverter.LambdaExpressions.Closure
                 ClassDeclaration = classDeclaration;
                 _generatedSubstitutingFieldName = generatedSubstitutingFieldName;
                 CorrespondingTreeNode = correspondingTreeNode;
+                NestedLambdas = new List<CapturedVariablesTreeNodeLambdaScope>();
             }
+        }
+
+        private class LambdaReferencesSubstitutionInfo
+        {
+            public CapturedVariablesTreeNodeLambdaScope LambdaScope { get; set; }
+            public string VarName { get; set; }
+            public syntax_tree_node SyntaxTreeNodeWithVarDeclaration { get; set; }
+            public dot_node DotNode { get; set; }
+        }
+
+        private class RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo
+        {
+            public CapturedVariablesTreeNode TreeNode { get; set; }
+            public string Varname { get; set; }
+            public syntax_tree_node NodeWithVarDecl { get; set; }
         }
 
         public CapturedVariablesSubstitutionClassGenerator(CapturedVariablesTreeNode capturedVariablesRootTreeNode)
@@ -150,21 +169,27 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         private void VisitCapturedVar(CapturedVariablesTreeNode scope, CapturedVariablesTreeNode.CapturedSymbolInfo symbolInfo)
         {
-            var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name.ToLower(); //TODO: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name.ToLower();
             var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName == compiler_string_consts.self_word;
 
-            for (var k = 0; k < symbolInfo.ReferencingLambdas.Count; k++)
+            foreach (var referencingLambda in symbolInfo.ReferencingLambdas.OrderByDescending(rl => rl.ScopeIndex))
             {
-                var referencingLambda = symbolInfo.ReferencingLambdas[k];
                 if (scope != referencingLambda.ParentNode)
                 {
                     var upperScopesStack = new Stack<CapturedVariablesTreeNode>();
                     var crawlUpScope = referencingLambda.ParentNode;
+                    var anotherLambdaIsOnTheWay = crawlUpScope is CapturedVariablesTreeNodeLambdaScope;
 
-                    while (crawlUpScope != scope)
+                    while (crawlUpScope != null && crawlUpScope != scope && !anotherLambdaIsOnTheWay)
                     {
                         upperScopesStack.Push(crawlUpScope);
                         crawlUpScope = crawlUpScope.ParentNode;
+                        anotherLambdaIsOnTheWay = crawlUpScope is CapturedVariablesTreeNodeLambdaScope;
+                    }
+
+                    if (anotherLambdaIsOnTheWay || crawlUpScope == null)
+                    {
+                        continue;
                     }
 
                     var upperScopeWhereVarsAreCaptured = scope;
@@ -352,7 +377,6 @@ namespace TreeConverter.LambdaExpressions.Closure
                         }
                     }
 
-                    //TODO: Nested Lambdas
                     if (!(upperScopeWhereVarsAreCaptured == scope &&
                           upperScopeWhereVarsAreCaptured is CapturedVariablesTreeNodeClassScope))
                     {
@@ -403,8 +427,27 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     dotnode1 = new dot_node(dotnode1, new ident(varName));
                                 }
                             }
-                            AddReferencesToIdentInLambda(referencingLambda.ChildNodes[0], varName,
-                                                         symbolInfo.SyntaxTreeNodeWithVarDeclaration, dotnode1);
+                            _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
+                                {
+                                    LambdaScope = referencingLambda,
+                                    VarName = varName,
+                                    SyntaxTreeNodeWithVarDeclaration = symbolInfo.SyntaxTreeNodeWithVarDeclaration,
+                                    DotNode = dotnode1
+                                });
+                        }
+                        else
+                        {
+                            var dotnode1 = new dot_node(
+                                new ident(compiler_string_consts.self_word),
+                                new ident(varName));
+
+                            _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
+                            {
+                                LambdaScope = referencingLambda,
+                                VarName = varName,
+                                SyntaxTreeNodeWithVarDeclaration = symbolInfo.SyntaxTreeNodeWithVarDeclaration,
+                                DotNode = dotnode1
+                            });
                         }
                     }
                     if (!referencingLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.HasValue ||
@@ -454,6 +497,18 @@ namespace TreeConverter.LambdaExpressions.Closure
                         }
                     }
 
+                    var dotnode1 = new dot_node(
+                                new ident(compiler_string_consts.self_word),
+                                new ident(varName));
+
+                    _lambdaIdReferences.Add(new LambdaReferencesSubstitutionInfo
+                    {
+                        LambdaScope = referencingLambda,
+                        VarName = varName,
+                        SyntaxTreeNodeWithVarDeclaration = symbolInfo.SyntaxTreeNodeWithVarDeclaration,
+                        DotNode = dotnode1
+                    });
+
                     if (!referencingLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.HasValue ||
                         scope.ScopeIndex > referencingLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod)
                     {
@@ -468,24 +523,93 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
-        private void AddReferencesToIdentInLambda(CapturedVariablesTreeNode scope, string varName, syntax_tree_node syntaxTreeNodeWithVarDeclaration, dot_node substDotNode)
+        private void AddReferencesToIdentInLambda(type_declaration upperScopeWhereVarsAreCapturedClass, CapturedVariablesTreeNode scope, string varName, syntax_tree_node syntaxTreeNodeWithVarDeclaration, dot_node substDotNode, bool nestedLambda)
         {
-            //TODO: Nested Lambdas
-
             for (var i = 0; i < scope.ChildNodes.Count; i++)
             {
-                if (!(scope.ChildNodes[i] is CapturedVariablesTreeNodeLambdaScope)) // Вложенные лямбды пока не рассматриваем
+                if (!(scope.ChildNodes[i] is CapturedVariablesTreeNodeLambdaScope))
                 {
                     var substKey = new SubstitutionKey(varName, syntaxTreeNodeWithVarDeclaration,
                                                        scope.ChildNodes[i].CorrespondingSyntaxTreeNode);
+
+                    if (_capturedVarsClassDefs.ContainsKey(scope.ChildNodes[i].ScopeIndex))
+                    {
+                        var cl = _capturedVarsClassDefs[scope.ChildNodes[i].ScopeIndex];
+                        if (cl.AssignNodeForUpperClassFieldInitialization == null)
+                        {
+                            var fieldType =
+                                    SyntaxTreeBuilder.BuildSimpleType(upperScopeWhereVarsAreCapturedClass.type_name.name);
+                            var field =
+                                SyntaxTreeBuilder.BuildClassFieldsSection(
+                                    new List<ident>
+                                            {
+                                                new ident(cl.GeneratedUpperClassFieldName)
+                                            },
+                                    new List<type_definition> { fieldType });
+
+                            var clClass = (class_definition) cl.ClassDeclaration.type_def;
+                            clClass.body.Add(field);
+
+                            cl.AssignNodeForUpperClassFieldInitialization =
+                                new assign(
+                                    new dot_node(new ident(cl.GeneratedSubstitutingFieldName),new ident(cl.GeneratedUpperClassFieldName)),
+                                    new ident(compiler_string_consts.self_word));
+
+                        }
+                    }
 
                     if (!_substitutions.ContainsKey(substKey))
                     {
                         _substitutions.Add(substKey, substDotNode);
                     }
 
-                    AddReferencesToIdentInLambda(scope.ChildNodes[i], varName, syntaxTreeNodeWithVarDeclaration,
-                                                 substDotNode);
+                    AddReferencesToIdentInLambda(upperScopeWhereVarsAreCapturedClass, scope.ChildNodes[i], varName, syntaxTreeNodeWithVarDeclaration, substDotNode, nestedLambda);
+                }
+                else
+                {
+                    var scopeAsLambda = scope.ChildNodes[i] as CapturedVariablesTreeNodeLambdaScope;
+                    if (scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.HasValue)
+                    {
+                        dot_node substDotNode1;
+                        if (!nestedLambda)
+                        {
+                            substDotNode1 = new dot_node(new ident(_capturedVarsClassDefs[scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].GeneratedUpperClassFieldName), new ident(varName));
+                        }
+                        else
+                        {
+                            var parts = new Stack<ident>();
+                            var dn = substDotNode;
+                            parts.Push((ident)dn.right);
+
+                            while (!(dn.left is ident && dn.right is ident))
+                            {
+                                dn = (dot_node)dn.left;
+                                parts.Push((ident)dn.right);
+                            }
+
+                            parts.Push((ident)dn.left);
+
+                            substDotNode1 = new dot_node(new ident(_capturedVarsClassDefs[scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].GeneratedUpperClassFieldName), parts.Pop());
+                            
+                            while (parts.Count > 0)
+                            {
+                                substDotNode1 = new dot_node(substDotNode, parts.Pop());    
+                            }
+                        }
+
+                        var substKey = new SubstitutionKey(varName, syntaxTreeNodeWithVarDeclaration,
+                                                       scope.ChildNodes[0].CorrespondingSyntaxTreeNode);
+                        if (!_substitutions.ContainsKey(substKey))
+                        {
+                            _substitutions.Add(substKey, substDotNode1);
+                        }
+
+                        AddReferencesToIdentInLambda(_capturedVarsClassDefs[scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].ClassDeclaration, scopeAsLambda.ChildNodes[0], varName, syntaxTreeNodeWithVarDeclaration, substDotNode1, true);
+                    }
+                    else
+                    {
+                        AddReferencesToIdentInLambda(upperScopeWhereVarsAreCapturedClass, scope.ChildNodes[0], varName, syntaxTreeNodeWithVarDeclaration, substDotNode, nestedLambda);
+                    }
                 }
             }
         }
@@ -524,8 +648,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                                             currentNode));
                     }
 
-                    // TODO: тут предусматривать разные случаи
-
+                   
                     var vars = variablesFromThisScopeWhichWereCaptured
                         .Select(field => field.SymbolInfo.sym_info as IVAriableDefinitionNode)
                         .ToList();
@@ -571,7 +694,6 @@ namespace TreeConverter.LambdaExpressions.Closure
 
             if (variablesFromThisScopeWhichWereCaptured.Count > 0)
             {
-                // TODO: тут предусматривать разные случаи
                 var vars = variablesFromThisScopeWhichWereCaptured
                     .Select(x =>
                             new
@@ -586,7 +708,13 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     foreach (CapturedVariablesTreeNode childNode in currentNode.ChildNodes)
                     {
-                        RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariable(childNode, var.IVarDefinitionNode.name, var.VarDeclNode);
+                        _rewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo.Add(
+                            new RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo
+                                {
+                                    TreeNode = childNode,
+                                    Varname = var.IVarDefinitionNode.name,
+                                    NodeWithVarDecl = var.VarDeclNode
+                                });
                     }
                 }
             }
@@ -594,9 +722,15 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         private void RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariable(CapturedVariablesTreeNode node, string varName, syntax_tree_node nodeWithVarDecl)
         {
+            if (node is CapturedVariablesTreeNodeLambdaScope)
+            {
+                RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariable(node.ChildNodes[0], varName, nodeWithVarDecl);
+                return;
+            }
+
             if (!(node is CapturedVariablesTreeNodeBlockScope || 
                   node is CapturedVariablesTreeNodeForScope || 
-                  node is CapturedVariablesTreeNodeForEachScope)) // Добавляем ссылки только для скоупов-блоков и циклов, потому что остальные случаи должны были уже быть рассмотрены (когда эти случаи буду реализованы)
+                  node is CapturedVariablesTreeNodeForEachScope))
             {
                 return;
             }
@@ -636,6 +770,17 @@ namespace TreeConverter.LambdaExpressions.Closure
         public VariableSubstitutionsInfo GenerateSubstitutions()
         {
             VisitTreeAndBuildClassDefinitions(_capturedVariablesRootTreeNode);
+
+            foreach (var ls in _lambdaIdReferences.Where(x => x.LambdaScope.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.HasValue))
+            {
+                AddReferencesToIdentInLambda(_capturedVarsClassDefs[ls.LambdaScope.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].ClassDeclaration, 
+                    ls.LambdaScope.ChildNodes[0], ls.VarName, ls.SyntaxTreeNodeWithVarDeclaration, ls.DotNode, false);
+            }
+
+            foreach (var r in _rewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariableInfo)
+            {
+                RewriteReferencesForNodesThatAreChildNodesToThoseThatContainCapturedVariable(r.TreeNode, r.Varname, r.NodeWithVarDecl);
+            }
 
             return new VariableSubstitutionsInfo
                 {

@@ -16,7 +16,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         private readonly syntax_tree_visitor _visitor;
         private CapturedVariablesTreeNode _currentTreeNode;
         private readonly Dictionary<int, CapturedVariablesTreeNode> _scopesCapturedVarsNodesDictionary;
-        private CapturedVariablesTreeNodeLambdaScope _currentLambdaScopeNode;                                //TODO Пересмотреть для вложенных лямбд
+        private Stack<CapturedVariablesTreeNodeLambdaScope> _currentLambdaScopeNodeStack = new Stack<CapturedVariablesTreeNodeLambdaScope>();
         private readonly Dictionary<SubstitutionKey, List<ident>> _identsReferences;
         private CapturedVariablesTreeNode _rootNode;
         private CapturedVariablesTreeNodeClassScope _classScope;
@@ -49,6 +49,13 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        private bool InLambdaContext
+        {
+            get
+            {
+                return _currentLambdaScopeNodeStack.Count > 0;
+            }
+        }
         public CapturedVariablesTreeBuilder(syntax_tree_visitor visitor)
         {
             _visitor = visitor;
@@ -125,7 +132,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             
             if (si == null)
             {
-                if (_currentLambdaScopeNode != null)
+                if (InLambdaContext)
                 {
                     _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                     return;
@@ -154,13 +161,13 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
                                     si.sym_info.semantic_node_type == semantic_node_type.class_field;
 
-            if (!(acceptableVarType) && _currentLambdaScopeNode != null) 
+            if (!(acceptableVarType) && InLambdaContext) 
             {
                 _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                 return;
             }
 
-            if (si.sym_info.semantic_node_type == semantic_node_type.class_field && _currentLambdaScopeNode != null)
+            if (si.sym_info.semantic_node_type == semantic_node_type.class_field && InLambdaContext)
             {
                 var semClassField = (class_field)si.sym_info;
                 if (semClassField.polymorphic_state != polymorphic_state.ps_common)
@@ -186,12 +193,12 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     if (si.sym_info.semantic_node_type == semantic_node_type.local_variable)
                     {
-                        if (!(idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && _currentLambdaScopeNode != null)
+                        if (!(idName == compiler_string_consts.self_word && si.scope is SymbolTable.ClassMethodScope && _classScope != null) && InLambdaContext)
                         {
                             _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                         }
                     }
-                    if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.ToLower() == idName).parameter_type != parameter_type.value && _currentLambdaScopeNode != null)
+                    if (si.sym_info.semantic_node_type == semantic_node_type.common_parameter && prScope.FunctionNode.parameters.First(v => v.name.ToLower() == idName).parameter_type != parameter_type.value && InLambdaContext)
                     {
                         _visitor.AddError(new CannotCaptureNonValueParameters(_visitor.get_location(id)));
                     }
@@ -268,19 +275,43 @@ namespace TreeConverter.LambdaExpressions.Closure
                     _identsReferences[substKey].Add(id);
                 }
 
-                if (_currentLambdaScopeNode == null || 
-                    scopeIndex >= _currentLambdaScopeNode.ScopeIndex)
+                if (InLambdaContext && scope is CapturedVariablesTreeNodeLambdaScope &&
+                    scopeIndex < _currentLambdaScopeNodeStack.Peek().ScopeIndex) //TODO: Захват параметров лямбды в другой лямбде
+                {
+                    _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
+                    return;
+                }
+
+                if (!InLambdaContext || 
+                    scopeIndex >= _currentLambdaScopeNodeStack.Peek().ScopeIndex)
                 {
                     return;
                 }
 
-                if (!_currentLambdaScopeNode.CapturedVarsSymbolInfo.Contains(si))
+                var stackAsList = _currentLambdaScopeNodeStack.ToList();
+                stackAsList.RemoveAt(0);
+
+                if (!_currentLambdaScopeNodeStack.Peek().CapturedVarsSymbolInfo.Contains(si))
                 {
-                    _currentLambdaScopeNode.CapturedVarsSymbolInfo.Add(si);
+                    _currentLambdaScopeNodeStack.Peek().CapturedVarsSymbolInfo.Add(si);
+                    foreach (var capturedVariablesTreeNodeLambdaScope in stackAsList)
+                    {
+                        if (!capturedVariablesTreeNodeLambdaScope.CapturedVarsSymbolInfo.Contains(si))
+                        {
+                            capturedVariablesTreeNodeLambdaScope.CapturedVarsSymbolInfo.Add(si);
+                        }
+                    }
                 }
-                if (!idRef.ReferencingLambdas.Contains(_currentLambdaScopeNode))
+                if (!idRef.ReferencingLambdas.Contains(_currentLambdaScopeNodeStack.Peek()))
                 {
-                    idRef.ReferencingLambdas.Add(_currentLambdaScopeNode);
+                    idRef.ReferencingLambdas.Add(_currentLambdaScopeNodeStack.Peek());
+                    foreach (var capturedVariablesTreeNodeLambdaScope in stackAsList)
+                    {
+                        if (!idRef.ReferencingLambdas.Contains(capturedVariablesTreeNodeLambdaScope))
+                        {
+                            idRef.ReferencingLambdas.Add(capturedVariablesTreeNodeLambdaScope);
+                        }
+                    }
                 }
             }
         }
@@ -529,14 +560,14 @@ namespace TreeConverter.LambdaExpressions.Closure
                 _visitor.context.func_stack.top().scope.ScopeNum, lambdaDefinition);
 
             _currentTreeNode.LambdasDefinedInScope.Add(newTreeNode);
-            _currentLambdaScopeNode = newTreeNode;
+            _currentLambdaScopeNodeStack.Push(newTreeNode);
 
             if (_currentTreeNode != null)
             {
                 _currentTreeNode.ChildNodes.Add(newTreeNode);
             }
             _currentTreeNode = newTreeNode;
-
+            _scopesCapturedVarsNodesDictionary.Add(_currentTreeNode.ScopeIndex, _currentTreeNode);
 
             VisitProcParameters(procDecl.proc_header.parameters);
             ProcessNode(procDecl.proc_body);
@@ -545,7 +576,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             _visitor.context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, false);
 
             _currentTreeNode = _currentTreeNode.ParentNode;
-            _currentLambdaScopeNode = null;                     //TODO: Вложенные лямбды - изменить это
+            _currentLambdaScopeNodeStack.Pop();
 
             LambdaHelper.RemoveLambdaInfoFromCompilationContext(_visitor.context, lambdaDefinition);
         }

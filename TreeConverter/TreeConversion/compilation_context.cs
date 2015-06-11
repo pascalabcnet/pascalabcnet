@@ -1048,12 +1048,6 @@ namespace PascalABCCompiler.TreeConverter
         {
             var func_stack_as_array = _func_stack.CloneInternalStack().ToList();
 
-            var upperLambda = func_stack_as_array.FirstOrDefault(func => LambdaHelper.IsLambdaName(func.name));
-            if (upperLambda != null)
-            {
-                syntax_tree_visitor.AddError(new NestedLambdasAreNotSupportedInThisVersionOfCompiler(def_loc));
-            }
-
             var nestedFunc = func_stack_as_array.FirstOrDefault(func => func is common_in_function_function_node);
             if (nestedFunc != null)
             {
