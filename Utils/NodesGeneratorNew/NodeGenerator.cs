@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace NodeGenerator
@@ -183,6 +184,18 @@ namespace NodeGenerator
         public static readonly string begin_seq = "begin";
         public static readonly string end_seq = "end";
         //\ssyy
+
+        public static readonly string get_keyword = "get";
+        public static readonly string set_keyword = "set";
+        public static readonly string default_keyword = "default";
+        public static readonly string value_keyword = "value";
+        public static readonly string throw_keyword = "throw";
+        public static readonly string index_out_of_range_exception_name = "IndexOutOfRangeException";
+        public static readonly string subnodes_property_name = "subnodes_count";
+        public static readonly string object_keyword = "object";
+        public static readonly string or_keyword = "||";
+        public static readonly string minus_keyword = "-";
+        public static readonly string question_keyword = "?";
 
         public static readonly string hierarchy_visitor_class_name = "HierarchyVisitor";
         public static readonly string hierarchy_visitor_file_name = hierarchy_visitor_class_name + ".cs";
@@ -975,6 +988,259 @@ namespace NodeGenerator
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
 
             sw.WriteLine();
+        }
+
+        public void generate_subnodes_number_property(StreamWriter sw)
+        {
+            var subnodes = collect_subnodes(true);
+            var fieldsCount = subnodes.Count;
+
+            sw.WriteLine(@"		///<summary>");
+            sw.WriteLine(@"		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List");
+            sw.WriteLine(@"		///</summary>");
+            string pol_type = "";
+            if (base_class != null)
+            {
+                pol_type = text_consts.override_keyword;
+            }
+            else
+            {
+                pol_type = text_consts.virtual_keyword;
+            }
+
+            var listFields = subnodes
+                .OfType<simple_element>()
+                .Where(se => se.val_field_type_name.Length > 4 &&
+                             se.val_field_type_name.Substring(0, 5) == "List<")
+                .ToList();
+
+            var listFieldsStr = new StringBuilder();
+            foreach (var listField in listFields)
+            {
+                listFieldsStr.Append(text_consts.space + text_consts.plus + text_consts.space +
+                                    text_consts.open_par + listField.field_name + text_consts.space + text_consts.equal_keyword_name + text_consts.space +
+                                    text_consts.null_keyword_name + text_consts.space + text_consts.question_keyword + text_consts.space + "0" + text_consts.space +
+                                    text_consts.colon + text_consts.space + listField.field_name + text_consts.dot + text_consts.count_name + text_consts.close_par);
+            }
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
+                         pol_type + text_consts.space +
+                         text_consts.int32_type_name + text_consts.space + text_consts.subnodes_property_name);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.get_keyword);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                         text_consts.return_keyword + text_consts.space + fieldsCount + listFieldsStr + text_consts.semicolon);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
+        }
+
+        public void generate_indexer(StreamWriter sw)
+        {
+            var fields = collect_subnodes(true);
+
+            var listFields = fields
+                .OfType<simple_element>()
+                .Where(se => se.val_field_type_name.Length > 4 &&
+                             se.val_field_type_name.Substring(0, 5) == "List<")
+                .ToList();
+
+            const string ind_string = "ind";
+
+            //sw.WriteLine();
+            sw.WriteLine(@"		///<summary>");
+            sw.WriteLine(@"		///Индексатор для получения всех подузлов");
+            sw.WriteLine(@"		///</summary>");
+            string pol_type = "";
+            if (base_class != null)
+            {
+                pol_type = text_consts.override_keyword;
+            }
+            else
+            {
+                pol_type = text_consts.virtual_keyword;
+            }
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
+                pol_type + text_consts.space +
+                text_consts.object_keyword + text_consts.space + text_consts.this_keyword + text_consts.open_qbracket +
+                text_consts.int32_type_name + text_consts.space + ind_string + text_consts.close_qbracket);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.get_keyword);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                         text_consts.if_keyword_name + text_consts.open_par + text_consts.subnodes_property_name +
+                         text_consts.space + text_consts.equal_keyword_name + text_consts.space + "0" + text_consts.space +
+                         text_consts.or_keyword + text_consts.space + ind_string + text_consts.space + text_consts.less_keyword_name + text_consts.space + "0" + text_consts.space +
+                         text_consts.or_keyword + text_consts.space + ind_string + text_consts.space + text_consts.greater_keyword_name + text_consts.space + text_consts.subnodes_property_name + text_consts.minus_keyword + "1" +
+                         text_consts.close_par);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                             text_consts.throw_keyword + text_consts.space + text_consts.new_keyword + text_consts.space +
+                             text_consts.index_out_of_range_exception_name + text_consts.open_par + text_consts.close_par +
+                             text_consts.semicolon);
+
+            if (fields.Count > 0)
+            {
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                             text_consts.switch_keyword_name + text_consts.open_par + ind_string + text_consts.close_par);
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+                for (var i = 0; i < fields.Count; i++)
+                {
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.case_keyword_name + text_consts.space + i + text_consts.colon);
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.tab + text_consts.return_keyword + text_consts.space + fields[i].field_name +
+                                 text_consts.semicolon);
+                }
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+            }
+
+            if (listFields.Count > 0)
+            {
+                const string indexCouterName = "index_counter";
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                             text_consts.int32_type_name + text_consts.space + indexCouterName + text_consts.assign +
+                             ind_string + text_consts.space + text_consts.minus_keyword + text_consts.space + fields.Count + text_consts.semicolon);
+
+                for (var i = 0; i < listFields.Count; i++)
+                {
+                    var listFiled = listFields[i];
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.if_keyword_name + text_consts.open_par + listFiled.field_name +
+                                 text_consts.space + text_consts.not_equal_keyword_name + text_consts.space +
+                                 text_consts.null_keyword_name + text_consts.close_par);
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.if_keyword_name + text_consts.open_par + indexCouterName +
+                                 text_consts.space + text_consts.less_keyword_name + text_consts.space +
+                                 listFiled.field_name + text_consts.dot + text_consts.count_name + text_consts.close_par);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.return_keyword + text_consts.space + listFiled.field_name + text_consts.open_qbracket + indexCouterName + text_consts.close_qbracket +
+                                 text_consts.semicolon);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+                    if (i < listFields.Count - 1)
+                    {
+                        sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                     text_consts.else_keyword_name);
+                        sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                     text_consts.tab +
+                                     indexCouterName + text_consts.space + text_consts.assign + text_consts.space +
+                                     indexCouterName + text_consts.space + text_consts.minus_keyword + text_consts.space +
+                                     listFiled.field_name + text_consts.dot + text_consts.count_name +
+                                     text_consts.semicolon);
+                    }
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+                }
+            }
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                         text_consts.return_keyword + text_consts.space + text_consts.null_keyword_name +
+                         text_consts.semicolon);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.set_keyword);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                         text_consts.if_keyword_name + text_consts.open_par + text_consts.subnodes_property_name +
+                         text_consts.space + text_consts.equal_keyword_name + text_consts.space + "0" + text_consts.space +
+                         text_consts.or_keyword + text_consts.space + ind_string + text_consts.space + text_consts.less_keyword_name + text_consts.space + "0" + text_consts.space +
+                         text_consts.or_keyword + text_consts.space + ind_string + text_consts.space + text_consts.greater_keyword_name + text_consts.space + text_consts.subnodes_property_name + text_consts.minus_keyword + "1" +
+                         text_consts.close_par);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                             text_consts.throw_keyword + text_consts.space + text_consts.new_keyword + text_consts.space +
+                             text_consts.index_out_of_range_exception_name + text_consts.open_par + text_consts.close_par +
+                             text_consts.semicolon);
+
+            if (fields.Count > 0)
+            {
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                             text_consts.switch_keyword_name + text_consts.open_par + ind_string + text_consts.close_par);
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+                for (var i = 0; i < fields.Count; i++)
+                {
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.case_keyword_name + text_consts.space + i + text_consts.colon);
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.tab + fields[i].field_name + text_consts.space +
+                                 text_consts.assign + text_consts.space + text_consts.open_par + fields[i].field_type_name + text_consts.close_par +
+                                 text_consts.value_keyword + text_consts.semicolon);
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.tab + text_consts.break_keyword_name + text_consts.semicolon);
+                }
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+            }
+
+            if (listFields.Count > 0)
+            {
+                const string indexCouterName = "index_counter";
+                sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                             text_consts.int32_type_name + text_consts.space + indexCouterName + text_consts.assign +
+                             ind_string + text_consts.space + text_consts.minus_keyword + text_consts.space + fields.Count + text_consts.semicolon);
+
+                for (var i = 0; i < listFields.Count; i++)
+                {
+                    var listFiled = listFields[i];
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.if_keyword_name + text_consts.open_par + listFiled.field_name +
+                                 text_consts.space + text_consts.not_equal_keyword_name + text_consts.space +
+                                 text_consts.null_keyword_name + text_consts.close_par);
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+                    var elementType = listFiled.val_field_type_name.Trim().Substring(5, listFiled.val_field_type_name.Length - 6);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 text_consts.if_keyword_name + text_consts.open_par + indexCouterName +
+                                 text_consts.space + text_consts.less_keyword_name + text_consts.space +
+                                 listFiled.field_name + text_consts.dot + text_consts.count_name + text_consts.close_par);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                 listFiled.field_name + text_consts.open_qbracket + indexCouterName + text_consts.close_qbracket +
+                                 text_consts.assign + text_consts.space + text_consts.open_par + elementType + text_consts.close_par +
+                                 text_consts.value_keyword + text_consts.semicolon);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.return_keyword + text_consts.semicolon);
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+                    if (i < listFields.Count - 1)
+                    {
+                        sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                     text_consts.else_keyword_name);
+                        sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                                     text_consts.tab +
+                                     indexCouterName + text_consts.space + text_consts.assign + text_consts.space +
+                                     indexCouterName + text_consts.space + text_consts.minus_keyword + text_consts.space +
+                                     listFiled.field_name + text_consts.dot + text_consts.count_name +
+                                     text_consts.semicolon);
+                    }
+
+                    sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+                }
+            }
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+            //sw.WriteLine();
         }
 
         public void genrate_summary_comment_for_interface_method(StreamWriter sw, string method_name_prefix = "")
@@ -2689,6 +2955,9 @@ namespace NodeGenerator
 
             if (_methods.Count > 0)
                 sw.WriteLine();
+
+            generate_subnodes_number_property(sw);
+            generate_indexer(sw);
 
             generate_visitor_node(sw);
 

@@ -874,6 +874,15 @@ procedure WriteAllText(path: string; s: string);
 /// —оздает новый файл с кодировкой en, записывает в него содержимое строки 
 procedure WriteAllText(path: string; s: string; en: Encoding);
 
+/// ¬озвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска 
+function EnumerateFiles(path: string; searchPattern: string := '*.*'): sequence of string;
+/// ¬озвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включа€ подкаталоги 
+function EnumerateAllFiles(path: string; searchPattern: string := '*.*'): sequence of string;
+/// ¬озвращает последовательность имен каталогов по заданному пути
+function EnumerateDirectories(path: string): sequence of string;
+/// ¬озвращает последовательность имен каталогов по заданному пути, включа€ подкаталоги
+function EnumerateAllDirectories(path: string): sequence of string;
+
 // -----------------------------------------------------
 //                  Abstract binary files
 // -----------------------------------------------------
@@ -2758,7 +2767,7 @@ begin
   end
   else
   begin
-    var q := o.GetType.GetMethod('ToString',System.Reflection.BindingFlags.DeclaredOnly or System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Instance,nil,new System.Type[0],nil);
+    var q := o.GetType.GetMethod('ToString',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Instance,nil,new System.Type[0],nil);
     var gg := o.GetType.FullName.StartsWith('System.Tuple');
     var gg1 := o.GetType.Name.StartsWith('KeyValuePair');
     if (q<>nil) and q.IsVirtual and not gg and not gg1 then
@@ -5063,6 +5072,26 @@ end;
 procedure WriteAllText(path: string; s: string; en: Encoding);
 begin
   System.IO.File.WriteAllText(path,s,en);
+end;
+
+function EnumerateFiles(path: string; searchPattern: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.TopDirectoryOnly)
+end;
+
+function EnumerateAllFiles(path: string; searchPattern: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.AllDirectories)
+end;
+
+function EnumerateDirectories(path: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateDirectories(path,'*.*',System.IO.SearchOption.TopDirectoryOnly)
+end;
+
+function EnumerateAllDirectories(path: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateDirectories(path,'*.*',System.IO.SearchOption.AllDirectories)
 end;
 
 // -----------------------------------------------------
