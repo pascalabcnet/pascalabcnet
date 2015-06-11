@@ -95,12 +95,20 @@ namespace VisualPascalABC
             {
 
             } 
+            try
+            {
+
             if (Environment.OSVersion.Version.Major >= 6) SetProcessDPIAware();
             CommandLineArgs = args;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             MainForm = new Form1();
             Application.Run(MainForm);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
         }
     }
     
