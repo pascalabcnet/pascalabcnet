@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 {$reference Compiler.dll}
 {$reference CodeCompletion.dll}
 {$reference Errors.dll}

@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 begin
   var args := System.Environment.GetCommandLineArgs();
   var args2 := new string[args.Length > 2?args.Length-2:0];

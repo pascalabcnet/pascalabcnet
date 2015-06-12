@@ -1637,6 +1637,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as statement_list, right as statement_list);
                 else if (left is inherited_method_call)
                     CompareInternal(left as inherited_method_call, right as inherited_method_call);
+                else if (left is assign)
+                    CompareInternal(left as assign, right as assign);
                 //else if (left is expression) // SSM 12/06/15
                 //    CompareInternal(left as expression, right as expression);
 
