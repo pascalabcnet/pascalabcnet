@@ -63,7 +63,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_expression(expression _expression)
 		{
-			write_statement(_expression);
+			write_declaration(_expression);
 		}
 
 
@@ -159,7 +159,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_assign(assign _assign)
 		{
-			write_expression(_assign);
+			write_statement(_assign);
 			if (_assign.to == null)
 			{
 				bw.Write((byte)0);

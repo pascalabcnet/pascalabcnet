@@ -648,8 +648,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as indexer, right as indexer);
                 else if (left is ident_with_templateparams)
                     CompareInternal(left as ident_with_templateparams, right as ident_with_templateparams);
-                else if (left is assign)
-                    CompareInternal(left as assign, right as assign);
+                //else if (left is assign)      // SSM 12/06/15
+                //    CompareInternal(left as assign, right as assign);
                 else if (left is typeof_operator)
                     CompareInternal(left as typeof_operator, right as typeof_operator);
                 else if (left is function_lambda_call)
@@ -1637,8 +1637,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as statement_list, right as statement_list);
                 else if (left is inherited_method_call)
                     CompareInternal(left as inherited_method_call, right as inherited_method_call);
-                else if (left is expression)
-                    CompareInternal(left as expression, right as expression);
+                //else if (left is expression) // SSM 12/06/15
+                //    CompareInternal(left as expression, right as expression);
 
                 else throw new NotImplementedException(left.GetType().ToString());
             }

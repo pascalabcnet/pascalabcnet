@@ -357,12 +357,13 @@ namespace NodesGenerator
             // NavigationPanel
             // 
             this.NavigationPanel.Font = new System.Drawing.Font("Tahoma", 9F);
+            this.NavigationPanel.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.NavigationPanel.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripDropDownButton1,
             this.toolStripStatusLabel2});
-            this.NavigationPanel.Location = new System.Drawing.Point(0, 700);
+            this.NavigationPanel.Location = new System.Drawing.Point(0, 696);
             this.NavigationPanel.Name = "NavigationPanel";
-            this.NavigationPanel.Size = new System.Drawing.Size(1088, 24);
+            this.NavigationPanel.Size = new System.Drawing.Size(1088, 28);
             this.NavigationPanel.SizingGrip = false;
             this.NavigationPanel.TabIndex = 18;
             this.NavigationPanel.Resize += new System.EventHandler(this.NavigationPanel_Resize);
@@ -375,16 +376,17 @@ namespace NodesGenerator
             this.toolStripDropDownButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripDropDownButton1.Margin = new System.Windows.Forms.Padding(0, 2, 0, 2);
             this.toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            this.toolStripDropDownButton1.Size = new System.Drawing.Size(29, 20);
+            this.toolStripDropDownButton1.Size = new System.Drawing.Size(34, 24);
             this.toolStripDropDownButton1.Text = "toolStripDropDownButton1";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 19);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(0, 23);
             // 
             // mainToolStrip
             // 
+            this.mainToolStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonNew,
             this.toolStripOpenButton,
@@ -397,7 +399,7 @@ namespace NodesGenerator
             this.toolStripGenerateButton});
             this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
             this.mainToolStrip.Name = "mainToolStrip";
-            this.mainToolStrip.Size = new System.Drawing.Size(1088, 25);
+            this.mainToolStrip.Size = new System.Drawing.Size(1088, 27);
             this.mainToolStrip.TabIndex = 19;
             this.mainToolStrip.Text = "toolStrip1";
             // 
@@ -407,7 +409,7 @@ namespace NodesGenerator
             this.toolStripButtonNew.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonNew.Image")));
             this.toolStripButtonNew.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonNew.Name = "toolStripButtonNew";
-            this.toolStripButtonNew.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonNew.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonNew.Text = "Новый";
             this.toolStripButtonNew.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -417,7 +419,7 @@ namespace NodesGenerator
             this.toolStripOpenButton.Image = ((System.Drawing.Image)(resources.GetObject("toolStripOpenButton.Image")));
             this.toolStripOpenButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripOpenButton.Name = "toolStripOpenButton";
-            this.toolStripOpenButton.Size = new System.Drawing.Size(23, 22);
+            this.toolStripOpenButton.Size = new System.Drawing.Size(24, 24);
             this.toolStripOpenButton.Text = "Открыть...";
             this.toolStripOpenButton.Click += new System.EventHandler(this.open_Click);
             // 
@@ -427,7 +429,7 @@ namespace NodesGenerator
             this.toolStripSaveButton.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSaveButton.Image")));
             this.toolStripSaveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSaveButton.Name = "toolStripSaveButton";
-            this.toolStripSaveButton.Size = new System.Drawing.Size(23, 22);
+            this.toolStripSaveButton.Size = new System.Drawing.Size(24, 24);
             this.toolStripSaveButton.Text = "Сохранить";
             this.toolStripSaveButton.Click += new System.EventHandler(this.save_Click);
             // 
@@ -437,7 +439,7 @@ namespace NodesGenerator
             this.toolStripSaveAsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolStripSaveAsButton.Image")));
             this.toolStripSaveAsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSaveAsButton.Name = "toolStripSaveAsButton";
-            this.toolStripSaveAsButton.Size = new System.Drawing.Size(23, 22);
+            this.toolStripSaveAsButton.Size = new System.Drawing.Size(24, 24);
             this.toolStripSaveAsButton.Text = "Сохранить как...";
             this.toolStripSaveAsButton.Click += new System.EventHandler(this.save_as_Click);
             // 
@@ -447,14 +449,14 @@ namespace NodesGenerator
             this.toolStripButtonSaveStore.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSaveStore.Image")));
             this.toolStripButtonSaveStore.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonSaveStore.Name = "toolStripButtonSaveStore";
-            this.toolStripButtonSaveStore.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonSaveStore.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonSaveStore.Text = "Сохранить и сделать копию";
             this.toolStripButtonSaveStore.Click += new System.EventHandler(this.toolStripButtonSaveStore_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripOptionsButton
             // 
@@ -462,14 +464,14 @@ namespace NodesGenerator
             this.toolStripOptionsButton.Image = ((System.Drawing.Image)(resources.GetObject("toolStripOptionsButton.Image")));
             this.toolStripOptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripOptionsButton.Name = "toolStripOptionsButton";
-            this.toolStripOptionsButton.Size = new System.Drawing.Size(23, 22);
+            this.toolStripOptionsButton.Size = new System.Drawing.Size(24, 24);
             this.toolStripOptionsButton.Text = "Настройки...";
             this.toolStripOptionsButton.Click += new System.EventHandler(this.toolStripOptionsButton_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripGenerateButton
             // 
@@ -477,7 +479,7 @@ namespace NodesGenerator
             this.toolStripGenerateButton.Image = ((System.Drawing.Image)(resources.GetObject("toolStripGenerateButton.Image")));
             this.toolStripGenerateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripGenerateButton.Name = "toolStripGenerateButton";
-            this.toolStripGenerateButton.Size = new System.Drawing.Size(23, 22);
+            this.toolStripGenerateButton.Size = new System.Drawing.Size(24, 24);
             this.toolStripGenerateButton.Text = "Генерировать";
             this.toolStripGenerateButton.Click += new System.EventHandler(this.toolStripGenerateButton_Click);
             // 
@@ -488,7 +490,7 @@ namespace NodesGenerator
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Left;
             this.groupBox1.Location = new System.Drawing.Point(0, 164);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(295, 536);
+            this.groupBox1.Size = new System.Drawing.Size(295, 532);
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Узлы:";
@@ -500,10 +502,10 @@ namespace NodesGenerator
             this.nodes_list.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.nodes_list.IntegralHeight = false;
             this.nodes_list.ItemHeight = 20;
-            this.nodes_list.Location = new System.Drawing.Point(3, 43);
+            this.nodes_list.Location = new System.Drawing.Point(3, 45);
             this.nodes_list.Name = "nodes_list";
             this.nodes_list.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.nodes_list.Size = new System.Drawing.Size(289, 490);
+            this.nodes_list.Size = new System.Drawing.Size(289, 484);
             this.nodes_list.TabIndex = 4;
             this.nodes_list.SelectedIndexChanged += new System.EventHandler(this.nodes_list_SelectedIndexChanged);
             this.nodes_list.KeyDown += new System.Windows.Forms.KeyEventHandler(this.nodes_list_KeyDown);
@@ -512,6 +514,7 @@ namespace NodesGenerator
             // 
             // nodesContextMenu
             // 
+            this.nodesContextMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.nodesContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.addToolStripMenuItem,
             this.toolStripMenuItem6,
@@ -520,26 +523,26 @@ namespace NodesGenerator
             this.toolStripMenuItem7,
             this.deleteToolStripMenuItem});
             this.nodesContextMenu.Name = "contextMenuStrip1";
-            this.nodesContextMenu.Size = new System.Drawing.Size(212, 104);
+            this.nodesContextMenu.Size = new System.Drawing.Size(216, 120);
             // 
             // addToolStripMenuItem
             // 
             this.addToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("addToolStripMenuItem.Image")));
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
             this.addToolStripMenuItem.Text = "Добавить";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.add_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(208, 6);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(212, 6);
             // 
             // moveUpToolStripMenuItem
             // 
             this.moveUpToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveUpToolStripMenuItem.Image")));
             this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
-            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
             this.moveUpToolStripMenuItem.Text = "Передвинуть вверх";
             this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.Up_Click);
             // 
@@ -547,25 +550,26 @@ namespace NodesGenerator
             // 
             this.moveDownToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveDownToolStripMenuItem.Image")));
             this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
-            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
             this.moveDownToolStripMenuItem.Text = "Передвинуть вниз";
             this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.Down_Click);
             // 
             // toolStripMenuItem7
             // 
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(208, 6);
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(212, 6);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("deleteToolStripMenuItem.Image")));
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(211, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
             this.deleteToolStripMenuItem.Text = "Удалить";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.delete_Click);
             // 
             // nodesToolStrip
             // 
+            this.nodesToolStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.nodesToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonAddNode,
             this.toolStripSeparator3,
@@ -579,7 +583,7 @@ namespace NodesGenerator
             this.toolStripButtonTagSelected});
             this.nodesToolStrip.Location = new System.Drawing.Point(3, 18);
             this.nodesToolStrip.Name = "nodesToolStrip";
-            this.nodesToolStrip.Size = new System.Drawing.Size(289, 25);
+            this.nodesToolStrip.Size = new System.Drawing.Size(289, 27);
             this.nodesToolStrip.TabIndex = 27;
             this.nodesToolStrip.Text = "toolStrip2";
             // 
@@ -589,14 +593,14 @@ namespace NodesGenerator
             this.toolStripButtonAddNode.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonAddNode.Image")));
             this.toolStripButtonAddNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonAddNode.Name = "toolStripButtonAddNode";
-            this.toolStripButtonAddNode.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonAddNode.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonAddNode.Text = "Add Node";
             this.toolStripButtonAddNode.Click += new System.EventHandler(this.add_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripButtonMoveUp
             // 
@@ -604,7 +608,7 @@ namespace NodesGenerator
             this.toolStripButtonMoveUp.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonMoveUp.Image")));
             this.toolStripButtonMoveUp.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonMoveUp.Name = "toolStripButtonMoveUp";
-            this.toolStripButtonMoveUp.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonMoveUp.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonMoveUp.Text = "Move Up";
             this.toolStripButtonMoveUp.Click += new System.EventHandler(this.Up_Click);
             // 
@@ -614,14 +618,14 @@ namespace NodesGenerator
             this.toolStripButtonMoveDown.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonMoveDown.Image")));
             this.toolStripButtonMoveDown.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonMoveDown.Name = "toolStripButtonMoveDown";
-            this.toolStripButtonMoveDown.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonMoveDown.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonMoveDown.Text = "Move Down";
             this.toolStripButtonMoveDown.Click += new System.EventHandler(this.Down_Click);
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripButtonDeleteNode
             // 
@@ -629,14 +633,14 @@ namespace NodesGenerator
             this.toolStripButtonDeleteNode.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonDeleteNode.Image")));
             this.toolStripButtonDeleteNode.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonDeleteNode.Name = "toolStripButtonDeleteNode";
-            this.toolStripButtonDeleteNode.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonDeleteNode.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonDeleteNode.Text = "Delete Node";
             this.toolStripButtonDeleteNode.Click += new System.EventHandler(this.delete_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripButtonSort
             // 
@@ -645,14 +649,14 @@ namespace NodesGenerator
             this.toolStripButtonSort.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonSort.Image")));
             this.toolStripButtonSort.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonSort.Name = "toolStripButtonSort";
-            this.toolStripButtonSort.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonSort.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonSort.Text = "Sort";
             this.toolStripButtonSort.CheckedChanged += new System.EventHandler(this.toolStripButton1_CheckedChanged);
             // 
             // toolStripSeparator7
             // 
             this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator7.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripButtonTagSelected
             // 
@@ -660,7 +664,7 @@ namespace NodesGenerator
             this.toolStripButtonTagSelected.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonTagSelected.Image")));
             this.toolStripButtonTagSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonTagSelected.Name = "toolStripButtonTagSelected";
-            this.toolStripButtonTagSelected.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonTagSelected.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonTagSelected.Text = "Присвоить тег";
             this.toolStripButtonTagSelected.Click += new System.EventHandler(this.saveTempFilter_Click);
             // 
@@ -675,7 +679,7 @@ namespace NodesGenerator
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(295, 164);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(793, 536);
+            this.groupBox2.Size = new System.Drawing.Size(793, 532);
             this.groupBox2.TabIndex = 21;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Содержимое узлов:";
@@ -687,7 +691,7 @@ namespace NodesGenerator
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3.Location = new System.Drawing.Point(3, 73);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(787, 169);
+            this.panel3.Size = new System.Drawing.Size(787, 165);
             this.panel3.TabIndex = 29;
             // 
             // scintilla1
@@ -699,9 +703,9 @@ namespace NodesGenerator
             this.scintilla1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.scintilla1.Indentation.IndentWidth = 2;
             this.scintilla1.Indentation.SmartIndentType = ScintillaNET.SmartIndent.CPP;
-            this.scintilla1.Location = new System.Drawing.Point(0, 25);
+            this.scintilla1.Location = new System.Drawing.Point(0, 27);
             this.scintilla1.Name = "scintilla1";
-            this.scintilla1.Size = new System.Drawing.Size(787, 144);
+            this.scintilla1.Size = new System.Drawing.Size(787, 138);
             this.scintilla1.Styles.BraceBad.Size = 7F;
             this.scintilla1.Styles.BraceLight.Size = 7F;
             this.scintilla1.Styles.ControlChar.Size = 7F;
@@ -715,6 +719,7 @@ namespace NodesGenerator
             // 
             // edtiorToolStrip
             // 
+            this.edtiorToolStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.edtiorToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButtonCut,
             this.toolStripButtonCopy,
@@ -724,7 +729,7 @@ namespace NodesGenerator
             this.toolStripButtonRedo});
             this.edtiorToolStrip.Location = new System.Drawing.Point(0, 0);
             this.edtiorToolStrip.Name = "edtiorToolStrip";
-            this.edtiorToolStrip.Size = new System.Drawing.Size(787, 25);
+            this.edtiorToolStrip.Size = new System.Drawing.Size(787, 27);
             this.edtiorToolStrip.TabIndex = 24;
             this.edtiorToolStrip.Text = "toolStrip3";
             // 
@@ -734,7 +739,7 @@ namespace NodesGenerator
             this.toolStripButtonCut.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCut.Image")));
             this.toolStripButtonCut.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonCut.Name = "toolStripButtonCut";
-            this.toolStripButtonCut.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonCut.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonCut.Text = "Cut";
             this.toolStripButtonCut.Click += new System.EventHandler(this.toolStripButtonCut_Click);
             // 
@@ -744,7 +749,7 @@ namespace NodesGenerator
             this.toolStripButtonCopy.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonCopy.Image")));
             this.toolStripButtonCopy.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonCopy.Name = "toolStripButtonCopy";
-            this.toolStripButtonCopy.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonCopy.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonCopy.Text = "Copy";
             this.toolStripButtonCopy.Click += new System.EventHandler(this.toolStripButtonCopy_Click);
             // 
@@ -754,14 +759,14 @@ namespace NodesGenerator
             this.toolStripButtonPaste.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonPaste.Image")));
             this.toolStripButtonPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonPaste.Name = "toolStripButtonPaste";
-            this.toolStripButtonPaste.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonPaste.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonPaste.Text = "Paste";
             this.toolStripButtonPaste.Click += new System.EventHandler(this.toolStripButtonPaste_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 25);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(6, 27);
             // 
             // toolStripButtonUndo
             // 
@@ -769,7 +774,7 @@ namespace NodesGenerator
             this.toolStripButtonUndo.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonUndo.Image")));
             this.toolStripButtonUndo.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonUndo.Name = "toolStripButtonUndo";
-            this.toolStripButtonUndo.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonUndo.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonUndo.Text = "Undo";
             this.toolStripButtonUndo.Click += new System.EventHandler(this.toolStripButtonUndo_Click);
             // 
@@ -779,7 +784,7 @@ namespace NodesGenerator
             this.toolStripButtonRedo.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButtonRedo.Image")));
             this.toolStripButtonRedo.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonRedo.Name = "toolStripButtonRedo";
-            this.toolStripButtonRedo.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonRedo.Size = new System.Drawing.Size(24, 24);
             this.toolStripButtonRedo.Text = "Redo";
             this.toolStripButtonRedo.Click += new System.EventHandler(this.toolStripButtonRedo_Click);
             // 
@@ -787,7 +792,7 @@ namespace NodesGenerator
             // 
             this.splitter2.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter2.Location = new System.Drawing.Point(3, 242);
+            this.splitter2.Location = new System.Drawing.Point(3, 238);
             this.splitter2.MinExtra = 40;
             this.splitter2.MinSize = 40;
             this.splitter2.Name = "splitter2";
@@ -800,7 +805,7 @@ namespace NodesGenerator
             this.panel2.Controls.Add(this.help_context);
             this.panel2.Controls.Add(this.label3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(3, 245);
+            this.panel2.Location = new System.Drawing.Point(3, 241);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(787, 117);
             this.panel2.TabIndex = 28;
@@ -827,7 +832,7 @@ namespace NodesGenerator
             // 
             this.splitter1.Cursor = System.Windows.Forms.Cursors.HSplit;
             this.splitter1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.splitter1.Location = new System.Drawing.Point(3, 362);
+            this.splitter1.Location = new System.Drawing.Point(3, 358);
             this.splitter1.MinExtra = 40;
             this.splitter1.MinSize = 40;
             this.splitter1.Name = "splitter1";
@@ -842,7 +847,7 @@ namespace NodesGenerator
             this.panel4.Controls.Add(this.tagCategories);
             this.panel4.Controls.Add(this.label4);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(3, 365);
+            this.panel4.Location = new System.Drawing.Point(3, 361);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(787, 168);
             this.panel4.TabIndex = 27;
@@ -971,9 +976,9 @@ namespace NodesGenerator
             this.panel6.Controls.Add(this.filterCategories);
             this.panel6.Controls.Add(this.panelFilterButtons);
             this.panel6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel6.Location = new System.Drawing.Point(0, 25);
+            this.panel6.Location = new System.Drawing.Point(0, 27);
             this.panel6.Name = "panel6";
-            this.panel6.Size = new System.Drawing.Size(1088, 110);
+            this.panel6.Size = new System.Drawing.Size(1088, 108);
             this.panel6.TabIndex = 20;
             // 
             // filterItems
@@ -985,7 +990,7 @@ namespace NodesGenerator
             this.filterItems.Location = new System.Drawing.Point(322, 0);
             this.filterItems.MultiSelect = false;
             this.filterItems.Name = "filterItems";
-            this.filterItems.Size = new System.Drawing.Size(766, 110);
+            this.filterItems.Size = new System.Drawing.Size(766, 108);
             this.filterItems.TabIndex = 5;
             this.filterItems.UseCompatibleStateImageBehavior = false;
             this.filterItems.View = System.Windows.Forms.View.List;
@@ -993,6 +998,7 @@ namespace NodesGenerator
             // 
             // filtersPanelContextMenu
             // 
+            this.filtersPanelContextMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.filtersPanelContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editInTagsCollectionToolStripMenuItem});
             this.filtersPanelContextMenu.Name = "filtersPanelContextMenu";
@@ -1014,7 +1020,7 @@ namespace NodesGenerator
             this.filterCategories.ItemHeight = 16;
             this.filterCategories.Location = new System.Drawing.Point(140, 0);
             this.filterCategories.Name = "filterCategories";
-            this.filterCategories.Size = new System.Drawing.Size(182, 110);
+            this.filterCategories.Size = new System.Drawing.Size(182, 108);
             this.filterCategories.TabIndex = 6;
             this.filterCategories.SelectedIndexChanged += new System.EventHandler(this.filterCategories_SelectedIndexChanged);
             // 
@@ -1026,7 +1032,7 @@ namespace NodesGenerator
             this.panelFilterButtons.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelFilterButtons.Location = new System.Drawing.Point(0, 0);
             this.panelFilterButtons.Name = "panelFilterButtons";
-            this.panelFilterButtons.Size = new System.Drawing.Size(140, 110);
+            this.panelFilterButtons.Size = new System.Drawing.Size(140, 108);
             this.panelFilterButtons.TabIndex = 3;
             // 
             // filterSelected
@@ -1039,7 +1045,7 @@ namespace NodesGenerator
             this.filterSelected.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.filterSelected.Location = new System.Drawing.Point(0, 29);
             this.filterSelected.Name = "filterSelected";
-            this.filterSelected.Size = new System.Drawing.Size(140, 52);
+            this.filterSelected.Size = new System.Drawing.Size(140, 50);
             this.filterSelected.TabIndex = 1;
             this.filterSelected.Text = "Только выделенные";
             this.filterSelected.UseVisualStyleBackColor = true;
@@ -1052,7 +1058,7 @@ namespace NodesGenerator
             this.filterAncestors.FlatAppearance.BorderColor = System.Drawing.Color.Black;
             this.filterAncestors.FlatAppearance.MouseDownBackColor = System.Drawing.SystemColors.ButtonShadow;
             this.filterAncestors.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.filterAncestors.Location = new System.Drawing.Point(0, 81);
+            this.filterAncestors.Location = new System.Drawing.Point(0, 79);
             this.filterAncestors.Name = "filterAncestors";
             this.filterAncestors.Size = new System.Drawing.Size(140, 29);
             this.filterAncestors.TabIndex = 2;
@@ -1094,7 +1100,7 @@ namespace NodesGenerator
             this.newToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("newToolStripMenuItem.Image")));
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
             this.newToolStripMenuItem.Text = "Новый";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -1103,7 +1109,7 @@ namespace NodesGenerator
             this.openToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem.Image")));
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
             this.openToolStripMenuItem.Text = "Открыть...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.open_Click);
             // 
@@ -1112,7 +1118,7 @@ namespace NodesGenerator
             this.saveToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveToolStripMenuItem.Image")));
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
             this.saveToolStripMenuItem.Text = "Сохранить";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.save_Click);
             // 
@@ -1122,7 +1128,7 @@ namespace NodesGenerator
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
             this.saveAsToolStripMenuItem.Text = "Сохранить как...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.save_as_Click);
             // 
@@ -1130,18 +1136,18 @@ namespace NodesGenerator
             // 
             this.saveAndStoreToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveAndStoreToolStripMenuItem.Image")));
             this.saveAndStoreToolStripMenuItem.Name = "saveAndStoreToolStripMenuItem";
-            this.saveAndStoreToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.saveAndStoreToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
             this.saveAndStoreToolStripMenuItem.Text = "Сохранить и сделать копию";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(266, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(270, 6);
             // 
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
             this.quitToolStripMenuItem.Text = "Выйти";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -1167,20 +1173,20 @@ namespace NodesGenerator
             this.addNodeToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("addNodeToolStripMenuItem.Image")));
             this.addNodeToolStripMenuItem.Name = "addNodeToolStripMenuItem";
             this.addNodeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.addNodeToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.addNodeToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.addNodeToolStripMenuItem.Text = "Добавить узел";
             this.addNodeToolStripMenuItem.Click += new System.EventHandler(this.add_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(272, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(276, 6);
             // 
             // moveNodeUpToolStripMenuItem
             // 
             this.moveNodeUpToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveNodeUpToolStripMenuItem.Image")));
             this.moveNodeUpToolStripMenuItem.Name = "moveNodeUpToolStripMenuItem";
-            this.moveNodeUpToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.moveNodeUpToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.moveNodeUpToolStripMenuItem.Text = "Передвинуть узел вверх";
             this.moveNodeUpToolStripMenuItem.Click += new System.EventHandler(this.Up_Click);
             // 
@@ -1188,33 +1194,33 @@ namespace NodesGenerator
             // 
             this.moveNodeDownToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveNodeDownToolStripMenuItem.Image")));
             this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
-            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.moveNodeDownToolStripMenuItem.Text = "Передвинуть узел вниз";
             this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.Down_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(272, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(276, 6);
             // 
             // deleteNodeToolStripMenuItem
             // 
             this.deleteNodeToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("deleteNodeToolStripMenuItem.Image")));
             this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
-            this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.deleteNodeToolStripMenuItem.Text = "Удалить узел";
             this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.delete_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(272, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(276, 6);
             // 
             // sortToolStripMenuItem
             // 
             this.sortToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("sortToolStripMenuItem.Image")));
             this.sortToolStripMenuItem.Name = "sortToolStripMenuItem";
-            this.sortToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.sortToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.sortToolStripMenuItem.Text = "Отсортировать узлы";
             this.sortToolStripMenuItem.Click += new System.EventHandler(this.sortToolStripMenuItem_Click);
             // 
@@ -1222,14 +1228,14 @@ namespace NodesGenerator
             // 
             this.присвоитьТегToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("присвоитьТегToolStripMenuItem.Image")));
             this.присвоитьТегToolStripMenuItem.Name = "присвоитьТегToolStripMenuItem";
-            this.присвоитьТегToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.присвоитьТегToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.присвоитьТегToolStripMenuItem.Text = "Присвоить тег";
             this.присвоитьТегToolStripMenuItem.Click += new System.EventHandler(this.saveTempFilter_Click);
             // 
             // globalRenamerToolStripMenuItem
             // 
             this.globalRenamerToolStripMenuItem.Name = "globalRenamerToolStripMenuItem";
-            this.globalRenamerToolStripMenuItem.Size = new System.Drawing.Size(275, 22);
+            this.globalRenamerToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
             this.globalRenamerToolStripMenuItem.Text = "Глобальное переименование";
             this.globalRenamerToolStripMenuItem.Click += new System.EventHandler(this.globalRenamerToolStripMenuItem_Click);
             // 
@@ -1251,7 +1257,7 @@ namespace NodesGenerator
             this.cutToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("cutToolStripMenuItem.Image")));
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.cutToolStripMenuItem.Text = "Вырезать";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonCut_Click);
             // 
@@ -1260,7 +1266,7 @@ namespace NodesGenerator
             this.copyToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("copyToolStripMenuItem.Image")));
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.copyToolStripMenuItem.Text = "Копировать";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonCopy_Click);
             // 
@@ -1269,21 +1275,21 @@ namespace NodesGenerator
             this.pasteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("pasteToolStripMenuItem.Image")));
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.pasteToolStripMenuItem.Text = "Вставить";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonPaste_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(217, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(221, 6);
             // 
             // undoToolStripMenuItem
             // 
             this.undoToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("undoToolStripMenuItem.Image")));
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.undoToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.undoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.undoToolStripMenuItem.Text = "Отменить";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonUndo_Click);
             // 
@@ -1293,7 +1299,7 @@ namespace NodesGenerator
             this.redoToolStripMenuItem.Name = "redoToolStripMenuItem";
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-            this.redoToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
+            this.redoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.redoToolStripMenuItem.Text = "Вернуть";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonRedo_Click);
             // 
@@ -1311,7 +1317,7 @@ namespace NodesGenerator
             this.filterPanelToolStripMenuItem.CheckOnClick = true;
             this.filterPanelToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.filterPanelToolStripMenuItem.Name = "filterPanelToolStripMenuItem";
-            this.filterPanelToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.filterPanelToolStripMenuItem.Size = new System.Drawing.Size(191, 26);
             this.filterPanelToolStripMenuItem.Text = "Панель фильтра";
             this.filterPanelToolStripMenuItem.CheckedChanged += new System.EventHandler(this.filterPanelToolStripMenuItem_CheckedChanged);
             // 
@@ -1352,18 +1358,19 @@ namespace NodesGenerator
             this.generateToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("generateToolStripMenuItem.Image")));
             this.generateToolStripMenuItem.Name = "generateToolStripMenuItem";
             this.generateToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.generateToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.generateToolStripMenuItem.Size = new System.Drawing.Size(205, 26);
             this.generateToolStripMenuItem.Text = "Генерировать";
             this.generateToolStripMenuItem.Click += new System.EventHandler(this.toolStripGenerateButton_Click);
             // 
             // grammarBrowserToolStripMenuItem
             // 
             this.grammarBrowserToolStripMenuItem.Name = "grammarBrowserToolStripMenuItem";
-            this.grammarBrowserToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.grammarBrowserToolStripMenuItem.Size = new System.Drawing.Size(205, 26);
             this.grammarBrowserToolStripMenuItem.Text = "Иерархия узлов...";
             // 
             // mainMenu
             // 
+            this.mainMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.mainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.contentsToolStripMenuItem,
@@ -2200,8 +2207,6 @@ namespace NodesGenerator
                 if (show_mes_id < _parseTree.ParserMessages.Count)
                 {
 
-                   /* MessageBox.Show(_parseTree.ParserMessages[show_mes_id].Message + " @ Line " + _parseTree.ParserMessages[show_mes_id].Location.Line.ToString(),
-                                    _parseTree.ParserMessages[show_mes_id].Message, MessageBoxButtons.OK, MessageBoxIcon.Error);*/
                     MessageBox.Show("Some Syntax Error @ Line " + _parseTree.ParserMessages[show_mes_id].Location.Line.ToString(),
                                     _parseTree.ParserMessages[show_mes_id].Message, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     scintilla1.Caret.LineNumber = _parseTree.ParserMessages[show_mes_id].Location.Line - 1;

@@ -42,7 +42,7 @@ namespace PascalABCSavParser
         // SSM: Errors инициализируется в другом месте - сюда только передается!
         public List<Error> errors;
         public System.Collections.Stack NodesStack; // SSM: для каких-то вспомогательных целей в двух правилах
-        public bool build_tree_for_brackets = false; // SSM: тоже ерунда какая-то
+        public bool build_tree_for_brackets = false; 
 
         public string CurrentFileName;
 

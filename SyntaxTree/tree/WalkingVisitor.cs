@@ -20,18 +20,23 @@ namespace PascalABCCompiler.SyntaxTree
 		protected VisitorDelegate OnEnter;
         protected VisitorDelegate OnLeave;
 
-		public virtual void ProcessNode(syntax_tree_node Node)
-		{
-			if (Node != null)
-			{
-                if(OnEnter != null)
+        protected bool visitNode = true; // в OnEnter можно сделать false
+
+        public virtual void ProcessNode(syntax_tree_node Node)
+        {
+            if (Node != null)
+            {
+                if (OnEnter != null)
                     OnEnter(Node);
-                Node.visit(this);
+
+                if (visitNode)
+                    Node.visit(this);
+                else visitNode = true;
 
                 if (OnLeave != null)
-				    OnLeave(Node);
-			}
-		}
+                    OnLeave(Node);
+            }
+        }
 
 		//0 
 		public override void visit(default_operator _default_operator)

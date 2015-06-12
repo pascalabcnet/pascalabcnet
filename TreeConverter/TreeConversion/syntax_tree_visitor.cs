@@ -741,10 +741,10 @@ namespace PascalABCCompiler.TreeConverter
             return ret.visit_symbol_info(tn);
         }*/
 
-        //(ssyy) DS, сделай нормальное дерево!
-        private SyntaxTree.statement prepare_statement(SyntaxTree.statement st)
+        //(ssyy) DS, сделай нормальное дерево! // 2015 год - проблема по-прежнему актуальна: expression не должно быть потомком statement 
+        private SyntaxTree.statement prepare_statement(SyntaxTree.statement st) // логика: если это вызов функции, то сделать из него вызов процедуры. И это - единственное место для преобразования
         {
-            SyntaxTree.method_call mc = st as SyntaxTree.method_call;
+            SyntaxTree.method_call mc = null; // st as SyntaxTree.method_call;
             if (mc == null)
             {
                 return st;
@@ -17119,9 +17119,11 @@ namespace PascalABCCompiler.TreeConverter
             location loc1 = get_location(node.expr1);
             statements_list head_stmts = new statements_list(loc1);
             convertion_data_and_alghoritms.statement_list_stack_push(head_stmts);
-            statement_node sn_init = convert_weak((SyntaxTree.statement)node.expr1);
+            //statement_node sn_init = convert_weak((SyntaxTree.statement)node.expr1); // SSM 12/06/15 - всё равно c-узлы никому не нужны
+            statement_node sn_init = convert_weak(node.expr1); // SSM 12/06/15
             expression_node sn_cond = convert_weak(node.expr2);
-            statement_node sn_next = convert_weak((SyntaxTree.statement)node.expr3);
+            //statement_node sn_next = convert_weak((SyntaxTree.statement)node.expr3); // SSM 12/06/15
+            statement_node sn_next = convert_weak(node.expr3); // SSM 12/06/15
 
             CheckToEmbeddedStatementCannotBeADeclaration(node.stmt);
 

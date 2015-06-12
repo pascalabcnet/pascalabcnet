@@ -502,7 +502,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_expression(expression _expression)
 		{
-			read_statement(_expression);
+			read_declaration(_expression);
 		}
 
 
@@ -569,7 +569,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_assign(assign _assign)
 		{
-			read_expression(_assign);
+			read_statement(_assign);
 			_assign.to = _read_node() as addressed_value;
 			_assign.from = _read_node() as expression;
 			_assign.operator_type = (Operators)br.ReadByte();
