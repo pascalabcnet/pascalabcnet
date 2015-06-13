@@ -2854,6 +2854,34 @@ namespace CodeFormatters
             visit_node(_sequence_type.elements_type);
         }
 
+        public override void visit(modern_proc_type _modern_proc_type)
+        {
+            if (_modern_proc_type.aloneparam != null)
+            {
+                visit_node(_modern_proc_type.aloneparam);
+                add_space_before = false;
+                add_space_after = false;
+                visit_node(_modern_proc_type.res);
+            }
+            else
+            {
+                
+                if (_modern_proc_type.el != null && _modern_proc_type.el.enumerators != null)
+                {
+                    sb.Append("(");
+                    for (int i = 0; i < _modern_proc_type.el.enumerators.Count; i++)
+                    {
+                        visit_node(_modern_proc_type.el.enumerators[i]);
+                    }
+                }
+                else
+                    read_from_beg_pos = true;
+                add_space_before = false;
+                add_space_after = false;
+                visit_node(_modern_proc_type.res);
+            }
+        }
+
         #endregion
     }
 }
