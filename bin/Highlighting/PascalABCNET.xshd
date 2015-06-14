@@ -50,6 +50,7 @@
 		<Key word = "in" />
 		<Key word = "array" />
 		<Key word = "sequence" />
+		<Key word = "yield" />
 		<Key word = "case" />
 		<Key word = "class" />
 		<Key word = "auto" />

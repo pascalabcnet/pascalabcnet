@@ -3818,11 +3818,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return "while " + expr.ToString() + " do\n" + statements.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4666,7 +4661,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public override string ToString()
 		{
-			return "label "+labels.ToString();
+			return "label "+labels.ToString() + ";";
 		}
 
 		///<summary>
@@ -8943,6 +8938,20 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public goto_statement(string name)
+		{
+			label = new ident(name);
+		}
+		public goto_statement(string name, SourceContext sc)
+		{
+			label = new ident(name);
+			source_context = sc;
+		}
+		public override string ToString()
+		{
+			return "goto " + label;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -9062,9 +9071,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
+		public labeled_statement(string name, statement st)
 		{
-			return label_name.ToString() + ": "+to_statement.ToString();
+			label_name = new ident(name);
+			to_statement = st;
+		}
+		public labeled_statement(string name, statement st, SourceContext sc)
+		{
+			label_name = new ident(name);
+			to_statement = st;
+			source_context = sc;
 		}
 
 		///<summary>
@@ -28446,6 +28462,112 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 3:
 						res = (type_definition)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public class yield_node : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_node()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_node(expression _ex)
+		{
+			this._ex=_ex;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_node(expression _ex,SourceContext sc)
+		{
+			this._ex=_ex;
+			source_context = sc;
+		}
+
+		protected expression _ex;
+
+		///<summary>
+		///
+		///</summary>
+		public expression ex
+		{
+			get
+			{
+				return _ex;
+			}
+			set
+			{
+				_ex=value;
+			}
+		}
+
+
+		public override string ToString()
+		{
+			return "yield "+ex.ToString();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override object this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return ex;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						ex = (expression)value;
 						break;
 				}
 			}

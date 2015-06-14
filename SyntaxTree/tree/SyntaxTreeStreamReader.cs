@@ -450,6 +450,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new sequence_type();
 				case 214:
 					return new modern_proc_type();
+				case 215:
+					return new yield_node();
 			}
 			return null;
 		}
@@ -3819,6 +3821,18 @@ namespace PascalABCCompiler.SyntaxTree
 			_modern_proc_type.aloneparam = _read_node() as type_definition;
 			_modern_proc_type.el = _read_node() as enumerator_list;
 			_modern_proc_type.res = _read_node() as type_definition;
+		}
+
+
+		public void visit(yield_node _yield_node)
+		{
+			read_yield_node(_yield_node);
+		}
+
+		public void read_yield_node(yield_node _yield_node)
+		{
+			read_statement(_yield_node);
+			_yield_node.ex = _read_node() as expression;
 		}
 
 	}

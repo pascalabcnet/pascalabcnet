@@ -6056,6 +6056,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(yield_node _yield_node)
+		{
+			bw.Write((Int16)215);
+			write_yield_node(_yield_node);
+		}
+
+		public void write_yield_node(yield_node _yield_node)
+		{
+			write_statement(_yield_node);
+			if (_yield_node.ex == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_node.ex.visit(this);
+			}
+		}
+
 	}
 
 

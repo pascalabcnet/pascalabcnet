@@ -864,6 +864,10 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual void visit(modern_proc_type _modern_proc_type)
 		{
 		}
+
+		public virtual void visit(yield_node _yield_node)
+		{
+		}
 	}
 
 

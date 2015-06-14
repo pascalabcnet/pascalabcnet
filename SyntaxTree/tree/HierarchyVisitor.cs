@@ -1725,6 +1725,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(yield_node _yield_node)
+		{
+		}
+
+		public virtual void post_do_visit(yield_node _yield_node)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			pre_do_visit(_syntax_tree_node);
@@ -3362,6 +3370,13 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(modern_proc_type.el);
 			visit(modern_proc_type.res);
 			post_do_visit(_modern_proc_type);
+		}
+
+		public override void visit(yield_node _yield_node)
+		{
+			pre_do_visit(_yield_node);
+			visit(yield_node.ex);
+			post_do_visit(_yield_node);
 		}
 	}
 

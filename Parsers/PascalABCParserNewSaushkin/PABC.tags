@@ -202,7 +202,6 @@
     <name value="stmt_or_expression" />
     <name value="stmt" />
     <name value="unlabelled_stmt" />
-    <name value="my_stmt" />
     <name value="var_stmt" />
     <name value="assignment" />
     <name value="proc_call" />

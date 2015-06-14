@@ -344,6 +344,8 @@ ALPHABET [^ a-zA-Z_0-9\r\n\t\'$#&,:.;@\+\-\*/=<>\^()\[\]\x01]
     case (int)Tokens.tkUnit:
     case (int)Tokens.tkLibrary:
     case (int)Tokens.tkExternal:
+    case (int)Tokens.tkYield:
+    case (int)Tokens.tkSequence:
 		yylval = new Union();
         yylval.ti = new token_info(cur_yytext,currentLexLocation);
         break;
@@ -605,6 +607,7 @@ public static class Keywords
         keywords.Add("new",(int)Tokens.tkNew);
         keywords.Add("auto",(int)Tokens.tkAuto);
         keywords.Add("sequence",(int)Tokens.tkSequence);
+        keywords.Add("yield",(int)Tokens.tkYield);
 	}
 	
 	public static int KeywordOrIDToken(string s)

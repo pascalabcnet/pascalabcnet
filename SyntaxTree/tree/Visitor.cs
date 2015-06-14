@@ -1294,6 +1294,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_modern_proc_type">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(modern_proc_type _modern_proc_type);
+		///<summary>
+		///Method to visit yield_node.
+		///</summary>
+		///<param name="_yield_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(yield_node _yield_node);
 	}
 
 

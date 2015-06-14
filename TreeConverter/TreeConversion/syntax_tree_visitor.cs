@@ -671,7 +671,7 @@ namespace PascalABCCompiler.TreeConverter
 
             convertion_data_and_alghoritms.check_node_parser_error(st);
 
-            st = prepare_statement(st);
+            //st = prepare_statement(st);
 
             statement_node sn = ret.visit(st);
             //sn.loc=get_location(st);
@@ -742,7 +742,7 @@ namespace PascalABCCompiler.TreeConverter
         }*/
 
         //(ssyy) DS, сделай нормальное дерево! // 2015 год - проблема по-прежнему актуальна: expression не должно быть потомком statement 
-        private SyntaxTree.statement prepare_statement(SyntaxTree.statement st) // логика: если это вызов функции, то сделать из него вызов процедуры. И это - единственное место для преобразования
+        /*private SyntaxTree.statement prepare_statement(SyntaxTree.statement st) // логика: если это вызов функции, то сделать из него вызов процедуры. И это - единственное место для преобразования
         {
             SyntaxTree.method_call mc = null; // st as SyntaxTree.method_call;
             if (mc == null)
@@ -753,7 +753,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return new SyntaxTree.procedure_call(mc);
             }
-        }
+        } */
 
         internal statement_node convert_strong(SyntaxTree.statement st)
         {
@@ -779,7 +779,7 @@ namespace PascalABCCompiler.TreeConverter
 
             convertion_data_and_alghoritms.check_node_parser_error(st);
 
-            st = prepare_statement(st);
+            //st = prepare_statement(st);
             statement_node sn = null;
             //try
             {
