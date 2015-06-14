@@ -573,7 +573,21 @@ namespace TreeConverter.LambdaExpressions.Closure
                         dot_node substDotNode1;
                         if (!nestedLambda)
                         {
-                            substDotNode1 = new dot_node(new ident(_capturedVarsClassDefs[scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].GeneratedUpperClassFieldName), new ident(varName));
+                            var parts = new Stack<ident>();
+                            var dn = substDotNode;
+                            parts.Push((ident)dn.right);
+
+                            while (!(dn.left is ident && dn.right is ident))
+                            {
+                                dn = (dot_node)dn.left;
+                                parts.Push((ident)dn.right);
+                            }
+
+                            substDotNode1 = new dot_node(new ident(_capturedVarsClassDefs[scopeAsLambda.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod.Value].GeneratedUpperClassFieldName), parts.Pop());
+                            while (parts.Count > 0)
+                            {
+                                substDotNode1 = new dot_node(substDotNode1, parts.Pop());
+                            }
                         }
                         else
                         {
@@ -593,7 +607,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                             
                             while (parts.Count > 0)
                             {
-                                substDotNode1 = new dot_node(substDotNode, parts.Pop());    
+                                substDotNode1 = new dot_node(substDotNode1, parts.Pop());    
                             }
                         }
 

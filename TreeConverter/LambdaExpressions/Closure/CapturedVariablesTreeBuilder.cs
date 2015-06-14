@@ -551,6 +551,28 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(function_lambda_definition lambdaDefinition)
         {   
+            if (lambdaDefinition.formal_parameters != null && lambdaDefinition.formal_parameters.params_list != null && lambdaDefinition.formal_parameters.params_list.Count != 0)
+            {
+                var varDefsList = new List<statement>();
+                for (var i = 0; i < lambdaDefinition.formal_parameters.params_list.Count; i++)
+                {
+                    var varType = lambdaDefinition.formal_parameters.params_list[i].vars_type is lambda_inferred_type ?
+                        LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)((lambda_inferred_type)lambdaDefinition.formal_parameters.params_list[i].vars_type).real_type) :
+                        lambdaDefinition.formal_parameters.params_list[i].vars_type;
+                    
+                    for (var j = 0; j < lambdaDefinition.formal_parameters.params_list[i].idents.idents.Count; j++)
+                    {
+                        var varName = "<>" + lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name;
+                        var vds = new var_def_statement(new ident(lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name), varType);
+                        vds.inital_value = new ident(varName);
+                        lambdaDefinition.formal_parameters.params_list[i].idents.idents[j].name = varName;
+                        varDefsList.Add(new var_statement(vds));
+                    }
+                }
+
+                ((statement_list)lambdaDefinition.proc_body).subnodes.InsertRange(0, varDefsList);
+            }
+
             var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDefinition);
             _visitor.body_exists = true;
             _visitor.hard_node_test_and_visit(procDecl.proc_header);
