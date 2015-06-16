@@ -166,9 +166,9 @@
             this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label12.Location = new System.Drawing.Point(3, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(255, 13);
+            this.label12.Size = new System.Drawing.Size(311, 13);
             this.label12.TabIndex = 17;
-            this.label12.Text = "Copyright (c) 2005, 2015   PascalABCCompiler Team";
+            this.label12.Text = "Copyright (c) 2005, 2015   Ivan Bondarev, Stanislav Mihalkovich";
             this.label12.Click += new System.EventHandler(this.label12_Click);
             // 
             // label9
@@ -218,7 +218,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(321, 95);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(332, 95);
             this.tableLayoutPanel1.TabIndex = 23;
             // 
             // flowLayoutPanel1
@@ -227,7 +227,7 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(315, 17);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(326, 17);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // flowLayoutPanel3
@@ -238,7 +238,7 @@
             this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 23);
             this.flowLayoutPanel3.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.flowLayoutPanel3.Name = "flowLayoutPanel3";
-            this.flowLayoutPanel3.Size = new System.Drawing.Size(315, 20);
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(326, 20);
             this.flowLayoutPanel3.TabIndex = 2;
             // 
             // flowLayoutPanel2
@@ -248,7 +248,7 @@
             this.flowLayoutPanel2.Location = new System.Drawing.Point(3, 69);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(3, 0, 3, 3);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(315, 23);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(326, 23);
             this.flowLayoutPanel2.TabIndex = 1;
             // 
             // flowLayoutPanel4
@@ -257,7 +257,7 @@
             this.flowLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel4.Location = new System.Drawing.Point(3, 49);
             this.flowLayoutPanel4.Name = "flowLayoutPanel4";
-            this.flowLayoutPanel4.Size = new System.Drawing.Size(315, 17);
+            this.flowLayoutPanel4.Size = new System.Drawing.Size(326, 17);
             this.flowLayoutPanel4.TabIndex = 3;
             // 
             // label4
@@ -310,9 +310,9 @@
             this.groupBox2.Controls.Add(this.label5);
             this.groupBox2.Controls.Add(this.label4);
             this.groupBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.groupBox2.Location = new System.Drawing.Point(332, 8);
+            this.groupBox2.Location = new System.Drawing.Point(343, 8);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(196, 132);
+            this.groupBox2.Size = new System.Drawing.Size(185, 132);
             this.groupBox2.TabIndex = 14;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "DEVELOPERS";
@@ -353,7 +353,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(534, 320);
+            this.ClientSize = new System.Drawing.Size(534, 346);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.linkLabel1);
