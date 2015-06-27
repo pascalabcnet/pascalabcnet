@@ -1,10 +1,10 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 /// <summary>
 /// Модуль для работы с консолью
 /// </summary>
 unit CRT;
-
-// Версия 0.3
-// Copyright (c) 2006-2007 DarkStar, SSM (parts)
 
 {$apptype console}
 {$gendoc true}

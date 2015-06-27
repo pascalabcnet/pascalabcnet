@@ -1,3 +1,6 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 ///Исполнитель Чертежник предназначен для построения рисунков и чертежей на плоскости с координатами. 
 ///Чертежник имеет перо, которое он может поднимать, опускать и перемещать. При перемещении опущенного пера за ним остается след. 
 unit Drawman;

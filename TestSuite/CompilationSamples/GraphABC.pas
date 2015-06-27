@@ -1,3 +1,6 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
 unit GraphABC;
 

@@ -340,10 +340,6 @@
     <name value="attribute_declarations" />
     <name value="simple_type_decl" />
   </tag>
-  <tag value="w1">
-    <name value="relop_expr" />
-    <name value="simple_expr" />
-  </tag>
   <tag value="Лямбда-выражения">
     <name value="func_decl_lambda" />
     <name value="expl_func_decl_lambda" />

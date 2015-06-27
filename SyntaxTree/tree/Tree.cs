@@ -1634,6 +1634,11 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		public override string ToString()
+		{
+			return base.ToString()+"^";
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1932,15 +1937,6 @@ namespace PascalABCCompiler.SyntaxTree
 		    var_definitions.Add(_var_def_statement);
 		    source_context = sc;
 		    return this;
-		}
-		public override string ToString()
-		{
-			var sb = new System.Text.StringBuilder();
-			sb.Append("var ");
-			for (int i=0; i<var_definitions.Count; i++)
-			    sb.Append(var_definitions[i].ToString()+"; ");
-			
-			return sb.ToString();
 		}
 
 		///<summary>
@@ -2297,6 +2293,8 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public var_def_statement(ident_list vars,type_definition vars_type): this(vars, vars_type, null, definition_attribute.None, false)
 		{ }
+		public var_def_statement(ident_list vars,type_definition vars_type, expression iv): this(vars, vars_type, iv, definition_attribute.None, false)
+		{ }
 		public var_def_statement(ident id, type_definition type): this(new ident_list(id),type)
 		{ }
 		public var_def_statement(string name, type_definition type): this(new ident(name),type)
@@ -2305,14 +2303,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			var sb = new System.Text.StringBuilder();
 			sb.Append(vars.ToString());
-			sb.Append(": ");
-			sb.Append(vars_type.ToString());
+			if (vars_type!=null)
+			{
+				sb.Append(": ");
+				sb.Append(vars_type.ToString());
+			}
 			if (inital_value!=null)
 			{
 			    sb.Append(" := ");
 				sb.Append(inital_value.ToString());
 			}
-			
+			sb.Append("; ");
 			return sb.ToString();
 		}
 
@@ -3289,6 +3290,11 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override string ToString()
+		{
+			return base.ToString()+"["+indexes.ToString()+"]";
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -4784,6 +4790,11 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override string ToString()
+		{
+			return attribute_type.ToString();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5499,6 +5510,20 @@ namespace PascalABCCompiler.SyntaxTree
 					name.meth_name = id;
 				}
 		}
+		public override string ToString()
+		{
+			var sb = new System.Text.StringBuilder();	
+			sb.Append("procedure ");
+			sb.Append(name.ToString());
+			
+			if (template_args != null)
+				sb.Append("<"+template_args.ToString()+">");
+				
+			if (parameters != null)
+				sb.Append("("+parameters.ToString()+")");	
+			sb.Append(";");	
+		    return sb.ToString();
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -5677,6 +5702,16 @@ namespace PascalABCCompiler.SyntaxTree
 		public function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype): this(fp,pal,new method_name(name),null,new named_type_reference(returntype),null)
 		{
 			
+		}
+		public override string ToString()
+		{
+			var sb = new System.Text.StringBuilder();	
+			sb.Append(base.ToString());
+			sb.Remove(0,9);
+			sb.Remove(sb.Length-1,1);
+			sb.Insert(0,"function");
+			sb.Append(": "+return_type.ToString()+";");
+		    return sb.ToString();
 		}
 
 		///<summary>
@@ -8624,6 +8659,10 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			
 		}
+		public override string ToString()
+		{
+			return meth_name.ToString();
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -8775,6 +8814,11 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override string ToString()
+		{
+		  return left.ToString()+"."+right.ToString();
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -22411,6 +22455,11 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override string ToString()
+		{
+			return "var "+var_def.ToString();
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List

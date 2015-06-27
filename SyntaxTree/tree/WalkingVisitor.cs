@@ -1120,7 +1120,41 @@ namespace PascalABCCompiler.SyntaxTree
         public override void visit(semantic_type_node stn) // SSM 
         {
         }
-     
+        public override void visit(short_func_definition _short_func_definition)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void visit(no_type_foreach _no_type_foreach)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void visit(matching_expression _matching_expression)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void visit(closure_substituting_node _closure_substituting_node)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void visit(sequence_type _sequence_type)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void visit(modern_proc_type _modern_proc_type)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void visit(yield_node _yield_node)
+        {
+            ProcessNode(_yield_node.ex);
+        }
+    
     }
  
 }
