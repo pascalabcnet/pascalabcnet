@@ -1,3 +1,6 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 ///Модуль реализует векторные графические объекты с возможностью масштабирования, наложения друг на друга, 
 ///создания составных графических объектов и многократного их вложения друг в друга. 
 ///Каждый векторный графический объект перерисовывает себя при перемещении, изменении размеров 

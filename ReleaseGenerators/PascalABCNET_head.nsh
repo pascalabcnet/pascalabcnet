@@ -70,7 +70,7 @@ Var PABCWorkNETPath
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE $(MUILicense)
+  ;!insertmacro MUI_PAGE_LICENSE $(MUILicense)
   !insertmacro MUI_PAGE_COMPONENTS
   !insertmacro MUI_PAGE_DIRECTORY
   Page custom fnc_PABCWorkNETDriveChoose_Show
