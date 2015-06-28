@@ -7890,7 +7890,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block))
                 {
-                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    //AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.to_statement);
@@ -7922,7 +7922,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block))
                 {
-                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    //AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             ret.return_value((statement_node)gs);
