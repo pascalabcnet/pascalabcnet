@@ -1119,10 +1119,11 @@ namespace PascalABCCompiler.TreeConverter
             //SymbolInfo si=left_type.find(name, context.CurrentScope);
             SymbolInfo si = left_type.find_in_type(name, left_type.Scope);
             SymbolInfo added_symbols = null;
+            SymbolInfo si2 = null;
             if (left_type != right_type && !one_way_operation(name))
             {
                 //SymbolInfo si2 = right_type.find(name, context.CurrentScope);
-                SymbolInfo si2 = right_type.find_in_type(name, right_type.Scope);
+                si2 = right_type.find_in_type(name, right_type.Scope);
                 if ((si != null) && (si2 != null))
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.
@@ -1255,7 +1256,19 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (si == null)
             {
-                AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                if (si2 == null && left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
+                {
+                    base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
+                    left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
+                    si = left.type.find_in_type(name);
+                    bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
+                    right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
+                    si2 = right.type.find_in_type(name);
+                    if (si == null)
+                        AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                }
+                else
+                    AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
             }
 
             expressions_list pars = null;
