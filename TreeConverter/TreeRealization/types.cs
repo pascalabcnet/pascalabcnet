@@ -2806,8 +2806,26 @@ namespace PascalABCCompiler.TreeRealization
                         invoke, ctor);
                     dii.parameters.AddRange(invoke.parameters);
                     this.add_internal_interface(dii);
+                    add_delegate_operator(compiler_string_consts.plusassign_name, type_constructor.instance.delegate_add_assign_compile_time_executor);
+                    add_delegate_operator(compiler_string_consts.plus_name, type_constructor.instance.delegate_add_compile_time_executor);
+                    add_delegate_operator(compiler_string_consts.minusassign_name, type_constructor.instance.delegate_sub_assign_compile_time_executor);
+                    add_delegate_operator(compiler_string_consts.minus_name, type_constructor.instance.delegate_sub_compile_time_executor);
                 }
             }
+        }
+
+        private void add_delegate_operator(string name, compile_time_executor executor)
+        {
+            common_namespace_function_node cnfn = new common_namespace_function_node(name, this, null, null, null);
+            cnfn.ConnectedToType = this;
+            cnfn.compile_time_executor = executor;
+            add_name(name, new SymbolInfo(cnfn));
+            common_parameter cp1 = new common_parameter(compiler_string_consts.left_param_name, this, SemanticTree.parameter_type.value,
+                                                        cnfn, concrete_parameter_type.cpt_none, null, null);
+            common_parameter cp2 = new common_parameter(compiler_string_consts.right_param_name, this, SemanticTree.parameter_type.value,
+                                                        cnfn, concrete_parameter_type.cpt_none, null, null);
+            cnfn.parameters.AddElement(cp1);
+            cnfn.parameters.AddElement(cp2);
         }
 
         //private bool ctors_inited = false;

@@ -154,7 +154,7 @@ namespace PascalABCCompiler.TreeConverter
 			}
 		}
 
-		private expression_node delegate_add_compile_time_executor(location call_location, expression_node[] exprs)
+		public expression_node delegate_add_compile_time_executor(location call_location, expression_node[] exprs)
 		{
 			if (exprs.Length != 2)
 			{
@@ -167,7 +167,7 @@ namespace PascalABCCompiler.TreeConverter
 			return cfc;
 		}
 
-		private expression_node delegate_sub_compile_time_executor(location call_location, expression_node[] exprs)
+		public expression_node delegate_sub_compile_time_executor(location call_location, expression_node[] exprs)
 		{
 			if (exprs.Length != 2)
 			{
