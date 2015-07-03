@@ -226,6 +226,7 @@ namespace ICSharpCode.FormsDesigner
             MakeDirty();
 
             PropertyGrid grid = PropertyPad.Grid;
+            
             var gridView = (Control)grid.GetType().GetField("gridView", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(grid);
             var edit = (Control)gridView.GetType().GetField("edit", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridView);
             edit.KeyPress += PropertyPadEditorKeyPress;

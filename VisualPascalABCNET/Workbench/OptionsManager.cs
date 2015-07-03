@@ -239,7 +239,7 @@ namespace VisualPascalABC
                 {
                 	AddVariable(w,false);
                 }*/
-
+                System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
             }
             catch (Exception e)
             {
@@ -300,6 +300,7 @@ namespace VisualPascalABC
                 Options.Add(OptionsItemNameLastFile + (LastOpenFiles.Count - i - 1).ToString(), LastOpenFiles[i]);
             for (int i = 0; i < LastOpenProjects.Count; i++)
                 Options.Add(OptionsItemNameLastProject + (LastOpenProjects.Count - i - 1).ToString(), LastOpenProjects[i]);
+            System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO);
             try
             {
                 PascalABCCompiler.StringResources.WriteStringsToStreamAsXml(new StreamWriter(FileName, false, /*VisualEnvironmentCompiler.DefaultFileEncoding*/System.Text.Encoding.UTF8), Options, GetAdvancedOptions());
@@ -308,7 +309,6 @@ namespace VisualPascalABC
             {
                 //ãàñèì èñêëþ÷åíèÿ åñëè íå óäàëîñü çàïèñàòü ôàéë. ýòî íå ñìåðòåëüíî
             }
-
         }
 
         public void UpdateUserOptions()
