@@ -140,7 +140,7 @@
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
 %type <ex> as_is_expr as_is_constexpr  
-%type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref array_type 
+%type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
 %type <stn> type_decl_sect
@@ -164,7 +164,7 @@
 %type <stn> with_stmt  
 %type <ex> variable_as_type dotted_identifier
 %type <ex> func_decl_lambda expl_func_decl_lambda
-%type <td> lambda_type_ref
+%type <td> lambda_type_ref lambda_type_ref_noproctype
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list
 %type <ti> tkAssignOrEqual
@@ -2175,6 +2175,19 @@ fptype
     : type_ref
 		{ $$ = $1; }
     ;
+    
+fptype_noproctype
+    : simple_type
+		{ $$ = $1; }
+    | string_type
+		{ $$ = $1; }
+    | pointer_type
+		{ $$ = $1; }
+    | structured_type
+		{ $$ = $1; }
+    | template_type
+		{ $$ = $1; }
+	    ;
 
 stmt
     : unlabelled_stmt  
@@ -3352,18 +3365,18 @@ func_decl_lambda
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
 		}
-    | tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
+    | tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, $5 as statement_list, @$);
 		}
-	| tkRoundOpen identifier tkColon fptype tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkRoundOpen identifier tkColon fptype tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			var idList = new ident_list($2, @2); 
             var loc = LexLocation.MergeAll(@2,@3,@4);
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), loc);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
 		}
-	| tkRoundOpen identifier tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkRoundOpen identifier tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			var idList = new ident_list($2, @2);
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
@@ -3371,7 +3384,7 @@ func_decl_lambda
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
 		}
-	| tkRoundOpen identifier tkColon fptype tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkRoundOpen identifier tkColon fptype tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
 			var idList = new ident_list($2, @2);
             var loc = LexLocation.MergeAll(@2,@3,@4);
@@ -3380,7 +3393,7 @@ func_decl_lambda
 				formalPars.Add(($6 as formal_parameters).params_list[i]);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, $10 as statement_list, @$);
 		}
-	| tkRoundOpen identifier tkComma lambda_simple_fp_sect tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkRoundOpen identifier tkComma lambda_simple_fp_sect tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
             var typed_pars = $4 as typed_parameters;
 			if (typed_pars.vars_type is lambda_inferred_type)
@@ -3411,7 +3424,7 @@ func_decl_lambda
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
 			}
 		}
-	| tkRoundOpen identifier tkComma lambda_simple_fp_sect tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
+	| tkRoundOpen identifier tkComma lambda_simple_fp_sect tkSemiColon full_lambda_fp_list tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
             var typed_pars = $4 as typed_parameters;
 			if (typed_pars.vars_type is lambda_inferred_type)
@@ -3524,6 +3537,17 @@ lambda_type_ref
 		}
 	;
 		
+lambda_type_ref_noproctype
+	:
+		{
+			$$ = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+		}
+	| tkColon fptype_noproctype
+		{
+			$$ = $2;
+		}
+	;
+
 lambda_function_body
 	: expr_l1 
 		{

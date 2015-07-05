@@ -1083,7 +1083,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override void visit(function_lambda_definition _function_lambda_definition)
         {
             ProcessNode(_function_lambda_definition.attributes);
-            //Непонятно, как обходить defs, так как они - object
+            //Непонятно, как обходить defs, так как они - object // ssm - ПОЧЕМУ? Вроде нет
             //if (_function_lambda_definition.defs != null)
             //    for (int i = 0; i < _function_lambda_definition.defs.Count; ++i)
             //        ProcessNode(_function_lambda_definition.defs[i]);
@@ -1096,6 +1096,9 @@ namespace PascalABCCompiler.SyntaxTree
         }
         public override void visit(function_lambda_call _function_lambda_call)
         {
+            ProcessNode(_function_lambda_call.f_lambda_def);
+            ProcessNode(_function_lambda_call.parameters);
+
             throw new NotImplementedException();
         }
         public override void visit(semantic_check _semantic_check)
@@ -1142,12 +1145,16 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override void visit(sequence_type _sequence_type)
         {
-            //throw new NotImplementedException();
+            ProcessNode(_sequence_type.attr_list);
+            ProcessNode(_sequence_type.elements_type);
         }
 
         public override void visit(modern_proc_type _modern_proc_type)
         {
-            //throw new NotImplementedException();
+            ProcessNode(_modern_proc_type.attr_list);
+            ProcessNode(_modern_proc_type.aloneparam);
+            ProcessNode(_modern_proc_type.el);
+            ProcessNode(_modern_proc_type.res);
         }
 
         public override void visit(yield_node _yield_node)

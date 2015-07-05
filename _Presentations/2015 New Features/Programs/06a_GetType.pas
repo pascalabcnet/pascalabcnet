@@ -3,7 +3,7 @@ begin
   var i := 123;
   var r := 3.14;
   var s := 'PascalABC.NET';
-  var a := Seq(1,2,3);
+  var a := Arr(1,2,3);
   writeln(c.GetType);
   writeln(i.GetType);
   writeln(r.GetType);
