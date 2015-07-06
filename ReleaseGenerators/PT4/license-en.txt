@@ -1,0 +1,50 @@
+PROGRAMMING TASKBOOK FOR PASCALABC.NET
+
+                           Copyright (c) M. Abramyan, 1998-2015
+
+
+LICENSE FOR USE AND DISTRIBUTION
+
+1. All copyrights to "Programming Taskbook for PascalABC.NET"
+are exclusively owned  by the author - M.Abramyan.
+
+2. If you wish to use the "Programming Taskbok for PascalABC.NET
+Complete Edition", you must register (see the registration terms 
+on the www.ptaskbook.com Web-site). The unregistered 
+"Programming Taskbook for PascalABC.NET" allows to solve 
+270 selected tasks from the total 1100 ones and all
+tasks of the Exam groups.
+
+3. "Programming Taskbook for PascalABC.NET" may be freely 
+distributed, with exceptions noted below, provided 
+the distribution package is not modified. No person or company 
+may charge a fee for the distribution of "Programming Taskbook 
+for PascalABC.NET" without written permission from 
+the copyright holder.
+
+4. "Programming Taskbook for PascalABC.NET" is distributed 
+"as is". No warranty of any kind is expressed or implied. 
+You use this software at your own risk. The author will not be 
+liable for data loss, damages, loss of profits or any other 
+kind of loss while using or misusing this software.
+
+5. You may not use, copy, emulate, clone, rent, lease, sell,  
+modify, decompile, disassemble, otherwise reverse engineer, 
+or transfer the licensed program, or any subset of the 
+licensed program, except as provided for in this agreement. 
+Any such unauthorized use shall result in immediate and 
+automatic termination of this license and may result in
+criminal and/or civil prosecution. All rights not expressly 
+granted here are reserved by M.E.Abramyan.
+
+6. Installing and using "Programming Taskbook for PascalABC.NET"
+signifies acceptance of these terms and conditions of the license.
+
+7. If you do not agree with the terms of this license 
+you must remove "Programming Taskbook for PascalABC.NET" files 
+from your storage devices (these files are located in the
+PT4 subdirectory of the PascalABC.NET system directory)
+and cease to use the product.
+
+
+

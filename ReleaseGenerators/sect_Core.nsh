@@ -28,6 +28,7 @@
 	File "gacutil.exe.config"
 	File "gacutlrc.dll"
     File "License.txt"
+    File "License_en.txt"
     File "copyright.txt"
 	File "..\bin\pabcnetc.exe.config"
 	File "..\bin\pabcnetcclear.exe.config"

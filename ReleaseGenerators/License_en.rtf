@@ -1,169 +1,481 @@
-{\rtf1\ansi\ansicpg1251\deff0\deflang1049\deflangfe1049{\fonttbl{\f0\fnil\fcharset0 Calibri;}}
-{\colortbl ;\red0\green0\blue255;}
-{\*\generator Msftedit 5.41.21.2510;}\viewkind4\uc1\pard\sl240\slmult1\lang7\f0\fs22                                       GNU LESSER GENERAL PUBLIC LICENSE\par
-                       \tab\tab Version 3, 29 June 2007\par
-\par
- Copyright (C) 2007 Free Software Foundation, Inc. <{\field{\*\fldinst{HYPERLINK "http://fsf.org/"}}{\fldrslt{\ul\cf1 http://fsf.org/}}}\f0\fs22 >\par
- Everyone is permitted to copy and distribute verbatim copies\par
- of this license document, but changing it is not allowed.\par
-\par
-\par
-  This version of the GNU Lesser General Public License incorporates\par
-the terms and conditions of version 3 of the GNU General Public\par
-License, supplemented by the additional permissions listed below.\par
-\par
-  0. Additional Definitions.\par
-\par
-  As used herein, "this License" refers to version 3 of the GNU Lesser\par
-General Public License, and the "GNU GPL" refers to version 3 of the GNU\par
-General Public License.\par
-\par
-  "The Library" refers to a covered work governed by this License,\par
-other than an Application or a Combined Work as defined below.\par
-\par
-  An "Application" is any work that makes use of an interface provided\par
-by the Library, but which is not otherwise based on the Library.\par
-Defining a subclass of a class defined by the Library is deemed a mode\par
-of using an interface provided by the Library.\par
-\par
-  A "Combined Work" is a work produced by combining or linking an\par
-Application with the Library.  The particular version of the Library\par
-with which the Combined Work was made is also called the "Linked\par
-Version".\par
-\par
-  The "Minimal Corresponding Source" for a Combined Work means the\par
-Corresponding Source for the Combined Work, excluding any source code\par
-for portions of the Combined Work that, considered in isolation, are\par
-based on the Application, and not on the Linked Version.\par
-\par
-  The "Corresponding Application Code" for a Combined Work means the\par
-object code and/or source code for the Application, including any data\par
-and utility programs needed for reproducing the Combined Work from the\par
-Application, but excluding the System Libraries of the Combined Work.\par
-\par
-  1. Exception to Section 3 of the GNU GPL.\par
-\par
-  You may convey a covered work under sections 3 and 4 of this License\par
-without being bound by section 3 of the GNU GPL.\par
-\par
-  2. Conveying Modified Versions.\par
-\par
-  If you modify a copy of the Library, and, in your modifications, a\par
-facility refers to a function or data to be supplied by an Application\par
-that uses the facility (other than as an argument passed when the\par
-facility is invoked), then you may convey a copy of the modified\par
-version:\par
-\par
-   a) under this License, provided that you make a good faith effort to\par
-   ensure that, in the event an Application does not supply the\par
-   function or data, the facility still operates, and performs\par
-   whatever part of its purpose remains meaningful, or\par
-\par
-   b) under the GNU GPL, with none of the additional permissions of\par
-   this License applicable to that copy.\par
-\par
-  3. Object Code Incorporating Material from Library Header Files.\par
-\par
-  The object code form of an Application may incorporate material from\par
-a header file that is part of the Library.  You may convey such object\par
-code under terms of your choice, provided that, if the incorporated\par
-material is not limited to numerical parameters, data structure\par
-layouts and accessors, or small macros, inline functions and templates\par
-(ten or fewer lines in length), you do both of the following:\par
-\par
-   a) Give prominent notice with each copy of the object code that the\par
-   Library is used in it and that the Library and its use are\par
-   covered by this License.\par
-\par
-   b) Accompany the object code with a copy of the GNU GPL and this license\par
-   document.\par
-\par
-  4. Combined Works.\par
-\par
-  You may convey a Combined Work under terms of your choice that,\par
-taken together, effectively do not restrict modification of the\par
-portions of the Library contained in the Combined Work and reverse\par
-engineering for debugging such modifications, if you also do each of\par
-the following:\par
-\par
-   a) Give prominent notice with each copy of the Combined Work that\par
-   the Library is used in it and that the Library and its use are\par
-   covered by this License.\par
-\par
-   b) Accompany the Combined Work with a copy of the GNU GPL and this license\par
-   document.\par
-\par
-   c) For a Combined Work that displays copyright notices during\par
-   execution, include the copyright notice for the Library among\par
-   these notices, as well as a reference directing the user to the\par
-   copies of the GNU GPL and this license document.\par
-\par
-   d) Do one of the following:\par
-\par
-       0) Convey the Minimal Corresponding Source under the terms of this\par
-       License, and the Corresponding Application Code in a form\par
-       suitable for, and under terms that permit, the user to\par
-       recombine or relink the Application with a modified version of\par
-       the Linked Version to produce a modified Combined Work, in the\par
-       manner specified by section 6 of the GNU GPL for conveying\par
-       Corresponding Source.\par
-\par
-       1) Use a suitable shared library mechanism for linking with the\par
-       Library.  A suitable mechanism is one that (a) uses at run time\par
-       a copy of the Library already present on the user's computer\par
-       system, and (b) will operate properly with a modified version\par
-       of the Library that is interface-compatible with the Linked\par
-       Version.\par
-\par
-   e) Provide Installation Information, but only if you would otherwise\par
-   be required to provide such information under section 6 of the\par
-   GNU GPL, and only to the extent that such information is\par
-   necessary to install and execute a modified version of the\par
-   Combined Work produced by recombining or relinking the\par
-   Application with a modified version of the Linked Version. (If\par
-   you use option 4d0, the Installation Information must accompany\par
-   the Minimal Corresponding Source and Corresponding Application\par
-   Code. If you use option 4d1, you must provide the Installation\par
-   Information in the manner specified by section 6 of the GNU GPL\par
-   for conveying Corresponding Source.)\par
-\par
-  5. Combined Libraries.\par
-\par
-  You may place library facilities that are a work based on the\par
-Library side by side in a single library together with other library\par
-facilities that are not Applications and are not covered by this\par
-License, and convey such a combined library under terms of your\par
-choice, if you do both of the following:\par
-\par
-   a) Accompany the combined library with a copy of the same work based\par
-   on the Library, uncombined with any other library facilities,\par
-   conveyed under the terms of this License.\par
-\par
-   b) Give prominent notice with the combined library that part of it\par
-   is a work based on the Library, and explaining where to find the\par
-   accompanying uncombined form of the same work.\par
-\par
-  6. Revised Versions of the GNU Lesser General Public License.\par
-\par
-  The Free Software Foundation may publish revised and/or new versions\par
-of the GNU Lesser General Public License from time to time. Such new\par
-versions will be similar in spirit to the present version, but may\par
-differ in detail to address new problems or concerns.\par
-\par
-  Each version is given a distinguishing version number. If the\par
-Library as you received it specifies that a certain numbered version\par
-of the GNU Lesser General Public License "or any later version"\par
-applies to it, you have the option of following the terms and\par
-conditions either of that published version or of any later version\par
-published by the Free Software Foundation. If the Library as you\par
-received it does not specify a version number of the GNU Lesser\par
-General Public License, you may choose any version of the GNU Lesser\par
-General Public License ever published by the Free Software Foundation.\par
-\par
-  If the Library as you received it specifies that a proxy can decide\par
-whether future versions of the GNU Lesser General Public License shall\par
-apply, that proxy's public statement of acceptance of any version is\par
-permanent authorization for you to choose that version for the\par
-Library.\par
+{\rtf1\ansi\deff4\adeflang1025
+{\fonttbl{\f0\froman\fprq2\fcharset0 Times New Roman;}{\f1\froman\fprq2\fcharset2 Symbol;}{\f2\fswiss\fprq2\fcharset0 Arial;}{\f3\froman\fprq2\fcharset204 Times New Roman;}{\f4\fswiss\fprq0\fcharset0 Calibri;}{\f5\fswiss\fprq2\fcharset204 Arial;}{\f6\fswiss\fprq0\fcharset128 Calibri;}{\f7\fnil\fprq0\fcharset204 MS Shell Dlg 2;}{\f8\fswiss\fprq2\fcharset128 Calibri;}{\f9\fnil\fprq2\fcharset204 Microsoft YaHei;}{\f10\fnil\fprq2\fcharset204 Mangal;}{\f11\fnil\fprq0\fcharset128 Mangal;}}
+{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green0\blue128;\red128\green128\blue128;}
+{\stylesheet{\s0\snext0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049 ???????;}
+{\*\cs15\snext15\cf3\ul\ulc0\langfe255\lang255\lang255 ????????-??????;}
+{\s16\sbasedon0\snext17\sb240\sa120\keepn\hich\af9\dbch\af10\afs28\loch\f5\fs28 Заголовок;}
+{\s17\sbasedon0\snext17\sb0\sa120 Основной текст;}
+{\s18\sbasedon17\snext18\sb0\sa120\dbch\af11 Список;}
+{\s19\sbasedon0\snext19\sb120\sa120\noline\i\dbch\af11\afs24\ai\fs24 Название;}
+{\s20\sbasedon0\snext20\noline\dbch\af11 Указатель;}
+{\s21\sbasedon0\snext21\noline Содержимое таблицы;}
+{\s22\sbasedon21\snext22\qc\noline\b\ab Заголовок таблицы;}
+}{\info{\creatim\yr0\mo0\dy0\hr0\min0}{\revtim\yr0\mo0\dy0\hr0\min0}{\printim\yr0\mo0\dy0\hr0\min0}{\comment OpenOffice}{\vern4110}}\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720\deftab720
+
+{\*\pgdsctbl
+{\pgdsc0\pgdscuse195\pgwsxn12240\pghsxn15840\marglsxn1800\margrsxn1800\margtsxn1440\margbsxn1440\pgdscnxt0 \u1054\'3f\u1073\'3f\u1099\'3f\u1095\'3f\u1085\'3f\u1099\'3f\u1081\'3f;}}
+\formshade{\*\pgdscno0}\paperh15840\paperw12240\margl1800\margr1800\margt1440\margb1440\sectd\sbknone\sectunlocked1\pgndec\pgwsxn12240\pghsxn15840\marglsxn1800\margrsxn1800\margtsxn1440\margbsxn1440\ftnbj\ftnstart1\ftnrstcont\ftnnar\aenddoc\aftnrstcont\aftnstart1\aftnnrlc
+\pgndec\pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+Next, we d}{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+escribe the terms under which PascalABC.NET is distributed.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+A copy of the GNU GPL is appended to this file.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
 }
- 
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\hich\af7\dbch\af7\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+IMPORTANT PascalABC.NET LICENSE TERMS}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+Copyright (C) 2005-2015 by Ivan Bondarev, Stanislav Mihalkovich}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+This program is free software; you may redistribute and/or modify it under the terms of the GNU LGPL version 3 with the clarifications and exceptions described below. }
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+PascalABC.NET }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+can be linked with non-free modules and libraries}{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+. }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+This condition is mainly concerned with possibility of adding foreign modules and libraries to PascalABC.NET, aimed at education.}{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+ }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+In particular}{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+, PascalABC.NET }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+includes as a part PROGRAMMING TASKBOOK FOR PASCALABC.NET}{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+ (in agreement with the author of this product), }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+which is distributed }{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+under the terms of }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+proprietary license}{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+ (}{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+see }{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+\\bin\\PT4)}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+In addition}{\afs22\rtlch \ltrch\loch\fs22\loch\f8
+, }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+in About window }{\afs22\rtlch \ltrch\loch\fs22\lang1049\loch\f8
+of}{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+ }{\afs22\rtlch \ltrch\loch\fs22\loch\f8
+PascalABC.NET IDE }{\afs22\rtlch \ltrch\loch\fs22\lang1033\loch\f8
+we demand to display names of the authors of  PascalABC.NET from the beginning of this document (right after the title \u8220\'1cIMPORTANT PascalABC.NET LICENSE TERMS\u8221\'1d).}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7\loch\f8
+              }
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang1049\loch\f8
+Our interpretation applies only to PascalABC.NET - we don't speak for other people's LGPL works.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7\loch\f8
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+******************************************************************************}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+                                      }{\afs22\rtlch \ltrch\loch\fs22\lang7
+GNU LESSER GENERAL PUBLIC LICENSE}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+                       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+\tab \tab Version 3, 29 June 2007}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+ }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Copyright (C) 2007 Free Software Foundation, Inc. <}{{\field{\*\fldinst HYPERLINK "http://fsf.org/" }{\fldrslt \cf3\ul\ulc0\langfe255\lang255\lang255\cf2\ul\ulc0\afs22\rtlch \ltrch\loch\fs22\lang7
+http://fsf.org/}{\afs22\rtlch \ltrch\loch\fs22\lang7
+}}>}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+ }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Everyone is permitted to copy and distribute verbatim copies}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+ }{\afs22\rtlch \ltrch\loch\fs22\lang7
+of this license document, but changing it is not allowed.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+This version of the GNU Lesser General Public License incorporates}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+the terms and conditions of version 3 of the GNU General Public}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+License, supplemented by the additional permissions listed below.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+0. Additional Definitions.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+As used herein, "this License" refers to version 3 of the GNU Lesser}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+General Public License, and the "GNU GPL" refers to version 3 of the GNU}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+General Public License.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+"The Library" refers to a covered work governed by this License,}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+other than an Application or a Combined Work as defined below.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+An "Application" is any work that makes use of an interface provided}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+by the Library, but which is not otherwise based on the Library.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Defining a subclass of a class defined by the Library is deemed a mode}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+of using an interface provided by the Library.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+A "Combined Work" is a work produced by combining or linking an}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Application with the Library.  The particular version of the Library}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+with which the Combined Work was made is also called the "Linked}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Version".}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+The "Minimal Corresponding Source" for a Combined Work means the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Corresponding Source for the Combined Work, excluding any source code}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+for portions of the Combined Work that, considered in isolation, are}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+based on the Application, and not on the Linked Version.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+The "Corresponding Application Code" for a Combined Work means the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+object code and/or source code for the Application, including any data}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+and utility programs needed for reproducing the Combined Work from the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Application, but excluding the System Libraries of the Combined Work.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+1. Exception to Section 3 of the GNU GPL.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+You may convey a covered work under sections 3 and 4 of this License}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+without being bound by section 3 of the GNU GPL.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+2. Conveying Modified Versions.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+If you modify a copy of the Library, and, in your modifications, a}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+facility refers to a function or data to be supplied by an Application}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+that uses the facility (other than as an argument passed when the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+facility is invoked), then you may convey a copy of the modified}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+version:}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+a) under this License, provided that you make a good faith effort to}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+ensure that, in the event an Application does not supply the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+function or data, the facility still operates, and performs}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+whatever part of its purpose remains meaningful, or}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+b) under the GNU GPL, with none of the additional permissions of}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+this License applicable to that copy.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+3. Object Code Incorporating Material from Library Header Files.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+The object code form of an Application may incorporate material from}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+a header file that is part of the Library.  You may convey such object}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+code under terms of your choice, provided that, if the incorporated}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+material is not limited to numerical parameters, data structure}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+layouts and accessors, or small macros, inline functions and templates}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+(ten or fewer lines in length), you do both of the following:}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+a) Give prominent notice with each copy of the object code that the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Library is used in it and that the Library and its use are}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+covered by this License.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+b) Accompany the object code with a copy of the GNU GPL and this license}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+document.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+4. Combined Works.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+You may convey a Combined Work under terms of your choice that,}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+taken together, effectively do not restrict modification of the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+portions of the Library contained in the Combined Work and reverse}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+engineering for debugging such modifications, if you also do each of}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+the following:}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+a) Give prominent notice with each copy of the Combined Work that}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+the Library is used in it and that the Library and its use are}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+covered by this License.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+b) Accompany the Combined Work with a copy of the GNU GPL and this license}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+document.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+c) For a Combined Work that displays copyright notices during}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+execution, include the copyright notice for the Library among}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+these notices, as well as a reference directing the user to the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+copies of the GNU GPL and this license document.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+d) Do one of the following:}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+0) Convey the Minimal Corresponding Source under the terms of this}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+License, and the Corresponding Application Code in a form}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+suitable for, and under terms that permit, the user to}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+recombine or relink the Application with a modified version of}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+the Linked Version to produce a modified Combined Work, in the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+manner specified by section 6 of the GNU GPL for conveying}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Corresponding Source.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+1) Use a suitable shared library mechanism for linking with the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Library.  A suitable mechanism is one that (a) uses at run time}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+a copy of the Library already present on the user's computer}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+system, and (b) will operate properly with a modified version}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+of the Library that is interface-compatible with the Linked}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+       }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Version.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+e) Provide Installation Information, but only if you would otherwise}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+be required to provide such information under section 6 of the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+GNU GPL, and only to the extent that such information is}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+necessary to install and execute a modified version of the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Combined Work produced by recombining or relinking the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Application with a modified version of the Linked Version. (If}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+you use option 4d0, the Installation Information must accompany}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+the Minimal Corresponding Source and Corresponding Application}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Code. If you use option 4d1, you must provide the Installation}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Information in the manner specified by section 6 of the GNU GPL}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+for conveying Corresponding Source.)}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+5. Combined Libraries.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+You may place library facilities that are a work based on the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Library side by side in a single library together with other library}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+facilities that are not Applications and are not covered by this}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+License, and convey such a combined library under terms of your}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+choice, if you do both of the following:}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+a) Accompany the combined library with a copy of the same work based}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+on the Library, uncombined with any other library facilities,}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+conveyed under the terms of this License.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+b) Give prominent notice with the combined library that part of it}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+is a work based on the Library, and explaining where to find the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+   }{\afs22\rtlch \ltrch\loch\fs22\lang7
+accompanying uncombined form of the same work.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+6. Revised Versions of the GNU Lesser General Public License.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+The Free Software Foundation may publish revised and/or new versions}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+of the GNU Lesser General Public License from time to time. Such new}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+versions will be similar in spirit to the present version, but may}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+differ in detail to address new problems or concerns.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+Each version is given a distinguishing version number. If the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Library as you received it specifies that a certain numbered version}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+of the GNU Lesser General Public License "or any later version"}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+applies to it, you have the option of following the terms and}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+conditions either of that published version or of any later version}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+published by the Free Software Foundation. If the Library as you}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+received it does not specify a version number of the GNU Lesser}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+General Public License, you may choose any version of the GNU Lesser}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+General Public License ever published by the Free Software Foundation.}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\fs22\lang7
+  }{\afs22\rtlch \ltrch\loch\fs22\lang7
+If the Library as you received it specifies that a proxy can decide}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+whether future versions of the GNU Lesser General Public License shall}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+apply, that proxy's public statement of acceptance of any version is}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+permanent authorization for you to choose that version for the}
+\par \pard\plain \s0\nowidctlpar{\*\hyphen2\hyphlead2\hyphtrail2\hyphmax0}\cf0\hich\af4\langfe1049\dbch\af4\afs24\lang1049\loch\f4\fs24\lang1049\sl240\slmult1{\afs22\rtlch \ltrch\loch\fs22\lang7
+Library.}
+\par }

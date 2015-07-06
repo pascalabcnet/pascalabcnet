@@ -1,28 +1,18 @@
-﻿Далее описываются условия, при которых распространяется продукт PascalABC.NET
-Копия GNU LGPL прилагается в конце этого файла
+﻿Next, we describe the terms under which PascalABC.NET is distributed.
+A copy of the GNU GPL is appended to this file.
 
-ВАЖНЕЙШИЕ УСЛОВИЯ РАСПРОСТРАНЕНИЯ ПРОДУКТА PascalABC.NET
+IMPORTANT PascalABC.NET LICENSE TERMS
 
 Copyright (C) 2005-2015 by Ivan Bondarev, Stanislav Mihalkovich
-Это программное обеспечение является свободным; вы можете распространять и/или 
-модифицировать его на условиях GNU LGPL версии 3 с разъяснениями и исключениями, данными ниже. 
+This program is free software; you may redistribute and/or modify it under the terms of the GNU LGPL version 3 with the clarifications and exceptions described below. 
 
-Продукт PascalABC.NET может компоноваться с несвободными модулями и библиотеками если это не 
-дестабилизирует его работу. Данное условие в основном направлено на возможность добавления 
-в продукт сторонних модулей, связанных с обучением. В частности, в основную поставку 
-PascalABC.NET входит электронный задачник Programming Taskbook (по согласованию с автором 
-данного продукта), который распространаяется на условиях своей проприетарной лицензии 
-(см. папку \bin\PT4)
+PascalABC.NET can be linked with non-free modules and libraries. This condition is mainly concerned with possibility of adding foreign modules and libraries to PascalABC.NET, aimed at education. In particular, PascalABC.NET includes as a part PROGRAMMING TASKBOOK FOR PASCALABC.NET (in agreement with the author of this product), which is distributed under the terms of proprietary license (see \bin\PT4)
 
-Кроме того, IDE продукта PascalABC.NET в окне About должна обязательно содержать имена авторов 
-продукта, приведенных в начале данного документа сразу после заголовка 
-«ВАЖНЕЙШИЕ УСЛОВИЯ РАСПРОСТРАНЕНИЯ ПРОДУКТА PascalABC.NET».
+In addition, in About window of PascalABC.NET IDE we demand to display names of the authors of  PascalABC.NET from the beginning of this document (right after the title “IMPORTANT PascalABC.NET LICENSE TERMS”).
               
-Наша интерпретация распространяется только на продукт PascalABC.NET - мы не имеем здесь виду 
-другие LGPL-продукты.
+Our interpretation applies only to PascalABC.NET - we don't speak for other people's LGPL works.
 
-************************************************************************************
-
+******************************************************************************
 
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007

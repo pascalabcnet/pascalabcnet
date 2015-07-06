@@ -45,6 +45,10 @@ Section $(DESC_PT4) PT4
   ${AddFile} "PT.ini"
   File "PT4\PT4Tasks.css"
   ${AddFile} "PT4Tasks.css"
+  File "PT4\license-en.txt"
+  ${AddFile} "license-en.txt"
+  File "PT4\license-ru.txt"
+  ${AddFile} "license-ru.txt"
 
   SetOutPath "$INSTDIR\PT4\Lib"
   File "PT4\Lib\PT4ExamBegin_ru.dll"
