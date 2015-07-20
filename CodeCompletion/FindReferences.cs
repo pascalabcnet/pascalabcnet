@@ -1526,7 +1526,11 @@ namespace CodeCompletion
         }
         public override void visit(ident_with_templateparams node)
         {
-            throw new NotImplementedException();
+            node.name.visit(this);
+            foreach (type_definition td in node.template_params.params_list)
+            {
+                td.visit(this);
+            }
         }
         public override void visit(bracket_expr _bracket_expr)
         {
@@ -1591,7 +1595,7 @@ namespace CodeCompletion
         }
         public override void visit(sequence_type _sequence_type)
         {
-            _sequence_type.visit(this);
+            _sequence_type.elements_type.visit(this);
         }
         public override void visit(modern_proc_type _modern_proc_type)
         {

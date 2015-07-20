@@ -1707,6 +1707,11 @@ var
 //                  Internal functions
 // -----------------------------------------------------
 
+function IsWDE: boolean;
+begin
+  Result := AppDomain.CurrentDomain.GetData('_RedirectIO_SpecialArgs') <> nil;
+end;
+
 [System.Security.SecuritySafeCriticalAttribute]
 procedure AllocConsole;
 begin
@@ -3654,17 +3659,34 @@ end;}
 
 procedure IOStandardSystem.read(var x: string);
 begin
-  var sb := new System.Text.StringBuilder;
-  // SSM 8.04.10
-  var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
-  while (c <> #13) and (c <> #10) do 
+  if IsWDE then
   begin
-    c := read_symbol;
-    if (c <> #13) and (c <> #10) then // SSM 13.12.13
-      sb.Append(c);
-    c := char(peek());
+    var sb := new System.Text.StringBuilder;
+    var c := read_symbol;
+    if (c <> #13) and (c <> #10) then
+        sb.Append(c);
+    while (c <> #13) and (c <> #10) do
+    begin
+        c := read_symbol;
+        sb.Append(c);
+        c := char(peek());
+    end;
+    x := sb.ToString;
+  end
+  else
+  begin
+    var sb := new System.Text.StringBuilder;
+    // SSM 8.04.10
+    var c := char(peek()); // первый раз может быть char(-1) - это значит, что в потоке ввода ничего нет, тогда мы читаем символ
+    while (c <> #13) and (c <> #10) do 
+    begin
+      c := read_symbol;
+      if (c <> #13) and (c <> #10) then // SSM 13.12.13
+        sb.Append(c);
+      c := char(peek());
+    end;
+    x := sb.ToString;
   end;
-  x := sb.ToString;
 end;
 
 
@@ -7576,7 +7598,6 @@ end;
 
 var
   __initialized := false;
-
 
 procedure __InitModule;
 begin
