@@ -15678,7 +15678,7 @@ namespace PascalABCCompiler.TreeConverter
                     ct = orig.compiled_type;
                 }
                     
-            Type r;
+                Type r;
                 var IEnTstring = "System.Collections.Generic.IEnumerable`1";
                 if (ct.ToString().StartsWith(IEnTstring))
                     r = ct;
@@ -15694,12 +15694,11 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        // Это неправильно !
-                        //new compiled_generic_instance_type_node(
-                        //var ss = arg1.Name;
-
                         if (arg1.GetGenericArguments().Count()>0)
-                            elem_type = compiled_type_node.get_type_node(arg1);
+                        {
+                            elem_type = compiled_type_node.get_type_node(arg1.GetGenericTypeDefinition());
+                            elem_type = elem_type.get_instance(tn.instance_params); // SSM 19/07/15 - работает!!!
+                        }
                         else
                         {
                             var ip = tn.instance_params;
@@ -15785,7 +15784,7 @@ namespace PascalABCCompiler.TreeConverter
             if (!FindIEnumerableElementType(_foreach_stmt, in_what.type, ref elem_type))
             //if (!IsGetEnumerator(in_what.type, ref elem_type))
                 AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type);
-            
+
             if (_foreach_stmt.type_name == null)
             {
                 location loc1 = get_location(_foreach_stmt.identifier);
