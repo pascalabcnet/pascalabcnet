@@ -8,7 +8,7 @@ This program is free software; you may redistribute and/or modify it under the t
 
 PascalABC.NET can be linked with non-free modules and libraries. This condition is mainly concerned with possibility of adding foreign modules and libraries to PascalABC.NET, aimed at education. In particular, PascalABC.NET includes as a part PROGRAMMING TASKBOOK FOR PASCALABC.NET (in agreement with the author of this product), which is distributed under the terms of proprietary license (see \bin\PT4)
 
-In addition, in About window of PascalABC.NET IDE we demand to display names of the authors of  PascalABC.NET from the beginning of this document (right after the title “IMPORTANT PascalABC.NET LICENSE TERMS”).
+In addition, in About window of PascalABC.NET IDE we demand to display names of the authors of PascalABC.NET from the beginning of this document (right after the title “IMPORTANT PascalABC.NET LICENSE TERMS”).
               
 Our interpretation applies only to PascalABC.NET - we don't speak for other people's LGPL works.
 

@@ -1,17 +1,19 @@
-function QuickSort(a: IEnumerable<integer>): IEnumerable<integer>;
+function QuickSort(a: sequence of integer): sequence of integer;
 begin
   if a.Count = 0 then
     Result := a
-  else
+  else 
   begin
-    var f := a.First();
-    Result := QuickSort(a.Skip(1).Where(x->x<=f)) + f + QuickSort(a.Skip(1).Where(x->x>f))
+    var head := a.First();
+    var tail := a.Skip(1);
+    Result := QuickSort(tail.Where(x->x<=head)) + 
+              head + 
+              QuickSort(tail.Where(x->x>head));
   end;
-end;
+end; 
 
 begin
-  var a := SeqRandom(20);
+  var a := ArrRandom(20);
   a.Println;
-  var b := QuickSort(a);
-  b.Println;
+  QuickSort(a).Println;
 end.
