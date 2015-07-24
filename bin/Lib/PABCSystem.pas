@@ -1964,7 +1964,7 @@ begin
       on e: System.Exception do
       begin
         Result := nil;
-        Exit;
+        //Exit;
       end;
     end;
   end;
