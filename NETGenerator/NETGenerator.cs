@@ -10290,7 +10290,10 @@ namespace PascalABCCompiler.NETGenerator
         {
             if (!ExitProcedureCall)
                 ExitLabel = il.DefineLabel();
-            il.Emit(OpCodes.Br, ExitLabel);
+            if (!safe_block)
+                il.Emit(OpCodes.Br, ExitLabel);
+            else
+                il.Emit(OpCodes.Leave, ExitLabel);
             ExitProcedureCall = true;
         }
 
