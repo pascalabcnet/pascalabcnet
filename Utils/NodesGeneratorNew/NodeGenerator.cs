@@ -193,6 +193,7 @@ namespace NodeGenerator
         public static readonly string index_out_of_range_exception_name = "IndexOutOfRangeException";
         public static readonly string subnodes_property_name = "subnodes_count";
         public static readonly string object_keyword = "object";
+        public static readonly string syntax_tree_node_name = "syntax_tree_node";
         public static readonly string or_keyword = "||";
         public static readonly string minus_keyword = "-";
         public static readonly string question_keyword = "?";
@@ -993,7 +994,7 @@ namespace NodeGenerator
         public void generate_subnodes_number_property(StreamWriter sw)
         {
             var subnodes = collect_subnodes(true);
-            var fieldsCount = subnodes.Count;
+            var fieldsCount = subnodes.Count(ni=>ni.field_type!=null); // в индексаторе учитывать только syntax_tree_node SSM 27/07/15
 
             sw.WriteLine(@"		///<summary>");
             sw.WriteLine(@"		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List");
@@ -1040,9 +1041,11 @@ namespace NodeGenerator
 
         public void generate_indexer(StreamWriter sw)
         {
-            var fields = collect_subnodes(true);
+            var subnodes = collect_subnodes(true);
 
-            var listFields = fields
+            var subnodesSyntaxNodes = subnodes.Where(ni => ni.field_type != null).ToList(); // только подузлы, являющиеся потомками syntax_tree_node
+
+            var listFields = subnodes
                 .OfType<simple_element>()
                 .Where(se => se.val_field_type_name.Length > 4 &&
                              se.val_field_type_name.Substring(0, 5) == "List<")
@@ -1065,7 +1068,7 @@ namespace NodeGenerator
             }
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
                 pol_type + text_consts.space +
-                text_consts.object_keyword + text_consts.space + text_consts.this_keyword + text_consts.open_qbracket +
+                text_consts.syntax_tree_node_name + text_consts.space + text_consts.this_keyword + text_consts.open_qbracket +
                 text_consts.int32_type_name + text_consts.space + ind_string + text_consts.close_qbracket);
 
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
@@ -1084,17 +1087,19 @@ namespace NodeGenerator
                              text_consts.index_out_of_range_exception_name + text_consts.open_par + text_consts.close_par +
                              text_consts.semicolon);
 
-            if (fields.Count > 0)
+            var fieldsCount = subnodesSyntaxNodes.Count(); // в индексаторе учитывать только syntax_tree_node SSM 27/07/15
+
+            if (fieldsCount > 0)
             {
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                              text_consts.switch_keyword_name + text_consts.open_par + ind_string + text_consts.close_par);
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
-                for (var i = 0; i < fields.Count; i++)
+                for (var i = 0; i < fieldsCount; i++)
                 {
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                                  text_consts.case_keyword_name + text_consts.space + i + text_consts.colon);
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
-                                 text_consts.tab + text_consts.return_keyword + text_consts.space + fields[i].field_name +
+                                 text_consts.tab + text_consts.return_keyword + text_consts.space + subnodesSyntaxNodes[i].field_name +
                                  text_consts.semicolon);
                 }
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
@@ -1105,7 +1110,7 @@ namespace NodeGenerator
                 const string indexCouterName = "index_counter";
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                              text_consts.int32_type_name + text_consts.space + indexCouterName + text_consts.assign +
-                             ind_string + text_consts.space + text_consts.minus_keyword + text_consts.space + fields.Count + text_consts.semicolon);
+                             ind_string + text_consts.space + text_consts.minus_keyword + text_consts.space + fieldsCount + text_consts.semicolon);
 
                 for (var i = 0; i < listFields.Count; i++)
                 {
@@ -1167,18 +1172,18 @@ namespace NodeGenerator
                              text_consts.index_out_of_range_exception_name + text_consts.open_par + text_consts.close_par +
                              text_consts.semicolon);
 
-            if (fields.Count > 0)
+            if (fieldsCount > 0)
             {
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                              text_consts.switch_keyword_name + text_consts.open_par + ind_string + text_consts.close_par);
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
-                for (var i = 0; i < fields.Count; i++)
+                for (var i = 0; i < fieldsCount; i++)
                 {
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                                  text_consts.case_keyword_name + text_consts.space + i + text_consts.colon);
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
-                                 text_consts.tab + fields[i].field_name + text_consts.space +
-                                 text_consts.assign + text_consts.space + text_consts.open_par + fields[i].field_type_name + text_consts.close_par +
+                                 text_consts.tab + subnodesSyntaxNodes[i].field_name + text_consts.space +
+                                 text_consts.assign + text_consts.space + text_consts.open_par + subnodesSyntaxNodes[i].field_type_name + text_consts.close_par +
                                  text_consts.value_keyword + text_consts.semicolon);
                     sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                                  text_consts.tab + text_consts.break_keyword_name + text_consts.semicolon);
@@ -1191,7 +1196,7 @@ namespace NodeGenerator
                 const string indexCouterName = "index_counter";
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
                              text_consts.int32_type_name + text_consts.space + indexCouterName + text_consts.assign +
-                             ind_string + text_consts.space + text_consts.minus_keyword + text_consts.space + fields.Count + text_consts.semicolon);
+                             ind_string + text_consts.space + text_consts.minus_keyword + text_consts.space + fieldsCount + text_consts.semicolon);
 
                 for (var i = 0; i < listFields.Count; i++)
                 {

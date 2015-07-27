@@ -12,7 +12,7 @@ using TreeConverter.LambdaExpressions;
 namespace PascalABCCompiler.TreeConverter
 {
     #region Визитор поиска имен переменных (для поиска захваченных переменных в теле лямбды)
-    public class FindMainIdentsVisitor : WalkingVisitor  // SSM
+    public class FindMainIdentsVisitor : WalkingVisitorNew  // SSM
     {
         public ISet<ident> vars = new HashSet<ident>();
         public override void visit(ident id)
@@ -29,7 +29,7 @@ namespace PascalABCCompiler.TreeConverter
     #endregion
 
     #region Визитор поиска имен локальных переменных 
-    public class FindLocalDefsVisitor : WalkingVisitor // SSM
+    public class FindLocalDefsVisitor : WalkingVisitorNew // SSM
     {
         public ISet<string> vars = new HashSet<string>();
         private bool indef = false;
@@ -326,7 +326,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         #region Поиск всех result - ов
-        public class ResultNodesSearcher : SyntaxTree.WalkingVisitor
+        public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew
         {
             public List<expression> exprList = new List<expression>();
             public ResultNodesSearcher(syntax_tree_node root)

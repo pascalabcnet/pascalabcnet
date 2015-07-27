@@ -37,7 +37,7 @@ namespace PascalABCCompiler.TreeConverter
     }
 
 
-    class SyntaxTreeNodeFinder : WalkingVisitor
+    class SyntaxTreeNodeFinder : WalkingVisitorNew
     {
         SourceContext _findContext = null;
         syntax_tree_node _findResult = null;

@@ -17,7 +17,7 @@ using PascalABCCompiler.TreeConverter;
 
 namespace PascalABCCompiler.TreeConverter
 {
-    class VarFinderSyntaxVisitor : SyntaxTree.WalkingVisitor
+    class VarFinderSyntaxVisitor : SyntaxTree.WalkingVisitorNew
     {
         /// <summary>
         /// Содержит список определений констант, объявленных внутри функций [и класса].

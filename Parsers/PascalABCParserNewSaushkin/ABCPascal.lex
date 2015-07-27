@@ -18,7 +18,7 @@
 %using PascalABCCompiler.ParserTools;
 %using QUT.Gppg;
 
-Letter [a-zA-Z_]
+Letter [[:IsLetter:]_]
 Digit [0-9]
 LetterDigit {Letter}|{Digit}
 ID {Letter}{LetterDigit}* 

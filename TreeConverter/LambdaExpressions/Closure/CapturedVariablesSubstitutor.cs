@@ -66,7 +66,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         }
     }
 
-    internal class CapturedVariablesSubstitutor : WalkingVisitor
+    internal class CapturedVariablesSubstitutor : WalkingVisitorNew
     {
         private readonly Dictionary<SubstitutionKey, List<ident>> _identsReferences;
         private readonly Dictionary<int, CapturedVariablesSubstitutionClassGenerator.ScopeClassDefinition> _generatedScopeClassesInfo;

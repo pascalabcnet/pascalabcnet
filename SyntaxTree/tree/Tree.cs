@@ -62,35 +62,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public virtual object this[Int32 ind]
+		public virtual syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return source_context;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						source_context = (SourceContext)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -135,7 +124,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -191,7 +180,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -331,13 +320,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3 + (subnodes == null ? 0 : subnodes.Count);
+				return 2 + (subnodes == null ? 0 : subnodes.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -346,13 +335,11 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return subnodes;
-					case 1:
 						return left_logical_bracket;
-					case 2:
+					case 1:
 						return right_logical_bracket;
 				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 2;
 				if(subnodes != null)
 				{
 					if(index_counter < subnodes.Count)
@@ -369,16 +356,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						subnodes = (List<statement>)value;
-						break;
-					case 1:
 						left_logical_bracket = (syntax_tree_node)value;
 						break;
-					case 2:
+					case 1:
 						right_logical_bracket = (syntax_tree_node)value;
 						break;
 				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 2;
 				if(subnodes != null)
 				{
 					if(index_counter < subnodes.Count)
@@ -464,35 +448,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -614,13 +587,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -632,8 +605,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return to;
 					case 1:
 						return from;
-					case 2:
-						return operator_type;
 				}
 				return null;
 			}
@@ -648,9 +619,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						from = (expression)value;
-						break;
-					case 2:
-						operator_type = (Operators)value;
 						break;
 				}
 			}
@@ -766,13 +734,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -784,8 +752,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return left;
 					case 1:
 						return right;
-					case 2:
-						return operation_type;
 				}
 				return null;
 			}
@@ -800,9 +766,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						right = (expression)value;
-						break;
-					case 2:
-						operation_type = (Operators)value;
 						break;
 				}
 			}
@@ -895,13 +858,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -911,8 +874,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return subnode;
-					case 1:
-						return operation_type;
 				}
 				return null;
 			}
@@ -924,9 +885,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						subnode = (expression)value;
-						break;
-					case 1:
-						operation_type = (Operators)value;
 						break;
 				}
 			}
@@ -973,7 +931,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -1064,35 +1022,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return val;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						val = (bool)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -1170,35 +1117,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return val;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						val = (Int32)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -1276,35 +1212,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return val;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						val = (double)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -1401,7 +1326,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -1473,7 +1398,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -1563,7 +1488,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -1652,7 +1577,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -1807,13 +1732,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2 + (names == null ? 0 : names.Count);
+				return 1 + (names == null ? 0 : names.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -1823,10 +1748,8 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return names;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(names != null)
 				{
 					if(index_counter < names.Count)
@@ -1845,11 +1768,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						attr_list = (type_definition_attr_list)value;
 						break;
-					case 1:
-						names = (List<ident>)value;
-						break;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(names != null)
 				{
 					if(index_counter < names.Count)
@@ -1946,24 +1866,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (var_definitions == null ? 0 : var_definitions.Count);
+				return 0 + (var_definitions == null ? 0 : var_definitions.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return var_definitions;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(var_definitions != null)
 				{
 					if(index_counter < var_definitions.Count)
@@ -1977,13 +1892,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						var_definitions = (List<var_def_statement>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(var_definitions != null)
 				{
 					if(index_counter < var_definitions.Count)
@@ -2108,24 +2017,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (idents == null ? 0 : idents.Count);
+				return 0 + (idents == null ? 0 : idents.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return idents;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(idents != null)
 				{
 					if(index_counter < idents.Count)
@@ -2139,13 +2043,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						idents = (List<ident>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(idents != null)
 				{
 					if(index_counter < idents.Count)
@@ -2324,13 +2222,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 5;
+				return 3;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -2344,10 +2242,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return vars_type;
 					case 2:
 						return inital_value;
-					case 3:
-						return var_attr;
-					case 4:
-						return is_event;
 				}
 				return null;
 			}
@@ -2365,12 +2259,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 2:
 						inital_value = (expression)value;
-						break;
-					case 3:
-						var_attr = (definition_attribute)value;
-						break;
-					case 4:
-						is_event = (bool)value;
 						break;
 				}
 			}
@@ -2451,7 +2339,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -2562,24 +2450,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (defs == null ? 0 : defs.Count);
+				return 0 + (defs == null ? 0 : defs.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return defs;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -2593,13 +2476,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						defs = (List<declaration>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -2696,24 +2573,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (compilation_units == null ? 0 : compilation_units.Count);
+				return 0 + (compilation_units == null ? 0 : compilation_units.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return compilation_units;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(compilation_units != null)
 				{
 					if(index_counter < compilation_units.Count)
@@ -2727,13 +2599,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						compilation_units = (List<compilation_unit>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(compilation_units != null)
 				{
 					if(index_counter < compilation_units.Count)
@@ -2825,7 +2691,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -2925,35 +2791,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return Value;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						Value = (string)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -3055,24 +2910,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (expressions == null ? 0 : expressions.Count);
+				return 0 + (expressions == null ? 0 : expressions.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return expressions;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(expressions != null)
 				{
 					if(index_counter < expressions.Count)
@@ -3086,13 +2936,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						expressions = (List<expression>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(expressions != null)
 				{
 					if(index_counter < expressions.Count)
@@ -3184,7 +3028,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -3309,7 +3153,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -3535,13 +3379,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 6;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -3558,13 +3402,9 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return statements;
 					case 4:
-						return cycle_type;
-					case 5:
 						return increment_value;
-					case 6:
+					case 5:
 						return type_name;
-					case 7:
-						return create_loop_variable;
 				}
 				return null;
 			}
@@ -3587,16 +3427,10 @@ namespace PascalABCCompiler.SyntaxTree
 						statements = (statement)value;
 						break;
 					case 4:
-						cycle_type = (for_cycle_type)value;
-						break;
-					case 5:
 						increment_value = (expression)value;
 						break;
-					case 6:
+					case 5:
 						type_name = (type_definition)value;
-						break;
-					case 7:
-						create_loop_variable = (bool)value;
 						break;
 				}
 			}
@@ -3695,7 +3529,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -3831,13 +3665,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -3849,8 +3683,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return expr;
 					case 1:
 						return statements;
-					case 2:
-						return CycleType;
 				}
 				return null;
 			}
@@ -3865,9 +3697,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						statements = (statement)value;
-						break;
-					case 2:
-						CycleType = (WhileCycleType)value;
 						break;
 				}
 			}
@@ -3984,7 +3813,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4114,7 +3943,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4259,7 +4088,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4399,13 +4228,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2 + (indexers == null ? 0 : indexers.Count);
+				return 1 + (indexers == null ? 0 : indexers.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4415,10 +4244,8 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return indexers;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(indexers != null)
 				{
 					if(index_counter < indexers.Count)
@@ -4437,11 +4264,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						attr_list = (type_definition_attr_list)value;
 						break;
-					case 1:
-						indexers = (List<type_definition>)value;
-						break;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(indexers != null)
 				{
 					if(index_counter < indexers.Count)
@@ -4567,7 +4391,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4683,7 +4507,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4802,40 +4626,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-					case 1:
-						return attribute_type;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-					case 1:
-						attribute_type = (proc_attribute)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -4967,13 +4775,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4;
+				return 3;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -4986,8 +4794,6 @@ namespace PascalABCCompiler.SyntaxTree
 					case 1:
 						return vars_type;
 					case 2:
-						return param_kind;
-					case 3:
 						return inital_value;
 				}
 				return null;
@@ -5005,9 +4811,6 @@ namespace PascalABCCompiler.SyntaxTree
 						vars_type = (type_definition)value;
 						break;
 					case 2:
-						param_kind = (parametr_kind)value;
-						break;
-					case 3:
 						inital_value = (expression)value;
 						break;
 				}
@@ -5099,24 +4902,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (params_list == null ? 0 : params_list.Count);
+				return 0 + (params_list == null ? 0 : params_list.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return params_list;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(params_list != null)
 				{
 					if(index_counter < params_list.Count)
@@ -5130,13 +4928,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						params_list = (List<typed_parameters>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(params_list != null)
 				{
 					if(index_counter < params_list.Count)
@@ -5241,24 +5033,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (proc_attributes == null ? 0 : proc_attributes.Count);
+				return 0 + (proc_attributes == null ? 0 : proc_attributes.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return proc_attributes;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(proc_attributes != null)
 				{
 					if(index_counter < proc_attributes.Count)
@@ -5272,13 +5059,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						proc_attributes = (List<procedure_attribute>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(proc_attributes != null)
 				{
 					if(index_counter < proc_attributes.Count)
@@ -5532,13 +5313,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 6;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -5555,12 +5336,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return name;
 					case 4:
-						return of_object;
-					case 5:
-						return class_keyword;
-					case 6:
 						return template_args;
-					case 7:
+					case 5:
 						return where_defs;
 				}
 				return null;
@@ -5584,15 +5361,9 @@ namespace PascalABCCompiler.SyntaxTree
 						name = (method_name)value;
 						break;
 					case 4:
-						of_object = (bool)value;
-						break;
-					case 5:
-						class_keyword = (bool)value;
-						break;
-					case 6:
 						template_args = (ident_list)value;
 						break;
-					case 7:
+					case 5:
 						where_defs = (where_definition_list)value;
 						break;
 				}
@@ -5721,13 +5492,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 9;
+				return 7;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -5744,14 +5515,10 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return name;
 					case 4:
-						return of_object;
-					case 5:
-						return class_keyword;
-					case 6:
 						return template_args;
-					case 7:
+					case 5:
 						return where_defs;
-					case 8:
+					case 6:
 						return return_type;
 				}
 				return null;
@@ -5775,18 +5542,12 @@ namespace PascalABCCompiler.SyntaxTree
 						name = (method_name)value;
 						break;
 					case 4:
-						of_object = (bool)value;
-						break;
-					case 5:
-						class_keyword = (bool)value;
-						break;
-					case 6:
 						template_args = (ident_list)value;
 						break;
-					case 7:
+					case 5:
 						where_defs = (where_definition_list)value;
 						break;
-					case 8:
+					case 6:
 						return_type = (type_definition)value;
 						break;
 				}
@@ -5918,13 +5679,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -5936,8 +5697,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return proc_header;
 					case 1:
 						return proc_body;
-					case 2:
-						return is_short_definition;
 				}
 				return null;
 			}
@@ -5952,9 +5711,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						proc_body = (proc_block)value;
-						break;
-					case 2:
-						is_short_definition = (bool)value;
 						break;
 				}
 			}
@@ -6058,7 +5814,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -6174,24 +5930,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (types_decl == null ? 0 : types_decl.Count);
+				return 0 + (types_decl == null ? 0 : types_decl.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return types_decl;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(types_decl != null)
 				{
 					if(index_counter < types_decl.Count)
@@ -6205,13 +5956,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						types_decl = (List<type_declaration>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(types_decl != null)
 				{
 					if(index_counter < types_decl.Count)
@@ -6283,7 +6028,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -6410,7 +6155,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -6539,7 +6284,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -6655,24 +6400,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (const_defs == null ? 0 : const_defs.Count);
+				return 0 + (const_defs == null ? 0 : const_defs.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return const_defs;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(const_defs != null)
 				{
 					if(index_counter < const_defs.Count)
@@ -6686,13 +6426,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						const_defs = (List<const_definition>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(const_defs != null)
 				{
 					if(index_counter < const_defs.Count)
@@ -6791,13 +6525,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -6807,8 +6541,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return idunit_name;
-					case 1:
-						return HeaderKeyword;
 				}
 				return null;
 			}
@@ -6820,9 +6552,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						idunit_name = (ident)value;
-						break;
-					case 1:
-						HeaderKeyword = (UnitHeaderKeyword)value;
 						break;
 				}
 			}
@@ -6908,7 +6637,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -7028,7 +6757,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -7152,24 +6881,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (units == null ? 0 : units.Count);
+				return 0 + (units == null ? 0 : units.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return units;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(units != null)
 				{
 					if(index_counter < units.Count)
@@ -7183,13 +6907,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						units = (List<unit_or_namespace>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(units != null)
 				{
 					if(index_counter < units.Count)
@@ -7330,7 +7048,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -7476,28 +7194,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 0 + (compiler_directives == null ? 0 : compiler_directives.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return file_name;
-					case 1:
-						return compiler_directives;
-					case 2:
-						return Language;
-				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 0;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -7511,19 +7220,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						file_name = (string)value;
-						break;
-					case 1:
-						compiler_directives = (List<compiler_directive>)value;
-						break;
-					case 2:
-						Language = (LanguageId)value;
-						break;
-				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 0;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -7738,13 +7435,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 9 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 6 + (compiler_directives == null ? 0 : compiler_directives.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -7753,25 +7450,19 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return file_name;
-					case 1:
-						return compiler_directives;
-					case 2:
-						return Language;
-					case 3:
 						return unit_name;
-					case 4:
+					case 1:
 						return interface_part;
-					case 5:
+					case 2:
 						return implementation_part;
-					case 6:
+					case 3:
 						return initialization_part;
-					case 7:
+					case 4:
 						return finalization_part;
-					case 8:
+					case 5:
 						return attributes;
 				}
-				Int32 index_counter=ind - 9;
+				Int32 index_counter=ind - 6;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -7788,34 +7479,25 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						file_name = (string)value;
-						break;
-					case 1:
-						compiler_directives = (List<compiler_directive>)value;
-						break;
-					case 2:
-						Language = (LanguageId)value;
-						break;
-					case 3:
 						unit_name = (unit_name)value;
 						break;
-					case 4:
+					case 1:
 						interface_part = (interface_node)value;
 						break;
-					case 5:
+					case 2:
 						implementation_part = (implementation_node)value;
 						break;
-					case 6:
+					case 3:
 						initialization_part = (statement_list)value;
 						break;
-					case 7:
+					case 4:
 						finalization_part = (statement_list)value;
 						break;
-					case 8:
+					case 5:
 						attributes = (attribute_list)value;
 						break;
 				}
-				Int32 index_counter=ind - 9;
+				Int32 index_counter=ind - 6;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -8004,13 +7686,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 7 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 4 + (compiler_directives == null ? 0 : compiler_directives.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -8019,21 +7701,15 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return file_name;
-					case 1:
-						return compiler_directives;
-					case 2:
-						return Language;
-					case 3:
 						return program_name;
-					case 4:
+					case 1:
 						return used_units;
-					case 5:
+					case 2:
 						return program_block;
-					case 6:
+					case 3:
 						return using_namespaces;
 				}
-				Int32 index_counter=ind - 7;
+				Int32 index_counter=ind - 4;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -8050,28 +7726,19 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						file_name = (string)value;
-						break;
-					case 1:
-						compiler_directives = (List<compiler_directive>)value;
-						break;
-					case 2:
-						Language = (LanguageId)value;
-						break;
-					case 3:
 						program_name = (program_name)value;
 						break;
-					case 4:
+					case 1:
 						used_units = (uses_list)value;
 						break;
-					case 5:
+					case 2:
 						program_block = (block)value;
 						break;
-					case 6:
+					case 3:
 						using_namespaces = (using_list)value;
 						break;
 				}
-				Int32 index_counter=ind - 7;
+				Int32 index_counter=ind - 4;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -8135,35 +7802,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return val;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						val = (Int64)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -8242,7 +7898,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -8361,7 +8017,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -8503,7 +8159,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -8671,13 +8327,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4 + (ln == null ? 0 : ln.Count);
+				return 3 + (ln == null ? 0 : ln.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -8686,15 +8342,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return ln;
-					case 1:
 						return class_name;
-					case 2:
+					case 1:
 						return meth_name;
-					case 3:
+					case 2:
 						return explicit_interface_name;
 				}
-				Int32 index_counter=ind - 4;
+				Int32 index_counter=ind - 3;
 				if(ln != null)
 				{
 					if(index_counter < ln.Count)
@@ -8711,19 +8365,16 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						ln = (List<ident>)value;
-						break;
-					case 1:
 						class_name = (ident)value;
 						break;
-					case 2:
+					case 1:
 						meth_name = (ident)value;
 						break;
-					case 3:
+					case 2:
 						explicit_interface_name = (ident)value;
 						break;
 				}
-				Int32 index_counter=ind - 4;
+				Int32 index_counter=ind - 3;
 				if(ln != null)
 				{
 					if(index_counter < ln.Count)
@@ -8833,7 +8484,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -8905,7 +8556,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9009,7 +8660,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9140,7 +8791,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9264,7 +8915,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9394,7 +9045,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9505,7 +9156,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9606,7 +9257,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9707,7 +9358,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9808,7 +9459,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -9930,7 +9581,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -10141,13 +9792,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 7;
+				return 6;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -10167,8 +9818,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return array_default;
 					case 5:
 						return parameter_list;
-					case 6:
-						return attr;
 				}
 				return null;
 			}
@@ -10195,9 +9844,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 5:
 						parameter_list = (property_parameter_list)value;
-						break;
-					case 6:
-						attr = (definition_attribute)value;
 						break;
 				}
 			}
@@ -10323,13 +9969,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 9;
+				return 8;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -10350,10 +9996,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 5:
 						return parameter_list;
 					case 6:
-						return attr;
-					case 7:
 						return property_parametres;
-					case 8:
+					case 7:
 						return is_default;
 				}
 				return null;
@@ -10383,12 +10027,9 @@ namespace PascalABCCompiler.SyntaxTree
 						parameter_list = (property_parameter_list)value;
 						break;
 					case 6:
-						attr = (definition_attribute)value;
-						break;
-					case 7:
 						property_parametres = (formal_parameters)value;
 						break;
-					case 8:
+					case 7:
 						is_default = (default_indexer_property_node)value;
 						break;
 				}
@@ -10502,13 +10143,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2 + (members == null ? 0 : members.Count);
+				return 1 + (members == null ? 0 : members.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -10517,11 +10158,9 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return members;
-					case 1:
 						return access_mod;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(members != null)
 				{
 					if(index_counter < members.Count)
@@ -10538,13 +10177,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						members = (List<declaration>)value;
-						break;
-					case 1:
 						access_mod = (access_modifer_node)value;
 						break;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(members != null)
 				{
 					if(index_counter < members.Count)
@@ -10625,35 +10261,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return access_level;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						access_level = (access_modifer)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -10742,24 +10367,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (class_def_blocks == null ? 0 : class_def_blocks.Count);
+				return 0 + (class_def_blocks == null ? 0 : class_def_blocks.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return class_def_blocks;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(class_def_blocks != null)
 				{
 					if(index_counter < class_def_blocks.Count)
@@ -10773,13 +10393,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						class_def_blocks = (List<class_members>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(class_def_blocks != null)
 				{
 					if(index_counter < class_def_blocks.Count)
@@ -11004,13 +10618,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 5;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -11025,15 +10639,9 @@ namespace PascalABCCompiler.SyntaxTree
 					case 2:
 						return body;
 					case 3:
-						return keyword;
-					case 4:
 						return template_args;
-					case 5:
+					case 4:
 						return where_section;
-					case 6:
-						return attribute;
-					case 7:
-						return is_auto;
 				}
 				return null;
 			}
@@ -11053,19 +10661,10 @@ namespace PascalABCCompiler.SyntaxTree
 						body = (class_body)value;
 						break;
 					case 3:
-						keyword = (class_keyword)value;
-						break;
-					case 4:
 						template_args = (ident_list)value;
 						break;
-					case 5:
+					case 4:
 						where_section = (where_definition_list)value;
-						break;
-					case 6:
-						attribute = (class_attribute)value;
-						break;
-					case 7:
-						is_auto = (bool)value;
 						break;
 				}
 			}
@@ -11112,7 +10711,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -11235,13 +10834,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -11252,8 +10851,6 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						return attr_list;
 					case 1:
-						return tp;
-					case 2:
 						return unit_name;
 				}
 				return null;
@@ -11268,9 +10865,6 @@ namespace PascalABCCompiler.SyntaxTree
 						attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						tp = (known_type)value;
-						break;
-					case 2:
 						unit_name = (ident)value;
 						break;
 				}
@@ -11371,7 +10965,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -11477,7 +11071,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -11614,7 +11208,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -11735,24 +11329,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (on_exceptions == null ? 0 : on_exceptions.Count);
+				return 0 + (on_exceptions == null ? 0 : on_exceptions.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return on_exceptions;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(on_exceptions != null)
 				{
 					if(index_counter < on_exceptions.Count)
@@ -11766,13 +11355,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						on_exceptions = (List<on_exception>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(on_exceptions != null)
 				{
 					if(index_counter < on_exceptions.Count)
@@ -11878,7 +11461,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -12023,7 +11606,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -12152,7 +11735,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -12268,24 +11851,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (rec_consts == null ? 0 : rec_consts.Count);
+				return 0 + (rec_consts == null ? 0 : rec_consts.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return rec_consts;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(rec_consts != null)
 				{
 					if(index_counter < rec_consts.Count)
@@ -12299,13 +11877,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						rec_consts = (List<record_const_definition>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(rec_consts != null)
 				{
 					if(index_counter < rec_consts.Count)
@@ -12431,7 +12003,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -12561,7 +12133,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -12661,35 +12233,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return cconst;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						cconst = (char)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -12768,7 +12329,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -12863,35 +12424,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return char_num;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						char_num = (int)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -12980,24 +12530,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (literals == null ? 0 : literals.Count);
+				return 0 + (literals == null ? 0 : literals.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return literals;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(literals != null)
 				{
 					if(index_counter < literals.Count)
@@ -13011,13 +12556,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						literals = (List<literal>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(literals != null)
 				{
 					if(index_counter < literals.Count)
@@ -13143,7 +12682,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -13272,7 +12811,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -13388,24 +12927,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (vars == null ? 0 : vars.Count);
+				return 0 + (vars == null ? 0 : vars.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return vars;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(vars != null)
 				{
 					if(index_counter < vars.Count)
@@ -13419,13 +12953,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						vars = (List<variant>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(vars != null)
 				{
 					if(index_counter < vars.Count)
@@ -13530,7 +13058,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -13646,24 +13174,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (vars == null ? 0 : vars.Count);
+				return 0 + (vars == null ? 0 : vars.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return vars;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(vars != null)
 				{
 					if(index_counter < vars.Count)
@@ -13677,13 +13200,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						vars = (List<variant_type>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(vars != null)
 				{
 					if(index_counter < vars.Count)
@@ -13806,7 +13323,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -13922,7 +13439,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14044,7 +13561,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14121,7 +13638,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14230,7 +13747,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14332,13 +13849,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 6;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14355,12 +13872,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return name;
 					case 4:
-						return of_object;
-					case 5:
-						return class_keyword;
-					case 6:
 						return template_args;
-					case 7:
+					case 5:
 						return where_defs;
 				}
 				return null;
@@ -14384,15 +13897,9 @@ namespace PascalABCCompiler.SyntaxTree
 						name = (method_name)value;
 						break;
 					case 4:
-						of_object = (bool)value;
-						break;
-					case 5:
-						class_keyword = (bool)value;
-						break;
-					case 6:
 						template_args = (ident_list)value;
 						break;
-					case 7:
+					case 5:
 						where_defs = (where_definition_list)value;
 						break;
 				}
@@ -14465,13 +13972,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8;
+				return 6;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14488,12 +13995,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return name;
 					case 4:
-						return of_object;
-					case 5:
-						return class_keyword;
-					case 6:
 						return template_args;
-					case 7:
+					case 5:
 						return where_defs;
 				}
 				return null;
@@ -14517,15 +14020,9 @@ namespace PascalABCCompiler.SyntaxTree
 						name = (method_name)value;
 						break;
 					case 4:
-						of_object = (bool)value;
-						break;
-					case 5:
-						class_keyword = (bool)value;
-						break;
-					case 6:
 						template_args = (ident_list)value;
 						break;
-					case 7:
+					case 5:
 						where_defs = (where_definition_list)value;
 						break;
 				}
@@ -14625,7 +14122,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14761,13 +14258,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -14779,8 +14276,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return expr;
 					case 1:
 						return type_def;
-					case 2:
-						return cast_op;
 				}
 				return null;
 			}
@@ -14795,9 +14290,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						type_def = (type_definition)value;
-						break;
-					case 2:
-						cast_op = (op_typecast)value;
 						break;
 				}
 			}
@@ -14914,7 +14406,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15061,7 +14553,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15190,7 +14682,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15317,7 +14809,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15389,7 +14881,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15498,7 +14990,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15587,7 +15079,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15654,7 +15146,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -15754,24 +15246,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (variants == null ? 0 : variants.Count);
+				return 0 + (variants == null ? 0 : variants.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return variants;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(variants != null)
 				{
 					if(index_counter < variants.Count)
@@ -15785,13 +15272,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						variants = (List<case_variant>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(variants != null)
 				{
 					if(index_counter < variants.Count)
@@ -15896,7 +15377,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -16012,24 +15493,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (vars == null ? 0 : vars.Count);
+				return 0 + (vars == null ? 0 : vars.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return vars;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(vars != null)
 				{
 					if(index_counter < vars.Count)
@@ -16043,13 +15519,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						vars = (List<var_def_statement>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(vars != null)
 				{
 					if(index_counter < vars.Count)
@@ -16154,7 +15624,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -16226,7 +15696,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -16352,7 +15822,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -16481,7 +15951,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -16597,24 +16067,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (parameters == null ? 0 : parameters.Count);
+				return 0 + (parameters == null ? 0 : parameters.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return parameters;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(parameters != null)
 				{
 					if(index_counter < parameters.Count)
@@ -16628,13 +16093,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						parameters = (List<property_parameter>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(parameters != null)
 				{
 					if(index_counter < parameters.Count)
@@ -16698,35 +16157,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -16841,7 +16289,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -16984,7 +16432,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -17089,35 +16537,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return text;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						text = (string)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -17214,7 +16651,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -17333,40 +16770,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return text;
-					case 1:
-						return type;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						text = (string)value;
-						break;
-					case 1:
-						type = (Operators)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -17464,7 +16885,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -17583,40 +17004,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-					case 1:
-						return type;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-					case 1:
-						type = (known_type)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -17731,7 +17136,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -17860,7 +17265,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -17976,24 +17381,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (handlers == null ? 0 : handlers.Count);
+				return 0 + (handlers == null ? 0 : handlers.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return handlers;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(handlers != null)
 				{
 					if(index_counter < handlers.Count)
@@ -18007,13 +17407,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						handlers = (List<exception_handler>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(handlers != null)
 				{
 					if(index_counter < handlers.Count)
@@ -18136,7 +17530,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18213,7 +17607,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18303,7 +17697,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18404,7 +17798,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18523,7 +17917,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18595,7 +17989,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18703,7 +18097,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -18803,24 +18197,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (namespaces == null ? 0 : namespaces.Count);
+				return 0 + (namespaces == null ? 0 : namespaces.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return namespaces;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(namespaces != null)
 				{
 					if(index_counter < namespaces.Count)
@@ -18834,13 +18223,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						namespaces = (List<unit_or_namespace>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(namespaces != null)
 				{
 					if(index_counter < namespaces.Count)
@@ -18946,7 +18329,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -19149,13 +18532,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 8 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 5 + (compiler_directives == null ? 0 : compiler_directives.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -19164,23 +18547,17 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return file_name;
-					case 1:
-						return compiler_directives;
-					case 2:
-						return Language;
-					case 3:
 						return first_name;
-					case 4:
+					case 1:
 						return second_name;
-					case 5:
+					case 2:
 						return import_list;
-					case 6:
+					case 3:
 						return definitions;
-					case 7:
+					case 4:
 						return module_code;
 				}
-				Int32 index_counter=ind - 8;
+				Int32 index_counter=ind - 5;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -19197,31 +18574,22 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						file_name = (string)value;
-						break;
-					case 1:
-						compiler_directives = (List<compiler_directive>)value;
-						break;
-					case 2:
-						Language = (LanguageId)value;
-						break;
-					case 3:
 						first_name = (ident)value;
 						break;
-					case 4:
+					case 1:
 						second_name = (ident)value;
 						break;
-					case 5:
+					case 2:
 						import_list = (uses_list)value;
 						break;
-					case 6:
+					case 3:
 						definitions = (declarations)value;
 						break;
-					case 7:
+					case 4:
 						module_code = (statement_list)value;
 						break;
 				}
-				Int32 index_counter=ind - 8;
+				Int32 index_counter=ind - 5;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -19321,40 +18689,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-					case 1:
-						return marker;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-					case 1:
-						marker = (oberon_export_marker)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -19427,35 +18779,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return text;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						text = (string)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -19546,13 +18887,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -19562,8 +18903,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return expr;
-					case 1:
-						return JumpType;
 				}
 				return null;
 			}
@@ -19575,9 +18914,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						expr = (expression)value;
-						break;
-					case 1:
-						JumpType = (JumpStmtType)value;
 						break;
 				}
 			}
@@ -19688,13 +19024,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -19703,10 +19039,8 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return param_kind;
-					case 1:
 						return receiver_name;
-					case 2:
+					case 1:
 						return receiver_typename;
 				}
 				return null;
@@ -19718,12 +19052,9 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						param_kind = (parametr_kind)value;
-						break;
-					case 1:
 						receiver_name = (ident)value;
 						break;
-					case 2:
+					case 1:
 						receiver_typename = (ident)value;
 						break;
 				}
@@ -19874,13 +19205,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 12;
+				return 10;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -19897,20 +19228,16 @@ namespace PascalABCCompiler.SyntaxTree
 					case 3:
 						return name;
 					case 4:
-						return of_object;
-					case 5:
-						return class_keyword;
-					case 6:
 						return template_args;
-					case 7:
+					case 5:
 						return where_defs;
-					case 8:
+					case 6:
 						return return_type;
-					case 9:
+					case 7:
 						return receiver;
-					case 10:
+					case 8:
 						return first_name;
-					case 11:
+					case 9:
 						return second_name;
 				}
 				return null;
@@ -19934,27 +19261,21 @@ namespace PascalABCCompiler.SyntaxTree
 						name = (method_name)value;
 						break;
 					case 4:
-						of_object = (bool)value;
-						break;
-					case 5:
-						class_keyword = (bool)value;
-						break;
-					case 6:
 						template_args = (ident_list)value;
 						break;
-					case 7:
+					case 5:
 						where_defs = (where_definition_list)value;
 						break;
-					case 8:
+					case 6:
 						return_type = (type_definition)value;
 						break;
-					case 9:
+					case 7:
 						receiver = (oberon_procedure_receiver)value;
 						break;
-					case 10:
+					case 8:
 						first_name = (ident)value;
 						break;
-					case 11:
+					case 9:
 						second_name = (ident)value;
 						break;
 				}
@@ -20072,7 +19393,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -20177,24 +19498,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (guardstats == null ? 0 : guardstats.Count);
+				return 0 + (guardstats == null ? 0 : guardstats.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return guardstats;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(guardstats != null)
 				{
 					if(index_counter < guardstats.Count)
@@ -20208,13 +19524,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						guardstats = (List<oberon_withstmt_guardstat>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(guardstats != null)
 				{
 					if(index_counter < guardstats.Count)
@@ -20319,7 +19629,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -20425,7 +19735,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -20580,7 +19890,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -20662,7 +19972,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -20762,24 +20072,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (types == null ? 0 : types.Count);
+				return 0 + (types == null ? 0 : types.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return types;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(types != null)
 				{
 					if(index_counter < types.Count)
@@ -20793,13 +20098,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						types = (List<named_type_reference>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(types != null)
 				{
 					if(index_counter < types.Count)
@@ -20915,13 +20214,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2 + (params_list == null ? 0 : params_list.Count);
+				return 1 + (params_list == null ? 0 : params_list.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -20931,10 +20230,8 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return dereferencing_value;
-					case 1:
-						return params_list;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(params_list != null)
 				{
 					if(index_counter < params_list.Count)
@@ -20953,11 +20250,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						dereferencing_value = (addressed_value)value;
 						break;
-					case 1:
-						params_list = (List<type_definition>)value;
-						break;
 				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 1;
 				if(params_list != null)
 				{
 					if(index_counter < params_list.Count)
@@ -21079,13 +20373,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4 + (names == null ? 0 : names.Count);
+				return 3 + (names == null ? 0 : names.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -21096,13 +20390,11 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						return attr_list;
 					case 1:
-						return names;
-					case 2:
 						return name;
-					case 3:
+					case 2:
 						return params_list;
 				}
-				Int32 index_counter=ind - 4;
+				Int32 index_counter=ind - 3;
 				if(names != null)
 				{
 					if(index_counter < names.Count)
@@ -21122,16 +20414,13 @@ namespace PascalABCCompiler.SyntaxTree
 						attr_list = (type_definition_attr_list)value;
 						break;
 					case 1:
-						names = (List<ident>)value;
-						break;
-					case 2:
 						name = (named_type_reference)value;
 						break;
-					case 3:
+					case 2:
 						params_list = (template_param_list)value;
 						break;
 				}
-				Int32 index_counter=ind - 4;
+				Int32 index_counter=ind - 3;
 				if(names != null)
 				{
 					if(index_counter < names.Count)
@@ -21217,35 +20506,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return val;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						val = (Int64)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -21323,35 +20601,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return val;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						val = (UInt64)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -21481,13 +20748,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4;
+				return 3;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -21500,8 +20767,6 @@ namespace PascalABCCompiler.SyntaxTree
 					case 1:
 						return params_list;
 					case 2:
-						return new_array;
-					case 3:
 						return array_init_expr;
 				}
 				return null;
@@ -21519,9 +20784,6 @@ namespace PascalABCCompiler.SyntaxTree
 						params_list = (expression_list)value;
 						break;
 					case 2:
-						new_array = (bool)value;
-						break;
-					case 3:
 						array_init_expr = (array_const)value;
 						break;
 				}
@@ -21613,24 +20875,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (defs == null ? 0 : defs.Count);
+				return 0 + (defs == null ? 0 : defs.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return defs;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -21644,13 +20901,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						defs = (List<type_definition>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -21755,7 +21006,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -21871,24 +21122,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (defs == null ? 0 : defs.Count);
+				return 0 + (defs == null ? 0 : defs.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return defs;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -21902,13 +21148,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						defs = (List<where_definition>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -22013,7 +21253,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22119,7 +21359,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22238,7 +21478,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22357,40 +21597,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-					case 1:
-						return operator_type;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-					case 1:
-						operator_type = (Operators)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -22474,7 +21698,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22611,7 +21835,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22722,7 +21946,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22856,13 +22080,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -22872,10 +22096,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return scalar_name;
-					case 2:
-						return sign;
 				}
 				return null;
 			}
@@ -22887,12 +22107,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						scalar_name = (c_scalar_type_name)value;
-						break;
-					case 2:
-						sign = (c_scalar_sign)value;
 						break;
 				}
 			}
@@ -23010,13 +22224,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 5 + (compiler_directives == null ? 0 : compiler_directives.Count);
+				return 2 + (compiler_directives == null ? 0 : compiler_directives.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -23025,17 +22239,11 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return file_name;
-					case 1:
-						return compiler_directives;
-					case 2:
-						return Language;
-					case 3:
 						return defs;
-					case 4:
+					case 1:
 						return used_units;
 				}
-				Int32 index_counter=ind - 5;
+				Int32 index_counter=ind - 2;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -23052,22 +22260,13 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						file_name = (string)value;
-						break;
-					case 1:
-						compiler_directives = (List<compiler_directive>)value;
-						break;
-					case 2:
-						Language = (LanguageId)value;
-						break;
-					case 3:
 						defs = (declarations)value;
 						break;
-					case 4:
+					case 1:
 						used_units = (uses_list)value;
 						break;
 				}
-				Int32 index_counter=ind - 5;
+				Int32 index_counter=ind - 2;
 				if(compiler_directives != null)
 				{
 					if(index_counter < compiler_directives.Count)
@@ -23154,7 +22353,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -23274,7 +22473,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -23398,7 +22597,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -23514,24 +22713,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (enumerators == null ? 0 : enumerators.Count);
+				return 0 + (enumerators == null ? 0 : enumerators.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return enumerators;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(enumerators != null)
 				{
 					if(index_counter < enumerators.Count)
@@ -23545,13 +22739,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						enumerators = (List<enumerator>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(enumerators != null)
 				{
 					if(index_counter < enumerators.Count)
@@ -23692,7 +22880,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -23838,13 +23026,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -23856,8 +23044,6 @@ namespace PascalABCCompiler.SyntaxTree
 						return condition;
 					case 1:
 						return stmt;
-					case 2:
-						return Part;
 				}
 				return null;
 			}
@@ -23872,9 +23058,6 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						stmt = (statement)value;
-						break;
-					case 2:
-						Part = (SwitchPartType)value;
 						break;
 				}
 			}
@@ -23965,24 +23148,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (attributes == null ? 0 : attributes.Count);
+				return 0 + (attributes == null ? 0 : attributes.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return attributes;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(attributes != null)
 				{
 					if(index_counter < attributes.Count)
@@ -23996,13 +23174,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						attributes = (List<type_definition_attr>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(attributes != null)
 				{
 					if(index_counter < attributes.Count)
@@ -24102,13 +23274,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -24118,8 +23290,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return attr;
 				}
 				return null;
 			}
@@ -24131,9 +23301,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						attr = (definition_attribute)value;
 						break;
 				}
 			}
@@ -24232,7 +23399,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -24369,13 +23536,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3 + (directives == null ? 0 : directives.Count);
+				return 2 + (directives == null ? 0 : directives.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -24387,10 +23554,8 @@ namespace PascalABCCompiler.SyntaxTree
 						return Name;
 					case 1:
 						return Directive;
-					case 2:
-						return directives;
 				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 2;
 				if(directives != null)
 				{
 					if(index_counter < directives.Count)
@@ -24412,11 +23577,8 @@ namespace PascalABCCompiler.SyntaxTree
 					case 1:
 						Directive = (token_info)value;
 						break;
-					case 2:
-						directives = (List<compiler_directive>)value;
-						break;
 				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 2;
 				if(directives != null)
 				{
 					if(index_counter < directives.Count)
@@ -24544,7 +23706,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -24670,24 +23832,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (sections == null ? 0 : sections.Count);
+				return 0 + (sections == null ? 0 : sections.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return sections;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(sections != null)
 				{
 					if(index_counter < sections.Count)
@@ -24701,13 +23858,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						sections = (List<documentation_comment_section>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(sections != null)
 				{
 					if(index_counter < sections.Count)
@@ -24824,28 +23975,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3 + (parameters == null ? 0 : parameters.Count);
+				return 0 + (parameters == null ? 0 : parameters.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-					case 1:
-						return parameters;
-					case 2:
-						return text;
-				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 0;
 				if(parameters != null)
 				{
 					if(index_counter < parameters.Count)
@@ -24859,19 +24001,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-					case 1:
-						parameters = (List<documentation_comment_tag_param>)value;
-						break;
-					case 2:
-						text = (string)value;
-						break;
-				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 0;
 				if(parameters != null)
 				{
 					if(index_counter < parameters.Count)
@@ -24970,40 +24100,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name;
-					case 1:
-						return value;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name = (string)value;
-						break;
-					case 1:
-						value = (string)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -25110,26 +24224,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2 + (tags == null ? 0 : tags.Count);
+				return 0 + (tags == null ? 0 : tags.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return tags;
-					case 1:
-						return text;
-				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 0;
 				if(tags != null)
 				{
 					if(index_counter < tags.Count)
@@ -25143,16 +24250,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						tags = (List<documentation_comment_tag>)value;
-						break;
-					case 1:
-						text = (string)value;
-						break;
-				}
-				Int32 index_counter=ind - 2;
+				Int32 index_counter=ind - 0;
 				if(tags != null)
 				{
 					if(index_counter < tags.Count)
@@ -25252,40 +24350,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return text;
-					case 1:
-						return tag;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						text = (string)value;
-						break;
-					case 1:
-						tag = (object)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -25397,13 +24479,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -25413,10 +24495,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return specificator;
-					case 2:
-						return name;
 				}
 				return null;
 			}
@@ -25428,12 +24506,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						specificator = (DeclarationSpecificator)value;
-						break;
-					case 2:
-						name = (string)value;
 						break;
 				}
 			}
@@ -25532,7 +24604,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -25651,13 +24723,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -25666,8 +24738,6 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return name;
-					case 1:
 						return template_args;
 				}
 				return null;
@@ -25679,9 +24749,6 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (string)value;
-						break;
-					case 1:
 						template_args = (ident_list)value;
 						break;
 				}
@@ -25763,7 +24830,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -25869,7 +24936,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -26006,7 +25073,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -26127,24 +25194,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (attributes == null ? 0 : attributes.Count);
+				return 0 + (attributes == null ? 0 : attributes.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return attributes;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(attributes != null)
 				{
 					if(index_counter < attributes.Count)
@@ -26158,13 +25220,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						attributes = (List<attribute>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(attributes != null)
 				{
 					if(index_counter < attributes.Count)
@@ -26261,24 +25317,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (attributes == null ? 0 : attributes.Count);
+				return 0 + (attributes == null ? 0 : attributes.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return attributes;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(attributes != null)
 				{
 					if(index_counter < attributes.Count)
@@ -26292,13 +25343,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						attributes = (List<simple_attribute_list>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(attributes != null)
 				{
 					if(index_counter < attributes.Count)
@@ -26569,13 +25614,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 10 + (defs == null ? 0 : defs.Count);
+				return 7 + (defs == null ? 0 : defs.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -26596,15 +25641,9 @@ namespace PascalABCCompiler.SyntaxTree
 					case 5:
 						return parameters;
 					case 6:
-						return lambda_name;
-					case 7:
-						return defs;
-					case 8:
-						return lambda_visit_mode;
-					case 9:
 						return substituting_node;
 				}
-				Int32 index_counter=ind - 10;
+				Int32 index_counter=ind - 7;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -26639,19 +25678,10 @@ namespace PascalABCCompiler.SyntaxTree
 						parameters = (expression_list)value;
 						break;
 					case 6:
-						lambda_name = (string)value;
-						break;
-					case 7:
-						defs = (List<declaration>)value;
-						break;
-					case 8:
-						lambda_visit_mode = (LambdaVisitMode)value;
-						break;
-					case 9:
 						substituting_node = (syntax_tree_node)value;
 						break;
 				}
-				Int32 index_counter=ind - 10;
+				Int32 index_counter=ind - 7;
 				if(defs != null)
 				{
 					if(index_counter < defs.Count)
@@ -26756,7 +25786,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -26898,28 +25928,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3 + (param == null ? 0 : param.Count);
+				return 0 + (param == null ? 0 : param.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return CheckName;
-					case 1:
-						return param;
-					case 2:
-						return fictive;
-				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 0;
 				if(param != null)
 				{
 					if(index_counter < param.Count)
@@ -26933,19 +25954,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						CheckName = (string)value;
-						break;
-					case 1:
-						param = (List<syntax_tree_node>)value;
-						break;
-					case 2:
-						fictive = (int)value;
-						break;
-				}
-				Int32 index_counter=ind - 3;
+				Int32 index_counter=ind - 0;
 				if(param != null)
 				{
 					if(index_counter < param.Count)
@@ -27045,13 +26054,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -27061,8 +26070,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return real_type;
 				}
 				return null;
 			}
@@ -27074,9 +26081,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						real_type = (object)value;
 						break;
 				}
 			}
@@ -27176,7 +26180,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -27300,7 +26304,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -27411,24 +26415,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1 + (name_expr == null ? 0 : name_expr.Count);
+				return 0 + (name_expr == null ? 0 : name_expr.Count);
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return name_expr;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(name_expr != null)
 				{
 					if(index_counter < name_expr.Count)
@@ -27442,13 +26441,7 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						name_expr = (List<name_assign_expr>)value;
-						break;
-				}
-				Int32 index_counter=ind - 1;
+				Int32 index_counter=ind - 0;
 				if(name_expr != null)
 				{
 					if(index_counter < name_expr.Count)
@@ -27577,13 +26570,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 3;
+				return 2;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -27594,8 +26587,6 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						return ne_list;
 					case 1:
-						return is_class;
-					case 2:
 						return new_ex;
 				}
 				return null;
@@ -27610,9 +26601,6 @@ namespace PascalABCCompiler.SyntaxTree
 						ne_list = (name_assign_expr_list)value;
 						break;
 					case 1:
-						is_class = (bool)value;
-						break;
-					case 2:
 						new_ex = (new_expr)value;
 						break;
 				}
@@ -27707,13 +26695,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -27723,8 +26711,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return type;
 				}
 				return null;
 			}
@@ -27736,9 +26722,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						type = (Object)value;
 						break;
 				}
 			}
@@ -27836,13 +26819,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 4;
+				return 3;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -27855,8 +26838,6 @@ namespace PascalABCCompiler.SyntaxTree
 					case 1:
 						return proc_body;
 					case 2:
-						return is_short_definition;
-					case 3:
 						return procdef;
 				}
 				return null;
@@ -27874,9 +26855,6 @@ namespace PascalABCCompiler.SyntaxTree
 						proc_body = (proc_block)value;
 						break;
 					case 2:
-						is_short_definition = (bool)value;
-						break;
-					case 3:
 						procdef = (procedure_definition)value;
 						break;
 				}
@@ -27941,7 +26919,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -28060,7 +27038,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -28179,13 +27157,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -28194,8 +27172,6 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return name;
-					case 1:
 						return substitution;
 				}
 				return null;
@@ -28207,9 +27183,6 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (string)value;
-						break;
-					case 1:
 						substitution = (dot_node)value;
 						break;
 				}
@@ -28310,7 +27283,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -28475,7 +27448,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{
@@ -28596,7 +27569,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Индексатор для получения всех подузлов
 		///</summary>
-		public override object this[Int32 ind]
+		public override syntax_tree_node this[Int32 ind]
 		{
 			get
 			{

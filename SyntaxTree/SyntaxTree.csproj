@@ -123,6 +123,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="tree\WalkingVisitor.cs" />
+    <Compile Include="tree\WalkingVisitorNew.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

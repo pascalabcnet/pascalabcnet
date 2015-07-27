@@ -11,7 +11,7 @@ using PascalABCCompiler.TreeRealization;
 
 namespace TreeConverter.LambdaExpressions.Closure
 {
-    internal class CapturedVariablesTreeBuilder : WalkingVisitor
+    internal class CapturedVariablesTreeBuilder : WalkingVisitorNew
     {
         private readonly syntax_tree_visitor _visitor;
         private CapturedVariablesTreeNode _currentTreeNode;

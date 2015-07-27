@@ -8,7 +8,7 @@ using PascalABCCompiler.TreeRealization;
 
 namespace TreeConverter.LambdaExpressions
 {
-    internal class LambdaResultTypeInferrer : WalkingVisitor
+    internal class LambdaResultTypeInferrer : WalkingVisitorNew
     {
         private const string RESULT_KEY_WORD = "result";
         private readonly List<Tuple<type_node, expression, expression_node>> resultExpressionsTypes;
