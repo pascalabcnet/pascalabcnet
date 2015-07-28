@@ -35,8 +35,9 @@ namespace NodeGenerator
 		public static readonly string close_figure="}";
 		public static readonly string class_keyword="class";
 		public static readonly string underline="_";
-		public static readonly string public_keyword="public";
-		public static readonly string open_par="(";
+        public static readonly string public_keyword = "public";
+        public static readonly string partial_keyword = "partial";
+        public static readonly string open_par = "(";
 		public static readonly string close_par=")";
 		public static readonly string comma=",";
 		public static readonly string assign="=";
@@ -50,7 +51,8 @@ namespace NodeGenerator
 		public static readonly string visitor_interface_name="IVisitor";
 		public static readonly string visitor_name="visitor";
 		public static readonly string virtual_keyword="virtual";
-		public static readonly string visit_method_name="visit";
+        public static readonly string visit_method_name = "visit";
+        public static readonly string DefaultVisitMethodName = "DefaultVisit";
         public static readonly string visit_method_name_pre_do_prefix = "pre_do_";
         public static readonly string visit_method_name_post_do_prefix = "post_do_";
 		public static readonly string tab="\t";
@@ -1319,6 +1321,10 @@ namespace NodeGenerator
                 text_consts.visit_method_name + text_consts.open_par +
                 node_name + text_consts.space + text_consts.underline + node_name + text_consts.close_par);
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+            // גûחמג DefaultVisit 28.07.15
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.DefaultVisitMethodName + text_consts.open_par +
+                text_consts.underline + node_name + text_consts.close_par + text_consts.semicolon);
 
             if (subnodes_pre_post)
                 sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.visit_method_name_pre_do_prefix + text_consts.visit_method_name +
@@ -2912,7 +2918,7 @@ namespace NodeGenerator
 				temp=text_consts.space+text_consts.colon+text_consts.space+base_class.node_name;
 			}
 
-			sw.WriteLine(text_consts.tab+text_consts.public_keyword+text_consts.space+text_consts.class_keyword+text_consts.space+
+            sw.WriteLine(text_consts.tab + text_consts.public_keyword + text_consts.space + text_consts.partial_keyword + text_consts.space + text_consts.class_keyword + text_consts.space +
 				node_name+temp);
 			sw.WriteLine(text_consts.tab+text_consts.open_figure);
 			//sw.WriteLine();
@@ -3393,6 +3399,14 @@ namespace NodeGenerator
                 text_consts.abstract_visitor_class_name + text_consts.colon + text_consts.space + text_consts.visitor_interface_name);
 
             sw.WriteLine(text_consts.tab + text_consts.open_figure);
+
+            // DefaultVisit
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space + text_consts.virtual_keyword +
+                text_consts.space + text_consts.void_keyword + text_consts.space + text_consts.DefaultVisitMethodName + text_consts.open_par + text_consts.syntax_tree_node_name +
+                text_consts.space + "n" + text_consts.close_par);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
 
             foreach (node_info ni in nodes)
             {

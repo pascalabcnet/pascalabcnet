@@ -9,7 +9,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Базовый класс для всех классов синтаксического дерева
 	///</summary>
 	[Serializable]
-	public class syntax_tree_node
+	public partial class syntax_tree_node
 	{
 
 		///<summary>
@@ -99,7 +99,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Выражение
 	///</summary>
 	[Serializable]
-	public class expression : declaration
+	public partial class expression : declaration
 	{
 
 		///<summary>
@@ -155,7 +155,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Оператор
 	///</summary>
 	[Serializable]
-	public class statement : declaration
+	public partial class statement : declaration
 	{
 
 		///<summary>
@@ -211,7 +211,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Блок операторов
 	///</summary>
 	[Serializable]
-	public class statement_list : statement
+	public partial class statement_list : statement
 	{
 
 		///<summary>
@@ -293,26 +293,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public statement_list(statement _statement, SourceContext sc)
-		{
-		    Add(_statement,sc);
-		}
-		public statement_list(statement _statement)
-		{
-		    Add(_statement,null);
-		}
-		public statement_list Add(statement _statement)
-		{
-		    subnodes.Add(_statement);
-		    return this;
-		}
-		public statement_list Add(statement _statement, SourceContext sc)
-		{
-		    subnodes.Add(_statement);
-		    source_context = sc;
-		    return this;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -390,7 +370,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Идентификатор
 	///</summary>
 	[Serializable]
-	public class ident : addressed_value_funcname
+	public partial class ident : addressed_value_funcname
 	{
 
 		///<summary>
@@ -436,11 +416,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return name;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -485,7 +460,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Оператор присваивания
 	///</summary>
 	[Serializable]
-	public class assign : statement
+	public partial class assign : statement
 	{
 
 		///<summary>
@@ -567,19 +542,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public assign(addressed_value left,expression ex, SourceContext sc): this(left,ex,Operators.Assignment,sc)
-		{  }
-		public assign(addressed_value left,expression ex): this(left,ex,Operators.Assignment)
-		{  }
-		public assign(string left,expression ex, SourceContext sc): this(new ident(left),ex,sc)
-		{  }
-		public assign(string left,expression ex): this(new ident(left),ex)
-		{  }
-		public override string ToString()
-		{
-			return string.Format("{0} {1} {2}",to,OperatorServices.ToString(operator_type,LanguageId.PascalABCNET),from);
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -640,7 +602,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Бинарное выражение
 	///</summary>
 	[Serializable]
-	public class bin_expr : addressed_value
+	public partial class bin_expr : addressed_value
 	{
 
 		///<summary>
@@ -722,11 +684,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return string.Format("{0} {2} {1}",left,right,OperatorServices.ToString(operation_type,LanguageId.PascalABCNET));
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -787,7 +744,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Унарное выражение
 	///</summary>
 	[Serializable]
-	public class un_expr : addressed_value
+	public partial class un_expr : addressed_value
 	{
 
 		///<summary>
@@ -906,7 +863,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Константа
 	///</summary>
 	[Serializable]
-	public class const_node : addressed_value
+	public partial class const_node : addressed_value
 	{
 
 		///<summary>
@@ -962,7 +919,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Логическая константа
 	///</summary>
 	[Serializable]
-	public class bool_const : const_node
+	public partial class bool_const : const_node
 	{
 
 		///<summary>
@@ -1008,13 +965,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			if (val)
-		      return "True";
-			else return "False";  
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1059,7 +1009,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Целая константа
 	///</summary>
 	[Serializable]
-	public class int32_const : const_node
+	public partial class int32_const : const_node
 	{
 
 		///<summary>
@@ -1105,11 +1055,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-		  return val.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1154,7 +1099,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Вещественная константа
 	///</summary>
 	[Serializable]
-	public class double_const : const_node
+	public partial class double_const : const_node
 	{
 
 		///<summary>
@@ -1200,11 +1145,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-		  return val.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1249,7 +1189,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Тело подпрограммы
 	///</summary>
 	[Serializable]
-	public class subprogram_body : syntax_tree_node
+	public partial class subprogram_body : syntax_tree_node
 	{
 
 		///<summary>
@@ -1373,7 +1313,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Значение, имеющее адрес
 	///</summary>
 	[Serializable]
-	public class addressed_value : expression
+	public partial class addressed_value : expression
 	{
 
 		///<summary>
@@ -1429,7 +1369,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Определение типа
 	///</summary>
 	[Serializable]
-	public class type_definition : declaration
+	public partial class type_definition : declaration
 	{
 
 		///<summary>
@@ -1530,7 +1470,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class roof_dereference : dereference
+	public partial class roof_dereference : dereference
 	{
 
 		///<summary>
@@ -1557,11 +1497,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			source_context = sc;
-		}
-
-		public override string ToString()
-		{
-			return base.ToString()+"^";
 		}
 
 		///<summary>
@@ -1619,7 +1554,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Именованное определение типа
 	///</summary>
 	[Serializable]
-	public class named_type_reference : type_definition
+	public partial class named_type_reference : type_definition
 	{
 
 		///<summary>
@@ -1683,47 +1618,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public void Add(string name)
-		{
-		  names.Add(new ident(name));
-		}
-		public void Add(string name, SourceContext sc)
-		{
-		  names.Add(new ident(name));
-		  source_context = sc;
-		}
-		public named_type_reference(string name, SourceContext sc)
-		{
-		  Add(name,sc);
-		}
-		public named_type_reference(string name)
-		{
-		  Add(name,null);
-		}
-		public named_type_reference(ident _ident, SourceContext sc)
-		{
-		    Add(_ident,sc);
-		}
-		public named_type_reference Add(ident _ident)
-		{
-		    names.Add(_ident);
-		    return this;
-		}
-		public named_type_reference Add(ident _ident, SourceContext sc)
-		{
-		    names.Add(_ident);
-		    source_context = sc;
-		    return this;
-		}
-		public override string ToString()
-		{
-			var sb = new System.Text.StringBuilder();
-		    sb.Append(names[0].ToString());
-			for (int i=1; i<names.Count; i++)
-			  sb.Append("."+names[i].ToString());
-			return sb.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -1797,7 +1691,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Секция описания переменных
 	///</summary>
 	[Serializable]
-	public class variable_definitions : declaration
+	public partial class variable_definitions : declaration
 	{
 
 		///<summary>
@@ -1842,22 +1736,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public variable_definitions(var_def_statement _var_def_statement, SourceContext sc)
-		{
-		    Add(_var_def_statement,sc);
-		}
-		public variable_definitions Add(var_def_statement _var_def_statement)
-		{
-		    var_definitions.Add(_var_def_statement);
-		    return this;
-		}
-		public variable_definitions Add(var_def_statement _var_def_statement, SourceContext sc)
-		{
-		    var_definitions.Add(_var_def_statement);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -1920,7 +1798,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Список идентификаторов
 	///</summary>
 	[Serializable]
-	public class ident_list : syntax_tree_node
+	public partial class ident_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -1965,50 +1843,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public ident_list(string name, SourceContext sc)
-		{
-		  Add(name,sc);
-		}
-		public ident_list(string name)
-		{
-		  Add(name);
-		}
-		public ident_list(ident _ident, SourceContext sc)
-		{
-		  Add(_ident,sc);
-		}
-		public ident_list(ident _ident)
-		{
-		  Add(_ident,null);
-		}
-		public void Add(string name)
-		{
-		  idents.Add(new ident(name));
-		}
-		public void Add(string name, SourceContext sc)
-		{
-		  Add(new ident(name),sc);
-		}
-		public ident_list Add(ident _ident)
-		{
-		    idents.Add(_ident);
-		    return this;
-		}
-		public ident_list Add(ident _ident, SourceContext sc)
-		{
-		    idents.Add(_ident);
-		    source_context = sc;
-		    return this;
-		}
-		public override string ToString()
-		{
-			var sb = new System.Text.StringBuilder();
-		    sb.Append(idents[0].ToString());
-			for (int i=1; i<idents.Count; i++)
-			  sb.Append(","+idents[i].ToString());
-			return sb.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -2071,7 +1905,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Описание переменных
 	///</summary>
 	[Serializable]
-	public class var_def_statement : declaration
+	public partial class var_def_statement : declaration
 	{
 
 		///<summary>
@@ -2189,32 +2023,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public var_def_statement(ident_list vars,type_definition vars_type): this(vars, vars_type, null, definition_attribute.None, false)
-		{ }
-		public var_def_statement(ident_list vars,type_definition vars_type, expression iv): this(vars, vars_type, iv, definition_attribute.None, false)
-		{ }
-		public var_def_statement(ident id, type_definition type): this(new ident_list(id),type)
-		{ }
-		public var_def_statement(string name, type_definition type): this(new ident(name),type)
-		{ }
-		public override string ToString()
-		{
-			var sb = new System.Text.StringBuilder();
-			sb.Append(vars.ToString());
-			if (vars_type!=null)
-			{
-				sb.Append(": ");
-				sb.Append(vars_type.ToString());
-			}
-			if (inital_value!=null)
-			{
-			    sb.Append(" := ");
-				sb.Append(inital_value.ToString());
-			}
-			sb.Append("; ");
-			return sb.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -2280,7 +2088,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Описание
 	///</summary>
 	[Serializable]
-	public class declaration : syntax_tree_node
+	public partial class declaration : syntax_tree_node
 	{
 
 		///<summary>
@@ -2381,7 +2189,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Список описаний
 	///</summary>
 	[Serializable]
-	public class declarations : syntax_tree_node
+	public partial class declarations : syntax_tree_node
 	{
 
 		///<summary>
@@ -2426,22 +2234,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public declarations(declaration _declaration, SourceContext sc)
-		{
-		    Add(_declaration,sc);
-		}
-		public declarations Add(declaration _declaration)
-		{
-		    defs.Add(_declaration);
-		    return this;
-		}
-		public declarations Add(declaration _declaration, SourceContext sc)
-		{
-		    defs.Add(_declaration);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -2504,7 +2296,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class program_tree : syntax_tree_node
+	public partial class program_tree : syntax_tree_node
 	{
 
 		///<summary>
@@ -2549,22 +2341,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public program_tree(compilation_unit _compilation_unit, SourceContext sc)
-		{
-		    Add(_compilation_unit,sc);
-		}
-		public program_tree Add(compilation_unit _compilation_unit)
-		{
-		    compilation_units.Add(_compilation_unit);
-		    return this;
-		}
-		public program_tree Add(compilation_unit _compilation_unit, SourceContext sc)
-		{
-		    compilation_units.Add(_compilation_unit);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -2627,7 +2403,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Имя программы
 	///</summary>
 	[Serializable]
-	public class program_name : syntax_tree_node
+	public partial class program_name : syntax_tree_node
 	{
 
 		///<summary>
@@ -2672,11 +2448,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-		    return prog_name.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -2733,7 +2504,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Строковая константа
 	///</summary>
 	[Serializable]
-	public class string_const : literal
+	public partial class string_const : literal
 	{
 
 		///<summary>
@@ -2779,11 +2550,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-		    return "'"+Value+"'";
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -2828,7 +2594,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Список выражений
 	///</summary>
 	[Serializable]
-	public class expression_list : expression
+	public partial class expression_list : expression
 	{
 
 		///<summary>
@@ -2873,35 +2639,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public expression_list(expression _expression, SourceContext sc)
-		{
-		    Add(_expression,sc);
-		}
-		public expression_list Add(expression _expression)
-		{
-		    expressions.Add(_expression);
-		    return this;
-		}
-		public expression_list Add(expression _expression, SourceContext sc)
-		{
-		    expressions.Add(_expression);
-		    source_context = sc;
-		    return this;
-		}
-		public override string ToString()
-		{
-			if (expressions.Count == 0)
-			    return "";
-			var sb = new System.Text.StringBuilder();
-			sb.Append(expressions[0].ToString());
-			for (int i=1; i<expressions.Count; i++)
-			{
-				sb.Append(",");
-			    sb.Append(expressions[i].ToString());
-			}
-			return sb.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -2964,7 +2701,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class dereference : addressed_value_funcname
+	public partial class dereference : addressed_value_funcname
 	{
 
 		///<summary>
@@ -3009,11 +2746,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-			return dereferencing_value.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -3070,7 +2802,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Индекс или индексы
 	///</summary>
 	[Serializable]
-	public class indexer : dereference
+	public partial class indexer : dereference
 	{
 
 		///<summary>
@@ -3135,11 +2867,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return base.ToString()+"["+indexes.ToString()+"]";
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -3200,7 +2927,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Цикл for
 	///</summary>
 	[Serializable]
-	public class for_node : statement
+	public partial class for_node : statement
 	{
 
 		///<summary>
@@ -3452,7 +3179,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Цикл с постусловием (repeat)
 	///</summary>
 	[Serializable]
-	public class repeat_node : statement
+	public partial class repeat_node : statement
 	{
 
 		///<summary>
@@ -3576,7 +3303,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Цикл ПОКА
 	///</summary>
 	[Serializable]
-	public class while_node : statement
+	public partial class while_node : statement
 	{
 
 		///<summary>
@@ -3718,7 +3445,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Условный оператор
 	///</summary>
 	[Serializable]
-	public class if_node : statement
+	public partial class if_node : statement
 	{
 
 		///<summary>
@@ -3865,7 +3592,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class ref_type : type_definition
+	public partial class ref_type : type_definition
 	{
 
 		///<summary>
@@ -3990,7 +3717,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Диапазон
 	///</summary>
 	[Serializable]
-	public class diapason : type_definition
+	public partial class diapason : type_definition
 	{
 
 		///<summary>
@@ -4140,7 +3867,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Типы индексов
 	///</summary>
 	[Serializable]
-	public class indexers_types : type_definition
+	public partial class indexers_types : type_definition
 	{
 
 		///<summary>
@@ -4204,22 +3931,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public indexers_types(type_definition _type_definition, SourceContext sc)
-		{
-		    Add(_type_definition,sc);
-		}
-		public indexers_types Add(type_definition _type_definition)
-		{
-		    indexers.Add(_type_definition);
-		    return this;
-		}
-		public indexers_types Add(type_definition _type_definition, SourceContext sc)
-		{
-		    indexers.Add(_type_definition);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -4293,7 +4004,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Тип массива
 	///</summary>
 	[Serializable]
-	public class array_type : type_definition
+	public partial class array_type : type_definition
 	{
 
 		///<summary>
@@ -4443,7 +4154,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Описание меток
 	///</summary>
 	[Serializable]
-	public class label_definitions : declaration
+	public partial class label_definitions : declaration
 	{
 
 		///<summary>
@@ -4488,11 +4199,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-			return "label "+labels.ToString() + ";";
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -4549,7 +4255,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class procedure_attribute : ident
+	public partial class procedure_attribute : ident
 	{
 
 		///<summary>
@@ -4614,11 +4320,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return attribute_type.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4663,7 +4364,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class typed_parameters : declaration
+	public partial class typed_parameters : declaration
 	{
 
 		///<summary>
@@ -4763,11 +4464,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public typed_parameters(ident_list idents,type_definition type): this(idents, type, parametr_kind.none, null)
-		{ }
-		public typed_parameters(ident id,type_definition type): this(new ident_list(id), type)
-		{ }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4833,7 +4529,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class formal_parameters : syntax_tree_node
+	public partial class formal_parameters : syntax_tree_node
 	{
 
 		///<summary>
@@ -4878,22 +4574,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public formal_parameters(typed_parameters _typed_parameters, SourceContext sc)
-		{
-		    Add(_typed_parameters,sc);
-		}
-		public formal_parameters Add(typed_parameters _typed_parameters)
-		{
-		    params_list.Add(_typed_parameters);
-		    return this;
-		}
-		public formal_parameters Add(typed_parameters _typed_parameters, SourceContext sc)
-		{
-		    params_list.Add(_typed_parameters);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -4956,7 +4636,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class procedure_attributes_list : syntax_tree_node
+	public partial class procedure_attributes_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -5001,30 +4681,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc)
-		{
-		    Add(_procedure_attribute,sc);
-		}
-		public procedure_attributes_list(procedure_attribute _procedure_attribute)
-		{
-		    Add(_procedure_attribute,null);
-		}
-		public procedure_attributes_list(proc_attribute attr, SourceContext sc): this(new procedure_attribute(attr),sc)
-		{ }
-		public procedure_attributes_list(proc_attribute attr): this(attr,null)
-		{ }
-		public procedure_attributes_list Add(procedure_attribute _procedure_attribute)
-		{
-		    proc_attributes.Add(_procedure_attribute);
-		    return this;
-		}
-		public procedure_attributes_list Add(procedure_attribute _procedure_attribute, SourceContext sc)
-		{
-		    proc_attributes.Add(_procedure_attribute);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -5087,7 +4743,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class procedure_header : type_definition
+	public partial class procedure_header : type_definition
 	{
 
 		///<summary>
@@ -5272,40 +4928,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public procedure_header(formal_parameters _parameters,procedure_attributes_list _proc_attributes,method_name _name,where_definition_list _where_defs,SourceContext sc)
-		{
-			this._parameters=_parameters;
-			this._proc_attributes=_proc_attributes;
-			this._name=_name;
-			this._of_object=false;
-			this._class_keyword=false;
-			this._template_args=null;
-			this._where_defs=_where_defs;
-			source_context = sc;
-			if (name!=null)
-				if (name.meth_name is template_type_name)
-				{
-					var t = name.meth_name as template_type_name;
-					template_args = t.template_args;
-					ident id = new ident(name.meth_name.name,name.meth_name.source_context);
-					name.meth_name = id;
-				}
-		}
-		public override string ToString()
-		{
-			var sb = new System.Text.StringBuilder();	
-			sb.Append("procedure ");
-			sb.Append(name.ToString());
-			
-			if (template_args != null)
-				sb.Append("<"+template_args.ToString()+">");
-				
-			if (parameters != null)
-				sb.Append("("+parameters.ToString()+")");	
-			sb.Append(";");	
-		    return sb.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5386,7 +5008,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class function_header : procedure_header
+	public partial class function_header : procedure_header
 	{
 
 		///<summary>
@@ -5464,26 +5086,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public function_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, type_definition _return_type, SourceContext sc)
-		            : base(_parameters, _proc_attributes, _name, _where_defs, sc)
-		{
-		     this._return_type=_return_type;
-		}
-		public function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype): this(fp,pal,new method_name(name),null,new named_type_reference(returntype),null)
-		{
-			
-		}
-		public override string ToString()
-		{
-			var sb = new System.Text.StringBuilder();	
-			sb.Append(base.ToString());
-			sb.Remove(0,9);
-			sb.Remove(sb.Length-1,1);
-			sb.Insert(0,"function");
-			sb.Append(": "+return_type.ToString()+";");
-		    return sb.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -5570,7 +5172,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class procedure_definition : declaration
+	public partial class procedure_definition : declaration
 	{
 
 		///<summary>
@@ -5652,26 +5254,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)
-		{
-			this.proc_header = proc_header;
-			this.proc_body = proc_body;
-			source_context = sc;
-			is_short_definition = false;
-		}
-		public procedure_definition(procedure_header proc_header, proc_block proc_body)
-		{
-			this.proc_header = proc_header;
-			this.proc_body = proc_body;
-			source_context = null;
-			is_short_definition = false;
-		}
-		public void AssignAttrList(attribute_list al)
-		{
-		  if (proc_header != null)
-		    proc_header.attributes = al;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5732,7 +5314,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class type_declaration : declaration
+	public partial class type_declaration : declaration
 	{
 
 		///<summary>
@@ -5796,11 +5378,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public type_declaration(string name, type_definition type): this(new ident(name),type)
-		{ }
-		public type_declaration(string name, type_definition type, SourceContext sc): this(new ident(name),type,sc)
-		{ }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5861,7 +5438,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Список определений типов
 	///</summary>
 	[Serializable]
-	public class type_declarations : declaration
+	public partial class type_declarations : declaration
 	{
 
 		///<summary>
@@ -5906,22 +5483,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public type_declarations(type_declaration _type_declaration, SourceContext sc)
-		{
-		    Add(_type_declaration,sc);
-		}
-		public type_declarations Add(type_declaration _type_declaration)
-		{
-		    types_decl.Add(_type_declaration);
-		    return this;
-		}
-		public type_declarations Add(type_declaration _type_declaration, SourceContext sc)
-		{
-		    types_decl.Add(_type_declaration);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -5984,7 +5545,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class simple_const_definition : const_definition
+	public partial class simple_const_definition : const_definition
 	{
 
 		///<summary>
@@ -6075,7 +5636,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class typed_const_definition : const_definition
+	public partial class typed_const_definition : const_definition
 	{
 
 		///<summary>
@@ -6207,7 +5768,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class const_definition : declaration
+	public partial class const_definition : declaration
 	{
 
 		///<summary>
@@ -6331,7 +5892,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class consts_definitions_list : declaration
+	public partial class consts_definitions_list : declaration
 	{
 
 		///<summary>
@@ -6376,22 +5937,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public consts_definitions_list(const_definition _const_definition, SourceContext sc)
-		{
-		    Add(_const_definition,sc);
-		}
-		public consts_definitions_list Add(const_definition _const_definition)
-		{
-		    const_defs.Add(_const_definition);
-		    return this;
-		}
-		public consts_definitions_list Add(const_definition _const_definition, SourceContext sc)
-		{
-		    const_defs.Add(_const_definition);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -6454,7 +5999,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class unit_name : syntax_tree_node
+	public partial class unit_name : syntax_tree_node
 	{
 
 		///<summary>
@@ -6573,7 +6118,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class unit_or_namespace : syntax_tree_node
+	public partial class unit_or_namespace : syntax_tree_node
 	{
 
 		///<summary>
@@ -6618,11 +6163,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public unit_or_namespace(string name)
-		{
-		  this.name = new ident_list(name);
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -6679,7 +6219,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class uses_unit_in : unit_or_namespace
+	public partial class uses_unit_in : unit_or_namespace
 	{
 
 		///<summary>
@@ -6804,7 +6344,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class uses_list : syntax_tree_node
+	public partial class uses_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -6849,30 +6389,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public uses_list(string name)
-		{
-		  units.Add(new unit_or_namespace(name));
-		}
-		public uses_list(unit_or_namespace un)
-		{
-		  units.Add(un);
-		}
-		public uses_list(unit_or_namespace _unit_or_namespace, SourceContext sc)
-		{
-		    Add(_unit_or_namespace,sc);
-		}
-		public uses_list Add(unit_or_namespace _unit_or_namespace)
-		{
-		    units.Add(_unit_or_namespace);
-		    return this;
-		}
-		public uses_list Add(unit_or_namespace _unit_or_namespace, SourceContext sc)
-		{
-		    units.Add(_unit_or_namespace);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -6935,7 +6451,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class program_body : syntax_tree_node
+	public partial class program_body : syntax_tree_node
 	{
 
 		///<summary>
@@ -7105,7 +6621,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class compilation_unit : syntax_tree_node
+	public partial class compilation_unit : syntax_tree_node
 	{
 
 		///<summary>
@@ -7248,7 +6764,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class unit_module : compilation_unit
+	public partial class unit_module : compilation_unit
 	{
 
 		///<summary>
@@ -7417,17 +6933,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public unit_module(LanguageId _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,SourceContext sc)
-		{
-			this._Language=_Language;
-			this._unit_name=_unit_name;
-			this._interface_part=_interface_part;
-			this._implementation_part=_implementation_part;
-			this._initialization_part=_initialization_part;
-			this._finalization_part=_finalization_part;
-			source_context = sc;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -7525,7 +7030,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class program_module : compilation_unit
+	public partial class program_module : compilation_unit
 	{
 
 		///<summary>
@@ -7654,31 +7159,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces)
-		{
-		  var r =  new program_module(new program_name(id),_used_units,_program_block,_using_namespaces);
-		  r.Language = LanguageId.CommonLanguage;
-		  return r;
-		}
-		public static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)
-		{
-		  var r = new program_module(new program_name(id),_used_units,_program_block,_using_namespaces,sc);
-		  r.Language = LanguageId.CommonLanguage;
-		  return r;
-		}
-		public static program_module create(ident id,uses_list _used_units,block _program_block)
-		{
-		  var r = new program_module(new program_name(id),_used_units,_program_block,null);
-		  r.Language = LanguageId.CommonLanguage;
-		  return r;
-		}
-		public static program_module create(ident id,uses_list _used_units,block _program_block,SourceContext sc)
-		{
-		  var r = new program_module(new program_name(id),_used_units,_program_block,null,sc);
-		  r.Language = LanguageId.CommonLanguage;
-		  return r;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -7766,7 +7246,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class hex_constant : int64_const
+	public partial class hex_constant : int64_const
 	{
 
 		///<summary>
@@ -7839,7 +7319,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class get_address : addressed_value_funcname
+	public partial class get_address : addressed_value_funcname
 	{
 
 		///<summary>
@@ -7940,7 +7420,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class case_variant : statement
+	public partial class case_variant : statement
 	{
 
 		///<summary>
@@ -8064,7 +7544,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class case_node : statement
+	public partial class case_node : statement
 	{
 
 		///<summary>
@@ -8211,7 +7691,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class method_name : syntax_tree_node
+	public partial class method_name : syntax_tree_node
 	{
 
 		///<summary>
@@ -8311,15 +7791,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public method_name(string name): this(null,null,new ident(name),null)
-		{
-			
-		}
-		public override string ToString()
-		{
-			return meth_name.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8402,7 +7873,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class dot_node : addressed_value_funcname
+	public partial class dot_node : addressed_value_funcname
 	{
 
 		///<summary>
@@ -8466,11 +7937,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-		  return left.ToString()+"."+right.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8531,7 +7997,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class empty_statement : statement
+	public partial class empty_statement : statement
 	{
 
 		///<summary>
@@ -8587,7 +8053,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class goto_statement : statement
+	public partial class goto_statement : statement
 	{
 
 		///<summary>
@@ -8632,20 +8098,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public goto_statement(string name)
-		{
-			label = new ident(name);
-		}
-		public goto_statement(string name, SourceContext sc)
-		{
-			label = new ident(name);
-			source_context = sc;
-		}
-		public override string ToString()
-		{
-			return "goto " + label;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -8702,7 +8154,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class labeled_statement : statement
+	public partial class labeled_statement : statement
 	{
 
 		///<summary>
@@ -8766,18 +8218,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public labeled_statement(string name, statement st)
-		{
-			label_name = new ident(name);
-			to_statement = st;
-		}
-		public labeled_statement(string name, statement st, SourceContext sc)
-		{
-			label_name = new ident(name);
-			to_statement = st;
-			source_context = sc;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8838,7 +8278,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Представление оператора with в синтаксическом дереве.
 	///</summary>
 	[Serializable]
-	public class with_statement : statement
+	public partial class with_statement : statement
 	{
 
 		///<summary>
@@ -8962,7 +8402,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class method_call : dereference
+	public partial class method_call : dereference
 	{
 
 		///<summary>
@@ -9027,11 +8467,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return dereferencing_value.ToString()+"("+parameters.ToString()+")";
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -9092,7 +8527,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Выражение-константа множество
 	///</summary>
 	[Serializable]
-	public class pascal_set_constant : addressed_value
+	public partial class pascal_set_constant : addressed_value
 	{
 
 		///<summary>
@@ -9137,11 +8572,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public void Add(expression value)
-		{
-		    values.Add(value);
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -9198,7 +8628,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class array_const : expression
+	public partial class array_const : expression
 	{
 
 		///<summary>
@@ -9299,7 +8729,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class write_accessor_name : syntax_tree_node
+	public partial class write_accessor_name : syntax_tree_node
 	{
 
 		///<summary>
@@ -9400,7 +8830,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class read_accessor_name : syntax_tree_node
+	public partial class read_accessor_name : syntax_tree_node
 	{
 
 		///<summary>
@@ -9501,7 +8931,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class property_accessors : syntax_tree_node
+	public partial class property_accessors : syntax_tree_node
 	{
 
 		///<summary>
@@ -9565,9 +8995,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public property_accessors(ident read_accessor, ident write_accessor): this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor))
-		{ }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -9628,7 +9055,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///property property_name[parameter_list]:property_type index index_expression accessors;array_default;
 	///</summary>
 	[Serializable]
-	public class simple_property : declaration
+	public partial class simple_property : declaration
 	{
 
 		///<summary>
@@ -9782,9 +9209,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public simple_property(ident name, type_definition type, property_accessors accessors): this(name, type, null, accessors, null, null, definition_attribute.None)
-		{ }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -9865,7 +9289,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class index_property : simple_property
+	public partial class index_property : simple_property
 	{
 
 		///<summary>
@@ -10052,7 +9476,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class class_members : syntax_tree_node
+	public partial class class_members : syntax_tree_node
 	{
 
 		///<summary>
@@ -10115,26 +9539,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public class_members(declaration _declaration, SourceContext sc)
-		{
-		    Add(_declaration,sc);
-		}
-		public class_members(access_modifer access)
-		{ 
-			access_mod = new access_modifer_node(access);
-		}
-		public class_members Add(declaration _declaration)
-		{
-		    members.Add(_declaration);
-		    return this;
-		}
-		public class_members Add(declaration _declaration, SourceContext sc)
-		{
-		    members.Add(_declaration);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -10208,7 +9612,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class access_modifer_node : syntax_tree_node
+	public partial class access_modifer_node : syntax_tree_node
 	{
 
 		///<summary>
@@ -10298,7 +9702,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class class_body : syntax_tree_node
+	public partial class class_body : syntax_tree_node
 	{
 
 		///<summary>
@@ -10343,22 +9747,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public class_body(class_members _class_members, SourceContext sc)
-		{
-		    Add(_class_members,sc);
-		}
-		public class_body Add(class_members _class_members)
-		{
-		    class_def_blocks.Add(_class_members);
-		    return this;
-		}
-		public class_body Add(class_members _class_members, SourceContext sc)
-		{
-		    class_def_blocks.Add(_class_members);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -10421,7 +9809,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class class_definition : type_definition
+	public partial class class_definition : type_definition
 	{
 
 		///<summary>
@@ -10606,11 +9994,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public class_definition(named_type_reference_list parents, class_body body): this(parents,body,class_keyword.Class, null, null, class_attribute.None,false)
-		{ is_auto = false; }
-		public class_definition(class_body body): this(null,body)
-		{ is_auto = false;  }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -10686,7 +10069,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class default_indexer_property_node : syntax_tree_node
+	public partial class default_indexer_property_node : syntax_tree_node
 	{
 
 		///<summary>
@@ -10742,7 +10125,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class known_type_definition : type_definition
+	public partial class known_type_definition : type_definition
 	{
 
 		///<summary>
@@ -10887,7 +10270,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class set_type_definition : type_definition
+	public partial class set_type_definition : type_definition
 	{
 
 		///<summary>
@@ -11012,7 +10395,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_statement : statement
+	public partial class try_statement : statement
 	{
 
 		///<summary>
@@ -11113,7 +10496,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class on_exception : syntax_tree_node
+	public partial class on_exception : syntax_tree_node
 	{
 
 		///<summary>
@@ -11260,7 +10643,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class on_exception_list : syntax_tree_node
+	public partial class on_exception_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -11305,22 +10688,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public on_exception_list(on_exception _on_exception, SourceContext sc)
-		{
-		    Add(_on_exception,sc);
-		}
-		public on_exception_list Add(on_exception _on_exception)
-		{
-		    on_exceptions.Add(_on_exception);
-		    return this;
-		}
-		public on_exception_list Add(on_exception _on_exception, SourceContext sc)
-		{
-		    on_exceptions.Add(_on_exception);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -11383,7 +10750,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_finally_statement : try_statement
+	public partial class try_finally_statement : try_statement
 	{
 
 		///<summary>
@@ -11508,7 +10875,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_except_statement : try_statement
+	public partial class try_except_statement : try_statement
 	{
 
 		///<summary>
@@ -11658,7 +11025,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class record_const_definition : statement
+	public partial class record_const_definition : statement
 	{
 
 		///<summary>
@@ -11782,7 +11149,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class record_const : expression
+	public partial class record_const : expression
 	{
 
 		///<summary>
@@ -11827,22 +11194,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public record_const(record_const_definition _record_const_definition, SourceContext sc)
-		{
-		    Add(_record_const_definition,sc);
-		}
-		public record_const Add(record_const_definition _record_const_definition)
-		{
-		    rec_consts.Add(_record_const_definition);
-		    return this;
-		}
-		public record_const Add(record_const_definition _record_const_definition, SourceContext sc)
-		{
-		    rec_consts.Add(_record_const_definition);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -11905,7 +11256,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class record_type : type_definition
+	public partial class record_type : type_definition
 	{
 
 		///<summary>
@@ -12055,7 +11406,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class enum_type_definition : type_definition
+	public partial class enum_type_definition : type_definition
 	{
 
 		///<summary>
@@ -12180,7 +11531,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Класс, представляющий символьную константу в синтаксическом дереве программы.
 	///</summary>
 	[Serializable]
-	public class char_const : literal
+	public partial class char_const : literal
 	{
 
 		///<summary>
@@ -12270,7 +11621,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Выкидывание исключения.
 	///</summary>
 	[Serializable]
-	public class raise_statement : statement
+	public partial class raise_statement : statement
 	{
 
 		///<summary>
@@ -12371,7 +11722,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Представление в синтаксичеком дереве символьной константы вида #100.
 	///</summary>
 	[Serializable]
-	public class sharp_char_const : literal
+	public partial class sharp_char_const : literal
 	{
 
 		///<summary>
@@ -12461,7 +11812,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Представляет в синтаксическом дереве строку вида #123'abc'#124#125.
 	///</summary>
 	[Serializable]
-	public class literal_const_line : literal
+	public partial class literal_const_line : literal
 	{
 
 		///<summary>
@@ -12506,22 +11857,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public literal_const_line(literal _literal, SourceContext sc)
-		{
-		    Add(_literal,sc);
-		}
-		public literal_const_line Add(literal _literal)
-		{
-		    literals.Add(_literal);
-		    return this;
-		}
-		public literal_const_line Add(literal _literal, SourceContext sc)
-		{
-		    literals.Add(_literal);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -12584,7 +11919,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Представление для класса строки вида string[256].
 	///</summary>
 	[Serializable]
-	public class string_num_definition : type_definition
+	public partial class string_num_definition : type_definition
 	{
 
 		///<summary>
@@ -12734,7 +12069,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class variant : syntax_tree_node
+	public partial class variant : syntax_tree_node
 	{
 
 		///<summary>
@@ -12858,7 +12193,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class variant_list : syntax_tree_node
+	public partial class variant_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -12903,22 +12238,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public variant_list(variant _variant, SourceContext sc)
-		{
-		    Add(_variant,sc);
-		}
-		public variant_list Add(variant _variant)
-		{
-		    vars.Add(_variant);
-		    return this;
-		}
-		public variant_list Add(variant _variant, SourceContext sc)
-		{
-		    vars.Add(_variant);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -12981,7 +12300,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class variant_type : syntax_tree_node
+	public partial class variant_type : syntax_tree_node
 	{
 
 		///<summary>
@@ -13105,7 +12424,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class variant_types : syntax_tree_node
+	public partial class variant_types : syntax_tree_node
 	{
 
 		///<summary>
@@ -13150,22 +12469,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public variant_types(variant_type _variant_type, SourceContext sc)
-		{
-		    Add(_variant_type,sc);
-		}
-		public variant_types Add(variant_type _variant_type)
-		{
-		    vars.Add(_variant_type);
-		    return this;
-		}
-		public variant_types Add(variant_type _variant_type, SourceContext sc)
-		{
-		    vars.Add(_variant_type);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -13228,7 +12531,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class variant_record_type : syntax_tree_node
+	public partial class variant_record_type : syntax_tree_node
 	{
 
 		///<summary>
@@ -13375,7 +12678,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class procedure_call : statement
+	public partial class procedure_call : statement
 	{
 
 		///<summary>
@@ -13420,11 +12723,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-			return func_name.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -13481,7 +12779,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class class_predefinition : type_declaration
+	public partial class class_predefinition : type_declaration
 	{
 
 		///<summary>
@@ -13613,7 +12911,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class nil_const : const_node
+	public partial class nil_const : const_node
 	{
 
 		///<summary>
@@ -13669,7 +12967,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class file_type_definition : type_definition
+	public partial class file_type_definition : type_definition
 	{
 
 		///<summary>
@@ -13794,7 +13092,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class constructor : procedure_header
+	public partial class constructor : procedure_header
 	{
 
 		///<summary>
@@ -13836,11 +13134,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_defs=_where_defs;
 			source_context = sc;
 		}
-
-		public constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null, sc)
-		{ }
-		public constructor(formal_parameters fp): this(fp, null)
-		{ }
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -13922,7 +13215,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class destructor : procedure_header
+	public partial class destructor : procedure_header
 	{
 
 		///<summary>
@@ -14045,7 +13338,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class inherited_method_call : statement
+	public partial class inherited_method_call : statement
 	{
 
 		///<summary>
@@ -14169,7 +13462,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class typecast_node : addressed_value
+	public partial class typecast_node : addressed_value
 	{
 
 		///<summary>
@@ -14311,7 +13604,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class interface_node : syntax_tree_node
+	public partial class interface_node : syntax_tree_node
 	{
 
 		///<summary>
@@ -14458,7 +13751,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class implementation_node : syntax_tree_node
+	public partial class implementation_node : syntax_tree_node
 	{
 
 		///<summary>
@@ -14605,7 +13898,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class diap_expr : expression
+	public partial class diap_expr : expression
 	{
 
 		///<summary>
@@ -14729,7 +14022,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class block : proc_block
+	public partial class block : proc_block
 	{
 
 		///<summary>
@@ -14793,9 +14086,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public block(statement_list code): this(null,code)
-		{ }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -14856,7 +14146,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class proc_block : syntax_tree_node
+	public partial class proc_block : syntax_tree_node
 	{
 
 		///<summary>
@@ -14912,7 +14202,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///array of type_name
 	///</summary>
 	[Serializable]
-	public class array_of_named_type_definition : type_definition
+	public partial class array_of_named_type_definition : type_definition
 	{
 
 		///<summary>
@@ -15037,7 +14327,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///array of const
 	///</summary>
 	[Serializable]
-	public class array_of_const_type_definition : type_definition
+	public partial class array_of_const_type_definition : type_definition
 	{
 
 		///<summary>
@@ -15121,7 +14411,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///#12 либо 'abc'
 	///</summary>
 	[Serializable]
-	public class literal : const_node
+	public partial class literal : const_node
 	{
 
 		///<summary>
@@ -15177,7 +14467,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class case_variants : syntax_tree_node
+	public partial class case_variants : syntax_tree_node
 	{
 
 		///<summary>
@@ -15222,22 +14512,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public case_variants(case_variant _case_variant, SourceContext sc)
-		{
-		    Add(_case_variant,sc);
-		}
-		public case_variants Add(case_variant _case_variant)
-		{
-		    variants.Add(_case_variant);
-		    return this;
-		}
-		public case_variants Add(case_variant _case_variant, SourceContext sc)
-		{
-		    variants.Add(_case_variant);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -15300,7 +14574,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class diapason_expr : expression
+	public partial class diapason_expr : expression
 	{
 
 		///<summary>
@@ -15424,7 +14698,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class var_def_list : syntax_tree_node
+	public partial class var_def_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -15469,22 +14743,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public var_def_list(var_def_statement _var_def_statement, SourceContext sc)
-		{
-		    Add(_var_def_statement,sc);
-		}
-		public var_def_list Add(var_def_statement _var_def_statement)
-		{
-		    vars.Add(_var_def_statement);
-		    return this;
-		}
-		public var_def_list Add(var_def_statement _var_def_statement, SourceContext sc)
-		{
-		    vars.Add(_var_def_statement);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -15547,7 +14805,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class record_type_parts : syntax_tree_node
+	public partial class record_type_parts : syntax_tree_node
 	{
 
 		///<summary>
@@ -15671,7 +14929,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class property_array_default : syntax_tree_node
+	public partial class property_array_default : syntax_tree_node
 	{
 
 		///<summary>
@@ -15727,7 +14985,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class property_interface : syntax_tree_node
+	public partial class property_interface : syntax_tree_node
 	{
 
 		///<summary>
@@ -15874,7 +15132,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class property_parameter : syntax_tree_node
+	public partial class property_parameter : syntax_tree_node
 	{
 
 		///<summary>
@@ -15998,7 +15256,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class property_parameter_list : syntax_tree_node
+	public partial class property_parameter_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -16043,22 +15301,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public property_parameter_list(property_parameter _property_parameter, SourceContext sc)
-		{
-		    Add(_property_parameter,sc);
-		}
-		public property_parameter_list Add(property_parameter _property_parameter)
-		{
-		    parameters.Add(_property_parameter);
-		    return this;
-		}
-		public property_parameter_list Add(property_parameter _property_parameter, SourceContext sc)
-		{
-		    parameters.Add(_property_parameter);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -16121,7 +15363,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class inherited_ident : ident
+	public partial class inherited_ident : ident
 	{
 
 		///<summary>
@@ -16194,7 +15436,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///expr:1:2
 	///</summary>
 	[Serializable]
-	public class format_expr : addressed_value
+	public partial class format_expr : addressed_value
 	{
 
 		///<summary>
@@ -16341,7 +15583,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class initfinal_part : syntax_tree_node
+	public partial class initfinal_part : syntax_tree_node
 	{
 
 		///<summary>
@@ -16405,20 +15647,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public initfinal_part(syntax_tree_node stn1, statement_list init, syntax_tree_node stn2, statement_list fin, syntax_tree_node stn3, SourceContext sc)
-		{
-		  _initialization_sect=init;
-		  _finalization_sect=fin;
-		  source_context = sc;
-		   init.left_logical_bracket = stn1;
-		   init.right_logical_bracket = stn2;
-		  if (fin!=null)
-		  {
-		     fin.left_logical_bracket = stn2;
-		     fin.right_logical_bracket = stn3;
-		  }
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16479,7 +15707,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class token_info : syntax_tree_node
+	public partial class token_info : syntax_tree_node
 	{
 
 		///<summary>
@@ -16525,11 +15753,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-			return text.ToLower();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16574,7 +15797,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///raise [expr [at address]]
 	///</summary>
 	[Serializable]
-	public class raise_stmt : statement
+	public partial class raise_stmt : statement
 	{
 
 		///<summary>
@@ -16698,7 +15921,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class op_type_node : token_info
+	public partial class op_type_node : token_info
 	{
 
 		///<summary>
@@ -16807,7 +16030,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class file_type : type_definition
+	public partial class file_type : type_definition
 	{
 
 		///<summary>
@@ -16932,7 +16155,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class known_type_ident : ident
+	public partial class known_type_ident : ident
 	{
 
 		///<summary>
@@ -17041,7 +16264,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class exception_handler : syntax_tree_node
+	public partial class exception_handler : syntax_tree_node
 	{
 
 		///<summary>
@@ -17188,7 +16411,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class exception_ident : syntax_tree_node
+	public partial class exception_ident : syntax_tree_node
 	{
 
 		///<summary>
@@ -17312,7 +16535,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class exception_handler_list : syntax_tree_node
+	public partial class exception_handler_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -17357,22 +16580,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public exception_handler_list(exception_handler _exception_handler, SourceContext sc)
-		{
-		    Add(_exception_handler,sc);
-		}
-		public exception_handler_list Add(exception_handler _exception_handler)
-		{
-		    handlers.Add(_exception_handler);
-		    return this;
-		}
-		public exception_handler_list Add(exception_handler _exception_handler, SourceContext sc)
-		{
-		    handlers.Add(_exception_handler);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -17435,7 +16642,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class exception_block : syntax_tree_node
+	public partial class exception_block : syntax_tree_node
 	{
 
 		///<summary>
@@ -17582,7 +16789,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_handler : syntax_tree_node
+	public partial class try_handler : syntax_tree_node
 	{
 
 		///<summary>
@@ -17638,7 +16845,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_handler_finally : try_handler
+	public partial class try_handler_finally : try_handler
 	{
 
 		///<summary>
@@ -17739,7 +16946,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_handler_except : try_handler
+	public partial class try_handler_except : try_handler
 	{
 
 		///<summary>
@@ -17840,7 +17047,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class try_stmt : statement
+	public partial class try_stmt : statement
 	{
 
 		///<summary>
@@ -17964,7 +17171,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class inherited_message : statement
+	public partial class inherited_message : statement
 	{
 
 		///<summary>
@@ -18020,7 +17227,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///expression может быть literal или ident
 	///</summary>
 	[Serializable]
-	public class external_directive : proc_block
+	public partial class external_directive : proc_block
 	{
 
 		///<summary>
@@ -18144,7 +17351,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class using_list : syntax_tree_node
+	public partial class using_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -18251,7 +17458,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_import_module : unit_or_namespace
+	public partial class oberon_import_module : unit_or_namespace
 	{
 
 		///<summary>
@@ -18376,7 +17583,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_module : compilation_unit
+	public partial class oberon_module : compilation_unit
 	{
 
 		///<summary>
@@ -18617,7 +17824,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_ident_with_export_marker : ident
+	public partial class oberon_ident_with_export_marker : ident
 	{
 
 		///<summary>
@@ -18726,7 +17933,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_exit_stmt : statement
+	public partial class oberon_exit_stmt : statement
 	{
 
 		///<summary>
@@ -18816,7 +18023,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class jump_stmt : statement
+	public partial class jump_stmt : statement
 	{
 
 		///<summary>
@@ -18935,7 +18142,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_procedure_receiver : syntax_tree_node
+	public partial class oberon_procedure_receiver : syntax_tree_node
 	{
 
 		///<summary>
@@ -19077,7 +18284,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_procedure_header : function_header
+	public partial class oberon_procedure_header : function_header
 	{
 
 		///<summary>
@@ -19298,7 +18505,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_withstmt_guardstat : syntax_tree_node
+	public partial class oberon_withstmt_guardstat : syntax_tree_node
 	{
 
 		///<summary>
@@ -19445,7 +18652,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_withstmt_guardstat_list : syntax_tree_node
+	public partial class oberon_withstmt_guardstat_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -19552,7 +18759,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class oberon_withstmt : statement
+	public partial class oberon_withstmt : statement
 	{
 
 		///<summary>
@@ -19676,7 +18883,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class loop_stmt : statement
+	public partial class loop_stmt : statement
 	{
 
 		///<summary>
@@ -19777,7 +18984,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class foreach_stmt : statement
+	public partial class foreach_stmt : statement
 	{
 
 		///<summary>
@@ -19947,7 +19154,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class addressed_value_funcname : addressed_value
+	public partial class addressed_value_funcname : addressed_value
 	{
 
 		///<summary>
@@ -20003,7 +19210,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class named_type_reference_list : syntax_tree_node
+	public partial class named_type_reference_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -20048,22 +19255,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public named_type_reference_list(named_type_reference _named_type_reference, SourceContext sc)
-		{
-		    Add(_named_type_reference,sc);
-		}
-		public named_type_reference_list Add(named_type_reference _named_type_reference)
-		{
-		    types.Add(_named_type_reference);
-		    return this;
-		}
-		public named_type_reference_list Add(named_type_reference _named_type_reference, SourceContext sc)
-		{
-		    types.Add(_named_type_reference);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -20126,7 +19317,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class template_param_list : dereference
+	public partial class template_param_list : dereference
 	{
 
 		///<summary>
@@ -20190,22 +19381,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public template_param_list(type_definition _type_definition, SourceContext sc)
-		{
-		    Add(_type_definition,sc);
-		}
-		public template_param_list Add(type_definition _type_definition)
-		{
-		    params_list.Add(_type_definition);
-		    return this;
-		}
-		public template_param_list Add(type_definition _type_definition, SourceContext sc)
-		{
-		    params_list.Add(_type_definition);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -20279,7 +19454,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class template_type_reference : named_type_reference
+	public partial class template_type_reference : named_type_reference
 	{
 
 		///<summary>
@@ -20448,7 +19623,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class int64_const : const_node
+	public partial class int64_const : const_node
 	{
 
 		///<summary>
@@ -20494,11 +19669,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-		  return val.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20543,7 +19713,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class uint64_const : const_node
+	public partial class uint64_const : const_node
 	{
 
 		///<summary>
@@ -20589,11 +19759,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public override string ToString()
-		{
-		  return val.ToString();
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20638,7 +19803,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class new_expr : addressed_value
+	public partial class new_expr : addressed_value
 	{
 
 		///<summary>
@@ -20738,9 +19903,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public new_expr(type_definition type,expression_list pars,SourceContext sc): this(type,pars,false,null,sc)
-		{ }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20806,7 +19968,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class type_definition_list : syntax_tree_node
+	public partial class type_definition_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -20851,22 +20013,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public type_definition_list(type_definition _type_definition, SourceContext sc)
-		{
-		    Add(_type_definition,sc);
-		}
-		public type_definition_list Add(type_definition _type_definition)
-		{
-		    defs.Add(_type_definition);
-		    return this;
-		}
-		public type_definition_list Add(type_definition _type_definition, SourceContext sc)
-		{
-		    defs.Add(_type_definition);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -20929,7 +20075,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class where_definition : syntax_tree_node
+	public partial class where_definition : syntax_tree_node
 	{
 
 		///<summary>
@@ -21053,7 +20199,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class where_definition_list : syntax_tree_node
+	public partial class where_definition_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -21098,22 +20244,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public where_definition_list(where_definition _where_definition, SourceContext sc)
-		{
-		    Add(_where_definition,sc);
-		}
-		public where_definition_list Add(where_definition _where_definition)
-		{
-		    defs.Add(_where_definition);
-		    return this;
-		}
-		public where_definition_list Add(where_definition _where_definition, SourceContext sc)
-		{
-		    defs.Add(_where_definition);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -21176,7 +20306,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class sizeof_operator : addressed_value
+	public partial class sizeof_operator : addressed_value
 	{
 
 		///<summary>
@@ -21300,7 +20430,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class typeof_operator : addressed_value
+	public partial class typeof_operator : addressed_value
 	{
 
 		///<summary>
@@ -21401,7 +20531,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class compiler_directive : syntax_tree_node
+	public partial class compiler_directive : syntax_tree_node
 	{
 
 		///<summary>
@@ -21525,7 +20655,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class operator_name_ident : ident
+	public partial class operator_name_ident : ident
 	{
 
 		///<summary>
@@ -21634,7 +20764,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class var_statement : statement
+	public partial class var_statement : statement
 	{
 
 		///<summary>
@@ -21679,11 +20809,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-			return "var "+var_def.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -21740,7 +20865,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class question_colon_expression : addressed_value
+	public partial class question_colon_expression : addressed_value
 	{
 
 		///<summary>
@@ -21887,7 +21012,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class expression_as_statement : statement
+	public partial class expression_as_statement : statement
 	{
 
 		///<summary>
@@ -21988,7 +21113,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class c_scalar_type : type_definition
+	public partial class c_scalar_type : type_definition
 	{
 
 		///<summary>
@@ -22128,7 +21253,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class c_module : compilation_unit
+	public partial class c_module : compilation_unit
 	{
 
 		///<summary>
@@ -22294,7 +21419,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class declarations_as_statement : statement
+	public partial class declarations_as_statement : statement
 	{
 
 		///<summary>
@@ -22395,7 +21520,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class array_size : type_definition
+	public partial class array_size : type_definition
 	{
 
 		///<summary>
@@ -22520,7 +21645,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class enumerator : syntax_tree_node
+	public partial class enumerator : syntax_tree_node
 	{
 
 		///<summary>
@@ -22644,7 +21769,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class enumerator_list : syntax_tree_node
+	public partial class enumerator_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -22689,22 +21814,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public enumerator_list(enumerator _enumerator, SourceContext sc)
-		{
-		    Add(_enumerator,sc);
-		}
-		public enumerator_list Add(enumerator _enumerator)
-		{
-		    enumerators.Add(_enumerator);
-		    return this;
-		}
-		public enumerator_list Add(enumerator _enumerator, SourceContext sc)
-		{
-		    enumerators.Add(_enumerator);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -22767,7 +21876,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class c_for_cycle : statement
+	public partial class c_for_cycle : statement
 	{
 
 		///<summary>
@@ -22937,7 +22046,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class switch_stmt : statement
+	public partial class switch_stmt : statement
 	{
 
 		///<summary>
@@ -23079,7 +22188,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class type_definition_attr_list : syntax_tree_node
+	public partial class type_definition_attr_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -23124,22 +22233,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public type_definition_attr_list(type_definition_attr _type_definition_attr, SourceContext sc)
-		{
-		    Add(_type_definition_attr,sc);
-		}
-		public type_definition_attr_list Add(type_definition_attr _type_definition_attr)
-		{
-		    attributes.Add(_type_definition_attr);
-		    return this;
-		}
-		public type_definition_attr_list Add(type_definition_attr _type_definition_attr, SourceContext sc)
-		{
-		    attributes.Add(_type_definition_attr);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -23202,7 +22295,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class type_definition_attr : type_definition
+	public partial class type_definition_attr : type_definition
 	{
 
 		///<summary>
@@ -23322,7 +22415,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class lock_stmt : statement
+	public partial class lock_stmt : statement
 	{
 
 		///<summary>
@@ -23446,7 +22539,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class compiler_directive_list : compiler_directive
+	public partial class compiler_directive_list : compiler_directive
 	{
 
 		///<summary>
@@ -23512,22 +22605,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public compiler_directive_list(compiler_directive _compiler_directive, SourceContext sc)
-		{
-		    Add(_compiler_directive,sc);
-		}
-		public compiler_directive_list Add(compiler_directive _compiler_directive)
-		{
-		    directives.Add(_compiler_directive);
-		    return this;
-		}
-		public compiler_directive_list Add(compiler_directive _compiler_directive, SourceContext sc)
-		{
-		    directives.Add(_compiler_directive);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -23606,7 +22683,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class compiler_directive_if : compiler_directive
+	public partial class compiler_directive_if : compiler_directive
 	{
 
 		///<summary>
@@ -23763,7 +22840,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class documentation_comment_list : syntax_tree_node
+	public partial class documentation_comment_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -23808,22 +22885,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public documentation_comment_list(documentation_comment_section _documentation_comment_section, SourceContext sc)
-		{
-		    Add(_documentation_comment_section,sc);
-		}
-		public documentation_comment_list Add(documentation_comment_section _documentation_comment_section)
-		{
-		    sections.Add(_documentation_comment_section);
-		    return this;
-		}
-		public documentation_comment_list Add(documentation_comment_section _documentation_comment_section, SourceContext sc)
-		{
-		    sections.Add(_documentation_comment_section);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -23886,7 +22947,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class documentation_comment_tag : syntax_tree_node
+	public partial class documentation_comment_tag : syntax_tree_node
 	{
 
 		///<summary>
@@ -24029,7 +23090,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class documentation_comment_tag_param : syntax_tree_node
+	public partial class documentation_comment_tag_param : syntax_tree_node
 	{
 
 		///<summary>
@@ -24137,7 +23198,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class documentation_comment_section : syntax_tree_node
+	public partial class documentation_comment_section : syntax_tree_node
 	{
 
 		///<summary>
@@ -24201,22 +23262,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public documentation_comment_section(documentation_comment_tag _documentation_comment_tag, SourceContext sc)
-		{
-		    Add(_documentation_comment_tag,sc);
-		}
-		public documentation_comment_section Add(documentation_comment_tag _documentation_comment_tag)
-		{
-		    tags.Add(_documentation_comment_tag);
-		    return this;
-		}
-		public documentation_comment_section Add(documentation_comment_tag _documentation_comment_tag, SourceContext sc)
-		{
-		    tags.Add(_documentation_comment_tag);
-		    source_context = sc;
-		    return this;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -24278,7 +23323,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class token_taginfo : token_info
+	public partial class token_taginfo : token_info
 	{
 
 		///<summary>
@@ -24387,7 +23432,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class declaration_specificator : type_definition
+	public partial class declaration_specificator : type_definition
 	{
 
 		///<summary>
@@ -24527,7 +23572,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class ident_with_templateparams : addressed_value_funcname
+	public partial class ident_with_templateparams : addressed_value_funcname
 	{
 
 		///<summary>
@@ -24651,7 +23696,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class template_type_name : ident
+	public partial class template_type_name : ident
 	{
 
 		///<summary>
@@ -24771,7 +23816,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class default_operator : addressed_value
+	public partial class default_operator : addressed_value
 	{
 
 		///<summary>
@@ -24872,7 +23917,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class bracket_expr : addressed_value
+	public partial class bracket_expr : addressed_value
 	{
 
 		///<summary>
@@ -24917,11 +23962,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-			return "("+expr.ToString()+")";
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -24978,7 +24018,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class attribute : syntax_tree_node
+	public partial class attribute : syntax_tree_node
 	{
 
 		///<summary>
@@ -25125,7 +24165,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class simple_attribute_list : syntax_tree_node
+	public partial class simple_attribute_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -25170,22 +24210,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public simple_attribute_list(attribute _attribute, SourceContext sc)
-		{
-		    Add(_attribute,sc);
-		}
-		public simple_attribute_list Add(attribute _attribute)
-		{
-		    attributes.Add(_attribute);
-		    return this;
-		}
-		public simple_attribute_list Add(attribute _attribute, SourceContext sc)
-		{
-		    attributes.Add(_attribute);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -25248,7 +24272,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class attribute_list : syntax_tree_node
+	public partial class attribute_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -25293,22 +24317,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public attribute_list(simple_attribute_list _simple_attribute_list, SourceContext sc)
-		{
-		    Add(_simple_attribute_list,sc);
-		}
-		public attribute_list Add(simple_attribute_list _simple_attribute_list)
-		{
-		    attributes.Add(_simple_attribute_list);
-		    return this;
-		}
-		public attribute_list Add(simple_attribute_list _simple_attribute_list, SourceContext sc)
-		{
-		    attributes.Add(_simple_attribute_list);
-		    source_context = sc;
-		    return this;
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -25371,7 +24379,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class function_lambda_definition : expression
+	public partial class function_lambda_definition : expression
 	{
 
 		///<summary>
@@ -25579,34 +24587,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)
-		        {
-		            statement_list _statement_list = body;
-		            expression_list _expression_list = new expression_list();
-		            ident_list identList = new ident_list();
-					lambda_visit_mode = LambdaVisitMode.None;
-					
-		            if (formalPars != null)
-		            {
-		                for (int i = 0; i < formalPars.params_list.Count; i++)
-		                {
-		                    for (int j = 0; j < formalPars.params_list[i].idents.idents.Count; j++)
-		                    {
-		                        identList.idents.Add(formalPars.params_list[i].idents.idents[j]);
-		                        _expression_list.expressions.Add(formalPars.params_list[i].idents.idents[j]);
-		                    }
-		                }
-		            }
-		
-		            formal_parameters = formalPars;
-		            return_type = returnType;
-		            ident_list = identList;
-		            parameters = _expression_list;
-		            lambda_name = name;                                     
-		            proc_body = _statement_list;
-		            source_context = sc;
-		        }
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -25709,7 +24689,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class function_lambda_call : expression
+	public partial class function_lambda_call : expression
 	{
 
 		///<summary>
@@ -25833,7 +24813,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///Узел для семантических проверок на этапе построения семантического дерева. Сделан для узлов синтаксического дерева, реализующих синтаксический сахар. Может, видимо, использоваться и для обычных семантических проверок
 	///</summary>
 	[Serializable]
-	public class semantic_check : statement
+	public partial class semantic_check : statement
 	{
 
 		///<summary>
@@ -25915,12 +24895,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public semantic_check(string name, params syntax_tree_node[] pars)
-		{
-		  CheckName = name;
-		  param.AddRange(pars);
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -25982,7 +24956,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class lambda_inferred_type : type_definition
+	public partial class lambda_inferred_type : type_definition
 	{
 
 		///<summary>
@@ -26102,7 +25076,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class same_type_node : type_definition
+	public partial class same_type_node : type_definition
 	{
 
 		///<summary>
@@ -26227,7 +25201,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class name_assign_expr : syntax_tree_node
+	public partial class name_assign_expr : syntax_tree_node
 	{
 
 		///<summary>
@@ -26351,7 +25325,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class name_assign_expr_list : syntax_tree_node
+	public partial class name_assign_expr_list : syntax_tree_node
 	{
 
 		///<summary>
@@ -26396,17 +25370,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public name_assign_expr_list Add(name_assign_expr ne, SourceContext sc)
-		{
-		    name_expr.Add(ne);
-			source_context = sc;
-		    return this;
-		}
-		public name_assign_expr_list Add(name_assign_expr ne)
-		{
-		    return Add(ne,null); 
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
@@ -26471,7 +25434,7 @@ namespace PascalABCCompiler.SyntaxTree
 /// ne - это узел для генерации кода, основной узел предназначен для форматирования
 	///</summary>
 	[Serializable]
-	public class unnamed_type_object : expression
+	public partial class unnamed_type_object : expression
 	{
 
 		///<summary>
@@ -26553,16 +25516,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public string name()
-		{
-			return (new_ex.type as SyntaxTree.named_type_reference).names[0].name;
-		}
-		public void set_name(string nm)
-		{
-			var ntr = new_ex.type as SyntaxTree.named_type_reference;
-			ntr.names[0].name = nm;
-		}
-
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -26623,7 +25576,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class semantic_type_node : type_definition
+	public partial class semantic_type_node : type_definition
 	{
 
 		///<summary>
@@ -26743,7 +25696,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class short_func_definition : procedure_definition
+	public partial class short_func_definition : procedure_definition
 	{
 
 		///<summary>
@@ -26877,7 +25830,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class no_type_foreach : type_definition
+	public partial class no_type_foreach : type_definition
 	{
 
 		///<summary>
@@ -26961,7 +25914,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class matching_expression : addressed_value
+	public partial class matching_expression : addressed_value
 	{
 
 		///<summary>
@@ -27085,7 +26038,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class closure_substituting_node : ident
+	public partial class closure_substituting_node : ident
 	{
 
 		///<summary>
@@ -27205,7 +26158,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class sequence_type : type_definition
+	public partial class sequence_type : type_definition
 	{
 
 		///<summary>
@@ -27330,7 +26283,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class modern_proc_type : type_definition
+	public partial class modern_proc_type : type_definition
 	{
 
 		///<summary>
@@ -27505,7 +26458,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public class yield_node : statement
+	public partial class yield_node : statement
 	{
 
 		///<summary>
@@ -27550,11 +26503,6 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
-
-		public override string ToString()
-		{
-			return "yield "+ex.ToString();
-		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
