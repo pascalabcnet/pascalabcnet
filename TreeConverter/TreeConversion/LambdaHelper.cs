@@ -354,7 +354,7 @@ namespace PascalABCCompiler.TreeConverter
             public static var_statement CreateVarStatementNode(string idName, type_definition varType, expression initValue)
             {
                 var id = new ident(idName);
-                var idlist = new ident_list(id, null);
+                var idlist = new ident_list(id);
                 var vdef = new var_def_statement(idlist, varType, initValue, definition_attribute.None, false, null);
                 return new var_statement(vdef, null);
             }
@@ -362,7 +362,7 @@ namespace PascalABCCompiler.TreeConverter
             public static var_statement CreateVarStatementNode(string idName, string varTypeName, expression initValue)
             {
                 var id = new ident(idName);
-                var idlist = new ident_list(id, null);
+                var idlist = new ident_list(id);
                 var varType = new named_type_reference(varTypeName, null);
                 var vdef = new var_def_statement(idlist, varType, initValue, definition_attribute.None, false, null);
                 return new var_statement(vdef, null);

@@ -5,22 +5,49 @@ namespace PascalABCCompiler.SyntaxTree
 {
     public partial class syntax_tree_node
     {
+        public int FindIndex(syntax_tree_node node)
+        {
+            int ind = -1;
+            for (var i = 0; i < subnodes_count; i++)
+                if (node == this[i])
+                {
+                    ind = i;
+                    break;
+                }
+            if (ind == -1)
+                throw new Exception(string.Format("У элемента {0} не найден {1} среди дочерних\n", this, node));
+            return ind;
+        }
 
+        public void Replace(syntax_tree_node from, syntax_tree_node to) // есть риск, что типы не совпадут
+        {
+            var ind = FindIndex(from);
+            this[ind] = to;
+        }
     }
 
     public partial class statement_list 
     {
-        public statement_list(statement _statement, SourceContext sc = null)
+        public statement_list(statement st, SourceContext sc)
         {
-            Add(_statement, sc);
+            Add(st, sc);
         }
-        public statement_list Add(statement _statement, SourceContext sc = null)
+        public statement_list(params statement[] sts)
         {
-            subnodes.Add(_statement);
+            AddMany(sts);
+        }
+        public statement_list Add(statement st, SourceContext sc = null)
+        {
+            subnodes.Add(st);
             if (sc != null)
                 source_context = sc;
             return this;
         }
+        public void AddMany(params statement[] sts)
+        {
+            subnodes.AddRange(sts);
+        }
+
     }
 
     public partial class ident : addressed_value_funcname
@@ -137,9 +164,13 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class ident_list
     {
-        public ident_list(ident id, SourceContext sc = null)
+        public ident_list(ident id, SourceContext sc)
         {
             Add(id, sc);
+        }
+        public ident_list(params ident[] ids)
+        {
+            AddMany(ids);
         }
         public ident_list Add(ident id, SourceContext sc = null)
         {
@@ -147,6 +178,10 @@ namespace PascalABCCompiler.SyntaxTree
             if (sc != null)
                 source_context = sc;
             return this;
+        }
+        public void AddMany(params ident[] ids)
+        {
+            idents.AddRange(ids);
         }
         public override string ToString()
         {
@@ -296,6 +331,9 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class label_definitions
     {
+        public label_definitions(params ident[] ids): this(new ident_list(ids))
+        {
+        }
         public override string ToString()
         {
             return "label " + labels.ToString() + ";";
@@ -864,13 +902,13 @@ namespace PascalABCCompiler.SyntaxTree
         { }
     }
 
-    public partial class type_definition_list
+    public partial class where_type_specificator_list
     {
-        public type_definition_list(type_definition _type_definition, SourceContext sc = null)
+        public where_type_specificator_list(type_definition _type_definition, SourceContext sc = null)
         {
             Add(_type_definition, sc);
         }
-        public type_definition_list Add(type_definition _type_definition, SourceContext sc = null)
+        public where_type_specificator_list Add(type_definition _type_definition, SourceContext sc = null)
         {
             defs.Add(_type_definition);
             if (sc != null)

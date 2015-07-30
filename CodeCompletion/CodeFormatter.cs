@@ -2363,52 +2363,7 @@ namespace CodeFormatters
             throw new NotImplementedException();
         }
 
-        public override void visit(oberon_import_module _oberon_import_module)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_module _oberon_module)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_exit_stmt _oberon_exit_stmt)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(jump_stmt _jump_stmt)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_procedure_header _oberon_procedure_header)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(oberon_withstmt _oberon_withstmt)
         {
             throw new NotImplementedException();
         }
@@ -2498,7 +2453,7 @@ namespace CodeFormatters
                 visit_node(_new_expr.array_init_expr);
         }
 
-        public override void visit(type_definition_list _type_definition_list)
+        public override void visit(where_type_specificator_list _type_definition_list)
         {
             for (int i = 0; i < _type_definition_list.defs.Count; i++)
             {

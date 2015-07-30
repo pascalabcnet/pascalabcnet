@@ -15539,30 +15539,6 @@ namespace PascalABCCompiler.TreeConverter
             throw new NotSupportedError(get_location(_using_list));
         }
 
-        public override void visit(SyntaxTree.oberon_import_module _oberon_import_module)
-        {
-            throw new NotSupportedError(get_location(_oberon_import_module));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_module _oberon_module)
-        {
-            throw new NotSupportedError(get_location(_oberon_module));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-        {
-            throw new NotSupportedError(get_location(_oberon_ident_with_export_marker));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_exit_stmt _oberon_exit_stmt)
-        {
-            throw new NotSupportedError(get_location(_oberon_exit_stmt));
-        }
-
-
         public override void visit(SyntaxTree.jump_stmt _return_stmt)
         {
             if (_return_stmt.JumpType != PascalABCCompiler.SyntaxTree.JumpStmtType.Return)
@@ -15593,37 +15569,6 @@ namespace PascalABCCompiler.TreeConverter
                 ret.return_value(new return_node(en, get_location(_return_stmt.expr)));
             }
         }
-
-
-        public override void visit(SyntaxTree.oberon_procedure_receiver _oberon_procedure_receiver)
-        {
-            throw new NotSupportedError(get_location(_oberon_procedure_receiver));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_procedure_header _oberon_procedure_header)
-        {
-            throw new NotSupportedError(get_location(_oberon_procedure_header));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-        {
-            throw new NotSupportedError(get_location(_oberon_withstmt_guardstat));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-        {
-            throw new NotSupportedError(get_location(_oberon_withstmt_guardstat_list));
-        }
-
-
-        public override void visit(SyntaxTree.oberon_withstmt _oberon_withstmt)
-        {
-            throw new NotSupportedError(get_location(_oberon_withstmt));
-        }
-
 
         public override void visit(SyntaxTree.loop_stmt _loop_stmt)
         {
@@ -16619,7 +16564,7 @@ namespace PascalABCCompiler.TreeConverter
             return_value(create_constructor_call(tn, exprs, get_location(_new_expr.type), new Tuple<bool, List<expression>>(lambdas_are_in_parameters, syntax_nodes_parameters)));
         }
 
-        public override void visit(SyntaxTree.type_definition_list node)
+        public override void visit(SyntaxTree.where_type_specificator_list node)
         {
             throw new NotSupportedError(get_location(node));
         }

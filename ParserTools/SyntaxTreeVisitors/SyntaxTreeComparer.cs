@@ -1892,7 +1892,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(type_definition_list left, type_definition_list right)
+        public void CompareInternal(where_type_specificator_list left, where_type_specificator_list right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

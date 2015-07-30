@@ -638,7 +638,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_expression_list(expression_list _expression_list)
 		{
-			write_expression(_expression_list);
+			write_syntax_tree_node(_expression_list);
 			if (_expression_list.expressions == null)
 			{
 				bw.Write((byte)0);
@@ -4017,121 +4017,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(oberon_import_module _oberon_import_module)
-		{
-			bw.Write((Int16)145);
-			write_oberon_import_module(_oberon_import_module);
-		}
-
-		public void write_oberon_import_module(oberon_import_module _oberon_import_module)
-		{
-			write_unit_or_namespace(_oberon_import_module);
-			if (_oberon_import_module.new_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_import_module.new_name.visit(this);
-			}
-		}
-
-
-		public void visit(oberon_module _oberon_module)
-		{
-			bw.Write((Int16)146);
-			write_oberon_module(_oberon_module);
-		}
-
-		public void write_oberon_module(oberon_module _oberon_module)
-		{
-			write_compilation_unit(_oberon_module);
-			if (_oberon_module.first_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_module.first_name.visit(this);
-			}
-			if (_oberon_module.second_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_module.second_name.visit(this);
-			}
-			if (_oberon_module.import_list == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_module.import_list.visit(this);
-			}
-			if (_oberon_module.definitions == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_module.definitions.visit(this);
-			}
-			if (_oberon_module.module_code == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_module.module_code.visit(this);
-			}
-		}
-
-
-		public void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			bw.Write((Int16)147);
-			write_oberon_ident_with_export_marker(_oberon_ident_with_export_marker);
-		}
-
-		public void write_oberon_ident_with_export_marker(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			write_ident(_oberon_ident_with_export_marker);
-			bw.Write((byte)_oberon_ident_with_export_marker.marker);
-		}
-
-
-		public void visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			bw.Write((Int16)148);
-			write_oberon_exit_stmt(_oberon_exit_stmt);
-		}
-
-		public void write_oberon_exit_stmt(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			write_statement(_oberon_exit_stmt);
-			if (_oberon_exit_stmt.text == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				bw.Write(_oberon_exit_stmt.text);
-			}
-		}
-
-
 		public void visit(jump_stmt _jump_stmt)
 		{
-			bw.Write((Int16)149);
+			bw.Write((Int16)145);
 			write_jump_stmt(_jump_stmt);
 		}
 
@@ -4151,181 +4039,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			bw.Write((Int16)150);
-			write_oberon_procedure_receiver(_oberon_procedure_receiver);
-		}
-
-		public void write_oberon_procedure_receiver(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			write_syntax_tree_node(_oberon_procedure_receiver);
-			bw.Write((byte)_oberon_procedure_receiver.param_kind);
-			if (_oberon_procedure_receiver.receiver_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_procedure_receiver.receiver_name.visit(this);
-			}
-			if (_oberon_procedure_receiver.receiver_typename == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_procedure_receiver.receiver_typename.visit(this);
-			}
-		}
-
-
-		public void visit(oberon_procedure_header _oberon_procedure_header)
-		{
-			bw.Write((Int16)151);
-			write_oberon_procedure_header(_oberon_procedure_header);
-		}
-
-		public void write_oberon_procedure_header(oberon_procedure_header _oberon_procedure_header)
-		{
-			write_function_header(_oberon_procedure_header);
-			if (_oberon_procedure_header.receiver == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_procedure_header.receiver.visit(this);
-			}
-			if (_oberon_procedure_header.first_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_procedure_header.first_name.visit(this);
-			}
-			if (_oberon_procedure_header.second_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_procedure_header.second_name.visit(this);
-			}
-		}
-
-
-		public void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			bw.Write((Int16)152);
-			write_oberon_withstmt_guardstat(_oberon_withstmt_guardstat);
-		}
-
-		public void write_oberon_withstmt_guardstat(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			write_syntax_tree_node(_oberon_withstmt_guardstat);
-			if (_oberon_withstmt_guardstat.name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_withstmt_guardstat.name.visit(this);
-			}
-			if (_oberon_withstmt_guardstat.type_name == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_withstmt_guardstat.type_name.visit(this);
-			}
-			if (_oberon_withstmt_guardstat.stmt == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_withstmt_guardstat.stmt.visit(this);
-			}
-		}
-
-
-		public void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			bw.Write((Int16)153);
-			write_oberon_withstmt_guardstat_list(_oberon_withstmt_guardstat_list);
-		}
-
-		public void write_oberon_withstmt_guardstat_list(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			write_syntax_tree_node(_oberon_withstmt_guardstat_list);
-			if (_oberon_withstmt_guardstat_list.guardstats == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				bw.Write(_oberon_withstmt_guardstat_list.guardstats.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _oberon_withstmt_guardstat_list.guardstats.Count; ssyy_i++)
-				{
-					if (_oberon_withstmt_guardstat_list.guardstats[ssyy_i] == null)
-					{
-						bw.Write((byte)0);
-					}
-					else
-					{
-						bw.Write((byte)1);
-						_oberon_withstmt_guardstat_list.guardstats[ssyy_i].visit(this);
-					}
-				}
-			}
-		}
-
-
-		public void visit(oberon_withstmt _oberon_withstmt)
-		{
-			bw.Write((Int16)154);
-			write_oberon_withstmt(_oberon_withstmt);
-		}
-
-		public void write_oberon_withstmt(oberon_withstmt _oberon_withstmt)
-		{
-			write_statement(_oberon_withstmt);
-			if (_oberon_withstmt.quardstat_list == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_withstmt.quardstat_list.visit(this);
-			}
-			if (_oberon_withstmt.else_stmt == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_oberon_withstmt.else_stmt.visit(this);
-			}
-		}
-
-
 		public void visit(loop_stmt _loop_stmt)
 		{
-			bw.Write((Int16)155);
+			bw.Write((Int16)146);
 			write_loop_stmt(_loop_stmt);
 		}
 
@@ -4346,7 +4062,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(foreach_stmt _foreach_stmt)
 		{
-			bw.Write((Int16)156);
+			bw.Write((Int16)147);
 			write_foreach_stmt(_foreach_stmt);
 		}
 
@@ -4394,7 +4110,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(addressed_value_funcname _addressed_value_funcname)
 		{
-			bw.Write((Int16)157);
+			bw.Write((Int16)148);
 			write_addressed_value_funcname(_addressed_value_funcname);
 		}
 
@@ -4406,7 +4122,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(named_type_reference_list _named_type_reference_list)
 		{
-			bw.Write((Int16)158);
+			bw.Write((Int16)149);
 			write_named_type_reference_list(_named_type_reference_list);
 		}
 
@@ -4439,7 +4155,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(template_param_list _template_param_list)
 		{
-			bw.Write((Int16)159);
+			bw.Write((Int16)150);
 			write_template_param_list(_template_param_list);
 		}
 
@@ -4472,7 +4188,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(template_type_reference _template_type_reference)
 		{
-			bw.Write((Int16)160);
+			bw.Write((Int16)151);
 			write_template_type_reference(_template_type_reference);
 		}
 
@@ -4502,7 +4218,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(int64_const _int64_const)
 		{
-			bw.Write((Int16)161);
+			bw.Write((Int16)152);
 			write_int64_const(_int64_const);
 		}
 
@@ -4515,7 +4231,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(uint64_const _uint64_const)
 		{
-			bw.Write((Int16)162);
+			bw.Write((Int16)153);
 			write_uint64_const(_uint64_const);
 		}
 
@@ -4528,7 +4244,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(new_expr _new_expr)
 		{
-			bw.Write((Int16)163);
+			bw.Write((Int16)154);
 			write_new_expr(_new_expr);
 		}
 
@@ -4566,33 +4282,33 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(type_definition_list _type_definition_list)
+		public void visit(where_type_specificator_list _where_type_specificator_list)
 		{
-			bw.Write((Int16)164);
-			write_type_definition_list(_type_definition_list);
+			bw.Write((Int16)155);
+			write_where_type_specificator_list(_where_type_specificator_list);
 		}
 
-		public void write_type_definition_list(type_definition_list _type_definition_list)
+		public void write_where_type_specificator_list(where_type_specificator_list _where_type_specificator_list)
 		{
-			write_syntax_tree_node(_type_definition_list);
-			if (_type_definition_list.defs == null)
+			write_syntax_tree_node(_where_type_specificator_list);
+			if (_where_type_specificator_list.defs == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_type_definition_list.defs.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _type_definition_list.defs.Count; ssyy_i++)
+				bw.Write(_where_type_specificator_list.defs.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _where_type_specificator_list.defs.Count; ssyy_i++)
 				{
-					if (_type_definition_list.defs[ssyy_i] == null)
+					if (_where_type_specificator_list.defs[ssyy_i] == null)
 					{
 						bw.Write((byte)0);
 					}
 					else
 					{
 						bw.Write((byte)1);
-						_type_definition_list.defs[ssyy_i].visit(this);
+						_where_type_specificator_list.defs[ssyy_i].visit(this);
 					}
 				}
 			}
@@ -4601,7 +4317,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(where_definition _where_definition)
 		{
-			bw.Write((Int16)165);
+			bw.Write((Int16)156);
 			write_where_definition(_where_definition);
 		}
 
@@ -4631,7 +4347,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(where_definition_list _where_definition_list)
 		{
-			bw.Write((Int16)166);
+			bw.Write((Int16)157);
 			write_where_definition_list(_where_definition_list);
 		}
 
@@ -4664,7 +4380,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(sizeof_operator _sizeof_operator)
 		{
-			bw.Write((Int16)167);
+			bw.Write((Int16)158);
 			write_sizeof_operator(_sizeof_operator);
 		}
 
@@ -4694,7 +4410,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(typeof_operator _typeof_operator)
 		{
-			bw.Write((Int16)168);
+			bw.Write((Int16)159);
 			write_typeof_operator(_typeof_operator);
 		}
 
@@ -4715,7 +4431,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(compiler_directive _compiler_directive)
 		{
-			bw.Write((Int16)169);
+			bw.Write((Int16)160);
 			write_compiler_directive(_compiler_directive);
 		}
 
@@ -4745,7 +4461,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(operator_name_ident _operator_name_ident)
 		{
-			bw.Write((Int16)170);
+			bw.Write((Int16)161);
 			write_operator_name_ident(_operator_name_ident);
 		}
 
@@ -4758,7 +4474,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(var_statement _var_statement)
 		{
-			bw.Write((Int16)171);
+			bw.Write((Int16)162);
 			write_var_statement(_var_statement);
 		}
 
@@ -4779,7 +4495,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(question_colon_expression _question_colon_expression)
 		{
-			bw.Write((Int16)172);
+			bw.Write((Int16)163);
 			write_question_colon_expression(_question_colon_expression);
 		}
 
@@ -4818,7 +4534,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(expression_as_statement _expression_as_statement)
 		{
-			bw.Write((Int16)173);
+			bw.Write((Int16)164);
 			write_expression_as_statement(_expression_as_statement);
 		}
 
@@ -4839,7 +4555,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(c_scalar_type _c_scalar_type)
 		{
-			bw.Write((Int16)174);
+			bw.Write((Int16)165);
 			write_c_scalar_type(_c_scalar_type);
 		}
 
@@ -4853,7 +4569,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(c_module _c_module)
 		{
-			bw.Write((Int16)175);
+			bw.Write((Int16)166);
 			write_c_module(_c_module);
 		}
 
@@ -4883,7 +4599,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(declarations_as_statement _declarations_as_statement)
 		{
-			bw.Write((Int16)176);
+			bw.Write((Int16)167);
 			write_declarations_as_statement(_declarations_as_statement);
 		}
 
@@ -4904,7 +4620,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(array_size _array_size)
 		{
-			bw.Write((Int16)177);
+			bw.Write((Int16)168);
 			write_array_size(_array_size);
 		}
 
@@ -4925,7 +4641,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(enumerator _enumerator)
 		{
-			bw.Write((Int16)178);
+			bw.Write((Int16)169);
 			write_enumerator(_enumerator);
 		}
 
@@ -4955,7 +4671,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(enumerator_list _enumerator_list)
 		{
-			bw.Write((Int16)179);
+			bw.Write((Int16)170);
 			write_enumerator_list(_enumerator_list);
 		}
 
@@ -4988,7 +4704,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(c_for_cycle _c_for_cycle)
 		{
-			bw.Write((Int16)180);
+			bw.Write((Int16)171);
 			write_c_for_cycle(_c_for_cycle);
 		}
 
@@ -5036,7 +4752,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(switch_stmt _switch_stmt)
 		{
-			bw.Write((Int16)181);
+			bw.Write((Int16)172);
 			write_switch_stmt(_switch_stmt);
 		}
 
@@ -5067,7 +4783,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(type_definition_attr_list _type_definition_attr_list)
 		{
-			bw.Write((Int16)182);
+			bw.Write((Int16)173);
 			write_type_definition_attr_list(_type_definition_attr_list);
 		}
 
@@ -5100,7 +4816,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(type_definition_attr _type_definition_attr)
 		{
-			bw.Write((Int16)183);
+			bw.Write((Int16)174);
 			write_type_definition_attr(_type_definition_attr);
 		}
 
@@ -5113,7 +4829,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(lock_stmt _lock_stmt)
 		{
-			bw.Write((Int16)184);
+			bw.Write((Int16)175);
 			write_lock_stmt(_lock_stmt);
 		}
 
@@ -5143,7 +4859,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(compiler_directive_list _compiler_directive_list)
 		{
-			bw.Write((Int16)185);
+			bw.Write((Int16)176);
 			write_compiler_directive_list(_compiler_directive_list);
 		}
 
@@ -5176,7 +4892,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(compiler_directive_if _compiler_directive_if)
 		{
-			bw.Write((Int16)186);
+			bw.Write((Int16)177);
 			write_compiler_directive_if(_compiler_directive_if);
 		}
 
@@ -5206,7 +4922,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(documentation_comment_list _documentation_comment_list)
 		{
-			bw.Write((Int16)187);
+			bw.Write((Int16)178);
 			write_documentation_comment_list(_documentation_comment_list);
 		}
 
@@ -5239,7 +4955,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(documentation_comment_tag _documentation_comment_tag)
 		{
-			bw.Write((Int16)188);
+			bw.Write((Int16)179);
 			write_documentation_comment_tag(_documentation_comment_tag);
 		}
 
@@ -5290,7 +5006,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(documentation_comment_tag_param _documentation_comment_tag_param)
 		{
-			bw.Write((Int16)189);
+			bw.Write((Int16)180);
 			write_documentation_comment_tag_param(_documentation_comment_tag_param);
 		}
 
@@ -5320,7 +5036,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(documentation_comment_section _documentation_comment_section)
 		{
-			bw.Write((Int16)190);
+			bw.Write((Int16)181);
 			write_documentation_comment_section(_documentation_comment_section);
 		}
 
@@ -5362,7 +5078,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(token_taginfo _token_taginfo)
 		{
-			bw.Write((Int16)191);
+			bw.Write((Int16)182);
 			write_token_taginfo(_token_taginfo);
 		}
 
@@ -5375,7 +5091,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(declaration_specificator _declaration_specificator)
 		{
-			bw.Write((Int16)192);
+			bw.Write((Int16)183);
 			write_declaration_specificator(_declaration_specificator);
 		}
 
@@ -5397,7 +5113,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(ident_with_templateparams _ident_with_templateparams)
 		{
-			bw.Write((Int16)193);
+			bw.Write((Int16)184);
 			write_ident_with_templateparams(_ident_with_templateparams);
 		}
 
@@ -5427,7 +5143,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(template_type_name _template_type_name)
 		{
-			bw.Write((Int16)194);
+			bw.Write((Int16)185);
 			write_template_type_name(_template_type_name);
 		}
 
@@ -5448,7 +5164,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(default_operator _default_operator)
 		{
-			bw.Write((Int16)195);
+			bw.Write((Int16)186);
 			write_default_operator(_default_operator);
 		}
 
@@ -5469,7 +5185,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(bracket_expr _bracket_expr)
 		{
-			bw.Write((Int16)196);
+			bw.Write((Int16)187);
 			write_bracket_expr(_bracket_expr);
 		}
 
@@ -5490,7 +5206,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(attribute _attribute)
 		{
-			bw.Write((Int16)197);
+			bw.Write((Int16)188);
 			write_attribute(_attribute);
 		}
 
@@ -5529,7 +5245,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(simple_attribute_list _simple_attribute_list)
 		{
-			bw.Write((Int16)198);
+			bw.Write((Int16)189);
 			write_simple_attribute_list(_simple_attribute_list);
 		}
 
@@ -5562,7 +5278,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(attribute_list _attribute_list)
 		{
-			bw.Write((Int16)199);
+			bw.Write((Int16)190);
 			write_attribute_list(_attribute_list);
 		}
 
@@ -5595,7 +5311,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(function_lambda_definition _function_lambda_definition)
 		{
-			bw.Write((Int16)200);
+			bw.Write((Int16)191);
 			write_function_lambda_definition(_function_lambda_definition);
 		}
 
@@ -5701,7 +5417,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(function_lambda_call _function_lambda_call)
 		{
-			bw.Write((Int16)201);
+			bw.Write((Int16)192);
 			write_function_lambda_call(_function_lambda_call);
 		}
 
@@ -5731,7 +5447,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(semantic_check _semantic_check)
 		{
-			bw.Write((Int16)202);
+			bw.Write((Int16)193);
 			write_semantic_check(_semantic_check);
 		}
 
@@ -5774,7 +5490,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(lambda_inferred_type _lambda_inferred_type)
 		{
-			bw.Write((Int16)203);
+			bw.Write((Int16)194);
 			write_lambda_inferred_type(_lambda_inferred_type);
 		}
 
@@ -5787,7 +5503,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(same_type_node _same_type_node)
 		{
-			bw.Write((Int16)204);
+			bw.Write((Int16)195);
 			write_same_type_node(_same_type_node);
 		}
 
@@ -5808,7 +5524,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(name_assign_expr _name_assign_expr)
 		{
-			bw.Write((Int16)205);
+			bw.Write((Int16)196);
 			write_name_assign_expr(_name_assign_expr);
 		}
 
@@ -5838,7 +5554,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(name_assign_expr_list _name_assign_expr_list)
 		{
-			bw.Write((Int16)206);
+			bw.Write((Int16)197);
 			write_name_assign_expr_list(_name_assign_expr_list);
 		}
 
@@ -5871,7 +5587,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(unnamed_type_object _unnamed_type_object)
 		{
-			bw.Write((Int16)207);
+			bw.Write((Int16)198);
 			write_unnamed_type_object(_unnamed_type_object);
 		}
 
@@ -5902,7 +5618,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(semantic_type_node _semantic_type_node)
 		{
-			bw.Write((Int16)208);
+			bw.Write((Int16)199);
 			write_semantic_type_node(_semantic_type_node);
 		}
 
@@ -5915,7 +5631,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(short_func_definition _short_func_definition)
 		{
-			bw.Write((Int16)209);
+			bw.Write((Int16)200);
 			write_short_func_definition(_short_func_definition);
 		}
 
@@ -5936,7 +5652,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(no_type_foreach _no_type_foreach)
 		{
-			bw.Write((Int16)210);
+			bw.Write((Int16)201);
 			write_no_type_foreach(_no_type_foreach);
 		}
 
@@ -5948,7 +5664,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(matching_expression _matching_expression)
 		{
-			bw.Write((Int16)211);
+			bw.Write((Int16)202);
 			write_matching_expression(_matching_expression);
 		}
 
@@ -5978,7 +5694,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(closure_substituting_node _closure_substituting_node)
 		{
-			bw.Write((Int16)212);
+			bw.Write((Int16)203);
 			write_closure_substituting_node(_closure_substituting_node);
 		}
 
@@ -5999,7 +5715,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(sequence_type _sequence_type)
 		{
-			bw.Write((Int16)213);
+			bw.Write((Int16)204);
 			write_sequence_type(_sequence_type);
 		}
 
@@ -6020,7 +5736,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(modern_proc_type _modern_proc_type)
 		{
-			bw.Write((Int16)214);
+			bw.Write((Int16)205);
 			write_modern_proc_type(_modern_proc_type);
 		}
 
@@ -6059,7 +5775,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void visit(yield_node _yield_node)
 		{
-			bw.Write((Int16)215);
+			bw.Write((Int16)206);
 			write_yield_node(_yield_node);
 		}
 

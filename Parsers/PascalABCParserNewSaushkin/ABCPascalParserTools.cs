@@ -760,21 +760,21 @@ namespace PascalABCSavParser
             var sc = new semantic_check("ExprIsInteger", ex);
 
             var id = new ident("#my");
-            var idlist = new ident_list(id, null);
-            var typ = new named_type_reference("integer", null);
+            var idlist = new ident_list(id);
+            var typ = new named_type_reference("integer");
             var one = new int32_const(1);
             var vdef = new var_def_statement(idlist, typ, one, definition_attribute.None, false, null);
             var vstat = new var_statement(vdef, null);
 
             var ass = new assign(new ident("#my"), one, Operators.AssignmentAddition);
-            var stlistwhile = new statement_list(st, null);
+            var stlistwhile = new statement_list(st);
             stlistwhile.Add(ass);
 
-            var bin = new bin_expr(id, ex, Operators.LessEqual, null);
+            var bin = new bin_expr(id, ex, Operators.LessEqual);
 
-            var wh = new while_node(bin, stlistwhile, WhileCycleType.While, null);
+            var wh = new while_node(bin, stlistwhile, WhileCycleType.While);
 
-            var stlist = new statement_list(sc, null);
+            var stlist = new statement_list(sc);
             stlist.Add(vstat);
             stlist.Add(wh);
             return stlist;

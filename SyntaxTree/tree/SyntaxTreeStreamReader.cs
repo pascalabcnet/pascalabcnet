@@ -311,146 +311,128 @@ namespace PascalABCCompiler.SyntaxTree
 				case 144:
 					return new using_list();
 				case 145:
-					return new oberon_import_module();
-				case 146:
-					return new oberon_module();
-				case 147:
-					return new oberon_ident_with_export_marker();
-				case 148:
-					return new oberon_exit_stmt();
-				case 149:
 					return new jump_stmt();
-				case 150:
-					return new oberon_procedure_receiver();
-				case 151:
-					return new oberon_procedure_header();
-				case 152:
-					return new oberon_withstmt_guardstat();
-				case 153:
-					return new oberon_withstmt_guardstat_list();
-				case 154:
-					return new oberon_withstmt();
-				case 155:
+				case 146:
 					return new loop_stmt();
-				case 156:
+				case 147:
 					return new foreach_stmt();
-				case 157:
+				case 148:
 					return new addressed_value_funcname();
-				case 158:
+				case 149:
 					return new named_type_reference_list();
-				case 159:
+				case 150:
 					return new template_param_list();
-				case 160:
+				case 151:
 					return new template_type_reference();
-				case 161:
+				case 152:
 					return new int64_const();
-				case 162:
+				case 153:
 					return new uint64_const();
-				case 163:
+				case 154:
 					return new new_expr();
-				case 164:
-					return new type_definition_list();
-				case 165:
+				case 155:
+					return new where_type_specificator_list();
+				case 156:
 					return new where_definition();
-				case 166:
+				case 157:
 					return new where_definition_list();
-				case 167:
+				case 158:
 					return new sizeof_operator();
-				case 168:
+				case 159:
 					return new typeof_operator();
-				case 169:
+				case 160:
 					return new compiler_directive();
-				case 170:
+				case 161:
 					return new operator_name_ident();
-				case 171:
+				case 162:
 					return new var_statement();
-				case 172:
+				case 163:
 					return new question_colon_expression();
-				case 173:
+				case 164:
 					return new expression_as_statement();
-				case 174:
+				case 165:
 					return new c_scalar_type();
-				case 175:
+				case 166:
 					return new c_module();
-				case 176:
+				case 167:
 					return new declarations_as_statement();
-				case 177:
+				case 168:
 					return new array_size();
-				case 178:
+				case 169:
 					return new enumerator();
-				case 179:
+				case 170:
 					return new enumerator_list();
-				case 180:
+				case 171:
 					return new c_for_cycle();
-				case 181:
+				case 172:
 					return new switch_stmt();
-				case 182:
+				case 173:
 					return new type_definition_attr_list();
-				case 183:
+				case 174:
 					return new type_definition_attr();
-				case 184:
+				case 175:
 					return new lock_stmt();
-				case 185:
+				case 176:
 					return new compiler_directive_list();
-				case 186:
+				case 177:
 					return new compiler_directive_if();
-				case 187:
+				case 178:
 					return new documentation_comment_list();
-				case 188:
+				case 179:
 					return new documentation_comment_tag();
-				case 189:
+				case 180:
 					return new documentation_comment_tag_param();
-				case 190:
+				case 181:
 					return new documentation_comment_section();
-				case 191:
+				case 182:
 					return new token_taginfo();
-				case 192:
+				case 183:
 					return new declaration_specificator();
-				case 193:
+				case 184:
 					return new ident_with_templateparams();
-				case 194:
+				case 185:
 					return new template_type_name();
-				case 195:
+				case 186:
 					return new default_operator();
-				case 196:
+				case 187:
 					return new bracket_expr();
-				case 197:
+				case 188:
 					return new attribute();
-				case 198:
+				case 189:
 					return new simple_attribute_list();
-				case 199:
+				case 190:
 					return new attribute_list();
-				case 200:
+				case 191:
 					return new function_lambda_definition();
-				case 201:
+				case 192:
 					return new function_lambda_call();
-				case 202:
+				case 193:
 					return new semantic_check();
-				case 203:
+				case 194:
 					return new lambda_inferred_type();
-				case 204:
+				case 195:
 					return new same_type_node();
-				case 205:
+				case 196:
 					return new name_assign_expr();
-				case 206:
+				case 197:
 					return new name_assign_expr_list();
-				case 207:
+				case 198:
 					return new unnamed_type_object();
-				case 208:
+				case 199:
 					return new semantic_type_node();
-				case 209:
+				case 200:
 					return new short_func_definition();
-				case 210:
+				case 201:
 					return new no_type_foreach();
-				case 211:
+				case 202:
 					return new matching_expression();
-				case 212:
+				case 203:
 					return new closure_substituting_node();
-				case 213:
+				case 204:
 					return new sequence_type();
-				case 214:
+				case 205:
 					return new modern_proc_type();
-				case 215:
+				case 206:
 					return new yield_node();
 			}
 			return null;
@@ -885,7 +867,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_expression_list(expression_list _expression_list)
 		{
-			read_expression(_expression_list);
+			read_syntax_tree_node(_expression_list);
 			if (br.ReadByte() == 0)
 			{
 				_expression_list.expressions = null;
@@ -2671,65 +2653,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(oberon_import_module _oberon_import_module)
-		{
-			read_oberon_import_module(_oberon_import_module);
-		}
-
-		public void read_oberon_import_module(oberon_import_module _oberon_import_module)
-		{
-			read_unit_or_namespace(_oberon_import_module);
-			_oberon_import_module.new_name = _read_node() as ident;
-		}
-
-
-		public void visit(oberon_module _oberon_module)
-		{
-			read_oberon_module(_oberon_module);
-		}
-
-		public void read_oberon_module(oberon_module _oberon_module)
-		{
-			read_compilation_unit(_oberon_module);
-			_oberon_module.first_name = _read_node() as ident;
-			_oberon_module.second_name = _read_node() as ident;
-			_oberon_module.import_list = _read_node() as uses_list;
-			_oberon_module.definitions = _read_node() as declarations;
-			_oberon_module.module_code = _read_node() as statement_list;
-		}
-
-
-		public void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			read_oberon_ident_with_export_marker(_oberon_ident_with_export_marker);
-		}
-
-		public void read_oberon_ident_with_export_marker(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			read_ident(_oberon_ident_with_export_marker);
-			_oberon_ident_with_export_marker.marker = (oberon_export_marker)br.ReadByte();
-		}
-
-
-		public void visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			read_oberon_exit_stmt(_oberon_exit_stmt);
-		}
-
-		public void read_oberon_exit_stmt(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			read_statement(_oberon_exit_stmt);
-			if (br.ReadByte() == 0)
-			{
-				_oberon_exit_stmt.text = null;
-			}
-			else
-			{
-				_oberon_exit_stmt.text = br.ReadString();
-			}
-		}
-
-
 		public void visit(jump_stmt _jump_stmt)
 		{
 			read_jump_stmt(_jump_stmt);
@@ -2740,85 +2663,6 @@ namespace PascalABCCompiler.SyntaxTree
 			read_statement(_jump_stmt);
 			_jump_stmt.expr = _read_node() as expression;
 			_jump_stmt.JumpType = (JumpStmtType)br.ReadByte();
-		}
-
-
-		public void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			read_oberon_procedure_receiver(_oberon_procedure_receiver);
-		}
-
-		public void read_oberon_procedure_receiver(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			read_syntax_tree_node(_oberon_procedure_receiver);
-			_oberon_procedure_receiver.param_kind = (parametr_kind)br.ReadByte();
-			_oberon_procedure_receiver.receiver_name = _read_node() as ident;
-			_oberon_procedure_receiver.receiver_typename = _read_node() as ident;
-		}
-
-
-		public void visit(oberon_procedure_header _oberon_procedure_header)
-		{
-			read_oberon_procedure_header(_oberon_procedure_header);
-		}
-
-		public void read_oberon_procedure_header(oberon_procedure_header _oberon_procedure_header)
-		{
-			read_function_header(_oberon_procedure_header);
-			_oberon_procedure_header.receiver = _read_node() as oberon_procedure_receiver;
-			_oberon_procedure_header.first_name = _read_node() as ident;
-			_oberon_procedure_header.second_name = _read_node() as ident;
-		}
-
-
-		public void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			read_oberon_withstmt_guardstat(_oberon_withstmt_guardstat);
-		}
-
-		public void read_oberon_withstmt_guardstat(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			read_syntax_tree_node(_oberon_withstmt_guardstat);
-			_oberon_withstmt_guardstat.name = _read_node() as addressed_value;
-			_oberon_withstmt_guardstat.type_name = _read_node() as type_definition;
-			_oberon_withstmt_guardstat.stmt = _read_node() as statement;
-		}
-
-
-		public void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			read_oberon_withstmt_guardstat_list(_oberon_withstmt_guardstat_list);
-		}
-
-		public void read_oberon_withstmt_guardstat_list(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			read_syntax_tree_node(_oberon_withstmt_guardstat_list);
-			if (br.ReadByte() == 0)
-			{
-				_oberon_withstmt_guardstat_list.guardstats = null;
-			}
-			else
-			{
-				_oberon_withstmt_guardstat_list.guardstats = new List<oberon_withstmt_guardstat>();
-				Int32 ssyy_count = br.ReadInt32();
-				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
-				{
-					_oberon_withstmt_guardstat_list.guardstats.Add(_read_node() as oberon_withstmt_guardstat);
-				}
-			}
-		}
-
-
-		public void visit(oberon_withstmt _oberon_withstmt)
-		{
-			read_oberon_withstmt(_oberon_withstmt);
-		}
-
-		public void read_oberon_withstmt(oberon_withstmt _oberon_withstmt)
-		{
-			read_statement(_oberon_withstmt);
-			_oberon_withstmt.quardstat_list = _read_node() as oberon_withstmt_guardstat_list;
-			_oberon_withstmt.else_stmt = _read_node() as statement;
 		}
 
 
@@ -2960,25 +2804,25 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(type_definition_list _type_definition_list)
+		public void visit(where_type_specificator_list _where_type_specificator_list)
 		{
-			read_type_definition_list(_type_definition_list);
+			read_where_type_specificator_list(_where_type_specificator_list);
 		}
 
-		public void read_type_definition_list(type_definition_list _type_definition_list)
+		public void read_where_type_specificator_list(where_type_specificator_list _where_type_specificator_list)
 		{
-			read_syntax_tree_node(_type_definition_list);
+			read_syntax_tree_node(_where_type_specificator_list);
 			if (br.ReadByte() == 0)
 			{
-				_type_definition_list.defs = null;
+				_where_type_specificator_list.defs = null;
 			}
 			else
 			{
-				_type_definition_list.defs = new List<type_definition>();
+				_where_type_specificator_list.defs = new List<type_definition>();
 				Int32 ssyy_count = br.ReadInt32();
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
-					_type_definition_list.defs.Add(_read_node() as type_definition);
+					_where_type_specificator_list.defs.Add(_read_node() as type_definition);
 				}
 			}
 		}
@@ -2993,7 +2837,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_syntax_tree_node(_where_definition);
 			_where_definition.names = _read_node() as ident_list;
-			_where_definition.types = _read_node() as type_definition_list;
+			_where_definition.types = _read_node() as where_type_specificator_list;
 		}
 
 

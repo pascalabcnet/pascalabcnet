@@ -875,65 +875,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(using_list _using_list);
 		///<summary>
-		///Method to visit oberon_import_module.
-		///</summary>
-		///<param name="_oberon_import_module">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_import_module _oberon_import_module);
-		///<summary>
-		///Method to visit oberon_module.
-		///</summary>
-		///<param name="_oberon_module">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_module _oberon_module);
-		///<summary>
-		///Method to visit oberon_ident_with_export_marker.
-		///</summary>
-		///<param name="_oberon_ident_with_export_marker">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker);
-		///<summary>
-		///Method to visit oberon_exit_stmt.
-		///</summary>
-		///<param name="_oberon_exit_stmt">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_exit_stmt _oberon_exit_stmt);
-		///<summary>
 		///Method to visit jump_stmt.
 		///</summary>
 		///<param name="_jump_stmt">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(jump_stmt _jump_stmt);
-		///<summary>
-		///Method to visit oberon_procedure_receiver.
-		///</summary>
-		///<param name="_oberon_procedure_receiver">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_procedure_receiver _oberon_procedure_receiver);
-		///<summary>
-		///Method to visit oberon_procedure_header.
-		///</summary>
-		///<param name="_oberon_procedure_header">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_procedure_header _oberon_procedure_header);
-		///<summary>
-		///Method to visit oberon_withstmt_guardstat.
-		///</summary>
-		///<param name="_oberon_withstmt_guardstat">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat);
-		///<summary>
-		///Method to visit oberon_withstmt_guardstat_list.
-		///</summary>
-		///<param name="_oberon_withstmt_guardstat_list">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list);
-		///<summary>
-		///Method to visit oberon_withstmt.
-		///</summary>
-		///<param name="_oberon_withstmt">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(oberon_withstmt _oberon_withstmt);
 		///<summary>
 		///Method to visit loop_stmt.
 		///</summary>
@@ -989,11 +935,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(new_expr _new_expr);
 		///<summary>
-		///Method to visit type_definition_list.
+		///Method to visit where_type_specificator_list.
 		///</summary>
-		///<param name="_type_definition_list">Node to visit</param>
+		///<param name="_where_type_specificator_list">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(type_definition_list _type_definition_list);
+		void visit(where_type_specificator_list _where_type_specificator_list);
 		///<summary>
 		///Method to visit where_definition.
 		///</summary>

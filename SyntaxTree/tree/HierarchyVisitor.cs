@@ -1165,83 +1165,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(oberon_import_module _oberon_import_module)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_import_module _oberon_import_module)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_module _oberon_module)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_module _oberon_module)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-		}
-
 		public virtual void pre_do_visit(jump_stmt _jump_stmt)
 		{
 		}
 
 		public virtual void post_do_visit(jump_stmt _jump_stmt)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_procedure_header _oberon_procedure_header)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_procedure_header _oberon_procedure_header)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-		}
-
-		public virtual void pre_do_visit(oberon_withstmt _oberon_withstmt)
-		{
-		}
-
-		public virtual void post_do_visit(oberon_withstmt _oberon_withstmt)
 		{
 		}
 
@@ -1317,11 +1245,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(type_definition_list _type_definition_list)
+		public virtual void pre_do_visit(where_type_specificator_list _where_type_specificator_list)
 		{
 		}
 
-		public virtual void post_do_visit(type_definition_list _type_definition_list)
+		public virtual void post_do_visit(where_type_specificator_list _where_type_specificator_list)
 		{
 		}
 
@@ -2980,93 +2908,12 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_using_list);
 		}
 
-		public override void visit(oberon_import_module _oberon_import_module)
-		{
-			DefaultVisit(_oberon_import_module);
-			pre_do_visit(_oberon_import_module);
-			visit(oberon_import_module.new_name);
-			post_do_visit(_oberon_import_module);
-		}
-
-		public override void visit(oberon_module _oberon_module)
-		{
-			DefaultVisit(_oberon_module);
-			pre_do_visit(_oberon_module);
-			visit(oberon_module.first_name);
-			visit(oberon_module.second_name);
-			visit(oberon_module.import_list);
-			visit(oberon_module.definitions);
-			visit(oberon_module.module_code);
-			post_do_visit(_oberon_module);
-		}
-
-		public override void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			DefaultVisit(_oberon_ident_with_export_marker);
-			pre_do_visit(_oberon_ident_with_export_marker);
-			post_do_visit(_oberon_ident_with_export_marker);
-		}
-
-		public override void visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			DefaultVisit(_oberon_exit_stmt);
-			pre_do_visit(_oberon_exit_stmt);
-			post_do_visit(_oberon_exit_stmt);
-		}
-
 		public override void visit(jump_stmt _jump_stmt)
 		{
 			DefaultVisit(_jump_stmt);
 			pre_do_visit(_jump_stmt);
 			visit(jump_stmt.expr);
 			post_do_visit(_jump_stmt);
-		}
-
-		public override void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			DefaultVisit(_oberon_procedure_receiver);
-			pre_do_visit(_oberon_procedure_receiver);
-			visit(oberon_procedure_receiver.receiver_name);
-			visit(oberon_procedure_receiver.receiver_typename);
-			post_do_visit(_oberon_procedure_receiver);
-		}
-
-		public override void visit(oberon_procedure_header _oberon_procedure_header)
-		{
-			DefaultVisit(_oberon_procedure_header);
-			pre_do_visit(_oberon_procedure_header);
-			visit(oberon_procedure_header.receiver);
-			visit(oberon_procedure_header.first_name);
-			visit(oberon_procedure_header.second_name);
-			post_do_visit(_oberon_procedure_header);
-		}
-
-		public override void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			DefaultVisit(_oberon_withstmt_guardstat);
-			pre_do_visit(_oberon_withstmt_guardstat);
-			visit(oberon_withstmt_guardstat.name);
-			visit(oberon_withstmt_guardstat.type_name);
-			visit(oberon_withstmt_guardstat.stmt);
-			post_do_visit(_oberon_withstmt_guardstat);
-		}
-
-		public override void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			DefaultVisit(_oberon_withstmt_guardstat_list);
-			pre_do_visit(_oberon_withstmt_guardstat_list);
-			for (int i = 0; i < guardstats.Count; i++)
-				visit(oberon_withstmt_guardstat_list.guardstats[i]);
-			post_do_visit(_oberon_withstmt_guardstat_list);
-		}
-
-		public override void visit(oberon_withstmt _oberon_withstmt)
-		{
-			DefaultVisit(_oberon_withstmt);
-			pre_do_visit(_oberon_withstmt);
-			visit(oberon_withstmt.quardstat_list);
-			visit(oberon_withstmt.else_stmt);
-			post_do_visit(_oberon_withstmt);
 		}
 
 		public override void visit(loop_stmt _loop_stmt)
@@ -3146,13 +2993,13 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_new_expr);
 		}
 
-		public override void visit(type_definition_list _type_definition_list)
+		public override void visit(where_type_specificator_list _where_type_specificator_list)
 		{
-			DefaultVisit(_type_definition_list);
-			pre_do_visit(_type_definition_list);
+			DefaultVisit(_where_type_specificator_list);
+			pre_do_visit(_where_type_specificator_list);
 			for (int i = 0; i < defs.Count; i++)
-				visit(type_definition_list.defs[i]);
-			post_do_visit(_type_definition_list);
+				visit(where_type_specificator_list.defs[i]);
+			post_do_visit(_where_type_specificator_list);
 		}
 
 		public override void visit(where_definition _where_definition)

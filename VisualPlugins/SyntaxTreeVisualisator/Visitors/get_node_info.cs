@@ -825,43 +825,11 @@ namespace VisualPascalABCPlugins
 		{
 			get_count(_using_list.namespaces);
 		}
-		public override void visit(oberon_import_module _oberon_import_module)
-		{
-		}
-		public override void visit(oberon_module _oberon_module)
-		{
-			text="Oberon2 module. "+_oberon_module.file_name;
-		}
-		public override void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			text=_oberon_ident_with_export_marker.name+"["+_oberon_ident_with_export_marker.marker+"]";
-		}
-		public override void visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			text="EXIT stament";
-		}
         public override void visit(jump_stmt node)
 		{
             text = node.JumpType.ToString();
 		}
 		public override void visit(loop_stmt _loop_stmt)
-		{
-		}
-		public override void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			text=_oberon_procedure_receiver.param_kind.ToString();
-		}
-		public override void visit(oberon_procedure_header _oberon_procedure_header)
-		{
-		}
-		public override void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-		}
-		public override void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			get_count(_oberon_withstmt_guardstat_list.guardstats);
-		}
-		public override void visit(oberon_withstmt _oberon_withstmt)
 		{
 		}
 		public override void visit(foreach_stmt _foreach_stmt)
@@ -887,7 +855,7 @@ namespace VisualPascalABCPlugins
             if (_new_expr.new_array)
                 text = "new_array";
         }
-        public override void visit(type_definition_list node)
+        public override void visit(where_type_specificator_list node)
         {
             get_count(node.defs);
         }

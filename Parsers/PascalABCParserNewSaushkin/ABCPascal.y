@@ -1506,18 +1506,18 @@ where_part_list
 where_part
     : tkWhere ident_list tkColon type_ref_and_secific_list tkSemiColon
         { 
-			$$ = new where_definition($2 as ident_list, $4 as type_definition_list, @$); 
+			$$ = new where_definition($2 as ident_list, $4 as where_type_specificator_list, @$); 
 		}
     ;
 
 type_ref_and_secific_list
     : type_ref_or_secific             
         { 
-			$$ = new type_definition_list($1, @$);
+			$$ = new where_type_specificator_list($1, @$);
 		}
     | type_ref_and_secific_list tkComma type_ref_or_secific  
         { 
-			$$ = ($1 as type_definition_list).Add($3, @$);
+			$$ = ($1 as where_type_specificator_list).Add($3, @$);
 		}
     ;
 

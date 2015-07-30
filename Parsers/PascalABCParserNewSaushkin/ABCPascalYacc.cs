@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 26.07.2015 23:18:54
+// DateTime: 30.07.2015 13:46:41
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -3447,18 +3447,18 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 300: // where_part -> tkWhere, ident_list, tkColon, type_ref_and_secific_list, 
                 //               tkSemiColon
 { 
-			CurrentSemanticValue.stn = new where_definition(ValueStack[ValueStack.Depth-4].stn as ident_list, ValueStack[ValueStack.Depth-2].stn as type_definition_list, CurrentLocationSpan); 
+			CurrentSemanticValue.stn = new where_definition(ValueStack[ValueStack.Depth-4].stn as ident_list, ValueStack[ValueStack.Depth-2].stn as where_type_specificator_list, CurrentLocationSpan); 
 		}
         break;
       case 301: // type_ref_and_secific_list -> type_ref_or_secific
 { 
-			CurrentSemanticValue.stn = new type_definition_list(ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new where_type_specificator_list(ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
 		}
         break;
       case 302: // type_ref_and_secific_list -> type_ref_and_secific_list, tkComma, 
                 //                              type_ref_or_secific
 { 
-			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as type_definition_list).Add(ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
+			CurrentSemanticValue.stn = (ValueStack[ValueStack.Depth-3].stn as where_type_specificator_list).Add(ValueStack[ValueStack.Depth-1].td, CurrentLocationSpan);
 		}
         break;
       case 303: // type_ref_or_secific -> type_ref

@@ -3464,52 +3464,8 @@ namespace CodeCompletion
             throw new Exception("The method or operation is not implemented.");
         }
 
-        public override void visit(oberon_import_module _oberon_import_module)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_module _oberon_module)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_exit_stmt _oberon_exit_stmt)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
 
         public override void visit(jump_stmt _jump_stmt)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_procedure_header _oberon_procedure_header)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-        {
-            throw new Exception("The method or operation is not implemented.");
-        }
-
-        public override void visit(oberon_withstmt _oberon_withstmt)
         {
             throw new Exception("The method or operation is not implemented.");
         }
@@ -3628,7 +3584,7 @@ namespace CodeCompletion
 			}*/
         }
 
-        public override void visit(type_definition_list _type_definition_list)
+        public override void visit(where_type_specificator_list _type_definition_list)
         {
             throw new Exception("The method or operation is not implemented.");
         }

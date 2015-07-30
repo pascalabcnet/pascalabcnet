@@ -966,7 +966,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 var whereDef = new where_definition
                 {
                     names = new ident_list(par),
-                    types = new type_definition_list()
+                    types = new where_type_specificator_list()
                 };
 
                 if (el.is_class)

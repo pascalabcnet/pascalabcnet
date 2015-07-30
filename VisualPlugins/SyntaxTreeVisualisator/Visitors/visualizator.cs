@@ -946,25 +946,6 @@ namespace VisualPascalABCPlugins
 		{
 			prepare_collection(_using_list.namespaces,"usings");
 		}
-		public override void visit(oberon_import_module _oberon_import_module)
-		{
-			prepare_node(_oberon_import_module.name,"name");
-			prepare_node(_oberon_import_module.new_name,"new_name");
-		}
-		public override void visit(oberon_module _oberon_module)
-		{
-			prepare_node(_oberon_module.first_name,"first_name");
-			prepare_node(_oberon_module.second_name,"second_name");
-			prepare_node(_oberon_module.import_list,"import_list");
-			prepare_node(_oberon_module.definitions,"definitions");	
-			prepare_node(_oberon_module.module_code,"module_code");	
-		}
-		public override void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-		}
-		public override void visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-		}
 		public override void visit(jump_stmt node)
 		{
             prepare_node(node.expr, "expr");
@@ -972,34 +953,6 @@ namespace VisualPascalABCPlugins
 		public override void visit(loop_stmt _loop_stmt)
 		{
 			prepare_node(_loop_stmt.stmt,"stmt");
-		}
-		public override void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			prepare_node(_oberon_procedure_receiver.receiver_name,"receiver_name");
-			prepare_node(_oberon_procedure_receiver.receiver_typename,"receiver_typename");
-		}
-		public override void visit(oberon_procedure_header _oberon_procedure_header)
-		{
-			prepare_node(_oberon_procedure_header.receiver,"receiver");
-			prepare_node(_oberon_procedure_header.first_name,"first_name");
-			prepare_node(_oberon_procedure_header.parameters,"parameters");
-			prepare_node(_oberon_procedure_header.return_type,"return_type");
-			prepare_node(_oberon_procedure_header.second_name,"second_name");
-		}
-		public override void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			prepare_node(_oberon_withstmt_guardstat.name,"name");
-			prepare_node(_oberon_withstmt_guardstat.type_name,"type_name");
-			prepare_node(_oberon_withstmt_guardstat.stmt,"stmt");
-		}
-		public override void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			prepare_collection(_oberon_withstmt_guardstat_list.guardstats,"guardstats");
-		}
-		public override void visit(oberon_withstmt _oberon_withstmt)
-		{
-			prepare_node(_oberon_withstmt.quardstat_list,"quardstat_list");
-			prepare_node(_oberon_withstmt.else_stmt,"else_stmt");
 		}
 		public override void visit(foreach_stmt _foreach_stmt)
 		{
@@ -1031,7 +984,7 @@ namespace VisualPascalABCPlugins
             prepare_node(_new_expr.params_list, "params_list");
             prepare_node(_new_expr.array_init_expr, "array_init_expr");
         }
-        public override void visit(type_definition_list node)
+        public override void visit(where_type_specificator_list node)
         {
             prepare_collection(node.defs, "defs");
         }

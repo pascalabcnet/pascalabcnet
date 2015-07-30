@@ -733,54 +733,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_using_list);
 		}
 
-		public virtual void visit(oberon_import_module _oberon_import_module)
-		{
-			DefaultVisit(_oberon_import_module);
-		}
-
-		public virtual void visit(oberon_module _oberon_module)
-		{
-			DefaultVisit(_oberon_module);
-		}
-
-		public virtual void visit(oberon_ident_with_export_marker _oberon_ident_with_export_marker)
-		{
-			DefaultVisit(_oberon_ident_with_export_marker);
-		}
-
-		public virtual void visit(oberon_exit_stmt _oberon_exit_stmt)
-		{
-			DefaultVisit(_oberon_exit_stmt);
-		}
-
 		public virtual void visit(jump_stmt _jump_stmt)
 		{
 			DefaultVisit(_jump_stmt);
-		}
-
-		public virtual void visit(oberon_procedure_receiver _oberon_procedure_receiver)
-		{
-			DefaultVisit(_oberon_procedure_receiver);
-		}
-
-		public virtual void visit(oberon_procedure_header _oberon_procedure_header)
-		{
-			DefaultVisit(_oberon_procedure_header);
-		}
-
-		public virtual void visit(oberon_withstmt_guardstat _oberon_withstmt_guardstat)
-		{
-			DefaultVisit(_oberon_withstmt_guardstat);
-		}
-
-		public virtual void visit(oberon_withstmt_guardstat_list _oberon_withstmt_guardstat_list)
-		{
-			DefaultVisit(_oberon_withstmt_guardstat_list);
-		}
-
-		public virtual void visit(oberon_withstmt _oberon_withstmt)
-		{
-			DefaultVisit(_oberon_withstmt);
 		}
 
 		public virtual void visit(loop_stmt _loop_stmt)
@@ -828,9 +783,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_new_expr);
 		}
 
-		public virtual void visit(type_definition_list _type_definition_list)
+		public virtual void visit(where_type_specificator_list _where_type_specificator_list)
 		{
-			DefaultVisit(_type_definition_list);
+			DefaultVisit(_where_type_specificator_list);
 		}
 
 		public virtual void visit(where_definition _where_definition)
