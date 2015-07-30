@@ -669,46 +669,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(try_statement _try_statement)
-		{
-		}
-
-		public virtual void post_do_visit(try_statement _try_statement)
-		{
-		}
-
-		public virtual void pre_do_visit(on_exception _on_exception)
-		{
-		}
-
-		public virtual void post_do_visit(on_exception _on_exception)
-		{
-		}
-
-		public virtual void pre_do_visit(on_exception_list _on_exception_list)
-		{
-		}
-
-		public virtual void post_do_visit(on_exception_list _on_exception_list)
-		{
-		}
-
-		public virtual void pre_do_visit(try_finally_statement _try_finally_statement)
-		{
-		}
-
-		public virtual void post_do_visit(try_finally_statement _try_finally_statement)
-		{
-		}
-
-		public virtual void pre_do_visit(try_except_statement _try_except_statement)
-		{
-		}
-
-		public virtual void post_do_visit(try_except_statement _try_except_statement)
-		{
-		}
-
 		public virtual void pre_do_visit(record_const_definition _record_const_definition)
 		{
 		}
@@ -965,11 +925,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(var_def_list _var_def_list)
+		public virtual void pre_do_visit(var_def_list_for_record _var_def_list_for_record)
 		{
 		}
 
-		public virtual void post_do_visit(var_def_list _var_def_list)
+		public virtual void post_do_visit(var_def_list_for_record _var_def_list_for_record)
 		{
 		}
 
@@ -2383,50 +2343,6 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_set_type_definition);
 		}
 
-		public override void visit(try_statement _try_statement)
-		{
-			DefaultVisit(_try_statement);
-			pre_do_visit(_try_statement);
-			visit(try_statement.statements);
-			post_do_visit(_try_statement);
-		}
-
-		public override void visit(on_exception _on_exception)
-		{
-			DefaultVisit(_on_exception);
-			pre_do_visit(_on_exception);
-			visit(on_exception.exception_var_name);
-			visit(on_exception.exception_type_name);
-			visit(on_exception.stat);
-			post_do_visit(_on_exception);
-		}
-
-		public override void visit(on_exception_list _on_exception_list)
-		{
-			DefaultVisit(_on_exception_list);
-			pre_do_visit(_on_exception_list);
-			for (int i = 0; i < on_exceptions.Count; i++)
-				visit(on_exception_list.on_exceptions[i]);
-			post_do_visit(_on_exception_list);
-		}
-
-		public override void visit(try_finally_statement _try_finally_statement)
-		{
-			DefaultVisit(_try_finally_statement);
-			pre_do_visit(_try_finally_statement);
-			visit(try_finally_statement.finally_statements);
-			post_do_visit(_try_finally_statement);
-		}
-
-		public override void visit(try_except_statement _try_except_statement)
-		{
-			DefaultVisit(_try_except_statement);
-			pre_do_visit(_try_except_statement);
-			visit(try_except_statement.on_except);
-			visit(try_except_statement.else_statements);
-			post_do_visit(_try_except_statement);
-		}
-
 		public override void visit(record_const_definition _record_const_definition)
 		{
 			DefaultVisit(_record_const_definition);
@@ -2696,13 +2612,13 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_diapason_expr);
 		}
 
-		public override void visit(var_def_list _var_def_list)
+		public override void visit(var_def_list_for_record _var_def_list_for_record)
 		{
-			DefaultVisit(_var_def_list);
-			pre_do_visit(_var_def_list);
+			DefaultVisit(_var_def_list_for_record);
+			pre_do_visit(_var_def_list_for_record);
 			for (int i = 0; i < vars.Count; i++)
-				visit(var_def_list.vars[i]);
-			post_do_visit(_var_def_list);
+				visit(var_def_list_for_record.vars[i]);
+			post_do_visit(_var_def_list_for_record);
 		}
 
 		public override void visit(record_type_parts _record_type_parts)

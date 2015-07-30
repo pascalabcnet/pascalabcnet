@@ -556,31 +556,6 @@ namespace VisualPascalABCPlugins
 			
 		}
 
-		public override void visit(try_statement _try_statement)
-		{
-			
-		}
-
-		public override void visit(on_exception _on_exception)
-		{
-			
-		}
-
-		public override void visit(on_exception_list _on_exception_list)
-		{
-			
-		}
-
-		public override void visit(try_finally_statement _try_finally_statement)
-		{
-			
-		}
-
-		public override void visit(try_except_statement _try_except_statement)
-		{
-			
-		}
-
 		public override void visit(record_const_definition _record_const_definition)
 		{
 			
@@ -740,7 +715,7 @@ namespace VisualPascalABCPlugins
 		{
 			
 		}
-		public override void visit(var_def_list _var_def_list)
+		public override void visit(var_def_list_for_record _var_def_list)
 		{
 			//text="Count: "+_statement_list.subnodes.Count;
 			get_count(_var_def_list.vars);

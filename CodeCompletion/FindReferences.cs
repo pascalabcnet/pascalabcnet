@@ -810,41 +810,6 @@ namespace CodeCompletion
             _set_type_definition.of_type.visit(this);
         }
 
-        public override void visit(try_statement _try_statement)
-        {
-            //throw new NotImplementedException();
-            if (_try_statement.statements != null)
-                _try_statement.statements.visit(this);
-        }
-
-        public override void visit(on_exception _on_exception)
-        {
-        }
-
-        public override void visit(on_exception_list _on_exception_list)
-        {
-            foreach (on_exception ex in _on_exception_list.on_exceptions)
-                ex.visit(this);
-        }
-
-        public override void visit(try_finally_statement _try_finally_statement)
-        {
-            if (_try_finally_statement.statements != null)
-                _try_finally_statement.statements.visit(this);
-            if (_try_finally_statement.finally_statements != null)
-                _try_finally_statement.finally_statements.visit(this);
-        }
-
-        public override void visit(try_except_statement _try_except_statement)
-        {
-            if (_try_except_statement.statements != null)
-                _try_except_statement.statements.visit(this);
-            if (_try_except_statement.on_except != null)
-                _try_except_statement.on_except.visit(this);
-            if (_try_except_statement.else_statements != null)
-                _try_except_statement.else_statements.visit(this);
-        }
-
         public override void visit(record_const_definition _record_const_definition)
         {
             _record_const_definition.val.visit(this);
@@ -1088,7 +1053,7 @@ namespace CodeCompletion
                 _diapason_expr.right.visit(this);
         }
 
-        public override void visit(var_def_list _var_def_list)
+        public override void visit(var_def_list_for_record _var_def_list)
         {
             throw new NotImplementedException();
         }

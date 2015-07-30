@@ -187,252 +187,242 @@ namespace PascalABCCompiler.SyntaxTree
 				case 82:
 					return new set_type_definition();
 				case 83:
-					return new try_statement();
-				case 84:
-					return new on_exception();
-				case 85:
-					return new on_exception_list();
-				case 86:
-					return new try_finally_statement();
-				case 87:
-					return new try_except_statement();
-				case 88:
 					return new record_const_definition();
-				case 89:
+				case 84:
 					return new record_const();
-				case 90:
+				case 85:
 					return new record_type();
-				case 91:
+				case 86:
 					return new enum_type_definition();
-				case 92:
+				case 87:
 					return new char_const();
-				case 93:
+				case 88:
 					return new raise_statement();
-				case 94:
+				case 89:
 					return new sharp_char_const();
-				case 95:
+				case 90:
 					return new literal_const_line();
-				case 96:
+				case 91:
 					return new string_num_definition();
-				case 97:
+				case 92:
 					return new variant();
-				case 98:
+				case 93:
 					return new variant_list();
-				case 99:
+				case 94:
 					return new variant_type();
-				case 100:
+				case 95:
 					return new variant_types();
-				case 101:
+				case 96:
 					return new variant_record_type();
-				case 102:
+				case 97:
 					return new procedure_call();
-				case 103:
+				case 98:
 					return new class_predefinition();
-				case 104:
+				case 99:
 					return new nil_const();
-				case 105:
+				case 100:
 					return new file_type_definition();
-				case 106:
+				case 101:
 					return new constructor();
-				case 107:
+				case 102:
 					return new destructor();
-				case 108:
+				case 103:
 					return new inherited_method_call();
-				case 109:
+				case 104:
 					return new typecast_node();
-				case 110:
+				case 105:
 					return new interface_node();
-				case 111:
+				case 106:
 					return new implementation_node();
-				case 112:
+				case 107:
 					return new diap_expr();
-				case 113:
+				case 108:
 					return new block();
-				case 114:
+				case 109:
 					return new proc_block();
-				case 115:
+				case 110:
 					return new array_of_named_type_definition();
-				case 116:
+				case 111:
 					return new array_of_const_type_definition();
-				case 117:
+				case 112:
 					return new literal();
-				case 118:
+				case 113:
 					return new case_variants();
-				case 119:
+				case 114:
 					return new diapason_expr();
-				case 120:
-					return new var_def_list();
-				case 121:
+				case 115:
+					return new var_def_list_for_record();
+				case 116:
 					return new record_type_parts();
-				case 122:
+				case 117:
 					return new property_array_default();
-				case 123:
+				case 118:
 					return new property_interface();
-				case 124:
+				case 119:
 					return new property_parameter();
-				case 125:
+				case 120:
 					return new property_parameter_list();
-				case 126:
+				case 121:
 					return new inherited_ident();
-				case 127:
+				case 122:
 					return new format_expr();
-				case 128:
+				case 123:
 					return new initfinal_part();
-				case 129:
+				case 124:
 					return new token_info();
-				case 130:
+				case 125:
 					return new raise_stmt();
-				case 131:
+				case 126:
 					return new op_type_node();
-				case 132:
+				case 127:
 					return new file_type();
-				case 133:
+				case 128:
 					return new known_type_ident();
-				case 134:
+				case 129:
 					return new exception_handler();
-				case 135:
+				case 130:
 					return new exception_ident();
-				case 136:
+				case 131:
 					return new exception_handler_list();
-				case 137:
+				case 132:
 					return new exception_block();
-				case 138:
+				case 133:
 					return new try_handler();
-				case 139:
+				case 134:
 					return new try_handler_finally();
-				case 140:
+				case 135:
 					return new try_handler_except();
-				case 141:
+				case 136:
 					return new try_stmt();
-				case 142:
+				case 137:
 					return new inherited_message();
-				case 143:
+				case 138:
 					return new external_directive();
-				case 144:
+				case 139:
 					return new using_list();
-				case 145:
+				case 140:
 					return new jump_stmt();
-				case 146:
+				case 141:
 					return new loop_stmt();
-				case 147:
+				case 142:
 					return new foreach_stmt();
-				case 148:
+				case 143:
 					return new addressed_value_funcname();
-				case 149:
+				case 144:
 					return new named_type_reference_list();
-				case 150:
+				case 145:
 					return new template_param_list();
-				case 151:
+				case 146:
 					return new template_type_reference();
-				case 152:
+				case 147:
 					return new int64_const();
-				case 153:
+				case 148:
 					return new uint64_const();
-				case 154:
+				case 149:
 					return new new_expr();
-				case 155:
+				case 150:
 					return new where_type_specificator_list();
-				case 156:
+				case 151:
 					return new where_definition();
-				case 157:
+				case 152:
 					return new where_definition_list();
-				case 158:
+				case 153:
 					return new sizeof_operator();
-				case 159:
+				case 154:
 					return new typeof_operator();
-				case 160:
+				case 155:
 					return new compiler_directive();
-				case 161:
+				case 156:
 					return new operator_name_ident();
-				case 162:
+				case 157:
 					return new var_statement();
-				case 163:
+				case 158:
 					return new question_colon_expression();
-				case 164:
+				case 159:
 					return new expression_as_statement();
-				case 165:
+				case 160:
 					return new c_scalar_type();
-				case 166:
+				case 161:
 					return new c_module();
-				case 167:
+				case 162:
 					return new declarations_as_statement();
-				case 168:
+				case 163:
 					return new array_size();
-				case 169:
+				case 164:
 					return new enumerator();
-				case 170:
+				case 165:
 					return new enumerator_list();
-				case 171:
+				case 166:
 					return new c_for_cycle();
-				case 172:
+				case 167:
 					return new switch_stmt();
-				case 173:
+				case 168:
 					return new type_definition_attr_list();
-				case 174:
+				case 169:
 					return new type_definition_attr();
-				case 175:
+				case 170:
 					return new lock_stmt();
-				case 176:
+				case 171:
 					return new compiler_directive_list();
-				case 177:
+				case 172:
 					return new compiler_directive_if();
-				case 178:
+				case 173:
 					return new documentation_comment_list();
-				case 179:
+				case 174:
 					return new documentation_comment_tag();
-				case 180:
+				case 175:
 					return new documentation_comment_tag_param();
-				case 181:
+				case 176:
 					return new documentation_comment_section();
-				case 182:
+				case 177:
 					return new token_taginfo();
-				case 183:
+				case 178:
 					return new declaration_specificator();
-				case 184:
+				case 179:
 					return new ident_with_templateparams();
-				case 185:
+				case 180:
 					return new template_type_name();
-				case 186:
+				case 181:
 					return new default_operator();
-				case 187:
+				case 182:
 					return new bracket_expr();
-				case 188:
+				case 183:
 					return new attribute();
-				case 189:
+				case 184:
 					return new simple_attribute_list();
-				case 190:
+				case 185:
 					return new attribute_list();
-				case 191:
+				case 186:
 					return new function_lambda_definition();
-				case 192:
+				case 187:
 					return new function_lambda_call();
-				case 193:
+				case 188:
 					return new semantic_check();
-				case 194:
+				case 189:
 					return new lambda_inferred_type();
-				case 195:
+				case 190:
 					return new same_type_node();
-				case 196:
+				case 191:
 					return new name_assign_expr();
-				case 197:
+				case 192:
 					return new name_assign_expr_list();
-				case 198:
+				case 193:
 					return new unnamed_type_object();
-				case 199:
+				case 194:
 					return new semantic_type_node();
-				case 200:
+				case 195:
 					return new short_func_definition();
-				case 201:
+				case 196:
 					return new no_type_foreach();
-				case 202:
+				case 197:
 					return new matching_expression();
-				case 203:
+				case 198:
 					return new closure_substituting_node();
-				case 204:
+				case 199:
 					return new sequence_type();
-				case 205:
+				case 200:
 					return new modern_proc_type();
-				case 206:
+				case 201:
 					return new yield_node();
 			}
 			return null;
@@ -1757,81 +1747,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(try_statement _try_statement)
-		{
-			read_try_statement(_try_statement);
-		}
-
-		public void read_try_statement(try_statement _try_statement)
-		{
-			read_statement(_try_statement);
-			_try_statement.statements = _read_node() as statement_list;
-		}
-
-
-		public void visit(on_exception _on_exception)
-		{
-			read_on_exception(_on_exception);
-		}
-
-		public void read_on_exception(on_exception _on_exception)
-		{
-			read_syntax_tree_node(_on_exception);
-			_on_exception.exception_var_name = _read_node() as ident;
-			_on_exception.exception_type_name = _read_node() as ident;
-			_on_exception.stat = _read_node() as statement;
-		}
-
-
-		public void visit(on_exception_list _on_exception_list)
-		{
-			read_on_exception_list(_on_exception_list);
-		}
-
-		public void read_on_exception_list(on_exception_list _on_exception_list)
-		{
-			read_syntax_tree_node(_on_exception_list);
-			if (br.ReadByte() == 0)
-			{
-				_on_exception_list.on_exceptions = null;
-			}
-			else
-			{
-				_on_exception_list.on_exceptions = new List<on_exception>();
-				Int32 ssyy_count = br.ReadInt32();
-				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
-				{
-					_on_exception_list.on_exceptions.Add(_read_node() as on_exception);
-				}
-			}
-		}
-
-
-		public void visit(try_finally_statement _try_finally_statement)
-		{
-			read_try_finally_statement(_try_finally_statement);
-		}
-
-		public void read_try_finally_statement(try_finally_statement _try_finally_statement)
-		{
-			read_try_statement(_try_finally_statement);
-			_try_finally_statement.finally_statements = _read_node() as statement_list;
-		}
-
-
-		public void visit(try_except_statement _try_except_statement)
-		{
-			read_try_except_statement(_try_except_statement);
-		}
-
-		public void read_try_except_statement(try_except_statement _try_except_statement)
-		{
-			read_try_statement(_try_except_statement);
-			_try_except_statement.on_except = _read_node() as on_exception_list;
-			_try_except_statement.else_statements = _read_node() as statement_list;
-		}
-
-
 		public void visit(record_const_definition _record_const_definition)
 		{
 			read_record_const_definition(_record_const_definition);
@@ -2287,25 +2202,25 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(var_def_list _var_def_list)
+		public void visit(var_def_list_for_record _var_def_list_for_record)
 		{
-			read_var_def_list(_var_def_list);
+			read_var_def_list_for_record(_var_def_list_for_record);
 		}
 
-		public void read_var_def_list(var_def_list _var_def_list)
+		public void read_var_def_list_for_record(var_def_list_for_record _var_def_list_for_record)
 		{
-			read_syntax_tree_node(_var_def_list);
+			read_syntax_tree_node(_var_def_list_for_record);
 			if (br.ReadByte() == 0)
 			{
-				_var_def_list.vars = null;
+				_var_def_list_for_record.vars = null;
 			}
 			else
 			{
-				_var_def_list.vars = new List<var_def_statement>();
+				_var_def_list_for_record.vars = new List<var_def_statement>();
 				Int32 ssyy_count = br.ReadInt32();
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
-					_var_def_list.vars.Add(_read_node() as var_def_statement);
+					_var_def_list_for_record.vars.Add(_read_node() as var_def_statement);
 				}
 			}
 		}
@@ -2319,7 +2234,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_record_type_parts(record_type_parts _record_type_parts)
 		{
 			read_syntax_tree_node(_record_type_parts);
-			_record_type_parts.fixed_part = _read_node() as var_def_list;
+			_record_type_parts.fixed_part = _read_node() as var_def_list_for_record;
 			_record_type_parts.variant_part = _read_node() as variant_record_type;
 		}
 

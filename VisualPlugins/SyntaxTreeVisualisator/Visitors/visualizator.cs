@@ -640,36 +640,6 @@ namespace VisualPascalABCPlugins
 			prepare_node(_set_type_definition.of_type,"of type");
 		}
 
-		public override void visit(try_statement _try_statement)
-		{
-			
-		}
-
-		public override void visit(on_exception _on_exception)
-		{
-			prepare_node(_on_exception.exception_var_name,"exception var name");
-			prepare_node(_on_exception.exception_type_name,"exception name");
-			prepare_node(_on_exception.stat,"do statement");
-		}
-
-		public override void visit(on_exception_list _on_exception_list)
-		{
-			prepare_collection(_on_exception_list.on_exceptions,"on exception");
-		}
-
-		public override void visit(try_finally_statement _try_finally_statement)
-		{
-			prepare_node(_try_finally_statement.statements,"try statements");
-			prepare_node(_try_finally_statement.finally_statements,"finally statements");
-		}
-
-		public override void visit(try_except_statement _try_except_statement)
-		{
-			prepare_node(_try_except_statement.statements,"try statements");
-			prepare_node(_try_except_statement.on_except,"on exception list");
-			prepare_node(_try_except_statement.else_statements,"else statements");
-		}
-
 		public override void visit(record_const_definition _record_const_definition)
 		{
 			prepare_node(_record_const_definition.name,"name");
@@ -846,7 +816,7 @@ namespace VisualPascalABCPlugins
 			prepare_node(_diapason_expr.left,"left");
 			prepare_node(_diapason_expr.right,"right");
 		}
-		public override void visit(var_def_list _var_def_list)
+		public override void visit(var_def_list_for_record _var_def_list)
 		{
 			prepare_collection(_var_def_list.vars,"vars");
 		}

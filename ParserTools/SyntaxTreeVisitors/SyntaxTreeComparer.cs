@@ -1149,31 +1149,6 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(on_exception left, on_exception right)
-        {
-            if (left == null && right != null || left != null && right == null)
-                throw_not_equal(left, right);
-            if (left != null && right != null)
-            {
-                CompareInternal(left.exception_var_name, right.exception_var_name);
-                CompareInternal(left.exception_type_name, right.exception_type_name);
-                CompareInternal(left.stat, right.stat);
-            }
-        }
-
-        public void CompareInternal(on_exception_list left, on_exception_list right)
-        {
-            if (left == null && right != null || left != null && right == null)
-                throw_not_equal(left, right);
-            if (left != null && right != null)
-            {
-                if (left.on_exceptions.Count != right.on_exceptions.Count)
-                    throw_not_equal(left, right);
-                for (int i = 0; i < left.on_exceptions.Count; i++)
-                    CompareInternal(left.on_exceptions[i], right.on_exceptions[i]);
-            }
-        }
-
         public void CompareInternal(op_type_node left, op_type_node right)
         {
             if (left == null && right != null || left != null && right == null)
@@ -2053,7 +2028,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(var_def_list left, var_def_list right)
+        public void CompareInternal(var_def_list_for_record left, var_def_list_for_record right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

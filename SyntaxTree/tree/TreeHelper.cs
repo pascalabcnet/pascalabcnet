@@ -26,6 +26,43 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    //------------------------------
+    public class SyntaxList<T> where T : syntax_tree_node // операции для работы с вложенными списками синтаксических узлов. Класс пока не используется
+    {
+        public List<T> list;
+        public SyntaxList(List<T> l)
+        {
+            list = l;
+        }
+        public void AddMany(params T[] tt)
+        {
+            list.AddRange(tt);
+        }
+        public bool Remove(T t)
+        {
+            return list.Remove(t);
+        }
+        public void InsertAfter(T st, T newst)
+        {
+            var ind = list.FindIndex(x => x == st);
+            if (ind == -1)
+                throw new Exception(string.Format("У {0} не найден {1} среди дочерних\n", this, st));
+            list.Insert(ind + 1, newst);
+        }
+        public void InsertBefore(T st, T newst)
+        {
+            var ind = list.FindIndex(x => x == st);
+            if (ind == -1)
+                throw new Exception(string.Format("У {0} не найден {1} среди дочерних\n", this, st));
+            list.Insert(ind, newst);
+        }
+        public void AddFirst(T st)
+        {
+            list.Insert(0, st);
+        }
+    }
+    //------------------------------
+
     public partial class statement_list 
     {
         public statement_list(statement st, SourceContext sc)
@@ -43,11 +80,60 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
-        public void AddMany(params statement[] sts)
-        {
-            subnodes.AddRange(sts);
-        }
 
+        //-- List members begin
+        public List<statement> list => subnodes;
+
+        public void AddMany(params statement[] els)
+        {
+            list.AddRange(els);
+        }
+        public bool Remove(statement el)
+        {
+            return list.Remove(el);
+        }
+        private int FindIndex(statement el)
+        {
+            var ind = list.FindIndex(x => x == el);
+            if (ind == -1)
+                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+            return ind;
+        }
+        public void Replace(statement el, statement newel)
+        {
+            list[FindIndex(el)] = newel;
+        }
+        public void Replace(statement el, IEnumerable<statement> newels)
+        {
+            var ind = FindIndex(el);
+            list.RemoveAt(ind);
+            list.InsertRange(ind,newels);
+        }
+        public void InsertAfter(statement el, statement newel)
+        {
+            list.Insert(FindIndex(el) + 1, newel);
+        }
+        public void InsertBefore(statement el, statement newel)
+        {
+            list.Insert(FindIndex(el), newel);
+        }
+        public void InsertAfter(statement el, IEnumerable<statement> newels)
+        {
+            list.InsertRange(FindIndex(el) + 1, newels);
+        }
+        public void InsertBefore(statement el, IEnumerable<statement> newels)
+        {
+            list.InsertRange(FindIndex(el), newels);
+        }
+        public void AddFirst(statement el)
+        {
+            list.Insert(0, el);
+        }
+        public void AddFirst(IEnumerable<statement> els)
+        {
+            list.InsertRange(0, els);
+        }
+        //-- List members end
     }
 
     public partial class ident : addressed_value_funcname
@@ -160,6 +246,41 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
+        //-- List members begin
+        public List<var_def_statement> list => var_definitions;
+
+        public void AddMany(params var_def_statement[] sts)
+        {
+            list.AddRange(sts);
+        }
+        public bool Remove(var_def_statement st)
+        {
+            return list.Remove(st);
+        }
+        private int FindIndex(var_def_statement st)
+        {
+            var ind = list.FindIndex(x => x == st);
+            if (ind == -1)
+                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, st));
+            return ind;
+        }
+        public void Replace(var_def_statement st, var_def_statement newst)
+        {
+            list[FindIndex(st)] = newst;
+        }
+        public void InsertAfter(var_def_statement st, var_def_statement newst)
+        {
+            list.Insert(FindIndex(st) + 1, newst);
+        }
+        public void InsertBefore(var_def_statement st, var_def_statement newst)
+        {
+            list.Insert(FindIndex(st), newst);
+        }
+        public void AddFirst(var_def_statement st)
+        {
+            list.Insert(0, st);
+        }
+        //-- List members end
     }
 
     public partial class ident_list
@@ -179,10 +300,6 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
-        public void AddMany(params ident[] ids)
-        {
-            idents.AddRange(ids);
-        }
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
@@ -191,6 +308,41 @@ namespace PascalABCCompiler.SyntaxTree
                 sb.Append("," + idents[i].ToString());
             return sb.ToString();
         }
+        //-- List members begin
+        public List<ident> list => idents;
+
+        public void AddMany(params ident[] els)
+        {
+            list.AddRange(els);
+        }
+        public bool Remove(ident el)
+        {
+            return list.Remove(el);
+        }
+        private int FindIndex(ident el)
+        {
+            var ind = list.FindIndex(x => x == el);
+            if (ind == -1)
+                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+            return ind;
+        }
+        public void Replace(ident el, ident newel)
+        {
+            list[FindIndex(el)] = newel;
+        }
+        public void InsertAfter(ident el, ident newel)
+        {
+            list.Insert(FindIndex(el) + 1, newel);
+        }
+        public void InsertBefore(ident el, ident newel)
+        {
+            list.Insert(FindIndex(el), newel);
+        }
+        public void AddFirst(ident el)
+        {
+            list.Insert(0, el);
+        }
+        //-- List members end
     }
 
     public partial class var_def_statement
@@ -236,6 +388,33 @@ namespace PascalABCCompiler.SyntaxTree
             if (sc != null)
                 source_context = sc;
             return this;
+        }
+        public void AddMany(params declaration[] ids)
+        {
+            defs.AddRange(ids);
+        }
+
+        public bool Remove(declaration st)
+        {
+            return defs.Remove(st);
+        }
+        public void InsertAfter(declaration st, declaration newst)
+        {
+            var ind = defs.FindIndex(x => x == st);
+            if (ind == -1)
+                throw new Exception(string.Format("У {0} не найден {1} среди дочерних\n", this, st));
+            defs.Insert(ind + 1, newst);
+        }
+        public void InsertBefore(declaration st, declaration newst)
+        {
+            var ind = defs.FindIndex(x => x == st);
+            if (ind == -1)
+                throw new Exception(string.Format("У {0} не найден {1} среди дочерних\n", this, st));
+            defs.Insert(ind, newst);
+        }
+        public void AddFirst(ident st)
+        {
+            defs.Insert(0, st);
         }
     }
 
@@ -669,21 +848,6 @@ namespace PascalABCCompiler.SyntaxTree
 
     }
 
-    public partial class on_exception_list
-    {
-        public on_exception_list(on_exception _on_exception, SourceContext sc = null)
-        {
-            Add(_on_exception, sc);
-        }
-        public on_exception_list Add(on_exception _on_exception, SourceContext sc = null)
-        {
-            on_exceptions.Add(_on_exception);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
-    }
-
     public partial class record_const
     {
         public record_const(record_const_definition _record_const_definition, SourceContext sc = null)
@@ -779,13 +943,13 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    public partial class var_def_list
+    public partial class var_def_list_for_record
     {
-        public var_def_list(var_def_statement _var_def_statement, SourceContext sc = null)
+        public var_def_list_for_record(var_def_statement _var_def_statement, SourceContext sc = null)
         {
             Add(_var_def_statement, sc);
         }
-        public var_def_list Add(var_def_statement _var_def_statement, SourceContext sc = null)
+        public var_def_list_for_record Add(var_def_statement _var_def_statement, SourceContext sc = null)
         {
             vars.Add(_var_def_statement);
             if (sc != null)

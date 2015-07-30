@@ -664,12 +664,12 @@ namespace CodeFormatters
             }
         }
 
-        #region IVisitor Member
-
-        public override void visit(syntax_tree_node _syntax_tree_node)
+        public override void DefaultVisit(syntax_tree_node sn)
         {
             throw new NotImplementedException();
         }
+
+        #region IVisitor Member
 
         public override void visit(statement_list _statement_list)
         {
@@ -723,11 +723,6 @@ namespace CodeFormatters
                     }
         }
 
-        public override void visit(expression _expression)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(assign _assign)
         {
             multiline_stack_push(_assign);
@@ -755,11 +750,6 @@ namespace CodeFormatters
             visit_node(_un_expr.subnode);
         }
 
-        public override void visit(const_node _const_node)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(bool_const _bool_const)
         {
             WriteNode(_bool_const);
@@ -775,30 +765,10 @@ namespace CodeFormatters
             WriteNode(_double_const);
         }
 
-        public override void visit(statement _statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(subprogram_body _subprogram_body)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(ident _ident)
         {
             WriteAmpersandIfNeed(_ident);
             sb.Append(prepare_ident(_ident.name));
-        }
-
-        public override void visit(addressed_value _addressed_value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(type_definition _type_definition)
-        {
-            throw new NotImplementedException();
         }
 
         public override void visit(named_type_reference _named_type_reference)
@@ -895,11 +865,6 @@ namespace CodeFormatters
                 if ((decl is procedure_definition || decl is short_func_definition) && in_procedure)
                     DecOffset();
             }
-        }
-
-        public override void visit(program_tree _program_tree)
-        {
-            throw new NotImplementedException();
         }
 
         public override void visit(program_name _program_name)
@@ -1351,11 +1316,6 @@ namespace CodeFormatters
             //sb.AppendLine(";");
         }
 
-        public override void visit(const_definition _const_definition)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(consts_definitions_list _consts_definitions_list)
         {
             sb.Append("const");
@@ -1430,16 +1390,6 @@ namespace CodeFormatters
             }
             insert_newline_after_prev = true;
             DecOffset();
-        }
-
-        public override void visit(program_body _program_body)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(compilation_unit _compilation_unit)
-        {
-            throw new NotImplementedException();
         }
 
         public override void visit(unit_module _unit_module)
@@ -1706,11 +1656,6 @@ namespace CodeFormatters
             multiline_stack_pop(_simple_property);
         }
 
-        public override void visit(index_property _index_property)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(class_members _class_members)
         {   
             if (_class_members.access_mod != null && _class_members.access_mod.source_context != null)
@@ -1789,44 +1734,9 @@ namespace CodeFormatters
             insert_newline_after_prev_semicolon = false;
         }
 
-        public override void visit(default_indexer_property_node _default_indexer_property_node)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(known_type_definition _known_type_definition)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void visit(set_type_definition _set_type_definition)
         {
             visit_node(_set_type_definition.of_type);
-        }
-
-        public override void visit(try_statement _try_statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(on_exception _on_exception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(on_exception_list _on_exception_list)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(try_finally_statement _try_finally_statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void visit(try_except_statement _try_except_statement)
-        {
-            throw new NotImplementedException();
         }
 
         public override void visit(record_const_definition _record_const_definition)
@@ -2115,7 +2025,7 @@ namespace CodeFormatters
             visit_node(_diapason_expr.right);
         }
 
-        public override void visit(var_def_list _var_def_list)
+        public override void visit(var_def_list_for_record _var_def_list)
         {
             throw new NotImplementedException();
         }

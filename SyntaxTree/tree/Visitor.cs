@@ -503,36 +503,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(set_type_definition _set_type_definition);
 		///<summary>
-		///Method to visit try_statement.
-		///</summary>
-		///<param name="_try_statement">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(try_statement _try_statement);
-		///<summary>
-		///Method to visit on_exception.
-		///</summary>
-		///<param name="_on_exception">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(on_exception _on_exception);
-		///<summary>
-		///Method to visit on_exception_list.
-		///</summary>
-		///<param name="_on_exception_list">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(on_exception_list _on_exception_list);
-		///<summary>
-		///Method to visit try_finally_statement.
-		///</summary>
-		///<param name="_try_finally_statement">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(try_finally_statement _try_finally_statement);
-		///<summary>
-		///Method to visit try_except_statement.
-		///</summary>
-		///<param name="_try_except_statement">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(try_except_statement _try_except_statement);
-		///<summary>
 		///Method to visit record_const_definition.
 		///</summary>
 		///<param name="_record_const_definition">Node to visit</param>
@@ -725,11 +695,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(diapason_expr _diapason_expr);
 		///<summary>
-		///Method to visit var_def_list.
+		///Method to visit var_def_list_for_record.
 		///</summary>
-		///<param name="_var_def_list">Node to visit</param>
+		///<param name="_var_def_list_for_record">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(var_def_list _var_def_list);
+		void visit(var_def_list_for_record _var_def_list_for_record);
 		///<summary>
 		///Method to visit record_type_parts.
 		///</summary>

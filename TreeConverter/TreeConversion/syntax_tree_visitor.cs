@@ -2470,7 +2470,7 @@ namespace PascalABCCompiler.TreeConverter
             throw new NotSupportedError(get_location(_record_type_parts));
         }
 
-        public override void visit(SyntaxTree.var_def_list _var_def_list)
+        public override void visit(SyntaxTree.var_def_list_for_record _var_def_list)
         {
             throw new NotSupportedError(get_location(_var_def_list));
         }
@@ -3467,31 +3467,6 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.record_const_definition _record_const_definition)
         {
             throw new NotSupportedError(get_location(_record_const_definition));
-        }
-
-        public override void visit(SyntaxTree.try_except_statement _try_except_statement)
-        {
-            throw new NotSupportedError(get_location(_try_except_statement));
-        }
-
-        public override void visit(SyntaxTree.try_finally_statement _try_finally_statement)
-        {
-            throw new NotSupportedError(get_location(_try_finally_statement));
-        }
-
-        public override void visit(SyntaxTree.on_exception_list _on_exception_list)
-        {
-            throw new NotSupportedError(get_location(_on_exception_list));
-        }
-
-        public override void visit(SyntaxTree.on_exception _on_exception)
-        {
-            throw new NotSupportedError(get_location(_on_exception));
-        }
-
-        public override void visit(SyntaxTree.try_statement _try_statement)
-        {
-            throw new NotSupportedError(get_location(_try_statement));
         }
 
         public override void visit(SyntaxTree.set_type_definition _set_type_definition)

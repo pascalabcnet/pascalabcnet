@@ -10395,636 +10395,6 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class try_statement : statement
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public try_statement()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_statement(statement_list _statements)
-		{
-			this._statements=_statements;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_statement(statement_list _statements,SourceContext sc)
-		{
-			this._statements=_statements;
-			source_context = sc;
-		}
-
-		protected statement_list _statements;
-
-		///<summary>
-		///
-		///</summary>
-		public statement_list statements
-		{
-			get
-			{
-				return _statements;
-			}
-			set
-			{
-				_statements=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return statements;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						statements = (statement_list)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///
-	///</summary>
-	[Serializable]
-	public partial class on_exception : syntax_tree_node
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public on_exception()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public on_exception(ident _exception_var_name,ident _exception_type_name,statement _stat)
-		{
-			this._exception_var_name=_exception_var_name;
-			this._exception_type_name=_exception_type_name;
-			this._stat=_stat;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public on_exception(ident _exception_var_name,ident _exception_type_name,statement _stat,SourceContext sc)
-		{
-			this._exception_var_name=_exception_var_name;
-			this._exception_type_name=_exception_type_name;
-			this._stat=_stat;
-			source_context = sc;
-		}
-
-		protected ident _exception_var_name;
-		protected ident _exception_type_name;
-		protected statement _stat;
-
-		///<summary>
-		///
-		///</summary>
-		public ident exception_var_name
-		{
-			get
-			{
-				return _exception_var_name;
-			}
-			set
-			{
-				_exception_var_name=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public ident exception_type_name
-		{
-			get
-			{
-				return _exception_type_name;
-			}
-			set
-			{
-				_exception_type_name=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public statement stat
-		{
-			get
-			{
-				return _stat;
-			}
-			set
-			{
-				_stat=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 3;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return exception_var_name;
-					case 1:
-						return exception_type_name;
-					case 2:
-						return stat;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						exception_var_name = (ident)value;
-						break;
-					case 1:
-						exception_type_name = (ident)value;
-						break;
-					case 2:
-						stat = (statement)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///
-	///</summary>
-	[Serializable]
-	public partial class on_exception_list : syntax_tree_node
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public on_exception_list()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public on_exception_list(List<on_exception> _on_exceptions)
-		{
-			this._on_exceptions=_on_exceptions;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public on_exception_list(List<on_exception> _on_exceptions,SourceContext sc)
-		{
-			this._on_exceptions=_on_exceptions;
-			source_context = sc;
-		}
-
-		protected List<on_exception> _on_exceptions=new List<on_exception>();
-
-		///<summary>
-		///
-		///</summary>
-		public List<on_exception> on_exceptions
-		{
-			get
-			{
-				return _on_exceptions;
-			}
-			set
-			{
-				_on_exceptions=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 0 + (on_exceptions == null ? 0 : on_exceptions.Count);
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				Int32 index_counter=ind - 0;
-				if(on_exceptions != null)
-				{
-					if(index_counter < on_exceptions.Count)
-					{
-						return on_exceptions[index_counter];
-					}
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				Int32 index_counter=ind - 0;
-				if(on_exceptions != null)
-				{
-					if(index_counter < on_exceptions.Count)
-					{
-						on_exceptions[index_counter]= (on_exception)value;
-						return;
-					}
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///
-	///</summary>
-	[Serializable]
-	public partial class try_finally_statement : try_statement
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public try_finally_statement()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_finally_statement(statement_list _finally_statements)
-		{
-			this._finally_statements=_finally_statements;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_finally_statement(statement_list _finally_statements,SourceContext sc)
-		{
-			this._finally_statements=_finally_statements;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_finally_statement(statement_list _statements,statement_list _finally_statements)
-		{
-			this._statements=_statements;
-			this._finally_statements=_finally_statements;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_finally_statement(statement_list _statements,statement_list _finally_statements,SourceContext sc)
-		{
-			this._statements=_statements;
-			this._finally_statements=_finally_statements;
-			source_context = sc;
-		}
-
-		protected statement_list _finally_statements;
-
-		///<summary>
-		///
-		///</summary>
-		public statement_list finally_statements
-		{
-			get
-			{
-				return _finally_statements;
-			}
-			set
-			{
-				_finally_statements=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 2;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return statements;
-					case 1:
-						return finally_statements;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						statements = (statement_list)value;
-						break;
-					case 1:
-						finally_statements = (statement_list)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///
-	///</summary>
-	[Serializable]
-	public partial class try_except_statement : try_statement
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public try_except_statement()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_except_statement(on_exception_list _on_except,statement_list _else_statements)
-		{
-			this._on_except=_on_except;
-			this._else_statements=_else_statements;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_except_statement(on_exception_list _on_except,statement_list _else_statements,SourceContext sc)
-		{
-			this._on_except=_on_except;
-			this._else_statements=_else_statements;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_except_statement(statement_list _statements,on_exception_list _on_except,statement_list _else_statements)
-		{
-			this._statements=_statements;
-			this._on_except=_on_except;
-			this._else_statements=_else_statements;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public try_except_statement(statement_list _statements,on_exception_list _on_except,statement_list _else_statements,SourceContext sc)
-		{
-			this._statements=_statements;
-			this._on_except=_on_except;
-			this._else_statements=_else_statements;
-			source_context = sc;
-		}
-
-		protected on_exception_list _on_except;
-		protected statement_list _else_statements;
-
-		///<summary>
-		///
-		///</summary>
-		public on_exception_list on_except
-		{
-			get
-			{
-				return _on_except;
-			}
-			set
-			{
-				_on_except=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public statement_list else_statements
-		{
-			get
-			{
-				return _else_statements;
-			}
-			set
-			{
-				_else_statements=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 3;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return statements;
-					case 1:
-						return on_except;
-					case 2:
-						return else_statements;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						statements = (statement_list)value;
-						break;
-					case 1:
-						on_except = (on_exception_list)value;
-						break;
-					case 2:
-						else_statements = (statement_list)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///
-	///</summary>
-	[Serializable]
 	public partial class record_const_definition : statement
 	{
 
@@ -14698,13 +14068,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class var_def_list : syntax_tree_node
+	public partial class var_def_list_for_record : syntax_tree_node
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public var_def_list()
+		public var_def_list_for_record()
 		{
 
 		}
@@ -14712,7 +14082,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public var_def_list(List<var_def_statement> _vars)
+		public var_def_list_for_record(List<var_def_statement> _vars)
 		{
 			this._vars=_vars;
 		}
@@ -14720,7 +14090,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public var_def_list(List<var_def_statement> _vars,SourceContext sc)
+		public var_def_list_for_record(List<var_def_statement> _vars,SourceContext sc)
 		{
 			this._vars=_vars;
 			source_context = sc;
@@ -14819,7 +14189,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public record_type_parts(var_def_list _fixed_part,variant_record_type _variant_part)
+		public record_type_parts(var_def_list_for_record _fixed_part,variant_record_type _variant_part)
 		{
 			this._fixed_part=_fixed_part;
 			this._variant_part=_variant_part;
@@ -14828,20 +14198,20 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public record_type_parts(var_def_list _fixed_part,variant_record_type _variant_part,SourceContext sc)
+		public record_type_parts(var_def_list_for_record _fixed_part,variant_record_type _variant_part,SourceContext sc)
 		{
 			this._fixed_part=_fixed_part;
 			this._variant_part=_variant_part;
 			source_context = sc;
 		}
 
-		protected var_def_list _fixed_part;
+		protected var_def_list_for_record _fixed_part;
 		protected variant_record_type _variant_part;
 
 		///<summary>
 		///
 		///</summary>
-		public var_def_list fixed_part
+		public var_def_list_for_record fixed_part
 		{
 			get
 			{
@@ -14904,7 +14274,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						fixed_part = (var_def_list)value;
+						fixed_part = (var_def_list_for_record)value;
 						break;
 					case 1:
 						variant_part = (variant_record_type)value;

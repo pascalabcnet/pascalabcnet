@@ -849,31 +849,6 @@ namespace PascalABCCompiler.Parsers
             throw new NotImplementedException();
         }
 
-        public void visit(try_statement _try_statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void visit(on_exception _on_exception)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void visit(on_exception_list _on_exception_list)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void visit(try_finally_statement _try_finally_statement)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void visit(try_except_statement _try_except_statement)
-        {
-            throw new NotImplementedException();
-        }
-
         public void visit(record_const_definition _record_const_definition)
         {
             throw new NotImplementedException();
@@ -1046,7 +1021,7 @@ namespace PascalABCCompiler.Parsers
             _diapason_expr.right.visit(this);
         }
 
-        public void visit(var_def_list _var_def_list)
+        public void visit(var_def_list_for_record _var_def_list)
         {
             throw new NotImplementedException();
         }
