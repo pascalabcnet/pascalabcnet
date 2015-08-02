@@ -82,7 +82,13 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         //-- List members begin
-        public List<statement> list => subnodes;
+        public List<statement> list
+        {
+            get
+            {
+                return subnodes;
+            }
+        }
 
         public void AddMany(params statement[] els)
         {
@@ -247,7 +253,10 @@ namespace PascalABCCompiler.SyntaxTree
             return this;
         }
         //-- List members begin
-        public List<var_def_statement> list => var_definitions;
+        public List<var_def_statement> list
+        {
+            get { return var_definitions; }
+        }
 
         public void AddMany(params var_def_statement[] sts)
         {
@@ -309,7 +318,10 @@ namespace PascalABCCompiler.SyntaxTree
             return sb.ToString();
         }
         //-- List members begin
-        public List<ident> list => idents;
+        public List<ident> list
+        {
+            get { return idents; }
+        }
 
         public void AddMany(params ident[] els)
         {
@@ -1289,4 +1301,12 @@ namespace PascalABCCompiler.SyntaxTree
             return "yield " + ex.ToString();
         }
     }
+    public partial class sequence_type
+    {
+        public override string ToString()
+        {
+            return "sequence of " + this.elements_type.ToString();
+        }
+    }
 }
+

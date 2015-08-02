@@ -671,6 +671,9 @@ namespace CodeFormatters
 
         #region IVisitor Member
 
+        public override void visit(syntax_tree_node n)
+        { }
+        
         public override void visit(statement_list _statement_list)
         {
             bool tmp_init_part = false;

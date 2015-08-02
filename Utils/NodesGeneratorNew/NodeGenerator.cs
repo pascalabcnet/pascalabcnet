@@ -194,6 +194,7 @@ namespace NodeGenerator
         public static readonly string throw_keyword = "throw";
         public static readonly string index_out_of_range_exception_name = "IndexOutOfRangeException";
         public static readonly string subnodes_property_name = "subnodes_count";
+        public static readonly string subnodes_without_list_elements_property_name = "subnodes_without_list_elements_count";
         public static readonly string object_keyword = "object";
         public static readonly string syntax_tree_node_name = "syntax_tree_node";
         public static readonly string or_keyword = "||";
@@ -998,9 +999,6 @@ namespace NodeGenerator
             var subnodes = collect_subnodes(true);
             var fieldsCount = subnodes.Count(ni=>ni.field_type!=null); // в индексаторе учитывать только syntax_tree_node SSM 27/07/15
 
-            sw.WriteLine(@"		///<summary>");
-            sw.WriteLine(@"		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List");
-            sw.WriteLine(@"		///</summary>");
             string pol_type = "";
             if (base_class != null)
             {
@@ -1026,6 +1024,28 @@ namespace NodeGenerator
                                     text_consts.colon + text_consts.space + listField.field_name + text_consts.dot + text_consts.count_name + text_consts.close_par);
             }
 
+            sw.WriteLine(@"		///<summary>");
+            sw.WriteLine(@"		///Свойство для получения количества всех подузлов без элементов поля типа List");
+            sw.WriteLine(@"		///</summary>");
+            // subnodes_without_list_elements_count
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
+                         pol_type + text_consts.space +
+                         text_consts.int32_type_name + text_consts.space + text_consts.subnodes_without_list_elements_property_name);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.get_keyword);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.open_figure);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.tab +
+                         text_consts.return_keyword + text_consts.space + fieldsCount + text_consts.semicolon);
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+            sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
+
+            sw.WriteLine(@"		///<summary>");
+            sw.WriteLine(@"		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List");
+            sw.WriteLine(@"		///</summary>");
+            // subnodes_count
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
                          pol_type + text_consts.space +
                          text_consts.int32_type_name + text_consts.space + text_consts.subnodes_property_name);

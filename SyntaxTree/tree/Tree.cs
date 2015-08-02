@@ -56,6 +56,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public virtual Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public virtual Int32 subnodes_count
@@ -112,6 +122,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -167,6 +187,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -294,6 +324,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -416,6 +456,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -542,6 +592,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -685,6 +745,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -809,6 +879,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -875,6 +955,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -966,6 +1056,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -1056,6 +1156,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -1145,6 +1255,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1254,6 +1374,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -1325,6 +1455,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1416,6 +1556,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -1499,6 +1649,16 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -1620,6 +1780,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -1738,6 +1908,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -1844,6 +2024,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -2024,6 +2214,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -2135,6 +2335,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -2235,6 +2445,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -2343,6 +2563,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -2450,6 +2680,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -2551,6 +2791,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -2640,6 +2890,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -2747,6 +3007,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -2867,6 +3137,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -3100,6 +3380,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 6;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -3244,6 +3534,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -3385,6 +3685,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -3528,6 +3838,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -3657,6 +3977,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -3803,6 +4133,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -3932,6 +4272,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4090,6 +4440,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -4200,6 +4560,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4320,6 +4690,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4465,6 +4845,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -4576,6 +4966,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -4682,6 +5082,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -4929,6 +5339,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 6;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -5087,6 +5507,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 7;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5255,6 +5685,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -5379,6 +5819,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -5485,6 +5935,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -5576,6 +6036,16 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5703,6 +6173,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -5833,6 +6313,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -5938,6 +6428,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -6064,6 +6564,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -6164,6 +6674,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -6285,6 +6805,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -6390,6 +6920,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -6552,6 +7092,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -6703,6 +7253,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -6934,6 +7494,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 6;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -7160,6 +7730,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -7276,6 +7856,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -7365,6 +7955,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -7484,6 +8084,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -7626,6 +8236,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -7792,6 +8412,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -7938,6 +8568,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -8009,6 +8649,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8099,6 +8749,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8218,6 +8878,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8342,6 +9012,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8468,6 +9148,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -8574,6 +9264,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -8674,6 +9374,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8776,6 +9486,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -8876,6 +9596,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -8995,6 +9725,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -9210,6 +9950,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 6;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -9387,6 +10137,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 8;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -9541,6 +10301,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -9659,6 +10429,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -9748,6 +10528,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -9995,6 +10785,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 5;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -10081,6 +10881,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -10211,6 +11021,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -10336,6 +11156,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -10460,6 +11290,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -10565,6 +11405,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -10712,6 +11562,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -10842,6 +11702,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -10948,6 +11818,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -11037,6 +11917,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -11139,6 +12029,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -11228,6 +12128,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -11375,6 +12285,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -11504,6 +12424,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -11609,6 +12539,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -11735,6 +12675,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -11840,6 +12790,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -11984,6 +12944,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -12094,6 +13064,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -12217,6 +13197,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -12293,6 +13283,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -12403,6 +13403,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -12505,6 +13515,16 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 6;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -12628,6 +13648,16 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 6;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -12773,6 +13803,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -12915,6 +13955,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -13056,6 +14106,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -13204,6 +14264,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -13333,6 +14403,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -13457,6 +14537,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -13528,6 +14618,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -13638,6 +14738,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -13727,6 +14837,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -13793,6 +14913,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -13883,6 +15013,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -14009,6 +15149,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -14114,6 +15264,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -14240,6 +15400,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -14311,6 +15481,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -14437,6 +15617,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -14567,6 +15757,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -14673,6 +15873,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -14762,6 +15972,16 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -14888,6 +16108,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -15018,6 +16248,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -15123,6 +16363,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -15231,6 +16481,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -15357,6 +16617,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -15465,6 +16735,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -15591,6 +16871,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -15716,6 +17006,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -15846,6 +17146,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -15951,6 +17261,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16095,6 +17415,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -16171,6 +17501,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16261,6 +17601,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16362,6 +17712,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16482,6 +17842,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -16553,6 +17923,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16662,6 +18042,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -16767,6 +18157,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -16893,6 +18293,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -16993,6 +18403,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -17149,6 +18569,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -17230,6 +18660,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -17320,6 +18760,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -17446,6 +18896,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -17606,6 +19066,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -17734,6 +19204,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -17823,6 +19303,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -17968,6 +19458,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -18078,6 +19578,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -18204,6 +19714,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -18309,6 +19829,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -18435,6 +19965,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -18540,6 +20080,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -18659,6 +20209,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -18785,6 +20345,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -18874,6 +20444,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -19012,6 +20592,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -19122,6 +20712,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -19262,6 +20862,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -19407,6 +21017,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -19530,6 +21150,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -19649,6 +21279,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -19774,6 +21414,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -19879,6 +21529,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20041,6 +21701,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -20193,6 +21863,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -20298,6 +21978,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20425,6 +22115,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -20543,6 +22243,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20670,6 +22380,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -20835,6 +22555,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -20950,6 +22680,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -21094,6 +22834,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -21219,6 +22969,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -21326,6 +23086,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -21452,6 +23222,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -21582,6 +23362,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -21700,6 +23490,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -21826,6 +23626,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -21927,6 +23737,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -22027,6 +23847,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -22165,6 +23995,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -22276,6 +24116,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -22382,6 +24232,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -22652,6 +24512,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 7;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -22818,6 +24688,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -22960,6 +24840,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -23086,6 +24976,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -23205,6 +25105,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -23330,6 +25240,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -23435,6 +25355,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -23581,6 +25511,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -23706,6 +25646,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -23830,6 +25780,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 3;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -23923,6 +25883,16 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -24042,6 +26012,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -24168,6 +26148,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -24287,6 +26277,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
@@ -24453,6 +26453,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 4;
+			}
+		}
+		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
 		public override Int32 subnodes_count
@@ -24568,6 +26578,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
 		///<summary>
 		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
 		///</summary>
