@@ -1,0 +1,84 @@
+[=Pascal][=PascalABC][=CPP][=Python][0]
+[~Обработка статистических данных]
+[text]
+При решении задач данной подгруппы необходимо использовать
+заготовку, включающую описания переменных и ввод
+исходных данных: 
+[code]
+[=Pascal][=PascalABC]
+const 
+  N = 15;
+var 
+  a: array[1..N] of integer;
+  i, j, k: integer;
+begin
+  for i := 1 to N do
+    read(a[i]);
+
+
+end.
+[=CPP]
+    #define N 15
+    int a[N];
+    int i, j, k;
+    for (i = 0; i < N; i++)
+        cin >> a[i];
+[=Python]
+    N = 15
+    i = None
+    j = None
+    k = None
+    a = [int(i) for i in input().split()]
+[=Pascal][=PascalABC][=CPP][=Python]
+[text]
+Требуется дополнить программу-заготовку алгоритмом 
+решения задачи, используя только те переменные, которые указаны в тексте 
+заготовки (все переменные можно не использовать).
+[123-130]
+[-H]
+[text]
+Предлагаемая заготовка содержит описания переменных и ввод
+исходных данных. Требуется дополнить программу-заготовку алгоритмом 
+решения задачи, используя только те переменные, которые указаны в тексте 
+заготовки (все переменные можно не использовать).
+[code]
+[=Pascal][=PascalABC]
+const 
+  N = 15;
+var 
+  a: array[1..N] of integer;
+  i, j, k: integer;
+begin
+[-W]
+  Task('%{task}');
+[+W]
+  for i := 1 to N do
+    read(a[i]);
+
+
+end.
+[=CPP]
+[-W]
+void Solve()
+{
+    Task("%{task}");
+[+W]
+    #define N 15
+    int a[N];
+    int i, j, k;
+    for (i = 0; i < N; i++)
+        cin >> a[i];
+
+[-W]
+}
+[=Python]
+def solve():
+    task("%{task}")
+[+W]
+    N = 15
+    i = None
+    j = None
+    k = None
+    a = [int(i) for i in input().split()]
+
+

@@ -1,0 +1,786 @@
+[=Pascal][=PascalABC][1-14]
+var x, y: real;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(x, y);
+[1]
+  if x*x + y*y >= 4 then
+    if x >= -2 then
+      if y <= -x then
+[2]
+  if x*x + y*y >= 4 then
+    if y >= -2 then
+      if y <= x then
+[3]
+  if y >= x then
+    if y >= 0 then
+      if y <= 2 - x*x then
+[4]
+  if y <= 2*x*x then
+    if x >= -1 then
+      if y >= 1 then
+[5]
+  if y <= 1 then
+    if y >= 0 then
+      if x >= -1 then
+        if y >= x*x then
+[6]
+  if y <= x then
+    if y <= -x then
+      if y >= x*x - 2 then
+[7]
+  if y <= 1 - x then
+    if y >= 0 then
+      if x >= 0 then
+        if x*x + y*y <= 1 then
+[8]
+  if y >= -1 then
+    if y <= x then
+      if y <= 0 then
+        if x*x + y*y <= 1 then
+[9]
+  if y <= 1 then
+    if y >= x then
+      if x >= -1 then
+        if x*x + y*y <= 1 then
+[10]
+  if y <= x + 2 then
+    if x <= 0 then
+      if x*x + y*y <= 25 then
+[11]
+  if y >= x*x - 6 then
+  begin
+    if x*x + y*y <= 16 then
+      writeln('Принадлежит')
+  end
+  else
+    if x >= 0 then
+      writeln('Принадлежит')
+    else
+      writeln('Не принадлежит');
+[12]
+  if y <= sin(x) then
+    if x <= 3.14/2 then
+      if y >= 0 then
+[13]
+ if y <= 1 then
+   if x >= 0 then
+     if y >= sin(x) then
+[14]
+  if y <= 0 then
+    if y >= -1 then
+      if y <= cos(x) then
+[1-4][6][10][12-14]
+        writeln('Принадлежит')
+      else
+        writeln('Не принадлежит');
+[5][7-9]
+          writeln('Принадлежит')
+        else
+          writeln('Не принадлежит');
+[1-14]
+  writeln('Программа завершена');
+end.
+[15]
+var c: real;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(c);
+  if c > 0 then
+  write('нет решений')
+  else
+    write('x = ', sqrt(-c):0:2, ' или x = ', -sqrt(-c):0:2);
+[16-21]
+var a, b: real;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(a, b);
+[16]
+  if a = 0 then
+    if b = 0 then
+      write('любое число')
+    else
+      write('нет решений')
+  else
+    if b = 0 then
+      write('x = 0.00')
+    else
+      write('x = ', b/a:0:2,' или x = ', -b/a:0:2);
+[17]
+  if b = 0 then
+    write('x = 0.00')
+  else
+    if a = 0 then
+      write('нет решений')
+    else
+      write('x = ', -b/a:0:2);
+end.
+[18]
+  if a = 0 then
+    if b > 0 then
+      write('любое число')
+    else
+      write('нет решений')
+  else
+    write('x > ', -b/a:0:2);
+[19]
+  if b = 0 then
+    write('x > 0.00 или x < 0.00')
+  else
+    if a > 0 then
+      write('x > 0.00 или x < ', -b:0:2)
+    else
+      write(-b:0:2, ' < x < 0.00') ;
+[20]
+  if a = 0 then
+    if b > 0 then
+      write('нет решений')
+    else
+      write('x > 0.00 или x < 0.00')
+  else
+    write(-a:0:2,' < x < 0.00');
+[21]
+  if b > 0 then
+    write('x > ', a:0:2,' или x < 0.00')
+  else
+    if a > 0 then
+      write('0.00 < x < ', a:0:2)
+    else
+      write(a:0:2, ' < x < 0.00');
+[15-21]
+end.
+[22]
+var N: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  while N > 10 do
+  begin
+    N := N mod 10;
+  end;
+  write(N);
+end.
+[23]
+var N: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  while N > 10 do
+  begin
+    N := N mod 100;
+  end;
+  write(N);
+end.
+[24]
+var N, digit, maxdigit: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  maxdigit := 10;
+  while N >= 10 do
+  begin
+    digit := N mod 10;
+    if maxdigit < digit then
+      maxdigit := digit;
+    N := N div 10;
+  end;
+  write(maxdigit);
+end.
+[25]
+var N, p, digit: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  p := N mod 10;
+  while N >= 10 do
+  begin
+    digit := N mod 10;
+    p := p * digit;
+    N := N div 10;
+  end;
+  writeln(p);
+end.
+[26]
+var N, s: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  s := 1;
+  while N > 1 do
+  begin
+    if N mod 10 <> 0 then
+      s := N mod 10;
+    N := N div 10;
+  end;
+  write(s);
+end.
+[27]
+var N, digit, maxdigit: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  maxdigit := N mod 10;
+  while N > 0 do
+  begin
+    digit := N mod 10;
+    if digit mod 3 = 0 then
+      if digit > maxdigit then
+        maxdigit := digit;
+    N := N div 10;
+  end;
+  if maxdigit = 0 then
+    writeln('NO')
+  else
+    writeln(maxDigit)
+end.
+[28]
+var N, cnt: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  cnt := 0;
+  while N > 0 do
+  begin
+    cnt := cnt + N mod 2;
+    N := N div 10;
+  end;
+  writeln(cnt)
+end.
+[29]
+var N, R, T, d: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  R := 0;
+  T := 0;
+  while N > 0 do
+  begin
+    d := N mod 10;
+    if d <> 2 then
+    begin
+      R := R + d * T;
+      T := T + 1;
+    end;
+    N := N div 10;
+  end;
+  writeln(T);
+end.
+[30]
+var N, m, d: integer;
+begin
+[-HW]
+  Task('%{task}');
+[+HW]
+  readln(N);
+  m := 0;
+  while N > 0 do
+  begin
+    d := N mod 10;
+    if d > 1 then
+    begin
+      m := d + m;
+    end;
+    N := N div 10;
+  end;
+  write(m);
+end.
+[-----------------------------------------------]
+[=CPP][12-15]
+[-HW]
+#include <cmath>
+using namespace std;
+[1-30]
+void Solve()
+{
+    Task("%{task}");
+[+HW]
+[1-14]
+    double x, y;
+    cin >> x >> y;
+[1]
+    if (x*x + y*y >= 4)
+        if (x >= -2)
+            if (y <= -x)
+[2]
+    if (x*x + y*y >= 4)
+        if (y >= -2)
+            if (y <= x)
+[3]
+    if (y >= x)
+        if (y >= 0)
+            if (y <= 2 - x*x)
+[4]
+    if (y <= 2*x*x)
+        if (x >= -1)
+            if (y >= 1)
+[5]
+    if (y <= 1)
+        if (y >= 0)
+            if (x >= -1)
+                if (y >= x*x)
+[6]
+    if (y <= x)
+        if (y <= -x)
+            if (y >= x*x - 2)
+[7]
+    if (y <= 1 - x)
+        if (y >= 0)
+            if (x >= 0)
+                if (x*x + y*y <= 1)
+[8]
+    if (y >= -1)
+        if (y <= x)
+            if (y <= 0)
+                if (x*x + y*y <= 1)
+[9]
+    if (y <= 1)
+        if (y >= x)
+            if (x >= -1)
+                if (x*x + y*y <= 1)
+[10]
+    if (y <= x + 2)
+        if (x <= 0)
+            if (x*x + y*y <= 25)
+[11]
+    if (y >= x*x - 6)
+    {
+        if (x*x + y*y <= 16)
+            cout << "Принадлежит" << endl;
+    }
+    else
+        if (x >= 0)
+            cout << "Принадлежит" << endl;
+        else
+            cout << "Не принадлежит" << endl;
+[12]
+    if (y <= sin(x))
+        if (x <= 3.14/2)
+            if (y >= 0)
+[13]
+    if (y <= 1)
+        if (x >= 0)
+            if (y >= sin(x))
+[14]
+    if (y <= 0)
+        if (y >= -1)
+            if (y <= cos(x))
+[1-4][6][10][12-14]
+                cout << "Принадлежит" << endl;
+            else
+                cout << "Не принадлежит" << endl;
+[5][7-9]
+                    cout << "Принадлежит" << endl;
+                else
+                    cout << "Не принадлежит" << endl;
+[1-14]
+    cout << "Программа завершена";
+[15-21]
+    cout << fixed << setprecision(2);
+[15]
+    double c;
+    cin >> c;
+    if (c > 0)
+        cout << "нет решений";
+    else
+        cout << "x = " << sqrt(-c):0:2, ' или x = ', -sqrt(-c):0:2);
+[16-21]
+    double a, b;
+    cin >> a >> b;
+[16]
+    if (a == 0)
+        if (b == 0)
+           cout << "любое число";
+        else
+           cout << "нет решений";
+    else
+        if (b == 0)
+           cout << "x = 0.00";
+        else
+           cout << "x = " << b/a << " или x = " << -b/a;
+[17]
+    if (b == 0)
+        cout << "x = 0.00";
+    else
+        if (a == 0)
+            cout << "нет решений";
+        else
+            cout << "x = " << -b/a;
+[18]
+    if (a == 0)
+        if (b > 0)
+            cout << "любое число";
+        else
+            cout << "нет решений";
+    else
+        cout << "x > " << -b/a;
+[19]
+    if (b == 0)
+        cout << "x > 0.00 или x < 0.00";
+    else
+        if (a > 0)
+            cout << "x > 0.00 или x < " << -b;
+        else
+            cout << -b << " < x < 0.00";
+[20]
+    if (a == 0)
+        if (b > 0)
+            cout << "нет решений";
+        else
+            cout << "x > 0.00 или x < 0.00";
+    else
+        cout << -a << " < x < 0.00";
+[21]
+    if (b > 0)
+        cout << "x > " << a << " или x < 0.00";
+    else
+        if (a > 0)
+            cout << "0.00 < x < " << a;
+        else
+            cout << a << " < x < 0.00";
+[22]
+    int N;
+    cin >> N;
+    while (N > 10)
+    {
+        N = N % 10;
+    }
+    cout << N;
+[23]
+    int N;
+    cin >> N;
+    while (N > 10)
+    {
+        N = N % 100;
+    }
+    cout << N;
+[24]
+    int N, digit, maxdigit;
+    cin >> N;
+    maxdigit = 10;
+    while (N >= 10)
+    {
+        digit = N % 10;
+        if (maxdigit < digit)
+            maxdigit = digit;
+        N = N / 10;
+    }
+    cout << maxdigit;
+[25]
+    int N, digit, p;
+    cin >> N;
+    p := N % 10;
+    while (N >= 10)
+    {
+        digit = N % 10;
+        p = p * digit;
+        N = N / 10;
+    }
+    cout << p;
+[26]
+    int N, s;
+    cin >> N;
+    s = 1;
+    while (N > 1)
+    {
+        if (N % 10 != 0)
+            s = N % 10;
+        N = N / 10;
+    }
+    cout << s;
+[27]
+    int N, digit, maxdigit;
+    cin >> N;
+    maxdigit = N % 10;
+    while (N > 0)
+    {
+        digit = N % 10;
+        if (digit % 3 == 0)
+            if (digit > maxdigit)
+                maxdigit = digit;
+        N = N / 10;
+    }
+    if (maxdigit == 0)
+        cout << "NO";
+    else
+        cout << maxDigit;
+[28]
+    int N, cnt;
+    cin >> N;
+    cnt = 0;
+    while (N > 0)
+    {
+        cnt = cnt + N % 2;
+        N = N / 10;
+    }
+    cout << cnt;
+[29]
+    int N, R, T, d;
+    cin >> N;
+    R = 0;
+    T = 0;
+    while (N > 0)
+    {
+        d = N % 10;
+        if (d != 2)
+        {
+            R = R + d * T;
+            T++;
+        }
+        N = N / 10;
+    }
+    cout << T;
+[30]
+    int N, m, d;
+    cin >> N;
+    m = 0;
+    while (N > 0)
+    {
+        d = N % 10;
+        if (d > 1)
+        {
+            m = d + m;
+        }
+        N = N / 10;
+    }
+    cout << m;
+[1-30]
+[-HW]
+}
+[+HW]
+[-----------------------------------------------]
+[=Python][12-15]
+[-HW]
+import math
+[1-30]
+def solve():
+    task("%{task}")
+[+HW]
+[1-14]
+    x = float(input())
+    y = float(input())
+[1]
+    if x*x + y*y >= 4:
+        if x >= -2:
+            if (y <= -x):
+[2]
+    if x*x + y*y >= 4:
+        if y >= -2:
+            if y <= x:
+[3]
+    if y >= x:
+        if y >= 0:
+            if y <= 2 - x*x:
+[4]
+    if y <= 2*x*x:
+        if x >= -1:
+            if y >= 1:
+[5]
+    if y <= 1:
+        if y >= 0:
+            if x >= -1:
+                if y >= x*x:
+[6]
+    if y <= x:
+        if y <= -x:
+            if y >= x*x - 2:
+[7]
+    if y <= 1 - x:
+        if y >= 0:
+            if x >= 0:
+                if x*x + y*y <= 1:
+[8]
+    if y >= -1:
+        if y <= x:
+            if y <= 0:
+                if x*x + y*y <= 1:
+[9]
+    if y <= 1:
+        if y >= x:
+            if x >= -1:
+                if x*x + y*y <= 1:
+[10]
+    if y <= x + 2:
+        if x <= 0:
+            if x*x + y*y <= 25:
+[11]
+    if y >= x*x - 6:
+        if x*x + y*y <= 16:
+            print("Принадлежит")
+    elif x >= 0:
+        print("Принадлежит")
+    else:
+        print("Не принадлежит")
+[12]
+    if y <= math.sin(x):
+        if x <= 3.14/2:
+            if y >= 0:
+[13]
+    if y <= 1:
+        if x >= 0:
+            if y >= math.sin(x):
+[14]
+    if y <= 0:
+        if y >= -1:
+            if y <= math.cos(x):
+[1-4][6][10][12-14]
+                print("Принадлежит")
+            else:
+                print("Не принадлежит")
+[5][7-9]
+                    print("Принадлежит")
+                else:
+                    print("Не принадлежит")
+[1-14]
+    print("Программа завершена")
+[15]
+    c = float(input())
+    if c > 0:
+        print("нет решений")
+    else:
+        print("x = %0.2f или x = %0.2f" % (math.sqrt(-c), -math.sqrt(-c)))
+[16-21]
+    a = float(input())
+    b = float(input())
+[16]
+    if a == 0:
+        if b == 0:
+           print("любое число")
+        else:
+           print("нет решений")
+    else:
+        if b == 0:
+           print("x = 0.00")
+        else
+           print("x = %0.2f или x = %0.2f" % (b/a, -b/a))
+[17]
+    if b == 0:
+        print("x = 0.00")
+    else:
+        if a == 0:
+            print("нет решений")
+        else:
+            print("x = %0.2f" % -b/a)
+[18]
+    if a == 0:
+        if b > 0:
+            print("любое число")
+        else:
+            print("нет решений")
+    else:
+        print("x = %0.2f" % -b/a)
+[19]
+    if b == 0:
+        print("x > 0.00 или x < 0.00")
+    else:
+        if a > 0:
+            print("x > 0.00 или x < %0.2f" % -b)
+        else:
+            print("%0.2f < x < 0.00" % -b)
+[20]
+    if a == 0:
+        if b > 0:
+            print("нет решений")
+        else:
+            print("x > 0.00 или x < 0.00")
+    else:
+        print("%0.2f < x < 0.00" % -a)
+[21]
+    if b > 0:
+        print("x > %0.2f или x < 0.00" % a)
+    else:
+        if a > 0:
+            print("0.00 < x < %0.2f" % a)
+        else:
+            print("%0.2f < x < 0.00" % a)
+[22-30]
+    N = int(input())
+[22]
+    while N > 10:
+        N = N % 10
+    print(N)
+[23]
+    while N > 10:
+        N = N % 100
+    print(N)
+[24]
+    maxdigit = 10
+    while N >= 10:
+        digit = N % 10
+        if maxdigit < digit:
+            maxdigit = digit
+        N = N // 10
+    }
+    print(maxdigit)
+[25]
+    p = N % 10
+    while N >= 10:
+        digit = N % 10
+        p = p * digit
+        N = N // 10
+    print(p)
+[26]
+    s = 1
+    while N > 1:
+        if N % 10 != 0:
+            s = N % 10
+        N = N // 10
+    print(s)
+[27]
+    maxdigit = N % 10
+    while N > 0:
+        digit = N % 10
+        if digit % 3 == 0:
+            if digit > maxdigit:
+                maxdigit = digit
+        N = N // 10
+    if maxdigit == 0:
+        print("NO")
+    else:
+        print(maxDigit)
+[28]
+    cnt = 0
+    while N > 0:
+        cnt = cnt + N % 2
+        N = N // 10
+    print(cnt)
+[29]
+    R = 0
+    T = 0
+    while N > 0:
+        d = N % 10
+        if d != 2:
+            R = R + d * T
+            T += 1
+        N = N // 10
+    print(T)
+[30]
+    m = 0
+    while N > 0:
+        d = N % 10
+        if d > 1:
+            m = d + m
+        N = N // 10
+    print(m)
+

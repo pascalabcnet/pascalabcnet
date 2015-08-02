@@ -1,0 +1,104 @@
+[4]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.1. Поэлементные операции
+// LinqBegin4: правильное решение - 1 вариант (с.126)
+begin
+  Task('LinqBegin4');
+  var c := ReadChar;
+  var a := ReadSeqString;
+  try
+    var r := a.SingleOrDefault(e -> (e.Length <> 0) and (e[e.Length] = c));
+    write(r <> nil ? r : '');
+  except
+    write('Error');
+  end;
+end.
+[15]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.2. Операция агрегирования и генерирование последовательностей
+// LinqBegin15: правильное решение - 2 вариант (с.134, внизу)
+begin
+  Task('LinqBegin15');
+  var n := ReadInteger;
+  var f := Range(1, n)
+    .Aggregate(1.0, (a, e) -> a * e);
+  write(f);
+end.
+[31]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.3. Фильтрация, сортировка, теоретико-множественные операции
+// LinqBegin31: правильное решение - 1 вариант (с.145)
+begin
+  Task('LinqBegin31');
+  var k := ReadInteger;
+  var a := ReadSeqString;
+  var b := a.Take(k).Show('B');
+  var c := a.Reverse()
+    .TakeWhile(e ->not char.IsDigit(e[e.Length])).Show('C');
+  b.Intersect(c).Show('D')
+    .OrderBy(e -> e.Length).ThenBy(e -> e)
+    .Write;
+end.
+[43]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.4. Проецирование
+// LinqBegin43: правильное решение с отладочной печатью (с.151, внизу)
+begin
+  Task('LinqBegin43');
+  var k := ReadInteger;
+  ReadSeqString
+    .SelectMany((e, n) ->
+       e.Where((c, i) -> i mod 2 = (n < k ? 0 : 1)).Show())
+    .Reverse
+    .Write;
+end.
+[52]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.5. Объединение
+// LinqBegin52: правильное решение - 1 вариант (с.159, середина)
+begin
+  Task('LinqBegin52');
+  var a := ReadSeqString()
+    .Where(e -> char.IsDigit(e[e.Length])).Show('A');
+  var b := ReadSeqString()
+    .Where(e -> char.IsDigit(e[e.Length])).Show('B');
+  a.SelectMany(e1 -> b.Select(e2 -> e1 + '=' + e2))
+    .OrderBy(e -> e.Split('=')[0])
+    .ThenByDescending(e -> e.Split('=')[1])
+    .Write;
+end.
+[54]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.5. Объединение
+// LinqBegin54: правильное решение (с.170, середина)
+begin
+  Task('LinqBegin54');
+  ReadSeqString().GroupJoin(ReadSeqString(),
+      e -> e[1], e -> e[1],
+      (e1, ee2) -> ee2.DefaultIfEmpty('')
+    .Select(e -> e1 + '.' + e))
+    .SelectMany(e -> e).OrderBy(e -> e).Show()
+    .Write;
+end.
+[60]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 5. Примеры решения задач из группы LinqBegin
+//     5.6. Группировка
+// LinqBegin60: правильное решение - 1 вариант (с.175, внизу)
+begin
+// ===ОШИБКА КОМПИЛЯЦИИ===
+  Task('LinqBegin60');
+  ReadSeqString().GroupBy(e -> e[1])
+    .OrderByDescending(e -> e.Sum(s -> s.Length)).ThenBy(e -> e.Key)
+    .Select(e -> e.Sum(s -> s.Length) + '-' + e.Key)
+    .Write;
+end.
+
+
+

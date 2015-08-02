@@ -1,0 +1,185 @@
+[10]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.1. Создание XML-документа
+// LinqXml10: правильное решение (с.227)
+begin
+    Task('LinqXml10');
+    var a := ReadAllLines(ReadString);
+    var d := new XDocument(
+      new XDeclaration(nil, 'windows-1251', nil),
+      new XElement('root',
+        a.Select(e -> e.StartsWith('data:') ?
+          new XProcessingInstruction('instr', e.Substring(5)) as XNode:
+          new XElement('line', e) as XNode)));
+    d.Save(ReadString);
+end.
+[20]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.2. Анализ содержимого XML-документа
+// LinqXml20: правильное решение (с.235-236)
+begin
+    Task('LinqXml20');
+    var d := XDocument.Load(ReadString);
+    foreach var e1 in d.Root.Elements do
+    begin
+        write(e1.Name.LocalName);
+        var max := e1.Descendants
+          .Select(e -> e.Attributes.Count())
+          .DefaultIfEmpty(-1).Max;
+        write(max);
+        var a := e1.Descendants
+          .Where(e -> e.Attributes.Count() = max)
+          .Select(e -> e.Name.LocalName)
+          .OrderBy(e -> e)
+          .DefaultIfEmpty('no child');
+        foreach var e in a do
+          write(e);
+    end
+end.
+[28]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.3. Преобразование XML-документа
+// LinqXml28: правильное решение (с.238)
+begin
+    Task('LinqXml28');
+    var name := ReadString;
+    var d := XDocument.Load(name);
+    d.Root.Elements().Elements().Elements()
+      .Nodes().OfType&<XText>().Remove();
+    d.Save(name);
+end.
+[32]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.3. Преобразование XML-документа
+// LinqXml32: правильное решение (с.242)
+begin
+    Task('LinqXml32');
+    var name := ReadString;
+    var s1 := ReadString;
+    var s2 := ReadString;
+    var d := XDocument.Load(name);
+    foreach var e in d.Root.Elements().Elements(s1) do
+        e.AddBeforeSelf(new XElement(s2,
+          e.LastAttribute, e.Elements().FirstOrDefault()));
+    d.Save(name);
+end.
+[37]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.3. Преобразование XML-документа
+// LinqXml37: решение с использованием выражения запроса (с.244)
+begin
+    Task('LinqXml37');
+    var name := ReadString;
+    var d := XDocument.Load(name);
+    var a := d.Root.Elements().Elements()
+      .Where(e -> not e.IsEmpty);
+    foreach var e in a do
+      e.Value := e.Value;
+    d.Save(name);
+end.
+[50]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.4. Преобразование типов при обработке XML-документа
+// LinqXml50: правильное решение (с.254)
+begin
+    Task('LinqXml50');
+    var name := ReadString;
+    var d := XDocument.Load(name);
+    d.Root.AddFirst(new XElement('total-time',
+      d.Root.Elements()
+        .Select(e ->
+        begin
+          var a := e.Attribute('time');
+          if a = nil then
+            result := new TimeSpan(24, 0, 0)
+          else
+            result := TimeSpan(a);
+        end)
+        .Aggregate(TimeSpan.Zero, (a, e) -> a + e)));
+    d.Save(name);
+end.
+[57]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.5. Работа с пространствами имен XML-документа
+// LinqXml57: правильное решение (с.263)
+begin
+    Task('LinqXml57');
+    var name := ReadString;
+    var s1 := ReadString;
+    var s2 := ReadString;
+    var d := XDocument.Load(name);
+    d.Root.Add(new XAttribute(XNamespace.Xmlns + 'x', s1),
+      new XAttribute(XNamespace.Xmlns + 'y', s2));
+    var ns1 := XNamespace(s1);
+    var ns2 := XNamespace(s2);
+    foreach var e in d.Descendants() do
+    begin
+        var ns := e.Ancestors().Count() <= 1 ? ns1 : ns2;
+        e.Name := ns + e.Name.LocalName;
+    end;
+    d.Descendants().Attributes('xmlns').Remove();
+    d.Save(name);
+end.
+[61]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.6. Дополнительные задания на обработку XML-документов
+// LinqXml61: правильное решение (с.268, вверху)
+begin
+    Task('LinqXml61');
+    var name := ReadString;
+    var d := XDocument.Load(name);
+    var ns := d.Root.Name.Namespace;
+    d.Root.ReplaceNodes(d.Root.Elements()
+      .Select(e -> new XElement(ns + 'time',
+        new XAttribute('id', e.Element(ns + 'id').Value),
+        new XAttribute('year',
+          (DateTime(e.Element(ns + 'date'))).Year),
+        new XAttribute('month',
+          (DateTime(e.Element(ns + 'date'))).Month),
+        e.Element(ns + 'time').Value)));
+    d.Save(name);
+end.
+[82]
+// Абрамян М.Э. ТЕХНОЛОГИЯ LINQ НА ПРИМЕРАХ. М.: ДМК-Пресс, 2014.
+// Глава 7. Примеры решения задач из группы LinqXml
+//     7.6. Дополнительные задания на обработку XML-документов
+// LinqXml82: правильное решение (с.276)
+begin
+// ОШИБКА КОМПИЛЯЦИИ
+    Task('LinqXml82');
+    var name := ReadString;
+    var d := XDocument.Load(name);
+    var ns := d.Root.Name.Namespace;
+    var a := d.Root.Elements()
+      .Select(e ->
+      begin
+          var s := e.Name.LocalName.Substring(4).Split('-');
+          result := new class
+          (
+              house := StrToInt(s[0]),
+              floor := (StrToInt(s[1]) - 1) mod 36 div 4 + 1,
+              debt := double(e)
+          );
+      end);
+    var floors := Range(1, 9);
+    d.Root.ReplaceNodes(a.OrderBy(e -> e.house)
+      .GroupBy(e -> e.house,
+        (k, ee) -> new XElement(ns + ('house' + k),
+          floors.GroupJoin(ee, e1 -> e1, e2 -> e2.floor,
+         (e1, ee2) -> new XElement(ns + ('floor' + e1),
+         new XAttribute('count', ee2.Count()),
+         new XAttribute('total-debt',
+             Math.Round(ee2.Sum(e -> e.debt), 2)))))));
+    d.Save(name);
+end.
+
+
+
