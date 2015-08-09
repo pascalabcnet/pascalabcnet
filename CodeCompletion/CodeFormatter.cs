@@ -669,16 +669,14 @@ namespace CodeFormatters
             throw new NotImplementedException();
         }
 
-        public override void visit(no_type_foreach _no_type_foreach)
-        {
-            
-        }
-
         #region IVisitor Member
 
         public override void visit(syntax_tree_node n)
         { }
-        
+
+        public override void visit(no_type_foreach _no_type_foreach)
+        { }
+
         public override void visit(statement_list _statement_list)
         {
             bool tmp_init_part = false;

@@ -410,7 +410,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (is_constructor)
                 return StringResources.Get("NO_CONSTRUCTOR_WITH_SAME_PARAMETERS_NUM");
-            return StringResources.Get("NO_FUNCTION_WITH_SAME_PARAMETERS_NUM");
+            return StringResources.Get("NO_FUNCTION_WITH_SAME_PARAMETERS_NUM") + " " + ((first_function == null) ? "" : first_function.name);
         }
 
     }
@@ -1460,7 +1460,7 @@ namespace PascalABCCompiler.TreeConverter
             //res+="\nFirst definition: "+_first_function.loc.ToString();
             //res+="\nSecond definition: "+_second_function.loc.ToString();
             //return res;
-            return (StringResources.Get("DUPLICATE_FUNCTION_DEFINITION"));
+            return (StringResources.Get("DUPLICATE_FUNCTION_DEFINITION")+" "+ first_function.name);
         }
 
         public override ILocation Location

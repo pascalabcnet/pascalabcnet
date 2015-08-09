@@ -1260,6 +1260,27 @@ namespace PascalABCCompiler.TreeConverter
             		return method_compare.greater_method;
             	else if (left_func.generic_parameters_count < right_func.generic_parameters_count)
             		return method_compare.less_method;
+                else // SSM 8/8/15 Два метода одинаковы по всем параметрам, но у одного - больше instance_params, т.е. он менее специализирован
+                if (left_func.parameters.Count == right_func.parameters.Count)
+                {
+                    bool eq = true;
+                    for (var i=0; i<left_func.parameters.Count; i++)
+                        if (left_func.parameters[i].type != right_func.parameters[i].type)
+                        {
+                            eq = false;
+                            break;
+                        }
+                    if (eq)
+                    {
+                        var lc = left_func.get_generic_params_list().Count;
+                        var rc = right_func.get_generic_params_list().Count;
+                        if (lc < rc)
+                            return method_compare.greater_method;
+                        if (lc > rc)
+                            return method_compare.less_method;
+                        // Тут совпадать они не могут, но если совпадают - пусть уж будут несравнимыми
+                    }
+                }
             }
             return method_compare.not_comparable_methods;
 		}
@@ -1853,7 +1874,41 @@ namespace PascalABCCompiler.TreeConverter
 					return set_of_possible_functions[0];
 				}
 				remove=false;
-				j=1;
+
+                var i = 0;
+                while (i < set_of_possible_functions.Count-1)
+                {
+                    j = i+1;
+                    while (j < set_of_possible_functions.Count)
+                    {
+                        method_compare mc = compare_methods(set_of_possible_functions[i],
+                            set_of_possible_functions[j], tcll[i], tcll[j]);
+                        if (mc == method_compare.greater_method)
+                        {
+                            tcll.remove_at(j);
+                            set_of_possible_functions.remove_at(j);
+                            remove = true;
+                        }
+                        else if (mc == method_compare.less_method)
+                        {
+                            tcll[i] = tcll[j];
+                            set_of_possible_functions[i] = set_of_possible_functions[j];
+                            tcll.remove_at(j);
+                            set_of_possible_functions.remove_at(j);
+                            remove = true;
+                        }
+                        else
+                        {
+                            j++;
+                        }
+                    }
+                    i++;
+                }
+
+            }
+
+            // TODO: Исправить этот алгоритм, сделав каждый с каждым - вроде исправил - см. выше
+            /*j = 1;
 				while(j<set_of_possible_functions.Count)
 				{
                     method_compare mc = compare_methods(set_of_possible_functions[0],
@@ -1877,7 +1932,7 @@ namespace PascalABCCompiler.TreeConverter
 						j++;
 					}
 				}
-			}
+			}*/
 
             /*remove=true;
             while (remove)

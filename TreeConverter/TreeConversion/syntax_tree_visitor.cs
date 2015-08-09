@@ -52,6 +52,9 @@ namespace PascalABCCompiler.TreeConverter
         internal using_namespace_list using_list = new using_namespace_list();
         internal using_namespace_list interface_using_list = new using_namespace_list();
 
+        // SSM 6/08/15 Стек для хранения вложенных лямбд для одной цели - вычислить истинный тип выражения, присваиваемого Result. Это нужно для выбора перегруженной функции, у которой параметр лямбда и один из типов возвращаемого значения в точности совпадает с типом возвращаемого значения лямбды
+        internal Stack<function_lambda_definition> stflambda = new Stack<function_lambda_definition>(); 
+
         //TODO: Загнать в request.
         motivation_keeper motivation_keeper = new motivation_keeper();
 
@@ -5107,12 +5110,21 @@ namespace PascalABCCompiler.TreeConverter
                                             if (spf != null) // пытаемся инстанцировать одну за другой и ошибки гасим try
                                             {   // exprs - глобальная, поэтому надо копировать
                                                 int spfnum = -1; // первый номер правильно инстанцированной. Если потом встретился второй, то тоже ошибка
-                                                for (int i = 0; i < spf.Count; i++)
+                                                                 // SSM 4.08.15. Сейчас меняю эту логику. Если будет много кандидатов, но ровно один с совпадающим типом возвращаемого значения, то его и надо выбирать.
+                                                                 // не забыть, что аналогичный код есть в create_constructor_call!!!!!!!
+                                                int GoodVersionsCount = 0;
+                                                int GoodVersionsCountWithSameResType = 0;
+                                                for (int i = 0; i < spf.Count; i++) // цикл по версиям
                                                 {
                                                     function_node fnn = spf[i];
                                                     try
                                                     {
                                                         int exprCounter = 0;
+                                                        if (skip_first_parameter)
+                                                        {
+                                                            exprCounter++;
+                                                        }
+
                                                         expressions_list exprs1 = new expressions_list();
                                                         exprs1.AddRange(exprs); // сделали копию
 
@@ -5145,7 +5157,6 @@ namespace PascalABCCompiler.TreeConverter
                                                                 object realrestype = null;
                                                                 if (restype != null)
                                                                     realrestype = restype.real_type;
-
                                                                 LambdaHelper.InferTypesFromVarStmt(fnn.parameters[exprCounter].type, fld, this);
                                                                 fld.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //lroman
                                                                 fld.lambda_name = LambdaHelper.GetAuxiliaryLambdaName(lambdaName); // поправляю имя. Думаю, назад возвращать не надо. ПРОВЕРИТЬ!
@@ -5154,6 +5165,28 @@ namespace PascalABCCompiler.TreeConverter
                                                                 try
                                                                 {
                                                                     exprs1[exprCounter] = convert_strong(en);
+
+                                                                    type_node resexprtype = fld.RealSemTypeOfResExpr as type_node;
+                                                                    type_node resformaltype = fld.RealSemTypeOfResult as type_node;
+                                                                    var bbb = resexprtype == resformaltype; // только в одном случае должно быть true - эту версию и надо выбирать. Если в нескольких, то неоднозначность
+                                                                    if (bbb)
+                                                                    {
+                                                                        GoodVersionsCountWithSameResType += 1;
+                                                                        spfnum = i; // здесь запоминаем индекс потому что он точно подойдет. Тогда ниже он запоминаться не будет. 
+                                                                    }
+
+                                                                    /*compiled_type_node tt;
+                                                                    tt = fnn.parameters[exprCounter].type as compiled_type_node;
+                                                                    if (tt != null && tt.compiled_type.FullName.ToLower().StartsWith("system.func"))
+                                                                    {
+                                                                        resformaltype = tt.instance_params[tt.instance_params.Count - 1]; // Последний параметр в записи Func<T,T1,...TN> - тип возвращаемого значения
+                                                                        var bbb = resexprtype == resformaltype; // только в одном случае должно быть true - эту версию и надо выбирать. Если в нескольких, то неоднозначность
+                                                                        if (bbb)
+                                                                        {
+                                                                            GoodVersionsCountWithSameResType += 1;
+                                                                            spfnum = i; // здесь запоминаем индекс потому что он точно подойдет. Тогда ниже он запоминаться не будет. 
+                                                                        }
+                                                                    }*/
                                                                 }
                                                                 catch
                                                                 {
@@ -5181,13 +5214,15 @@ namespace PascalABCCompiler.TreeConverter
                                                                 exprCounter++;
                                                             }
                                                         }
-                                                        if (spfnum >= 0) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                                                        /*if (spfnum >= 0) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
                                                         {
                                                             spfnum = -2;
                                                             break;
-                                                        }
+                                                        }*/
 
-                                                        spfnum = i;
+                                                        if (GoodVersionsCountWithSameResType == 0)
+                                                            spfnum = i; // здесь запоминаем индекс только если нет подошедших, совпадающих по типу возвращаемого значения
+                                                        GoodVersionsCount += 1;
                                                         for (int j = 0; j < exprs.Count; j++) // копируем назад если всё хорошо
                                                             exprs[j] = exprs1[j];
                                                     }
@@ -5197,16 +5232,18 @@ namespace PascalABCCompiler.TreeConverter
                                                         //contextChanger.RestoreCurrentContext();
                                                         lastmultex = e;
                                                     }
-                                                }
-                                                if (spfnum == -2) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                                                } // конец цикла по версиям
+                                                if (GoodVersionsCount > 1 && GoodVersionsCountWithSameResType != 1) // подошло много, но не было ровно одной с совпадающим типом возвращаемого значения
                                                     throw new SeveralFunctionsCanBeCalled(subloc, spf);
-                                                if (spfnum == -1) // было много, но ни одна не подошла из-за лямбд
+                                                if (GoodVersionsCount == 0) // было много, но ни одна не подошла из-за лямбд
                                                 {
                                                     throw lastmultex;
                                                     //throw new NoFunctionWithSameArguments(subloc2, false);
                                                 }
 
-                                                var kk = 0;
+                                                int kk = 0;
+                                                if (skip_first_parameter)
+                                                    kk++;
                                                 foreach (SyntaxTree.expression en in _method_call.parameters.expressions) //lroman окончательно подставить типы в лямбды
                                                 {
                                                     if (!(en is SyntaxTree.function_lambda_definition))
@@ -6161,10 +6198,14 @@ namespace PascalABCCompiler.TreeConverter
                         if (spf != null) // пытаемся инстанцировать одну за другой и ошибки гасим try
                         {   // exprs - глобальная, поэтому надо копировать
                             int spfnum = -1; // первый номер правильно инстанцированной. Если потом встретился второй, то тоже ошибка
-                            for (int i = 0; i < spf.Count; i++)
+                                             // SSM 4.08.15. Сейчас меняю эту логику. Если будет много кандидатов, но ровно один с совпадающим типом возвращаемого значения, то его и надо выбирать.
+                                             // не забыть, что аналогичный код есть в create_constructor_call!!!!!!! И еще выше по коду!!! кошмар!!!
+                            int GoodVersionsCount = 0;
+                            int GoodVersionsCountWithSameResType = 0;
+                            for (int i = 0; i < spf.Count; i++) // цикл по версиям
                             {
                                 function_node fn = spf[i];
-                                try
+                                try // внутренний try регенерирует исключение, а этот гасит
                                 {
                                     int exprCounter = 0;
                                     expressions_list exprs1 = new expressions_list();
@@ -6208,6 +6249,29 @@ namespace PascalABCCompiler.TreeConverter
                                             try
                                             {
                                                 exprs1[exprCounter] = convert_strong(en);
+
+                                                // SSM 7/08/15
+
+                                                type_node resexprtype = fld.RealSemTypeOfResExpr as type_node;
+                                                type_node resformaltype = fld.RealSemTypeOfResult as type_node;
+                                                var bbb = resexprtype == resformaltype; // только в одном случае должно быть true - эту версию и надо выбирать. Если в нескольких, то неоднозначность
+                                                if (bbb)
+                                                {
+                                                    GoodVersionsCountWithSameResType += 1;
+                                                    spfnum = i; // здесь запоминаем индекс потому что он точно подойдет. Тогда ниже он запоминаться не будет. 
+                                                }
+
+                                                /*var tt = fn.parameters[exprCounter].type as compiled_type_node;
+                                                if (tt != null && tt.compiled_type.FullName.ToLower().StartsWith("system.func"))
+                                                {
+                                                    resformaltype = tt.instance_params[tt.instance_params.Count - 1]; // Последний параметр в записи Func<T,T1,...TN> - тип возвращаемого значения
+                                                    var bbb = resexprtype == resformaltype; // только в одном случае должно быть true - эту версию и надо выбирать. Если в нескольких, то неоднозначность
+                                                    if (bbb)
+                                                    {
+                                                        GoodVersionsCountWithSameResType += 1;
+                                                        spfnum = i; // здесь запоминаем индекс потому что он точно подойдет. Тогда ниже он запоминаться не будет. 
+                                                    }
+                                                }*/
                                             }
                                             catch
                                             {
@@ -6235,13 +6299,15 @@ namespace PascalABCCompiler.TreeConverter
                                             exprCounter++;
                                         }
                                     }
-                                    if (spfnum >= 0) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                                    /*if (spfnum >= 0) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
                                     {
                                         spfnum = -2;
                                         break;
-                                    }
+                                    }*/
 
-                                    spfnum = i;
+                                    if (GoodVersionsCountWithSameResType==0)
+                                        spfnum = i; // здесь запоминаем индекс только если нет подошедших, совпадающих по типу возвращаемого значения
+                                    GoodVersionsCount += 1;
                                     for (int j = 0; j < exprs.Count; j++) // копируем назад если всё хорошо
                                         exprs[j] = exprs1[j];
                                 }
@@ -6251,10 +6317,11 @@ namespace PascalABCCompiler.TreeConverter
                                     //contextChanger.RestoreCurrentContext();
                                     lastmultex = e;
                                 }
-                            }
-                            if (spfnum == -2) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                            } //--------------- конец цикла по версиям
+
+                            if (GoodVersionsCount>1 && GoodVersionsCountWithSameResType!=1) // подошло много, но не было ровно одной с совпадающим типом возвращаемого значения
                                 throw new SeveralFunctionsCanBeCalled(subloc2, spf);
-                            if (spfnum == -1) // было много, но ни одна не подошла из-за лямбд
+                            if (GoodVersionsCount == 0) // было много, но ни одна не подошла из-за лямбд
                             {
                                 throw lastmultex;
                                 //throw new NoFunctionWithSameArguments(subloc2, false);
@@ -15022,6 +15089,17 @@ namespace PascalABCCompiler.TreeConverter
 
             expression_node from = convert_strong(_assign.from);
 
+            if (stflambda.Count>0) // мы находимся внутри лямбды - возможно, вложенной
+            {
+                var fld = stflambda.Peek();
+                if (_assign.to is ident && (_assign.to as ident).name.ToLower()=="result" && fld.RealSemTypeOfResExpr == null) // если это - первое присваивание Result
+                {
+                    fld.RealSemTypeOfResExpr = from.type;
+                    fld.RealSemTypeOfResult = to.type;
+                }
+                    
+            }
+
             location loc = get_location(_assign);
 			bool oper_ass_in_prop = false;
 			
@@ -16245,8 +16323,9 @@ namespace PascalABCCompiler.TreeConverter
                     if (spf != null) // пытаемся инстанцировать одну за другой и ошибки гасим try
                     {
                         // exprs - глобальная, поэтому надо копировать
-                        int spfnum = -1;
-                            // первый номер правильно инстанцированной. Если потом встретился второй, то тоже ошибка
+                        int spfnum = -1; // spfnum - первый номер правильно инстанцированной. Пока -1. Если потом встретился второй, то тоже ошибка
+                        int GoodVersionsCount = 0;
+                        int GoodVersionsCountWithSameResType = 0;
                         for (int i = 0; i < spf.Count; i++)
                         {
                             function_node fn = spf[i];
@@ -16299,6 +16378,27 @@ namespace PascalABCCompiler.TreeConverter
                                         try
                                         {
                                             exprs1[exprCounter] = convert_strong(en);
+
+                                            type_node resexprtype = fld.RealSemTypeOfResExpr as type_node;
+                                            type_node resformaltype = fld.RealSemTypeOfResult as type_node;
+                                            var bbb = resexprtype == resformaltype; // только в одном случае должно быть true - эту версию и надо выбирать. Если в нескольких, то неоднозначность
+                                            if (bbb)
+                                            {
+                                                GoodVersionsCountWithSameResType += 1;
+                                                spfnum = i; // здесь запоминаем индекс потому что он точно подойдет. Тогда ниже он запоминаться не будет. 
+                                            }
+
+                                            /*var tt = fn.parameters[exprCounter].type as compiled_type_node;
+                                            if (tt != null && tt.compiled_type.FullName.ToLower().StartsWith("system.func"))
+                                            {
+                                                resformaltype = tt.instance_params[tt.instance_params.Count - 1]; // Последний параметр в записи Func<T,T1,...TN> - тип возвращаемого значения
+                                                var bbb = resexprtype == resformaltype; // только в одном случае должно быть true - эту версию и надо выбирать. Если в нескольких, то неоднозначность
+                                                if (bbb)
+                                                {
+                                                    GoodVersionsCountWithSameResType += 1;
+                                                    spfnum = i; // здесь запоминаем индекс потому что он точно подойдет. Тогда ниже он запоминаться не будет. 
+                                                }
+                                            }*/
                                         }
                                         catch
                                         {
@@ -16328,14 +16428,15 @@ namespace PascalABCCompiler.TreeConverter
                                         exprCounter++;
                                     }
                                 }
-                                if (spfnum >= 0)
-                                    // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                                /*if (spfnum >= 0) // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
                                 {
                                     spfnum = -2;
                                     break;
-                                }
+                                }*/
 
-                                spfnum = i;
+                                if (GoodVersionsCountWithSameResType == 0)
+                                    spfnum = i; // здесь запоминаем индекс только если нет подошедших, совпадающих по типу возвращаемого значения
+                                GoodVersionsCount += 1;
                                 for (int j = 0; j < exprs.Count; j++) // копируем назад если всё хорошо
                                     exprs[j] = exprs1[j];
                             }
@@ -16346,10 +16447,9 @@ namespace PascalABCCompiler.TreeConverter
                                 lastmultex = e;
                             }
                         }
-                        if (spfnum == -2)
-                            // два удачных инстанцирования - плохо. Может, одно - с более близким типом возвращаемого значения, тогда это плохо - надо доделать, но пока так
+                        if (GoodVersionsCount > 1 && GoodVersionsCountWithSameResType != 1) // подошло много, но не было ровно одной с совпадающим типом возвращаемого значения
                             throw new SeveralFunctionsCanBeCalled(loc, spf);
-                        if (spfnum == -1) // было много, но ни одна не подошла из-за лямбд
+                        if (GoodVersionsCount == 0) // было много, но ни одна не подошла из-за лямбд
                         {
                             throw lastmultex;
                             //throw new NoFunctionWithSameArguments(subloc2, false);
@@ -17495,156 +17595,166 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
         {
-            if (_function_lambda_definition.substituting_node != null)
-            {
-                if (_function_lambda_definition.substituting_node is dot_node)
+            _function_lambda_definition.RealSemTypeOfResExpr = null; // После первого присваивания Result она будет содержать тип type_node в правой части Result
+            _function_lambda_definition.RealSemTypeOfResult = null;
+            try
+            {                
+                stflambda.Push(_function_lambda_definition);
+                if (_function_lambda_definition.substituting_node != null)
                 {
-                    visit((dot_node)_function_lambda_definition.substituting_node);
-                }
-                else
-                {
-                    if (_function_lambda_definition.substituting_node is ident)
+                    if (_function_lambda_definition.substituting_node is dot_node)
                     {
-                        visit((ident) _function_lambda_definition.substituting_node);
+                        visit((dot_node)_function_lambda_definition.substituting_node);
                     }
                     else
                     {
-                        if (_function_lambda_definition.substituting_node is ident_with_templateparams)
+                        if (_function_lambda_definition.substituting_node is ident)
                         {
-                            visit((ident_with_templateparams)_function_lambda_definition.substituting_node);
-                        }
-                    }
-                }
-                return;
-            }
-
-            Func<function_lambda_definition, ident_list, where_definition_list, expression> makeProcedureForLambdaAndVisit =
-                (lambdaDefinition, tempParsList, whereSection) =>
-                {
-                    var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDefinition);
-
-                    if (tempParsList != null)
-                    {
-                        procDecl.proc_header.template_args = tempParsList;
-                    }
-
-                    if (whereSection != null && whereSection.defs != null && whereSection.defs.Count != 0)
-                    {
-                        procDecl.proc_header.where_defs = whereSection;
-                    }
-
-                    if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static)
-                    {
-                        procDecl.proc_header.class_keyword = true;
-                        if (procDecl.proc_header.proc_attributes == null)
-                            procDecl.proc_header.proc_attributes = new SyntaxTree.procedure_attributes_list();
-                        procDecl.proc_header.proc_attributes.proc_attributes.Add(new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static));
-                    }
-
-                    try
-                    {
-                        visit(procDecl);
-                    }
-                    catch
-                    {
-                        context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, true);
-                        throw;
-                    }
-
-                    context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, false);
-
-                    return tempParsList == null ? 
-                        (expression) procDecl.proc_header.name.meth_name :
-                        (expression) new ident_with_templateparams(procDecl.proc_header.name.meth_name, new template_param_list(tempParsList.idents.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList()));
-                };
-
-
-            switch (lambdaProcessingState)
-            {
-                case LambdaProcessingState.FinishPhase:
-                    {
-                        if (context.top_function != null && context.top_function.generic_params != null)
-                        {
-                            var pars = context.top_function.generic_params.Select(par => new ident(par.name)).ToList();
-
-                            var whereSection =
-                                CapturedVariablesSubstitutor.GetWhereSection(
-                                    generic_parameter_eliminations.make_eliminations_common(
-                                        context.top_function.generic_params), pars);
-
-                            if (_function_lambda_definition.formal_parameters != null && _function_lambda_definition.formal_parameters.params_list.Count > 0)
-                            {
-                                for (var j = 0; j < _function_lambda_definition.formal_parameters.params_list.Count; j++)
-                                {
-                                    if (_function_lambda_definition.formal_parameters.params_list[j].vars_type is lambda_inferred_type)
-                                    {
-                                        if ((_function_lambda_definition.formal_parameters.params_list[j].vars_type as lambda_inferred_type).real_type is type_node)
-                                        {
-                                            _function_lambda_definition.formal_parameters.params_list[j].vars_type =
-                                                LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)(_function_lambda_definition.formal_parameters.params_list[j].vars_type as lambda_inferred_type).real_type);
-                                        }
-                                    }
-                                }
-                            }
-
-                            if (_function_lambda_definition.return_type is lambda_inferred_type)
-                            {
-                                if ((_function_lambda_definition.return_type as lambda_inferred_type).real_type is type_node)
-                                {
-                                    _function_lambda_definition.return_type = LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)(_function_lambda_definition.return_type as lambda_inferred_type).real_type);
-                                }
-                            }
-
-                            var methodNameToVisit = (ident_with_templateparams)makeProcedureForLambdaAndVisit(_function_lambda_definition, new ident_list(pars), whereSection);
-                            _function_lambda_definition.substituting_node = methodNameToVisit;
-                            visit(methodNameToVisit);
+                            visit((ident)_function_lambda_definition.substituting_node);
                         }
                         else
                         {
-                            var methodNameToVisit = (ident)makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
-                            _function_lambda_definition.substituting_node = methodNameToVisit;
-                            visit(methodNameToVisit);
-                        }
-                        break;
-                    }
-                case LambdaProcessingState.TypeInferencePhase:
-                    {
-                        if (_function_lambda_definition.lambda_visit_mode ==
-                            LambdaVisitMode.VisitForAdvancedMethodCallProcessing)
-                        {
-                            makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
-                            if (!LambdaHelper.IsAuxiliaryLambdaName(_function_lambda_definition.lambda_name))
+                            if (_function_lambda_definition.substituting_node is ident_with_templateparams)
                             {
-                                LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
+                                visit((ident_with_templateparams)_function_lambda_definition.substituting_node);
                             }
                         }
+                    }
+                    return;
+                }
 
-                        ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
+                Func<function_lambda_definition, ident_list, where_definition_list, expression> makeProcedureForLambdaAndVisit =
+                    (lambdaDefinition, tempParsList, whereSection) =>
+                    {
+                        var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDefinition);
 
-                        break;
-                    }
-                case LambdaProcessingState.ClosuresProcessingPhase:
-                    {
-                        makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
-                        LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
-                        ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
-                        break;
-                    }
-                case LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase:
-                    {
-                        makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
-                        break;
-                    }
-                case LambdaProcessingState.None:
-                    {
-                        if (context.converting_block() == block_type.namespace_block)
+                        if (tempParsList != null)
                         {
-                            var methodNameToVisit = (ident)makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
-                            _function_lambda_definition.substituting_node = methodNameToVisit;
-                            visit(methodNameToVisit);
+                            procDecl.proc_header.template_args = tempParsList;
                         }
-                        break;
-                    }
+
+                        if (whereSection != null && whereSection.defs != null && whereSection.defs.Count != 0)
+                        {
+                            procDecl.proc_header.where_defs = whereSection;
+                        }
+
+                        if (!context.func_stack.Empty && context.func_stack.top().polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                        {
+                            procDecl.proc_header.class_keyword = true;
+                            if (procDecl.proc_header.proc_attributes == null)
+                                procDecl.proc_header.proc_attributes = new SyntaxTree.procedure_attributes_list();
+                            procDecl.proc_header.proc_attributes.proc_attributes.Add(new SyntaxTree.procedure_attribute(PascalABCCompiler.SyntaxTree.proc_attribute.attr_static));
+                        }
+
+                        try
+                        {
+                            visit(procDecl);
+                        }
+                        catch
+                        {
+                            context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, true);
+                            throw;
+                        }
+
+                        context.remove_lambda_function(procDecl.proc_header.name.meth_name.name, false);
+
+                        return tempParsList == null ?
+                            (expression)procDecl.proc_header.name.meth_name :
+                            (expression)new ident_with_templateparams(procDecl.proc_header.name.meth_name, new template_param_list(tempParsList.idents.Select(l => SyntaxTreeBuilder.BuildSimpleType(l.name)).ToList()));
+                    };
+
+
+                switch (lambdaProcessingState)
+                {
+                    case LambdaProcessingState.FinishPhase:
+                        {
+                            if (context.top_function != null && context.top_function.generic_params != null)
+                            {
+                                var pars = context.top_function.generic_params.Select(par => new ident(par.name)).ToList();
+
+                                var whereSection =
+                                    CapturedVariablesSubstitutor.GetWhereSection(
+                                        generic_parameter_eliminations.make_eliminations_common(
+                                            context.top_function.generic_params), pars);
+
+                                if (_function_lambda_definition.formal_parameters != null && _function_lambda_definition.formal_parameters.params_list.Count > 0)
+                                {
+                                    for (var j = 0; j < _function_lambda_definition.formal_parameters.params_list.Count; j++)
+                                    {
+                                        if (_function_lambda_definition.formal_parameters.params_list[j].vars_type is lambda_inferred_type)
+                                        {
+                                            if ((_function_lambda_definition.formal_parameters.params_list[j].vars_type as lambda_inferred_type).real_type is type_node)
+                                            {
+                                                _function_lambda_definition.formal_parameters.params_list[j].vars_type =
+                                                    LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)(_function_lambda_definition.formal_parameters.params_list[j].vars_type as lambda_inferred_type).real_type);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (_function_lambda_definition.return_type is lambda_inferred_type)
+                                {
+                                    if ((_function_lambda_definition.return_type as lambda_inferred_type).real_type is type_node)
+                                    {
+                                        _function_lambda_definition.return_type = LambdaHelper.ConvertSemanticTypeToSyntaxType((type_node)(_function_lambda_definition.return_type as lambda_inferred_type).real_type);
+                                    }
+                                }
+
+                                var methodNameToVisit = (ident_with_templateparams)makeProcedureForLambdaAndVisit(_function_lambda_definition, new ident_list(pars), whereSection);
+                                _function_lambda_definition.substituting_node = methodNameToVisit;
+                                visit(methodNameToVisit);
+                            }
+                            else
+                            {
+                                var methodNameToVisit = (ident)makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                                _function_lambda_definition.substituting_node = methodNameToVisit;
+                                visit(methodNameToVisit);
+                            }
+                            break;
+                        }
+                    case LambdaProcessingState.TypeInferencePhase:
+                        {
+                            if (_function_lambda_definition.lambda_visit_mode ==
+                                LambdaVisitMode.VisitForAdvancedMethodCallProcessing)
+                            {
+                                makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                                if (!LambdaHelper.IsAuxiliaryLambdaName(_function_lambda_definition.lambda_name))
+                                {
+                                    LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
+                                }
+                            }
+
+                            ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
+
+                            break;
+                        }
+                    case LambdaProcessingState.ClosuresProcessingPhase:
+                        {
+                            makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                            LambdaHelper.RemoveLambdaInfoFromCompilationContext(context, _function_lambda_definition);
+                            ret.return_value((semantic_node)LambdaHelper.GetTempFunctionNodeForTypeInference(_function_lambda_definition, this));
+                            break;
+                        }
+                    case LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase:
+                        {
+                            makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                            break;
+                        }
+                    case LambdaProcessingState.None:
+                        {
+                            if (context.converting_block() == block_type.namespace_block)
+                            {
+                                var methodNameToVisit = (ident)makeProcedureForLambdaAndVisit(_function_lambda_definition, null, null);
+                                _function_lambda_definition.substituting_node = methodNameToVisit;
+                                visit(methodNameToVisit);
+                            }
+                            break;
+                        }
+                }
+            }
+            finally
+            {
+                stflambda.Pop();
             }
         }
 

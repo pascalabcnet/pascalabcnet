@@ -109,6 +109,7 @@
     </Compile>
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="tree\AbstractVisitor.cs" />
+    <Compile Include="tree\BaseEnterExitVisitor.cs" />
     <Compile Include="tree\TreeHelper.cs" />
     <Compile Include="tree\LambdaVisitMode.cs" />
     <Compile Include="tree\NodesBuilder.cs" />

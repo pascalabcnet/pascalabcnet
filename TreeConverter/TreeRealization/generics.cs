@@ -681,7 +681,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 catch (Exception exc)
                 {
-                    exception_on_body_compilation = exc; // Если произошгло исключением то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
+                    exception_on_body_compilation = exc; // Если произошло исключение то запишем его в выходной параметр, оно потом будет обработано вызывающим методом
                     result = false;
                 }
                 finally

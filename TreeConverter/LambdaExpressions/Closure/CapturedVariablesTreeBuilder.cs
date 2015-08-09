@@ -603,6 +603,13 @@ namespace TreeConverter.LambdaExpressions.Closure
             LambdaHelper.RemoveLambdaInfoFromCompilationContext(_visitor.context, lambdaDefinition);
         }
 
+        public override void visit(name_assign_expr nae) // Не надо захватывать явные имена полей в безымянных классах 
+        {
+            // visit(nae.name); - пропустить!
+            visit(nae.expr);
+        }
+
+
         private void VisitProcParameters(formal_parameters procParametres)
         {
             if (procParametres == null ||

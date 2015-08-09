@@ -3407,9 +3407,9 @@ _cmn.types.AddElement(tctn);*/
 #endif
 				//compar - найденная функция
 
-                common_function_node compar=((common_function_node)(si.sym_info));	
+                common_function_node compar=((common_function_node)(si.sym_info));
 
-				if (compar.is_overload==false)
+                if (compar.is_overload==false)
 				{
 					AddError(new FunctionMustBeWithOverloadDirective(compar,fn));
 				}
@@ -3423,7 +3423,7 @@ _cmn.types.AddElement(tctn);*/
                     else
 					    AddError(new FunctionDuplicateDefinition(compar,fn));
 				}
-				si=si.Next;
+                si = si.Next;
 			}
 		}
 
