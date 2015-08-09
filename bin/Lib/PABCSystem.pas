@@ -2721,6 +2721,26 @@ end;
 //------------------------------------------------------------------------------
 // StructuredObjectToString
 //------------------------------------------------------------------------------
+
+// ¬озвращает переопределенный в последнем потомке ToString или nil если ToString определен в Object
+function RedefinedToString(o: object): System.Reflection.MethodInfo;
+begin
+  var t := o.GetType;
+  var meth: System.Reflection.MethodInfo := nil;
+  while t<>typeof(Object) do
+  begin
+    meth := t.GetMethod('ToString',System.Reflection.BindingFlags.Public or
+                System.Reflection.BindingFlags.Instance or 
+                System.Reflection.BindingFlags.DeclaredOnly,nil,new System.Type[0],nil);
+    if meth<>nil then 
+      break;
+    t := t.BaseType;            
+  end;
+  if t=typeof(Object) then
+    Result := nil
+  else Result := meth;   
+end;
+
 function ArrNToString(a: System.Array; indexes: array of integer; i: integer): string; forward;
 
 function StructuredObjectToString(o: Object; n: integer := 0): string;
@@ -2775,7 +2795,7 @@ begin
   end
   else
   begin
-    var q := o.GetType.GetMethod('ToString',System.Reflection.BindingFlags.Public or System.Reflection.BindingFlags.Instance,nil,new System.Type[0],nil);
+    var q := RedefinedToString(o);
     var gg := o.GetType.FullName.StartsWith('System.Tuple');
     var gg1 := o.GetType.Name.StartsWith('KeyValuePair');
     if (q<>nil) and q.IsVirtual and not gg and not gg1 then
