@@ -54,7 +54,8 @@ namespace ParsePABC1
             foreach (var m in fields)
                 cm.Add(m);
             cm.Add(pd);
-            return new type_declaration(newClassName(), SyntaxTreeBuilder.BuildClassDefinition(cm), SyntaxTreeBuilder.BuildGenSC);
+            var td = new type_declaration(newClassName(), SyntaxTreeBuilder.BuildClassDefinition(cm), SyntaxTreeBuilder.BuildGenSC);
+            return td;
         }
 
         public override void visit(procedure_definition pd)
