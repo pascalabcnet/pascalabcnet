@@ -5,9 +5,9 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsePABC1", "ParsePABC1\ParsePABC1.csproj", "{BAA767F1-6544-4A44-BA17-5FBFCF6F2D99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTree", "..\..\PascalABC.NET\!PABC_Git\SyntaxTree\SyntaxTree.csproj", "{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTree", "..\SyntaxTree\SyntaxTree.csproj", "{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCompletion", "..\..\PascalABC.NET\!PABC_Git\CodeCompletion\CodeCompletion.csproj", "{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCompletion", "..\CodeCompletion\CodeCompletion.csproj", "{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

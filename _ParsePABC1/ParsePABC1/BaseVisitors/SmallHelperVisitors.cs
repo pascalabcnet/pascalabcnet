@@ -9,7 +9,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace ParsePABC1
 {
-    public class FindLocalDefsVisitor : WalkingVisitor // Запускать только для подпрограмм
+    public class FindLocalDefsVisitor : WalkingVisitorNew // Запускать только для подпрограмм
     {
         public ISet<string> ids = new HashSet<string>();
         private bool indef = false;
@@ -33,7 +33,7 @@ namespace ParsePABC1
         }
     }
 
-    public class FindMainIdentsVisitor : WalkingVisitor  // в выражении yield это надо будет. 
+    public class FindMainIdentsVisitor : WalkingVisitorNew  // в выражении yield это надо будет. 
     {
         public HashSet<string> vars = new HashSet<string>();
         public override void visit(ident id)

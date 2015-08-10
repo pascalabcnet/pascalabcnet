@@ -90,7 +90,7 @@ namespace PascalABCCompiler.SyntaxTree
             return cm;
         }
 
-        public static class_definition BuildClassDefinition(bool is_class, params class_members[] cms)
+        public static class_definition BuildClassOrRecordDefinition(bool is_class, params class_members[] cms)
         {
             var cb = new class_body();
             foreach (var cm in cms)
@@ -99,6 +99,11 @@ namespace PascalABCCompiler.SyntaxTree
             if (!is_class)
                 cd.keyword = class_keyword.Record;
             return cd;
+        }
+
+        public static class_definition BuildClassDefinition(params class_members[] cms)
+        {
+            return BuildClassOrRecordDefinition(true,cms);
         }
 
         // names и types передаю во внешний мир на предмет анализа того, что они не указатели. Снаружи они инициализируются пустыми списками
@@ -169,7 +174,7 @@ namespace PascalABCCompiler.SyntaxTree
             var cm2 = BuildSimpleConstructorSection(names, formnames, types);
             var cm3 = BuildOneMemberSection(pd);
 
-            return new type_declaration(class_name, BuildClassDefinition(true, cm1, cm2, cm3), BuildGenSC);
+            return new type_declaration(class_name, BuildClassOrRecordDefinition(true, cm1, cm2, cm3), BuildGenSC);
         }
 
         public static type_declaration BuildAutoClass(string class_name, List<ident> names, List<type_definition> types, bool is_class)
@@ -180,7 +185,7 @@ namespace PascalABCCompiler.SyntaxTree
             var cm2 = BuildSimpleConstructorSection(fnames,names,types);
             var cm3 = BuildSimpleReadPropertiesSection(names, fnames, types);
 
-            return new type_declaration(class_name, BuildClassDefinition(is_class, cm1, cm2, cm3), BuildGenSC);
+            return new type_declaration(class_name, BuildClassOrRecordDefinition(is_class, cm1, cm2, cm3), BuildGenSC);
         }
 
         public static type_declaration BuildClassWithFieldsOnly(string class_name, List<ident> names, List<type_definition> types, bool is_class)
@@ -189,7 +194,7 @@ namespace PascalABCCompiler.SyntaxTree
 
             var cm1 = BuildClassFieldsSection(fnames, types);
 
-            return new type_declaration(class_name, BuildClassDefinition(is_class, cm1), BuildGenSC);
+            return new type_declaration(class_name, BuildClassOrRecordDefinition(is_class, cm1), BuildGenSC);
         }
 
         public static procedure_definition BuildShortFuncDefinition(formal_parameters fp, procedure_attributes_list att, method_name name, type_definition result, expression ex, SourceContext headsc)

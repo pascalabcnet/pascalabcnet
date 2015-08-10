@@ -9,7 +9,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace ParsePABC1
 {
-    class BaseEnterExitVisitor: WalkingVisitor
+    class BaseEnterExitVisitor: WalkingVisitorNew
     {
         public BaseEnterExitVisitor()
         {

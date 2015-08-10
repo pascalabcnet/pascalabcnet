@@ -54,31 +54,16 @@ namespace ParsePABC1
                 if (idents.Count == 0)
                 {
                     // Выше  - variable_definitions, еще выше - declarations
-                    var uvdsl = UpperNode() as variable_definitions;
-                    uvdsl.var_definitions.Remove(vd);  // Проблема - мы удаляем первую var_def_statement и вторая становится первой. А в цикле обхода - индексы что естественно
+                    var uvdsl = UpperNodeAs<variable_definitions>();
+                    uvdsl.var_definitions.Remove(vd);  
                     if (uvdsl.var_definitions.Count == 0)
                     {
-                        var d = UpperNode(2) as declarations;
+                        var d = UpperNodeAs<declarations>(2);
                         d.defs.Remove(uvdsl);
                     }
-                }
-                    
+                }                    
             }
         }
-        public override void visit(variable_definitions vd) 
-        {
-            if (vd.var_definitions != null)
-                for (int i = vd.var_definitions.Count - 1; i >= 0; --i) // в обратном порядке - тогда удаление текущего элемента работает корректно
-                    ProcessNode(vd.var_definitions[i]);
-        }
-
-        public override void visit(declarations d)
-        {
-            if (d.defs != null)
-                for (int i = d.defs.Count - 1; i >= 0; --i) // в обратном порядке - тогда удаление текущего элемента работает корректно
-                    ProcessNode(d.defs[i]);
-        }
-
         public void AfterProcTraverse()
         {
             idsToDelete.ExceptWith(deletedIdsToDeleteInLocalScope); // исключаем из множества удаляемых идентификаторов те, которые мы нашли и удалили в секции var_statement. Это надо делать не для каждого описания, а в конце подпрограммы после удаления из всех секций var_statement

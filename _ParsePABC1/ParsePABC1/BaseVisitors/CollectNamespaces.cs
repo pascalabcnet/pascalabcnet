@@ -49,9 +49,11 @@ namespace ParsePABC1
         public override void visit(class_definition cl)
         {
             type_declarations tds = UpperNode(2) as type_declarations;
-            var f = tds.types_decl.Find(td => td.type_def == cl);
             if (PrintInfo)
+            {
+                var f = tds.types_decl.Find(td => td.type_def == cl);
                 Console.WriteLine(" " + f.type_name);
+            }
             base.visit(cl);
         }
     }

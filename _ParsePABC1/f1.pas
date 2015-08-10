@@ -11,6 +11,7 @@ var l,m,n: integer;
   kk,jj: real;
 begin
   var i,j,k,mmm: integer;
+  yield x111.x222+fff;
   yield l*k;
   yield i*n;
 end;

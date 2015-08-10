@@ -11,6 +11,7 @@
     <AssemblyName>ParsePABC1</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -83,11 +84,11 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\PascalABC.NET\!PABC_Git\CodeCompletion\CodeCompletion.csproj">
+    <ProjectReference Include="..\..\CodeCompletion\CodeCompletion.csproj">
       <Project>{1ab15f6e-c22e-499a-a7ed-54ba7de5cfa6}</Project>
       <Name>CodeCompletion</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\PascalABC.NET\!PABC_Git\SyntaxTree\SyntaxTree.csproj">
+    <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>

@@ -3017,7 +3017,7 @@ end;}
 // Extension methods for IEnumerable<T>
 //------------------------------------------------------------------------------
 /// Выводит последовательность на экран, используя delim в качестве разделителя
-function System.Collections.Generic.IEnumerable<T>.Print(delim: string := ' '): sequence of T;
+function System.Collections.Generic.IEnumerable<T>.Print(delim: string): sequence of T;
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
@@ -3027,16 +3027,28 @@ begin
   Result := Self;  
 end;
 
+/// Выводит последовательность на экран, используя пробел в качестве разделителя
+function System.Collections.Generic.IEnumerable<T>.Print(): sequence of T;
+begin
+  Result := Self.Print(' ');  
+end;
+
 /// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
-function System.Collections.Generic.IEnumerable<T>.Println(delim: string := ' '): sequence of T;
+function System.Collections.Generic.IEnumerable<T>.Println(delim: string): sequence of T;
 begin
   Self.Print(delim);
   Writeln;
   Result := Self;  
 end;
 
+/// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
+function System.Collections.Generic.IEnumerable<T>.Println(): sequence of T;
+begin
+  Result := Self.Println(' ');  
+end;
+
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
-function System.Collections.Generic.IEnumerable<T>.JoinIntoString(delim: string := ' '): string;
+function System.Collections.Generic.IEnumerable<T>.JoinIntoString(delim: string): string;
 begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
@@ -3045,6 +3057,12 @@ begin
   while g.MoveNext() do 
     sb.Append(delim + g.Current.ToString());
   Result := sb.ToString;  
+end;
+
+/// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
+function System.Collections.Generic.IEnumerable<T>.JoinIntoString(): string;
+begin
+  Result := Self.JoinIntoString(' ');  
 end;
 
 /// Применяет действие к каждому элементу последовательности

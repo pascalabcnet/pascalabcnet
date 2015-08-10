@@ -11,61 +11,57 @@ namespace ParsePABC1
 {
     class BaseChangeVisitor : CollectUpperNodesVisitor
     {
+        public override void DefaultVisit(syntax_tree_node n)
+        {
+            // Элементы списков - с конца в начало чтобы можно было эти элементы изменять по ходу (удалять/вставлять/заменять один несколькими)
+            var Сount = n.subnodes_count;
+            var СountWithoutListElements = n.subnodes_without_list_elements_count;
+
+            for (var i = 0; i < СountWithoutListElements; i++)
+                ProcessNode(n[i]);
+
+            for (var i = Сount - 1; i >= СountWithoutListElements; i--) // в обратном порядке
+                ProcessNode(n[i]);
+        }
+
         public void Replace(syntax_tree_node from, syntax_tree_node to)
         {
             var upper = UpperNode();
             if (upper == null)
                 throw new Exception("У корневого элемента нельзя получить UpperNode");
-
-            int ind = -1;
-            for (var i = 0; i < upper.subnodes_count; i++)
-                if (from == upper[i])
-                {
-                    ind = i;
-                    break;
-                }
-            upper[ind] = to;
+            upper.Replace(from, to);
         }
 
-        public statement_list UpperStatementList()
+        public T UpperNodeAs<T>(int up = 1) where T : syntax_tree_node
         {
-            var stl = UpperNode() as statement_list;
+            var stl = UpperNode(up) as T;
             if (stl == null)
-                throw new Exception("оператор вложен не в statement_list");
+                throw new Exception("Элемент вложен не в " + typeof(T));
             return stl;
+        }
+
+        public bool DeleteInIdentList(ident id)
+        {
+            var idl = UpperNodeAs<ident_list>();
+            return idl.Remove(id);
         }
 
         public bool DeleteInStatementList(statement st)
         {
-            var stl = UpperStatementList();
-            bool b = stl.subnodes.Remove(st);
-            return b;
-        }
-        public bool DeleteInIdentList(ident id)
-        {
-            var idl = UpperNode() as ident_list;
-            if (idl==null)
-                throw new Exception("идентификатор не вложен в id_list");
-            var b = idl.idents.Remove(id);
-            return b;
+            var stl = UpperNodeAs<statement_list>();
+            return stl.Remove(st);
         }
 
         public void ReplaceStatement(statement from, statement to)
         {
-            var stl = UpperStatementList();
-            var ind = stl.subnodes.IndexOf(from);
-            if (ind == -1)
-                throw new Exception("оператор from не найден - некорректный вызов ReplaceStatement");
-            stl.subnodes[ind] = to;
+            var stl = UpperNodeAs<statement_list>();
+            stl.Replace(from, to);
         }
-        public void ReplaceStatement(statement from, List<statement> to)
+
+        public void ReplaceStatement(statement from, IEnumerable<statement> to)
         {
-            var stl = UpperStatementList();
-            var ind = stl.subnodes.IndexOf(from);
-            if (ind == -1)
-                throw new Exception("оператор from не найден - некорректный вызов ReplaceStatement");
-            stl.subnodes.RemoveAt(ind);
-            stl.subnodes.InsertRange(ind, to);
+            var stl = UpperNodeAs<statement_list>();
+            stl.Replace(from, to);
         }
     }
 

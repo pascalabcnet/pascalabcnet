@@ -14,7 +14,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace ParsePABC1
 {
-    class SimplePrettyPrinterVisitor: WalkingVisitor
+    class SimplePrettyPrinterVisitor: WalkingVisitorNew
     {
         int off = 0;
 

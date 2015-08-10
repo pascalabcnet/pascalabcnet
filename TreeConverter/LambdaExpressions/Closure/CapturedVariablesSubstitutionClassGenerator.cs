@@ -286,7 +286,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                             var nextNodeWhereVarsAreCaptured = upperScopesStack.Pop();
                             if (!_capturedVarsClassDefs.ContainsKey(nextNodeWhereVarsAreCaptured.ScopeIndex))
                             {
-                                var classDef = SyntaxTreeBuilder.BuildClassDefinition(true);
+                                var classDef = SyntaxTreeBuilder.BuildClassDefinition();
                                 var typeDeclaration = new type_declaration(GeneratedClassName, classDef);
                                 _capturedVarsClassDefs.Add(nextNodeWhereVarsAreCaptured.ScopeIndex,
                                                            new ScopeClassDefinition(
@@ -462,7 +462,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     if (!_capturedVarsClassDefs.ContainsKey(scope.ScopeIndex))
                     {
-                        var classDef = SyntaxTreeBuilder.BuildClassDefinition(true);
+                        var classDef = SyntaxTreeBuilder.BuildClassDefinition();
                         var typeDeclaration = new type_declaration(GeneratedClassName, classDef);
                         _capturedVarsClassDefs.Add(scope.ScopeIndex,
                                                    new ScopeClassDefinition(
@@ -641,7 +641,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     if (!_capturedVarsClassDefs.ContainsKey(currentNode.ScopeIndex))
                     {
-                        var classDef = SyntaxTreeBuilder.BuildClassDefinition(true);
+                        var classDef = SyntaxTreeBuilder.BuildClassDefinition();
                         var typeDeclaration = new type_declaration(((CapturedVariablesTreeNodeClassScope)currentNode).ClassName, classDef);
                         _capturedVarsClassDefs.Add(currentNode.ScopeIndex,
                                                    new ScopeClassDefinition(currentNode.CorrespondingSyntaxTreeNode,
@@ -654,7 +654,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     if (!_capturedVarsClassDefs.ContainsKey(currentNode.ScopeIndex))
                     {
-                        var classDef = SyntaxTreeBuilder.BuildClassDefinition(true);
+                        var classDef = SyntaxTreeBuilder.BuildClassDefinition();
                         var typeDeclaration = new type_declaration(GeneratedClassName, classDef);
                         _capturedVarsClassDefs.Add(currentNode.ScopeIndex,
                                                    new ScopeClassDefinition(currentNode.CorrespondingSyntaxTreeNode,

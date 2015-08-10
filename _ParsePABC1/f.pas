@@ -7,8 +7,8 @@ const ccc: integer = 2;
 type bcd = integer;
 begin
   var k: integer;
-  yield x111.x222+fff;
-  yield aaa[i]^.d+(bbb.c*nnn^)*fff(4);
+//  yield x111.x222+fff;
+//  yield aaa[i]^.d+(bbb.c*nnn^)*fff(4);
 end;
 
 function f(var i,j,k: integer): integer;

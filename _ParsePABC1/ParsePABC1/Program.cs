@@ -1,4 +1,5 @@
 ﻿using System;
+using static System.Console;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,44 +25,52 @@ namespace ParsePABC1
 
             if (cu == null)
             {
-                Console.WriteLine("Не распарсилось");
+                WriteLine("Не распарсилось");
             }
             return cu;
         }
 
         static void Main(string[] args)
         {
-            var cu = ParseFile(@"d:\w5\ex1.pas");
-            if (cu == null)
-                return;
-                             
-            /*cu.visit(new ChangeWhileVisitor());
-            cu.visit(new DeleteRedundantBeginEnds());*/
+            try
+            {
+                var cu = ParseFile(@"d:\w5\yield2.pas");
+                if (cu == null)
+                    return;
 
-            /*cu.visit(new CollectUpperNamespacesVisitor());
+                /*cu.visit(new ChangeWhileVisitor());
+                cu.visit(new DeleteRedundantBeginEnds());*/
 
-            var allv = new AllVarsInProcYields();
-            cu.visit(allv);
-            allv.PrintDict();*/
+                /*cu.visit(new CollectUpperNamespacesVisitor());
 
-            /*var cnt = new CountNodesVisitor();
-            cu.visit(cnt);
-            cnt.PrintSortedByValue();*/
+                var allv = new AllVarsInProcYields();
+                cu.visit(allv);
+                allv.PrintDict();*/
 
-            /*var ld = new HashSet<string>();
-            ld.Add("a");
-            ld.Add("p1");
-            ld.Add("s");
-            var dld = new DeleteLocalDefs(ld);
-            cu.visit(dld);*/
+                /*var cnt = new CountNodesVisitor();
+                cu.visit(cnt);
+                cnt.PrintSortedByValue();*/
 
-            /*var p = new ProcessYieldCapturedVarsVisitor();
-            cu.visit(p);*/
+                /*var ld = new HashSet<string>();
+                ld.Add("a");
+                ld.Add("p1");
+                ld.Add("s");
+                var dld = new DeleteLocalDefs(ld);
+                cu.visit(dld);*/
 
-            var p = new CalcConstExprs();
-            cu.visit(p);
+                var p = new ProcessYieldCapturedVarsVisitor();
+                cu.visit(p);
 
-            cu.visit(new SimplePrettyPrinterVisitor());
+                /*var p = new CalcConstExprs();
+                cu.visit(p);*/
+
+                cu.visit(new SimplePrettyPrinterVisitor());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
         }
     }
 }

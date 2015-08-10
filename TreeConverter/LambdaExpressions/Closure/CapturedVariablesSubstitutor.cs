@@ -567,7 +567,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         private Tuple<type_declaration, List<procedure_definition>> CreateTypeDeclarationWithForwardDeclaration(type_declaration cl)
         {
             var oldClDef = (class_definition) cl.type_def;
-            var classDef = SyntaxTreeBuilder.BuildClassDefinition(true);
+            var classDef = SyntaxTreeBuilder.BuildClassDefinition();
             var typeDeclaration = new type_declaration(cl.type_name, classDef);
             classDef.where_section = oldClDef.where_section;
             var procedures = new List<procedure_definition>();
