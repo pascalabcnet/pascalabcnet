@@ -3877,6 +3877,11 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        private base_function_call get_function_call_copy(base_function_call bfc)
+        {
+            return bfc.copy();
+        }
+
         public override function_node get_implicit_conversion_to(type_node ctn)
         {
             foreach (base_function_call fn in _proper_methods)
@@ -3907,15 +3912,16 @@ namespace PascalABCCompiler.TreeRealization
                     (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) 
                     && fn.simple_function_node.parameters.Count == 2 && fn.simple_function_node.parameters[1].is_params)
                 {
+                    base_function_call copy_fn = get_function_call_copy(fn);
                     int param_num = (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) ? 1 : 0;
                 	if (fn.simple_function_node.return_value_type == ctn)
                     {
                 		common_namespace_function_call cnfc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.NewArrayProcedureDecl,null);
                         cnfc.parameters.AddElement(new typeof_operator(fn.simple_function_node.parameters[param_num].type, null));
                 		cnfc.parameters.AddElement(new int_const_node(0,null));
-                        if (fn.parameters.Count < fn.simple_function_node.parameters.Count)
-                		    fn.parameters.AddElement(cnfc);
-                		convert_function_to_function_call cftfc = new convert_function_to_function_call(fn);
+                        if (copy_fn.parameters.Count < fn.simple_function_node.parameters.Count)
+                            copy_fn.parameters.AddElement(cnfc);
+                		convert_function_to_function_call cftfc = new convert_function_to_function_call(copy_fn);
                         return (new convert_types_function_node(cftfc.compile_time_executor, true));
                         
                     }
@@ -3932,9 +3938,9 @@ namespace PascalABCCompiler.TreeRealization
                     common_namespace_function_call cnfc2 = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.NewArrayProcedureDecl,null);
                     cnfc2.parameters.AddElement(new typeof_operator(fn.simple_function_node.parameters[param_num].type, null));
                 	cnfc2.parameters.AddElement(new int_const_node(0,null));
-                    if (fn.parameters.Count < fn.simple_function_node.parameters.Count)
-                	    fn.parameters.AddElement(cnfc2);
-                    expression_node ennew=type_table.type_table_function_call_maker(ptc.first.convertion_method, null, fn);
+                    if (copy_fn.parameters.Count < fn.simple_function_node.parameters.Count)
+                        copy_fn.parameters.AddElement(cnfc2);
+                    expression_node ennew=type_table.type_table_function_call_maker(ptc.first.convertion_method, null, copy_fn);
                     convert_function_to_function_call cftfc2 = new convert_function_to_function_call(ennew);
                     return (new convert_types_function_node(cftfc2.compile_time_executor, false));
                 }
@@ -3943,10 +3949,12 @@ namespace PascalABCCompiler.TreeRealization
                     && fn.simple_function_node.parameters.Count == 2 && fn.simple_function_node.parameters[1].default_value != null)
                 {
                     int param_num = (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) ? 1 : 0;
+                    base_function_call copy_fn = null;
                     if (fn.simple_function_node.return_value_type == ctn)
                     {
-                        fn.parameters.AddElement(fn.simple_function_node.parameters[param_num].default_value);
-                        convert_function_to_function_call cftfc = new convert_function_to_function_call(fn);
+                        copy_fn = get_function_call_copy(fn);
+                        copy_fn.parameters.AddElement(fn.simple_function_node.parameters[param_num].default_value);
+                        convert_function_to_function_call cftfc = new convert_function_to_function_call(copy_fn);
                         return (new convert_types_function_node(cftfc.compile_time_executor, true));
 
                     }
@@ -3960,9 +3968,9 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         continue;
                     }
-                    
-                    fn.parameters.AddElement(fn.simple_function_node.parameters[param_num].default_value);
-                    expression_node ennew = type_table.type_table_function_call_maker(ptc.first.convertion_method, null, fn);
+                    copy_fn = get_function_call_copy(fn);
+                    copy_fn.parameters.AddElement(fn.simple_function_node.parameters[param_num].default_value);
+                    expression_node ennew = type_table.type_table_function_call_maker(ptc.first.convertion_method, null, copy_fn);
                     convert_function_to_function_call cftfc2 = new convert_function_to_function_call(ennew);
                     return (new convert_types_function_node(cftfc2.compile_time_executor, false));
                 }
