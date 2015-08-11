@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTree
@@ -218,6 +220,10 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class named_type_reference
     {
+        public named_type_reference(string name)
+        {
+            this.names = name.Split('.').Select(s => new ident(s)).ToList();
+        }
         public named_type_reference(ident id, SourceContext sc = null)
         {
             Add(id, sc);
@@ -1031,6 +1037,15 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Add(_named_type_reference, sc);
         }
+        public named_type_reference_list(string name)
+        {
+            Add(new named_type_reference(name));
+        }
+        public named_type_reference_list(string name1, string name2)
+        {
+            Add(new named_type_reference(name1));
+            Add(new named_type_reference(name2));
+        }
         public named_type_reference_list Add(named_type_reference _named_type_reference, SourceContext sc = null)
         {
             types.Add(_named_type_reference);
@@ -1038,10 +1053,20 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
+        public override string ToString()
+        {
+            return string.Join(",", this.types.Select(x => x.ToString()).ToArray());
+        }
     }
 
     public partial class template_param_list
     {
+        public template_param_list(string names)
+        {
+            foreach (var ntr in names.Split(',').Select(s => new named_type_reference(s)))
+                Add(ntr);
+        }
+
         public template_param_list(type_definition _type_definition, SourceContext sc = null)
         {
             Add(_type_definition, sc);

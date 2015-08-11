@@ -74,7 +74,13 @@ namespace ParsePABC1
             else if (st is class_definition)
             {
                 var cd = st as class_definition;
-                PrintlnNoOffset("class");
+                PrintNoOffset("class");
+                if (cd.class_parents != null && cd.class_parents.types.Count > 0)
+                {
+                    PrintlnNoOffset("(" + cd.class_parents.ToString() + ")");
+                }
+                else
+                    PrintlnNoOffset("");
                 off += 2;
                 ProcessNode(cd.body);
                 visitNode = false;

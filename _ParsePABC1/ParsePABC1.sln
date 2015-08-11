@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParsePABC1", "ParsePABC1\ParsePABC1.csproj", "{BAA767F1-6544-4A44-BA17-5FBFCF6F2D99}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTree", "..\SyntaxTree\SyntaxTree.csproj", "{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeCompletion", "..\CodeCompletion\CodeCompletion.csproj", "{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1AB15F6E-C22E-499A-A7ED-54BA7DE5CFA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

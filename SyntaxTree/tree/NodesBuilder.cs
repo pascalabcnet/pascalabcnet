@@ -103,7 +103,16 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static class_definition BuildClassDefinition(params class_members[] cms)
         {
-            return BuildClassOrRecordDefinition(true,cms);
+            return BuildClassOrRecordDefinition(true, cms);
+        }
+
+        public static class_definition BuildClassDefinition(named_type_reference_list parents, params class_members[] cms)
+        {
+            var cb = new class_body();
+            foreach (var cm in cms)
+                cb.Add(cm);
+            var cd = new class_definition(parents,cb);
+            return cd;
         }
 
         // names и types передаю во внешний мир на предмет анализа того, что они не указатели. Снаружи они инициализируются пустыми списками
