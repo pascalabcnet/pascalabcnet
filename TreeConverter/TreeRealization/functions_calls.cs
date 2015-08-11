@@ -33,6 +33,11 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public virtual base_function_call copy()
+        {
+            return this;
+        }
+
 
         /// <summary>
         /// Список фактических параметров. Количество и типы формальных и фактических параметров сверяется
@@ -284,6 +289,13 @@ namespace PascalABCCompiler.TreeRealization
                 return function_node;
             }
         }
+
+        public override base_function_call copy()
+        {
+            common_namespace_function_call cnfc_copy = new common_namespace_function_call(this.function_node, this.location);
+            cnfc_copy.parameters.AddRange(this.parameters);
+            return cnfc_copy;
+        }
     }
 
     /// <summary>
@@ -350,6 +362,13 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return function_node;
             }
+        }
+
+        public override base_function_call copy()
+        {
+            common_in_function_function_call cffc_copy = new common_in_function_function_call(this.function_node, this.static_depth, this.location);
+            cffc_copy.parameters.AddRange(this.parameters);
+            return cffc_copy;
         }
     }
 
@@ -431,6 +450,13 @@ namespace PascalABCCompiler.TreeRealization
                 _virtual_call = value;
             }
         }
+
+        public override base_function_call copy()
+        {
+            common_method_call cmc_copy = new common_method_call(this.function_node, this.obj, this.location);
+            cmc_copy.parameters.AddRange(this.parameters);
+            return cmc_copy;
+        }
     }
 
     [Serializable]
@@ -482,6 +508,13 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return function_node;
             }
+        }
+
+        public override base_function_call copy()
+        {
+            common_static_method_call cmc_copy = new common_static_method_call(this.function_node, this.location);
+            cmc_copy.parameters.AddRange(this.parameters);
+            return cmc_copy;
         }
 
     }
@@ -595,6 +628,13 @@ namespace PascalABCCompiler.TreeRealization
                 _virtual_call = value;
             }
         }
+
+        public override base_function_call copy()
+        {
+            compiled_function_call cfc_copy = new compiled_function_call(this.function_node, this.obj, this.location);
+            cfc_copy.parameters.AddRange(this.parameters);
+            return cfc_copy;
+        }
     }
 
     //Внимательно простмореть реализацию.
@@ -664,6 +704,13 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return (_template_parametres_list.ToArray());
             }
+        }
+
+        public override base_function_call copy()
+        {
+            compiled_static_method_call csmc_copy = new compiled_static_method_call(this.function_node, this.location);
+            csmc_copy.parameters.AddRange(this.parameters);
+            return csmc_copy;
         }
     }
 

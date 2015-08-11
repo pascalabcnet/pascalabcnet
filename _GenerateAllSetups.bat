@@ -41,7 +41,7 @@ ExecHide.exe gacutil.exe /u PABCRtl
 ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 
 cd ..\bin
-MPGORunner.exe
+REM MPGORunner.exe
 TestRunner.exe
 cd ..\ReleaseGenerators
 PascalABCNET_ALL.bat

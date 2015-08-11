@@ -5265,7 +5265,27 @@ namespace PascalABCCompiler.TreeConverter
                                         //lroman//
                                         #endregion
 
-                                        function_node fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                        function_node fn = null;
+                                        if (!skip_first_parameter || si.Next == null)
+                                            fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                        else
+                                        {
+                                            try
+                                            {
+                                                fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                            }
+                                            catch (Exception ex)
+                                            {
+                                                if (skip_first_parameter)
+                                                {
+                                                    si = tmp_si;
+                                                    exprs.remove_at(0);
+                                                    fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                                }
+                                                else
+                                                    throw ex;
+                                            }
+                                        }
                                         SemanticTree.IGenericInstance igi = fn as SemanticTree.IGenericInstance;
                                         if (igi != null)
                                         {
