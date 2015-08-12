@@ -808,8 +808,6 @@ namespace PascalABCCompiler.PCU
                     //mi = t.GetMethod(pcu_file.dotnet_names[off].name, new Type[1] { param_types[0].t });
                 }
             }
-            if (mi == null)
-                throw new Exception(pcu_file.dotnet_names[off].name+" "+t.FullName);
             dot_net_cache[off] = mi;
             return mi;
         }
