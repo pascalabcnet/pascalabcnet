@@ -1640,6 +1640,8 @@ var
 ///--
 procedure __InitModule__;
 ///--
+procedure __InitPABCSystem;
+///--
 procedure __FinalizeModule__;
 
 implementation
@@ -7675,6 +7677,11 @@ begin
     __from_dll := true;
     __InitModule;
   end;
+end;
+
+procedure __InitPABCSystem;
+begin
+  __InitModule__;
 end;
 
 procedure __FinalizeModule__;

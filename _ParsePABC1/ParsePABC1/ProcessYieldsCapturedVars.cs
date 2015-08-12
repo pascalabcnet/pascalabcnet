@@ -49,12 +49,24 @@ namespace ParsePABC1
 
         type_declaration GenClassForYield(procedure_definition pd, IEnumerable<var_def_statement> fields)
         {
+            var fh = (pd.proc_header as function_header);
+            var seqt = fh.return_type as sequence_type;
+            var stels = seqt.elements_type;
             // Теперь на месте процедуры генерируем класс
             var cm = new class_members(access_modifer.public_modifer);
             foreach (var m in fields)
                 cm.Add(m);
-            cm.Add(pd);
-            var td = new type_declaration(newClassName(), SyntaxTreeBuilder.BuildClassDefinition(cm), SyntaxTreeBuilder.BuildGenSC);
+
+            var st = SyntaxTreeBuilder.BuildSimpleVarDef("state", "integer");
+            var cur = new var_def_statement("current", stels);
+
+            var pb = pd.proc_body;
+            var fhh = new function_header(new formal_parameters(),new procedure_attributes_list(),"MoveNext","boolean");
+            var MoveNext = new procedure_definition(fhh, pb);
+
+            cm.Add(st).Add(cur).Add(MoveNext);
+            var interfaces = new named_type_reference_list("System.Collections.IEnumerator","System.Collections.IEnumerable");
+            var td = new type_declaration(newClassName()+"Helper", SyntaxTreeBuilder.BuildClassDefinition(interfaces, cm));
             return td;
         }
 

@@ -45,6 +45,9 @@
     <Reference Include="Localization">
       <HintPath>..\..\..\PascalABC.NET\!PABC_SVN1\bin\Localization.dll</HintPath>
     </Reference>
+    <Reference Include="NETGenerator">
+      <HintPath>..\..\bin\NETGenerator.dll</HintPath>
+    </Reference>
     <Reference Include="ParserTools">
       <HintPath>..\..\..\PascalABC.NET\!PABC_SVN1\bin\ParserTools.dll</HintPath>
     </Reference>
@@ -58,6 +61,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="TreeConverter">
+      <HintPath>..\..\bin\TreeConverter.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllVarsInProcYieldsProba.cs" />
@@ -84,10 +90,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CodeCompletion\CodeCompletion.csproj">
-      <Project>{1ab15f6e-c22e-499a-a7ed-54ba7de5cfa6}</Project>
-      <Name>CodeCompletion</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
