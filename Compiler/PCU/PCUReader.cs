@@ -790,24 +790,26 @@ namespace PascalABCCompiler.PCU
                 param_types[i] = FindSpecTypeByHandle(pcu_file.dotnet_names[off].addit[i].offset);
             }
             MethodInfo mi = null;
-                if (pcu_file.dotnet_names[off].name != "op_Explicit")
+            if (pcu_file.dotnet_names[off].name != "op_Explicit")
+            {
+                //mi = t.GetMethod(pcu_file.dotnet_names[off].name, param_types);
+                List<MemberInfo> mis = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
+                mi = ChooseMethod(t, mis, param_types);
+            }
+            else
+            {
+                MethodInfo[] mis = t.GetMethods();
+                foreach (MethodInfo mi2 in mis)
+                    if (mi2.Name == "op_Explicit" && mi2.GetParameters()[0].ParameterType == param_types[0].t && mi2.ReturnType == param_types[1].t) mi = mi2;
+                if (mi == null)
                 {
-                    //mi = t.GetMethod(pcu_file.dotnet_names[off].name, param_types);
-                    List<MemberInfo> mis = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
-                    mi = ChooseMethod(t, mis, param_types);
+                    List<MemberInfo> mis2 = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
+                    mi = ChooseMethod(t, mis2, param_types);
+                    //mi = t.GetMethod(pcu_file.dotnet_names[off].name, new Type[1] { param_types[0].t });
                 }
-                else
-                {
-                    MethodInfo[] mis = t.GetMethods();
-                    foreach (MethodInfo mi2 in mis)
-                        if (mi2.Name == "op_Explicit" && mi2.GetParameters()[0].ParameterType == param_types[0].t && mi2.ReturnType == param_types[1].t) mi = mi2;
-                    if (mi == null)
-                    {
-                        List<MemberInfo> mis2 = NetHelper.NetHelper.GetMembers(t, pcu_file.dotnet_names[off].name);
-                        mi = ChooseMethod(t, mis2, param_types);
-                        //mi = t.GetMethod(pcu_file.dotnet_names[off].name, new Type[1] { param_types[0].t });
-                    }
-                }
+            }
+            if (mi == null)
+                throw new Exception(pcu_file.dotnet_names[off].name+" "+t.FullName);
             dot_net_cache[off] = mi;
             return mi;
         }

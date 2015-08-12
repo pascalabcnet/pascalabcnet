@@ -13,6 +13,21 @@ begin
   Result := a;
 end;
 
+function ff(delim: string := ' '): string;
+begin
+  Result := 'abc';
+end;
+
+procedure tt(str: string);
+begin
+  assert(str = 'abc');
+end;
+
+procedure tt(i: integer);
+begin
+  raise new Exception;
+end;
+
 begin
 assert(test(2)=3);
 assert(test(2,4)=4);
@@ -24,4 +39,5 @@ var s := 'abcd';
 assert(s.test=6);
 var k := s.test;
 assert(k = 6);
+tt(ff);
 end.
