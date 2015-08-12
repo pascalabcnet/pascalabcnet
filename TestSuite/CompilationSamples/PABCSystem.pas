@@ -2269,9 +2269,9 @@ end;
 function FormatStr(obj: object): string;
 begin
   if (obj.GetType = typeof(char)) or (obj.GetType = typeof(string)) then
-    Result := '''' + string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', obj) + ''''
+    Result := '''' + string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', new object[](obj)) + ''''
   else
-    Result := string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', obj)
+    Result := string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', new object[](obj))
 end;
 
 function TypedSet.ToString: string;
