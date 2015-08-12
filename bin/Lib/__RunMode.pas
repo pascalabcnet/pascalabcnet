@@ -54,7 +54,7 @@ begin
   if not __initialized then
   begin
     __initialized := true;
-    PABCSystem.__InitModule__;
+    __InitPABCSystem;
     __InitModule;
   end;
 end;
