@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 12.08.2015 17:27:41
+// DateTime: 12.08.2015 22:25:22
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -4905,23 +4905,23 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 627: // optional_method_modificators -> tkSemiColon
 { 
-			CurrentSemanticValue.stn = new procedure_attributes_list(new procedure_attribute(proc_attribute.attr_overload),CurrentLocationSpan); 
+			CurrentSemanticValue.stn = new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan); 
 		}
         break;
       case 628: // optional_method_modificators -> tkSemiColon, meth_modificators, tkSemiColon
 { 
-			parsertools.AddModifier((procedure_attributes_list)ValueStack[ValueStack.Depth-2].stn, proc_attribute.attr_overload); 
+			//parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-2].stn; 
 		}
         break;
       case 629: // optional_method_modificators1 -> /* empty */
 { 
-			CurrentSemanticValue.stn = new procedure_attributes_list(new procedure_attribute(proc_attribute.attr_overload),CurrentLocationSpan); 
+			CurrentSemanticValue.stn = new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan); 
 		}
         break;
       case 630: // optional_method_modificators1 -> tkSemiColon, meth_modificators
 { 
-			parsertools.AddModifier((procedure_attributes_list)ValueStack[ValueStack.Depth-1].stn, proc_attribute.attr_overload); 
+			//parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
 		}
         break;

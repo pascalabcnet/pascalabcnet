@@ -3906,7 +3906,7 @@ namespace PascalABCCompiler.TreeConverter
                 clmem.access_mod = new SyntaxTree.access_modifer_node(SyntaxTree.access_modifer.public_modifer);
             }
             SyntaxTree.procedure_attributes_list pal = new PascalABCCompiler.SyntaxTree.procedure_attributes_list();
-            pal.proc_attributes.Add(new PascalABCCompiler.SyntaxTree.procedure_attribute(SyntaxTree.proc_attribute.attr_overload));
+            //pal.proc_attributes.Add(new PascalABCCompiler.SyntaxTree.procedure_attribute(SyntaxTree.proc_attribute.attr_overload)); attr_overload - убрал отовсюду! ССМ
             SyntaxTree.constructor constr = new PascalABCCompiler.SyntaxTree.constructor();
             constr.name = new SyntaxTree.method_name(null, null, new PascalABCCompiler.SyntaxTree.ident(compiler_string_consts.default_constructor_name), null);
             constr.proc_attributes = pal;
@@ -11515,7 +11515,10 @@ namespace PascalABCCompiler.TreeConverter
                         break;
                 }
             }
-        	for (int i = 0; i < _procedure_attributes_list.proc_attributes.Count; i++)
+            context.top_function.is_overload = true;                                       // SSM 12/08/15
+            context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
+
+            for (int i = 0; i < _procedure_attributes_list.proc_attributes.Count; i++)
             {
                 convertion_data_and_alghoritms.check_node_parser_error(_procedure_attributes_list.proc_attributes[i]);
                 for (int j = 0; j < i; j++)
@@ -11530,12 +11533,12 @@ namespace PascalABCCompiler.TreeConverter
                 
                 switch (_procedure_attributes_list.proc_attributes[i].attribute_type)
                 {
-                    case SyntaxTree.proc_attribute.attr_overload:
+                    case SyntaxTree.proc_attribute.attr_overload:// ничего не делать - это и так есть
                         {
-                			if (with_class_name && _procedure_attributes_list.proc_attributes[i].source_context != null) 
-                				AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
-                			context.top_function.is_overload = true;
-                            context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
+                		//	if (with_class_name && _procedure_attributes_list.proc_attributes[i].source_context != null) 
+                		//		AddError(get_location(_procedure_attributes_list.proc_attributes[i]),"DIRECTIVE_{0}_NOT_ALLOWED", _procedure_attributes_list.proc_attributes[i].name);
+                		//	context.top_function.is_overload = true;
+                        //    context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
                             break;
                         }
                     case SyntaxTree.proc_attribute.attr_forward:

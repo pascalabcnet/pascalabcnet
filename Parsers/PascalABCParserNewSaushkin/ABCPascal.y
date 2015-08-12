@@ -3057,11 +3057,11 @@ operator_name_ident
 optional_method_modificators
     : tkSemiColon                                        
         { 
-			$$ = new procedure_attributes_list(new procedure_attribute(proc_attribute.attr_overload),@$); 
+			$$ = new procedure_attributes_list(new List<procedure_attribute>(),@$); 
 		}
     | tkSemiColon meth_modificators tkSemiColon     
         { 
-			parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
+			//parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
 			$$ = $2; 
 		}
     ;
@@ -3069,11 +3069,11 @@ optional_method_modificators
 optional_method_modificators1
     : 
         { 
-			$$ = new procedure_attributes_list(new procedure_attribute(proc_attribute.attr_overload),@$); 
+			$$ = new procedure_attributes_list(new List<procedure_attribute>(),@$); 
 		}
     | tkSemiColon meth_modificators 
         { 
-			parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
+			//parsertools.AddModifier((procedure_attributes_list)$2, proc_attribute.attr_overload); 
 			$$ = $2; 
 		}
     ;

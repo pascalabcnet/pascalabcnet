@@ -936,7 +936,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class constructor
     {
-        public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null, sc)
+        public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(), null, false, false, null, null, sc)
         { }
     }
 

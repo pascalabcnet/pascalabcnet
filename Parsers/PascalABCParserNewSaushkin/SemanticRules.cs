@@ -362,14 +362,6 @@ namespace GPPGParserScanner
 			return lcl;
         }
 
-        public procedure_attributes_list NewOptMethModificators(LexLocation loc)
-        {
-            var nomm = new procedure_attributes_list();  
-			parsertools.AddModifier(nomm, proc_attribute.attr_overload);
-            nomm.source_context = loc;
-            return nomm;
-        }
-
         public var_def_statement NewVarOrIdentifier(ident identifier, named_type_reference fptype, LexLocation loc)
         {
             var n_t_r = fptype;

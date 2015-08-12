@@ -288,8 +288,8 @@ namespace PascalABCCompiler.VBNETParser
 				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_virtual));
 			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override)
 				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_override));
-			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Overloads) == ICSharpCode.NRefactory.Ast.Modifiers.Overloads)
-				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_overload));
+			//if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Overloads) == ICSharpCode.NRefactory.Ast.Modifiers.Overloads)
+			//	proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_overload));
 			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.New) == ICSharpCode.NRefactory.Ast.Modifiers.New)
 				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_reintroduce));
 			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Static) == ICSharpCode.NRefactory.Ast.Modifiers.Static)
@@ -321,8 +321,8 @@ namespace PascalABCCompiler.VBNETParser
 				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_virtual));
 			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Override) == ICSharpCode.NRefactory.Ast.Modifiers.Override)
 				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_override));
-			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Overloads) == ICSharpCode.NRefactory.Ast.Modifiers.Overloads)
-				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_overload));
+			//if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Overloads) == ICSharpCode.NRefactory.Ast.Modifiers.Overloads)
+			//	proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_overload));
 			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.New) == ICSharpCode.NRefactory.Ast.Modifiers.New)
 				proc_header.proc_attributes.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_reintroduce));
 			if ((method.Modifier & ICSharpCode.NRefactory.Ast.Modifiers.Static) == ICSharpCode.NRefactory.Ast.Modifiers.Static)
