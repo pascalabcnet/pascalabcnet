@@ -2670,9 +2670,12 @@ namespace CodeFormatters
             multiline_stack_push(_name_assign_expr);
             visit_node(_name_assign_expr.name);
             //sb.Append(" := ");
-            add_space_before = true;
-            add_space_after = true;
-            visit_node(_name_assign_expr.expr);
+            if (_name_assign_expr.name != null)
+            {
+                add_space_before = true;
+                add_space_after = true;
+                visit_node(_name_assign_expr.expr);
+            }
             multiline_stack_pop(_name_assign_expr);
         }
         public override void visit(name_assign_expr_list _name_assign_expr_list) // SSM 27.06.13
