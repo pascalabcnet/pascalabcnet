@@ -2668,10 +2668,14 @@ namespace CodeFormatters
         public override void visit(name_assign_expr _name_assign_expr) // SSM 27.06.13
         {
             multiline_stack_push(_name_assign_expr);
-            visit_node(_name_assign_expr.name);
-            //sb.Append(" := ");
-            if (_name_assign_expr.expr != null)
+            if (_name_assign_expr.name.source_context.Eq(_name_assign_expr.expr.source_context))
             {
+                visit_node(_name_assign_expr.expr);
+            }
+            else
+            {
+                visit_node(_name_assign_expr.name);
+                //sb.Append(" := ");
                 add_space_before = true;
                 add_space_after = true;
                 visit_node(_name_assign_expr.expr);

@@ -331,6 +331,11 @@ namespace PascalABCCompiler.SyntaxTree
             return string.Format("[({0},{1})-({2},{3})]",
 				begin_position.line_num,begin_position.column_num,end_position.line_num,end_position.column_num);
 		}
+        public bool Eq(SourceContext sc)
+        {
+            return begin_position.line_num == sc.begin_position.line_num && begin_position.column_num == sc.begin_position.column_num
+                && end_position.line_num == sc.end_position.line_num && end_position.column_num == sc.end_position.column_num;
+        }
         public bool In(SourceContext sc)
         {
             //return Position >= sc.Position && (Length + Position <= sc.Length + sc.Position);
