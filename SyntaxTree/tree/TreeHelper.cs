@@ -86,12 +86,8 @@ namespace PascalABCCompiler.SyntaxTree
         //-- List members begin
         public List<statement> list
         {
-            get
-            {
-                return subnodes;
-            }
+            get { return subnodes; }
         }
-
         public void AddMany(params statement[] els)
         {
             list.AddRange(els);
@@ -141,6 +137,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
             list.InsertRange(0, els);
         }
+        public static statement_list Empty
+        {
+            get { return new statement_list(); }
+        }
         //-- List members end
     }
 
@@ -161,6 +161,14 @@ namespace PascalABCCompiler.SyntaxTree
         public assign(addressed_value left, expression ex, SourceContext sc = null) : this(left, ex, Operators.Assignment, sc)
         { }
         public assign(string name, expression ex, SourceContext sc = null) : this(new ident(name), ex, sc)
+        { }
+        public assign(string name, string id) : this(new ident(name), new ident(id))
+        { }
+        public assign(string name, int value) : this(new ident(name), new int32_const(value))
+        { }
+        public assign(string name, double value) : this(new ident(name), new double_const(value))
+        { }
+        public assign(string name, char value) : this(new ident(name), new char_const(value))
         { }
         public override string ToString()
         {
@@ -374,6 +382,9 @@ namespace PascalABCCompiler.SyntaxTree
         public var_def_statement(ident id, type_definition type) : this(new ident_list(id), type)
         { }
 
+        public var_def_statement(ident id, string type) : this(new ident_list(id), new named_type_reference(type))
+        { }
+
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
@@ -399,7 +410,6 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Add(_declaration, sc);
         }
-
         public declarations Add(declaration _declaration, SourceContext sc = null)
         {
             defs.Add(_declaration);
@@ -407,33 +417,66 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
-        public void AddMany(params declaration[] ids)
-        {
-            defs.AddRange(ids);
-        }
 
-        public bool Remove(declaration st)
+        //-- List members begin
+        public List<declaration> list
         {
-            return defs.Remove(st);
+            get { return defs; }
         }
-        public void InsertAfter(declaration st, declaration newst)
+        public void AddMany(params declaration[] els)
         {
-            var ind = defs.FindIndex(x => x == st);
+            list.AddRange(els);
+        }
+        public bool Remove(declaration el)
+        {
+            return list.Remove(el);
+        }
+        private int FindIndex(declaration el)
+        {
+            var ind = list.FindIndex(x => x == el);
             if (ind == -1)
-                throw new Exception(string.Format("У {0} не найден {1} среди дочерних\n", this, st));
-            defs.Insert(ind + 1, newst);
+                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+            return ind;
         }
-        public void InsertBefore(declaration st, declaration newst)
+        public void Replace(declaration el, declaration newel)
         {
-            var ind = defs.FindIndex(x => x == st);
-            if (ind == -1)
-                throw new Exception(string.Format("У {0} не найден {1} среди дочерних\n", this, st));
-            defs.Insert(ind, newst);
+            list[FindIndex(el)] = newel;
         }
-        public void AddFirst(ident st)
+        public void Replace(declaration el, IEnumerable<declaration> newels)
         {
-            defs.Insert(0, st);
+            var ind = FindIndex(el);
+            list.RemoveAt(ind);
+            list.InsertRange(ind, newels);
         }
+        public void InsertAfter(declaration el, declaration newel)
+        {
+            list.Insert(FindIndex(el) + 1, newel);
+        }
+        public void InsertBefore(declaration el, declaration newel)
+        {
+            list.Insert(FindIndex(el), newel);
+        }
+        public void InsertAfter(declaration el, IEnumerable<declaration> newels)
+        {
+            list.InsertRange(FindIndex(el) + 1, newels);
+        }
+        public void InsertBefore(declaration el, IEnumerable<declaration> newels)
+        {
+            list.InsertRange(FindIndex(el), newels);
+        }
+        public void AddFirst(declaration el)
+        {
+            list.Insert(0, el);
+        }
+        public void AddFirst(IEnumerable<declaration> els)
+        {
+            list.InsertRange(0, els);
+        }
+        public static statement_list Empty
+        {
+            get { return new statement_list(); }
+        }
+        //-- List members end
     }
 
     public partial class program_tree
@@ -479,6 +522,10 @@ namespace PascalABCCompiler.SyntaxTree
             if (sc != null)
                 source_context = sc;
             return this;
+        }
+        public static expression_list Empty
+        {
+            get { return new expression_list(); }
         }
         public override string ToString()
         {
@@ -551,6 +598,13 @@ namespace PascalABCCompiler.SyntaxTree
         { }
         public typed_parameters(ident id, type_definition type): this(new ident_list(id), type)
         { }
+        public override string ToString()
+        {
+            var s = this.idents.ToString() + ": " + this.vars_type.ToString();
+            if (this.inital_value != null)
+                s += " := " + this.inital_value.ToString();
+            return s;
+        }
     }
 
     public partial class formal_parameters
@@ -566,8 +620,16 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
+        public override string ToString()
+        {
+            return string.Join(",", params_list.Select(p => p.ToString()));
+        }
+        public static formal_parameters Empty
+        {
+            get { return new formal_parameters(); }
+        }
     }
-///
+    ///
     public partial class procedure_attributes_list
     {
         public procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc = null)
@@ -607,6 +669,16 @@ namespace PascalABCCompiler.SyntaxTree
                 }
         }
 
+        //for sugar
+        public procedure_header(string name, formal_parameters fp, procedure_attributes_list pal) : this(fp, pal, new method_name(name), null, null)
+        { }
+
+        public procedure_header(string name, formal_parameters fp) : this(name, fp, new procedure_attributes_list())
+        { }
+
+        public procedure_header(string name) : this(name, new formal_parameters())
+        { }
+
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
@@ -632,9 +704,14 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         //for sugar
-        public function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype) : this(fp, pal, new method_name(name), null, new named_type_reference(returntype), null)
-        {
-        }
+        public function_header(string name, string returntype, formal_parameters fp, procedure_attributes_list pal) : this(fp, pal, new method_name(name), null, new named_type_reference(returntype), null)
+        { }
+
+        public function_header(string name, string returntype, formal_parameters fp) : this(fp, new procedure_attributes_list(), new method_name(name), null, new named_type_reference(returntype), null)
+        { }
+
+        public function_header(string name, string returntype) : this(new formal_parameters(), new procedure_attributes_list(), new method_name(name), null, new named_type_reference(returntype), null)
+        { }
 
         public override string ToString()
         {
@@ -664,6 +741,49 @@ namespace PascalABCCompiler.SyntaxTree
             source_context = null;
             is_short_definition = false;
         }
+
+        public procedure_definition(string name, formal_parameters fp, declarations defs, statement_list code) : this(new procedure_header(name,fp), new block(defs, code))
+        { }
+
+        public procedure_definition(string name, formal_parameters fp, statement_list code) : this(new procedure_header(name, fp), new block(null, code))
+        { }
+
+        public procedure_definition(string name, formal_parameters fp, statement st) : this(new procedure_header(name, fp), new block(null, new statement_list(st)))
+        { }
+
+        public procedure_definition(string name, declarations defs, statement_list code) : this(new procedure_header(name), new block(defs, code))
+        { }
+
+        public procedure_definition(string name, statement_list code, proc_block b) : this(new procedure_header(name), b)
+        { }
+
+        public procedure_definition(string name, statement_list code) : this(new procedure_header(name), new block(null, code))
+        { }
+
+        public procedure_definition(string name, statement st) : this(new procedure_header(name), new block(null, new statement_list(st)))
+        { }
+
+        public procedure_definition(string name, string rettype, formal_parameters fp, declarations defs, statement_list code) : this(new function_header(name, rettype, fp), new block(defs, code))
+        { }
+
+        public procedure_definition(string name, string rettype, formal_parameters fp, statement_list code) : this(new function_header(name, rettype, fp), new block(null, code))
+        { }
+
+        public procedure_definition(string name, string rettype, formal_parameters fp, statement st) : this(new function_header(name, rettype, fp), new block(null, new statement_list(st)))
+        { }
+
+        public procedure_definition(string name, string rettype, declarations defs, statement_list code) : this(new function_header(name, rettype), new block(defs, code))
+        { }
+
+        public procedure_definition(string name, string rettype, proc_block b) : this(new function_header(name, rettype), b)
+        { }
+
+        public procedure_definition(string name, string rettype, statement_list code) : this(new function_header(name, rettype), new block(null, code))
+        { }
+
+        public procedure_definition(string name, string rettype, statement st) : this(new function_header(name, rettype), new block(null, new statement_list(st)))
+        { }
+
         public void AssignAttrList(attribute_list al)
         {
             if (proc_header != null)
@@ -833,12 +953,17 @@ namespace PascalABCCompiler.SyntaxTree
         {
             access_mod = new access_modifer_node(access);
         }
-        public class_members Add(declaration _declaration, SourceContext sc = null)
+        public class_members Add(declaration _declaration, SourceContext sc)
         {
             members.Add(_declaration);
             if (sc != null)
                 source_context = sc;
             return this;
+        }
+        public void Add(params declaration[] decls)
+        {
+            foreach (var d in decls)
+                members.Add(d);
         }
     }
 
@@ -938,12 +1063,26 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(), null, false, false, null, null, sc)
         { }
+        public override string ToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append("constructor ");
+
+            sb.Append("(" + parameters.ToString() + ")");
+            sb.Append(";");
+            return sb.ToString();
+        }
     }
 
     public partial class block
     {
         public block(statement_list code) : this(null, code, null)
         { }
+
+        public static block Empty
+        {
+            get { return new block(null, new statement_list()); }
+        }
     }
 
     public partial class case_variants
@@ -1101,6 +1240,10 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public new_expr(type_definition type, expression_list pars, SourceContext sc = null) : this(type, pars, false, null, sc)
         { }
+        public override string ToString()
+        {
+            return "new "+this.type.ToString()+"("+this.params_list.ToString()+")";
+        }
     }
 
     public partial class where_type_specificator_list

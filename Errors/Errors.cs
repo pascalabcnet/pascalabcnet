@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+п»ї// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.IO;
@@ -55,7 +55,7 @@ namespace PascalABCCompiler.Errors
                 fn = Path.GetFileName(FileName);
             return string.Format(StringResources.Get("PARSER_ERRORS_COMPILATION_ERROR{0}{1}{2}"), fn, pos, Message);
              */
-            return (new CompilerInternalError("Errors.ToString",new Exception(string.Format("Не переопеределена {0}.ToString",this.GetType())))).ToString();
+            return (new CompilerInternalError("Errors.ToString",new Exception(string.Format("РќРµ РїРµСЂРµРѕРїРµСЂРµРґРµР»РµРЅР° {0}.ToString",this.GetType())))).ToString();
         }
 
         public virtual SourceLocation SourceLocation
@@ -167,7 +167,7 @@ namespace PascalABCCompiler.Errors
                 pos = "(?,?)";
             else
                 pos = "(" + source_context.begin_position.line_num + "," + source_context.begin_position.column_num + ")";
-            return Path.GetFileName(FileName) + pos + ": Синтаксическая ошибка :  " + Message + snode;
+            return Path.GetFileName(FileName) + pos + ": РЎРёРЅС‚Р°РєСЃРёС‡РµСЃРєР°СЏ РѕС€РёР±РєР° :  " + Message + snode;
         }
 
         public override SourceContext SourceContext

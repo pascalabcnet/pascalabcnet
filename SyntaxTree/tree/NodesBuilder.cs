@@ -239,7 +239,7 @@ namespace PascalABCCompiler.SyntaxTree
         {
             var pal = new procedure_attributes_list(proc_attribute.attr_override);
             var fp = new formal_parameters();
-            var ff = new function_header(fp, pal, "ToString", "string");
+            var ff = new function_header("ToString", "string", fp, pal);
 
             var cleft = new char_const('(');
             var cright = new char_const(')');

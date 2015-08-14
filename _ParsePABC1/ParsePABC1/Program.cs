@@ -21,11 +21,13 @@ namespace ParsePABC1
 
             var txt = System.IO.File.ReadAllText(fname);
 
-            var cu = c.ParsersController.Compile(fname, txt, err, PascalABCCompiler.Parsers.ParseMode.ForFormatter);
+            var cu = c.ParseText(fname, txt, err);
 
             if (cu == null)
             {
-                WriteLine("Не распарсилось");
+                if (err.Count > 0)
+                    WriteLine(err[0]);
+                else WriteLine("Не распарсилось");
             }
             return cu;
         }
@@ -34,7 +36,7 @@ namespace ParsePABC1
         {
             try
             {
-                var cu = ParseFile(@"d:\w5\yield2.pas");
+                var cu = ParseFile(@"..\..\..\yield2.pas");
                 if (cu == null)
                     return;
 

@@ -91,6 +91,7 @@
     File ..\bin\Lib\Utils.pcu
     File ..\bin\Lib\VCL.pcu
     File ..\bin\Lib\PT4Exam.pcu
+    File ..\bin\Lib\PT4Linq.pcu
     File ..\bin\Lib\PT4TaskMakerNET.pcu
     File ..\bin\Lib\RBDMUtils.pcu
     File ..\bin\Lib\Collections.pcu
@@ -135,6 +136,7 @@
     ${AddFile} "VCL.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
     ${AddFile} "PT4Exam.pcu"
+    ${AddFile} "PT4Linq.pcu"
     ${AddFile} "RBDMUtils.pcu"
     ${AddFile} "Collections.pcu"
     ${AddFile} "Core.pcu"
@@ -172,6 +174,7 @@
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
     File ..\bin\Lib\PT4Exam.pas
+    File ..\bin\Lib\PT4Linq.pas
     File ..\bin\Lib\Robot.pas
     File ..\bin\Lib\RobotField.pas
     File ..\bin\Lib\RobotTaskMaker.pas
@@ -216,6 +219,7 @@
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
     ${AddFile} "PT4Exam.pas"
+    ${AddFile} "PT4Linq.pas"
     ${AddFile} "Robot.pas"
     ${AddFile} "RobotField.pas"
     ${AddFile} "RobotTaskMaker.pas"
