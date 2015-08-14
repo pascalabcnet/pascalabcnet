@@ -2670,7 +2670,7 @@ namespace CodeFormatters
             multiline_stack_push(_name_assign_expr);
             visit_node(_name_assign_expr.name);
             //sb.Append(" := ");
-            if (_name_assign_expr.name != null)
+            if (_name_assign_expr.expr != null)
             {
                 add_space_before = true;
                 add_space_after = true;
