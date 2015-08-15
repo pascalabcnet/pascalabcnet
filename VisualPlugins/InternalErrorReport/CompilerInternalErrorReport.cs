@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -66,14 +66,16 @@ namespace VisualPascalABCPlugins
 			zip_out.Close();
         }
 
+        public delegate void ShowDialogDel();
+
         private void button1_Click(object sender, EventArgs e)
         {
-        	saveFileDialog.ShowDialog();
+            saveFileDialog.ShowDialog();
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            System.Diagnostics.Process.Start("mailto:" + ((Label)sender).Text);
+            System.Diagnostics.Process.Start("mailto:" + ((Label)sender).Text+ "?subject=Внутренняя ошибка компилятора&cc=miks@math.rsu.ru");
         }
 
         private void CompilerInternalErrorReport_Load(object sender, EventArgs e)
