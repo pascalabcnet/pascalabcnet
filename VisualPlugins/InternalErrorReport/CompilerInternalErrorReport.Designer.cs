@@ -104,10 +104,10 @@ namespace VisualPascalABCPlugins
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(367, 317);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(95, 13);
+            this.linkLabel1.Size = new System.Drawing.Size(129, 13);
             this.linkLabel1.TabIndex = 7;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "darkstarta@mail.ru";
+            this.linkLabel1.Text = "ibond84@googlemail.com";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // saveFileDialog
@@ -145,8 +145,8 @@ namespace VisualPascalABCPlugins
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "COMPILER_INTERNAL_ERROR";
-            this.Shown += new System.EventHandler(this.CompilerInternalErrorReport_Shown);
             this.Load += new System.EventHandler(this.CompilerInternalErrorReport_Load);
+            this.Shown += new System.EventHandler(this.CompilerInternalErrorReport_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

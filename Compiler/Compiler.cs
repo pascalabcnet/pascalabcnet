@@ -1028,7 +1028,9 @@ namespace PascalABCCompiler
         
         public void StartCompile()
         {
-            (new System.Threading.Thread(syncStartCompile)).Start();
+            System.Threading.Thread th = new System.Threading.Thread(syncStartCompile);
+            th.SetApartmentState(System.Threading.ApartmentState.STA);
+            th.Start();
         }
 
         public string Compile(CompilerOptions CompilerOptions)
