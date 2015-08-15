@@ -605,8 +605,8 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         public override void visit(name_assign_expr nae) // Не надо захватывать явные имена полей в безымянных классах 
         {
-            // visit(nae.name); - пропустить!
-            visit(nae.expr);
+            // ProcessNode(nae.name); - пропустить!
+            ProcessNode(nae.expr);
         }
 
 

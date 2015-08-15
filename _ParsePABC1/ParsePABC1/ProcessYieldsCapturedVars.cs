@@ -60,6 +60,7 @@ namespace ParsePABC1
             if (seqt == null)
                 throw new SyntaxError("Functions with yields must return sequences", "", fh.return_type.source_context, fh.return_type);
 
+            List<ident> lid = new List<ident>();
             var pars = fh.parameters;
             foreach (var ps in pars.params_list)
             {
@@ -69,6 +70,7 @@ namespace ParsePABC1
                     throw new SyntaxError("Parameters of functions with yields must not have initial values", "", pars.source_context, pars);
                 var_def_statement vds = new var_def_statement(ps.idents, ps.vars_type);
                 cm.Add(vds);
+                lid.AddRange(vds.vars.idents);
             }
 
             var stels = seqt.elements_type;
@@ -86,7 +88,14 @@ namespace ParsePABC1
             var assG = new assign("Result", new new_expr(new named_type_reference(className),expression_list.Empty));
             var GetEnumerator = new procedure_definition("GetEnumerator", "System.Collections.IEnumerator", assG);
 
-            pd.proc_body = new block(new statement_list(assG));
+            var stl = new statement_list(assG);
+            foreach (var id in lid)
+            {
+                var ass = new assign(new dot_node(new ident("Result"), id),id);
+                stl.Add(ass);
+            }
+            pd.proc_body = new block(stl);
+
 
             cm.Add(st, cur, Constr, Reset, MoveNext, GetCurrent, GetEnumerator);
 
@@ -110,6 +119,9 @@ namespace ParsePABC1
             pd.visit(dld); // Удалить в локальных и блочных описаниях этой процедуры все захваченные переменные
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать
             dld.AfterProcTraverse();
+
+            var chw = new ChangeWhileVisitor();
+            pd.visit(chw);
 
             // Конструируем определение класса
             var cc = GenClassForYield(pd, dld.BlockDeletedIds.Union(dld.LocalDeletedIds));
