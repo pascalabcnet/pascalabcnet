@@ -120,8 +120,7 @@ namespace ParsePABC1
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать
             dld.AfterProcTraverse();
 
-            var chw = new ChangeWhileVisitor();
-            pd.visit(chw);
+            ChangeWhileVisitor.New.ProcessNode(pd);
 
             // Конструируем определение класса
             var cc = GenClassForYield(pd, dld.BlockDeletedIds.Union(dld.LocalDeletedIds));
