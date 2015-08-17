@@ -1683,6 +1683,8 @@ namespace PascalABCCompiler.PCU
             cmn.is_overload = br.ReadBoolean();
             cmn.set_access_level((SemanticTree.field_access_level)br.ReadByte());
             cmn.polymorphic_state = (SemanticTree.polymorphic_state)br.ReadByte();
+            if (cmn.is_constructor && cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                cmn.cont_type.static_constr = cmn;
             cmn.num_of_default_variables = br.ReadInt32();
             cmn.num_of_for_cycles = br.ReadInt32();
             br.ReadBoolean();
