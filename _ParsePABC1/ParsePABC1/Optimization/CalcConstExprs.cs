@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class CalcConstExprs : BaseChangeVisitor // вычисление целых и вещественных константных выражений на этапе парсинга
+    public class CalcConstExprs : BaseChangeVisitor // вычисление целых и вещественных константных выражений на этапе парсинга
     {
         public override void Exit(syntax_tree_node st)
         {

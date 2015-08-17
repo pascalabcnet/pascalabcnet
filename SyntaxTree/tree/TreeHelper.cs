@@ -186,6 +186,10 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class un_expr
     {
+        public static un_expr Not(expression ex)
+        {
+            return new un_expr(ex, Operators.LogicalNOT); 
+        }
         public override string ToString()
         {
             return string.Format("{0} {1}", OperatorServices.ToString(operation_type, LanguageId.PascalABCNET),this.subnode);
@@ -906,9 +910,22 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class goto_statement
     {
+        static int lbnum = 0;
+
+        static public string newLabelName()
+        {
+            lbnum++;
+            return "lb#" + lbnum.ToString();
+        }
+
         public override string ToString()
         {
             return "goto " + label;
+        }
+
+        public static goto_statement New
+        {
+            get { return new goto_statement(newLabelName()); }
         }
     }
 
@@ -1479,5 +1496,39 @@ namespace PascalABCCompiler.SyntaxTree
             return "sequence of " + this.elements_type.ToString();
         }
     }
+
+    public partial class if_node
+    {
+        public if_node(expression _condition, statement _then_body)
+        {
+            this._condition = _condition;
+            this._then_body = _then_body;
+            this._else_body = null;
+        }
+    }
+    public partial class empty_statement
+    {
+        public static empty_statement New
+        {
+            get { return new empty_statement(); }
+        }
+    }
+
+    public partial class case_node
+    {
+        public case_node(expression _param, case_variants _conditions)
+        {
+            this._param = _param;
+            this._conditions = _conditions;
+            this._else_statement = null;
+        }
+        public case_node(expression _param)
+        {
+            this._param = _param;
+            this._conditions = new case_variants();
+            this._else_statement = null;
+        }
+    }
+
 }
 

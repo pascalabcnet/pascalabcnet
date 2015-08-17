@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
     public class FindLocalDefsVisitor : WalkingVisitorNew // Запускать только для подпрограмм
     {

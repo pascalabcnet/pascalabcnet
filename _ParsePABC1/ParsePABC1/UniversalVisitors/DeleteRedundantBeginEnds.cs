@@ -8,9 +8,9 @@ using PascalABCCompiler.Errors;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class DeleteRedundantBeginEnds : BaseChangeVisitor
+    public class DeleteRedundantBeginEnds : BaseChangeVisitor
     {
         public override void Exit(syntax_tree_node st)
         {

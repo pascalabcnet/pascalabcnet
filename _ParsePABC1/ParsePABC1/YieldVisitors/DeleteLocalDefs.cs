@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class DeleteLocalDefs : BaseChangeVisitor
+    public class DeleteLocalDefs : BaseChangeVisitor
     {
         public List<var_def_statement> LocalDeletedIds = new List<var_def_statement>();
         public List<var_def_statement> BlockDeletedIds = new List<var_def_statement>();

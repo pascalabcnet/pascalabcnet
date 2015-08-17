@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class CollectUpperNamespacesVisitor : CollectUpperNodesVisitor
+    public class CollectUpperNamespacesVisitor : CollectUpperNodesVisitor
     {
         protected List<declaration> list = new List<declaration>();
 

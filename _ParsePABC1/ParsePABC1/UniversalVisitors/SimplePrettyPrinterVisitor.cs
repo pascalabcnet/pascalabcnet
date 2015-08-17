@@ -12,13 +12,18 @@ using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class SimplePrettyPrinterVisitor: WalkingVisitorNew
+    public class SimplePrettyPrinterVisitor : WalkingVisitorNew
     {
         int off = 0;
 
         bool printNodeType = false;
+
+        public static SimplePrettyPrinterVisitor New
+        {
+            get { return new SimplePrettyPrinterVisitor(); }
+        }
 
         public SimplePrettyPrinterVisitor()
         {
@@ -64,6 +69,14 @@ namespace ParsePABC1
                 Println("type ");
                 off += 2;
             }
+            else if (st is case_variant)
+            {
+                var td = st as case_variant;
+                Println(td.conditions.ToString()+": ");
+                off += 2;
+                //ProcessNode(td.type_def);
+                //visitNode = false;
+            }
             else if (st is type_declaration)
             {
                 var td = st as type_declaration;
@@ -102,7 +115,7 @@ namespace ParsePABC1
                 var vds = st as var_def_statement;
                 Println(vds.ToString());
             }
-            else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members)
+            else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members || st is case_variants)
             {
             }
             else if (st is if_node)
@@ -128,6 +141,13 @@ namespace ParsePABC1
                 var wn = st as while_node;
 
                 Println("while " + wn.expr.ToString() + " do");
+                off += 2;
+            }
+            else if (st is case_node)
+            {
+                var cn = st as case_node;
+
+                Println("case " + cn.param.ToString() + " of");
                 off += 2;
             }
             else if (st is labeled_statement)
@@ -174,11 +194,11 @@ namespace ParsePABC1
                 off -= 2;
                 Println("end");
             }
-            else if (st is while_node || st is if_node || st is type_declarations || st is variable_definitions)
+            else if (st is while_node || st is if_node || st is type_declarations || st is variable_definitions || st is case_variant)
             {
                 off -= 2;
             }
-            else if (st is class_definition)
+            else if (st is class_definition || st is case_node)
             {
                 off -= 2;
                 Println("end;");

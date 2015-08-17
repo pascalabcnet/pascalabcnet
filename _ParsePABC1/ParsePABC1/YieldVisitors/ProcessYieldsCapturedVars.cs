@@ -11,9 +11,9 @@ using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
 
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor 
+    public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor 
     {
         int clnum = 0;
 
@@ -28,6 +28,11 @@ namespace ParsePABC1
         public int countNodesVisited;
 
         public bool hasYields = false;
+
+        public static ProcessYieldCapturedVarsVisitor New
+        {
+            get { return new ProcessYieldCapturedVarsVisitor(); }
+        }
 
         public ProcessYieldCapturedVarsVisitor()
         {
@@ -86,7 +91,7 @@ namespace ParsePABC1
 
             var className = newClassName() + "Helper";
             var assG = new assign("Result", new new_expr(new named_type_reference(className),expression_list.Empty));
-            var GetEnumerator = new procedure_definition("GetEnumerator", "System.Collections.IEnumerator", assG);
+            var GetEnumerator = new procedure_definition("GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"));
 
             var stl = new statement_list(assG);
             foreach (var id in lid)
@@ -102,6 +107,67 @@ namespace ParsePABC1
             var interfaces = new named_type_reference_list("System.Collections.IEnumerator","System.Collections.IEnumerable");
             var td = new type_declaration(className, SyntaxTreeBuilder.BuildClassDefinition(interfaces, cm));
             return td;
+        }
+
+        class ConstructFiniteAutomata
+        {
+            public statement_list res = new statement_list();
+            statement_list stl;
+            int curState = 0;
+
+            statement_list curStatList;
+            statement_list StatListAfterCase = new statement_list();
+
+            case_node cas; // формируемый case
+
+            public ConstructFiniteAutomata(statement_list stl)
+            {
+                this.stl = stl;
+            }
+
+            public void Process(statement st)
+            {
+                if (!(st is yield_node || st is labeled_statement))
+                {
+                    curStatList.Add(st);
+                }
+                if (st is yield_node)
+                {
+                    var yn = st as yield_node;
+                    curState += 1;
+                    curStatList.Add(new assign("current", yn.ex));
+                    curStatList.Add(new assign("state", curState));
+                    curStatList.Add(new assign("Result", new bool_const(true)));
+                    curStatList.Add(new procedure_call(new ident("exit")));
+
+                    curStatList = new statement_list();
+                    case_variant cv = new case_variant(new expression_list(new int32_const(curState)), curStatList);
+                    cas.conditions.variants.Add(cv);
+                }
+                if (st is labeled_statement)
+                {
+                    var ls = st as labeled_statement;
+                    curStatList = StatListAfterCase;
+                    curStatList.Add(new labeled_statement(ls.label_name,empty_statement.New));
+                    Process(ls.to_statement);
+                }
+            }
+
+            public void Transform()
+            {
+                cas = new case_node(new ident("state"));
+
+                curStatList = new statement_list();
+                case_variant cv = new case_variant(new expression_list(new int32_const(curState)), curStatList);
+                cas.conditions.variants.Add(cv);
+
+                foreach (var st in stl.subnodes)
+                    Process(st);
+
+                stl.subnodes = SeqStatements(cas,StatListAfterCase).ToList();
+                //statement_list res = new statement_list(cas);
+                res = stl;
+            }
         }
 
         public override void visit(procedure_definition pd)
@@ -120,7 +186,11 @@ namespace ParsePABC1
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать
             dld.AfterProcTraverse();
 
-            ChangeWhileVisitor.New.ProcessNode(pd);
+            LoweringVisitor.Accept(pd);
+
+            var cfa = new ConstructFiniteAutomata((pd.proc_body as block).program_code);
+            cfa.Transform();
+            (pd.proc_body as block).program_code = cfa.res;
 
             // Конструируем определение класса
             var cc = GenClassForYield(pd, dld.BlockDeletedIds.Union(dld.LocalDeletedIds));

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class BaseEnterExitVisitor: WalkingVisitorNew
+    public class BaseEnterExitVisitor : WalkingVisitorNew
     {
         public BaseEnterExitVisitor()
         {

@@ -653,8 +653,15 @@ namespace PascalABCCompiler
 
     public delegate void ChangeCompilerStateEventDelegate(ICompiler sender, CompilerState State, string FileName);
         
+    public interface ISyntaxTreeChanger
+    {
+        void Change(SyntaxTree.syntax_tree_node sn);
+    }
+
     public class Compiler : MarshalByRefObject, ICompiler
 	{
+        public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
+
         public static string Version
         {
             get
@@ -2208,7 +2215,7 @@ namespace PascalABCCompiler
             }
         }
 		
-        private List<SyntaxTree.unit_or_namespace> GetSyntaxInterfaceUsesList(SyntaxTree.compilation_unit CurrentSyntaxUnit)
+        public List<SyntaxTree.unit_or_namespace> GetSyntaxInterfaceUsesList(SyntaxTree.compilation_unit CurrentSyntaxUnit)
 		{
             List<SyntaxTree.unit_or_namespace> result = null;
 			if(CurrentSyntaxUnit is SyntaxTree.unit_module)
@@ -2450,7 +2457,7 @@ namespace PascalABCCompiler
             return Path.GetDirectoryName(FileName).ToLower() == CompilerOptions.SearchDirectory.ToLower();
         }
         
-        private void AddStandartUnitsToUsesSection(SyntaxTree.compilation_unit cu)
+        public void AddStandartUnitsToUsesSection(SyntaxTree.compilation_unit cu)
         {
             //if (FileInSearchDirectory(cu.file_name)) return;
             
@@ -2533,7 +2540,7 @@ namespace PascalABCCompiler
             	throw new AssemblyReadingError(CurrentCompilationUnit.SyntaxTree.file_name,UnitName,sc);
         }
         
-        private TreeRealization.unit_node_list GetReferences(CompilationUnit Unit)
+        public TreeRealization.unit_node_list GetReferences(CompilationUnit Unit)
         {
             //TODO переделать, ConvertDirectives определена дважды и вызывается дважды!
             TreeRealization.unit_node_list res = new TreeRealization.unit_node_list();
@@ -2618,7 +2625,7 @@ namespace PascalABCCompiler
             return false;
         }
 
-        private TreeRealization.using_namespace GetNamespace(SyntaxTree.unit_or_namespace _name_space)
+        public TreeRealization.using_namespace GetNamespace(SyntaxTree.unit_or_namespace _name_space)
         {
             return new TreeRealization.using_namespace(SyntaxTree.Utils.IdentListToString(_name_space.name.idents, "."));
         }
@@ -2635,19 +2642,19 @@ namespace PascalABCCompiler
             return new TreeRealization.using_namespace(full_namespace_name);
         }
 
-        private void AddNamespaces(TreeRealization.using_namespace_list using_list, List<SyntaxTree.unit_or_namespace> namespaces, bool possible_is_units)
+        public void AddNamespaces(TreeRealization.using_namespace_list using_list, List<SyntaxTree.unit_or_namespace> namespaces, bool possible_is_units)
         {
             foreach (SyntaxTree.unit_or_namespace ns in namespaces)
                 using_list.AddElement(GetNamespace(using_list, SyntaxTree.Utils.IdentListToString(ns.name.idents, "."), ns, possible_is_units));
         }
         
-        private void AddNamespaces(TreeRealization.using_namespace_list using_list, SyntaxTree.using_list ul)
+        public void AddNamespaces(TreeRealization.using_namespace_list using_list, SyntaxTree.using_list ul)
         {
             if (ul != null) 
                 AddNamespaces(using_list, ul.namespaces, false);
         }
 
-        private SyntaxTree.using_list GetInterfaceSyntaxUsingList(SyntaxTree.compilation_unit cu)
+        public SyntaxTree.using_list GetInterfaceSyntaxUsingList(SyntaxTree.compilation_unit cu)
         {
             if (cu is SyntaxTree.unit_module)
                 return (cu as SyntaxTree.unit_module).interface_part.using_namespaces;
@@ -2829,7 +2836,14 @@ namespace PascalABCCompiler
                         throw new SourceFileNotFound(UnitName);
                     else
                         throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
+
                 CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList);
+
+                if (errorsList.Count == 0) // SSM 17/08/15 - для преобразования синтаксических деревьев извне
+                {
+                    if (SyntaxTreeChanger != null)
+                        SyntaxTreeChanger.Change(CurrentUnit.SyntaxTree);
+                }
 
                 if (errorsList.Count == 0 && need_gen_doc(CurrentUnit.SyntaxTree))
                 {

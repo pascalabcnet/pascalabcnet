@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class CountNodesVisitor : BaseEnterExitVisitor
+    public class CountNodesVisitor : BaseEnterExitVisitor
     {
         public Dictionary<System.Type, int> d = new Dictionary<System.Type, int>();
 

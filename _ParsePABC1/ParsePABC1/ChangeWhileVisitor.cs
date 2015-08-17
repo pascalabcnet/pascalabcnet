@@ -8,9 +8,9 @@ using PascalABCCompiler.Errors;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class ChangeWhileVisitor : BaseChangeVisitor
+    public class ChangeWhileVisitor : BaseChangeVisitor
     {
         int lbnum = 0;
 

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class AllVarsInProcYields : CollectUpperNamespacesVisitor 
+    public class AllVarsInProcYields : CollectUpperNamespacesVisitor 
     {
         public FindMainIdentsVisitor mids = new FindMainIdentsVisitor();
 

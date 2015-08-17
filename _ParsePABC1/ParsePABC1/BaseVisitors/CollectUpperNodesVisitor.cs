@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class CollectUpperNodesVisitor : BaseEnterExitVisitor
+    public class CollectUpperNodesVisitor : BaseEnterExitVisitor
     {
         protected List<syntax_tree_node> listNodes = new List<syntax_tree_node>();
 

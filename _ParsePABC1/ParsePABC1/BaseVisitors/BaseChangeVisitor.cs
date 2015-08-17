@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
-namespace ParsePABC1
+namespace SyntaxVisitors
 {
-    class BaseChangeVisitor : CollectUpperNodesVisitor
+    public class BaseChangeVisitor : CollectUpperNodesVisitor
     {
         public override void DefaultVisit(syntax_tree_node n)
         {
@@ -50,6 +50,16 @@ namespace ParsePABC1
         {
             var stl = UpperNodeAs<statement_list>();
             return stl.Remove(st);
+        }
+
+        public static IEnumerable<statement> SeqStatements(params statement[] seq)
+        {
+            var l = new List<statement>();
+            foreach (var st in seq)
+                if (st is statement_list)
+                    l.AddRange((st as statement_list).list);
+                else l.Add(st);
+            return l;
         }
 
         public void ReplaceStatement(statement from, statement to)
