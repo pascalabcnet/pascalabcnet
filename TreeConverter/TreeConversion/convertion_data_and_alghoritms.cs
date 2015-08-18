@@ -195,7 +195,10 @@ namespace PascalABCCompiler.TreeConverter
                 case semantic_node_type.local_variable:
                     return new local_variable_reference((local_variable)vd, 0, loc);
                 case semantic_node_type.class_field:
-                    return new class_field_reference((class_field)vd, syntax_tree_visitor.GetCurrentObjectReference((vd as class_field).cont_type.Scope,vd,loc), loc);
+                    if (vd.polymorphic_state == polymorphic_state.ps_static)
+                        return new static_class_field_reference((class_field)vd, loc);
+                    else
+                        return new class_field_reference((class_field)vd, syntax_tree_visitor.GetCurrentObjectReference((vd as class_field).cont_type.Scope,vd,loc), loc);
                 case semantic_node_type.namespace_variable:
                     return new namespace_variable_reference((namespace_variable)vd, loc);
                 case semantic_node_type.local_block_variable:
