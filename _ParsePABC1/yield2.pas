@@ -1,8 +1,4 @@
-type A = class
-  j,k: integer;
-end;
-
-function Gen(a,b: real): sequence of integer;
+function Gen(a,b: integer): sequence of integer;
 var j,k: real;
 begin
   var i := 1;
@@ -15,4 +11,6 @@ begin
 end;
 
 begin
+  foreach var x in Gen(1,2) do
+    Print(x);
 end.

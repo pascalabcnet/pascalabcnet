@@ -257,6 +257,22 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class template_type_reference
+    {
+        public override string ToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append(this.name.ToString());
+            sb.Append("<");
+            sb.Append(params_list.params_list[0].ToString());
+            for (int i = 1; i < params_list.params_list.Count; i++)
+                sb.Append("," + params_list.params_list[i].ToString());
+            sb.Append(">");
+            return sb.ToString();
+        }
+    }
+
+
     public partial class variable_definitions
     {
         public variable_definitions(var_def_statement _var_def_statement, SourceContext sc = null)
@@ -384,6 +400,9 @@ namespace PascalABCCompiler.SyntaxTree
         { }
 
         public var_def_statement(ident id, type_definition type) : this(new ident_list(id), type)
+        { }
+
+        public var_def_statement(ident id, type_definition type, expression iv) : this(new ident_list(id), type, iv)
         { }
 
         public var_def_statement(ident id, string type) : this(new ident_list(id), new named_type_reference(type))
@@ -708,6 +727,12 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         //for sugar
+        public function_header(string name, type_definition returntype, formal_parameters fp) : this(fp, new procedure_attributes_list(), new method_name(name), null, returntype, null)
+        { }
+
+        public function_header(string name, type_definition returntype) : this(new formal_parameters(), new procedure_attributes_list(), new method_name(name), null, returntype, null)
+        { }
+
         public function_header(string name, string returntype, formal_parameters fp, procedure_attributes_list pal) : this(fp, pal, new method_name(name), null, new named_type_reference(returntype), null)
         { }
 
@@ -933,7 +958,11 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString()
         {
-            return dereferencing_value.ToString() + "(" + parameters.ToString() + ")";
+            string s = dereferencing_value.ToString();
+            if (parameters != null)
+                s += "(" + parameters.ToString() + ")";
+            else s += "()";
+            return s;
         }
     }
 
@@ -1078,14 +1107,16 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class constructor
     {
-        public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(), null, false, false, null, null, sc)
+        public constructor(formal_parameters fp, SourceContext sc = null) : this(null, fp, new procedure_attributes_list(), new method_name("Create"), false, false, null, null, sc)
         { }
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("constructor ");
-
-            sb.Append("(" + parameters.ToString() + ")");
+            if (parameters != null)
+                sb.Append("(" + parameters.ToString() + ")");
+            else
+                sb.Append("()");
             sb.Append(";");
             return sb.ToString();
         }
@@ -1256,6 +1287,10 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class new_expr
     {
         public new_expr(type_definition type, expression_list pars, SourceContext sc = null) : this(type, pars, false, null, sc)
+        { }
+        public new_expr(string type, expression_list pars) : this(new named_type_reference(type), pars, false, null)
+        { }
+        public new_expr(string type) : this(new named_type_reference(type), expression_list.Empty, false, null)
         { }
         public override string ToString()
         {

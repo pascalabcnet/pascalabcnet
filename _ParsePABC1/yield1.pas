@@ -1,9 +1,11 @@
 function Gen: sequence of integer;
 begin
-  for var i:=1 to 10 do
-    yield i*i;
+  yield 1;
+  yield 5;
 end;
 
 begin
-  
+  var q := Gen();
+  foreach var x in q do
+    Print(x);
 end.
