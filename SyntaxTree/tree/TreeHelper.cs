@@ -92,6 +92,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
             list.AddRange(els);
         }
+        public void AddMany(IEnumerable<statement> els)
+        {
+            list.AddRange(els);
+        }
         public bool Remove(statement el)
         {
             return list.Remove(el);
@@ -169,6 +173,8 @@ namespace PascalABCCompiler.SyntaxTree
         public assign(string name, double value) : this(new ident(name), new double_const(value))
         { }
         public assign(string name, char value) : this(new ident(name), new char_const(value))
+        { }
+        public assign(string name, bool value) : this(new ident(name), new bool_const(value))
         { }
         public override string ToString()
         {
@@ -259,6 +265,8 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class template_type_reference
     {
+        public template_type_reference(string name, template_param_list params_list): this(new named_type_reference(name), params_list)
+        { }
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
@@ -771,6 +779,11 @@ namespace PascalABCCompiler.SyntaxTree
             is_short_definition = false;
         }
 
+        public static procedure_definition EmptyDefaultConstructor
+        {
+            get { return new procedure_definition(new constructor(null), block.Empty, null); }
+        }
+            
         public procedure_definition(string name, formal_parameters fp, declarations defs, statement_list code) : this(new procedure_header(name,fp), new block(defs, code))
         { }
 
@@ -789,7 +802,16 @@ namespace PascalABCCompiler.SyntaxTree
         public procedure_definition(string name, statement_list code) : this(new procedure_header(name), new block(null, code))
         { }
 
+        public procedure_definition(procedure_header proc_header, statement_list code) : this(proc_header, new block(null, code))
+        { }
+
+        public procedure_definition(string name) : this(new procedure_header(name), new block(null, statement_list.Empty))
+        { }
+
         public procedure_definition(string name, statement st) : this(new procedure_header(name), new block(null, new statement_list(st)))
+        { }
+
+        public procedure_definition(procedure_header proc_header, statement st) : this(proc_header, new block(null, new statement_list(st)))
         { }
 
         public procedure_definition(string name, string rettype, formal_parameters fp, declarations defs, statement_list code) : this(new function_header(name, rettype, fp), new block(defs, code))
@@ -927,6 +949,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class dot_node
     {
+        public dot_node (ident left, ident right)
+        {
+            this.left = left;
+            this.right = right;
+        }
         public override string ToString()
         {
             return left.ToString() + "." + right.ToString();
@@ -991,6 +1018,14 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class class_members
     {
+        public static class_members Public
+        {
+            get { return new class_members(access_modifer.public_modifer); }
+        }
+        public static class_members Private
+        {
+            get { return new class_members(access_modifer.private_modifer); }
+        }
         public class_members(declaration _declaration, SourceContext sc = null)
         {
             Add(_declaration, sc);
@@ -1006,10 +1041,11 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
-        public void Add(params declaration[] decls)
+        public class_members Add(params declaration[] decls)
         {
             foreach (var d in decls)
                 members.Add(d);
+            return this;
         }
     }
 
@@ -1099,6 +1135,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class procedure_call
     {
+        public procedure_call(ident name)
+        {
+            this._func_name = name;
+        }
+
         public override string ToString()
         {
             return func_name.ToString();
@@ -1330,6 +1371,36 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class var_statement
     {
+        public var_statement(ident_list vars, type_definition type, expression iv)
+        {
+            var_def = new var_def_statement(vars, type, iv);
+        }
+
+        public var_statement(ident_list vars, type_definition type)
+        {
+            var_def = new var_def_statement(vars, type);
+        }
+
+        public var_statement(ident id, type_definition type, expression iv)
+        {
+            var_def = new var_def_statement(new ident_list(id), type, iv);
+        }
+
+        public var_statement(ident id, type_definition type)
+        {
+            var_def = new var_def_statement(new ident_list(id), type);
+        }
+
+        public var_statement(ident id, string type)
+        {
+            var_def = new var_def_statement(new ident_list(id), new named_type_reference(type));
+        }
+
+        public var_statement(ident id, expression iv)
+        {
+            var_def = new var_def_statement(new ident_list(id), null, iv);
+        }
+
         public override string ToString()
         {
             return "var " + var_def.ToString();
@@ -1562,6 +1633,15 @@ namespace PascalABCCompiler.SyntaxTree
             this._param = _param;
             this._conditions = new case_variants();
             this._else_statement = null;
+        }
+    }
+
+    public partial class labeled_statement
+    {
+        public labeled_statement(ident label_name)
+        {
+            this._label_name = label_name;
+            this._to_statement = empty_statement.New;
         }
     }
 

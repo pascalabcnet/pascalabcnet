@@ -43,9 +43,32 @@ namespace SyntaxVisitors
 
             var if0 = new if_node(un_expr.Not(wn.expr), gt1);
             var lb2 = new labeled_statement(gt2.label, if0);
-            var lb1 = new labeled_statement(gt1.label, empty_statement.New);
+            var lb1 = new labeled_statement(gt1.label);
 
             ReplaceStatement(wn, SeqStatements(lb2, wn.statements, gt2, lb1));
+
+            // в declarations ближайшего блока добавить описание labels
+            block bl = listNodes.FindLast(x => x is block) as block;
+
+            bl.defs.Add(new label_definitions(gt1.label, gt2.label));
+        }
+        public override void visit(for_node fn)
+        {
+            ProcessNode(fn.statements);
+            var b = HasStatementVisitor<yield_node>.Has(fn);
+            if (!b)
+                return;
+
+            var gt1 = goto_statement.New;
+            var gt2 = goto_statement.New;
+
+            var assi = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+
+            var if0 = new if_node(new bin_expr(fn.loop_variable, fn.finish_value,Operators.Greater), gt1);
+            var lb2 = new labeled_statement(gt2.label, if0);
+            var lb1 = new labeled_statement(gt1.label);
+
+            ReplaceStatement(fn, SeqStatements(lb2, fn.statements, gt2, lb1));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;

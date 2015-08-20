@@ -13,6 +13,12 @@ using PascalABCCompiler.Errors;
 
 namespace SyntaxVisitors
 {
+    public static class Consts
+    {
+        public static string Current = "<>current";
+        public static string State = "<>state";
+    }
+
     public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor 
     {
         int clnum = 0;
@@ -53,13 +59,6 @@ namespace SyntaxVisitors
 
         type_declarations GenClassesForYield(procedure_definition pd, IEnumerable<var_def_statement> fields)
         {
-            // Теперь на месте процедуры генерируем класс
-            var cm = new class_members(access_modifer.public_modifer);
-            foreach (var m in fields)
-                cm.Add(m);
-
-            var st = new var_def_statement("state", "integer");
-
             var fh = (pd.proc_header as function_header);
             if (fh == null)
                 throw new SyntaxError("Only functions can contain yields", "", pd.proc_header.source_context, pd.proc_header);
@@ -67,6 +66,14 @@ namespace SyntaxVisitors
             if (seqt == null)
                 throw new SyntaxError("Functions with yields must return sequences", "", fh.return_type.source_context, fh.return_type);
 
+            // Теперь на месте функции генерируем класс
+
+            // Захваченные переменные
+            var cm = class_members.Public;
+            foreach (var m in fields)
+                cm.Add(m);
+
+            // Параметры функции
             List<ident> lid = new List<ident>();
             var pars = fh.parameters;
             if (pars != null)
@@ -77,67 +84,52 @@ namespace SyntaxVisitors
                     if (ps.inital_value != null)
                         throw new SyntaxError("Parameters of functions with yields must not have initial values", "", pars.source_context, pars);
                     var_def_statement vds = new var_def_statement(ps.idents, ps.vars_type);
-                    cm.Add(vds);
+                    cm.Add(vds); // все параметры функции делаем полями класса
                     lid.AddRange(vds.vars.idents);
                 }
 
             var stels = seqt.elements_type;
-            var cur = new var_def_statement("current", stels);
 
-            var Constr = new procedure_definition(new constructor(null), block.Empty, null);
-
-            var MoveNext = new procedure_definition("MoveNext", "boolean", pd.proc_body);
-
-            var Reset = new procedure_definition("Reset", statement_list.Empty);
-
-            var GetCurrent = new procedure_definition("get_Current", "object", new assign("Result", "current"));
+            // Системные поля и методы для реализации интерфейса IEnumerable
+            cm.Add(new var_def_statement(Consts.State, "integer"),
+                new var_def_statement(Consts.Current, stels),
+                procedure_definition.EmptyDefaultConstructor,
+                new procedure_definition("Reset"),
+                new procedure_definition("MoveNext", "boolean", pd.proc_body),
+                new procedure_definition("get_Current", "object", new assign("Result", Consts.Current)),
+                new procedure_definition("GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"))
+                );
 
             var className = newClassName();
+            var classNameHelper = className + "Helper";
 
-            var vds1 = new var_statement(new var_def_statement("res", null, new new_expr(className)));
-            //var assG = new assign("Result", new new_expr(className));
-            var GetEnumerator = new procedure_definition("GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"));
+            var interfaces = new named_type_reference_list("System.Collections.IEnumerator", "System.Collections.IEnumerable");
+            var td = new type_declaration(classNameHelper, SyntaxTreeBuilder.BuildClassDefinition(interfaces, cm));
 
-            var stl = new statement_list(vds1);
-            foreach (var id in lid)
-            {
-                var ass = new assign(new dot_node(new ident("res"), id), id);
-                stl.Add(ass);
-            }
+            // Изменение тела процедуры
+
+            var stl = new statement_list(new var_statement("res", new new_expr(className)));
+            stl.AddMany(lid.Select(id => new assign(new dot_node("res", id), id)));
             stl.Add(new assign("Result", "res"));
             pd.proc_body = new block(stl);
 
-            cm.Add(st, cur, Constr, Reset, MoveNext, GetCurrent, GetEnumerator);
-
-            var interfaces = new named_type_reference_list("System.Collections.IEnumerator", "System.Collections.IEnumerable");
-            var td = new type_declaration(className + "Helper", SyntaxTreeBuilder.BuildClassDefinition(interfaces, cm));
-
             // Второй класс
 
-            var cm1 = new class_members(access_modifer.public_modifer);
-
-            var Constr1 = new procedure_definition(new constructor(null), block.Empty, null);
-
-            var Dispose1 = new procedure_definition("Dispose", statement_list.Empty);
-
-            var assG1 = new assign("Result", new new_expr(new named_type_reference(className), expression_list.Empty));
-
             var tpl = new template_param_list(stels);
-            //
-            var ntr = new named_type_reference("System.Collections.Generic.IEnumerator");
-            var ttr2 = new template_type_reference(ntr, tpl);
-            var fh1 = new function_header("GetEnumerator", ttr2);
-            var GetEnumerator1 = new procedure_definition(fh1, new block(new statement_list(new assign("Result", "Self"))));
 
-            var GetCurrent1 = new procedure_definition(new function_header("get_Current", stels), new block(new statement_list(new assign("Result", "current"))));
+            var IEnumeratorT = new template_type_reference("System.Collections.Generic.IEnumerator", tpl);
 
-            cm1.Add(Constr1, GetCurrent1, GetEnumerator1, Dispose1);
-            //cm1.Add(Constr1, GetEnumerator1, Dispose1);
+            var cm1 = class_members.Public.Add(
+                procedure_definition.EmptyDefaultConstructor,
+                new procedure_definition(new function_header("get_Current", stels), new assign("Result", Consts.Current)),
+                new procedure_definition(new function_header("GetEnumerator", IEnumeratorT), new assign("Result", "Self")),
+                new procedure_definition("Dispose")
+            );
 
-            var interfaces1 = new named_type_reference_list(className+"Helper");
-            var ttr1 = new template_type_reference(new named_type_reference("System.Collections.Generic.IEnumerable"), tpl);
+            var interfaces1 = new named_type_reference_list(classNameHelper);
+            var IEnumerableT = new template_type_reference("System.Collections.Generic.IEnumerable", tpl);
 
-            interfaces1.Add(ttr1).Add(ttr2);
+            interfaces1.Add(IEnumerableT).Add(IEnumeratorT);
 
             var td1 = new type_declaration(className, SyntaxTreeBuilder.BuildClassDefinition(interfaces1, cm1));
 
@@ -217,10 +209,12 @@ namespace SyntaxVisitors
             {
                 var yn = st as yield_node;
                 curState += 1;
-                curStatList.Add(new assign("current", yn.ex));
-                curStatList.Add(new assign("state", curState));
-                curStatList.Add(new assign("Result", new bool_const(true)));
-                curStatList.Add(new procedure_call(new ident("exit")));
+                curStatList.AddMany(
+                    new assign(Consts.Current, yn.ex),
+                    new assign(Consts.State, curState),
+                    new assign("Result", true),
+                    new procedure_call("exit")
+                );
 
                 curStatList = new statement_list();
                 case_variant cv = new case_variant(new expression_list(new int32_const(curState)), curStatList);
@@ -230,14 +224,14 @@ namespace SyntaxVisitors
             {
                 var ls = st as labeled_statement;
                 curStatList = StatListAfterCase;
-                curStatList.Add(new labeled_statement(ls.label_name, empty_statement.New));
+                curStatList.Add(new labeled_statement(ls.label_name));
                 Process(ls.to_statement);
             }
         }
 
         public void Transform()
         {
-            cas = new case_node(new ident("state"));
+            cas = new case_node(new ident(Consts.State));
 
             curStatList = new statement_list();
             case_variant cv = new case_variant(new expression_list(new int32_const(curState)), curStatList);

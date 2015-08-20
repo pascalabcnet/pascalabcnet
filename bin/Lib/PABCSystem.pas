@@ -6958,22 +6958,22 @@ end;
 
 procedure Inc(var c: char);
 begin
-  c := Chr(Ord(c) + 1);
+  c := ChrUnicode(word(c) + 1);
 end;
 
 procedure Inc(var c: char; n: integer);
 begin
-  c := Chr(Ord(c) + n);
+  c := ChrUnicode(word(c) + n);
 end;
 
 procedure Dec(var c: char);
 begin
-  c := Chr(Ord(c) - 1);
+  c := ChrUnicode(word(c) - 1);
 end;
 
 procedure Dec(var c: char; n: integer);
 begin
-  c := Chr(Ord(c) - n);
+  c := ChrUnicode(word(c) - n);
 end;
 
 procedure Inc(var b: byte);

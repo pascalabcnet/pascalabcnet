@@ -2427,7 +2427,7 @@ foreach_stmt_ident_dype_opt
 for_stmt
     : tkFor optional_var identifier for_stmt_decl_or_assign expr for_cycle_type expr optional_tk_do stmt
         { 
-			$$ = NewForStmt($1, (bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
         }
 	;
 	

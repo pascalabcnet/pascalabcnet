@@ -115,7 +115,7 @@ namespace SyntaxVisitors
                 var vds = st as var_def_statement;
                 Println(vds.ToString());
             }
-            else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members || st is case_variants)
+            else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members || st is case_variants || st is program_module)
             {
             }
             else if (st is if_node)

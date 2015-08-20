@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 12.08.2015 22:25:22
+// DateTime: 20.08.2015 13:05:18
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -4304,7 +4304,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 493: // for_stmt -> tkFor, optional_var, identifier, for_stmt_decl_or_assign, expr, 
                 //             for_cycle_type, expr, optional_tk_do, stmt
 { 
-			CurrentSemanticValue.stn = NewForStmt(ValueStack[ValueStack.Depth-9].ti, (bool)ValueStack[ValueStack.Depth-8].ob, ValueStack[ValueStack.Depth-7].id, ValueStack[ValueStack.Depth-6].td, ValueStack[ValueStack.Depth-5].ex, (for_cycle_type)ValueStack[ValueStack.Depth-4].ob, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-2].ti, ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan);
+			CurrentSemanticValue.stn = NewForStmt((bool)ValueStack[ValueStack.Depth-8].ob, ValueStack[ValueStack.Depth-7].id, ValueStack[ValueStack.Depth-6].td, ValueStack[ValueStack.Depth-5].ex, (for_cycle_type)ValueStack[ValueStack.Depth-4].ob, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-2].ti, ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan);
         }
         break;
       case 494: // optional_var -> tkVar
