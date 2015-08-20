@@ -52,6 +52,7 @@ namespace SyntaxVisitors
 
             bl.defs.Add(new label_definitions(gt1.label, gt2.label));
         }
+
         public override void visit(for_node fn)
         {
             ProcessNode(fn.statements);
