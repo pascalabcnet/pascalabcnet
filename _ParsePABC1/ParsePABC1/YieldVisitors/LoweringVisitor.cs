@@ -17,6 +17,14 @@ namespace SyntaxVisitors
             get { return new LoweringVisitor();  }
         }
 
+        int varnum = 0;
+
+        public string newVarName()
+        {
+            varnum++;
+            return "<>varLV" + varnum.ToString();
+        }
+
         public static void Accept(procedure_definition pd)
         {
             New.ProcessNode(pd);
@@ -63,13 +71,17 @@ namespace SyntaxVisitors
             var gt1 = goto_statement.New;
             var gt2 = goto_statement.New;
 
-            var assi = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            var endtemp = new ident(newVarName());
+            var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            var ass2 = new var_statement(endtemp, fn.type_name, fn.finish_value);
 
-            var if0 = new if_node(new bin_expr(fn.loop_variable, fn.finish_value,Operators.Greater), gt1);
+
+            var if0 = new if_node(bin_expr.Greater(fn.loop_variable, fn.finish_value), gt1);
             var lb2 = new labeled_statement(gt2.label, if0);
             var lb1 = new labeled_statement(gt1.label);
+            var Inc = new procedure_call(new method_call(new ident("Inc"),new expression_list(fn.loop_variable)));
 
-            ReplaceStatement(fn, SeqStatements(lb2, fn.statements, gt2, lb1));
+            ReplaceStatement(fn, SeqStatements(ass1,ass2,lb2, fn.statements, Inc, gt2, lb1));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
