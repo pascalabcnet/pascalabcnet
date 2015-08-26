@@ -150,10 +150,11 @@ namespace SyntaxVisitors
             if (!hasYields) // т.е. мы разобрали функцию и уже выходим. Это значит, что пока yield будет обрабатываться только в функциях. Так это и надо.
                 return;
 
-            var dld = new DeleteLocalDefs(mids.vars); // mids.vars - все захваченные переменные
-            pd.visit(dld); // Удалить в локальных и блочных описаниях этой процедуры все захваченные переменные
+            var dld = new DeleteAllLocalDefs(); // mids.vars - все захваченные переменные
+            pd.visit(dld); // Удалить в локальных и блочных описаниях этой процедуры все переменные и вынести их в отдельный список var_def_statement
+
+            mids.vars.Except(dld.LocalDeletedDefsNames); // параметры остались. Их тоже надо исключать - они и так будут обработаны
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать
-            dld.AfterProcTraverse();
 
             LoweringVisitor.Accept(pd);
 
@@ -162,7 +163,7 @@ namespace SyntaxVisitors
             (pd.proc_body as block).program_code = cfa.res;
 
             // Конструируем определение класса
-            var cct = GenClassesForYield(pd, dld.BlockDeletedIds.Union(dld.LocalDeletedIds));
+            var cct = GenClassesForYield(pd, dld.LocalDeletedDefs); // все удаленные описания переменных делаем описанием класса
 
             UpperNodeAs<declarations>().InsertBefore(pd, cct);
 

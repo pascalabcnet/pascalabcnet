@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 20.08.2015 13:05:18
+// DateTime: 25.08.2015 22:41:40
 // UserName: ?????????
 // Input file <ABCPascal.y>
 

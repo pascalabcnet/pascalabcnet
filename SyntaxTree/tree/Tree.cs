@@ -18992,7 +18992,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public template_type_reference(named_type_reference _name,template_param_list _params_list)
+		public template_type_reference(named_type_reference _name, template_param_list _params_list)
 		{
 			this._name=_name;
 			this._params_list=_params_list;

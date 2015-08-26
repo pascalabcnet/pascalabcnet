@@ -37,5 +37,7 @@ namespace SyntaxVisitors
             d.defs.Remove(vd); // может ли остаться список declarations пустым?
         }
 
+        // еще - не заходить в лямбды
+
     }
 }

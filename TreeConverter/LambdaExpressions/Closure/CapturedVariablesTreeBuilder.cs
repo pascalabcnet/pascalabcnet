@@ -381,6 +381,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             }
         }
 
+        public override void visit(unnamed_type_object uto) // SSM 26/08/15 - Роман подсказал
+        {
+            ProcessNode(uto.ne_list);
+        }
+
         public override void visit(foreach_stmt _foreach_stmt)
         {
             var loopIdentName = _foreach_stmt.identifier.name.ToLower();

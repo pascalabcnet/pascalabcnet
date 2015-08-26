@@ -184,6 +184,15 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class bin_expr
     {
+        public static bin_expr Greater(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.Greater);
+        }
+        public static bin_expr Less(expression left, expression right)
+        {
+            return new bin_expr(left, right, Operators.Less);
+        }
+
         public override string ToString()
         {
             return string.Format("{0} {2} {1}", left, right, OperatorServices.ToString(operation_type, LanguageId.PascalABCNET));
