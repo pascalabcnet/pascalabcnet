@@ -19,7 +19,7 @@ uses PT4, PT4Linq;
 //     6.2. Более сложные задания на обработку отдельных последовательностей
 // LinqObj61: правильное решение (с.199-200)
 begin
-// === ОШИБКА КОМПИЛЯЦИИ ===
+// === ОШИБКА ВРЕМЕНИ ВЫПОЛНЕНИЯ ===
     Task('LinqObj61');
     var subjects : array of string := ( 'Алгебра', 'Геометрия', 'Информатика' );
     var culture := new System.Globalization.CultureInfo('en-US');
