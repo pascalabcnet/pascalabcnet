@@ -48,6 +48,7 @@ namespace PascalABCCompiler.TreeConverter
 	public class compilation_context
 	{
         private ContextState SavedContext = null; // сохраненный контекст, используется при переходе к другому контексту при компиляции и последующем возврате к первоначальному контексту
+        public Stack<ContextState> SavedContextStack = new Stack<ContextState>(); // SSM 26/08/15 - пробую сделать стек контекстов. Может, что-то надо удет клонировать?
 
         // Существуют 3 перехода вверх:
         // Из блока в раздел описаний до beginа этого блока (если это глобальный блок, то - на глобальный уровень). Обнуляется convertion_data_and_alghoritms.statement_list_stack. Поля func_stack и _ctn остаются нетронутыми
@@ -96,6 +97,8 @@ namespace PascalABCCompiler.TreeConverter
             SavedContext.member_decls = member_decls;
             SavedContext.types_predefined = _types_predefined;
             SavedContext.ret_value = syntax_tree_visitor.ret.get_result();
+
+            SavedContextStack.Push(SavedContext);
             // SavedContext.type_stack = type_stack;
 
             convertion_data_and_alghoritms.statement_list_stack = new statement_list_stack();
@@ -127,6 +130,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public void RestoreCurrentContext()
         {
+            SavedContext = SavedContextStack.Pop();
             convertion_data_and_alghoritms.statement_list_stack = SavedContext.stlist_stack;
             _cmn = SavedContext.cmn;
             _ctn = SavedContext.ctn;
@@ -151,7 +155,8 @@ namespace PascalABCCompiler.TreeConverter
             _types_predefined = SavedContext.types_predefined;
             syntax_tree_visitor.ret.return_value(SavedContext.ret_value);
 
-            SavedContext = null;
+            if (SavedContextStack.Count == 0)
+                SavedContext = null;
             // type_stack = cs.type_stack; оно почему-то readonly - ну и ладно
         }
 
