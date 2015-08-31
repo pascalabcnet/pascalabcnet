@@ -1,0 +1,5 @@
+D:\PT4\!!PascalABC.NET\PT4Tools2010\PT4Tools\PT4Tools\bin\Debug\PT4Tools.dll
+D:\PT4\!!PascalABC.NET\PT4Tools2010\PT4Tools\PT4Tools\bin\Debug\PT4Tools.pdb
+D:\PT4\!!PascalABC.NET\PT4Tools2010\PT4Tools\PT4Tools\obj\Debug\ResolveAssemblyReference.cache
+D:\PT4\!!PascalABC.NET\PT4Tools2010\PT4Tools\PT4Tools\obj\Debug\PT4Tools.dll
+D:\PT4\!!PascalABC.NET\PT4Tools2010\PT4Tools\PT4Tools\obj\Debug\PT4Tools.pdb
