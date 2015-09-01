@@ -1,5 +1,5 @@
 begin
-  var dct := Dict('цвет'=>'color');
+  var dct := Dict(KV('цвет','color'));
   foreach var s in ReadLines('translations.txt') do
   begin
     var ss := s.ToWords;

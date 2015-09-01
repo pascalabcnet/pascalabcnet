@@ -92,7 +92,6 @@ end.
 //     5.6. Ãðóïïèðîâêà
 // LinqBegin60: ïðàâèëüíîå ðåøåíèå - 1 âàðèàíò (ñ.175, âíèçó)
 begin
-// ===ÎØÈÁÊÀ ÊÎÌÏÈËßÖÈÈ===
   Task('LinqBegin60');
   ReadSeqString().GroupBy(e -> e[1])
     .OrderByDescending(e -> e.Sum(s -> s.Length)).ThenBy(e -> e.Key)

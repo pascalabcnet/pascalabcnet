@@ -1019,7 +1019,6 @@
           <PointOfInterest>
             <Name>Операции с IEnumerable&lt;T&gt;</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>function System.Collections.Generic.IEnumerable&lt;T&gt;.operator+(a,b: IEnumerable&lt;T&gt;): IEnumerable&lt;T&gt;;</Text>
             <OuterContext>
               <OuterContextItem Type="Method">
                 <string>function</string>
@@ -1041,18 +1040,16 @@
                 <string>,</string>
                 <string>b</string>
                 <string>:</string>
-                <string>IEnumerable</string>
-                <string>&lt;</string>
+                <string>sequence</string>
+                <string>of</string>
                 <string>T</string>
-                <string>&gt;</string>
                 <string>)</string>
                 <string>:</string>
-                <string>IEnumerable</string>
-                <string>&lt;</string>
+                <string>sequence</string>
+                <string>of</string>
                 <string>T</string>
-                <string>&gt;</string>
               </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
             <Items />
           </PointOfInterest>

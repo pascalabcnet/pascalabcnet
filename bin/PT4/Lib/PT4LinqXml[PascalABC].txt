@@ -153,7 +153,6 @@ end.
 //     7.6. Дополнительные задания на обработку XML-документов
 // LinqXml82: правильное решение (с.276)
 begin
-// ОШИБКА КОМПИЛЯЦИИ
     Task('LinqXml82');
     var name := ReadString;
     var d := XDocument.Load(name);

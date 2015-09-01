@@ -4,7 +4,6 @@
 //     6.1. Простое задание на обработку отдельной последовательности
 // LinqObj4: правильное решение (с.191, внизу)
 begin
-// === ОШИБКА КОМПИЛЯЦЫЫ ===
   Task('LinqObj4');
   var r := ReadAllLines(ReadString)
     .Select(e ->
@@ -18,7 +17,7 @@ begin
     .GroupBy(e -> e.code,
       (k, ee) -> new class(k, sum := ee.Sum(c -> c.hours) ))
     .OrderByDescending(e -> e.sum).ThenBy(e -> e.k)
-    .Select(e -> IntToStr(e.sum) + ' ' + IntToStr(e.k));
+    .Select(e -> e.sum + ' ' + e.k);
     WriteAllLines(ReadString, r);
 end.
 [41]
@@ -27,7 +26,6 @@ end.
 //     6.2. Более сложные задания на обработку отдельных последовательностей
 // LinqObj41: правильное решение (с.196)
 begin
-// === ОШИБКА КОМПИЛЯЦЫЫ ===
   Task('LinqObj41');
   var m := ReadInteger;
   var r := ReadAllLines(ReadString)
@@ -44,7 +42,7 @@ begin
     .GroupBy(e -> e.street,
       (k, ee) -> new class ( street := k, max := ee.Max(e -> e.price) ))
     .OrderBy(e -> e.max).ThenBy(e -> e.street)
-    .Select(e -> IntToStr(e.max) + ' ' + IntToStr(e.street))
+    .Select(e -> e.max + ' ' + e.street)
     .DefaultIfEmpty('Нет');
   WriteAllLines(ReadString, r);
 end.
@@ -54,7 +52,6 @@ end.
 //     6.2. Более сложные задания на обработку отдельных последовательностей
 // LinqObj61: правильное решение (с.199-200)
 begin
-// === ОШИБКА ВРЕМЕНИ ВЫПОЛНЕНИЯ ===
     Task('LinqObj61');
     var subjects : array of string := ( 'Алгебра', 'Геометрия', 'Информатика' );
     var culture := new System.Globalization.CultureInfo('en-US');
