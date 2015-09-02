@@ -3,3 +3,8 @@ D:\PT4\!!PascalABC.NET\PT4Tools2010-14\PT4Tools-2015\PT4Tools\bin\Debug\PT4Tools
 D:\PT4\!!PascalABC.NET\PT4Tools2010-14\PT4Tools-2015\PT4Tools\obj\Debug\PT4Tools.csprojResolveAssemblyReference.cache
 D:\PT4\!!PascalABC.NET\PT4Tools2010-14\PT4Tools-2015\PT4Tools\obj\Debug\PT4Tools.dll
 D:\PT4\!!PascalABC.NET\PT4Tools2010-14\PT4Tools-2015\PT4Tools\obj\Debug\PT4Tools.pdb
+D:\PascalABC.NET\!PABC_Git\Utils\PT4Tools\bin\Debug\PT4Tools.dll
+D:\PascalABC.NET\!PABC_Git\Utils\PT4Tools\bin\Debug\PT4Tools.pdb
+D:\PascalABC.NET\!PABC_Git\Utils\PT4Tools\obj\Debug\PT4Tools.csprojResolveAssemblyReference.cache
+D:\PascalABC.NET\!PABC_Git\Utils\PT4Tools\obj\Debug\PT4Tools.dll
+D:\PascalABC.NET\!PABC_Git\Utils\PT4Tools\obj\Debug\PT4Tools.pdb
