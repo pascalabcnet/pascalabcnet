@@ -1,0 +1,6 @@
+## Сборка проекта под Windows
+_ReBuildRelease.bat собирает проект в Release-режиме  
+_ReBuildDebug.bat собирает проект в Debug-режиме  
+_GenerateAllSetups.bat собирает инсталлят (запускатаь с правами администратора).  
+
+Разработка ведется в Visual Studio Community 2015.  
