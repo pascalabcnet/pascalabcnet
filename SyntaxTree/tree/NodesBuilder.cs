@@ -150,7 +150,7 @@ namespace PascalABCCompiler.SyntaxTree
 
                         if (!HasToString)
                         {
-                            if (ts != null && ts.proc_header.name != null)
+                            if (ts != null && ts.proc_header.name != null && ts.proc_header.name.meth_name.name != null)
                             {
                                 HasToString = ts.proc_header.name.meth_name.name.ToUpper().Equals("TOSTRING");
                             }

@@ -142,7 +142,9 @@ namespace PascalABCCompiler.TreeConverter
         }
         public override string ToString()
         {
-            return string.Format(StringResources.Get(ErrResourceString), values);
+            if (values != null)
+                return string.Format(StringResources.Get(ErrResourceString), values);
+            else return string.Format(StringResources.Get(ErrResourceString),"");
         }
     }
 

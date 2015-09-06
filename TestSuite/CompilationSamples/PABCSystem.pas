@@ -1521,7 +1521,7 @@ function ArrFill<T>(count: integer; f: Func<integer,T>): array of T;
 /// ¬озвращает последовательность из count элементов x 
 function SeqFill<T>(x: T; count: integer): sequence of T;
 /// ¬озвращает последовательность из count элементов, заполненных значени€ми f(i)
-function SeqFill<T>(count: integer; f: Func<integer,T>): sequence of T;
+function SeqFill<T>(count: integer; f: Func<integer,T>; from: integer := 1): sequence of T;
 
 /// ¬озвращает матрицу размера m x n, заполненную случайными целыми значени€ми
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
@@ -2738,7 +2738,7 @@ begin
       break;
     t := t.BaseType;            
   end;
-  if t=typeof(Object) then
+  if (t=typeof(Object)) or (t=typeof(System.ValueType)) then
     Result := nil
   else Result := meth;   
 end;
@@ -3388,9 +3388,9 @@ begin
   Result := System.Linq.Enumerable.Repeat(x,count);
 end;
 
-function SeqFill<T>(count: integer; f: Func<integer,T>): sequence of T;
+function SeqFill<T>(count: integer; f: Func<integer,T>; from: integer): sequence of T;
 begin
-  Result := Range(1,count).Select(f)
+  Result := Range(from,count).Select(f)
 end;
 
 function MatrixRandom(m: integer; n: integer; a: integer; b: integer): array [,] of integer;

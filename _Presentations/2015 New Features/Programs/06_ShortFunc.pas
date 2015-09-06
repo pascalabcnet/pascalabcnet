@@ -1,6 +1,6 @@
 function Sqr3(x: integer) := x*x*x;
 
-function CircleLen(r: real) := 2 * Pi * r;
+function CircleLen(r: real): real := 2 * Pi * r;
 
 function Hypot(a,b: real) := sqrt(a*a + b*b);
 
