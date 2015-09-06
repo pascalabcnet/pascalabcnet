@@ -144,7 +144,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (values != null)
                 return string.Format(StringResources.Get(ErrResourceString), values);
+<<<<<<< HEAD
             else return string.Format(StringResources.Get(ErrResourceString),"");
+=======
+            else
+                return string.Format(StringResources.Get(ErrResourceString), "");
+>>>>>>> 723c42a9a7eb640d4070e6baabe6e553909acbd4
         }
     }
 
