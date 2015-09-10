@@ -14,9 +14,11 @@ $ MONO_IOMAP=case xbuild pabcnetc.sln
 ```
 
 ### Запуск
+```bash
 $ cd bin
 $ mono pabcnetc.exe
 или $ mono --debug pabcnetc.exe
+```
 
 ## Тесты
 Тесты расположены в папке TestSuite. Прогон тестов осуществляется программой bin/TestRunner.exe
