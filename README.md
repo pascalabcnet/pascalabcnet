@@ -6,10 +6,13 @@ _GenerateAllSetups.bat собирает инсталлят (запускать �
 Разработка ведется в Visual Studio Community 2015.
 
 ## Сборка проекта в Linux (Ubuntu)
+```bash
 $ sudo apt-get install mono-complete
 $ git clone https://github.com/pascalabcnet/pascalabcnet
 $ cd pascalabcnet
 $ MONO_IOMAP=case xbuild pabcnetc.sln
+```
+
 ### Запуск
 $ cd bin
 $ mono pabcnetc.exe
