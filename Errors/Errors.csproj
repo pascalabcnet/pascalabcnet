@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\configuration\globalassemblyinfo.cs">
+    <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\globalassemblyinfo.cs</Link>
     </Compile>
     <Compile Include="Config\AssemblyInfo.cs" />

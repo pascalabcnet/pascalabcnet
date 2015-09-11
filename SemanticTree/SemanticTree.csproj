@@ -106,7 +106,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\configuration\globalassemblyinfo.cs">
+    <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
       <Link>Config\globalassemblyinfo.cs</Link>
     </Compile>
     <Compile Include="AbstractVisitor.cs">
