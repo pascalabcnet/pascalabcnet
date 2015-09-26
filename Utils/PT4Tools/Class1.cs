@@ -83,13 +83,13 @@ namespace PT4
                     if (load == null)
                         return "";
                 }
-                if (!File.Exists(startDir + "\\ABC.ini"))
+                if (!File.Exists(startDir + "\\PT4.ini"))
                     return "";
-                StreamReader sr = new StreamReader(startDir + "\\ABC.ini");
+                StreamReader sr = new StreamReader(startDir + "\\PT4.ini");
                 while (!sr.EndOfStream)
                 {
                     string s = sr.ReadLine();
-                    if (s.StartsWith("TaskFile="))
+                    if (s.StartsWith("File="))
                     {
                         s = s.Substring(s.IndexOf('=')+1);
                         if (File.Exists(s))
