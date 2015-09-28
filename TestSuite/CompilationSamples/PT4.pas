@@ -116,6 +116,35 @@ function ReadPNode: PNode;
 /// Возвращает введенное значение типа Node
 function ReadNode: Node;
 
+/// Возвращает введенное значение типа integer
+function ReadlnInteger: integer;
+/// Возвращает введенное значение типа real
+function ReadlnReal: real;
+/// Возвращает введенное значение типа char
+function ReadlnChar: char;
+/// Возвращает введенное значение типа string
+function ReadlnString: string;
+/// Возвращает введенное значение типа boolean
+function ReadlnBoolean: boolean;
+/// Возвращает введенное значение типа PNode
+function ReadlnPNode: PNode;
+/// Возвращает введенное значение типа Node
+function ReadlnNode: Node;
+
+/// Возвращает массив из n целых, введенных с клавиатуры
+function ReadArrInteger(n: integer): array of integer;
+/// Возвращает массив из n вещественных, введенных с клавиатуры
+function ReadArrReal(n: integer): array of real;
+/// Возвращает массив из n строк, введенных с клавиатуры
+function ReadArrString(n: integer): array of string;
+
+/// Возвращает последовательность из n целых, введенных с клавиатуры
+function ReadSeqInteger(n: integer): sequence of integer;
+/// Возвращает последовательность из n вещественных, введенных с клавиатуры
+function ReadSeqReal(n: integer): sequence of real;
+/// Возвращает последовательность из n строк, введенных с клавиатуры
+function ReadSeqString(n: integer): sequence of string;
+
 
 procedure GetR(var param: real);
 procedure GetN(var param: integer);
@@ -868,6 +897,77 @@ end;
 function ReadNode: Node;
 begin
   Result := GetNode;
+end;
+
+function ReadlnInteger: integer;
+begin
+  Result := GetInt;
+end;
+
+function ReadlnReal: real;
+begin
+  Result := GetReal;
+end;
+
+function ReadlnChar: char;
+begin
+  Result := GetChar;
+end;
+
+function ReadlnString: string;
+begin
+  Result := GetString;
+end;
+
+function ReadlnBoolean: boolean;
+begin
+  Result := GetBool;
+end;
+
+function ReadlnPNode: PNode;
+begin
+  Result := GetPNode;
+end;
+
+function ReadlnNode: Node;
+begin
+  Result := GetNode;
+end;
+
+function ReadArrInteger(n: integer): array of integer;
+begin
+  Result := new integer[n];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := ReadInteger;
+end;
+
+function ReadArrReal(n: integer): array of real;
+begin
+  Result := new real[n];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := ReadReal;
+end;
+
+function ReadArrString(n: integer): array of string;
+begin
+  Result := new string[n];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := ReadString;
+end;
+
+function ReadSeqInteger(n: integer): sequence of integer;
+begin
+  Result := Range(1,n).Select(i->ReadInteger());
+end;
+
+function ReadSeqReal(n: integer): sequence of real;
+begin
+  Result := Range(1,n).Select(i->ReadReal());
+end;
+
+function ReadSeqString(n: integer): sequence of string;
+begin
+  Result := Range(1,n).Select(i->ReadString());
 end;
 
 // -----------------------------------------------------

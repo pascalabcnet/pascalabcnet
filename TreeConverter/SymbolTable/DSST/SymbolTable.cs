@@ -237,7 +237,7 @@ namespace SymbolTable
 
 	public class DotNETScope:Scope
 	{
-		public DotNETScope(DSSymbolTable vSymbolTable):base(vSymbolTable,null,true)
+		public DotNETScope(DSSymbolTable vSymbolTable):base(vSymbolTable,null,false)
 		{
 
 		}
