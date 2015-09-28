@@ -256,23 +256,23 @@ begin
   if Self.Rank = 1 then
     for var i := 0 to Self.Length - 1 do
     begin
-      write(Self.GetValue(i));
+      PABCSystem.write(Self.GetValue(i));
       if i < Self.Length - 1 then
-        write(delimiter);
+        PABCSystem.write(delimiter);
     end
   else if Self.Rank = 2 then 
     for var i := 0 to Self.GetLength(0) - 1 do
     begin
       for var j := 0 to Self.GetLength(1) - 1 do
-        write(Self.GetValue(i, j), delimiter);
-      writeln;
+        PABCSystem.write(Self.GetValue(i, j), delimiter);
+      PABCSystem.writeln;
     end;
 end;
 
 procedure &Array.Writeln(delimiter: string);
 begin
   Self.Write(delimiter);
-  writeln;
+  PABCSystem.writeln;
 end;
 
 end.

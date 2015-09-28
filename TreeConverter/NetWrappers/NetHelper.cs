@@ -1341,7 +1341,15 @@ namespace PascalABCCompiler.NetHelper
                     si = temp;
                 }
         	}
-            Type nested_t = t.GetNestedType(name);
+            Type nested_t = null;
+            foreach (Type nt in t.GetNestedTypes())
+            {
+                if (string.Compare(nt.Name, name, true) == 0)
+                {
+                    nested_t = nt;
+                    break;
+                }
+            }
             if (nested_t != null)
             {
             	SymbolInfo temp = new SymbolInfo(compiled_type_node.get_type_node(nested_t));
@@ -1405,7 +1413,15 @@ namespace PascalABCCompiler.NetHelper
                     si = temp;
                 }
             }
-            Type nested_t = t.GetNestedType(name);
+            Type nested_t = null;
+            foreach (Type nt in t.GetNestedTypes())
+            {
+                if (string.Compare(nt.Name,name, true) == 0)
+                {
+                    nested_t = nt;
+                    break;
+                }
+            }
             if (nested_t != null)
             {
             	SymbolInfo temp = new SymbolInfo(compiled_type_node.get_type_node(nested_t));
@@ -1882,11 +1898,11 @@ namespace PascalABCCompiler.NetHelper
 			TypeInfo ti = (TypeInfo)types[name];
 			if (ti != null /*&& cur_used_assemblies.ContainsKey(t.Assembly)*/) return ti.type;
 			//ivan added - runtime types adding
-			Type t = Type.GetType(name);
+			Type t = Type.GetType(name, false, true);
             if (t == null)
                 foreach (Assembly a in assemblies.Values)
                 {
-                    t = a.GetType(name);
+                    t = a.GetType(name, false, true);
                     if (t != null) break;
                 }
             if (t != null)
