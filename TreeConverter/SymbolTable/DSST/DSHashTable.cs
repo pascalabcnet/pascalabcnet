@@ -29,7 +29,7 @@ namespace SymbolTable
             return Math.Abs(n % hash_size);
         }
 
-        private System.Collections.Hashtable ht = new System.Collections.Hashtable();
+        private System.Collections.Generic.Dictionary<int, object> ht = new System.Collections.Generic.Dictionary<int, object>();
 
         private int GetHash(string s)
         {
@@ -41,7 +41,7 @@ namespace SymbolTable
                 if (hash_arr[hash].Name == s) return hash;
                 i = i * 11;
                 hash = Math.Abs((hash + i) % hash_size);
-                if (ht[hash] != null)
+                if (ht.ContainsKey(hash))
                     Resize(hash_size * 2);
                 else
                     ht[hash] = ht;
