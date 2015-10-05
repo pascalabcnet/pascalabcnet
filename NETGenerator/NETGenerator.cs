@@ -6944,6 +6944,12 @@ namespace PascalABCCompiler.NETGenerator
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
             }
+            else if (value.obj.type.is_generic_parameter && !(value.obj is IAddressedExpressionNode))
+            {
+                LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
+                il.Emit(OpCodes.Stloc, lb);
+                il.Emit(OpCodes.Ldloca, lb);
+            }
             is_dot_expr = false;
             for (int i = 0; i < real_parameters.Length; i++)
             {
