@@ -6935,7 +6935,7 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             is_dot_expr = true;
             //DarkStar Fixed: type t:=i.gettype();
-            bool _box = (value.obj.type.is_value_type || value.obj.type.is_generic_parameter) && !value.compiled_method.method_info.DeclaringType.IsValueType;
+            bool _box = value.obj.type.is_value_type && !value.compiled_method.method_info.DeclaringType.IsValueType;
             if (_box)
                 is_dot_expr = false;
             value.obj.visit(this);
@@ -6943,6 +6943,12 @@ namespace PascalABCCompiler.NETGenerator
             if (_box)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
+            }
+            else if (value.obj.type.is_generic_parameter && !(value.obj is IAddressedExpressionNode))
+            {
+                LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
+                il.Emit(OpCodes.Stloc, lb);
+                il.Emit(OpCodes.Ldloca, lb);
             }
             is_dot_expr = false;
             for (int i = 0; i < real_parameters.Length; i++)
