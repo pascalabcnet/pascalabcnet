@@ -4,7 +4,7 @@ uses
    DrawManField, Events, FilesOperations, GOLDParserEngine, GraphABC, 
    GraphABCHelper, IniFile, PointerTools, PointRect, PT4, Robot, RobotField,
    RobotTaskMaker, RobotZadan, Sockets, Utils, VCL, Timers, PT4Exam, PT4TaskMakerNET, RBDMUtils,
-   Collections, Arrays, Core, FormsABC, MPI, PT4Linq;
+   Collections, Arrays, Core, FormsABC, MPI;
 
 begin
   writeln(cos(pi));

@@ -6935,12 +6935,12 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             is_dot_expr = true;
             //DarkStar Fixed: type t:=i.gettype();
-            bool _box = (value.obj.type.is_value_type || value.obj.type.is_generic_parameter) && !value.compiled_method.method_info.DeclaringType.IsValueType;
+            bool _box = value.obj.type.is_value_type && !value.compiled_method.method_info.DeclaringType.IsValueType;
             if (_box)
                 is_dot_expr = false;
             value.obj.visit(this);
             //DarkStar Fixed: type t:=i.gettype();
-            if (_box)
+            if ((value.obj.type.is_value_type) && !value.compiled_method.method_info.DeclaringType.IsValueType)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
             }
