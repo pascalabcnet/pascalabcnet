@@ -19,7 +19,7 @@ begin
   while not eof(f) do
   begin
 	readln(f,s);
-	sb.append(s);
+	sb.AppendLine(s);
   end;
   ReadFileToEnd:=sb.ToString();
   CloseFile(f);{}

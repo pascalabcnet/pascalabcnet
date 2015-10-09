@@ -21,11 +21,14 @@ begin
   while not eof(f) do begin
     readln(f,s);
     i := s.IndexOf('=');
-    name := s.Substring(0,i);
-    if name = IncrementDef then
-      defs.Add(name, System.Convert.ToInt32(s.Substring(i+1))+IncrementValue)
-    else
-      defs.Add(name, s.Substring(i+1));
+    if i > 0 then
+    begin
+      name := s.Substring(0,i);
+      if name = IncrementDef then
+        defs.Add(name, System.Convert.ToInt32(s.Substring(i+1))+IncrementValue)
+      else
+        defs.Add(name, s.Substring(i+1));
+    end;
   end;
   CloseFile(f);
   AssignFile(f, DefsFile);
