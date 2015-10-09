@@ -69,7 +69,7 @@ namespace PascalABCCompiler
                 co.OutputDirectory = "";
             else co.OutputDirectory = args[1];
             co.Rebuild = false;
-            co.Debug = false;
+            co.Debug = true;
             co.UseDllForSystemUnits = false;
 
             bool success = true;

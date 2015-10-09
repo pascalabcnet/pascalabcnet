@@ -33,7 +33,7 @@ namespace PascalABCCompiler
         public static bool DetailOut = false;
         public static bool Rebuild=false;
         public static CompilerOptions.OutputType outputType;
-        public static bool Debug = false;
+        public static bool Debug = true;
         public static bool UseDll = false;
         public static List<Error> GlobalErrorsList = new List<Error>();
         public static DateTime StartTime;
