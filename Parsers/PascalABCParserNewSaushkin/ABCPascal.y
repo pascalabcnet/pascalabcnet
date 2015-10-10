@@ -44,7 +44,7 @@
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
 %token <stn> tkStringLiteral tkAsciiChar
-%token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExternalMethod 
+%token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex 
 
 %type <ti> unit_key_word 
@@ -3125,7 +3125,7 @@ meth_modificator
 		{ $$ = $1; }
     | tkOverride
 		{ $$ = $1; }
-    | tkExternalMethod
+    | tkExtensionMethod
 		{ $$ = $1; }
     | tkVirtual
 		{ $$ = $1; }

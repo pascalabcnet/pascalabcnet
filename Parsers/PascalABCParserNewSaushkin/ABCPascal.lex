@@ -392,9 +392,9 @@ ALPHABET [^ a-zA-Z_0-9\r\n\t\'$#&,:.;@\+\-\*/=<>\^()\[\]\x01]
         yylval.id = new procedure_attribute(proc_attribute.attr_override,currentLexLocation);
         yylval.id.name = cur_yytext;
         break;
-    case (int)Tokens.tkExternalMethod:
+    case (int)Tokens.tkExtensionMethod:
 		yylval = new Union(); 
-        yylval.id = new procedure_attribute(proc_attribute.attr_override,currentLexLocation);
+        yylval.id = new procedure_attribute(proc_attribute.attr_extension,currentLexLocation);
         yylval.id.name = cur_yytext;
         break;
     case (int)Tokens.tkVirtual:
@@ -609,7 +609,7 @@ public static class Keywords
         keywords.Add("reintroduce",(int)Tokens.tkReintroduce);
         keywords.Add("override",(int)Tokens.tkOverride);
         keywords.Add("virtual",(int)Tokens.tkVirtual);
-        keywords.Add("externalmethod",(int)Tokens.tkExternalMethod);
+        keywords.Add("extensionmethod",(int)Tokens.tkExtensionMethod);
         keywords.Add("new",(int)Tokens.tkNew);
         keywords.Add("auto",(int)Tokens.tkAuto);
         keywords.Add("sequence",(int)Tokens.tkSequence);

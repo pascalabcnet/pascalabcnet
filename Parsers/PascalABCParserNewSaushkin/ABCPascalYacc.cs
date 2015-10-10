@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 10.10.2015 20:28:42
+// DateTime: 10.10.2015 21:28:35
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -44,7 +44,7 @@ public enum Tokens {
     tkXor=115,tkAnd=116,tkDiv=117,tkMod=118,tkShl=119,tkShr=120,
     tkNot=121,tkAs=122,tkIn=123,tkIs=124,tkImplicit=125,tkExplicit=126,
     tkAddressOf=127,tkDeref=128,tkIdentifier=129,tkStringLiteral=130,tkAsciiChar=131,tkAbstract=132,
-    tkForward=133,tkOverload=134,tkReintroduce=135,tkOverride=136,tkVirtual=137,tkExternalMethod=138,
+    tkForward=133,tkOverload=134,tkReintroduce=135,tkOverride=136,tkVirtual=137,tkExtensionMethod=138,
     tkInteger=139,tkFloat=140,tkHex=141};
 
 // Abstract base class for GPLEX scanners
@@ -4976,7 +4976,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 645: // meth_modificator -> tkOverride
 { CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
         break;
-      case 646: // meth_modificator -> tkExternalMethod
+      case 646: // meth_modificator -> tkExtensionMethod
 { CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
         break;
       case 647: // meth_modificator -> tkVirtual
