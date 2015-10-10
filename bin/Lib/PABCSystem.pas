@@ -5700,7 +5700,7 @@ end;
 
 procedure Assert(cond: boolean);
 begin
-  if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
+  if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
     var stackTrace := new System.Diagnostics.StackTrace(true);
     var ind := 1;
@@ -5708,7 +5708,15 @@ begin
       ind := 0;
     var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
     var currentFile := stackTrace.GetFrame(ind).GetFileName();
-    System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString());
+    if not IsWDE then
+      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString())
+    else if not cond then
+    begin
+      var err := 'Сбой подтверждения: '+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      writeln(err);
+      System.Threading.Thread.Sleep(500);
+      raise new Exception();
+    end;
   end
   else
     System.Diagnostics.Debug.Assert(cond);
@@ -5716,7 +5724,7 @@ end;
 
 procedure Assert(cond: boolean; mes: string);
 begin
-  if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
+  if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
     var stackTrace := new System.Diagnostics.StackTrace(true);
     var ind := 1;
@@ -5724,7 +5732,15 @@ begin
       ind := 0;
     var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
     var currentFile := stackTrace.GetFrame(ind).GetFileName();
-    System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString()+': '+mes);
+    if not IsWDE then
+      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString()+': '+mes)
+    else if not cond then
+    begin
+      var err := 'Сбой подтверждения: '+mes+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      writeln(err);
+      System.Threading.Thread.Sleep(500);
+      raise new Exception();
+    end;
   end
   else
     System.Diagnostics.Debug.Assert(cond, mes);
