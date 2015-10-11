@@ -7,6 +7,7 @@ unit PT4;
 // Copyright (c) 2006-2008 DarkStar, SSM
 // Copyright (c) 2010 М.Э.Абрамян, дополнения к версии 1.3
 // Copyright (c) 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
+// Copyright (c) 2015 М.Э.Абрамян, дополнения к версии 4.14
 // Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2015
 //------------------------------------------------------------------------------
 
@@ -130,21 +131,6 @@ function ReadlnBoolean: boolean;
 function ReadlnPNode: PNode;
 /// Возвращает введенное значение типа Node
 function ReadlnNode: Node;
-
-/// Возвращает массив из n целых, введенных с клавиатуры
-function ReadArrInteger(n: integer): array of integer;
-/// Возвращает массив из n вещественных, введенных с клавиатуры
-function ReadArrReal(n: integer): array of real;
-/// Возвращает массив из n строк, введенных с клавиатуры
-function ReadArrString(n: integer): array of string;
-
-/// Возвращает последовательность из n целых, введенных с клавиатуры
-function ReadSeqInteger(n: integer): sequence of integer;
-/// Возвращает последовательность из n вещественных, введенных с клавиатуры
-function ReadSeqReal(n: integer): sequence of real;
-/// Возвращает последовательность из n строк, введенных с клавиатуры
-function ReadSeqString(n: integer): sequence of string;
-
 
 procedure GetR(var param: real);
 procedure GetN(var param: integer);
@@ -316,6 +302,57 @@ procedure HideTask;
 
 // == Конец дополнений к версии 1.3 ==
 
+// == Версия 4.14. Дополнения ==
+
+/// Вводит n целых чисел
+/// и возвращает введенные числа в виде массива
+function  ReadArrInteger(n: integer): array of integer;
+
+/// Вводит n вещественных чисел
+/// и возвращает введенные числа в виде массива
+function  ReadArrReal(n: integer):  array of real;
+
+/// Вводит n строк 
+/// и возвращает введенные строки в виде массива
+function ReadArrString(n: integer):  array of string;
+
+/// Вводит n целых чисел
+/// и возвращает введенные числа в виде последовательности
+function  ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+
+/// Вводит n вещественных чисел
+/// и возвращает введенные числа в виде последовательности
+function  ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+
+/// Вводит n строк 
+/// и возвращает введенные строки в виде последовательности
+function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+
+/// Вводит размер набора целых чисел и его элементы
+/// и возвращает введенный набор в виде последовательности
+function  ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+
+/// Вводит размер набора вещественных чисел и его элементы
+/// и возвращает введенный набор в виде последовательности
+function  ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+
+/// Вводит размер набора строк и его элементы
+/// и возвращает введенный набор в виде последовательности
+function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+
+/// Вводит размер набора целых чисел и его элементы
+/// и возвращает введенный набор в виде массива
+function  ReadArrInteger(): array of integer;
+
+/// Вводит размер набора вещественных чисел и его элементы
+/// и возвращает введенный набор в виде массива
+function  ReadArrReal():  array of real;
+
+/// Вводит размер набора строк и его элементы
+/// и возвращает введенный набор в виде массива
+function ReadArrString():  array of string;
+
+// == Конец дополнений к версии 4.14 ==
 
 
 implementation
@@ -934,42 +971,6 @@ begin
   Result := GetNode;
 end;
 
-function ReadArrInteger(n: integer): array of integer;
-begin
-  Result := new integer[n];
-  for var i:=0 to Result.Length-1 do
-    Result[i] := ReadInteger;
-end;
-
-function ReadArrReal(n: integer): array of real;
-begin
-  Result := new real[n];
-  for var i:=0 to Result.Length-1 do
-    Result[i] := ReadReal;
-end;
-
-function ReadArrString(n: integer): array of string;
-begin
-  Result := new string[n];
-  for var i:=0 to Result.Length-1 do
-    Result[i] := ReadString;
-end;
-
-function ReadSeqInteger(n: integer): sequence of integer;
-begin
-  Result := Range(1,n).Select(i->ReadInteger());
-end;
-
-function ReadSeqReal(n: integer): sequence of real;
-begin
-  Result := Range(1,n).Select(i->ReadReal());
-end;
-
-function ReadSeqString(n: integer): sequence of string;
-begin
-  Result := Range(1,n).Select(i->ReadString());
-end;
-
 // -----------------------------------------------------
 //                      Процедуры Put
 // -----------------------------------------------------
@@ -1274,9 +1275,9 @@ procedure Show(S: string; A: Real; W: Integer);
 var s0: string;
 begin
   if D > 0 then
-    Str(A:W:D, s0)
+    s0 := string.Format('{0,'+W+':f'+D+'}', A).Replace(',','.')
   else
-    Str(A:W, s0);
+    s0 := string.Format('{0,'+W+':e}', A).Replace(',','.');
   Show(S + s0);
 end;
 
@@ -1379,6 +1380,144 @@ begin
 end;
 
 // == Конец дополнений к версии 1.3 ==
+
+// == Версия 4.14. Дополнения ==
+
+function  ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
+end;           
+
+function  ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+begin
+  result := Range(1, n).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+begin
+  result := Range(1, n).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+begin
+  result := Range(1, n).Select(e -> GetString()).ToArray();
+end;           
+
+function  ReadArrInteger(): array of integer;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadArrReal(): array of real;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadArrString(): array of string;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
+end;           
+
+function  ReadArrInteger(n: integer): array of integer;
+begin
+  result := Range(1, n).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadArrReal(n: integer): array of real;
+begin
+  result := Range(1, n).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadArrString(n: integer): array of string;
+begin
+  result := Range(1, n).Select(e -> GetString()).ToArray();
+end;           
+
+
+/// Выводит размер и элементы последовательности
+procedure System.Collections.Generic.IEnumerable<T>.WriteAll();
+begin
+  var b := self.ToArray();
+  PT4.Put(b.Length);
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит элементы последовательности
+procedure System.Collections.Generic.IEnumerable<T>.Write();
+begin
+  var b := self.ToArray();
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// комментарий cmt, размер последовательности и значения, 
+/// полученные из элементов последовательности 
+/// с помощью указанного лямбда-выражения
+function System.Collections.Generic.IEnumerable<TSource>.Show
+  (cmt: string; selector: System.Func<TSource, string>): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  var b := self.Select(selector).ToArray();
+  PT4.Show(cmt);
+  PT4.Show((b.Length + ':').PadLeft(3));
+  foreach var e in b do
+    PT4.Show(e);
+  PT4.ShowLine();
+  result := self; 
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// размер последовательности и значения, 
+/// полученные из элементов последовательности 
+/// с помощью указанного лямбда-выражения
+function System.Collections.Generic.IEnumerable<TSource>.Show
+  (selector: System.Func<TSource, string>): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  result := self.Show('', selector); 
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// комментарий cmt, размер последовательности и ее элементы
+function System.Collections.Generic.IEnumerable<TSource>.Show(cmt: string): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  result := self;
+  var a := self.ToArray;
+  var s := '';
+  var t := '';
+  if a.Length > 0 then
+    t := a[0].GetType.Name;
+  if t = 'Double' then
+    if D > 0 then
+      s := '{0,0:f' + D + '}'
+    else
+      s := '{0,0:e}';
+  a.Show(cmt, e -> s = '' ? e.ToString() : 
+    string.Format(s, e).Replace(',', '.'));
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// размер последовательности и ее элементы.
+function System.Collections.Generic.IEnumerable<TSource>.Show(): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  result := self.Show(''); 
+end;
+
+// == Конец дополнений к версии 4.14 ==
 
 initialization
   __InitModule;

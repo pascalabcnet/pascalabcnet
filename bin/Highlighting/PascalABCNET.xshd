@@ -234,6 +234,7 @@
 		<Key word = "overload" />
 		<Key word = "reintroduce" />
 		<Key word = "override" />
+		<Key word = "extensionmethod" />
 		<Key word = "virtual" />
 		<Key word = "default" />
 		<Key word = "forward" />

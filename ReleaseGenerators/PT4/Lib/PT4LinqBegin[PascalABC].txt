@@ -40,7 +40,7 @@ begin
     .TakeWhile(e ->not char.IsDigit(e[e.Length])).Show('C');
   b.Intersect(c).Show('D')
     .OrderBy(e -> e.Length).ThenBy(e -> e)
-    .Write;
+    .WriteAll;
 end.
 [43]
 // Àáðàìÿí Ì.Ý. ÒÅÕÍÎËÎÃÈß LINQ ÍÀ ÏÐÈÌÅÐÀÕ. Ì.: ÄÌÊ-Ïðåññ, 2014.
@@ -54,7 +54,7 @@ begin
     .SelectMany((e, n) ->
        e.Where((c, i) -> i mod 2 = (n < k ? 0 : 1)).Show())
     .Reverse
-    .Write;
+    .WriteAll;
 end.
 [52]
 // Àáðàìÿí Ì.Ý. ÒÅÕÍÎËÎÃÈß LINQ ÍÀ ÏÐÈÌÅÐÀÕ. Ì.: ÄÌÊ-Ïðåññ, 2014.
@@ -70,7 +70,7 @@ begin
   a.SelectMany(e1 -> b.Select(e2 -> e1 + '=' + e2))
     .OrderBy(e -> e.Split('=')[0])
     .ThenByDescending(e -> e.Split('=')[1])
-    .Write;
+    .WriteAll;
 end.
 [54]
 // Àáðàìÿí Ì.Ý. ÒÅÕÍÎËÎÃÈß LINQ ÍÀ ÏÐÈÌÅÐÀÕ. Ì.: ÄÌÊ-Ïðåññ, 2014.
@@ -84,7 +84,7 @@ begin
       (e1, ee2) -> ee2.DefaultIfEmpty('')
     .Select(e -> e1 + '.' + e))
     .SelectMany(e -> e).OrderBy(e -> e).Show()
-    .Write;
+    .WriteAll;
 end.
 [60]
 // Àáðàìÿí Ì.Ý. ÒÅÕÍÎËÎÃÈß LINQ ÍÀ ÏÐÈÌÅÐÀÕ. Ì.: ÄÌÊ-Ïðåññ, 2014.
@@ -96,7 +96,7 @@ begin
   ReadSeqString().GroupBy(e -> e[1])
     .OrderByDescending(e -> e.Sum(s -> s.Length)).ThenBy(e -> e.Key)
     .Select(e -> e.Sum(s -> s.Length) + '-' + e.Key)
-    .Write;
+    .WriteAll;
 end.
 
 

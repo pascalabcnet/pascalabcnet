@@ -6940,7 +6940,7 @@ namespace PascalABCCompiler.NETGenerator
                 is_dot_expr = false;
             value.obj.visit(this);
             //DarkStar Fixed: type t:=i.gettype();
-            if (_box)
+            if ((value.obj.type.is_value_type) && !value.compiled_method.method_info.DeclaringType.IsValueType)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
             }
