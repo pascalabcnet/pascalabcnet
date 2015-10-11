@@ -4163,7 +4163,15 @@ namespace CodeCompletion
             if (original_type != null)
                 return original_type.FindNameOnlyInType(name);
             if (name != null) sc = internal_find(name, false);//ht[name] as SymScope;
-            if (sc == null && baseScope != null) return baseScope.FindNameOnlyInType(name);
+            if (sc == null && baseScope != null)
+                sc = baseScope.FindNameOnlyInType(name);
+            if (sc == null && implemented_interfaces != null)
+                foreach (TypeScope ts in implemented_interfaces)
+                {
+                    sc = ts.FindNameOnlyInType(name);
+                    if (sc != null)
+                        break;
+                }
             return sc;
         }
 

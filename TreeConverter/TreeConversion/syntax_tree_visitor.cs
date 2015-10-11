@@ -1543,7 +1543,17 @@ namespace PascalABCCompiler.TreeConverter
                 if (convertion_data_and_alghoritms.find_eq_method_in_list(fn, fnl) == null)
                 {
                     if (!(obj != null && fn.polymorphic_state == SemanticTree.polymorphic_state.ps_static && !fn.is_extension_method))
-                        fnl.AddElement(fn);
+                    {
+                        if (fn.is_extension_method)
+                        {
+                            if (fn.parameters[0].type == obj.type || type_table.compare_types(fn.parameters[0].type, obj.type) == type_compare.greater_type)
+                                fnl.AddElementFirst(fn);
+                            else
+                                fnl.AddElement(fn);
+                        }
+                        else
+                            fnl.AddElement(fn);
+                    }
                 }
                 si = si.Next;
             }

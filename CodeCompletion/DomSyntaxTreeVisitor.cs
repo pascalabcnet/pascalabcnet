@@ -401,8 +401,14 @@ namespace CodeCompletion
            		// if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
            
             	if (ret_tn == null) return;
-            	if (ret_tn is ProcScope)
-            		ret_tn = new ProcType(ret_tn as ProcScope);
+                if (ret_tn is ProcScope)
+                {
+                    if (_var_def_statement.vars_type != null)
+                        ret_tn = new ProcType(ret_tn as ProcScope);
+                    else
+                        ret_tn = (ret_tn as ProcScope).return_type;
+                }
+
             	if (_var_def_statement.vars != null)
             	foreach (ident s in _var_def_statement.vars.idents)
             	{
