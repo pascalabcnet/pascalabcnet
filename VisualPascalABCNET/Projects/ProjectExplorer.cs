@@ -391,9 +391,10 @@ namespace VisualPascalABC
             {
                 ProjectFactory.Instance.CurrentProject.MainFile = System.IO.Path.Combine(ProjectFactory.Instance.CurrentProject.ProjectDirectory,e.Label);
             }
-            VisualPABCSingleton.MainForm.RenameFile(oldFileName,fi.Path);
+            WorkbenchServiceFactory.FileService.RenameFile(oldFileName, fi.Path);
             CodeCompletionActionsManager.RenameUnit(fi.Path, Path.GetFileNameWithoutExtension(e.Label));
             string oldFileNameWithoutExt = Path.Combine(Path.GetDirectoryName(oldFileName),Path.GetFileNameWithoutExtension(oldFileName));
+            string newFilePath = Path.Combine(Path.GetDirectoryName(oldFileName), e.Label);
             if (File.Exists(oldFileNameWithoutExt+".fmabc"))
             {
                 string fmabcFullName = Path.Combine(Path.GetDirectoryName(oldFileName), oldFileNameWithoutExt + ".fmabc");
@@ -401,7 +402,11 @@ namespace VisualPascalABC
                 File.Delete(fmabcFullName);  
             }
             ProjectFactory.Instance.SaveProject();
-            VisualPABCSingleton.MainForm.SaveAll(false);
+            WorkbenchServiceFactory.FileService.SaveAll(false);
+            WorkbenchServiceFactory.FileService.CloseFile(newFilePath);
+            WorkbenchServiceFactory.FileService.OpenFile(newFilePath, Path.GetFileName(newFilePath));
+            WorkbenchServiceFactory.DesignerService.SetActiveDesignerDirty();
+            WorkbenchServiceFactory.DesignerService.GenerateAllDesignersCode();
             /*if (File.Exists(oldFileNameWithoutExt + ".resources"))
             {
                 string fmabcFullName = Path.Combine(Path.GetDirectoryName(oldFileName), oldFileNameWithoutExt + ".fmabc");

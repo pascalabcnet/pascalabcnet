@@ -398,7 +398,7 @@ namespace VisualPascalABC
 
         }
 
-        internal bool SaveAll(bool Question)
+        public bool SaveAll(bool Question)
         {
             if (ProjectFactory.Instance.ProjectLoaded && Question)
             {
