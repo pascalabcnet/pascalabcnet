@@ -26,6 +26,12 @@ namespace VisualPascalABC
             }
         }
 
+        public void SetActiveDesignerDirty()
+        {
+            if (_currentCodeFileDocument.Designer != null)
+                _currentCodeFileDocument.Designer.IsDirty = true;
+        }
+
         public void UpdateDesignerIsActive()
         {
             bool active =

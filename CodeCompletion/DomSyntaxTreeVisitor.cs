@@ -401,8 +401,14 @@ namespace CodeCompletion
            		// if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
            
             	if (ret_tn == null) return;
-            	if (ret_tn is ProcScope)
-            		ret_tn = new ProcType(ret_tn as ProcScope);
+                if (ret_tn is ProcScope)
+                {
+                    if (_var_def_statement.vars_type != null)
+                        ret_tn = new ProcType(ret_tn as ProcScope);
+                    else
+                        ret_tn = (ret_tn as ProcScope).return_type;
+                }
+
             	if (_var_def_statement.vars != null)
             	foreach (ident s in _var_def_statement.vars.idents)
             	{
@@ -779,30 +785,30 @@ namespace CodeCompletion
         	ret_tn = tmp;
         	return ps;
         }
-        
+
         public override void visit(procedure_header _procedure_header)
         {
             //throw new Exception("The method or operation is not implemented.");
             SymScope topScope;
-        	ProcScope ps=null;
+            ProcScope ps = null;
             bool not_def = false;
             ProcRealization pr = null;
-        	bool is_realization=false;
-        	location loc = get_location(_procedure_header);
-        	if (_procedure_header.name != null)
-        	{
-        		_procedure_header.name.visit(this);
-        	
-        		if (_procedure_header.name.class_name != null)
-        		{
-        			topScope = cur_scope.FindName(_procedure_header.name.class_name.name);
-        			if (topScope != null)
-        			{
-        				ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
-        				if (ps == null) 
-        				{
-        					ps = new ProcScope(meth_name, topScope);
-        					ps.head_loc = loc;
+            bool is_realization = false;
+            location loc = get_location(_procedure_header);
+            if (_procedure_header.name != null)
+            {
+                _procedure_header.name.visit(this);
+
+                if (_procedure_header.name.class_name != null)
+                {
+                    topScope = cur_scope.FindName(_procedure_header.name.class_name.name);
+                    if (topScope != null)
+                    {
+                        ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
+                        if (ps == null)
+                        {
+                            ps = new ProcScope(meth_name, topScope);
+                            ps.head_loc = loc;
                             bool ext = false;
                             if (topScope is CompiledScope || topScope is ArrayScope || topScope is TypeSynonim && ((topScope as TypeSynonim).actType is CompiledScope || (topScope as TypeSynonim).actType is ArrayScope || (topScope as TypeSynonim).actType is DiapasonScope))
                                 ext = true;
@@ -820,220 +826,225 @@ namespace CodeCompletion
                                 this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                                 topScope.AddExtensionMethod(meth_name, ps, ts);
                             }
-        				}
-        				//while (ps != null && ps.already_defined) ps = ps.nextProc;
-        				else ps = select_function_definition(ps,_procedure_header.parameters,null,topScope as TypeScope);
-        				if (ps == null) 
-        				{
-        					ps = new ProcScope(meth_name, cur_scope);
-        					ps.head_loc = loc;
-        				}
-        				if (ps.parameters.Count != 0 && _procedure_header.parameters != null && is_proc_realization) 
-        				{
-        					ps.parameters.Clear();
-        					ps.already_defined = true;
-        				}
-        				if (impl_scope == null) 
-        				{
-        					pr = new ProcRealization(ps,cur_scope);
-        					pr.already_defined = true;
-        					ps.proc_realization = pr;
-        					pr.loc = cur_loc;
-        					pr.head_loc = loc;
-        					is_realization = true;
-        					entry_scope.AddName("$method",pr);
-        				}
-        				else 
-        				{
-        					pr = new ProcRealization(ps,impl_scope);
-        					pr.already_defined = true;
-        					ps.proc_realization = pr;
-        					pr.loc = cur_loc;
-        					is_realization = true;
-        					pr.head_loc = loc;
-        					impl_scope.AddName("$method",pr);
-        				}
-        			}
-        			else 
-        			{
-        				ps = new ProcScope(meth_name, cur_scope);
-        				ps.head_loc = loc;
-        			}
-        		}
-        		else 
-        		{
-        			ps = new ProcScope(meth_name, cur_scope);
-        			ps.head_loc = loc;
-        			if (IsForward(_procedure_header))
-        			{
-        				cur_scope.AddName(meth_name, ps);
-        				ps.is_forward = true;
-        			}
-        			else
-        			{
-        				bool found_in_top = false;
-        				SymScope ss=null;
-        				if (cur_scope is ImplementationUnitScope)
-        				{
-        						ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
-        						if (ss != null && ss is ProcScope)
-        						{
-        							//ps = ss as ProcScope;
-        							//while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null)
-        							//	ss = (ss as ProcScope).nextProc;
-        							ps = select_function_definition(ss as ProcScope,_procedure_header.parameters,null,null);
-        							if (ps == null)
-        							{
-        								ps = new ProcScope(meth_name, cur_scope);
-        								ps.head_loc = loc;
-        							}
-        							//ps = ss as ProcScope;
-        							if (ps.parameters.Count != 0 && _procedure_header.parameters != null) 
-        							{
-        								ps.parameters.Clear();
-        								ps.already_defined = true;
-        							}
-        							pr = new ProcRealization(ps,cur_scope);
-        							pr.already_defined = true;
-        							pr.loc = cur_loc;
-        							ps.proc_realization = pr;
-        							pr.head_loc = loc;
-        							is_realization = true;
-        							cur_scope.AddName("$method",pr);
-        							found_in_top = true;
-        						}
-        				}
-        				if (!found_in_top) //ne nashli opisanie v interface chasti modilja
-        				{
-        					//ss = cur_scope.FindNameOnlyInType(meth_name);
-        					ss = cur_scope.FindName(meth_name);
-        					if (ss != null && ss is ProcScope)
-        					{
-        						if ((ss as ProcScope).is_forward)
-        						{
-        							//if ((ss as ProcScope).parameters.Count != 0 && _procedure_header.parameters != null) (ss as ProcScope).parameters.Clear();
-        							pr = new ProcRealization(ss as ProcScope,cur_scope);
-        							pr.already_defined = true;
-        							pr.loc = cur_loc;
-        							cur_scope.AddName("$method",pr);
-        							ret_tn = pr;
-        							pr.head_loc = loc;
-        							return;
-        						}
-        						else
-        						{
-        							ps = new ProcScope(meth_name,cur_scope);
-        							ps.head_loc = loc;
-        							if (ps.topScope == ss.topScope)
-        							{
-        								while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
-        								ProcScope tmp_ps = (ss as ProcScope).nextProc;
-        								(ss as ProcScope).nextProc = ps;
-        								ps.nextProc = tmp_ps;
-        								cur_scope.AddName(meth_name,ps);
-        								ps.si.name = meth_name;
-        							}
-        							else
-        							{
-        								ps.nextProc = ss as ProcScope;
-        								cur_scope.AddName(meth_name,ps);
-        							}
-        							//ps = select_function_definition(ss as ProcScope,_procedure_header.parameters);
-        						}
-        					}
-        					else
-        					{
-        						cur_scope.AddName(meth_name, ps);
-        					}
-        				}
-        				/*if (is_proc_realization)
-        				{
-        					ss = cur_scope.FindNameOnlyInUses(meth_name);
-        					if (ss != null && ss is ProcScope)
-        					{
-        						ProcScope tmp = ps;
-        						bool flag = true;
-        						while (tmp.nextProc != null)
-        						{
-        							if (tmp.nextProc != null && ps.IsEqual(tmp.nextProc))
-        							{
-        								flag = false;
-        								break;
-        							}
-        							tmp = tmp.nextProc;
-        						}
-        						if (!tmp.IsEqual(ss) && flag)
-        						tmp.nextProc = ss as ProcScope;
-        					}
-        				}*/
-        			}
-        		}
-        	}
-        	else
-        	{
-        		ps = new ProcScope("", cur_scope);
-        		ps.head_loc = loc;
-        	}
-            if ((!is_realization || not_def) && ps.loc == null)
-        	ps.loc = cur_loc;
-        	//ps.head_loc = loc;
-        	ps.declaringUnit = entry_scope;
-        	if (_procedure_header.template_args != null && !ps.IsGeneric())
-        	{
-        		foreach (ident s in _procedure_header.template_args.idents)
-        		{
-        			ps.AddTemplateParameter(s.name);
-        			ps.AddName(s.name,new TemplateParameterScope(s.name,TypeTable.obj_type,ps));
-        		}
-        	}
-        	SetAttributes(ps,_procedure_header.proc_attributes);
-        	ps.is_static = _procedure_header.class_keyword;
-        	if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_procedure_header))
-        		ps.AddDocumentation(this.converter.controller.docs[_procedure_header]);
-        	
-        	if (is_proc_realization) ps.already_defined = true;
-        	else 
-        	{
-        		ps.loc = loc;
-        	}
-        	if (_procedure_header.name == null || _procedure_header.name.class_name == null)
-        	{
-        		ps.acc_mod = cur_access_mod;
-        		ps.si.acc_mod = cur_access_mod;
-        	}
-        	SymScope tmp = cur_scope;
-            if (_procedure_header.parameters != null)
-            foreach (typed_parameters pars in _procedure_header.parameters.params_list)
-            {
-            	pars.vars_type.visit(this);
-            	
-            	if (ret_tn != null)
-            	{
-            		if (ret_tn is ProcScope)
-            		ret_tn = new ProcType(ret_tn as ProcScope);
-            		foreach (ident id in pars.idents.idents)
-            		{
-            			ElementScope si = new ElementScope(new SymInfo(id.name, SymbolKind.Parameter,id.name),ret_tn,ps);
-            			si.loc = get_location(id);
-            			si.param_kind = pars.param_kind;
-            			if (pars.inital_value != null)
-            			{
-            				pars.inital_value.visit(this);
-            				si.cnst_val = cnst_val.prim_val;
-            			}
-            			si.MakeDescription();
-            			ps.AddName(id.name,si);
-            			ps.AddParameter(si);
-            		}
-            	}
+                        }
+                        //while (ps != null && ps.already_defined) ps = ps.nextProc;
+                        else ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
+                        if (ps == null)
+                        {
+                            ps = new ProcScope(meth_name, cur_scope);
+                            ps.head_loc = loc;
+                        }
+                        if (ps.parameters.Count != 0 && _procedure_header.parameters != null && is_proc_realization)
+                        {
+                            ps.parameters.Clear();
+                            ps.already_defined = true;
+                        }
+                        if (impl_scope == null)
+                        {
+                            pr = new ProcRealization(ps, cur_scope);
+                            pr.already_defined = true;
+                            ps.proc_realization = pr;
+                            pr.loc = cur_loc;
+                            pr.head_loc = loc;
+                            is_realization = true;
+                            entry_scope.AddName("$method", pr);
+                        }
+                        else
+                        {
+                            pr = new ProcRealization(ps, impl_scope);
+                            pr.already_defined = true;
+                            ps.proc_realization = pr;
+                            pr.loc = cur_loc;
+                            is_realization = true;
+                            pr.head_loc = loc;
+                            impl_scope.AddName("$method", pr);
+                        }
+                    }
+                    else
+                    {
+                        ps = new ProcScope(meth_name, cur_scope);
+                        ps.head_loc = loc;
+                    }
+                }
+                else
+                {
+                    ps = new ProcScope(meth_name, cur_scope);
+                    if (has_extensionmethod_attr(_procedure_header.proc_attributes.proc_attributes) && _procedure_header.parameters.params_list.Count > 0)
+                    {
+                        ps.is_extension = true;
+                        _procedure_header.parameters.params_list[0].vars_type.visit(this);
+                        topScope = ret_tn;
+                        ps.declaringType = topScope as TypeScope;
+                        TypeScope ts = topScope as TypeScope;
+                        if (topScope is TypeSynonim)
+                            ts = (ts as TypeSynonim).actType;
+                        this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
+                        topScope.AddExtensionMethod(meth_name, ps, ts);
+                    }
+                    ps.head_loc = loc;
+                    if (IsForward(_procedure_header))
+                    {
+                        cur_scope.AddName(meth_name, ps);
+                        ps.is_forward = true;
+                    }
+                    else
+                    {
+                        bool found_in_top = false;
+                        SymScope ss = null;
+                        if (cur_scope is ImplementationUnitScope)
+                        {
+                            ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
+                            if (ss != null && ss is ProcScope)
+                            {
+                                //ps = ss as ProcScope;
+                                //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null)
+                                //	ss = (ss as ProcScope).nextProc;
+                                ps = select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null);
+                                if (ps == null)
+                                {
+                                    ps = new ProcScope(meth_name, cur_scope);
+                                    ps.head_loc = loc;
+                                }
+                                //ps = ss as ProcScope;
+                                if (ps.parameters.Count != 0 && _procedure_header.parameters != null)
+                                {
+                                    ps.parameters.Clear();
+                                    ps.already_defined = true;
+                                }
+                                pr = new ProcRealization(ps, cur_scope);
+                                pr.already_defined = true;
+                                pr.loc = cur_loc;
+                                ps.proc_realization = pr;
+                                pr.head_loc = loc;
+                                is_realization = true;
+                                cur_scope.AddName("$method", pr);
+                                found_in_top = true;
+                            }
+                        }
+                        if (!found_in_top) //ne nashli opisanie v interface chasti modilja
+                        {
+                            //ss = cur_scope.FindNameOnlyInType(meth_name);
+                            ss = cur_scope.FindName(meth_name);
+                            if (ss != null && ss is ProcScope)
+                            {
+                                if ((ss as ProcScope).is_forward)
+                                {
+                                    //if ((ss as ProcScope).parameters.Count != 0 && _procedure_header.parameters != null) (ss as ProcScope).parameters.Clear();
+                                    pr = new ProcRealization(ss as ProcScope, cur_scope);
+                                    pr.already_defined = true;
+                                    pr.loc = cur_loc;
+                                    cur_scope.AddName("$method", pr);
+                                    ret_tn = pr;
+                                    pr.head_loc = loc;
+                                    return;
+                                }
+                                else
+                                {
+                                    ps = new ProcScope(meth_name, cur_scope);
+                                    ps.head_loc = loc;
+                                    if (ps.topScope == ss.topScope)
+                                    {
+                                        while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
+                                        ProcScope tmp_ps = (ss as ProcScope).nextProc;
+                                        (ss as ProcScope).nextProc = ps;
+                                        ps.nextProc = tmp_ps;
+                                        cur_scope.AddName(meth_name, ps);
+                                        ps.si.name = meth_name;
+                                    }
+                                    else
+                                    {
+                                        ps.nextProc = ss as ProcScope;
+                                        cur_scope.AddName(meth_name, ps);
+                                    }
+                                    //ps = select_function_definition(ss as ProcScope,_procedure_header.parameters);
+                                }
+                            }
+                            else
+                            {
+                                cur_scope.AddName(meth_name, ps);
+                            }
+                        }
+
+                    }
+                }
             }
+            else
+            {
+                ps = new ProcScope("", cur_scope);
+                ps.head_loc = loc;
+            }
+            if ((!is_realization || not_def) && ps.loc == null)
+                ps.loc = cur_loc;
+            //ps.head_loc = loc;
+            ps.declaringUnit = entry_scope;
+            if (_procedure_header.template_args != null && !ps.IsGeneric())
+            {
+                foreach (ident s in _procedure_header.template_args.idents)
+                {
+                    ps.AddTemplateParameter(s.name);
+                    ps.AddName(s.name, new TemplateParameterScope(s.name, TypeTable.obj_type, ps));
+                }
+            }
+            SetAttributes(ps, _procedure_header.proc_attributes);
+            ps.is_static = _procedure_header.class_keyword;
+            if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_procedure_header))
+                ps.AddDocumentation(this.converter.controller.docs[_procedure_header]);
+
+            if (is_proc_realization) ps.already_defined = true;
+            else
+            {
+                ps.loc = loc;
+            }
+            if (_procedure_header.name == null || _procedure_header.name.class_name == null)
+            {
+                ps.acc_mod = cur_access_mod;
+                ps.si.acc_mod = cur_access_mod;
+            }
+            SymScope tmp = cur_scope;
+            if (_procedure_header.parameters != null)
+                foreach (typed_parameters pars in _procedure_header.parameters.params_list)
+                {
+                    pars.vars_type.visit(this);
+
+                    if (ret_tn != null)
+                    {
+                        if (ret_tn is ProcScope)
+                            ret_tn = new ProcType(ret_tn as ProcScope);
+                        foreach (ident id in pars.idents.idents)
+                        {
+                            ElementScope si = new ElementScope(new SymInfo(id.name, SymbolKind.Parameter, id.name), ret_tn, ps);
+                            si.loc = get_location(id);
+                            si.param_kind = pars.param_kind;
+                            if (pars.inital_value != null)
+                            {
+                                pars.inital_value.visit(this);
+                                si.cnst_val = cnst_val.prim_val;
+                            }
+                            si.MakeDescription();
+                            ps.AddName(id.name, si);
+                            ps.AddParameter(si);
+                        }
+                    }
+                }
             if (cur_scope is TypeScope && !ps.is_static)
-            	ps.AddName("self",new ElementScope(new SymInfo("self", SymbolKind.Parameter,"self"),cur_scope,ps));
+                ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
             //cur_scope = ps;
             ret_tn = ps;
             ps.Complete();
             if (pr != null && not_def)
                 pr.Complete();
+        }
+
+        bool has_extensionmethod_attr(List<procedure_attribute> attrs)
+        {
+            foreach (procedure_attribute attr in attrs)
+            {
+                if (attr.attribute_type == PascalABCCompiler.SyntaxTree.proc_attribute.attr_extension)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         public override void visit(function_header _function_header)
@@ -1130,7 +1141,19 @@ namespace CodeCompletion
         		{
         			ps = new ProcScope(meth_name, cur_scope);
         			ps.head_loc = loc;
-        			if (IsForward(_function_header))
+                    if (has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes) && _function_header.parameters.params_list.Count > 0)
+                    {
+                        ps.is_extension = true;
+                        _function_header.parameters.params_list[0].vars_type.visit(this);
+                        topScope = ret_tn;
+                        ps.declaringType = topScope as TypeScope;
+                        TypeScope ts = topScope as TypeScope;
+                        if (topScope is TypeSynonim)
+                            ts = (ts as TypeSynonim).actType;
+                        this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
+                        topScope.AddExtensionMethod(meth_name, ps, ts);
+                    }
+                    if (IsForward(_function_header))
         			{
         				cur_scope.AddName(meth_name, ps);
         				ps.is_forward = true;

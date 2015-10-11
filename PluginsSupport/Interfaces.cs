@@ -263,6 +263,7 @@ namespace VisualPascalABCPlugins
         void RenameFile(string OldFileName, string NewFileName);
         void CloseFile(string FileName);
         void ReloadFile(string FileName);
+        bool SaveAll(bool Question);
         void SetFileAsChanged(string FileName);
         void OpenTabWithText(string tabName, string Text);
         ICodeFileDocument OpenFileForDebug(string FileName);
@@ -282,6 +283,7 @@ namespace VisualPascalABCPlugins
         void DisableDesigner();
         void EnableDesigner();
         void GenerateAllDesignersCode();
+        void SetActiveDesignerDirty();
     }
 
     public interface IWorkbenchRunService
