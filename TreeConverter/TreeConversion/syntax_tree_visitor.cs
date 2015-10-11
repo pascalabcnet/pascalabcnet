@@ -10747,10 +10747,13 @@ namespace PascalABCCompiler.TreeConverter
                     cpt = concrete_parameter_type.cpt_var;
                     pt = PascalABCCompiler.SemanticTree.parameter_type.var;
                 }
-                common_parameter cp = new common_parameter(compiler_string_consts.self_word,(context.top_function as common_namespace_function_node).ConnectedToType,pt,
-				                                                                context.top_function,cpt,null,null);
-            	context.top_function.parameters.AddElementFirst(cp);
-            	context.top_function.scope.AddSymbol(compiler_string_consts.self_word,new SymbolInfo(cp));
+                if (!has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes))
+                {
+                    common_parameter cp = new common_parameter(compiler_string_consts.self_word, (context.top_function as common_namespace_function_node).ConnectedToType, pt,
+                                                                                    context.top_function, cpt, null, null);
+                    context.top_function.parameters.AddElementFirst(cp);
+                    context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                }
             }
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
 
@@ -11290,14 +11293,18 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     self_type = self_type.get_instance(context.top_function.get_generic_params_list());
                 }
-                common_parameter cp = new common_parameter(compiler_string_consts.self_word,self_type,pt,
-				                                                                context.top_function,cpt,null,null);
-            	context.top_function.parameters.AddElementFirst(cp);
-            	context.top_function.scope.AddSymbol(compiler_string_consts.self_word,new SymbolInfo(cp));
+                if (!has_extensionmethod_attr(_function_header.proc_attributes.proc_attributes))
+                {
+                    common_parameter cp = new common_parameter(compiler_string_consts.self_word, self_type, pt,
+                                                                                context.top_function, cpt, null, null);
+                    context.top_function.parameters.AddElementFirst(cp);
+                    context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                }
             }
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
 
             bool unique = context.close_function_params(body_exists);
+            
             if (context.top_function.return_value_type == null)
                 AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             if (_function_header.where_defs != null)
@@ -11341,7 +11348,19 @@ namespace PascalABCCompiler.TreeConverter
             }
             return false;
         }
-        
+
+        bool has_extensionmethod_attr(List<SyntaxTree.procedure_attribute> attrs)
+        {
+            foreach (SyntaxTree.procedure_attribute attr in attrs)
+            {
+                if (attr.attribute_type == PascalABCCompiler.SyntaxTree.proc_attribute.attr_extension)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private bool has_var_char_parameters(common_function_node fn)
         {
         	for (int i=0; i<fn.parameters.Count; i++)
@@ -11382,8 +11401,9 @@ namespace PascalABCCompiler.TreeConverter
                 pa.source_context = _procedure_header.source_context;
                 _procedure_header.proc_attributes.proc_attributes.Add(pa);
             }
+            
             weak_node_test_and_visit(_procedure_header.proc_attributes);
-			 with_class_name = false;
+			with_class_name = false;
             CheckOverrideOrReintroduceExpectedWarning(get_location(_procedure_header));
             if (context.top_function != null && context.top_function is common_namespace_function_node && (context.top_function as common_namespace_function_node).ConnectedToType != null && !context.top_function.IsOperator)
             {
@@ -11400,12 +11420,14 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     self_type = self_type.get_instance(context.top_function.get_generic_params_list());
                 }
-                
-                common_parameter cp = new common_parameter(compiler_string_consts.self_word,self_type,pt,
-				                                                                context.top_function,cpt,null,null);
-                
-                context.top_function.parameters.AddElementFirst(cp);
-            	context.top_function.scope.AddSymbol(compiler_string_consts.self_word,new SymbolInfo(cp));
+                if (!has_extensionmethod_attr(_procedure_header.proc_attributes.proc_attributes))
+                {
+                    common_parameter cp = new common_parameter(compiler_string_consts.self_word, self_type, pt,
+                                                                                context.top_function, cpt, null, null);
+
+                    context.top_function.parameters.AddElementFirst(cp);
+                    context.top_function.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(cp));
+                }
             }
             if (_procedure_header is SyntaxTree.constructor)
             {
@@ -11714,6 +11736,32 @@ namespace PascalABCCompiler.TreeConverter
                             context.converted_type.SetIsAbstract(true);
                             break;
                 		}
+                    case proc_attribute.attr_extension:
+                        {
+                            if (!(context.top_function is common_namespace_function_node))
+                                AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
+                            if (context.top_function.parameters.Count == 0)
+                                AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
+                            if (context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
+                                AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
+                            if (context.top_function.parameters[0].name != compiler_string_consts.self_word)
+                                AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
+                            common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
+                            top_function.ConnectedToType = context.top_function.parameters[0].type;
+                            if (top_function.ConnectedToType.Scope == null && top_function.ConnectedToType is compiled_type_node)
+                            {
+                                (top_function.ConnectedToType as compiled_type_node).init_scope();
+                            }
+                            if (top_function.ConnectedToType.Scope == null)
+                                AddError(context.top_function.loc, "EXTENSION_METHODS_FOR_CONSTRUCTED_TYPES_NOT_ALLOWED");
+                            /*SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(context.converted_namespace.scope, top_function.ConnectedToType.Scope);
+                            top_function.scope = scope;*/
+                            top_function.ConnectedToType.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
+                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                                top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
+                            
+                            break;
+                        }
                     default:
                         {
                             throw new NotSupportedError(get_location(_procedure_attributes_list.proc_attributes[i]));
@@ -11730,7 +11778,7 @@ namespace PascalABCCompiler.TreeConverter
             first_param = true;
             foreach (SyntaxTree.typed_parameters tp in _formal_parametres.params_list)
             {
-            	if (params_met)
+                if (params_met)
                 {
                     AddError(get_location(tp), "ONLY_LAST_PARAMETER_CAN_BE_PARAMS");
                 }
@@ -11748,7 +11796,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(new NeedDefaultValueForParameter(get_location(tp)));
                 }
-                
+
                 if (tp.inital_value != null)
                 {
                     default_value_met = true;
@@ -11758,24 +11806,24 @@ namespace PascalABCCompiler.TreeConverter
             common_method_node cnode = context.top_function as common_method_node;
             if (cnode != null && cnode.IsOperator)
             {
-            	parameter_list pars = context.top_function.parameters;
-            	if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
-            	{
-                bool all_types_mismatch = true;
-                foreach (parameter par in pars)
+                parameter_list pars = context.top_function.parameters;
+                if (cnode.name != compiler_string_consts.implicit_operator_name && cnode.name != compiler_string_consts.explicit_operator_name)
                 {
-                    //if (par.type == cnode.comperehensive_type)
-                    if (convertion_data_and_alghoritms.eq_type_nodes(par.type, cnode.comperehensive_type as type_node))
+                    bool all_types_mismatch = true;
+                    foreach (parameter par in pars)
                     {
-                        all_types_mismatch = false;
-                        break;
+                        //if (par.type == cnode.comperehensive_type)
+                        if (convertion_data_and_alghoritms.eq_type_nodes(par.type, cnode.comperehensive_type as type_node))
+                        {
+                            all_types_mismatch = false;
+                            break;
+                        }
+                    }
+                    if (all_types_mismatch)
+                    {
+                        AddError(cnode.loc, "TYPE_OF_ONE_OR_MORE_OPERATOR_PARAMETERS_MUST_BE_{0}", ((type_node)(cnode.comperehensive_type)).PrintableName);
                     }
                 }
-                if (all_types_mismatch)
-                {
-                    AddError(cnode.loc, "TYPE_OF_ONE_OR_MORE_OPERATOR_PARAMETERS_MUST_BE_{0}", ((type_node)(cnode.comperehensive_type)).PrintableName);
-                }
-            	}
                 if (pars.Count > 0 && pars[pars.Count - 1].is_params)
                 {
                     AddError(convertion_data_and_alghoritms.get_location(pars[pars.Count - 1]), "PARAMS_IN_OPERATOR");
@@ -11783,11 +11831,11 @@ namespace PascalABCCompiler.TreeConverter
                 int pcount = name_reflector.get_params_count(cnode.name);
                 if (pcount != pars.Count)
                 {
-                	if (cnode.name != compiler_string_consts.minus_name && cnode.name != compiler_string_consts.plus_name)
-                	AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
-                	else
-                	if (pars.Count != 1 && pars.Count != 2)
-                		AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
+                    if (cnode.name != compiler_string_consts.minus_name && cnode.name != compiler_string_consts.plus_name)
+                        AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
+                    else
+                    if (pars.Count != 1 && pars.Count != 2)
+                        AddError(cnode.loc, "OPERATOR_{0}_PARAMETERS_COUNT_MUST_EQUAL_{1}", cnode.name, pcount);
                 }
             }
         }
