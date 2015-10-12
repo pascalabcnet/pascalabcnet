@@ -56,6 +56,7 @@ namespace VisualPascalABC
             Workbench.WidgetController.CompilingButtonsEnabled = false;
             Workbench.CompilerConsoleWindow.ClearConsole();
             CompilerOptions1.SourceFileName = project.Path;
+            CompilerOptions1.OutputDirectory = project.OutputDirectory;
             CompilerOptions1.ProjectCompiled = true;
             if (project.ProjectType == PascalABCCompiler.ProjectType.WindowsApp)
                 CompilerOptions1.OutputFileType = PascalABCCompiler.CompilerOptions.OutputType.WindowsApplication;
