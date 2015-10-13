@@ -27,6 +27,14 @@ begin
     sb.Append(c);
   Result := sb.ToString();
 end;
+procedure MyAdd<T>(self: List<T>; params arr: array of T); extensionmethod;
+begin
+  self.AddRange(arr);
+end;
+procedure Add(self: List<integer>; params arr: array of integer); extensionmethod;
+begin
+  self.AddRange(arr);
+end;
 begin
   var arr := Arr(1,2,3);
   assert(arr.myfirst=1);
@@ -41,4 +49,10 @@ begin
   var j:= 2;
   j.myproc;
   assert(PABCSystem.Arr('a','b','c').glue='abc');
+  var lst3 := new List<integer>;
+  lst3.MyAdd(2,3,4,5);
+  assert(lst3[3]=5);
+  var lst4 := new List<integer>;
+  lst4.Add(2,3,4,5);
+  assert(lst4[3]=5);
 end.

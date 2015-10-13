@@ -2947,6 +2947,7 @@ namespace PascalABCCompiler.TreeRealization
                 SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.sm_name, ctn, SemanticTree.basic_function_type.enumsm, SystemLibrary.SystemLibrary.bool_type);
                 SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.smeq_name, ctn, SemanticTree.basic_function_type.enumsmeq, SystemLibrary.SystemLibrary.bool_type);
             }
+            //ctn.init_scope();
             //TODO: Тут надо подумать. Может как-то сделать по другому?
             if (!NetHelper.NetHelper.IsStandType(st))
 			{
@@ -3137,6 +3138,16 @@ namespace PascalABCCompiler.TreeRealization
             {
                 SymbolInfo si = scope.SymbolTable.Find(scope, name);
                 SymbolInfo si2 = find_in_additional_names(name);
+                SymbolInfo si3 = compiled_find(name);
+                if (si != null)
+                {
+                    SymbolInfo tmp_si = si;
+                    while (tmp_si.Next != null)
+                        tmp_si = tmp_si.Next;
+                    tmp_si.Next = si3;
+                }
+                else if (si3 != null)
+                    si = si3;
                 if (si == null && si2 == null && string.Compare(name, "Create", true) != 0)
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;

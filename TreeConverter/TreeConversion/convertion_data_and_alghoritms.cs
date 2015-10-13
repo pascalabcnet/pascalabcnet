@@ -38,6 +38,12 @@ namespace PascalABCCompiler.TreeConverter
             syntax_tree_visitor.AddError(err);
         }
 
+        private T AddError<T>(Errors.Error err)
+        {
+            syntax_tree_visitor.AddError(err);
+            return default(T);
+        }
+
         private void AddError(location loc, string ErrString, params string[] values)
         {
             syntax_tree_visitor.AddError(loc, ErrString, values);
@@ -1675,7 +1681,7 @@ namespace PascalABCCompiler.TreeConverter
 		{
 			if (functions==null)
 			{
-				AddError(new NoFunctionWithThisName(loc));
+				return AddError<function_node>(new NoFunctionWithThisName(loc));
 			}
 
             function_node_list set_of_possible_functions = new function_node_list();
