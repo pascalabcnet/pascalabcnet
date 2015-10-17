@@ -5042,11 +5042,11 @@ namespace PascalABCCompiler.TreeConverter
                                                 si = si.Next;
                                             }
                                         }
-                                        if (has_obj_methods)
+                                        /*if (has_obj_methods)
                                         { 
                                             exprs.remove_at(0);
                                             skip_first_parameter = false;
-                                        }
+                                        }*/
                                         si = new_si;
                                     }
                                     if (_method_call.parameters != null)
@@ -11754,7 +11754,7 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
                             if (context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
                                 AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
-                            if (context.top_function.parameters[0].name != compiler_string_consts.self_word)
+                            if (context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
                             top_function.ConnectedToType = context.top_function.parameters[0].type;

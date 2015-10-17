@@ -3278,7 +3278,7 @@ _cmn.types.AddElement(tctn);*/
 						throw new CompilerInternalError("Undefined block type");
 					}
 				}
-                while (siint.sym_info != fn)
+                while (siint.sym_info != fn && siint.Next != null)
                 {
                     siint = siint.Next;
                 }
