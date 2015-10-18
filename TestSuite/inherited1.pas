@@ -8,7 +8,7 @@ begin
   var s0: string;
   s0 := inherited ToString();
   
-  var s: string := 'ss' + inherited ToString();
+  //var s: string := 'ss' + inherited ToString();
   
 end;
 end;
