@@ -14523,7 +14523,7 @@ namespace PascalABCCompiler.TreeConverter
                         //return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                         //	si,lloc,blocks.converted_type,blocks.top_function,false);
                         if (!(si.sym_info is common_in_function_function_node))
-                            return make_delegate_wrapper(null, si, lloc, false);
+                            return make_delegate_wrapper(null, si, lloc, ((si.sym_info is common_method_node) && ((common_method_node)si.sym_info).IsStatic));
                         return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                         	si,lloc,context.converted_type,context.top_function,false);
                     }
