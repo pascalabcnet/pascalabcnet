@@ -1,11 +1,19 @@
-type TClass = class
+type 
+TestEventHandler =  procedure(value: integer);
+
+TClass = class
+class event TestEvent: TestEventHandler;
 class a : integer := 4;
+class property Prop1 : integer read a write a;
+
 class constructor Create;
 begin
+TestEvent+= TestEventHandler(set_Prop1);
 assert(a=4);
+TestEvent(5);
+assert(a=5);
 end;
 
-class property Prop1 : integer read a write a;
 end;
 
 var t : TClass;
