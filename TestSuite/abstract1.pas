@@ -44,6 +44,21 @@ begin
 end;
 end;
 
+TClass7 = abstract class
+a: integer;
+procedure Test; virtual;
+begin
+a := 5;
+end;
+end;
+
+TClass8 = class(TClass7)
+procedure Test; override;
+begin
+a := 3;
+end;
+end;
+
 var t : TClass;
     t2 : TClass3;
     t3 : TClass5;
@@ -55,4 +70,7 @@ t2 := new TClass4;
 t2.Test2(2.3);
 t3 := new TClass6;
 t3.Test3;
+var t4 := new TClass8;
+t4.Test;
+assert(t4.a=3);
 end.
