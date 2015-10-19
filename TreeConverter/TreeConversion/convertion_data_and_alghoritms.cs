@@ -40,7 +40,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private T AddError<T>(Errors.Error err)
         {
-            syntax_tree_visitor.AddError(err);
+            syntax_tree_visitor.AddError(err, true);
             return default(T);
         }
 
@@ -1789,7 +1789,7 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
 			{
-                AddError(new NoFunctionWithSameParametresNum(loc, is_alone_method_defined, first_function));
+                return AddError<function_node>(new NoFunctionWithSameParametresNum(loc, is_alone_method_defined, first_function));
 			}
 
             //(ssyy) Инициализируем is_alone_defined
@@ -1866,10 +1866,10 @@ namespace PascalABCCompiler.TreeConverter
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
 			{
                 if (_is_assigment && parameters.Count == 2)
-                    AddError(new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location));
+                    return AddError<function_node>(new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location));
                 if (_tmp_bfn != null && parameters.Count == 2)
-                    AddError(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1],loc));
-				AddError(new NoFunctionWithSameArguments(loc,is_alone_method_defined));
+                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1],loc));
+                return AddError<function_node>(new NoFunctionWithSameArguments(loc,is_alone_method_defined));
 			}
 
 			bool remove=true;
@@ -2001,9 +2001,8 @@ namespace PascalABCCompiler.TreeConverter
                 indefinits.AddRange(set_of_possible_functions);
                 return new indefinite_functions_set(indefinits);
             }
-			
-            AddError(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));
-            return null;
+
+            return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));
 		}
 
         private function_node is_exist_eq_return_value_method(function_node fn, function_node_list funcs)

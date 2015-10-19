@@ -86,9 +86,21 @@ namespace PascalABCCompiler.TreeConverter
             return num.ToString();
         }
 
-        internal void AddError(Errors.Error err)
+        internal Errors.Error LastError()
         {
-            if (ThrowCompilationError || err.MustThrow)
+            Errors.Error err = ErrorsList[ErrorsList.Count-1];
+            ErrorsList.RemoveAt(ErrorsList.Count - 1);
+            return err;
+        }
+
+        internal void RemoveLastError()
+        {
+            ErrorsList.RemoveAt(ErrorsList.Count - 1);
+        }
+
+        internal void AddError(Errors.Error err, bool shouldReturn=false)
+        {
+            if (ThrowCompilationError || !shouldReturn /*|| err.MustThrow && !shouldReturn*/)
             {
                 throw err;
             }
@@ -5283,10 +5295,32 @@ namespace PascalABCCompiler.TreeConverter
                                         {
                                             try
                                             {
+                                                ThrowCompilationError = false;
                                                 fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                                if (fn == null && skip_first_parameter)
+                                                {
+                                                    if (si.Next == null)
+                                                    {
+                                                        ThrowCompilationError = true;
+                                                        throw LastError();
+                                                    }
+                                                    RemoveLastError();
+                                                    skip_first_parameter = false;
+                                                    si = tmp_si;
+                                                    exprs.remove_at(0);
+                                                    fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                                    if (fn == null)
+                                                    {
+                                                        ThrowCompilationError = true;
+                                                        throw LastError();
+                                                    }
+                                                    else
+                                                        RemoveLastError();
+                                                }
                                             }
                                             catch (Exception ex)
                                             {
+                                                ThrowCompilationError = true;
                                                 if (skip_first_parameter)
                                                 {
                                                     si = tmp_si;
@@ -5296,6 +5330,7 @@ namespace PascalABCCompiler.TreeConverter
                                                 else
                                                     throw ex;
                                             }
+                                            ThrowCompilationError = true;
                                         }
                                         SemanticTree.IGenericInstance igi = fn as SemanticTree.IGenericInstance;
                                         if (igi != null)
@@ -11616,14 +11651,13 @@ namespace PascalABCCompiler.TreeConverter
                             {
                             	AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "USING_MODIFIERS{0}_{1}_TOGETHER_NOT_ALLOWED", cmn,_procedure_attributes_list.proc_attributes[i].name,override_proc_attr);
                             }
-                            if (!context.converted_type.IsAbstract)
+                            if (!context.converted_type.IsAbstract || true)
                             {
                                 is_virtual = true;
                                 virtual_proc_attr = _procedure_attributes_list.proc_attributes[i].name;
                                 if (!is_abstract)
                                 context.set_virtual(cmn);
                             }
-                            
                             break;
                         }
                     case SyntaxTree.proc_attribute.attr_override:
