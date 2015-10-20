@@ -3109,6 +3109,8 @@ namespace PascalABCCompiler.TreeRealization
             {
                 SymbolInfo si = compiled_find(name);
                 SymbolInfo si2 = find_in_additional_names(name);
+                /*if (name == "Clear") //статическая функция для массива при наличии такого кода не конкурирует с одноименным методом расширения для массивов. Как определить тут, что она статическая???
+                    si = null;*/
                 if (si == null && si2 == null && string.Compare(name,"Create",true) != 0)
                 {
                     compiled_type_node bas_type = base_type as compiled_type_node;
