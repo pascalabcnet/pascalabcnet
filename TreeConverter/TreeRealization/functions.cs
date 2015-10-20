@@ -1072,6 +1072,14 @@ namespace PascalABCCompiler.TreeRealization
 
         public type_node ConnectedToType = null;
 
+        public override bool is_extension_method
+        {
+            get
+            {
+                return ConnectedToType != null;
+            }
+        }
+
         SemanticTree.ITypeNode SemanticTree.ICommonNamespaceFunctionNode.ConnectedToType
         {
             get

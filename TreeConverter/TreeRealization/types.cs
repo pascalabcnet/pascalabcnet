@@ -3104,7 +3104,8 @@ namespace PascalABCCompiler.TreeRealization
                 si = AddToSymbolInfo(si, scope.SymbolTable.Find(scope,name));
 			return si;
             */
-
+            if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && scope == null)
+                this.init_scope();
             if (scope == null)
             {
                 SymbolInfo si = compiled_find(name);
@@ -3139,6 +3140,15 @@ namespace PascalABCCompiler.TreeRealization
                 SymbolInfo si = scope.SymbolTable.Find(scope, name);
                 SymbolInfo si2 = find_in_additional_names(name);
                 SymbolInfo si3 = compiled_find(name);
+                if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
+                {
+                    SymbolInfo tmp_si = this.base_type.Scope.SymbolTable.Find(this.base_type.Scope, name);
+                    if (tmp_si != null)
+                    {
+                        tmp_si.Next = si;
+                        si = tmp_si;
+                    }
+                }
                 if (si != null)
                 {
                     SymbolInfo tmp_si = si;
