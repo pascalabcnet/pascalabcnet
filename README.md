@@ -13,6 +13,14 @@ $ cd pascalabcnet
 $ MONO_IOMAP=case xbuild pabcnetc.sln
 ```
 
+## Сборка проекта в MacOS
+Скачайте и установите Mono с официального сайта. При необходимости установите git-клиент. Далее выполните команды
+```bash
+$ git clone https://github.com/pascalabcnet/pascalabcnet
+$ cd pascalabcnet
+$ MONO_IOMAP=case xbuild pabcnetc.sln
+```
+
 ### Запуск
 ```bash
 $ cd bin
