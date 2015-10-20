@@ -267,6 +267,8 @@ namespace VisualPascalABCPlugins
         void SetFileAsChanged(string FileName);
         void OpenTabWithText(string tabName, string Text);
         ICodeFileDocument OpenFileForDebug(string FileName);
+        void CloseAllButThis(ICodeFileDocument nonCloseTab);
+        void PrintActiveDocument();
     }
 
     public interface IWorkbenchProjectService

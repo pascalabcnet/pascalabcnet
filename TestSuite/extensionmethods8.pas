@@ -35,6 +35,10 @@ procedure Add(self: List<integer>; params arr: array of integer); extensionmetho
 begin
   self.AddRange(arr);
 end;
+function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
+begin
+  Result := System.Array.BinarySearch(self,item);
+end;
 begin
   var arr := Arr(1,2,3);
   assert(arr.myfirst=1);
@@ -55,4 +59,5 @@ begin
   var lst4 := new List<integer>;
   lst4.Add(2,3,4,5);
   assert(lst4[3]=5);
+  assert(arr.BinarySearch(3)=2);
 end.

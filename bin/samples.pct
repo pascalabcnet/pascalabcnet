@@ -73,3 +73,9 @@ LINQ\Zip2.pas
 
 [CRT]
 StandardUnits\CRT\*.pas
+
+[operator]
+!MainFeatures\06_Classes\OperatorOverloading.pas
+
+[where]
+!MainFeatures\06_Classes\Where.pas

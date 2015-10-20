@@ -16,6 +16,7 @@ namespace VisualPascalABC
     {
         List<string> temp_open_files = new List<string>();
         public List<string> LastOpenFiles;
+        private VisualStates visualStates = new VisualStates();
         internal Dictionary<string, CodeFileDocumentControl> OpenDocuments = new Dictionary<string, CodeFileDocumentControl>();
         internal Dictionary<string, WebBrowserControl> OpenBrowserDocuments = new Dictionary<string, WebBrowserControl>();
         private int MaxLastOpenFiles = 10;
@@ -423,6 +424,11 @@ namespace VisualPascalABC
             return true;
         }
 
+        void IWorkbenchFileService.CloseAllButThis(ICodeFileDocument nonCloseTab)
+        {
+            this.CloseAllButThis(nonCloseTab as CodeFileDocumentControl);
+        }
+
         void CloseAllButThis(CodeFileDocumentControl nonCloseTab)
         {
             SaveCanceled = false;
@@ -574,6 +580,11 @@ namespace VisualPascalABC
             foreach (CodeFileDocumentControl tp in OpenDocuments.Values)
                 if (tp.DocumentChanged) return false;
             return true;
+        }
+
+        void IWorkbenchFileService.PrintActiveDocument()
+        {
+            ExecPrint();
         }
 
         public void ExecPrint()
