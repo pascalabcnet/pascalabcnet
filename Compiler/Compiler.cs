@@ -1682,7 +1682,7 @@ namespace PascalABCCompiler
                 {
                 	PrepareCompileOptionsForProject();
                 }
-                Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory;
+                //Environment.CurrentDirectory = CompilerOptions.SourceFileDirectory;
                 Units = new PascalABCCompiler.TreeRealization.unit_node_list();
                 CurrentSyntaxUnit = new SyntaxTree.uses_unit_in(new SyntaxTree.string_const(CompilerOptions.SourceFileName));
                 CompileUnit(Units, CurrentSyntaxUnit);
@@ -2370,11 +2370,11 @@ namespace PascalABCCompiler
             }
             //\MikhailoMMX
 
-            if (System.IO.File.Exists(FileName))
+            /*if (System.IO.File.Exists(FileName))
             {
                 return FileName;//.ToLower();//? а надо ли tolover?
             }
-            else
+            else*/
             {
                 string name = get_assembly_path(FileName,false);//? а надо ли tolover?
                 if (name == null)
