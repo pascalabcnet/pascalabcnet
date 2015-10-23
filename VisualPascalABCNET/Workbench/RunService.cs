@@ -178,7 +178,7 @@ namespace VisualPascalABC
                         try
                         {
                             RunTabsAdd(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, tabPage);
-                            RunnerManager.Run(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, Workbench.UserOptions.RedirectConsoleIO, ModeName, RunWithPause, Path.GetDirectoryName(tabPage.FileName), RunArgumentsTable[tabPage.FileName.ToLower()], attachdbg, fictive_attach);
+                            RunnerManager.Run(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName, Workbench.UserOptions.RedirectConsoleIO, ModeName, RunWithPause, Path.GetDirectoryName(Workbench.VisualEnvironmentCompiler.Compiler.CompilerOptions.OutputFileName), RunArgumentsTable[tabPage.FileName.ToLower()], attachdbg, fictive_attach);
                         }
                         catch (System.Exception e)
                         {
