@@ -4921,7 +4921,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (_dot_node != null)
                     {
 						bool skip_first_parameter = false; //lroman//
-						
+                        bool has_extension_overload = false;
                         semantic_node sn = convert_semantic_strong(_dot_node.left);
 
                         //SyntaxTree.ident id_right = ConvertOperatorNameToIdent(_dot_node.right as SyntaxTree.ident);
@@ -5054,11 +5054,8 @@ namespace PascalABCCompiler.TreeConverter
                                                 si = si.Next;
                                             }
                                         }
-                                        /*if (has_obj_methods)
-                                        { 
-                                            exprs.remove_at(0);
-                                            skip_first_parameter = false;
-                                        }*/
+                                        if (si != null)
+                                            si.Next = null;
                                         si = new_si;
                                     }
                                     if (_method_call.parameters != null)
@@ -5433,6 +5430,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         si = tn.find_in_type(id_right.name, context.CurrentScope);//CurrentScope
                                         delete_inherited_constructors(ref si, tn);
+                                        delete_extension_methods(ref si);
                                     }
 
                                     //definition_node ddn2=check_name_node_type(id_right.name,si,get_location(id_right),
@@ -6458,6 +6456,35 @@ namespace PascalABCCompiler.TreeConverter
             }
             //throw new CompilerInternalError("Error in creation method call");
 
+        }
+
+        private void delete_extension_methods(ref SymbolInfo si)
+        {
+            List<SymbolInfo> si_list = new List<SymbolInfo>();
+            SymbolInfo tmp_si = si;
+            while (tmp_si != null)
+            {
+                if (!(tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method))
+                    si_list.Add(tmp_si);
+                tmp_si = tmp_si.Next;
+            }
+            SymbolInfo new_si = null;
+            for (int i = 0; i < si_list.Count; i++)
+            {
+                if (new_si == null)
+                {
+                    new_si = si_list[i];
+                    si = new_si;
+                }
+                else
+                {
+                    si.Next = si_list[i];
+                    si = si.Next;
+                }
+            }
+            if (si != null)
+                si.Next = null;
+            si = new_si;
         }
 
         //ssyy
@@ -11801,7 +11828,7 @@ namespace PascalABCCompiler.TreeConverter
                             /*SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(context.converted_namespace.scope, top_function.ConnectedToType.Scope);
                             top_function.scope = scope;*/
                             top_function.ConnectedToType.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
-                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind)
+                            if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && top_function.ConnectedToType.element_type.is_generic_parameter)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             
                             break;

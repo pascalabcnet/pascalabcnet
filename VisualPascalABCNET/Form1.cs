@@ -189,7 +189,7 @@ namespace VisualPascalABC
         
         public CompilerForm CompilerForm1;      
                
-        public VisualStates visualStates;
+        
         public AboutBox AboutBox1;
         public FindReplaceForm FindForm;
         public GotoLineForm GotoLineForm;
@@ -265,9 +265,6 @@ namespace VisualPascalABC
             //this.Width = 800;
             //this.Height = 600;
             UserOptions = new UserOptions();
-
-            visualStates = new VisualStates();
-
             SetFiltersAndHighlighting();
             
             FormLeft = this.Left; FormTop = this.Top; FormWidth = this.Width; FormHeight = this.Height;

@@ -2018,6 +2018,8 @@ func_meth_name_ident
 		{ $$ = $1; }
     | operator_name_ident
 		{ $$ = (ident)$1; }
+    | operator_name_ident template_arguments
+		{ $$ = new template_type_name(((ident)$1).name, $2 as ident_list, @$); }
     ;
 
 func_name_with_template_args

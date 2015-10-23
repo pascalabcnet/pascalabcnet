@@ -805,6 +805,7 @@ namespace CodeCompletion
                 else return ss;
             }
             else
+                if (members != null)
                 foreach (SymScope ss in members)
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
