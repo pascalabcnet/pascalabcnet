@@ -2915,9 +2915,14 @@ namespace PascalABCCompiler.PCU
                 FinalizationMethodOffset = pos;
 
             bw.Write((byte)func.semantic_node_type);
-
+            int connected_to_type_pos = (int)bw.BaseStream.Position;
+            bw.Write(0);
             if (CanWriteObject(func.ConnectedToType))
                 WriteTypeReference(func.ConnectedToType);
+            int cur_pos = (int)bw.BaseStream.Position;
+            bw.Seek(connected_to_type_pos, SeekOrigin.Begin);
+            bw.Write(cur_pos);
+            bw.Seek(cur_pos, SeekOrigin.Begin);
             bw.Write(is_interface);
             if (is_interface == true)
                 bw.Write(GetNameIndex(func));

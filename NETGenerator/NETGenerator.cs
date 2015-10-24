@@ -6936,7 +6936,7 @@ namespace PascalABCCompiler.NETGenerator
             if (tmp_dot == true)
             {
                 //MethodInfo mi = value.static_method.method_info;
-                if (mi.ReturnType.IsValueType && !NETGeneratorTools.IsPointer(mi.ReturnType))
+                if ((mi.ReturnType.IsValueType || mi.ReturnType.IsGenericParameter) && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 {
                     LocalBuilder lb = il.DeclareLocal(mi.ReturnType);
                     il.Emit(OpCodes.Stloc, lb);
@@ -7195,7 +7195,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 //if (mi.ReturnType.IsValueType && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 //Для правильной работы шаблонов поменял условие (ssyy, 15.05.2009)
-                if ((value.method.return_value_type != null && value.method.return_value_type.is_value_type || value.method.return_value_type.is_generic_parameter) && !NETGeneratorTools.IsPointer(mi.ReturnType))
+                if ((value.method.return_value_type != null && value.method.return_value_type.is_value_type /*|| value.method.return_value_type != null && value.method.return_value_type.is_generic_parameter*/) && !NETGeneratorTools.IsPointer(mi.ReturnType))
                 {
                     LocalBuilder lb = mi.ReturnType.IsGenericParameter ?
                         il.DeclareLocal(helper.GetTypeReference(value.method.return_value_type).tp) :

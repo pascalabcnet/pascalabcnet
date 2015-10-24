@@ -1020,7 +1020,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             //#endif
             SymbolInfo si = expr.type.find(name, context.CurrentScope);
-            if (si == null)
+            if (si == null || si.sym_info is wrapped_definition_node)
             {
             	AddError(new OperatorCanNotBeAppliedToThisType(name, expr));
             }

@@ -593,15 +593,15 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class common_function_node : function_node, SemanticTree.ICommonFunctionNode
 	{
-		private string _name;
+		protected string _name;
 
-        private readonly local_variable_list _var_defs = new local_variable_list();
+        protected readonly local_variable_list _var_defs = new local_variable_list();
 
-        private readonly List<label_node> _label_defs = new List<label_node>();
+        protected readonly List<label_node> _label_defs = new List<label_node>();
 
-        private readonly function_constant_definition_list _const_defs = new function_constant_definition_list();
+        protected readonly function_constant_definition_list _const_defs = new function_constant_definition_list();
 
-        private SemanticTree.SpecialFunctionKind specialFunctionKind = SemanticTree.SpecialFunctionKind.None;
+        protected SemanticTree.SpecialFunctionKind specialFunctionKind = SemanticTree.SpecialFunctionKind.None;
 
         public SemanticTree.SpecialFunctionKind SpecialFunctionKind
         {
@@ -638,7 +638,7 @@ namespace PascalABCCompiler.TreeRealization
             get { return _generic_params; }
             set { _generic_params = value; }
         }
-
+        
         public override List<type_node> get_generic_params_list()
         {
             if (_generic_params == null)
@@ -1097,6 +1097,10 @@ namespace PascalABCCompiler.TreeRealization
 			{
 				return _namespace;
 			}
+            set
+            {
+                _namespace = value;
+            }
 		}
 
         /// <summary>
