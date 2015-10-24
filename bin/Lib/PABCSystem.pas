@@ -1502,26 +1502,30 @@ function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): sequence 
 function Arr<T>(params a: array of T): array of T;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
-/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
-function ArrGen<T>(first: T; next: Func<T,T>; count: integer): array of T;
-/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
-function ArrGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): array of T;
-/// Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
-function SeqGen<T>(first: T; next: Func<T,T>; count: integer): sequence of T;
-/// Возвращает последовательность из count элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему 
-function SeqGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): sequence of T;
-/// Возвращает последовательность элементов с начальным значением first, функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
-function SeqWhile<T>(first: T; next: Func<T,T>; pred: Predicate<T>): sequence of T;
-/// Возвращает последовательность элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности 
-function SeqWhile<T>(first,second: T; next: Func2<T,T,T>; pred: Predicate<T>): sequence of T;
-/// Возвращает массив из count элементов x 
-function ArrFill<T>(x: T; count: integer): array of T;
 /// Возвращает массив из count элементов, заполненных значениями f(i)
-function ArrFill<T>(count: integer; f: Func<integer,T>): array of T;
-/// Возвращает последовательность из count элементов x 
-function SeqFill<T>(x: T; count: integer): sequence of T;
+function ArrGen<T>(count: integer; f: integer -> T): array of T;
+/// Возвращает массив из count элементов, заполненных значениями f(i), начиная с i=from
+function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
+/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
+function ArrGen<T>(count: integer; first: T; next: T -> T): array of T;
+/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
+function ArrGen<T>(count: integer; first,second: T; next: (T,T) -> T): array of T;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i)
-function SeqFill<T>(count: integer; f: Func<integer,T>; from: integer := 1): sequence of T;
+function SeqGen<T>(count: integer; f: integer -> T): sequence of T;
+/// Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from
+function SeqGen<T>(count: integer; f: integer -> T; from: integer): sequence of T;
+/// Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
+function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
+/// Возвращает последовательность из count элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему 
+function SeqGen<T>(count: integer; first,second: T; next: (T,T) -> T): sequence of T;
+/// Возвращает последовательность элементов с начальным значением first, функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
+function SeqWhile<T>(first: T; next: T -> T; pred: T -> boolean): sequence of T;
+/// Возвращает последовательность элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности 
+function SeqWhile<T>(first,second: T; next: (T,T) -> T; pred: T -> boolean): sequence of T;
+/// Возвращает массив из count элементов x 
+function ArrFill<T>(count: integer; x: T): array of T;
+/// Возвращает последовательность из count элементов x 
+function SeqFill<T>(count: integer; x: T): sequence of T;
 
 /// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
@@ -3024,8 +3028,10 @@ begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
     write(g.Current);
-  while g.MoveNext() do 
-    write(delim, g.Current);
+  while g.MoveNext() do
+    if delim<>'' then
+      write(delim, g.Current)
+    else write(g.Current);
   Result := Self;  
 end;
 
@@ -3295,7 +3301,7 @@ type
     end;
   end;
 
-function SeqGen<T>(first: T; next: Func<T,T>; count: integer): sequence of T;
+function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
 begin
   if count<1 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
@@ -3303,7 +3309,7 @@ begin
   Result := tt.f();
 end;  
 
-function SeqGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): sequence of T;
+function SeqGen<T>(count: integer; first,second: T; next: (T,T) -> T): sequence of T;
 begin
   if count<1 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
@@ -3311,19 +3317,19 @@ begin
   Result := tt.f();
 end;  
 
-function SeqWhile<T>(first: T; next: Func<T,T>; pred: Predicate<T>): sequence of T;
+function SeqWhile<T>(first: T; next: T -> T; pred: T -> boolean): sequence of T;
 begin
   var tt := new SeqWhileClass<T>(first,next,pred);
   Result := tt.f();
 end;  
 
-function SeqWhile<T>(first,second: T; next: Func2<T,T,T>; pred: Predicate<T>): sequence of T;
+function SeqWhile<T>(first,second: T; next: (T,T) -> T; pred: T -> boolean): sequence of T;
 begin
   var tt := new SeqWhileClass2<T>(first,second,next,pred);
   Result := tt.f();
 end;
 
-function ArrGen<T>(first: T; next: Func<T,T>; count: integer): array of T;
+function ArrGen<T>(count: integer; first: T; next: T -> T): array of T;
 begin
   if count<1 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
@@ -3334,7 +3340,7 @@ begin
   Result := a;
 end;
 
-function ArrGen<T>(first,second: T; next: Func2<T,T,T>; count: integer): array of T;
+function ArrGen<T>(count: integer; first,second: T; next: (T,T) -> T): array of T;
 begin
   if count<2 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_1));
@@ -3373,24 +3379,34 @@ begin
   Result := a;
 end;}
 
-function ArrFill<T>(x: T; count: integer): array of T;
+function ArrFill<T>(count: integer; x: T): array of T;
 begin
   Result := System.Linq.Enumerable.Repeat(x,count).ToArray();
 end;
 
-function ArrFill<T>(count: integer; f: Func<integer,T>): array of T;
+function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
 begin
-  Result := Range(1,count).Select(f).ToArray()
+  Result := Range(from,count+from-1).Select(f).ToArray()
 end;
 
-function SeqFill<T>(x: T; count: integer): sequence of T;
+function ArrGen<T>(count: integer; f: integer -> T): array of T;
+begin
+  Result := Range(0,count-1).Select(f).ToArray()
+end;
+
+function SeqFill<T>(count: integer; x: T): sequence of T;
 begin
   Result := System.Linq.Enumerable.Repeat(x,count);
 end;
 
-function SeqFill<T>(count: integer; f: Func<integer,T>; from: integer): sequence of T;
+function SeqGen<T>(count: integer; f: integer -> T; from: integer): sequence of T;
 begin
-  Result := Range(from,count).Select(f)
+  Result := Range(from,count+from-1).Select(f)
+end;
+
+function SeqGen<T>(count: integer; f: integer -> T): sequence of T;
+begin
+  Result := Range(0,count-1).Select(f)
 end;
 
 function MatrixRandom(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
