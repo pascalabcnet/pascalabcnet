@@ -269,11 +269,12 @@ namespace PascalABCCompiler.PCU
                 }
                 cur_doc = new document(SourceFileName);
 
+                AddNamespaces();
                 AddInterfaceNames();
                 //ssyy
                 AddImplementationNames();
                 //\ssyy
-                AddNamespaces();
+                
                 //AddInitFinalMethods();
                 //ProcessWaitedToRestoreFields();
                 unit.State = UnitState.Compiled;
@@ -475,7 +476,9 @@ namespace PascalABCCompiler.PCU
                     
                     type_node tn = GetSpecialTypeRefernce(names[i].offset);
                     if (tn is compiled_type_node)
-                        (tn as compiled_type_node).scope.AddSymbol(names[i].name,si);
+                        (tn as compiled_type_node).scope.AddSymbol(names[i].name, si);
+                    else if (tn is generic_instance_type_node)
+                        tn.Scope.AddSymbol(names[i].name, si);
                     else if (tn is common_type_node)
                         (tn as common_type_node).scope.AddSymbol(names[i].name, si);
                     else
@@ -2696,6 +2699,7 @@ namespace PascalABCCompiler.PCU
             AddMember(cnfn, offset);
 
             type_node ConnectedToType = null;
+            br.ReadInt32();
             if (CanReadObject())
                 ConnectedToType = GetTypeReference();
             br.ReadBoolean();//пропускаем флаг - интерфейсности
@@ -2758,6 +2762,7 @@ namespace PascalABCCompiler.PCU
             int pos = (int)br.BaseStream.Position;
             br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
             br.ReadByte();
+            br.ReadInt32();
             type_node tn = null;
             if (CanReadObject())
                 tn = GetTypeReference();
@@ -2771,13 +2776,17 @@ namespace PascalABCCompiler.PCU
             if (members.TryGetValue(offset, out dn))
                 return dn as common_namespace_function_node;
 			common_namespace_function_node cnfn = null;
-			int pos = (int)br.BaseStream.Position;
+            
+            int pos = (int)br.BaseStream.Position;
 			br.BaseStream.Seek(start_pos+offset,SeekOrigin.Begin);
 			br.ReadByte();
+            int func_pos = start_pos + br.ReadInt32();
+            int connected_to_type_pos = (int)br.BaseStream.Position;
+            br.BaseStream.Seek(func_pos, SeekOrigin.Begin);
 			string name;
             type_node ConnectedToType = null; 
-            if (CanReadObject())
-                ConnectedToType = GetTypeReference();
+            /*if (CanReadObject())
+                ConnectedToType = GetTypeReference();*/
 			bool is_interface = br.ReadBoolean();
 			if (is_interface)//пропускаем флаг - интерфейсности
 			{
@@ -2789,16 +2798,21 @@ namespace PascalABCCompiler.PCU
 			}
 			if (is_interface)
 			{
-				cnfn = new common_namespace_function_node(name,null,cun.namespaces[0],null);
-				int_members.Add(cnfn);
+                cnfn = new common_namespace_function_node(name,null,cun.namespaces[0],null);
+                int_members.Add(cnfn);
 			}
 			else
 			{
-				cnfn = new common_namespace_function_node(name,null,cun.namespaces[1],null);
-				impl_members.Add(cnfn);
+                cnfn = new common_namespace_function_node(name,null,cun.namespaces[1],null);
+                impl_members.Add(cnfn);
 			}
             ReadGenericFunctionInformation(cnfn);
             AddMember(cnfn, offset);
+            int cur_pos = (int)br.BaseStream.Position;
+            br.BaseStream.Seek(connected_to_type_pos, SeekOrigin.Begin);
+            if (CanReadObject())
+                ConnectedToType = GetTypeReference();
+            br.BaseStream.Seek(cur_pos, SeekOrigin.Begin);
             if (br.ReadByte() == 1)
 			{
 				cnfn.return_value_type = GetTypeReference();

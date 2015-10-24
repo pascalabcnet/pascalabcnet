@@ -3,6 +3,7 @@ type
     procedure Add(a: T);
     begin
     assert(a.Equals(5));
+    assert(a.ToString()='5');
     end;
     
     procedure Add2(a:T);virtual;

@@ -408,6 +408,8 @@ namespace PascalABCCompiler.TreeRealization
 		{
             if (derived_class == null)  //void?
                 return false;
+            if (base_class == null)
+                return false;
 			type_node tn=derived_class.base_type;
             //TODO: Проверить на ссылочный и размерный тип.
 			if (derived_class.semantic_node_type == semantic_node_type.null_type_node) 
