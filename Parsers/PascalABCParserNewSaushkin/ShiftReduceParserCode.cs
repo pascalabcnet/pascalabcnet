@@ -745,7 +745,17 @@ namespace QUT.Gppg
         /// <param name="last">The last location in the result span</param>
         /// <returns>The merged span</returns>
         public LexLocation Merge(LexLocation last)
-        { return new LexLocation(this.startLine, this.startColumn, last.endLine, last.endColumn); }
+        { 
+           string n_file_name = null;
+            if ((last.filename == null))
+                n_file_name = this.filename;
+            else
+            if ((this.filename == null))
+                n_file_name = last.filename;
+            else
+                n_file_name = this.filename;
+            return new LexLocation(this.startLine, this.startColumn, last.endLine, last.endColumn, n_file_name); 
+        }
 
         public static implicit operator SourceContext(LexLocation loc)
         {

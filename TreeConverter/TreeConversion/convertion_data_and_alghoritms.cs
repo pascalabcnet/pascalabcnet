@@ -159,8 +159,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return null;
             }
-            location loc = new location(l.begin_line_num, l.begin_column_num, l.end_line_num, l.end_column_num,
-                syntax_tree_visitor.CurrentDocument);
+            document d = new document(l.document.file_name);
+            if (d == null)
+                d = syntax_tree_visitor.CurrentDocument;
+
+            location loc = new location(l.begin_line_num, l.begin_column_num, l.end_line_num, l.end_column_num, d);
             return loc;
         }
 
