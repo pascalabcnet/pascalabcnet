@@ -289,7 +289,7 @@ namespace VisualPascalABC
             }
             foreach (Breakpoint bp in dbg.Breakpoints)
             {
-                if (bp.SourcecodeSegment.SourceFilename == fileName || bp.SourcecodeSegment.StartLine == line)
+                if (bp.SourcecodeSegment.SourceFilename == fileName && bp.SourcecodeSegment.StartLine == line)
                 {
                     added = true;
                     br = bp;
@@ -726,6 +726,7 @@ namespace VisualPascalABC
                 //debuggedProcess.Modules[0].SymReader.GetMethod(debuggedProcess.SelectedFunction.Token);
                 if (nextStatement != null)
                 {
+                    string save_PrevFullFileName = PrevFullFileName;
                     //CodeFileDocumentControl page = null;
                     //DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
                     if (!show_debug_tabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
@@ -853,7 +854,7 @@ namespace VisualPascalABC
                        len);
                     curPage.TextEditor.ActiveTextAreaControl.JumpTo(nextStatement.StartLine - 1, 0);
 
-                    if ((Status == DebugStatus.StepOver || Status == DebugStatus.StepIn) && CurrentLine == nextStatement.StartLine)
+                    if ((Status == DebugStatus.StepOver || Status == DebugStatus.StepIn) && (CurrentLine == nextStatement.StartLine && save_PrevFullFileName == debuggedProcess.NextStatement.SourceFilename))
                     {
                         if (curILOffset != nextStatement.ILOffset)
                         {
@@ -868,7 +869,8 @@ namespace VisualPascalABC
                     {
                         curILOffset = nextStatement.ILOffset;
                         CurrentLine = nextStatement.StartLine;
-                        MustDebug = false;
+                        //MustDebug = false;
+                        MustDebug = ((nextStatement.ILOffset + 1) == nextStatement.ILEnd);
                     }
                     //MustDebug = false;
                     //if (remove_breakpoints)

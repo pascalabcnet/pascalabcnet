@@ -5311,8 +5311,8 @@ namespace PascalABCCompiler.TreeConverter
                                                         ThrowCompilationError = true;
                                                         throw LastError();
                                                     }
-                                                    else
-                                                        RemoveLastError();
+//                                                    else
+//                                                        RemoveLastError(); // ошибка уже убрана чуть выше
                                                 }
                                             }
                                             catch (Exception ex)

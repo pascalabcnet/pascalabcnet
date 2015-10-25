@@ -39,7 +39,7 @@ namespace PascalABCCompiler.PascalABCNewParser
 #endif
             PT parsertools = new PT(); // контекст сканера и парсера
             parsertools.errors = Errs;
-            parsertools.CurrentFileName = FileName;
+            parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
 
             Scanner scanner = new Scanner();
@@ -81,7 +81,7 @@ namespace PascalABCCompiler.PascalABCNewParser
 
             PT parsertools = new PT(); // контекст сканера и парсера
             parsertools.errors = Errs;
-            parsertools.CurrentFileName = FileName;
+            parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
             var scanner = new PreprocessorScanner();
             scanner.SetSource(Text, 0);

@@ -502,7 +502,7 @@ ALPHABET [^ a-zA-Z_0-9\r\n\t\'$#&,:.;@\+\-\*/=<>\^()\[\]\x01]
                 BufferContext savedCtx = MkBuffCtx();
                 string full_path = fName;
                 if (!Path.IsPathRooted(full_path))
-                    full_path = Path.Combine(Path.GetDirectoryName(parsertools.CurrentFileName),fName);
+                    full_path = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(parsertools.CurrentFileName), fName));
                 SetSource(File.ReadAllText(full_path), 0);
 				fNameStack.Push(parsertools.CurrentFileName);
 				parsertools.CurrentFileName = full_path;
