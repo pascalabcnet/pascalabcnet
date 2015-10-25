@@ -166,6 +166,7 @@ namespace PascalABCCompiler.NETGenerator
                     temp_doc = sym_docs[Location.document.file_name];
                 }
                 else
+                if (save_debug_info) // иногда вызывается MarkSequencePoint при save_debug_info = false
                 {
                     temp_doc = mb.DefineDocument(Location.document.file_name, SymDocumentType.Text, SymLanguageType.Pascal, SymLanguageVendor.Microsoft);
                     sym_docs.Add(Location.document.file_name, temp_doc);
