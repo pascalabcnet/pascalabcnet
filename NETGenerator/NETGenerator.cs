@@ -545,6 +545,7 @@ namespace PascalABCCompiler.NETGenerator
             if (save_debug_info)
             {
                 first_doc = mb.DefineDocument(SourceFileName, SymDocumentType.Text, SymLanguageType.Pascal, SymLanguageVendor.Microsoft);
+                sym_docs.Add(SourceFileName, first_doc);
                 for (int iii = 0; iii < cnns.Length; iii++)
                 {
                     string cnns_document_file_name = null;
@@ -558,7 +559,7 @@ namespace PascalABCCompiler.NETGenerator
                     if (!sym_docs.ContainsKey(cnns_document_file_name))
                         sym_docs.Add(cnns_document_file_name, doc);//сохраняем его в таблице документов
                 }
-                first_doc = sym_docs[cnns[0].Location == null ? null : cnns[0].Location.document.file_name];
+                first_doc = sym_docs[cnns[0].Location == null ? SourceFileName : cnns[0].Location.document.file_name];
 
                 if (p.main_function != null)
                 {
@@ -575,7 +576,7 @@ namespace PascalABCCompiler.NETGenerator
             //Переводим заголовки типов
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 bool is_main_namespace = cnns[iii].namespace_name == "" && comp_opt.target != TargetType.Dll || comp_opt.target == TargetType.Dll && cnns[iii].namespace_name == "";
                 ICommonNamespaceNode cnn = cnns[iii];
                 cur_type = entry_type;
@@ -659,7 +660,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 ConvertTypeMemberHeaders(cnns[iii].types);
@@ -670,7 +671,7 @@ namespace PascalABCCompiler.NETGenerator
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 ConvertFunctionHeaders(cnns[iii].functions);
@@ -705,7 +706,7 @@ namespace PascalABCCompiler.NETGenerator
 
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 //генерим инциализацию для полей
@@ -718,7 +719,7 @@ namespace PascalABCCompiler.NETGenerator
             //Переводим заголовки всего остального (процедур, переменных)
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 bool is_main_namespace = iii == cnns.Length - 1 && comp_opt.target != TargetType.Dll;
                 ICommonNamespaceNode cnn = cnns[iii];
                 string tmp_unit_name = cur_unit;
@@ -777,7 +778,7 @@ namespace PascalABCCompiler.NETGenerator
             //переводим реализации
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 bool is_main_namespace = iii == 0 && comp_opt.target != TargetType.Dll;
                 ICommonNamespaceNode cnn = cnns[iii];
                 string tmp_unit_name = cur_unit;
@@ -797,7 +798,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             for (int iii = 0; iii < cnns.Length; iii++)
             {
-                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? null : cnns[iii].Location.document.file_name];
+                if (save_debug_info) doc = sym_docs[cnns[iii].Location == null ? SourceFileName : cnns[iii].Location.document.file_name];
                 cur_type = NamespacesTypes[cnns[iii]];
                 cur_unit_type = NamespacesTypes[cnns[iii]];
                 //вставляем ret в int_meth
