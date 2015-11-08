@@ -23,6 +23,19 @@ namespace PascalABCCompiler
         }
     }
 
+    public class HintStringResources
+    {
+        public static string Get(string key)
+        {
+            return PascalABCCompiler.StringResources.Get("HINT_" + key);
+        }
+
+        public static string Get(string key, params object[] values)
+        {
+            return (string.Format(Get(key), values));
+        }
+    }
+
     public class CompilerWarningWithLocation : CompilerWarning
     {
         protected location loc;
@@ -43,7 +56,37 @@ namespace PascalABCCompiler
         }
     }
 
-    
+    public class GenericWarning : CompilerWarningWithLocation
+    {
+        protected string message;
+
+        public GenericWarning(string message, location loc)
+        {
+            this.message = message;
+            this.loc = loc;
+        }
+
+        public override string ToString()
+        {
+            //return ("Possible two type convertions\n"+_en.location.ToString());
+            return WarningStringResources.Get(message);
+        }
+    }
+
+    public class GenericHint : GenericWarning
+    {
+        public GenericHint(string message, location loc):base(message, loc)
+        {
+            
+        }
+
+        public override string ToString()
+        {
+            //return ("Possible two type convertions\n"+_en.location.ToString());
+            return WarningStringResources.Get(message);
+        }
+    }
+
     public class UnreachableCodeDetected : CompilerWarningWithLocation
     {
         public UnreachableCodeDetected(location loc)

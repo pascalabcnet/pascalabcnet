@@ -289,7 +289,7 @@ namespace VisualPascalABC
             }
             foreach (Breakpoint bp in dbg.Breakpoints)
             {
-                if (bp.SourcecodeSegment.SourceFilename == fileName && bp.SourcecodeSegment.StartLine == line)
+                if (bp.SourcecodeSegment.SourceFullFilename == fileName && bp.SourcecodeSegment.StartLine == line)
                 {
                     added = true;
                     br = bp;
@@ -869,8 +869,8 @@ namespace VisualPascalABC
                     {
                         curILOffset = nextStatement.ILOffset;
                         CurrentLine = nextStatement.StartLine;
-                        //MustDebug = false;
-                        MustDebug = ((nextStatement.ILOffset + 1) == nextStatement.ILEnd);
+                        MustDebug = false;
+                        //MustDebug = ((nextStatement.ILOffset + 1) == nextStatement.ILEnd);
                     }
                     //MustDebug = false;
                     //if (remove_breakpoints)
