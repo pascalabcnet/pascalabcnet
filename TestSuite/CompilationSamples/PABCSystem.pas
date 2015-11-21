@@ -3036,7 +3036,7 @@ begin
 end;
 
 /// ¬ыводит последовательность на экран, использу€ пробел в качестве разделител€
-function System.Collections.Generic.IEnumerable<T>.Print(): sequence of T;
+function System.Collections.Generic.IEnumerable<T>.Print(): sequence of T; 
 begin
   Result := Self.Print(' ');  
 end;
@@ -3073,8 +3073,14 @@ begin
   Result := Self.JoinIntoString(' ');  
 end;
 
+{procedure System.Collections.Generic.IEnumerable<T>.&ForEach(action: Action<T>);
+begin
+  foreach x: T in Self do
+    action(x);
+end;}
+
 /// ѕримен€ет действие к каждому элементу последовательности
-procedure System.Collections.Generic.IEnumerable<T>.&ForEach(action: Action<T>);
+procedure &ForEach<T>(self: sequence of T; action: T -> ()); extensionmethod;
 begin
   foreach x: T in Self do
     action(x);
@@ -3126,6 +3132,11 @@ end;
 // -----------------------------------------------------
 //                Sequences
 // -----------------------------------------------------
+function Range(self: integer): sequence of integer; extensionmethod;
+begin
+  Result := Range(1,self);  
+end;
+
 function Range(a, b: integer): sequence of integer;
 begin
   Result := System.Linq.Enumerable.Range(a, b - a + 1);

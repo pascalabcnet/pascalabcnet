@@ -1,0 +1,102 @@
+Занятие 4. Оператор присваивания
+[=PascalABC]
+[1]
+// Исполнитель Робот имеет систему команд
+// Left  Right  Up  Down  Paint
+// В начале программы ОБЯЗАТЕЛЬНО должна быть вызвана
+// команда Task с именем задания в апострофах
+// Решите задачу a1 для Робота, используя его команды
+
+uses Robot;
+
+begin
+  Task('a1');
+end.
+[2]
+// Решите задачу a2 для Робота, нажав кнопку
+// с буквой L на панели инструментов и набрав имя RBa2.
+// Программа-заготовка RBa2.pas создастся в текущем каталоге
+[3]
+{ Нарисуйте с помощью Робота
+      *
+      *
+    *****
+      *
+      *
+}
+
+uses Robot;
+
+begin
+  Field(15,11);
+
+end.
+[4]
+{ Нарисуйте с помощью Робота
+    *****
+    *   *
+    *   *
+    *   *
+    *****
+}
+
+uses Robot;
+
+begin
+  Field(15,11);
+
+end.
+[5]
+// Исправьте ошибки: пропушенные ";" и неправильные имена команд
+// Запустите программу для Робота
+uses Robot;
+
+begin
+  Field(30,20);
+  Speed(7);
+  Up Up Up Up Paint
+  Down;
+  Left; Paint; Right
+  Right; Paint; Left;
+  Down;
+  Left; Left  Paint; Right; Right;
+  Right; Right; Paint; Left; Left;
+  Down;
+  Lft; Left  Left; Paint; Right; Right; Right
+  Rght; Right; Right; Paint; Left; Left; Left;
+  Down;
+  Left; Left; Left;
+  Paint  Down;
+  Pant; Down
+  Paint; Down;
+  Paint; Rigth
+  Paint  Right;
+  Paint; Rigth;
+  Paint; Right;
+  Paint  Right;
+  Paint; Right
+  Paint; UUp;
+  Paint; Up
+  Paint; Up;
+  Paint; Up;
+  Left;Left; Left
+end
+[6]
+// Перепишите с доски программу вычисления периметра P
+// и площади S прямоугольника по известным сторонам a,b
+
+begin
+
+end.
+[7]
+// Опишите все необходимые переменные в разделе описаний
+// до строки begin основной программы
+
+
+begin
+  read(a,b);
+  radd := a + b;
+  rmult := a * b;
+  Print(radd,rmult);
+end.
+
