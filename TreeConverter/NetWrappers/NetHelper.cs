@@ -1960,7 +1960,7 @@ namespace PascalABCCompiler.NetHelper
 			List<string> lst = new List<string>();
 			foreach (string s in namespaces.Keys)
 			{
-				if (s != name && s.StartsWith(name))
+				if (s != name && s.StartsWith(name, StringComparison.CurrentCultureIgnoreCase))
 					lst.Add(s.Substring(name.Length+1));
 			}
 			if (lst == null) return null;
