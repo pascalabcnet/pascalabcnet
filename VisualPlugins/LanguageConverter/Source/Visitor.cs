@@ -384,6 +384,7 @@ namespace VisualPascalABCPlugins
                 case basic_function_type.iunmin:
                 case basic_function_type.bunmin:
                 case basic_function_type.sunmin:
+                case basic_function_type.funmin:
                 case basic_function_type.dunmin:
                 //case basic_function_type.uiunmin:
                 case basic_function_type.sbunmin:
