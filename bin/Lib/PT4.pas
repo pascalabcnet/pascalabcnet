@@ -1461,6 +1461,19 @@ begin
     PT4.Put(e);
 end;
 
+/// ¬ыводит элементы матрицы
+procedure Write<T>(self: array [,] of T); extensionmethod;
+begin
+  for var i:=0 to self.GetLength(0)-1 do
+  for var j:=0 to self.GetLength(1)-1 do
+    PT4.Put(self[i,j]);
+end;
+
+{procedure Proba<T>(self: array of T); extensionmethod;
+begin
+  PT4.Put(111);
+end;}
+
 /// ¬ыводит в разделе отладки окна задачника 
 /// комментарий cmt, размер последовательности и значени€, 
 /// полученные из элементов последовательности 
