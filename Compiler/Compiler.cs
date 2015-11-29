@@ -1827,7 +1827,13 @@ namespace PascalABCCompiler
                     List<TreeRealization.compiler_directive> ResourceDirectives = compilerDirectives[TreeConverter.compiler_string_consts.compiler_directive_resource];
                     foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
                         if (!File.Exists(cd.directive))
-                            ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
+                        {
+                            string fileName = Path.Combine(cd.location.doc.file_name, cd.directive);
+                            if (File.Exists(fileName))
+                                ResourceFiles.Add(fileName);
+                            else
+                                ErrorsList.Add(new ResourceFileNotFound(cd.directive, cd.location));
+                        }
                         else
                             ResourceFiles.Add(cd.directive);
                 }

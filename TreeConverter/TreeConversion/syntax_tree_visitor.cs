@@ -12131,7 +12131,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 type_node tn = convert_strong(td);
                 internal_interface ii = tn.get_internal_interface(internal_interface_kind.ordinal_interface);
-                if (ii == null || ((tn is common_type_node) && (tn as common_type_node).IsEnum))
+                if (ii == null /*|| ((tn is common_type_node) && (tn as common_type_node).IsEnum)*/)
                 {
                     AddError(new OrdinalTypeExpected(get_location(td)));
                 }

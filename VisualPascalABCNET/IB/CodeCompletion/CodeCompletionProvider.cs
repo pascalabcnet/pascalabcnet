@@ -256,14 +256,14 @@ namespace VisualPascalABC
                         }
                     }
                     PascalABCCompiler.Parsers.Position p = fnd_scope.GetPosition();
-                    bool need_add_def = true;
-                    if (for_refact)
-                    foreach (PascalABCCompiler.Parsers.Position pos in lst)
-                        if (p.file_name == pos.file_name && p.line == pos.line && p.column == pos.column && p.end_line == pos.end_line && p.end_column == pos.end_column)
-                        {
-                            need_add_def = false;
-                            break;
-                        }
+                    bool need_add_def = !for_refact; // true
+                    //if (for_refact)
+                    //foreach (PascalABCCompiler.Parsers.Position pos in lst)
+                    //    if (p.file_name == pos.file_name && p.line == pos.line && p.column == pos.column && p.end_line == pos.end_line && p.end_column == pos.end_column)
+                    //    {
+                    //        need_add_def = false;
+                    //        break;
+                    //    }
                     if (p.file_name != null && need_add_def)       
                         svs_lst.Add(new SymbolsViewerSymbol(new PascalABCCompiler.SourceLocation(p.file_name, p.line, p.column, p.end_line, p.end_column), ImagesProvider.GetPictureNum(fnd_scope.SymbolInfo)));
                     foreach (PascalABCCompiler.Parsers.Position pos in lst)

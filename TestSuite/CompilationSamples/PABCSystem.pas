@@ -3023,7 +3023,7 @@ end;}
 // Extension methods for IEnumerable<T>
 //------------------------------------------------------------------------------
 /// ¬ыводит последовательность на экран, использу€ delim в качестве разделител€
-function System.Collections.Generic.IEnumerable<T>.Print(delim: string): sequence of T;
+function Print<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
@@ -3036,13 +3036,13 @@ begin
 end;
 
 /// ¬ыводит последовательность на экран, использу€ пробел в качестве разделител€
-function System.Collections.Generic.IEnumerable<T>.Print(): sequence of T;
+function Print<T>(self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.Print(' ');  
 end;
 
 /// ¬ыводит последовательность на экран, использу€ delim в качестве разделител€, и переходит на новую строку
-function System.Collections.Generic.IEnumerable<T>.Println(delim: string): sequence of T;
+function Println<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
 begin
   Self.Print(delim);
   Writeln;
@@ -3050,7 +3050,7 @@ begin
 end;
 
 /// ¬ыводит последовательность на экран, использу€ пробел качестве разделител€, и переходит на новую строку
-function System.Collections.Generic.IEnumerable<T>.Println(): sequence of T;
+function Println<T>(self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.Println(' ');  
 end;
@@ -3074,7 +3074,7 @@ begin
 end;
 
 /// ѕримен€ет действие к каждому элементу последовательности
-procedure System.Collections.Generic.IEnumerable<T>.&ForEach(action: Action<T>);
+procedure &ForEach<T>(self: sequence of T; action: T -> ()); extensionmethod;
 begin
   foreach x: T in Self do
     action(x);
@@ -3085,7 +3085,7 @@ begin
   Result := x;
 end;
 
-function System.Collections.Generic.IEnumerable<T>.Sorted(): sequence of T;
+function Sorted<T>(self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.OrderBy(Ident&<T>);
 end;
@@ -3126,6 +3126,11 @@ end;
 // -----------------------------------------------------
 //                Sequences
 // -----------------------------------------------------
+function Range(self: integer): sequence of integer; extensionmethod;
+begin
+  Result := Range(1,self);  
+end;
+
 function Range(a, b: integer): sequence of integer;
 begin
   Result := System.Linq.Enumerable.Range(a, b - a + 1);

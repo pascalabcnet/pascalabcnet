@@ -1678,7 +1678,7 @@ namespace PascalABCCompiler.PCU
             for (int i = 0; i < num_par; i++)
                 cmn.parameters.AddElement(GetParameter(cmn));
             cmn.cont_type = (common_type_node)GetTypeReference(br.ReadInt32());
-            if (name==null)
+            if (name==null || true)
                 cmn.SetName(GetStringInClass(cmn.cont_type, name_ref));
             cmn.attributes.AddRange(GetAttributes());
             cmn.is_constructor = br.ReadBoolean();

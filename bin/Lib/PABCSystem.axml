@@ -1083,33 +1083,6 @@
         </Items>
       </PointOfInterest>
       <PointOfInterest>
-        <Name>StructuredObjectToString</Name>
-        <FileName>\PABCSystem.pas</FileName>
-        <Text>function StructuredObjectToString(o: Object; n: integer := 0): string;</Text>
-        <OuterContext>
-          <OuterContextItem Type="Method">
-            <string>function</string>
-            <string>StructuredObjectToString</string>
-            <string>(</string>
-            <string>o</string>
-            <string>:</string>
-            <string>Object</string>
-            <string>;</string>
-            <string>n</string>
-            <string>:</string>
-            <string>integer</string>
-            <string>:</string>
-            <string>=</string>
-            <string>0</string>
-            <string>)</string>
-            <string>:</string>
-            <string>string</string>
-          </OuterContextItem>
-          <OuterContextItem Type="" />
-        </OuterContext>
-        <Items />
-      </PointOfInterest>
-      <PointOfInterest>
         <Name>read_lexem</Name>
         <FileName>\PABCSystem.pas</FileName>
         <Text>function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать</Text>

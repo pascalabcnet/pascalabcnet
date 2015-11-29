@@ -8732,7 +8732,7 @@ namespace PascalABCCompiler.NETGenerator
                 case basic_function_type.ishl: il.Emit(OpCodes.Shl); break;
                 case basic_function_type.ishr: il.Emit(OpCodes.Shr); break;
                 case basic_function_type.bshl: il.Emit(OpCodes.Shl); break;
-                case basic_function_type.bshr: il.Emit(OpCodes.Shr); break;
+                case basic_function_type.bshr: il.Emit(OpCodes.Shr_Un); break;
                 case basic_function_type.sshl: il.Emit(OpCodes.Shl); break;
                 case basic_function_type.sshr: il.Emit(OpCodes.Shr); break;
                 case basic_function_type.lshl: il.Emit(OpCodes.Shl); break;
@@ -8741,10 +8741,10 @@ namespace PascalABCCompiler.NETGenerator
                 case basic_function_type.sbshl: il.Emit(OpCodes.Shl); break;
                 case basic_function_type.usshl: il.Emit(OpCodes.Shl); break;
                 case basic_function_type.ulshl: il.Emit(OpCodes.Shl); break;
-                case basic_function_type.uishr: il.Emit(OpCodes.Shr); break;
+                case basic_function_type.uishr: il.Emit(OpCodes.Shr_Un); break;
                 case basic_function_type.sbshr: il.Emit(OpCodes.Shr); break;
-                case basic_function_type.usshr: il.Emit(OpCodes.Shr); break;
-                case basic_function_type.ulshr: il.Emit(OpCodes.Shr); break;
+                case basic_function_type.usshr: il.Emit(OpCodes.Shr_Un); break;
+                case basic_function_type.ulshr: il.Emit(OpCodes.Shr_Un); break;
 
                 case basic_function_type.ieq: il.Emit(OpCodes.Ceq); break;
                 case basic_function_type.inoteq: il.Emit(OpCodes.Ceq); il.Emit(OpCodes.Ldc_I4_0); il.Emit(OpCodes.Ceq); break;
@@ -8895,6 +8895,7 @@ namespace PascalABCCompiler.NETGenerator
                 case basic_function_type.iunmin:
                 case basic_function_type.bunmin:
                 case basic_function_type.sunmin:
+                case basic_function_type.funmin:
                 case basic_function_type.dunmin:
                 //case basic_function_type.uiunmin:
                 case basic_function_type.sbunmin:
