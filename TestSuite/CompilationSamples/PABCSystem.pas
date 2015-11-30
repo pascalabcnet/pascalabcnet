@@ -795,6 +795,8 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 ///и осуществл€ет переход на новую строку
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
+/// ¬ыводит значени€ s на экран
+procedure Print(s: string);
 /// ¬ыводит значени€ args на экран, вывод€ после каждого значени€ пробел
 procedure Print(params args: array of object);
 /// ¬ыводит значени€ args на экран, вывод€ после каждого значени€ пробел, и переходит на новую строчку
@@ -4858,6 +4860,11 @@ procedure WritelnFormat(f: Text; formatstr: string; params args: array of object
 begin
   var s := Format(formatstr, args);
   writeln(f, s);
+end;
+
+procedure Print(s: string);
+begin
+  write(s);
 end;
 
 procedure Print(params args: array of object);
