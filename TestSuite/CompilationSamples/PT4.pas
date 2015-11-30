@@ -354,9 +354,6 @@ function ReadArrString(): array of string;
 
 // == Конец дополнений к версии 4.14 ==
 
-/// Выводит матрицу
-procedure Write<T>(self: array [,] of T); extensionmethod;
-
 implementation
 
 const
