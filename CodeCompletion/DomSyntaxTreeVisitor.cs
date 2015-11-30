@@ -882,89 +882,91 @@ namespace CodeCompletion
                         topScope.AddExtensionMethod(meth_name, ps, ts);
                     }
                     ps.head_loc = loc;
-                    if (IsForward(_procedure_header))
+                    if (!ps.is_extension)
                     {
-                        cur_scope.AddName(meth_name, ps);
-                        ps.is_forward = true;
-                    }
-                    else
-                    {
-                        bool found_in_top = false;
-                        SymScope ss = null;
-                        if (cur_scope is ImplementationUnitScope)
+                        if (IsForward(_procedure_header))
                         {
-                            ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
-                            if (ss != null && ss is ProcScope)
-                            {
-                                //ps = ss as ProcScope;
-                                //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null)
-                                //	ss = (ss as ProcScope).nextProc;
-                                ps = select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null);
-                                if (ps == null)
-                                {
-                                    ps = new ProcScope(meth_name, cur_scope);
-                                    ps.head_loc = loc;
-                                }
-                                //ps = ss as ProcScope;
-                                if (ps.parameters.Count != 0 && _procedure_header.parameters != null)
-                                {
-                                    ps.parameters.Clear();
-                                    ps.already_defined = true;
-                                }
-                                pr = new ProcRealization(ps, cur_scope);
-                                pr.already_defined = true;
-                                pr.loc = cur_loc;
-                                ps.proc_realization = pr;
-                                pr.head_loc = loc;
-                                is_realization = true;
-                                cur_scope.AddName("$method", pr);
-                                found_in_top = true;
-                            }
+                            cur_scope.AddName(meth_name, ps);
+                            ps.is_forward = true;
                         }
-                        if (!found_in_top) //ne nashli opisanie v interface chasti modilja
+                        else
                         {
-                            //ss = cur_scope.FindNameOnlyInType(meth_name);
-                            ss = cur_scope.FindName(meth_name);
-                            if (ss != null && ss is ProcScope)
+                            bool found_in_top = false;
+                            SymScope ss = null;
+                            if (cur_scope is ImplementationUnitScope)
                             {
-                                if ((ss as ProcScope).is_forward)
+                                ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
+                                if (ss != null && ss is ProcScope)
                                 {
-                                    //if ((ss as ProcScope).parameters.Count != 0 && _procedure_header.parameters != null) (ss as ProcScope).parameters.Clear();
-                                    pr = new ProcRealization(ss as ProcScope, cur_scope);
+                                    //ps = ss as ProcScope;
+                                    //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null)
+                                    //	ss = (ss as ProcScope).nextProc;
+                                    ps = select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null);
+                                    if (ps == null)
+                                    {
+                                        ps = new ProcScope(meth_name, cur_scope);
+                                        ps.head_loc = loc;
+                                    }
+                                    //ps = ss as ProcScope;
+                                    if (ps.parameters.Count != 0 && _procedure_header.parameters != null)
+                                    {
+                                        ps.parameters.Clear();
+                                        ps.already_defined = true;
+                                    }
+                                    pr = new ProcRealization(ps, cur_scope);
                                     pr.already_defined = true;
                                     pr.loc = cur_loc;
-                                    cur_scope.AddName("$method", pr);
-                                    ret_tn = pr;
+                                    ps.proc_realization = pr;
                                     pr.head_loc = loc;
-                                    return;
+                                    is_realization = true;
+                                    cur_scope.AddName("$method", pr);
+                                    found_in_top = true;
                                 }
-                                else
+                            }
+                            if (!found_in_top) //ne nashli opisanie v interface chasti modilja
+                            {
+                                //ss = cur_scope.FindNameOnlyInType(meth_name);
+                                ss = cur_scope.FindName(meth_name);
+                                if (ss != null && ss is ProcScope)
                                 {
-                                    ps = new ProcScope(meth_name, cur_scope);
-                                    ps.head_loc = loc;
-                                    if (ps.topScope == ss.topScope)
+                                    if ((ss as ProcScope).is_forward)
                                     {
-                                        while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
-                                        ProcScope tmp_ps = (ss as ProcScope).nextProc;
-                                        (ss as ProcScope).nextProc = ps;
-                                        ps.nextProc = tmp_ps;
-                                        cur_scope.AddName(meth_name, ps);
-                                        ps.si.name = meth_name;
+                                        //if ((ss as ProcScope).parameters.Count != 0 && _procedure_header.parameters != null) (ss as ProcScope).parameters.Clear();
+                                        pr = new ProcRealization(ss as ProcScope, cur_scope);
+                                        pr.already_defined = true;
+                                        pr.loc = cur_loc;
+                                        cur_scope.AddName("$method", pr);
+                                        ret_tn = pr;
+                                        pr.head_loc = loc;
+                                        return;
                                     }
                                     else
                                     {
-                                        ps.nextProc = ss as ProcScope;
-                                        cur_scope.AddName(meth_name, ps);
+                                        ps = new ProcScope(meth_name, cur_scope);
+                                        ps.head_loc = loc;
+                                        if (ps.topScope == ss.topScope)
+                                        {
+                                            while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
+                                            ProcScope tmp_ps = (ss as ProcScope).nextProc;
+                                            (ss as ProcScope).nextProc = ps;
+                                            ps.nextProc = tmp_ps;
+                                            cur_scope.AddName(meth_name, ps);
+                                            ps.si.name = meth_name;
+                                        }
+                                        else
+                                        {
+                                            ps.nextProc = ss as ProcScope;
+                                            cur_scope.AddName(meth_name, ps);
+                                        }
+                                        //ps = select_function_definition(ss as ProcScope,_procedure_header.parameters);
                                     }
-                                    //ps = select_function_definition(ss as ProcScope,_procedure_header.parameters);
+                                }
+                                else
+                                {
+                                    cur_scope.AddName(meth_name, ps);
                                 }
                             }
-                            else
-                            {
-                                cur_scope.AddName(meth_name, ps);
-                            }
                         }
-
                     }
                 }
             }
@@ -1153,86 +1155,89 @@ namespace CodeCompletion
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
                     }
-                    if (IsForward(_function_header))
-        			{
-        				cur_scope.AddName(meth_name, ps);
-        				ps.is_forward = true;
-        			}
-        			else
-        			{
-        				bool found_in_top=false;
-        				SymScope ss=null;
-        				if (cur_scope is ImplementationUnitScope)
-        				{
-        						ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
-        						if (ss != null && ss is ProcScope)
-        						{
-        							//while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
-        							//ps = ss as ProcScope;
-        							ps = select_function_definition(ss as ProcScope,_function_header.parameters,return_type,null);
-        							if (ps == null) 
-        							{
-        								ps = new ProcScope(meth_name, cur_scope);
-        								ps.head_loc = loc;
-        							}
-        							if (ps.parameters.Count != 0 && _function_header.parameters != null)
-        							{
-        								ps.parameters.Clear();
-        								ps.already_defined = true;
-        							}
-        							pr = new ProcRealization(ps,cur_scope);
-        							pr.already_defined = true;
-        							pr.loc = cur_loc;
-        							ps.proc_realization = pr;
-        							pr.head_loc = loc;
-        							is_realization = true;
-        							cur_scope.AddName("$method",pr);
-        							found_in_top = true;
-        						}
-        				}
-        				if (!found_in_top)
-        				{
-        					//ss = cur_scope.FindNameOnlyInType(meth_name);
-        					ss = cur_scope.FindName(meth_name);
-        					if (ss != null && ss is ProcScope)
-        					{
-        						if ((ss as ProcScope).is_forward)
-        						{
-        							//if ((ss as ProcScope).parameters.Count != 0 && _function_header.parameters != null) (ss as ProcScope).parameters.Clear();
-        							pr = new ProcRealization(ss as ProcScope,cur_scope);
-        							pr.already_defined = true;
-        							pr.loc = cur_loc;
-        							cur_scope.AddName("$method",pr);
-        							pr.head_loc = loc;
-        							ret_tn = pr;
-        							return;
-        						}
-        						else
-        						{
-        							ps = new ProcScope(meth_name,cur_scope);
-        							ps.head_loc = loc;
-        							if (ps.topScope == ss.topScope)
-        							{
-        								while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
-        								ProcScope tmp_ps = (ss as ProcScope).nextProc;
-        								(ss as ProcScope).nextProc = ps;
-        								ps.nextProc = tmp_ps;
-        								cur_scope.AddName(meth_name,ps);
-        								ps.si.name = meth_name;
-        							}
-        							else
-        							{
-        								ps.nextProc = ss as ProcScope;
-        								cur_scope.AddName(meth_name,ps);
-        							}
-        						}
-        					}
-        					else
-        					{
-        						cur_scope.AddName(meth_name, ps);
-        					}
-        				}
-        			}
+                    if (!ps.is_extension)
+                    {
+                        if (IsForward(_function_header))
+                        {
+                            cur_scope.AddName(meth_name, ps);
+                            ps.is_forward = true;
+                        }
+                        else
+                        {
+                            bool found_in_top = false;
+                            SymScope ss = null;
+                            if (cur_scope is ImplementationUnitScope)
+                            {
+                                ss = (cur_scope as ImplementationUnitScope).topScope.FindNameOnlyInThisType(meth_name);
+                                if (ss != null && ss is ProcScope)
+                                {
+                                    //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
+                                    //ps = ss as ProcScope;
+                                    ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null);
+                                    if (ps == null)
+                                    {
+                                        ps = new ProcScope(meth_name, cur_scope);
+                                        ps.head_loc = loc;
+                                    }
+                                    if (ps.parameters.Count != 0 && _function_header.parameters != null)
+                                    {
+                                        ps.parameters.Clear();
+                                        ps.already_defined = true;
+                                    }
+                                    pr = new ProcRealization(ps, cur_scope);
+                                    pr.already_defined = true;
+                                    pr.loc = cur_loc;
+                                    ps.proc_realization = pr;
+                                    pr.head_loc = loc;
+                                    is_realization = true;
+                                    cur_scope.AddName("$method", pr);
+                                    found_in_top = true;
+                                }
+                            }
+                            if (!found_in_top)
+                            {
+                                //ss = cur_scope.FindNameOnlyInType(meth_name);
+                                ss = cur_scope.FindName(meth_name);
+                                if (ss != null && ss is ProcScope)
+                                {
+                                    if ((ss as ProcScope).is_forward)
+                                    {
+                                        //if ((ss as ProcScope).parameters.Count != 0 && _function_header.parameters != null) (ss as ProcScope).parameters.Clear();
+                                        pr = new ProcRealization(ss as ProcScope, cur_scope);
+                                        pr.already_defined = true;
+                                        pr.loc = cur_loc;
+                                        cur_scope.AddName("$method", pr);
+                                        pr.head_loc = loc;
+                                        ret_tn = pr;
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        ps = new ProcScope(meth_name, cur_scope);
+                                        ps.head_loc = loc;
+                                        if (ps.topScope == ss.topScope)
+                                        {
+                                            while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
+                                            ProcScope tmp_ps = (ss as ProcScope).nextProc;
+                                            (ss as ProcScope).nextProc = ps;
+                                            ps.nextProc = tmp_ps;
+                                            cur_scope.AddName(meth_name, ps);
+                                            ps.si.name = meth_name;
+                                        }
+                                        else
+                                        {
+                                            ps.nextProc = ss as ProcScope;
+                                            cur_scope.AddName(meth_name, ps);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    cur_scope.AddName(meth_name, ps);
+                                }
+                            }
+                        }
+                    }
         		}
         	}
         	else

@@ -2753,7 +2753,9 @@ namespace PascalABCCompiler.PCU
             cnfn.function_code = GetCode(br.ReadInt32());
 			int_members.Add(cnfn);
             cnfn.ConnectedToType = ConnectedToType;
-			return cnfn;
+            if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && cnfn.ConnectedToType.element_type.is_generic_parameter)
+                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            return cnfn;
 		}
 
 
@@ -2849,7 +2851,9 @@ namespace PascalABCCompiler.PCU
 			cnfn.loc = ReadDebugInfo();
             cnfn.function_code = /*new statements_list(null);//*/ (restore_code || cnfn.is_generic_function) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
             cnfn.ConnectedToType = ConnectedToType;
-			br.BaseStream.Seek(pos,SeekOrigin.Begin);
+            if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && cnfn.ConnectedToType.element_type.is_generic_parameter)
+                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            br.BaseStream.Seek(pos,SeekOrigin.Begin);
 			return cnfn;
 		}
 
