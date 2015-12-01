@@ -1544,7 +1544,7 @@ namespace PascalABCCompiler.Parsers
                 sb.Append('>');
                 return sb.ToString();
             }
-            return GetFullTypeName(t, false);
+            return GetFullTypeName(t, no_alias);
         }
 
         public virtual string GetDescriptionForCompiledMethod(MethodInfo mi)

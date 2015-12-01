@@ -3577,8 +3577,20 @@ namespace CodeCompletion
             _new_expr.type.visit(this);
             if (_new_expr.new_array && ret_tn != null && ret_tn is TypeScope)
             {
-            	ret_tn = new ArrayScope(ret_tn as TypeScope,new TypeScope[1]{TypeTable.int_type});
-            	(ret_tn as ArrayScope).is_dynamic_arr = true;
+                List<TypeScope> indexes = new List<TypeScope>();
+                indexes.Add(TypeTable.int_type);
+                for (int i = 1; i < _new_expr.params_list.expressions.Count; i++)
+                    indexes.Add(TypeTable.int_type);
+                if (indexes.Count > 1)
+                {
+                    for (int i = 0; i < indexes.Count; i++)
+                    {
+                        indexes[i] = null;
+                    }
+                }
+            	ret_tn = new ArrayScope(ret_tn as TypeScope, indexes.ToArray());
+                if (indexes.Count == 1)
+            	    (ret_tn as ArrayScope).is_dynamic_arr = true;
             }
 			/*if (ret_tn != null && ret_tn is TypeScope)
 			{
