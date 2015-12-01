@@ -306,23 +306,23 @@ procedure HideTask;
 
 /// ¬водит n целых чисел
 /// и возвращает введенные числа в виде массива
-function  ReadArrInteger(n: integer): array of integer;
+function ReadArrInteger(n: integer): array of integer;
 
 /// ¬водит n вещественных чисел
 /// и возвращает введенные числа в виде массива
-function  ReadArrReal(n: integer):  array of real;
+function ReadArrReal(n: integer): array of real;
 
 /// ¬водит n строк 
 /// и возвращает введенные строки в виде массива
-function ReadArrString(n: integer):  array of string;
+function ReadArrString(n: integer): array of string;
 
 /// ¬водит n целых чисел
 /// и возвращает введенные числа в виде последовательности
-function  ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+function ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
 
 /// ¬водит n вещественных чисел
 /// и возвращает введенные числа в виде последовательности
-function  ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+function ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
 
 /// ¬водит n строк 
 /// и возвращает введенные строки в виде последовательности
@@ -330,11 +330,11 @@ function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<strin
 
 /// ¬водит размер набора целых чисел и его элементы
 /// и возвращает введенный набор в виде последовательности
-function  ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+function ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
 
 /// ¬водит размер набора вещественных чисел и его элементы
 /// и возвращает введенный набор в виде последовательности
-function  ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+function ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
 
 /// ¬водит размер набора строк и его элементы
 /// и возвращает введенный набор в виде последовательности
@@ -342,18 +342,17 @@ function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
 
 /// ¬водит размер набора целых чисел и его элементы
 /// и возвращает введенный набор в виде массива
-function  ReadArrInteger(): array of integer;
+function ReadArrInteger(): array of integer;
 
 /// ¬водит размер набора вещественных чисел и его элементы
 /// и возвращает введенный набор в виде массива
-function  ReadArrReal():  array of real;
+function ReadArrReal(): array of real;
 
 /// ¬водит размер набора строк и его элементы
 /// и возвращает введенный набор в виде массива
-function ReadArrString():  array of string;
+function ReadArrString(): array of string;
 
 // ==  онец дополнений к версии 4.14 ==
-
 
 implementation
 
@@ -1468,11 +1467,6 @@ begin
   for var j:=0 to self.GetLength(1)-1 do
     PT4.Put(self[i,j]);
 end;
-
-{procedure Proba<T>(self: array of T); extensionmethod;
-begin
-  PT4.Put(111);
-end;}
 
 /// ¬ыводит в разделе отладки окна задачника 
 /// комментарий cmt, размер последовательности и значени€, 
