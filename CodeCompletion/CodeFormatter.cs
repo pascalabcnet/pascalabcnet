@@ -1086,16 +1086,17 @@ namespace CodeFormatters
         public override void visit(procedure_attribute _procedure_attribute)
         {
             if (_procedure_attribute.source_context != null)
-            switch (_procedure_attribute.attribute_type)
-            {
-                case proc_attribute.attr_abstract: sb.Append("abstract"); return;
-                case proc_attribute.attr_forward: sb.Append("forward"); return;
-                case proc_attribute.attr_overload: sb.Append("overload"); return;
-                case proc_attribute.attr_override: sb.Append("override"); return;
-                case proc_attribute.attr_reintroduce: sb.Append("reintroduce"); return;
-                case proc_attribute.attr_virtual: sb.Append("virtual"); return;
-                case proc_attribute.attr_static: sb.Append("static"); return;
-            }
+                switch (_procedure_attribute.attribute_type)
+                {
+                    case proc_attribute.attr_abstract: sb.Append("abstract"); return;
+                    case proc_attribute.attr_forward: sb.Append("forward"); return;
+                    case proc_attribute.attr_overload: sb.Append("overload"); return;
+                    case proc_attribute.attr_override: sb.Append("override"); return;
+                    case proc_attribute.attr_reintroduce: sb.Append("reintroduce"); return;
+                    case proc_attribute.attr_virtual: sb.Append("virtual"); return;
+                    case proc_attribute.attr_static: sb.Append("static"); return;
+                    case proc_attribute.attr_extension: sb.Append("extensionmethod"); return;
+                }
             return;
         }
 
