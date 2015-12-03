@@ -99,6 +99,7 @@ EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER=Parameter with name 'self' expec
 FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER=var and const are not allowed for first parameter of extension method
 FIRST_PARAMETER_MUST_HAVE_NAME_SELF=Parameter with 'name' self expected
 EXTENSION_METHODS_FOR_CONSTRUCTED_TYPES_NOT_ALLOWED=Cannot extend this type
+EXTENSION_METHODS_IN_INTERFACE_PART_NOT_ALLOWED=Cannot declare extension methods in interface part of unit
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

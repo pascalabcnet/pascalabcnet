@@ -562,6 +562,7 @@ namespace PascalABCCompiler.TreeConverter
             set_intls.Clear();
             NetHelper.NetHelper.reset();
             from_pabc_dll = false;
+            in_interface_part = false;
             compiled_type_node[] ctns = new compiled_type_node[compiled_type_node.compiled_types.Values.Count];
             compiled_type_node.compiled_types.Values.CopyTo(ctns, 0);
             null_type_node.reset();
@@ -3029,6 +3030,8 @@ namespace PascalABCCompiler.TreeConverter
 
             weak_node_test_and_visit(_implementation_node.implementation_definitions);
         }
+
+        bool in_interface_part = false;
 
         public override void visit(SyntaxTree.interface_node _interface_node)
         {
@@ -9429,8 +9432,12 @@ namespace PascalABCCompiler.TreeConverter
 
             //cnsn.scope=_compiled_unit.scope;
             reset_for_interface();
+            in_interface_part = false;
+            if (_unit_module.implementation_part != null)
+                in_interface_part = true;
             hard_node_test_and_visit(_unit_module.interface_part);
-
+            if (_unit_module.implementation_part != null)
+                in_interface_part = false;
             //compiled_program=new program_node();
             //compiled_program.units.Add(compiled_main_unit);
 
@@ -11809,6 +11816,8 @@ namespace PascalABCCompiler.TreeConverter
                 		}
                     case proc_attribute.attr_extension:
                         {
+                            if (in_interface_part)
+                                AddError(get_location(_procedure_attributes_list), "EXTENSION_METHODS_IN_INTERFACE_PART_NOT_ALLOWED");
                             if (!(context.top_function is common_namespace_function_node))
                                 AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
                             if (context.top_function.parameters.Count == 0)
