@@ -880,6 +880,12 @@ namespace CodeCompletion
                             ts = (ts as TypeSynonim).actType;
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
+                        pr = new ProcRealization(ps, cur_scope);
+                        pr.already_defined = true;
+                        ps.proc_realization = pr;
+                        pr.loc = cur_loc;
+                        pr.head_loc = loc;
+                        this.entry_scope.AddName("$method", pr);
                     }
                     ps.head_loc = loc;
                     if (!ps.is_extension)
@@ -1154,6 +1160,12 @@ namespace CodeCompletion
                             ts = (ts as TypeSynonim).actType;
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
+                        pr = new ProcRealization(ps, cur_scope);
+                        pr.already_defined = true;
+                        ps.proc_realization = pr;
+                        pr.loc = cur_loc;
+                        pr.head_loc = loc;
+                        this.entry_scope.AddName("$method",pr);
                     }
                     if (!ps.is_extension)
                     {
@@ -1340,78 +1352,78 @@ namespace CodeCompletion
         private List<PointerScope> ref_type_wait_list = new List<PointerScope>();
         
         private ident_list template_args = null;
-        
+
         public override void visit(type_declaration _type_declaration)
         {
             //throw new Exception("The method or operation is not implemented.");
             cur_type_name = _type_declaration.type_name.name;
             if (_type_declaration.type_name is template_type_name)
             {
-            	template_args = (_type_declaration.type_name as template_type_name).template_args;
+                template_args = (_type_declaration.type_name as template_type_name).template_args;
             }
             _type_declaration.type_def.visit(this);
             if (ret_tn != null && ret_tn is PointerScope && (ret_tn as PointerScope).ref_type is UnknownScope)
             {
-            	ref_type_wait_list.Add(ret_tn as PointerScope);
+                ref_type_wait_list.Add(ret_tn as PointerScope);
             }
             //else
             if (ret_tn != null && ret_tn is TypeScope)
             {
-            	//if (ret_tn is TypeScope)
-            	//{
-            		if (!(_type_declaration.type_def is named_type_reference))
-            		{
-            			//(ret_tn as TypeScope).name = _type_declaration.type_name.name;
-            			ret_tn.si.name = _type_declaration.type_name.name;
-            			ret_tn.si.describe = ret_tn.GetDescription();
-            			if (!(_type_declaration.type_def is class_definition)) 
-            				ret_tn.MakeSynonimDescription();
-            			ret_tn.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
-            			if (_type_declaration.type_def is class_definition)
-            			{
-            				string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword((_type_declaration.type_def as class_definition).keyword);
-            				if (key != null && ret_tn.body_loc != null)
-            				{
-            					ret_tn.head_loc = new location(ret_tn.body_loc.begin_line_num,ret_tn.body_loc.begin_column_num, ret_tn.body_loc.begin_line_num,ret_tn.body_loc.begin_column_num+key.Length,doc);
-            				}
-            			}
-            			if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
-        				ret_tn.AddDocumentation(this.converter.controller.docs[_type_declaration]);
-            			if (!(_type_declaration.type_def is class_definition))
-            			cur_scope.AddName(_type_declaration.type_name.name,ret_tn);
-            		}
-            		else
-            		{
-            			TypeSynonim ts = new TypeSynonim(new SymInfo(_type_declaration.type_name.name, SymbolKind.Type,_type_declaration.type_name.name),ret_tn);
-            			ts.loc = get_location(_type_declaration);
-            			ts.topScope = cur_scope;
-            			ts.declaringUnit = entry_scope;
-            			//ts.si.describe = "type "+ret_tn.si.name+" = "+ret_tn.si.describe;
-            			cur_scope.AddName(_type_declaration.type_name.name,ts);
-            			if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
-        				ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
-            		}
-            	//}
-            	
+                //if (ret_tn is TypeScope)
+                //{
+                if (!(_type_declaration.type_def is named_type_reference))
+                {
+                    //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
+                    ret_tn.si.name = _type_declaration.type_name.name;
+                    ret_tn.si.describe = ret_tn.GetDescription();
+                    if (!(_type_declaration.type_def is class_definition))
+                        ret_tn.MakeSynonimDescription();
+                    ret_tn.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
+                    if (_type_declaration.type_def is class_definition)
+                    {
+                        string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword((_type_declaration.type_def as class_definition).keyword);
+                        if (key != null && ret_tn.body_loc != null)
+                        {
+                            ret_tn.head_loc = new location(ret_tn.body_loc.begin_line_num, ret_tn.body_loc.begin_column_num, ret_tn.body_loc.begin_line_num, ret_tn.body_loc.begin_column_num + key.Length, doc);
+                        }
+                    }
+                    if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
+                        ret_tn.AddDocumentation(this.converter.controller.docs[_type_declaration]);
+                    if (!(_type_declaration.type_def is class_definition))
+                        cur_scope.AddName(_type_declaration.type_name.name, ret_tn);
+                }
+                else
+                {
+                    TypeSynonim ts = new TypeSynonim(new SymInfo(_type_declaration.type_name.name, SymbolKind.Type, _type_declaration.type_name.name), ret_tn);
+                    ts.loc = get_location(_type_declaration);
+                    ts.topScope = cur_scope;
+                    ts.declaringUnit = entry_scope;
+                    //ts.si.describe = "type "+ret_tn.si.name+" = "+ret_tn.si.describe;
+                    cur_scope.AddName(_type_declaration.type_name.name, ts);
+                    if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
+                        ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
+                }
+                //}
+
             }
             else if (ret_tn != null)
             {
-            	if (ret_tn is ProcScope)
-            	{
-            		ret_tn = new ProcType(ret_tn as ProcScope);
-            		ret_tn.topScope = cur_scope;
-            	}
-            	cur_scope.AddName(_type_declaration.type_name.name,ret_tn);
-            	if (ret_tn is ProcType)
-            	{
-            		ret_tn.MakeSynonimDescription();
-            	}
-            	location loc = get_location(_type_declaration);
-            	if (ret_tn.loc == null)
-            	{
-            		ret_tn.loc = loc;
-            		//ret_tn.loc = new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
-            	}
+                if (ret_tn is ProcScope)
+                {
+                    ret_tn = new ProcType(ret_tn as ProcScope);
+                    ret_tn.topScope = cur_scope;
+                }
+                cur_scope.AddName(_type_declaration.type_name.name, ret_tn);
+                if (ret_tn is ProcType)
+                {
+                    ret_tn.MakeSynonimDescription();
+                }
+                location loc = get_location(_type_declaration);
+                if (ret_tn.loc == null)
+                {
+                    ret_tn.loc = loc;
+                    //ret_tn.loc = new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
+                }
             }
             ret_tn.declaringUnit = entry_scope;
             if (ref_type_wait_list.Count == 0) ret_tn = null;
@@ -2151,72 +2163,72 @@ namespace CodeCompletion
             _with_statement.what_do.visit(this);
             cur_scope = tmp;
         }
-		
+
         internal static bool is_good_overload(ProcScope ps, List<SymScope> args)
         {
-        	if (ps.parameters == null || ps.parameters.Count == 0)
-        	if (args.Count == 0)
-        		return true;
-        	else
-        		return false;
-        	if (args.Count == 0)
-        	if (ps.parameters.Count == 1 && ps.parameters[0].param_kind == parametr_kind.params_parametr)
-        		return true;
-        	else
-        		return false;
-        	if (args.Count == ps.parameters.Count || ps.IsExtension && args.Count == ps.parameters.Count - 1)
-        	{
+            if (ps.parameters == null || ps.parameters.Count == 0)
+                if (args.Count == 0)
+                    return true;
+                else
+                    return false;
+            if (args.Count == 0)
+                if (ps.parameters.Count == 1 && ps.parameters[0].param_kind == parametr_kind.params_parametr)
+                    return true;
+                else
+                    return false;
+            if (args.Count == ps.parameters.Count || ps.IsExtension && args.Count == ps.parameters.Count - 1)
+            {
                 int off = 0;
                 if (ps.IsExtension && args.Count == ps.parameters.Count - 1)
                     off = 1;
-        		for (int i=0; i<args.Count; i++)
-        		{
+                for (int i = 0; i < args.Count; i++)
+                {
                     if (args[i] is UnknownScope)
                         continue;
-        			if (!(args[i] is TypeScope))
-        				return false;
-        			TypeScope ts = args[i] as TypeScope;
+                    if (!(args[i] is TypeScope))
+                        return false;
+                    TypeScope ts = args[i] as TypeScope;
                     ElementScope parameter = ps.parameters[i + off];
                     if (!ts.IsConvertable(parameter.sc as TypeScope))
-        			{
-        				if (parameter.param_kind == parametr_kind.params_parametr)
-        				{
-        					if (!(parameter.sc is TypeScope && (parameter.sc as TypeScope).IsArray && ts.IsConvertable((parameter.sc as TypeScope).elementType)))
-        						return false;
-        				}
-        				else
-        				return false;
-        			}
-        		}
-        		return true;
-        	}
-        	else
-        	{
-        		if (args.Count < ps.parameters.Count)
-        			return false;
-        		int min_arg_cnt = Math.Min(args.Count,ps.parameters.Count);
-        		
-        		for (int i=0; i<min_arg_cnt; i++)
-        		{
-        			if (!(args[i] is TypeScope))
-        				return false;
-        			TypeScope ts = args[i] as TypeScope;
-        			if (!ts.IsConvertable(ps.parameters[i].sc as TypeScope))
-        			{
-        				if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
-        				{
-        					if (!(ps.parameters[i].sc is ArrayScope && ts.IsConvertable((ps.parameters[i].sc as ArrayScope).elementType)))
-        						return false;
-        				}
-        				else
-        				return false;
-        			}
-        			else if (i == ps.parameters.Count-1 && ps.parameters[i].param_kind != parametr_kind.params_parametr)
-        				return false;
-        				
-        		}
-        		return true;
-        	}
+                    {
+                        if (parameter.param_kind == parametr_kind.params_parametr)
+                        {
+                            if (!(parameter.sc is TypeScope && (parameter.sc as TypeScope).IsArray && ts.IsConvertable((parameter.sc as TypeScope).elementType)))
+                                return false;
+                        }
+                        else
+                            return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                if (args.Count < ps.parameters.Count)
+                    return false;
+                int min_arg_cnt = Math.Min(args.Count, ps.parameters.Count);
+
+                for (int i = 0; i < min_arg_cnt; i++)
+                {
+                    if (!(args[i] is TypeScope))
+                        return false;
+                    TypeScope ts = args[i] as TypeScope;
+                    if (!ts.IsConvertable(ps.parameters[i].sc as TypeScope))
+                    {
+                        if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
+                        {
+                            if (!(ps.parameters[i].sc is ArrayScope && ts.IsConvertable((ps.parameters[i].sc as ArrayScope).elementType)))
+                                return false;
+                        }
+                        else
+                            return false;
+                    }
+                    else if (i == ps.parameters.Count - 1 && ps.parameters[i].param_kind != parametr_kind.params_parametr)
+                        return false;
+
+                }
+                return true;
+            }
         }
         
         internal static bool is_good_exact_overload(ProcScope ps, List<SymScope> args)
@@ -2649,17 +2661,18 @@ namespace CodeCompletion
             enum_scope.topScope = cur_scope;
             List<ElementScope> elems = new List<ElementScope>();
             if (_enum_type_definition.enumerators != null)
-            foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
-            {
-            	ElementScope ss = new ElementScope(new SymInfo(en.name.name, SymbolKind.Constant, en.name.name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope,cur_scope);
-            	ss.is_static = true;
-            	ss.cnst_val = en.name.name;
-            	elems.Add(ss);
-            	ss.loc = get_location(en);
-            	cur_scope.AddName(en.name.name, ss);
-            	enum_scope.AddName(en.name.name, ss);
-            	enum_scope.AddEnumConstant(en.name.name);
-            }
+                foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
+                {
+                    ElementScope ss = new ElementScope(new SymInfo(en.name.name, SymbolKind.Constant, en.name.name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope, cur_scope);
+                    ss.is_static = true;
+                    ss.cnst_val = en.name.name;
+                    elems.Add(ss);
+                    ss.loc = get_location(en);
+                    cur_scope.AddName(en.name.name, ss);
+                    enum_scope.AddName(en.name.name, ss);
+                    enum_scope.AddEnumConstant(en.name.name);
+                    ss.AddDocumentation(this.converter.controller.docs[en]);
+                }
             for (int i=0; i<elems.Count; i++)
             	elems[i].MakeDescription();
             ret_tn = enum_scope;

@@ -772,6 +772,7 @@ namespace CodeCompletion
                 {
                     SymScope left_scope = ret_tn;
                     ret_names = ret_tn.FindOverloadNamesOnlyInType((_dot_node.right as ident).name);
+                    List<int> to_remove = new List<int>();
                     for (int i = 0; i < ret_names.Count; i++)
                     {
                         if (ret_names[i] is ElementScope && (ret_names[i] as ElementScope).sc is ProcType)
@@ -781,7 +782,13 @@ namespace CodeCompletion
                             //if (ret_names[i] != null)
                             //ret_names[i] = ((ret_names[i] as ElementScope).sc as ProcType).target;
                         }
+                        else if (left_scope is ElementScope && ret_names[i] is ProcScope && (ret_names[i] as ProcScope).IsStatic)
+                        {
+                            ret_names[i] = null;
+                        }
                     }
+                    ret_names.RemoveAll(x => x == null);
+                    
                     if (ret_tn is ElementScope && stv != null)
                     {
                         List<ProcScope> procs = stv.entry_scope.GetExtensionMethods((_dot_node.right as ident).name,(ret_tn as ElementScope).sc as TypeScope);
@@ -1439,7 +1446,7 @@ namespace CodeCompletion
 		
 		public override void visit(question_colon_expression _question_colon_expression)
 		{
-			throw new NotImplementedException();
+            _question_colon_expression.ret_if_true.visit(this);
 		}
 		
 		public override void visit(expression_as_statement _expression_as_statement)
