@@ -650,6 +650,10 @@ namespace PascalABCCompiler.TreeRealization
                 if (lambdaInfType != null
                     && lambdaInfType.real_type is lambda_any_type_node)
                 {
+                    if (formal_delegate == null)
+                    {
+                        return false;
+                    }
                     if (!CheckIfTypeDependsOnUndeducedGenericParameters(formal_delegate.parameters[param_counter].type, deduced)) //Если тип параметра не зависит от невыведенных дженерик-параметров, то можем вычислить этот тип явно
                     {
                         lambdaInfType.real_type = generic_convertions.determine_type(formal_delegate.parameters[param_counter].type,
