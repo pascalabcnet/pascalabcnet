@@ -1494,6 +1494,8 @@ function Range(a,b: real; n: integer): sequence of real;
 function Range(a,b,step: integer): sequence of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
 /// Возвращает последовательность из n случайных целых элементов
@@ -3185,6 +3187,11 @@ begin
   Result := new integer[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := Random(a,b);
+end;
+
+function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+begin
+  Result := ArrRandom(n,a,b);
 end;
 
 function ArrRandomReal(n: integer; a: real; b: real): array of real;

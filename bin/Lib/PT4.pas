@@ -352,6 +352,24 @@ function ReadArrReal(): array of real;
 /// и возвращает введенный набор в виде массива
 function ReadArrString(): array of string;
 
+/// ¬водит целую матрицу размера m на n по строкам
+function  ReadMatrInteger(m,n: integer): array [,] of integer;
+
+/// ¬водит размеры матрицы и затем целую матрицу указанных размеров по строкам
+function  ReadMatrInteger(): array [,] of integer;
+
+/// ¬водит вещественную матрицу размера m на n по строкам
+function  ReadMatrReal(m,n: integer): array [,] of real;
+
+/// ¬водит размеры матрицы и затем вещественную матрицу указанных размеров по строкам
+function  ReadMatrReal(): array [,] of real;
+
+/// ¬водит матрицу из строк размера m на n по строкам
+function  ReadMatrString(m,n: integer): array [,] of string;
+
+/// ¬водит размеры матрицы и затем строковую матрицу указанных размеров по строкам
+function  ReadMatrString(): array [,] of string;
+
 // ==  онец дополнений к версии 4.14 ==
 
 implementation
@@ -1440,7 +1458,46 @@ end;
 function ReadArrString(n: integer): array of string;
 begin
   result := Range(1, n).Select(e -> GetString()).ToArray();
-end;           
+end;   
+
+function  ReadMatrInteger(m,n: integer): array [,] of integer;
+begin
+  result := new integer[m,n];
+  for var i := 0 to m-1 do
+    for var j := 0 to n-1 do
+      result[i,j] := ReadInteger;
+end;
+
+function  ReadMatrInteger(): array [,] of integer;
+begin
+  result := ReadMatrInteger(ReadInteger,ReadInteger);
+end;
+
+function  ReadMatrReal(m,n: integer): array [,] of real;
+begin
+  result := new real[m,n];
+  for var i := 0 to m-1 do
+    for var j := 0 to n-1 do
+      result[i,j] := ReadReal;
+end;
+
+function  ReadMatrReal(): array [,] of real;
+begin
+  result := ReadMatrReal(ReadInteger,ReadInteger);
+end;
+
+function  ReadMatrString(m,n: integer): array [,] of string;
+begin
+  result := new string[m,n];
+  for var i := 0 to m-1 do
+    for var j := 0 to n-1 do
+      result[i,j] := ReadString;
+end;
+
+function  ReadMatrString(): array [,] of string;
+begin
+  result := ReadMatrString(ReadInteger,ReadInteger);
+end;        
 
 
 /// ¬ыводит размер и элементы последовательности
