@@ -2163,72 +2163,72 @@ namespace CodeCompletion
             _with_statement.what_do.visit(this);
             cur_scope = tmp;
         }
-		
+
         internal static bool is_good_overload(ProcScope ps, List<SymScope> args)
         {
-        	if (ps.parameters == null || ps.parameters.Count == 0)
-        	if (args.Count == 0)
-        		return true;
-        	else
-        		return false;
-        	if (args.Count == 0)
-        	if (ps.parameters.Count == 1 && ps.parameters[0].param_kind == parametr_kind.params_parametr)
-        		return true;
-        	else
-        		return false;
-        	if (args.Count == ps.parameters.Count || ps.IsExtension && args.Count == ps.parameters.Count - 1)
-        	{
+            if (ps.parameters == null || ps.parameters.Count == 0)
+                if (args.Count == 0)
+                    return true;
+                else
+                    return false;
+            if (args.Count == 0)
+                if (ps.parameters.Count == 1 && ps.parameters[0].param_kind == parametr_kind.params_parametr)
+                    return true;
+                else
+                    return false;
+            if (args.Count == ps.parameters.Count || ps.IsExtension && args.Count == ps.parameters.Count - 1)
+            {
                 int off = 0;
                 if (ps.IsExtension && args.Count == ps.parameters.Count - 1)
                     off = 1;
-        		for (int i=0; i<args.Count; i++)
-        		{
+                for (int i = 0; i < args.Count; i++)
+                {
                     if (args[i] is UnknownScope)
                         continue;
-        			if (!(args[i] is TypeScope))
-        				return false;
-        			TypeScope ts = args[i] as TypeScope;
+                    if (!(args[i] is TypeScope))
+                        return false;
+                    TypeScope ts = args[i] as TypeScope;
                     ElementScope parameter = ps.parameters[i + off];
                     if (!ts.IsConvertable(parameter.sc as TypeScope))
-        			{
-        				if (parameter.param_kind == parametr_kind.params_parametr)
-        				{
-        					if (!(parameter.sc is TypeScope && (parameter.sc as TypeScope).IsArray && ts.IsConvertable((parameter.sc as TypeScope).elementType)))
-        						return false;
-        				}
-        				else
-        				return false;
-        			}
-        		}
-        		return true;
-        	}
-        	else
-        	{
-        		if (args.Count < ps.parameters.Count)
-        			return false;
-        		int min_arg_cnt = Math.Min(args.Count,ps.parameters.Count);
-        		
-        		for (int i=0; i<min_arg_cnt; i++)
-        		{
-        			if (!(args[i] is TypeScope))
-        				return false;
-        			TypeScope ts = args[i] as TypeScope;
-        			if (!ts.IsConvertable(ps.parameters[i].sc as TypeScope))
-        			{
-        				if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
-        				{
-        					if (!(ps.parameters[i].sc is ArrayScope && ts.IsConvertable((ps.parameters[i].sc as ArrayScope).elementType)))
-        						return false;
-        				}
-        				else
-        				return false;
-        			}
-        			else if (i == ps.parameters.Count-1 && ps.parameters[i].param_kind != parametr_kind.params_parametr)
-        				return false;
-        				
-        		}
-        		return true;
-        	}
+                    {
+                        if (parameter.param_kind == parametr_kind.params_parametr)
+                        {
+                            if (!(parameter.sc is TypeScope && (parameter.sc as TypeScope).IsArray && ts.IsConvertable((parameter.sc as TypeScope).elementType)))
+                                return false;
+                        }
+                        else
+                            return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                if (args.Count < ps.parameters.Count)
+                    return false;
+                int min_arg_cnt = Math.Min(args.Count, ps.parameters.Count);
+
+                for (int i = 0; i < min_arg_cnt; i++)
+                {
+                    if (!(args[i] is TypeScope))
+                        return false;
+                    TypeScope ts = args[i] as TypeScope;
+                    if (!ts.IsConvertable(ps.parameters[i].sc as TypeScope))
+                    {
+                        if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
+                        {
+                            if (!(ps.parameters[i].sc is ArrayScope && ts.IsConvertable((ps.parameters[i].sc as ArrayScope).elementType)))
+                                return false;
+                        }
+                        else
+                            return false;
+                    }
+                    else if (i == ps.parameters.Count - 1 && ps.parameters[i].param_kind != parametr_kind.params_parametr)
+                        return false;
+
+                }
+                return true;
+            }
         }
         
         internal static bool is_good_exact_overload(ProcScope ps, List<SymScope> args)
