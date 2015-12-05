@@ -7169,6 +7169,38 @@ end;
 //------------------------------------------------------------------------------
 //    Linq ext
 //------------------------------------------------------------------------------
+// явл€етс€ ли символ цифрой
+function char.IsDigit(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsDigit(self);
+end;
+
+// явл€етс€ ли символ буквой
+function char.IsLetter(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsLetter(self);
+end;
+
+function char.IsLower(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsLower(self);
+end;
+
+function char.IsUpper(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsUpper(self);
+end;
+
+function char.ToUpper(self: char): char; extensionmethod;
+begin
+  Result := char.ToUpper(self);
+end;
+
+function char.ToLower(self: char): char; extensionmethod;
+begin
+  Result := char.ToLower(self);
+end;
+
 /// ѕреобразует строку в целое
 function string.ToInteger: integer;
 begin
