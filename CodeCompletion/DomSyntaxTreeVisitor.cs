@@ -805,6 +805,8 @@ namespace CodeCompletion
                     if (topScope != null)
                     {
                         ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
+                        if (ps != null && ps is CompiledMethodScope)
+                            ps = null;
                         if (ps == null)
                         {
                             ps = new ProcScope(meth_name, topScope);
@@ -1082,6 +1084,8 @@ namespace CodeCompletion
         			if (topScope != null)
         			{
         				ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
+                        if (ps != null && ps is CompiledMethodScope)
+                            ps = null;
         				if (ps == null) 
         				{
         					ps = new ProcScope(meth_name, topScope);
