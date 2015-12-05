@@ -5008,7 +5008,7 @@ namespace CodeCompletion
                 else if (ci.GetParameters().Length > 0)
                     constrs.Add(ci);
             constrs.AddRange(mis);
-            constrs.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn));
+            //constrs.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn));
             mis = constrs.ToArray();
             if (ctn.IsInterface)
             {
