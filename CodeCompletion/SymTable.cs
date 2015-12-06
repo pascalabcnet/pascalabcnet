@@ -2484,6 +2484,7 @@ namespace CodeCompletion
             : base(SymbolKind.Type, null, baseType)
         {
             this.declScope = declScope;
+            this.topScope = declScope;
             this.name = name;
             si.describe = name + " in " + declScope.si.name;
         }

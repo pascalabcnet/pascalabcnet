@@ -430,6 +430,8 @@ namespace CodeCompletion
             }
             if (_procedure_header.parameters != null)
                 _procedure_header.parameters.visit(this);
+            if (_procedure_header.where_defs != null)
+                _procedure_header.where_defs.visit(this);
         }
 
         public override void visit(function_header _function_header)
@@ -465,6 +467,8 @@ namespace CodeCompletion
                 _function_header.parameters.visit(this);
             if (_function_header.return_type != null)
                 _function_header.return_type.visit(this);
+            if (_function_header.where_defs != null)
+                _function_header.where_defs.visit(this);
         }
 
         private bool with_body = false;
@@ -1293,12 +1297,16 @@ namespace CodeCompletion
 
         public override void visit(where_definition _where_definition)
         {
-            //throw new NotImplementedException();
+            foreach (ident id in _where_definition.names.list)
+                id.visit(this);
+            foreach (type_definition td in _where_definition.types.defs)
+                td.visit(this);
         }
 
         public override void visit(where_definition_list _where_definition_list)
         {
-            //throw new NotImplementedException();
+            foreach (where_definition wd in _where_definition_list.defs)
+                wd.visit(this);
         }
 
         public override void visit(sizeof_operator _sizeof_operator)

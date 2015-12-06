@@ -21,10 +21,10 @@ namespace CodeCompletion
 	
 	public class DomSyntaxTreeVisitor : AbstractVisitor
     {
-		private SymScope returned_scope;
-        private SymScope saved_returned_scope;
-		private List<SymScope> returned_scopes = new List<SymScope>();
-		public SymScope entry_scope;
+		private SymScope returned_scope;//vozvrashaemyj scope posle vyzova visit
+        private SymScope saved_returned_scope;//nuzhen dlja lambd
+		private List<SymScope> returned_scopes = new List<SymScope>();//hranit spisok scopov (metodov) posle vyzova visit, esli search_all=true
+        public SymScope entry_scope;//tekushij scope
 		public SymScope impl_scope;
 		private string cur_type_name;
 		private location cur_loc;
@@ -36,7 +36,7 @@ namespace CodeCompletion
 		private RetValue cnst_val;
 		private ExpressionEvaluator ev = new ExpressionEvaluator();
 		public bool add_doc_from_text=true;
-		private bool search_all = false;
+		private bool search_all = false;//flag, iskat vse peregruzki ili tolko odnu. sdelal dlja effektivnosti. true zadaetsja tolko v visit(method_call)
         private ProcScope calling_method;
         internal bool parse_only_interface = false;
 
@@ -1004,7 +1004,9 @@ namespace CodeCompletion
                 foreach (ident s in _procedure_header.template_args.idents)
                 {
                     ps.AddTemplateParameter(s.name);
-                    ps.AddName(s.name, new TemplateParameterScope(s.name, TypeTable.obj_type, ps));
+                    TemplateParameterScope tps = new TemplateParameterScope(s.name, TypeTable.obj_type, ps);
+                    tps.loc = get_location(s);
+                    ps.AddName(s.name, tps);
                 }
             }
             SetAttributes(ps, _procedure_header.proc_attributes);
@@ -1282,7 +1284,9 @@ namespace CodeCompletion
         		foreach (ident s in _function_header.template_args.idents)
         		{
         			ps.AddTemplateParameter(s.name);
-        			ps.AddName(s.name,new TemplateParameterScope(s.name,TypeTable.obj_type,ps));
+                    TemplateParameterScope tps = new TemplateParameterScope(s.name, TypeTable.obj_type, ps);
+                    tps.loc = get_location(s);
+                    ps.AddName(s.name, tps);
         		}
         	}
         	SetAttributes(ps,_function_header.proc_attributes);
