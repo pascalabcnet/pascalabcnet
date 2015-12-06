@@ -803,7 +803,6 @@ namespace CodeCompletion
 		
 		public override void visit(empty_statement _empty_statement)
 		{
-			throw new NotImplementedException();
 		}
 		
 		public override void visit(goto_statement _goto_statement)

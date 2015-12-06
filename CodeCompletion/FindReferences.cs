@@ -1474,7 +1474,14 @@ namespace CodeCompletion
 
         public override void visit(function_lambda_definition _function_lambda_definition)
         {
-            
+            IBaseScope tmp = cur_scope;
+            cur_scope = entry_scope.FindScopeByLocation(_function_lambda_definition.source_context.begin_position.line_num, _function_lambda_definition.source_context.begin_position.column_num);
+            if (cur_scope == null)
+                cur_scope = tmp;
+            foreach (ident id in _function_lambda_definition.ident_list.list)
+                id.visit(this);
+            _function_lambda_definition.proc_body.visit(this);
+            cur_scope = tmp;
         }
 
         public override void visit(function_lambda_call _function_lambda_call)
