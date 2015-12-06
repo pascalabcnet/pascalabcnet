@@ -424,6 +424,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new modern_proc_type();
 				case 201:
 					return new yield_node();
+				case 202:
+					return new template_operator_name();
 			}
 			return null;
 		}
@@ -3592,6 +3594,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_yield_node);
 			_yield_node.ex = _read_node() as expression;
+		}
+
+
+		public void visit(template_operator_name _template_operator_name)
+		{
+			read_template_operator_name(_template_operator_name);
+		}
+
+		public void read_template_operator_name(template_operator_name _template_operator_name)
+		{
+			read_template_type_name(_template_operator_name);
+			_template_operator_name.opname = _read_node() as operator_name_ident;
 		}
 
 	}

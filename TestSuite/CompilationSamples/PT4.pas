@@ -1517,6 +1517,13 @@ begin
     PT4.Put(e);
 end;
 
+/// Выводит элементы динамического массива
+procedure Write<T>(self: array of T); extensionmethod;
+begin
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
 /// Выводит элементы матрицы
 procedure Write<T>(self: array [,] of T); extensionmethod;
 begin

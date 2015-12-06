@@ -967,6 +967,29 @@
             </Items>
           </PointOfInterest>
           <PointOfInterest>
+            <Name>Методы расширения для char</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function char.IsDigit(self: char): boolean; extensionmethod;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>char</string>
+                <string>.</string>
+                <string>IsDigit</string>
+                <string>(</string>
+                <string>self</string>
+                <string>:</string>
+                <string>char</string>
+                <string>)</string>
+                <string>:</string>
+                <string>boolean</string>
+                <string>extensionmethod</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
             <Name>Extension methods for BigInteger</Name>
             <FileName>\PABCSystem.pas</FileName>
             <Text>// Extension methods for BigInteger</Text>
