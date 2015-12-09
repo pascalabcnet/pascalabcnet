@@ -4809,7 +4809,8 @@ begin
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
 
-  if val = nil then
+  f.sw.Write(StructuredObjectToString(val));
+  {if val = nil then
   begin
     f.sw.Write('nil');
     exit;
@@ -4821,7 +4822,7 @@ begin
     f.sw.Write(FormatFloatNumber(val.ToString));
   else
     f.sw.Write(val)
-  end;
+  end;}
 end;
 
 procedure write(f: Text; params args: array of object);
