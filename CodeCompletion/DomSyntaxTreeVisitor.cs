@@ -899,7 +899,10 @@ namespace CodeCompletion
                         ps.proc_realization = pr;
                         pr.loc = cur_loc;
                         pr.head_loc = loc;
-                        this.entry_scope.AddName("$method", pr);
+                        if (impl_scope != null)
+                            impl_scope.AddName("$method", pr);
+                        else
+                            this.entry_scope.AddName("$method", pr);
                     }
                     ps.head_loc = loc;
                     if (!ps.is_extension)
@@ -1183,7 +1186,10 @@ namespace CodeCompletion
                         ps.proc_realization = pr;
                         pr.loc = cur_loc;
                         pr.head_loc = loc;
-                        this.entry_scope.AddName("$method",pr);
+                        if (impl_scope != null)
+                            impl_scope.AddName("$method", pr);
+                        else
+                            this.entry_scope.AddName("$method", pr);
                     }
                     if (!ps.is_extension)
                     {
@@ -3634,6 +3640,7 @@ namespace CodeCompletion
             	    (returned_scope as ArrayScope).is_dynamic_arr = true;
             }
             save_return_value();
+            if (_new_expr.params_list != null)
             foreach (expression ex in _new_expr.params_list.expressions)
             {
                 if (ex is function_lambda_definition)

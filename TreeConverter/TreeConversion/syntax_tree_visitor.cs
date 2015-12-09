@@ -8965,7 +8965,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (is_operator && context.converted_type == null && context.converted_template_type == null)
+                if (is_operator && context.converted_type == null && context.converted_template_type == null && !(current_function_header != null && current_function_header.template_args != null && current_function_header.template_args.idents.Count > 0))
                 {
                     AddError(get_location(_method_name), "OVERLOADED_OPERATOR_MUST_BE_STATIC_FUNCTION");
                 }
@@ -11209,9 +11209,13 @@ namespace PascalABCCompiler.TreeConverter
                 }
         }
 
+        private procedure_header current_function_header = null;
+
         public override void visit(SyntaxTree.function_header _function_header)
         {
+            current_function_header = _function_header;
             hard_node_test_and_visit(_function_header.name);
+            current_function_header = null;
             if (context.converted_template_type != null)
             {
                 return;
@@ -11337,9 +11341,11 @@ namespace PascalABCCompiler.TreeConverter
                             type_node ptn = p.type;
                             if (ptn.is_generic_type_instance)
                                 ptn = ptn.original_generic;
-                            if (ptn == cnfn.ConnectedToType)
+                            if (ptn == cnfn.ConnectedToType || ptn == cnfn.ConnectedToType.original_generic)
                                 has_types = true;
                         }
+                        if (cnfn.ConnectedToType == null)
+                            AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
                         if (!has_types)
                             AddError(new SimpleSemanticError(cnfn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cnfn.ConnectedToType.name));
                     }
@@ -11462,7 +11468,9 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(get_location(_procedure_header), "CONSTRUCTOR_CAN_NOT_BE_GENERIC");
             }
+            current_function_header = _procedure_header;
             hard_node_test_and_visit(_procedure_header.name);
+            current_function_header = null;
             if (context.converted_template_type != null)
             {
                 return;
@@ -11822,9 +11830,9 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(get_location(_procedure_attributes_list), "EXTENSION_ATTRIBUTE_ONLY_FOR_NAMESPACE_FUNCTIONS_ALLOWED");
                             if (context.top_function.parameters.Count == 0)
                                 AddError(context.top_function.loc, "EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER");
-                            if (context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
+                            if (!context.top_function.IsOperator && context.top_function.parameters[0].parameter_type != SemanticTree.parameter_type.value)
                                 AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
-                            if (context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
+                            if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
                             top_function.ConnectedToType = context.top_function.parameters[0].type;

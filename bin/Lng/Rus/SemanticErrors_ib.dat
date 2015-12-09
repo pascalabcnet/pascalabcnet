@@ -102,6 +102,7 @@ FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER=Недопустимо испол�
 FIRST_PARAMETER_MUST_HAVE_NAME_SELF=Первый параметр должен иметь имя self
 EXTENSION_METHODS_FOR_CONSTRUCTED_TYPES_NOT_ALLOWED=Нельзя расширять этот тип
 EXTENSION_METHODS_IN_INTERFACE_PART_NOT_ALLOWED=Объявление extension-методов в интерфейсной части модуля недопустимо
+OPERATOR_SHOULD_BE_EXTENSION_METHOD=Оператор должен быть помечен модификатором extensionmethod
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

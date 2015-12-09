@@ -3127,6 +3127,14 @@ begin
   Result := a*n;
 end;
 
+/// Объединяет два массива
+function operator+<T>(a, b: array of T): array of T; extensionmethod;
+begin
+  Result := new T[a.Length+b.Length];
+  a.CopyTo(Result,0);
+  b.CopyTo(Result,a.Length);
+end;
+
 // -----------------------------------------------------
 //                Sequences
 // -----------------------------------------------------
