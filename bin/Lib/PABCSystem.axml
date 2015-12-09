@@ -913,6 +913,48 @@
                 </OuterContext>
                 <Items />
               </PointOfInterest>
+              <PointOfInterest>
+                <Name>StructuredObjectToString</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function StructuredObjectToString(o: Object; n: integer := 0): string;</Text>
+                <OuterContext>
+                  <OuterContextItem Type="Method">
+                    <string>function</string>
+                    <string>StructuredObjectToString</string>
+                    <string>(</string>
+                    <string>o</string>
+                    <string>:</string>
+                    <string>Object</string>
+                    <string>;</string>
+                    <string>n</string>
+                    <string>:</string>
+                    <string>integer</string>
+                    <string>:</string>
+                    <string>=</string>
+                    <string>0</string>
+                    <string>)</string>
+                    <string>:</string>
+                    <string>string</string>
+                  </OuterContextItem>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>nmax</string>
+                    <string>=</string>
+                    <string>100</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>nmax1</string>
+                    <string>=</string>
+                    <string>50</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Defs">
+                    <string>const</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
             </Items>
           </PointOfInterest>
         </Items>
@@ -1327,6 +1369,28 @@
             <Items />
           </PointOfInterest>
         </Items>
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>eeeeeeeee</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>f.sw.Write(</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>procedure</string>
+            <string>write</string>
+            <string>(</string>
+            <string>f</string>
+            <string>:</string>
+            <string>Text</string>
+            <string>;</string>
+            <string>val</string>
+            <string>:</string>
+            <string>object</string>
+            <string>)</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <Items />
       </PointOfInterest>
     </Items>
   </PointOfInterest>
