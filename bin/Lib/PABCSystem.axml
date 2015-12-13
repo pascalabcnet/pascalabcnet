@@ -1371,7 +1371,7 @@
         </Items>
       </PointOfInterest>
       <PointOfInterest>
-        <Name>eeeeeeeee</Name>
+        <Name>write(f: Text</Name>
         <FileName>\PABCSystem.pas</FileName>
         <Text>f.sw.Write(</Text>
         <OuterContext>

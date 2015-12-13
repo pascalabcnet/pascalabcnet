@@ -1460,7 +1460,7 @@ begin
   result := Range(1, n).Select(e -> GetString()).ToArray();
 end;   
 
-function  ReadMatrInteger(m,n: integer): array [,] of integer;
+function ReadMatrInteger(m,n: integer): array [,] of integer;
 begin
   result := new integer[m,n];
   for var i := 0 to m-1 do
@@ -1468,7 +1468,7 @@ begin
       result[i,j] := ReadInteger;
 end;
 
-function  ReadMatrInteger(): array [,] of integer;
+function ReadMatrInteger(): array [,] of integer;
 begin
   result := ReadMatrInteger(ReadInteger,ReadInteger);
 end;
