@@ -3,10 +3,12 @@ unit PT4;
 
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника Programming Taskbook
-// Версия 1.3
+// Версия 4.13
 // Copyright (c) 2006-2008 DarkStar, SSM
 // Copyright (c) 2010 М.Э.Абрамян, дополнения к версии 1.3
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2010
+// Copyright (c) 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
+// Copyright (c) 2015 М.Э.Абрамян, дополнения к версии 4.14
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2015
 //------------------------------------------------------------------------------
 
 {$apptype windows}
@@ -17,7 +19,6 @@ interface
 uses System,
      System.Collections,
      System.Runtime.InteropServices;
-
 type
   /// Тип указателя на узел списка
   PNode = ^TNode;
@@ -116,6 +117,20 @@ function ReadPNode: PNode;
 /// Возвращает введенное значение типа Node
 function ReadNode: Node;
 
+/// Возвращает введенное значение типа integer
+function ReadlnInteger: integer;
+/// Возвращает введенное значение типа real
+function ReadlnReal: real;
+/// Возвращает введенное значение типа char
+function ReadlnChar: char;
+/// Возвращает введенное значение типа string
+function ReadlnString: string;
+/// Возвращает введенное значение типа boolean
+function ReadlnBoolean: boolean;
+/// Возвращает введенное значение типа PNode
+function ReadlnPNode: PNode;
+/// Возвращает введенное значение типа Node
+function ReadlnNode: Node;
 
 procedure GetR(var param: real);
 procedure GetN(var param: integer);
@@ -178,6 +193,10 @@ procedure Read(var val: Node);
 procedure Read(var val: PNode);
 ///--
 procedure Readln;
+
+procedure Print(params args: array of object);
+
+procedure Println(params args: array of object);
 
 /// Освобождает память, выделенную динамически, на которую указывает p
 procedure Dispose(p: pointer);
@@ -283,7 +302,75 @@ procedure HideTask;
 
 // == Конец дополнений к версии 1.3 ==
 
+// == Версия 4.14. Дополнения ==
 
+/// Вводит n целых чисел
+/// и возвращает введенные числа в виде массива
+function ReadArrInteger(n: integer): array of integer;
+
+/// Вводит n вещественных чисел
+/// и возвращает введенные числа в виде массива
+function ReadArrReal(n: integer): array of real;
+
+/// Вводит n строк 
+/// и возвращает введенные строки в виде массива
+function ReadArrString(n: integer): array of string;
+
+/// Вводит n целых чисел
+/// и возвращает введенные числа в виде последовательности
+function ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+
+/// Вводит n вещественных чисел
+/// и возвращает введенные числа в виде последовательности
+function ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+
+/// Вводит n строк 
+/// и возвращает введенные строки в виде последовательности
+function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+
+/// Вводит размер набора целых чисел и его элементы
+/// и возвращает введенный набор в виде последовательности
+function ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+
+/// Вводит размер набора вещественных чисел и его элементы
+/// и возвращает введенный набор в виде последовательности
+function ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+
+/// Вводит размер набора строк и его элементы
+/// и возвращает введенный набор в виде последовательности
+function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+
+/// Вводит размер набора целых чисел и его элементы
+/// и возвращает введенный набор в виде массива
+function ReadArrInteger(): array of integer;
+
+/// Вводит размер набора вещественных чисел и его элементы
+/// и возвращает введенный набор в виде массива
+function ReadArrReal(): array of real;
+
+/// Вводит размер набора строк и его элементы
+/// и возвращает введенный набор в виде массива
+function ReadArrString(): array of string;
+
+/// Вводит целую матрицу размера m на n по строкам
+function  ReadMatrInteger(m,n: integer): array [,] of integer;
+
+/// Вводит размеры матрицы и затем целую матрицу указанных размеров по строкам
+function  ReadMatrInteger(): array [,] of integer;
+
+/// Вводит вещественную матрицу размера m на n по строкам
+function  ReadMatrReal(m,n: integer): array [,] of real;
+
+/// Вводит размеры матрицы и затем вещественную матрицу указанных размеров по строкам
+function  ReadMatrReal(): array [,] of real;
+
+/// Вводит матрицу из строк размера m на n по строкам
+function  ReadMatrString(m,n: integer): array [,] of string;
+
+/// Вводит размеры матрицы и затем строковую матрицу указанных размеров по строкам
+function  ReadMatrString(): array [,] of string;
+
+// == Конец дополнений к версии 4.14 ==
 
 implementation
 
@@ -324,6 +411,7 @@ procedure _PutB(param: integer);                external '%PABCSYSTEM%\PT4\PT4PA
 procedure _GetP(var param: IntPtr);     external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'getp';
 procedure _PutP(param: IntPtr); external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'putp';
 procedure DisposeP(sNode: IntPtr);      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'disposep';
+function FinishPT(): integer;      external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'finishpt';  // == 4.13 ==
 
 procedure Dispose(p: pointer);
 begin
@@ -498,7 +586,7 @@ begin
   else x.Parent := Parent.addr;
 
   addr := Marshal.AllocHGlobal(sizeof(InternalNode));
-  Marshal.StructureToPtr(x, addr, false);
+  Marshal.StructureToPtr(x as object, addr, false);
   isAllocMem := true;
   isDisposed := false;
   loadNodes.Add(self); 
@@ -511,11 +599,11 @@ begin
   if value = nil then 
   begin
     x.Next := IntPtr.Zero; 
-    Marshal.StructureToPtr(x, addr, isAllocMem); 
+    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
   end else 
   begin
     x.Next := value.addr;
-    Marshal.StructureToPtr(x, addr, isAllocMem);                                             
+    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
   end;
 end;
 
@@ -549,11 +637,11 @@ begin
   if value = nil then 
   begin
     x.Prev := IntPtr.Zero; 
-    Marshal.StructureToPtr(x, addr, isAllocMem); 
+    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
   end else 
   begin
     x.Prev := value.addr;
-    Marshal.StructureToPtr(x, addr, isAllocMem);                                             
+    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
   end;
 end;
 
@@ -585,11 +673,11 @@ begin
   if value = nil then 
   begin
     x.Left := IntPtr.Zero; 
-    Marshal.StructureToPtr(x, addr, isAllocMem); 
+    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
   end else 
   begin
     x.Left := value.addr;
-    Marshal.StructureToPtr(x, addr, isAllocMem);                                             
+    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
   end;
 end;
 
@@ -621,11 +709,11 @@ begin
   if value = nil then 
   begin
     x.Right := IntPtr.Zero; 
-    Marshal.StructureToPtr(x, addr, isAllocMem); 
+    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
   end else 
   begin
     x.Right := value.addr;
-    Marshal.StructureToPtr(x, addr, isAllocMem);                                             
+    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
   end;
 end;
 
@@ -657,11 +745,11 @@ begin
   if value = nil then 
   begin
     x.Parent := IntPtr.Zero; 
-    Marshal.StructureToPtr(x, addr, isAllocMem); 
+    Marshal.StructureToPtr(x as object, addr, isAllocMem); 
   end else 
   begin
     x.Parent := value.addr;
-    Marshal.StructureToPtr(x, addr, isAllocMem);                                             
+    Marshal.StructureToPtr(x as object, addr, isAllocMem);                                             
   end;
 end;
 
@@ -691,7 +779,7 @@ begin
   if isDisposed then
     raise new ObjectDisposedException(ToString, eMessage);
   self.x.Data := value;
-  Marshal.StructureToPtr(x, addr, isAllocMem);
+  Marshal.StructureToPtr(x as object, addr, isAllocMem);
 end;
 
 function Node.getData: integer;
@@ -865,6 +953,41 @@ begin
   Result := GetNode;
 end;
 
+function ReadlnInteger: integer;
+begin
+  Result := GetInt;
+end;
+
+function ReadlnReal: real;
+begin
+  Result := GetReal;
+end;
+
+function ReadlnChar: char;
+begin
+  Result := GetChar;
+end;
+
+function ReadlnString: string;
+begin
+  Result := GetString;
+end;
+
+function ReadlnBoolean: boolean;
+begin
+  Result := GetBool;
+end;
+
+function ReadlnPNode: PNode;
+begin
+  Result := GetPNode;
+end;
+
+function ReadlnNode: Node;
+begin
+  Result := GetNode;
+end;
+
 // -----------------------------------------------------
 //                      Процедуры Put
 // -----------------------------------------------------
@@ -1027,6 +1150,19 @@ procedure Readln;
 begin
 end;
 
+procedure Print(params args: array of object);
+begin
+  if args.Length = 0 then
+    exit;
+  for var i := 0 to args.length - 1 do
+    write(args[i]);
+end;
+
+procedure Println(params args: array of object);
+begin
+  Print(args);
+end;
+
 {procedure write;
 begin
 end;}
@@ -1097,6 +1233,45 @@ begin
   if InfoT=0 then 
     Console.WriteLine(InfoS);
   FreePT;
+  // == Начало дополнений к версии 4.13 == 
+  var fpt := FinishPT;
+  if fpt = 1 then exit;
+  var asm := System.Reflection.Assembly.GetExecutingAssembly;
+  var nm := asm.FullName;
+  Delete(nm, Pos(',', nm), length(nm));
+  var prg := asm.GetType(nm+'.Program');
+  var solveproc := prg.GetMethod('$Main');
+  var initproc := prg.GetMethod('$_InitVariables_');
+  var examunit := asm.GetType('PT4Exam.PT4Exam');
+  var finexamproc: System.Reflection.MethodInfo := nil;
+  if examunit <> nil then
+    finexamproc := examunit.GetMethod('FinExam');
+  var i := 0;
+  while (fpt = 0) and (i < 10) do 
+  begin
+    StartPT(512);    
+    try
+      foreach var f in prg.GetFields do
+        if not f.Name.StartsWith('$') then 
+        try
+          f.SetValue(nil, nil);
+        except
+        end;
+      if initproc <> nil then
+        initproc.Invoke(nil,nil);
+      solveproc.Invoke(nil,nil);
+    except
+      on e: Exception do
+        RaisePT(e.InnerException.GetType.ToString, e.InnerException.Message);
+    end;
+    if finexamproc <> nil then
+      finexamproc.Invoke(nil,nil);
+    InfoS := CheckPT(InfoT);
+    FreePT;
+    inc(i);
+    fpt := FinishPT;
+  end;
+  // == Конец дополнений к версии 4.13 == 
 end;
 
 // == Версия 1.3. Дополнения ==
@@ -1117,9 +1292,9 @@ procedure Show(S: string; A: Real; W: Integer);
 var s0: string;
 begin
   if D > 0 then
-    Str(A:W:D, s0)
+    s0 := string.Format('{0,'+W+':f'+D+'}', A).Replace(',','.')
   else
-    Str(A:W, s0);
+    s0 := string.Format('{0,'+W+':e}', A).Replace(',','.');
   Show(S + s0);
 end;
 
@@ -1222,6 +1397,198 @@ begin
 end;
 
 // == Конец дополнений к версии 1.3 ==
+
+// == Версия 4.14. Дополнения ==
+
+function  ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
+end;           
+
+function  ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+begin
+  result := Range(1, n).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+begin
+  result := Range(1, n).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+begin
+  result := Range(1, n).Select(e -> GetString()).ToArray();
+end;           
+
+function  ReadArrInteger(): array of integer;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadArrReal(): array of real;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadArrString(): array of string;
+begin
+  result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
+end;           
+
+function  ReadArrInteger(n: integer): array of integer;
+begin
+  result := Range(1, n).Select(e -> GetInteger()).ToArray();
+end;  
+
+function  ReadArrReal(n: integer): array of real;
+begin
+  result := Range(1, n).Select(e -> GetReal()).ToArray();
+end;  
+
+function ReadArrString(n: integer): array of string;
+begin
+  result := Range(1, n).Select(e -> GetString()).ToArray();
+end;   
+
+function  ReadMatrInteger(m,n: integer): array [,] of integer;
+begin
+  result := new integer[m,n];
+  for var i := 0 to m-1 do
+    for var j := 0 to n-1 do
+      result[i,j] := ReadInteger;
+end;
+
+function  ReadMatrInteger(): array [,] of integer;
+begin
+  result := ReadMatrInteger(ReadInteger,ReadInteger);
+end;
+
+function  ReadMatrReal(m,n: integer): array [,] of real;
+begin
+  result := new real[m,n];
+  for var i := 0 to m-1 do
+    for var j := 0 to n-1 do
+      result[i,j] := ReadReal;
+end;
+
+function  ReadMatrReal(): array [,] of real;
+begin
+  result := ReadMatrReal(ReadInteger,ReadInteger);
+end;
+
+function  ReadMatrString(m,n: integer): array [,] of string;
+begin
+  result := new string[m,n];
+  for var i := 0 to m-1 do
+    for var j := 0 to n-1 do
+      result[i,j] := ReadString;
+end;
+
+function  ReadMatrString(): array [,] of string;
+begin
+  result := ReadMatrString(ReadInteger,ReadInteger);
+end;        
+
+
+/// Выводит размер и элементы последовательности
+procedure System.Collections.Generic.IEnumerable<T>.WriteAll();
+begin
+  var b := self.ToArray();
+  PT4.Put(b.Length);
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит элементы последовательности
+procedure System.Collections.Generic.IEnumerable<T>.Write();
+begin
+  var b := self.ToArray();
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит элементы динамического массива
+procedure Write<T>(self: array of T); extensionmethod;
+begin
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит элементы матрицы
+procedure Write<T>(self: array [,] of T); extensionmethod;
+begin
+  for var i:=0 to self.GetLength(0)-1 do
+  for var j:=0 to self.GetLength(1)-1 do
+    PT4.Put(self[i,j]);
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// комментарий cmt, размер последовательности и значения, 
+/// полученные из элементов последовательности 
+/// с помощью указанного лямбда-выражения
+function System.Collections.Generic.IEnumerable<TSource>.Show
+  (cmt: string; selector: System.Func<TSource, string>): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  var b := self.Select(selector).ToArray();
+  PT4.Show(cmt);
+  PT4.Show((b.Length + ':').PadLeft(3));
+  foreach var e in b do
+    PT4.Show(e);
+  PT4.ShowLine();
+  result := self; 
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// размер последовательности и значения, 
+/// полученные из элементов последовательности 
+/// с помощью указанного лямбда-выражения
+function System.Collections.Generic.IEnumerable<TSource>.Show
+  (selector: System.Func<TSource, string>): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  result := self.Show('', selector); 
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// комментарий cmt, размер последовательности и ее элементы
+function System.Collections.Generic.IEnumerable<TSource>.Show(cmt: string): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  result := self;
+  var a := self.ToArray;
+  var s := '';
+  var t := '';
+  if a.Length > 0 then
+    t := a[0].GetType.Name;
+  if t = 'Double' then
+    if D > 0 then
+      s := '{0,0:f' + D + '}'
+    else
+      s := '{0,0:e}';
+  a.Show(cmt, e -> s = '' ? e.ToString() : 
+    string.Format(s, e).Replace(',', '.'));
+end;
+
+/// Выводит в разделе отладки окна задачника 
+/// размер последовательности и ее элементы.
+function System.Collections.Generic.IEnumerable<TSource>.Show(): 
+  System.Collections.Generic.IEnumerable<TSource>;
+begin
+  result := self.Show(''); 
+end;
+
+// == Конец дополнений к версии 4.14 ==
 
 initialization
   __InitModule;

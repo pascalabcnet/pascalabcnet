@@ -705,7 +705,9 @@ namespace PascalABCCompiler.SyntaxTree
                     var t = name.meth_name as template_type_name;
                     template_args = t.template_args;
                     if (name.meth_name is template_operator_name)
+                    { 
                         name.meth_name = new operator_name_ident((name.meth_name as template_operator_name).opname.operator_type, name.meth_name.source_context);
+                    }
                     else
                         name.meth_name = new ident(name.meth_name.name, name.meth_name.source_context);
                 }

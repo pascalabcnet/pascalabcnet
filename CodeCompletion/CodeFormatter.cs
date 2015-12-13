@@ -1167,7 +1167,7 @@ namespace CodeFormatters
                 visit_node(_procedure_header.name);
             else
                 add_space_before = false;
-            if (_procedure_header.template_args != null)
+            if (_procedure_header.template_args != null && !(_procedure_header.name.meth_name is operator_name_ident))
             {
                 sb.Append("<");
                 visit_node(_procedure_header.template_args);
@@ -1203,7 +1203,7 @@ namespace CodeFormatters
                 visit_node(_function_header.name);
             else
                 add_space_before = false;
-            if (_function_header.template_args != null)
+            if (_function_header.template_args != null && !(_function_header.name.meth_name is operator_name_ident))
             {
                 sb.Append("<");
                 visit_node(_function_header.template_args);
@@ -1497,12 +1497,20 @@ namespace CodeFormatters
 
         public override void visit(method_name _method_name)
         {
-            if (_method_name.class_name != null)
-                visit_node(_method_name.class_name);
-            if (_method_name.explicit_interface_name != null)
-                visit_node(_method_name.explicit_interface_name);
-            if (_method_name.meth_name != null)
-                visit_node(_method_name.meth_name);
+            if (_method_name.ln != null)
+            {
+                foreach (ident id in _method_name.ln)
+                    visit_node(id);
+            }
+            else
+            {
+                if (_method_name.class_name != null)
+                    visit_node(_method_name.class_name);
+                if (_method_name.explicit_interface_name != null)
+                    visit_node(_method_name.explicit_interface_name);
+                if (_method_name.meth_name != null)
+                    visit_node(_method_name.meth_name);
+            }
         }
 
         public override void visit(dot_node _dot_node)

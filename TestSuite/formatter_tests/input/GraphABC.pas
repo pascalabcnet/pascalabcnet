@@ -1,7 +1,11 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
 unit GraphABC;
 
 //ne udaljat, IB 7.10.08 
+//с дополнениями 2015.01 (mabr) 
 {$apptype windows} 
 {$reference 'System.Windows.Forms.dll'}
 {$reference 'System.Drawing.dll'}
@@ -277,6 +281,9 @@ procedure DrawPie(x,y,r,a1,a2: integer);
 /// Рисует заполненный сектор окружности, ограниченный дугой с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы a1 и a2 с осью OX (a1 и a2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
 procedure Pie(x,y,r,a1,a2: integer);
 
+/// Возвращает точку на плоскости с координатами (x,y)
+function Pnt(x,y: integer): Point;
+
 /// Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
 procedure DrawPolygon(points: array of Point);
 /// Заполняет многоугольник, координаты вершин которого заданы в массиве points
@@ -296,6 +303,16 @@ procedure ClosedCurve(points: array of Point);
 
 /// Выводит строку s в прямоугольник к координатами левого верхнего угла (x,y)
 procedure TextOut(x,y: integer; s: string); 
+/// Выводит целое n в прямоугольник к координатами левого верхнего угла (x,y)
+procedure TextOut(x,y: integer; n: integer); 
+/// Выводит вещественное r в прямоугольник к координатами левого верхнего угла (x,y)
+procedure TextOut(x,y: integer; r: real); 
+/// Выводит строку s, отцентрированную в прямоугольнике с координатами (x,y,x1,y1)
+procedure DrawTextCentered(x,y,x1,y1: integer; s: string); 
+/// Выводит целое значение n, отцентрированное в прямоугольнике с координатами (x,y,x1,y1)
+procedure DrawTextCentered(x,y,x1,y1: integer; n: integer); 
+/// Выводит вещественное значение r, отцентрированное в прямоугольнике с координатами (x,y,x1,y1)
+procedure DrawTextCentered(x,y,x1,y1: integer; r: real); 
 /// Заливает область одного цвета цветом c, начиная с точки (x,y).
 procedure FloodFill(x,y: integer; c: Color);
 
@@ -369,7 +386,12 @@ function PenStyle: DashStyle;
 procedure SetPenMode(m: integer);
 /// Возвращает режим текущего пера
 function PenMode: integer;
-
+//2015.01>
+/// Устанавливает или отменяет режим закругленных концов линий
+procedure SetPenRoundCap(isRoundCap: boolean);
+/// Возвращает truе, если установлен режим закругленных концов линий
+function PenRoundCap: boolean;
+//2015.01<    
 /// Возвращают x-координату текущей позиции рисования
 function PenX: integer;
 /// Возвращают y-координату текущей позиции рисования
@@ -546,6 +568,40 @@ procedure SetCoordinateScale(sx,sy: real);
 /// Устанавливает поворот системы координат 
 procedure SetCoordinateAngle(a: real);
 
+//----------------------------------------
+////        Сервисные подпрограммы 
+//----------------------------------------
+/// Возвращает прямоугольник, заданный координатами противоположных вершин
+function Rect(x1,y1,x2,y2: integer): System.Drawing.Rectangle;
+
+/// Возвращает прямоугольник клиентской части главного окна
+function ClientRectangle: System.Drawing.Rectangle;
+
+//------------------------------------------
+////        Рисование графиков функций 
+//------------------------------------------
+/// Рисует график функции f на отрезке [a,b] в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+procedure Draw(f: Func<real,real>; a,b: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f на отрезке [a,b] в прямоугольнике r 
+procedure Draw(f: Func<real,real>; a,b: real; r: System.Drawing.Rectangle);
+/// Рисует график функции f на отрезке [-5,5] в прямоугольнике r 
+procedure Draw(f: Func<real,real>; r: System.Drawing.Rectangle);
+/// Рисует график функции f на отрезке [a,b] на полное графическое окно 
+procedure Draw(f: Func<real,real>; a,b: real);
+/// Рисует график функции f на отрезке [-5,5] на полное графическое окно  
+procedure Draw(f: Func<real,real>);
+
+//------------------------------------------
+////        Рисование изображений
+//------------------------------------------
+/// Выводит растровое изображение из файла с именем fname в позицию x,y 
+procedure Draw(fname: string; x: integer := 0; y: integer := 0);
+/// Выводит растровое изображение из файла с именем fname в позицию x,y, масштабируя его к размеру w на h
+procedure Draw(fname: string; x,y,w,h: integer);
+/// Выводит растровое изображение из файла с именем fname в позицию x,y, масштабируя его с коэффициентом Scale
+procedure Draw(fname: string; x,y: integer; Scale: real);
+
+
 /// Инициализирует графическое окно. Используется для внутренних целей
 procedure InitGraphABC;
 
@@ -565,6 +621,10 @@ type
     procedure SetNETPen(p: System.Drawing.Pen);
     function GetX: integer;
     function GetY: integer;
+//2015.01>
+    procedure SetRoundCap(isRoundCap: boolean);
+    function GetRoundCap: boolean;
+//2015.01<    
   public  
     /// Текущее перо .NET
     property NETPen: System.Drawing.Pen read _NETPen write SetNETPen;
@@ -580,6 +640,10 @@ type
     property X: integer read GetX;
     /// Y-координата текущей позиции пера
     property Y: integer read GetY;
+//2015.01>
+    /// Режим закругленных концов линий
+    property RoundCap: boolean read GetRoundCap write SetRoundCap;
+//2015.01<    
   end;
 
 /// Тип кисти GraphABC
@@ -783,7 +847,7 @@ type
 /// Возвращает True, если изображение данного рисунка пересекается с изображением рисунка p, и False в противном случае. Белый цвет считается прозрачным
     function Intersect(p: Picture): boolean;
 /// Выводит рисунок в позиции (x,y)
-    procedure Draw(x,y: integer);
+    procedure Draw(x: integer := 0; y: integer := 0);
 /// Выводит рисунок в позиции (x,y) на поверхность рисования g
     procedure Draw(x,y: integer; g: Graphics);
 /// Выводит рисунок в позиции (x,y), масштабируя его к размеру (w,h)
@@ -980,6 +1044,8 @@ type
     function read_symbol: char;      override;
     function peek: integer;          override;
   end;
+  
+function SetProcessDPIAware(): boolean; external 'user32.dll'; 
   
 var 
   // строка-буфер ввода
@@ -1422,6 +1488,23 @@ begin
   Result := PenY;
 end; 
 
+//2015.01>
+procedure GraphABCPen.SetRoundCap(isRoundCap: boolean);
+begin
+  SetPenRoundCap(isRoundCap);
+end;
+
+function GraphABCPen.GetRoundCap: boolean;
+begin
+  result := PenRoundCap;
+end;  
+//2015.01<    
+
+
+
+
+//!!!!!!!!!!!!!!!!!!!!
+
 // ------------ GraphABCBrush -----------------
 procedure GraphABCBrush.SetNETBrush(b: System.Drawing.Brush);
 begin
@@ -1554,7 +1637,7 @@ begin
     raise new System.IO.FileNotFoundException(string.Format(FILE_NOT_FOUND_MESSAGE,fname));
   end;
    
-  gb := Graphics.FromImage(bmp);
+  gb := Graphics.FromImage(bmp);  //!!!
   transpcolor := bmp.GetPixel(0,bmp.Height-1);
   istransp := false;
   savedbmp := nil;
@@ -1641,9 +1724,26 @@ begin
 end;
 
 procedure Picture.Load(fname: string);
+//2015.01>
+var
+  tmp: Image;
+  fs: System.IO.FileStream;
+//2015.01<
 begin
   bmp.Dispose;
-  bmp := new Bitmap(fname);
+//2015.01>
+//  bmp := new Bitmap(fname);
+  try
+    fs := new System.IO.FileStream(fname, System.IO.FileMode.Open);
+    tmp := Image.FromStream(fs);
+    bmp := new Bitmap(tmp);
+    fs.Flush;
+    fs.Close;
+    tmp.Dispose;
+  except on ex: System.ArgumentException do
+    raise new System.IO.FileNotFoundException(string.Format(FILE_NOT_FOUND_MESSAGE,fname));
+  end;
+//2015.01<
   gb := Graphics.FromImage(bmp);
   istransp := False;
   if savedbmp<>nil then
@@ -2004,6 +2104,16 @@ begin
   Result := True;
 end;
 
+procedure InitBMP;
+begin
+  var ww := ScreenWidth;
+  var hh := ScreenHeight;
+  bmp := new Bitmap(ww,hh,gr);
+  gbmp := Graphics.FromImage(bmp);
+  __buffer := bmp;
+  gbmp.FillRectangle(Brushes.White,0,0,ww,hh);
+end;
+
 procedure ABCControl.Init;
 begin
   BackColor := System.Drawing.Color.White;
@@ -2022,13 +2132,7 @@ begin
 //  FormClosing += OnClosing;
 
 // Initialization of global vars 
-
-  bmp := new Bitmap(Screen.PrimaryScreen.Bounds.Width,Screen.PrimaryScreen.Bounds.Height);
-  gr := Graphics.FromHwnd(Handle);
-  gbmp := Graphics.FromImage(bmp);
-  __buffer := bmp;
-  gbmp.FillRectangle(Brushes.White,0,0,Screen.PrimaryScreen.Bounds.Width,Screen.PrimaryScreen.Bounds.Height);
-
+  
   Pen.NETPen := new System.Drawing.Pen(System.Drawing.Color.Black);
   GraphABC.Font.NETFont := new System.Drawing.Font('Arial',10);
 
@@ -2143,6 +2247,13 @@ begin
   ResizeHelper;
   if GraphABC.OnResize<>nil then  
     GraphABC.OnResize;
+end;
+
+// Extension methods
+procedure System.Drawing.Rectangle.MoveTo(x,y: integer);
+begin
+  Self.X := x;
+  Self.Y := y;
 end;
 
 // Primitives
@@ -2376,6 +2487,47 @@ begin
   if DrawInBuffer then   
     TextOut(x,y,s,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure TextOut(x,y: integer; n: integer); 
+begin
+  TextOut(x,y,n.ToString);
+end;
+
+procedure TextOut(x,y: integer; r: real); 
+begin
+  var nfi := new System.Globalization.NumberFormatInfo();
+  nfi.NumberGroupSeparator := '.';
+
+  TextOut(x,y,r.ToString(nfi));
+end;
+
+procedure DrawTextCentered(x,y,x1,y1: integer; s: string); 
+begin
+  Monitor.Enter(f);
+  if NotLockDrawing then
+    DrawTextCentered(x,y,x1,y1,s,gr);
+  if DrawInBuffer then   
+    DrawTextCentered(x,y,x1,y1,s,gbmp);
+  Monitor.Exit(f);
+end;
+
+procedure DrawTextCentered(x,y,x1,y1: integer; n: integer); 
+begin
+  DrawTextCentered(x,y,x1,y1,n.ToString);  
+end;
+
+procedure DrawTextCentered(x,y,x1,y1: integer; r: real); 
+begin
+  var nfi := new System.Globalization.NumberFormatInfo();
+  nfi.NumberGroupSeparator := '.';
+
+  DrawTextCentered(x,y,x1,y1,r.ToString(nfi));  
+end;
+
+function Pnt(x,y: integer): Point;
+begin
+  Result := new Point(x,y);
 end;
 
 procedure DrawPolygon(points: array of Point);
@@ -2633,6 +2785,29 @@ begin
 // TODO
 end;
 
+
+//2015.01>
+procedure SetPenRoundCap(isRoundCap: boolean);
+var lCap: LineCap;
+begin
+  if isRoundCap then
+    lCap := LineCap.Round
+  else
+    lCap := LineCap.Flat;
+  lock f do
+  begin   
+    Pen.NETPen.StartCap := lCap;
+    Pen.NETPen.EndCap := lCap;
+  end;
+end;
+function PenRoundCap: boolean;
+begin
+  Result := (Pen.NETPen.StartCap = LineCap.Round)
+    and (Pen.NETPen.EndCap = LineCap.Round);
+end;
+//2015.01<    
+
+
 function PenX: integer;
 begin
   Result := x_coord;
@@ -2642,6 +2817,7 @@ function PenY: integer;
 begin
   Result := y_coord;
 end;
+
 
 // Brushes
 procedure SetBrushColor(c: Color);
@@ -2983,8 +3159,26 @@ begin
 end;
 
 procedure LoadWindow(fname: string);
+//2015.01>
+var
+  b: Bitmap;
+  tmp: Image;
+  fs: System.IO.FileStream;
+//2015.01<
 begin
-  var b: Bitmap := new Bitmap(fname);
+//2015.01>
+//  var b: Bitmap := new Bitmap(fname);
+  try
+    fs := new System.IO.FileStream(fname, System.IO.FileMode.Open);
+    tmp := Image.FromStream(fs);
+    b := new Bitmap(tmp);
+    fs.Flush;
+    fs.Close;
+    tmp.Dispose;
+  except on ex: System.ArgumentException do
+    raise new System.IO.FileNotFoundException(string.Format(FILE_NOT_FOUND_MESSAGE,fname));
+  end;
+//2015.01<
   SetWindowSize(b.Width,b.Height);
   Monitor.Enter(f);
   gr.DrawImage(b,0,0);  
@@ -3061,6 +3255,7 @@ begin
   if MainForm.WindowState=FormWindowState.Minimized then 
     exit;
   tempbmp := GetView(bmp,new System.Drawing.Rectangle(0,0,WindowWidth,WindowHeight));
+  tempbmp.SetResolution(gr.DpiX,gr.DpiY);
   Monitor.Enter(f);
   if gr<>nil then 
   begin
@@ -3276,6 +3471,89 @@ begin
   Result := WindowCenter;
 end;
 
+function Rect(x1,y1,x2,y2: integer): System.Drawing.Rectangle;
+begin
+  Result := new System.Drawing.Rectangle(x1,y1,x2-x1,y2-y1);
+end;
+
+function ClientRectangle: System.Drawing.Rectangle;
+begin
+  Result := MainForm.ClientRectangle
+end;
+
+type FS = auto class
+  mx,my,a,max: real;
+  x0,y0: integer;
+  f: Func<real,real>;
+
+  function Apply(x: real): Point;
+  begin
+    Result := Pnt(x0+Round(mx*(x-a)),y0+Round(my*(max-f(x))));
+  end;
+end;
+
+procedure Draw(f: Func<real,real>; a,b: real; x1,y1,x2,y2: integer);
+begin
+  Rectangle(x1,y1,x2+1,y2+1);
+  var n := (x2-x1) div 3;
+  var min := Range(a,b,n).Min(f);
+  var max := Range(a,b,n).Max(f);
+  var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
+  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+end;
+
+procedure Draw(f: Func<real,real>; a,b: real; r: System.Drawing.Rectangle);
+var x1 := r.X; y1 := r.Y;
+    x2 := r.X+r.Width-1;
+    y2 := r.Y+r.Height-1;
+begin
+  Draw(f,a,b,x1,y1,x2,y2);
+end;
+
+procedure Draw(f: Func<real,real>; r: System.Drawing.Rectangle);
+begin
+  Draw(f,-5,5,r);
+end;
+
+procedure Draw(f: Func<real,real>; a,b: real);
+var x1 := 0; y1 := 0;
+    x2 := Window.Width-1;
+    y2 := Window.Height-1;
+begin
+  Draw(f,a,b,x1,y1,x2,y2);
+end;
+
+procedure Draw(f: Func<real,real>);
+begin
+  Draw(f,-5,5);
+end;
+
+var dpic := new Dictionary<string,Picture>;
+
+procedure Draw(fname: string; x,y: integer);
+begin
+  if not dpic.ContainsKey(fname) then 
+    dpic[fname] := new Picture(fname);
+  dpic[fname].Draw(x,y);
+end;
+
+procedure Draw(fname: string; x,y,w,h: integer);
+begin
+  if not dpic.ContainsKey(fname) then 
+    dpic[fname] := new Picture(fname);
+  dpic[fname].Draw(x,y,w,h);
+end;
+
+procedure Draw(fname: string; x,y: integer; Scale: real);
+begin
+  if not dpic.ContainsKey(fname) then 
+    dpic[fname] := new Picture(fname);
+  var d := dpic[fname];
+  var w := Round(d.Width * Scale);
+  var h := Round(d.Height * Scale);
+  dpic[fname].Draw(x,y,w,h);
+end;
+
 var firstcall := True;
 
 procedure ReadlnTextBoxKeyDown(Sender: object; e: KeyEventArgs);
@@ -3308,7 +3586,7 @@ begin
   _MainForm := new Form;
   _MainForm.Text := 'GraphABC.NET';
   _MainForm.ClientSize := new Size(defaultWindowWidth,defaultWindowHeight);
-//  _MainForm.BackColor := Color.White;
+  _MainForm.BackColor := Color.White;
   _MainForm.Controls.Add(f);
   _MainForm.TopMost := True;
   _MainForm.StartPosition := FormStartPosition.CenterScreen;
@@ -3331,6 +3609,12 @@ begin
   _MainForm.KeyPreview := True;
   _MainForm.KeyDown += ReadlnTextBoxKeyDown;
   _MainForm.Controls.Add(IOPanel);
+
+  gr := Graphics.FromHwnd(f.Handle);
+  
+  if (System.Environment.OSVersion.Version.Major >= 6) then SetProcessDPIAware();
+  InitBMP;
+
 end;  
 
 procedure InitForm0;
