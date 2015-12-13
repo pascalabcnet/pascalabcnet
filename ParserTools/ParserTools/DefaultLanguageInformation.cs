@@ -1061,6 +1061,8 @@ namespace PascalABCCompiler.Parsers
                             parameters.Add(old_parameters[ind]);
                             ind++;
                         }
+                        else
+                            parameters.Add(generic_arg.Name);
                     }
                     else
                         //parameters.Add(GetShortTypeName(generic_arg, false));
@@ -1088,7 +1090,8 @@ namespace PascalABCCompiler.Parsers
                 else
                     sb.Append(parameters[0] + "->()");
             }
-
+            if (sb.Length == 0)
+                sb.Append(t.Name);
             return sb.ToString();
         }
 

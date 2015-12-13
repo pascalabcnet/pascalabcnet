@@ -8430,7 +8430,18 @@ namespace PascalABCCompiler.TreeConverter
                 && (fn.parameters[fn.parameters.Count - 1].is_params || fn.parameters[fn.parameters.Count - 1].default_value != null))
             {
                 fn = convertion_data_and_alghoritms.select_function(bfc.parameters, new SymbolInfo(fn), bfc.location);
-                bfc = convertion_data_and_alghoritms.create_simple_function_call(fn, bfc.location, bfc.parameters.ToArray()) as base_function_call;
+                if (fn.polymorphic_state == SemanticTree.polymorphic_state.ps_static || fn is common_namespace_function_node || fn is basic_function_node)
+                    bfc = convertion_data_and_alghoritms.create_simple_function_call(fn, bfc.location, bfc.parameters.ToArray()) as base_function_call;
+                else
+                {
+                    expression_node obj = null;
+                    if (bfc is common_method_call)
+                        obj = (bfc as common_method_call).obj;
+                    else if (bfc is compiled_function_call)
+                        obj = (bfc as compiled_function_call).obj;
+                    bfc = convertion_data_and_alghoritms.create_method_call(fn, bfc.location, obj, bfc.parameters.ToArray()) as base_function_call;
+
+                }   
             }
             else
             {

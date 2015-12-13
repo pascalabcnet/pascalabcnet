@@ -357,6 +357,37 @@ namespace PascalABCCompiler.TreeConverter
             throw new CanNotReferenceToNonStaticMethodWithType(fn.name, loc);
         }
 
+        public expression_node create_method_call(function_node fn, location loc, expression_node obj, params expression_node[] exprs)
+        {
+            if (fn.compile_time_executor != null)
+            {
+                expression_node ex = fn.compile_time_executor(loc, exprs);
+                if (ex != null)
+                {
+                    return ex;
+                }
+            }
+
+            switch (fn.semantic_node_type)
+            {
+                case semantic_node_type.common_method_node:
+                    {
+                        common_method_node cmn = (common_method_node)fn;
+                        
+                        return create_common_method_call(cmn, loc, obj, exprs);
+                    }
+
+                case semantic_node_type.compiled_function_node:
+                    {
+                        compiled_function_node cfn = (compiled_function_node)fn;
+                        
+                        return create_compiled_function_call(cfn, loc, obj, exprs);
+                    }
+                
+                default: throw new CompilerInternalError("Unknown function type");
+            }
+        }
+
         /// <summary>
         /// Этот метод вызывается если мы встречаем простой вызов функии, например f(1).
         /// Он определяет является ли эта функция методом класса, вложенной функцией и т.д. и создает соответствующее обращение.
