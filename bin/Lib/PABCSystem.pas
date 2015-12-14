@@ -2971,7 +2971,6 @@ begin
   left := sb.ToString;
 end;
 
-
 /// Возвращает инверсию строки
 function string.Inverse(): string;
 begin
@@ -2980,6 +2979,8 @@ begin
     sb.Append(Self[i]);
   Result := sb.ToString;
 end;
+
+
 
 //------------------------------------------------------------------------------
 // Extension methods for BigInteger
@@ -7176,8 +7177,34 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//    Linq ext
+//    char ext
 //------------------------------------------------------------------------------
+// Преобразовать символ в цифру
+function char.ToDigit(self: char): integer; extensionmethod;
+begin
+  Result := OrdUnicode(self) - OrdUnicode('0');
+  if (Result<0) or (Result>=10) then
+    raise new System.FormatException('not a Digit');
+end;
+
+// Следующий символ
+function char.Succ(self: char): char; extensionmethod;
+begin
+  Result := PABCSystem.succ(self);
+end;
+
+// Код символа
+function char.Code(self: char): integer; extensionmethod;
+begin
+  Result := word(self);
+end;
+
+// Предыдущий символ
+function char.Pred(self: char): char; extensionmethod;
+begin
+  Result := PABCSystem.pred(self);
+end;
+
 // Является ли символ цифрой
 function char.IsDigit(self: char): boolean; extensionmethod;
 begin
@@ -7210,6 +7237,9 @@ begin
   Result := char.ToLower(self);
 end;
 
+//------------------------------------------------------------------------------
+//    string ext
+//------------------------------------------------------------------------------
 /// Преобразует строку в целое
 function string.ToInteger: integer;
 begin
