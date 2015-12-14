@@ -11,4 +11,8 @@ begin
   assert(s.Count = s.Length);
   var j := s.Count;
   assert(j = s.Count);
+  s := 'abcdef';
+  var q1 := s.Min;
+  assert(q1 = 'a');
+  assert(s.Min = 'a');
 end.

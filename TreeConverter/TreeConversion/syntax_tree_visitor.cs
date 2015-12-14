@@ -1568,6 +1568,10 @@ namespace PascalABCCompiler.TreeConverter
                             fnl.AddElement(fn);
                     }
                 }
+                else
+                {
+
+                }
                 si = si.Next;
             }
             return convert_functions_to_calls(obj, fnl, loc, is_static);
@@ -8445,16 +8449,24 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
+                function_node[] empty_param_methods = dm.empty_param_methods;
+                SymbolInfo si = new SymbolInfo(empty_param_methods[0]);
+                SymbolInfo root_si = si;
+                for (int i = 1; i < empty_param_methods.Length; i++)
+                {
+                    si.Next = new SymbolInfo(empty_param_methods[i]);
+                    si = si.Next;
+                }
                 compiled_function_node cfn = fn as compiled_function_node;
                 if ((fn.parameters.Count == 1 || cfn != null && fn.parameters.Count == 2 && cfn.ConnectedToType != null)
                     && (fn.parameters[fn.parameters.Count - 1].is_params || fn.parameters[fn.parameters.Count - 1].default_value != null))
                 {
-                    fn = convertion_data_and_alghoritms.select_function(bfc.parameters, new SymbolInfo(fn), bfc.location);
+                    fn = convertion_data_and_alghoritms.select_function(bfc.parameters, root_si, bfc.location);
                     bfc = create_static_method_call_with_params(fn, bfc.location, fn.return_value_type, true, bfc.parameters);
                 }
                 else if (fn.parameters.Count == 1 && cfn != null && cfn.ConnectedToType != null)
                 {
-                    fn = convertion_data_and_alghoritms.select_function(bfc.parameters, new SymbolInfo(fn), bfc.location);
+                    fn = convertion_data_and_alghoritms.select_function(bfc.parameters, root_si, bfc.location);
                     bfc = create_static_method_call_with_params(fn, bfc.location, fn.return_value_type, true, bfc.parameters);
                 }
             }
