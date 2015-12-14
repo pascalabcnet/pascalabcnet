@@ -318,27 +318,27 @@ function ReadArrString(n: integer): array of string;
 
 /// Вводит n целых чисел
 /// и возвращает введенные числа в виде последовательности
-function ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+function ReadSeqInteger(n: integer): sequence of integer;
 
 /// Вводит n вещественных чисел
 /// и возвращает введенные числа в виде последовательности
-function ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+function ReadSeqReal(n: integer): sequence of real;
 
 /// Вводит n строк 
 /// и возвращает введенные строки в виде последовательности
-function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(n: integer): sequence of string;
 
 /// Вводит размер набора целых чисел и его элементы
 /// и возвращает введенный набор в виде последовательности
-function ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+function ReadSeqInteger(): sequence of integer;
 
 /// Вводит размер набора вещественных чисел и его элементы
 /// и возвращает введенный набор в виде последовательности
-function ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+function ReadSeqReal(): sequence of real;
 
 /// Вводит размер набора строк и его элементы
 /// и возвращает введенный набор в виде последовательности
-function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(): sequence of string;
 
 /// Вводит размер набора целых чисел и его элементы
 /// и возвращает введенный набор в виде массива
@@ -369,6 +369,48 @@ function  ReadMatrString(m,n: integer): array [,] of string;
 
 /// Вводит размеры матрицы и затем строковую матрицу указанных размеров по строкам
 function  ReadMatrString(): array [,] of string;
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of integer);
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of real);
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of string);
+
+procedure ReadMatr(var m: integer; var a: array [,] of integer);
+
+procedure ReadMatr(var m: integer; var a: array [,] of real);
+
+procedure ReadMatr(var m: integer; var a: array [,] of string);
+
+procedure ReadMatr(var m, n: integer; var a: array of array of integer);
+
+procedure ReadMatr(var m, n: integer; var a: array of array of real);
+
+procedure ReadMatr(var m, n: integer; var a: array of array of string);
+
+procedure ReadMatr(var m: integer; var a: array of array of integer);
+
+procedure ReadMatr(var m: integer; var a: array of array of real);
+
+procedure ReadMatr(var m: integer; var a: array of array of string);
+
+procedure ReadMatr(var m, n: integer; var a: List<List<integer>>);
+
+procedure ReadMatr(var m, n: integer; var a: List<List<real>>);
+
+procedure ReadMatr(var m, n: integer; var a: List<List<string>>);
+
+procedure ReadMatr(var m: integer; var a: List<List<integer>>);
+
+procedure ReadMatr(var m: integer; var a: List<List<real>>);
+
+procedure ReadMatr(var m: integer; var a: List<List<string>>);
+
+procedure WriteMatr<T>(a: array[,] of T);
+
+procedure WriteMatr<T>(a: array of array of T);
+
+procedure WriteMatr<T>(a: List<List<T>>);
 
 // == Конец дополнений к версии 4.14 ==
 
@@ -1400,32 +1442,32 @@ end;
 
 // == Версия 4.14. Дополнения ==
 
-function  ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+function  ReadSeqInteger(): sequence of integer;
 begin
   result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
 end;  
 
-function  ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+function  ReadSeqReal(): sequence of real;
 begin
   result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
 end;  
 
-function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(): sequence of string;
 begin
   result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
 end;           
 
-function  ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+function  ReadSeqInteger(n: integer): sequence of integer;
 begin
   result := Range(1, n).Select(e -> GetInteger()).ToArray();
 end;  
 
-function  ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+function  ReadSeqReal(n: integer): sequence of real;
 begin
   result := Range(1, n).Select(e -> GetReal()).ToArray();
 end;  
 
-function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(n: integer): sequence of string;
 begin
   result := Range(1, n).Select(e -> GetString()).ToArray();
 end;           
@@ -1499,9 +1541,179 @@ begin
   result := ReadMatrString(ReadInteger,ReadInteger);
 end;        
 
+procedure ReadMatr(var m, n: integer; var a: array [,] of integer);
+begin
+  read(m); read(n);
+  a := new integer[m, n];
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of real);
+begin
+  read(m); read(n);
+  a := new real[m, n];
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of string);
+begin
+  read(m); read(n);
+  a := new string[m, n];
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m: integer; var a: array [,] of integer);
+begin
+  read(m);
+  a := new integer[m, m];
+  for var i := 0 to m - 1 do
+    for var j := 0 to m - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m: integer; var a: array [,] of real);
+begin
+  read(m);
+  a := new real[m, m];
+  for var i := 0 to m - 1 do
+    for var j := 0 to m - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m: integer; var a: array [,] of string);
+begin
+  read(m);
+  a := new string[m, m];
+  for var i := 0 to m - 1 do
+    for var j := 0 to m - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array of array of integer);
+begin
+  read(m); read(n);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrInteger(n);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array of array of real);
+begin
+  read(m); read(n);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrReal(n);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array of array of string);
+begin
+  read(m); read(n);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrString(n);
+end;
+
+procedure ReadMatr(var m: integer; var a: array of array of integer);
+begin
+  read(m);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrInteger(m);
+end;
+
+procedure ReadMatr(var m: integer; var a: array of array of real);
+begin
+  read(m);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrReal(m);
+end;
+
+procedure ReadMatr(var m: integer; var a: array of array of string);
+begin
+  read(m);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrString(m);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: List<List<integer>>);
+begin
+  read(m); read(n);
+  a := new List<List<integer>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqInteger(n).ToList);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: List<List<real>>);
+begin
+  read(m); read(n);
+  a := new List<List<real>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqReal(n).ToList);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: List<List<string>>);
+begin
+  read(m); read(n);
+  a := new List<List<string>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqString(n).ToList);
+end;
+
+procedure ReadMatr(var m: integer; var a: List<List<integer>>);
+begin
+  read(m);
+  a := new List<List<integer>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqInteger(m).ToList);
+end;
+
+procedure ReadMatr(var m: integer; var a: List<List<real>>);
+begin
+  read(m);
+  a := new List<List<real>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqReal(m).ToList);
+end;
+
+procedure ReadMatr(var m: integer; var a: List<List<string>>);
+begin
+  read(m);
+  a := new List<List<string>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqString(m).ToList);
+end;
+
+procedure WriteMatr<T>(a: array[,] of T);
+begin
+  for var i := 0 to a.GetLength(0)-1 do
+    for var j := 0 to a.GetLength(1)-1 do
+      write(a[i,j]);
+end;
+
+procedure WriteMatr<T>(a: array of array of T);
+begin
+  for var i := 0 to a.Length-1 do
+    for var j := 0 to a[i].Length-1 do
+      write(a[i][j]);
+end;
+
+procedure WriteMatr<T>(a: List<List<T>>);
+begin
+  for var i := 0 to a.Count-1 do
+    for var j := 0 to a[i].Count-1 do
+      write(a[i][j]);
+end;
 
 /// Выводит размер и элементы последовательности
-procedure System.Collections.Generic.IEnumerable<T>.WriteAll();
+procedure WriteAll<T>(self: sequence of T); extensionmethod;
 begin
   var b := self.ToArray();
   PT4.Put(b.Length);
@@ -1510,7 +1722,7 @@ begin
 end;
 
 /// Выводит элементы последовательности
-procedure System.Collections.Generic.IEnumerable<T>.Write();
+procedure Write<T>(self: sequence of T); extensionmethod;
 begin
   var b := self.ToArray();
   foreach e : T in b do
