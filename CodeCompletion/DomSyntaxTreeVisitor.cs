@@ -2124,8 +2124,15 @@ namespace CodeCompletion
 				{
 					if (!search_all)
 					{
+                        TypeScope ts = returned_scope as TypeScope;
 						returned_scope = returned_scope.FindNameOnlyInType((_dot_node.right as ident).name);
-						if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
+                        if (returned_scope == null)
+                        {
+                            List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
+                            if (meths.Count > 0)
+                                returned_scope = meths[0];
+                        }
+                        if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
 						{
 							if ((returned_scope as ProcScope).parameters.Count == 0)
                                 returned_scope = (returned_scope as ProcScope).return_type;

@@ -5791,7 +5791,9 @@ namespace CodeCompletion
                 if (string.Compare(name, "Create", true) == 0)
                     si = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (si == null)
+                {
                     return null;
+                }  
             }
             switch (si.sym_info.semantic_node_type)
             {
