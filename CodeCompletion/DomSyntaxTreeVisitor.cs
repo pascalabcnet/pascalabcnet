@@ -813,7 +813,20 @@ namespace CodeCompletion
 
                 if (_procedure_header.name.class_name != null)
                 {
-                    topScope = cur_scope.FindName(_procedure_header.name.class_name.name);
+                    topScope = null;
+                    if (_procedure_header.name.ln != null && _procedure_header.name.ln.Count > 0)
+                    {
+                        SymScope tmp_scope = cur_scope;
+                        for (int i = 0; i < _procedure_header.name.ln.Count; i++)
+                        {
+                            tmp_scope = tmp_scope.FindName(_procedure_header.name.ln[i].name);
+                            if (tmp_scope == null)
+                                break;
+                        }
+                        topScope = tmp_scope;
+                    }
+                    else
+                        topScope = cur_scope.FindName(_procedure_header.name.class_name.name);
                     if (topScope != null)
                     {
                         ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
@@ -1097,7 +1110,20 @@ namespace CodeCompletion
         		_function_header.name.visit(this);
         		if (_function_header.name.class_name != null)
         		{
-        			topScope = cur_scope.FindName(_function_header.name.class_name.name);
+                    topScope = null;
+                    if (_function_header.name.ln != null && _function_header.name.ln.Count > 0)
+                    {
+                        SymScope tmp_scope = cur_scope;
+                        for (int i=0; i< _function_header.name.ln.Count; i++)
+                        {
+                            tmp_scope = tmp_scope.FindName(_function_header.name.ln[i].name);
+                            if (tmp_scope == null)
+                                break;
+                        }
+                        topScope = tmp_scope;
+                    }
+                    else
+        			    topScope = cur_scope.FindName(_function_header.name.class_name.name);
         			if (topScope != null)
         			{
         				ps = topScope.FindNameOnlyInThisType(meth_name) as ProcScope;
@@ -1285,7 +1311,8 @@ namespace CodeCompletion
         	ps.loc = cur_loc;
         	//ps.head_loc = loc;
         	ps.declaringUnit = entry_scope;
-        	if (_function_header.template_args != null && !ps.IsGeneric())
+            SymScope tmp = cur_scope;
+            if (_function_header.template_args != null && !ps.IsGeneric())
         	{
         		foreach (ident s in _function_header.template_args.idents)
         		{
@@ -1294,7 +1321,16 @@ namespace CodeCompletion
                     tps.loc = get_location(s);
                     ps.AddName(s.name, tps);
         		}
-        	}
+                if (ps.return_type == null)
+                {
+                    cur_scope = ps;
+                    if (_function_header.return_type != null)
+                        _function_header.return_type.visit(this);
+                    return_type = returned_scope as TypeScope;
+                    cur_scope = tmp;
+                }
+            }
+            
         	SetAttributes(ps,_function_header.proc_attributes);
         	ps.is_static = _function_header.class_keyword;
         	if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_function_header))
@@ -1309,8 +1345,8 @@ namespace CodeCompletion
         		ps.acc_mod = cur_access_mod;
         		ps.si.acc_mod = cur_access_mod;
         	}
-            SymScope tmp = cur_scope;
-            cur_scope = ps.topScope;
+            
+            cur_scope = ps;
             if (_function_header.parameters != null)
             foreach (typed_parameters pars in _function_header.parameters.params_list)
             {

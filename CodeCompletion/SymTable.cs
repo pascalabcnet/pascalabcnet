@@ -402,7 +402,7 @@ namespace CodeCompletion
                             if (t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray) || (int_ts2 is ArrayScope && t.IsArray))
                             {
                                 lst.AddRange(extension_methods[t]);
-                                break;
+                                //break;
                             }
                         }
                         
