@@ -39,6 +39,13 @@ function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
 begin
   Result := System.Array.BinarySearch(self,item);
 end;
+procedure Test1<T>(self: array[,] of T); extensionmethod;
+begin
+assert(self[0,0].ToString() = '3');
+var e := self[0,0];
+assert(e.ToString='3');
+end;
+
 begin
   var arr := Arr(1,2,3);
   assert(arr.myfirst=1);
@@ -60,4 +67,8 @@ begin
   lst4.Add(2,3,4,5);
   assert(lst4[3]=5);
   assert(arr.BinarySearch(3)=2);
+  var arr3 := new integer[2,2];
+  arr3[0,0] := 3;
+  arr3.Test1;
+
 end.

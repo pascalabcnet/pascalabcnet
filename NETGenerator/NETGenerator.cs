@@ -9265,12 +9265,15 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (elem_type.IsGenericParameter)
                     {
-                        il.Emit(OpCodes.Ldelema, elem_type);
-                        //if (value.indices == null)
-                        //    il.Emit(OpCodes.Ldelema, elem_type);
-                        //else
-                        //    il.Emit(OpCodes.Call, addr_meth);
-                    }
+                        if (indices == null)
+                            il.Emit(OpCodes.Ldelema, elem_type);
+                        else
+                            il.Emit(OpCodes.Call, addr_meth);
+                    //if (value.indices == null)
+                    //    il.Emit(OpCodes.Ldelema, elem_type);
+                    //else
+                    //    il.Emit(OpCodes.Call, addr_meth);
+                }
                     else if (elem_type.IsValueType == true)
                     {
                         if (indices == null)

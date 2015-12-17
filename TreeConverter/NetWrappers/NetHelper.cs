@@ -294,6 +294,8 @@ namespace PascalABCCompiler.NetHelper
         public static Assembly SystemCoreAssembly;
         private static Dictionary<Type,MethodInfo[]> extension_methods = new Dictionary<Type,MethodInfo[]>();
         private static Dictionary<Type,List<MethodInfo>> type_extensions = new Dictionary<Type, List<MethodInfo>>();
+        private static Dictionary<Type, Type> arrays_with_extension_methods = new Dictionary<Type, Type>();
+        private static Dictionary<int, List<MethodInfo>> generic_array_type_extensions = new Dictionary<int, List<MethodInfo>>();
         public static Type PABCSystemType = null;
         public static Type PT4Type = null;
         public static Type StringType = typeof(string);
@@ -302,7 +304,9 @@ namespace PascalABCCompiler.NetHelper
 
 		public static void reset()
 		{
-			cur_used_assemblies.Clear();
+            if (cur_used_assemblies == null)
+                cur_used_assemblies = new Hashtable();
+            cur_used_assemblies.Clear();
 			cur_used_assemblies[typeof(string).Assembly] = typeof(string).Assembly;
 			cur_used_assemblies[typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly] = typeof(Microsoft.CSharp.CSharpCodeProvider).Assembly;
             type_search_cache.Clear();
@@ -499,15 +503,59 @@ namespace PascalABCCompiler.NetHelper
                                     {
 
                                         List<MethodInfo> mths = null;
+                                        List<MethodInfo> mths2 = null;
                                         Type tmp = prms[0].ParameterType;
+                                        bool generic_type = false;
                                         if (tmp.IsGenericType)
+                                        {
                                             tmp = tmp.GetGenericTypeDefinition();
+                                            generic_type = true;
+                                        }
                                         if (!type_extensions.TryGetValue(tmp, out mths))
                                         {
                                             mths = new List<MethodInfo>();
                                             type_extensions.Add(tmp, mths);
                                         }
                                         mths.Add(mi);
+                                        if (tmp.IsArray && !generic_array_type_extensions.TryGetValue(tmp.GetArrayRank(), out mths2))
+                                        {
+                                            mths2 = new List<MethodInfo>();
+                                            generic_array_type_extensions.Add(tmp.GetArrayRank(), mths2);
+                                        }
+                                        if (mths2 != null)
+                                            mths2.Add(mi);
+                                        Dictionary<string, List<MemberInfo>> mht;
+                                        if (members.TryGetValue(tmp, out mht))
+                                        {
+                                            List<MemberInfo> mis2 = null;
+                                            string name = compiler_string_consts.GetNETOperName(mi.Name);
+                                            if (name == null)
+                                                name = mi.Name;
+                                            if (!mht.TryGetValue(name, out mis2))
+                                            {
+                                                mis2 = new List<MemberInfo>();
+                                                mht.Add(name, mis2);
+                                            }
+                                            if (!mis2.Contains(mi))
+                                                mis2.Add(mi);
+                                        }
+                                        foreach (Type arr_t in arrays_with_extension_methods.Keys)
+                                        {
+                                            if (members.TryGetValue(arr_t, out mht))
+                                            {
+                                                List<MemberInfo> mis2 = null;
+                                                string name = compiler_string_consts.GetNETOperName(mi.Name);
+                                                if (name == null)
+                                                    name = mi.Name;
+                                                if (!mht.TryGetValue(name, out mis2))
+                                                {
+                                                    mis2 = new List<MemberInfo>();
+                                                    mht.Add(name, mis2);
+                                                }
+                                                if (!mis2.Contains(mi))
+                                                    mis2.Add(mi);
+                                            }
+                                        }
                                     }
                                 }
                             extension_methods.Add(t, ext_meths.ToArray());
@@ -1110,20 +1158,27 @@ namespace PascalABCCompiler.NetHelper
                 {
                     List<MethodInfo> meths = null;
                     Type tmp_t = t;
+                    if (tmp_t.IsArray)
+                        arrays_with_extension_methods[tmp_t] = tmp_t;
                     cached_type_extensions[t] = t;
                     while (tmp_t != null)
                     {
-                        if (type_extensions.TryGetValue(tmp_t, out meths) || tmp_t.IsGenericType && type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths))
+                        if (type_extensions.TryGetValue(tmp_t, out meths) 
+                            || tmp_t.IsGenericType && type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths)
+                            || tmp_t.IsArray && generic_array_type_extensions.TryGetValue(tmp_t.GetArrayRank(), out meths))
                         {
                             foreach (MethodInfo mi in meths)
                             {
                                 if (cur_used_assemblies.ContainsKey(mi.DeclaringType.Assembly))
                                 {
                                     List<MemberInfo> al = null;
-                                    if (!ht.TryGetValue(mi.Name, out al))
+                                    string s = compiler_string_consts.GetNETOperName(mi.Name);
+                                    if (s == null)
+                                        s = mi.Name;
+                                    if (!ht.TryGetValue(s, out al))
                                     {
                                         al = new List<MemberInfo>();
-                                        ht[mi.Name] = al;
+                                        ht[s] = al;
                                     }
                                     al.Insert(0, mi);
                                 }
@@ -1364,6 +1419,7 @@ namespace PascalABCCompiler.NetHelper
 			if (name == null) return null;
 			if (name == compiler_string_consts.assign_name) return null;
             string s = compiler_string_consts.GetNETOperName(name);
+            string tmp_name = name;
 			if (s != null) 
 			{
 				if (IsStandType(t)) return null;
@@ -1373,7 +1429,6 @@ namespace PascalABCCompiler.NetHelper
 			SymbolInfo si=null;
 			
 			List<MemberInfo> mis = GetMembers(t,name);
-
             //(ssyy) Изменил алгоритм.
             //У нас некоторые алгоритмы базируются на том, что возвращённые
             //сущности будут одной природы (например, все - методы). Это неверно,

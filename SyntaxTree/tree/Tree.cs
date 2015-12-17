@@ -18992,7 +18992,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public template_type_reference(named_type_reference _name, template_param_list _params_list)
+		public template_type_reference(named_type_reference _name,template_param_list _params_list)
 		{
 			this._name=_name;
 			this._params_list=_params_list;
@@ -26622,6 +26622,143 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						ex = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class template_operator_name : template_type_name
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public template_operator_name()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public template_operator_name(operator_name_ident _opname)
+		{
+			this._opname=_opname;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public template_operator_name(operator_name_ident _opname,SourceContext sc)
+		{
+			this._opname=_opname;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public template_operator_name(string _name,ident_list _template_args,operator_name_ident _opname)
+		{
+			this._name=_name;
+			this._template_args=_template_args;
+			this._opname=_opname;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public template_operator_name(string _name,ident_list _template_args,operator_name_ident _opname,SourceContext sc)
+		{
+			this._name=_name;
+			this._template_args=_template_args;
+			this._opname=_opname;
+			source_context = sc;
+		}
+
+		protected operator_name_ident _opname;
+
+		///<summary>
+		///
+		///</summary>
+		public operator_name_ident opname
+		{
+			get
+			{
+				return _opname;
+			}
+			set
+			{
+				_opname=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return template_args;
+					case 1:
+						return opname;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						template_args = (ident_list)value;
+						break;
+					case 1:
+						opname = (operator_name_ident)value;
 						break;
 				}
 			}

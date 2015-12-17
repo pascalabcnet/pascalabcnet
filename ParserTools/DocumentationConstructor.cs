@@ -166,5 +166,13 @@ namespace PascalABCCompiler
         {
         	connect(_destructor);
         }
+        public override void visit(enum_type_definition _enum_type_definition)
+        {
+            visit_collection(_enum_type_definition.enumerators.enumerators);
+        }
+        public override void visit(enumerator _enumerator)
+        {
+            connect(_enumerator);
+        }
     }
 }

@@ -650,6 +650,10 @@ namespace PascalABCCompiler.TreeRealization
                 if (lambdaInfType != null
                     && lambdaInfType.real_type is lambda_any_type_node)
                 {
+                    if (formal_delegate == null) // SSM 5.12.15
+                    {
+                        return false;
+                    }
                     if (!CheckIfTypeDependsOnUndeducedGenericParameters(formal_delegate.parameters[param_counter].type, deduced)) //Если тип параметра не зависит от невыведенных дженерик-параметров, то можем вычислить этот тип явно
                     {
                         lambdaInfType.real_type = generic_convertions.determine_type(formal_delegate.parameters[param_counter].type,
@@ -696,6 +700,11 @@ namespace PascalABCCompiler.TreeRealization
 
                     if (result)
                     {
+                        if (formal_delegate == null) // SSM 5.12.15
+                        {
+                            result = false;
+                        }
+                        else 
                         if (!DeduceInstanceTypes(formal_delegate.return_value_type,
                                                  (type_node)((lambda_inferred_type)lambda_syntax_node.return_type).real_type,
                                                  deduced, nils)) //Выводим дженерик-параметры после того как вычислили тип возвращаемого значения

@@ -795,6 +795,8 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 ///и осуществляет переход на новую строку
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
+/// Выводит значения s на экран
+procedure Print(s: string);
 /// Выводит значения args на экран, выводя после каждого значения пробел
 procedure Print(params args: array of object);
 /// Выводит значения args на экран, выводя после каждого значения пробел, и переходит на новую строчку
@@ -1492,6 +1494,8 @@ function Range(a,b: real; n: integer): sequence of real;
 function Range(a,b,step: integer): sequence of integer;
 /// Возвращает массив размера n, заполненный случайными целыми значениями
 function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
 /// Возвращает последовательность из n случайных целых элементов
@@ -3123,6 +3127,14 @@ begin
   Result := a*n;
 end;
 
+/// Объединяет два массива
+function operator+<T>(a, b: array of T): array of T; extensionmethod;
+begin
+  Result := new T[a.Length+b.Length];
+  a.CopyTo(Result,0);
+  b.CopyTo(Result,a.Length);
+end;
+
 // -----------------------------------------------------
 //                Sequences
 // -----------------------------------------------------
@@ -3183,6 +3195,11 @@ begin
   Result := new integer[n];
   for var i:=0 to Result.Length-1 do
     Result[i] := Random(a,b);
+end;
+
+function ArrRandomInteger(n: integer; a: integer; b: integer): array of integer;
+begin
+  Result := ArrRandom(n,a,b);
 end;
 
 function ArrRandomReal(n: integer; a: real; b: real): array of real;
@@ -4792,7 +4809,8 @@ begin
   if f.sw = nil then 
     raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED_FOR_WRITING));
 
-  if val = nil then
+  f.sw.Write(StructuredObjectToString(val));
+  {if val = nil then
   begin
     f.sw.Write('nil');
     exit;
@@ -4804,7 +4822,7 @@ begin
     f.sw.Write(FormatFloatNumber(val.ToString));
   else
     f.sw.Write(val)
-  end;
+  end;}
 end;
 
 procedure write(f: Text; params args: array of object);
@@ -4858,6 +4876,11 @@ procedure WritelnFormat(f: Text; formatstr: string; params args: array of object
 begin
   var s := Format(formatstr, args);
   writeln(f, s);
+end;
+
+procedure Print(s: string);
+begin
+  write(s);
 end;
 
 procedure Print(params args: array of object);
@@ -7155,6 +7178,38 @@ end;
 //------------------------------------------------------------------------------
 //    Linq ext
 //------------------------------------------------------------------------------
+// Является ли символ цифрой
+function char.IsDigit(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsDigit(self);
+end;
+
+// Является ли символ буквой
+function char.IsLetter(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsLetter(self);
+end;
+
+function char.IsLower(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsLower(self);
+end;
+
+function char.IsUpper(self: char): boolean; extensionmethod;
+begin
+  Result := char.IsUpper(self);
+end;
+
+function char.ToUpper(self: char): char; extensionmethod;
+begin
+  Result := char.ToUpper(self);
+end;
+
+function char.ToLower(self: char): char; extensionmethod;
+begin
+  Result := char.ToLower(self);
+end;
+
 /// Преобразует строку в целое
 function string.ToInteger: integer;
 begin

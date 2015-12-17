@@ -3871,6 +3871,36 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public function_node[] empty_param_methods
+        {
+            get
+            {
+                List<function_node> funcs = new List<function_node>();
+                foreach (base_function_call bfc in _proper_methods)
+                {
+                    if (bfc.simple_function_node.parameters.Count == 0 || bfc.simple_function_node.parameters.Count == 1 && (bfc.simple_function_node.parameters[0].default_value != null || bfc.simple_function_node.parameters[0].is_params))
+                    {
+                        funcs.Add(bfc.simple_function_node);
+                    }
+                    else if (bfc.function is common_namespace_function_node)
+                    {
+                        common_namespace_function_node cnfn = bfc.function as common_namespace_function_node;
+                        if (cnfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))
+                        {
+                            funcs.Add(bfc.simple_function_node);
+                        }
+                    }
+                    else if (bfc.function is compiled_function_node)
+                    {
+                        compiled_function_node cfn = bfc.function as compiled_function_node;
+                        if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))
+                            funcs.Add(bfc.simple_function_node);
+                    }
+                }
+                return funcs.ToArray();
+            }
+        }
+
         public base_function_call empty_param_method
         {
             get

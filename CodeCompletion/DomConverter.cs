@@ -1103,16 +1103,13 @@ namespace CodeCompletion
         
         private bool equal_params(ProcScope ps, List<ProcScope> procs)
         {
-        	/*foreach (ProcScope p in procs)
-        	{
-        		if (p.IsParamsEquals(ps) || ps.topScope.IsChildScopeOf(p.topScope))
-        			return true;
-        	}*/
         	return false;
         }
 
         private Hashtable tmp_cur_used_assemblies;
 
+        //kazhdaja programma mozhet imet svoj spisok podkluchaemyh sborok, 
+        //poetomu nado sohranat i vosstanavlivat tekushij kesh sborok
         private void SetCurrentUsedAssemblies()
         {
             tmp_cur_used_assemblies = PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies;

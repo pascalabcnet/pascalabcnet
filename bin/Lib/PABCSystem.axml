@@ -913,6 +913,48 @@
                 </OuterContext>
                 <Items />
               </PointOfInterest>
+              <PointOfInterest>
+                <Name>StructuredObjectToString</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function StructuredObjectToString(o: Object; n: integer := 0): string;</Text>
+                <OuterContext>
+                  <OuterContextItem Type="Method">
+                    <string>function</string>
+                    <string>StructuredObjectToString</string>
+                    <string>(</string>
+                    <string>o</string>
+                    <string>:</string>
+                    <string>Object</string>
+                    <string>;</string>
+                    <string>n</string>
+                    <string>:</string>
+                    <string>integer</string>
+                    <string>:</string>
+                    <string>=</string>
+                    <string>0</string>
+                    <string>)</string>
+                    <string>:</string>
+                    <string>string</string>
+                  </OuterContextItem>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>nmax</string>
+                    <string>=</string>
+                    <string>100</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>nmax1</string>
+                    <string>=</string>
+                    <string>50</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Defs">
+                    <string>const</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
             </Items>
           </PointOfInterest>
         </Items>
@@ -922,6 +964,19 @@
         <Items>
           <PointOfInterest>
             <Name>Методы расширения для string</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function string.ToInteger: integer;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>string</string>
+                <string>.</string>
+                <string>ToInteger</string>
+                <string>:</string>
+                <string>integer</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
             <Items>
               <PointOfInterest>
                 <Name>Extension methods for String 1</Name>
@@ -965,6 +1020,29 @@
                 <Items />
               </PointOfInterest>
             </Items>
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Методы расширения для char</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function char.ToDigit(self: char): integer; extensionmethod;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>char</string>
+                <string>.</string>
+                <string>ToDigit</string>
+                <string>(</string>
+                <string>self</string>
+                <string>:</string>
+                <string>char</string>
+                <string>)</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>extensionmethod</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
           </PointOfInterest>
           <PointOfInterest>
             <Name>Extension methods for BigInteger</Name>
@@ -1081,87 +1159,6 @@
             <Items />
           </PointOfInterest>
         </Items>
-      </PointOfInterest>
-      <PointOfInterest>
-        <Name>read_lexem</Name>
-        <FileName>\PABCSystem.pas</FileName>
-        <Text>function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать</Text>
-        <OuterContext>
-          <OuterContextItem Type="Method">
-            <string>function</string>
-            <string>read_lexem</string>
-            <string>:</string>
-            <string>string</string>
-          </OuterContextItem>
-          <OuterContextItem Type="" />
-        </OuterContext>
-        <Items />
-      </PointOfInterest>
-      <PointOfInterest>
-        <Name>Функция Ident</Name>
-        <FileName>\PABCSystem.pas</FileName>
-        <Text>function Ident&lt;T1&gt;(x: T1): T1;</Text>
-        <OuterContext>
-          <OuterContextItem Type="Method">
-            <string>function</string>
-            <string>Ident</string>
-            <string>&lt;</string>
-            <string>T</string>
-            <string>&gt;</string>
-            <string>(</string>
-            <string>x</string>
-            <string>:</string>
-            <string>T</string>
-            <string>)</string>
-            <string>:</string>
-            <string>T</string>
-          </OuterContextItem>
-          <OuterContextItem Type="" />
-        </OuterContext>
-        <Items />
-      </PointOfInterest>
-      <PointOfInterest>
-        <Name>function Copy(a: &amp;Array)</Name>
-        <FileName>\PABCSystem.pas</FileName>
-        <Text>function Copy(a: &amp;Array): &amp;Array;</Text>
-        <OuterContext>
-          <OuterContextItem Type="Method">
-            <string>function</string>
-            <string>Copy</string>
-            <string>(</string>
-            <string>a</string>
-            <string>:</string>
-            <string>&amp;Array</string>
-            <string>)</string>
-            <string>:</string>
-            <string>&amp;Array</string>
-          </OuterContextItem>
-          <OuterContextItem Type="" />
-        </OuterContext>
-        <Items />
-      </PointOfInterest>
-      <PointOfInterest>
-        <Name>procedure Sort</Name>
-        <FileName>\PABCSystem.pas</FileName>
-        <Text>procedure Sort(a: &amp;Array);</Text>
-        <OuterContext>
-          <OuterContextItem Type="MethodHeader">
-            <string>procedure</string>
-            <string>Sort</string>
-            <string>&lt;</string>
-            <string>T</string>
-            <string>&gt;</string>
-            <string>(</string>
-            <string>a</string>
-            <string>:</string>
-            <string>array</string>
-            <string>of</string>
-            <string>T</string>
-            <string>)</string>
-          </OuterContextItem>
-          <OuterContextItem Type="PAS_TreeNode" />
-        </OuterContext>
-        <Items />
       </PointOfInterest>
       <PointOfInterest>
         <Name>BigInteger</Name>
@@ -1304,6 +1301,109 @@
             <Items />
           </PointOfInterest>
         </Items>
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>read_lexem</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>function</string>
+            <string>read_lexem</string>
+            <string>:</string>
+            <string>string</string>
+          </OuterContextItem>
+          <OuterContextItem Type="" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Функция Ident</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Ident&lt;T1&gt;(x: T1): T1;</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>function</string>
+            <string>Ident</string>
+            <string>&lt;</string>
+            <string>T</string>
+            <string>&gt;</string>
+            <string>(</string>
+            <string>x</string>
+            <string>:</string>
+            <string>T</string>
+            <string>)</string>
+            <string>:</string>
+            <string>T</string>
+          </OuterContextItem>
+          <OuterContextItem Type="" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>function Copy(a: &amp;Array)</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Copy(a: &amp;Array): &amp;Array;</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>function</string>
+            <string>Copy</string>
+            <string>(</string>
+            <string>a</string>
+            <string>:</string>
+            <string>&amp;Array</string>
+            <string>)</string>
+            <string>:</string>
+            <string>&amp;Array</string>
+          </OuterContextItem>
+          <OuterContextItem Type="" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>procedure Sort</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>procedure Sort(a: &amp;Array);</Text>
+        <OuterContext>
+          <OuterContextItem Type="MethodHeader">
+            <string>procedure</string>
+            <string>Sort</string>
+            <string>&lt;</string>
+            <string>T</string>
+            <string>&gt;</string>
+            <string>(</string>
+            <string>a</string>
+            <string>:</string>
+            <string>array</string>
+            <string>of</string>
+            <string>T</string>
+            <string>)</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>write(f: Text</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>f.sw.Write(</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>procedure</string>
+            <string>write</string>
+            <string>(</string>
+            <string>f</string>
+            <string>:</string>
+            <string>Text</string>
+            <string>;</string>
+            <string>val</string>
+            <string>:</string>
+            <string>object</string>
+            <string>)</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <Items />
       </PointOfInterest>
     </Items>
   </PointOfInterest>

@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 21.10.2015 21:51:55
+// DateTime: 06.12.2015 22:38:00
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -3928,7 +3928,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { CurrentSemanticValue.id = (ident)ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 405: // func_meth_name_ident -> operator_name_ident, template_arguments
-{ CurrentSemanticValue.id = new template_type_name(((ident)ValueStack[ValueStack.Depth-2].ex).name, ValueStack[ValueStack.Depth-1].stn as ident_list, CurrentLocationSpan); }
+{ CurrentSemanticValue.id = new template_operator_name(null, ValueStack[ValueStack.Depth-1].stn as ident_list, ValueStack[ValueStack.Depth-2].ex as operator_name_ident, CurrentLocationSpan); }
         break;
       case 406: // func_name_with_template_args -> func_name_ident
 { CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }

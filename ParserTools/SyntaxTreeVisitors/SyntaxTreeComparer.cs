@@ -1082,9 +1082,25 @@ namespace PascalABCCompiler.SyntaxTree
                 throw_not_equal(left, right);
             if (left != null && right != null)
             {
-                CompareInternal(left.class_name, right.class_name);
-                CompareInternal(left.explicit_interface_name, right.explicit_interface_name);
-                CompareInternal(left.meth_name, right.meth_name);
+                if (left.ln != null && right.ln == null)
+                    throw_not_equal(left, right);
+                if (left.ln == null && right.ln != null)
+                    throw_not_equal(left, right);
+                if (left.ln != null && right.ln != null)
+                {
+                    if (left.ln.Count != right.ln.Count)
+                        throw_not_equal(left, right);
+                    for (int i = 0; i < left.ln.Count; i++)
+                    {
+                        CompareInternal(left.ln[i], right.ln[i]);
+                    }
+                }
+                else
+                {
+                    CompareInternal(left.class_name, right.class_name);
+                    CompareInternal(left.explicit_interface_name, right.explicit_interface_name);
+                    CompareInternal(left.meth_name, right.meth_name);
+                }
             }
         }
 
@@ -1839,6 +1855,10 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as lambda_inferred_type, right as lambda_inferred_type);
                 else if (left is no_type_foreach)
                     CompareInternal(left as no_type_foreach, right as no_type_foreach);
+                else if (left is sequence_type)
+                    CompareInternal(left as sequence_type, right as sequence_type);
+                else if (left is modern_proc_type)
+                    CompareInternal(left as modern_proc_type, right as modern_proc_type);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
             }
@@ -2135,6 +2155,26 @@ namespace PascalABCCompiler.SyntaxTree
             if (left != null && right != null)
             {
                 CompareInternal(left.accessor_name, right.accessor_name);
+            }
+        }
+
+        public void CompareInternal(sequence_type left, sequence_type right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.elements_type, right.elements_type);
+            }
+        }
+
+        public void CompareInternal(modern_proc_type left, modern_proc_type right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.el, right.el);
             }
         }
     }

@@ -1017,6 +1017,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_node);
 		}
+
+		public virtual void visit(template_operator_name _template_operator_name)
+		{
+			DefaultVisit(_template_operator_name);
+		}
 	}
 
 

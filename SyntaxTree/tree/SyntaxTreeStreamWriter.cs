@@ -5649,6 +5649,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(template_operator_name _template_operator_name)
+		{
+			bw.Write((Int16)202);
+			write_template_operator_name(_template_operator_name);
+		}
+
+		public void write_template_operator_name(template_operator_name _template_operator_name)
+		{
+			write_template_type_name(_template_operator_name);
+			if (_template_operator_name.opname == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_template_operator_name.opname.visit(this);
+			}
+		}
+
 	}
 
 

@@ -402,7 +402,7 @@ namespace CodeCompletion
                             if (t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray) || (int_ts2 is ArrayScope && t.IsArray))
                             {
                                 lst.AddRange(extension_methods[t]);
-                                break;
+                                //break;
                             }
                         }
                         
@@ -2484,6 +2484,7 @@ namespace CodeCompletion
             : base(SymbolKind.Type, null, baseType)
         {
             this.declScope = declScope;
+            this.topScope = declScope;
             this.name = name;
             si.describe = name + " in " + declScope.si.name;
         }
@@ -3014,7 +3015,7 @@ namespace CodeCompletion
             {
                 return this.indexes.Length == arrs.indexes.Length;
             }
-            return false;
+            return true;
             /*if (this.indexes == null && arrs.indexes == null) return true;//?????
             if (this.indexes != null && arrs.indexes != null)
             {
@@ -4849,34 +4850,38 @@ namespace CodeCompletion
                     return this.IsConvertable((ts as TypeSynonim).actType);
                 else
                     if (ts is ShortStringScope && ctn == typeof(string))
+                    return true;
+                else
+                {
+                    if (ts is UnknownScope)
                         return true;
-                    else
+                    else if (ts is ProcType)
                     {
-                        if (ts is UnknownScope)
-                            return true;
-                        else if (ts is ProcType)
+                        ProcType pt = ts as ProcType;
+                        MethodInfo invoke_meth = this.ctn.GetMethod("Invoke");
+                        if (invoke_meth == null)
                         {
-                            ProcType pt = ts as ProcType;
-                            MethodInfo invoke_meth = this.ctn.GetMethod("Invoke");
-                            if (invoke_meth == null)
-                                return false;
-                            if (pt.target.parameters == null)
-                                if (invoke_meth.GetParameters().Length > 0)
-                                    return false;
-                            if (pt.target.parameters != null && pt.target.parameters.Count != invoke_meth.GetParameters().Length)
-                                return false;
-                            ParameterInfo[] parameters = invoke_meth.GetParameters();
-                            for (int i=0; i<parameters.Length; i++)
-                            {
-                                CompiledScope param_cs = TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Type, null), parameters[i].ParameterType);
-                                if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope))
-                                    return false;
-                            }
-                            return true;
-                        }
-                        else
+                            if (this.ctn == typeof(Delegate))
+                                return true;
                             return false;
+                        }
+                        if (pt.target.parameters == null)
+                            if (invoke_meth.GetParameters().Length > 0)
+                                return false;
+                        if (pt.target.parameters != null && pt.target.parameters.Count != invoke_meth.GetParameters().Length)
+                            return false;
+                        ParameterInfo[] parameters = invoke_meth.GetParameters();
+                        for (int i = 0; i < parameters.Length; i++)
+                        {
+                            CompiledScope param_cs = TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Type, null), parameters[i].ParameterType);
+                            if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope))
+                                return false;
+                        }
+                        return true;
                     }
+                    else
+                        return false;
+                }
             if (this.ctn == cs.ctn)
                 return true;
 
@@ -5004,7 +5009,7 @@ namespace CodeCompletion
                 else if (ci.GetParameters().Length > 0)
                     constrs.Add(ci);
             constrs.AddRange(mis);
-            constrs.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn));
+            //constrs.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetExtensionMethods(ctn));
             mis = constrs.ToArray();
             if (ctn.IsInterface)
             {
@@ -5786,7 +5791,9 @@ namespace CodeCompletion
                 if (string.Compare(name, "Create", true) == 0)
                     si = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
                 if (si == null)
+                {
                     return null;
+                }  
             }
             switch (si.sym_info.semantic_node_type)
             {
