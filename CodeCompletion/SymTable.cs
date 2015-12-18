@@ -379,7 +379,6 @@ namespace CodeCompletion
                             if (t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray))
                             {
                                 lst.AddRange(extension_methods[t]);
-                                break;
                             }
                         }
                     }

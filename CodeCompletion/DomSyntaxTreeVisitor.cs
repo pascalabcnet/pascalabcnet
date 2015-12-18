@@ -1041,6 +1041,7 @@ namespace CodeCompletion
                 ps.si.acc_mod = cur_access_mod;
             }
             SymScope tmp = cur_scope;
+            cur_scope = ps;
             if (_procedure_header.parameters != null)
                 foreach (typed_parameters pars in _procedure_header.parameters.params_list)
                 {
@@ -1066,6 +1067,7 @@ namespace CodeCompletion
                         }
                     }
                 }
+            cur_scope = tmp;
             if (cur_scope is TypeScope && !ps.is_static)
                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
             //cur_scope = ps;
