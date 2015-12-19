@@ -5657,7 +5657,12 @@ namespace CodeCompletion
 
         public override TypeScope GetElementType()
         {
-            if (!is_def_prop_searched) get_default_property();
+            if (!is_def_prop_searched)
+                get_default_property();
+            if (ctn == typeof(IEnumerable<>) && instances.Count > 0)
+            {
+                return instances[0];
+            }
             return elementType;
         }
 
