@@ -55,7 +55,7 @@ namespace CodeCompletion
             	fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
             	br = new BinaryReader(fs);
             	ReadPCUHeader();
-            	root_scope = new InterfaceUnitScope(new SymInfo(unit_name, SymbolKind.Namespace,unit_name),null,null);
+            	root_scope = new InterfaceUnitScope(new SymInfo(unit_name, SymbolKind.Namespace,unit_name),null);
             	unit_cache[FileName] = root_scope;
             	cur_scope = root_scope;
             	AddReferencedAssemblies();
@@ -793,7 +793,7 @@ namespace CodeCompletion
             	PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
             	AssemblyDocCache.Load(assm,tmp);
             	//namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
-            	cur_scope.AddReferencedAssembly(assm);
+            	(cur_scope as InterfaceUnitScope).AddReferencedAssembly(assm);
 			}
 		}
 		
