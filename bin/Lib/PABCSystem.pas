@@ -4881,7 +4881,7 @@ end;
 
 procedure Print(s: string);
 begin
-  write(s);
+  write(s, ' ');
 end;
 
 procedure Print(params args: array of object);

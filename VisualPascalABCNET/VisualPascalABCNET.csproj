@@ -169,9 +169,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="DS\NavigationManager.cs" />
-    <Compile Include="DS\CodeCompletionVisual\CodeCompletionListView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="DS\CodeCompletionVisual\CodeCompletionListView.cs" />
     <Compile Include="DS\CodeCompletionVisual\CodeCompletionWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -310,17 +308,13 @@
       <DependentUpon>BreakpointCondition.cs</DependentUpon>
     </Compile>
     <Compile Include="IB\Debugger\Debugger.cs" />
-    <Compile Include="IB\Debugger\DynamicTreeView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="IB\Debugger\DynamicTreeView.cs" />
     <Compile Include="IB\Debugger\ExpressionEvaluation.cs" />
     <Compile Include="IB\Debugger\Immediate.cs" />
     <Compile Include="IB\Debugger\LocalVars.cs">
     </Compile>
     <Compile Include="IB\Debugger\Utility.cs" />
-    <Compile Include="IB\FormExtensions.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="IB\FormExtensions.cs" />
     <Compile Include="DockContent\OutputWindowForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -370,9 +364,7 @@
     <Compile Include="OptionsContent\ViewOptionsContent.Designer.cs">
       <DependentUpon>ViewOptionsContent.cs</DependentUpon>
     </Compile>
-    <Compile Include="Program.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="Workbench\BuildService.cs" />
     <Compile Include="Workbench\DesignerService.cs">
