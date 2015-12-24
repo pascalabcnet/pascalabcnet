@@ -24,7 +24,7 @@ namespace CodeCompletion
 		private SymScope returned_scope;//vozvrashaemyj scope posle vyzova visit
         private SymScope saved_returned_scope;//nuzhen dlja lambd
 		private List<SymScope> returned_scopes = new List<SymScope>();//hranit spisok scopov (metodov) posle vyzova visit, esli search_all=true
-        public SymScope entry_scope;//tekushij scope
+        public SymScope entry_scope;//korenvoj scope unita
 		public SymScope impl_scope;
 		private string cur_type_name;
 		private location cur_loc;
@@ -139,8 +139,8 @@ namespace CodeCompletion
         public override void visit(assign _assign)
         {
             //throw new Exception("The method or operation is not implemented.");
-            if (_assign.to is ident && (_assign.to as ident).name == "result")
-                _assign.from.visit(this);
+            //if (_assign.to is ident && (_assign.to as ident).name == "result")
+            //    _assign.from.visit(this);
         }
 		
        
@@ -905,6 +905,17 @@ namespace CodeCompletion
                         TypeScope ts = topScope as TypeScope;
                         if (topScope is TypeSynonim)
                             ts = (ts as TypeSynonim).actType;
+                        if (ts.original_type != null && ts.instances != null)
+                        {
+                            bool pure_instance = true;
+                            foreach (TypeScope gen_arg in ts.instances)
+                            {
+                                if (!(gen_arg is TemplateParameterScope))
+                                    pure_instance = false;
+                            }
+                            if (pure_instance)
+                                ts = ts.original_type;
+                        }
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
                         pr = new ProcRealization(ps, cur_scope);
@@ -1041,6 +1052,7 @@ namespace CodeCompletion
                 ps.si.acc_mod = cur_access_mod;
             }
             SymScope tmp = cur_scope;
+            cur_scope = ps;
             if (_procedure_header.parameters != null)
                 foreach (typed_parameters pars in _procedure_header.parameters.params_list)
                 {
@@ -1066,6 +1078,7 @@ namespace CodeCompletion
                         }
                     }
                 }
+            cur_scope = tmp;
             if (cur_scope is TypeScope && !ps.is_static)
                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
             //cur_scope = ps;
@@ -1205,6 +1218,17 @@ namespace CodeCompletion
                         TypeScope ts = topScope as TypeScope;
                         if (topScope is TypeSynonim)
                             ts = (ts as TypeSynonim).actType;
+                        if (ts.original_type != null && ts.instances != null)
+                        {
+                            bool pure_instance = true;
+                            foreach (TypeScope gen_arg in ts.instances)
+                            {
+                                if (!(gen_arg is TemplateParameterScope) && !(gen_arg is UnknownScope))
+                                    pure_instance = false;
+                            }
+                            if (pure_instance)
+                                ts = ts.original_type;
+                        }
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
                         pr = new ProcRealization(ps, cur_scope);
@@ -1621,9 +1645,8 @@ namespace CodeCompletion
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
             List<string> namespaces = new List<string>();
             namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
-            //List<Scope> netScopes = new List<Scope>();
-            //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
-            cur_scope = new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace,_unit_module.unit_name.idunit_name.name),null,unl);
+            InterfaceUnitScope unit_scope = null;
+            cur_scope = unit_scope= new InterfaceUnitScope(new SymInfo(_unit_module.unit_name.idunit_name.name, SymbolKind.Namespace,_unit_module.unit_name.idunit_name.name),null);
             this.cur_unit_file_name = _unit_module.file_name;
             //if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_unit_module.file_name) != null)
             if (!add_doc_from_text)
@@ -1657,7 +1680,7 @@ namespace CodeCompletion
                 		PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
                     	AssemblyDocCache.Load(assm, path);
                     	namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
-                    	cur_scope.AddReferencedAssembly(assm);
+                    	unit_scope.AddReferencedAssembly(assm);
                     }
                     catch (Exception e)
                     {
@@ -1813,7 +1836,8 @@ namespace CodeCompletion
             namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
-            cur_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace,"program"),null,unl);
+            InterfaceUnitScope unit_scope = null;
+            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace,"program"),null);
 //            if (XmlDoc.LookupLocalizedXmlDocForUnitWithSources(_program_module.file_name) != null)
 //            {
 //            	UnitDocCache.LoadWithSources(cur_scope,_program_module.file_name);
@@ -1848,7 +1872,7 @@ namespace CodeCompletion
                             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
                             AssemblyDocCache.Load(assm, path);
                             namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
-                            cur_scope.AddReferencedAssembly(assm);
+                            unit_scope.AddReferencedAssembly(assm);
                         }
                     }
                     catch (Exception e)
@@ -1886,7 +1910,7 @@ namespace CodeCompletion
             bool has_system_unit = false;
             if (_program_module.used_units != null)
             {
-                cur_scope.uses_source_range = get_location(_program_module.used_units);
+                unit_scope.uses_source_range = get_location(_program_module.used_units);
 
                 //foreach (unit_or_namespace s in _program_module.used_units.units)
                 for (int j = _program_module.used_units.units.Count - 1; j >= 0; j--)
@@ -2161,7 +2185,9 @@ namespace CodeCompletion
 					if (!search_all)
 					{
                         TypeScope ts = returned_scope as TypeScope;
-						returned_scope = returned_scope.FindNameOnlyInType((_dot_node.right as ident).name);
+                        if (returned_scope is ProcScope)
+                            ts = (returned_scope as ProcScope).return_type;
+						returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
                         if (returned_scope == null)
                         {
                             List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
@@ -3142,7 +3168,7 @@ namespace CodeCompletion
             bool has_system_unit = false;
             if (_interface_node.uses_modules != null)
             {
-                cur_scope.uses_source_range = get_location(_interface_node.uses_modules);
+                (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_interface_node.uses_modules);
                 //foreach (unit_or_namespace s in _interface_node.uses_modules.units)
                 for (int j = _interface_node.uses_modules.units.Count - 1; j >= 0; j--)
                 {
@@ -3248,14 +3274,13 @@ namespace CodeCompletion
             //throw new Exception("The method or operation is not implemented.");
             SymScope tmp = cur_scope;
             unl.clear();
-            
-            cur_scope = new ImplementationUnitScope(new SymInfo("$implementation",SymbolKind.Namespace,"implementation"),cur_scope,unl);
+            cur_scope = new ImplementationUnitScope(new SymInfo("$implementation",SymbolKind.Namespace,"implementation"),cur_scope);
             tmp.AddName("$implementation",cur_scope);
             (tmp as InterfaceUnitScope).impl_scope = cur_scope as ImplementationUnitScope;
             cur_scope.loc = get_location(_implementation_node);
             if (_implementation_node.uses_modules != null)
             {
-            	cur_scope.uses_source_range = get_location(_implementation_node.uses_modules);
+            	(cur_scope as ImplementationUnitScope).uses_source_range = get_location(_implementation_node.uses_modules);
              	for (int j=_implementation_node.uses_modules.units.Count-1; j>=0;j--)
             	{
                		unit_or_namespace s =_implementation_node.uses_modules.units[j];
@@ -3821,7 +3846,7 @@ namespace CodeCompletion
                     }
                 }
             }
-            cur_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Block,"module"),null,unl);
+            cur_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Block,"module"),null);
             doc = new document(_c_module.file_name);
             cur_scope.loc = get_location(_c_module);
             entry_scope = cur_scope;
@@ -3829,7 +3854,7 @@ namespace CodeCompletion
             add_system_unit();
             if (_c_module.used_units != null)
             {
-                cur_scope.uses_source_range = get_location(_c_module.used_units);
+                (cur_scope as InterfaceUnitScope).uses_source_range = get_location(_c_module.used_units);
                 foreach (unit_or_namespace s in _c_module.used_units.units)
                 {
                     try

@@ -685,33 +685,26 @@ namespace VisualPascalABC
                         NamedValue nv = GetNullBasedArray();
                         if (nv != null)
                         {
-                            NamedValueCollection nvc = nv.GetArrayElements();
+                            if (nv.ArrayLenght > 40)
+                                return DebugUtils.WrapTypeName(val.Type);
+                            NamedValueCollection nvc = GetNullBasedArray().GetArrayElements();
                             StringBuilder sb = new StringBuilder();
                             sb.Append('(');
-                            for (int i = 0; i < GetNullBasedArray().GetArrayElements().Count; i++)
+                            for (int i = 0; i < nvc.Count; i++)
                             {
                                 if (i > 10)
                                 {
                                     sb.Append("...");
                                     break;
                                 }
-                                sb.Append(WorkbenchServiceFactory.DebuggerManager.MakeValueView(GetNullBasedArray().GetArrayElements()[i]));
-                                if (i < GetNullBasedArray().GetArrayElements().Count - 1) sb.Append(',');
+                                sb.Append(WorkbenchServiceFactory.DebuggerManager.MakeValueView(nvc[i]));
+                                if (i < nvc.Count - 1) sb.Append(',');
                             }
                             sb.Append(')');
                             return sb.ToString();
                         }
                         else if (val.IsArray)
                         {
-                            /*uint[] dims = null; 
-                            try
-                            {
-                                dims = val.ArrayDimensions;
-                            }
-                            catch
-                            {
-                                dims = val.Dereference.ArrayDimensions;
-                            }*/
                             uint[] dims = val.Dereference.ArrayDimensions;
                             StringBuilder sb = new StringBuilder();
                             for (int i = 0; i < dims.Length; i++)

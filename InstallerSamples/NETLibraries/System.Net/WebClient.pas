@@ -1,8 +1,6 @@
 // Использование WebClient
 uses System.Net;
 
-const address = 'www.yandex.ru';
-
 begin
   var w := new WebClient();
   w.Encoding := System.Text.Encoding.UTF8;
