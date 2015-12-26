@@ -7,8 +7,8 @@ begin
   var n := 20;
   SetLength(a,n);
   for var i:=0 to a.Length-1 do
-    a[i] := Random(1,9);
+    a[i] := Random(1,99);
   writeln('Содержимое случайного динамического массива целых: ');  
-  foreach x: integer in a do
-    write(x,' ');
+  foreach var x in a do
+    Print(x);
 end.
