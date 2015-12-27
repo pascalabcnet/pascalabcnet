@@ -1878,12 +1878,30 @@ namespace PascalABCCompiler.TreeConverter
 
             possible_type_convertions_list_list tcll = new possible_type_convertions_list_list();
 
-			for(int i=0;i<set_of_possible_functions.Count;i++)
-			{
-				possible_type_convertions_list tc=get_conversions(parameters,set_of_possible_functions[i].parameters,
-					is_alone_method_defined,loc);
-				tcll.AddElement(tc);
-			}
+            for (int i = 0; i < set_of_possible_functions.Count; i++)
+            {
+                possible_type_convertions_list tc = get_conversions(parameters, set_of_possible_functions[i].parameters,
+                    is_alone_method_defined, loc);
+                //fix dlja lambd i extension metodov (c->c.IsDigit)
+                if (tc == null)
+                {
+                    expressions_list el = new expressions_list();
+                    el.AddRange(parameters);
+                    bool has_lambda_var = false;
+                    for (int k = 0; k < el.Count; k++)
+                    {
+                        if (el[k] is local_variable_reference && el[k].type is delegated_methods && (el[k].type as delegated_methods).empty_param_method != null)
+                        {
+                            el[k].type = (el[k].type as delegated_methods).empty_param_method.ret_type;
+                            has_lambda_var = true;
+                        }
+                    }
+                    if (has_lambda_var)
+                        tc = get_conversions(el, set_of_possible_functions[i].parameters,
+                            is_alone_method_defined, loc);
+                }
+                tcll.AddElement(tc);
+            }
 
 			int j=0;
 			while(j<set_of_possible_functions.Count)
