@@ -295,6 +295,6 @@ begin
     writeln('Formatter tests run successfully');
   except
     on e: Exception do
-      WriteAllText('d:\err.txt',e.ToString());
+      assert(false,e.ToString());
   end;
 end.
