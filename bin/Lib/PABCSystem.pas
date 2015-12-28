@@ -2971,16 +2971,6 @@ begin
   left := sb.ToString;
 end;
 
-/// Возвращает инверсию строки
-function string.Inverse(): string;
-begin
-  var sb := new System.Text.StringBuilder(Self.Length);
-  for var i:= Self.Length downto 1 do
-    sb.Append(Self[i]);
-  Result := sb.ToString;
-end;
-
-
 
 //------------------------------------------------------------------------------
 // Extension methods for BigInteger
@@ -7268,6 +7258,15 @@ end;
 function string.ToReals(): array of real;
 begin
   Result := Self.ToWords().Select(s -> StrToFloat(s)).ToArray();
+end;
+
+/// Возвращает инверсию строки
+function string.Inverse(): string;
+begin
+  var sb := new System.Text.StringBuilder(Self.Length);
+  for var i:= Self.Length downto 1 do
+    sb.Append(Self[i]);
+  Result := sb.ToString;
 end;
 
 //------------------------------------------------------------------------------
