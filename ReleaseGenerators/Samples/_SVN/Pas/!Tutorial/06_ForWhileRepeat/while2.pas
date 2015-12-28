@@ -1,6 +1,6 @@
-// Цикл while. Степени 2
+// Р¦РёРєР» while. РЎС‚РµРїРµРЅРё 2
 begin
-  writeln('Степени 2');
+  writeln('РЎС‚РµРїРµРЅРё 2');
   var i := 1;
   var p := 1;
   while i<32 do

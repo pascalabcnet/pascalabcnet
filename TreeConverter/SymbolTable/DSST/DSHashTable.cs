@@ -6,7 +6,7 @@ namespace SymbolTable
 {
 
     /// <summary>
-    /// Динамическая хеш таблица строк
+    /// Р”РёРЅР°РјРёС‡РµСЃРєР°СЏ С…РµС€ С‚Р°Р±Р»РёС†Р° СЃС‚СЂРѕРє
     /// </summary>
     public class DSHashTable
     {

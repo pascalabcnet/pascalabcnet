@@ -3,8 +3,8 @@
 
 /***************************************************************************
  *   
- *   Интерфейс конвертора синтаксического дерева в семантическое для Compiler   
- *   Зависит от Errors,SemanticTree,PascalABCCompiler.SyntaxTree
+ *   РРЅС‚РµСЂС„РµР№СЃ РєРѕРЅРІРµСЂС‚РѕСЂР° СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° РІ СЃРµРјР°РЅС‚РёС‡РµСЃРєРѕРµ РґР»СЏ Compiler   
+ *   Р—Р°РІРёСЃРёС‚ РѕС‚ Errors,SemanticTree,PascalABCCompiler.SyntaxTree
  *
  ***************************************************************************/
 
@@ -19,11 +19,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public SyntaxTreeToSemanticTreeConverter()
         {
-            //(ssyy) запоминаем visitor
+            //(ssyy) Р·Р°РїРѕРјРёРЅР°РµРј visitor
             SystemLibrary.SystemLibrary.syn_visitor = stv;
         }
 
-        //TODO: Разобраться, где использутеся.
+        //TODO: Р Р°Р·РѕР±СЂР°С‚СЊСЃСЏ, РіРґРµ РёСЃРїРѕР»СЊР·СѓС‚РµСЃСЏ.
 		public SymbolTable.TreeConverterSymbolTable SymbolTable
 		{
 			get
@@ -70,7 +70,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
-        //TODO: Исправить коллкцию модулей.
+        //TODO: РСЃРїСЂР°РІРёС‚СЊ РєРѕР»Р»РєС†РёСЋ РјРѕРґСѓР»РµР№.
         public PascalABCCompiler.TreeRealization.common_unit_node CompileInterface(SyntaxTree.compilation_unit SyntaxUnit,
             PascalABCCompiler.TreeRealization.unit_node_list UsedUnits, List<Errors.Error> ErrorsList, List<Errors.CompilerWarning> WarningsList, PascalABCCompiler.Errors.SyntaxError parser_error,
             System.Collections.Hashtable bad_nodes, TreeRealization.using_namespace_list namespaces, Dictionary<SyntaxTree.syntax_tree_node,string> docs, bool debug, bool debugging)
@@ -99,7 +99,7 @@ namespace PascalABCCompiler.TreeConverter
             foreach (SyntaxTree.compiler_directive cd in SyntaxUnit.compiler_directives)
                 cd.visit(stv);
 
-            stv.DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(SyntaxUnit, ErrorsList);  //MikhailoMMX добавил передачу списка ошибок (02.10.10)
+            stv.DirectivesToNodesLinks = CompilerDirectivesToSyntaxTreeNodesLinker.BuildLinks(SyntaxUnit, ErrorsList);  //MikhailoMMX РґРѕР±Р°РІРёР» РїРµСЂРµРґР°С‡Сѓ СЃРїРёСЃРєР° РѕС€РёР±РѕРє (02.10.10)
 
             SyntaxUnit.visit(stv);
 			/*SyntaxTree.program_module pmod=SyntaxUnit as SyntaxTree.program_module;
@@ -150,7 +150,7 @@ namespace PascalABCCompiler.TreeConverter
 			{
                 throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Program has not implementation part");
 			}
-            //TODO: Переделать, чтобы Сашин код работал с common_unit_node.
+            //TODO: РџРµСЂРµРґРµР»Р°С‚СЊ, С‡С‚РѕР±С‹ РЎР°С€РёРЅ РєРѕРґ СЂР°Р±РѕС‚Р°Р» СЃ common_unit_node.
 			stv.compiled_unit=(PascalABCCompiler.TreeRealization.common_unit_node)SemanticUnit;
             stv.current_document = new TreeRealization.document(SyntaxUnit.file_name);
 
@@ -165,7 +165,7 @@ namespace PascalABCCompiler.TreeConverter
 		public void Reset()
 		{
 			stv.reset();
-            //stv = new syntax_tree_visitor(); // SSM 14/07/13 - может, будет занимать больше памяти, зато все внутренние переменные будут чиститься
+            //stv = new syntax_tree_visitor(); // SSM 14/07/13 - РјРѕР¶РµС‚, Р±СѓРґРµС‚ Р·Р°РЅРёРјР°С‚СЊ Р±РѕР»СЊС€Рµ РїР°РјСЏС‚Рё, Р·Р°С‚Рѕ РІСЃРµ РІРЅСѓС‚СЂРµРЅРЅРёРµ РїРµСЂРµРјРµРЅРЅС‹Рµ Р±СѓРґСѓС‚ С‡РёСЃС‚РёС‚СЊСЃСЏ
             //SystemLibrary.SystemLibrary.syn_visitor = stv;
 
 		}

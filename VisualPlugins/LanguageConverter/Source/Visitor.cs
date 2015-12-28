@@ -20,7 +20,7 @@ namespace VisualPascalABCPlugins
         // e,hfnm yfabu
         public List<string> nmspaceFiles = new List<string>();
 
-        // убрать отсюда
+        // СѓР±СЂР°С‚СЊ РѕС‚СЃСЋРґР°
         public void SaveTextInFile(string fileName, string text, bool append)
         {
             StreamWriter sw = new StreamWriter(fileName, append, System.Text.Encoding.GetEncoding(1251));
@@ -38,7 +38,7 @@ namespace VisualPascalABCPlugins
             ISemanticNodeConverter = _semanticNodeConverter;
         }                     
 
-        // для обычного node - потомка ISemanticNode
+        // РґР»СЏ РѕР±С‹С‡РЅРѕРіРѕ node - РїРѕС‚РѕРјРєР° ISemanticNode
         public void prepare_node(ISemanticNode subnode, string node_name)
         {
             
@@ -677,9 +677,9 @@ namespace VisualPascalABCPlugins
         {
             StringBuilder bodyBlock = new StringBuilder("");
             StringBuilder parameters = new StringBuilder("");
-            // увеличиваем отступ тела блока перед входом в блок
+            // СѓРІРµР»РёС‡РёРІР°РµРј РѕС‚СЃС‚СѓРї С‚РµР»Р° Р±Р»РѕРєР° РїРµСЂРµРґ РІС…РѕРґРѕРј РІ Р±Р»РѕРє
 
-            // тело функции
+            // С‚РµР»Рѕ С„СѓРЅРєС†РёРё
             if (value.var_definition_nodes.Length != 0)
                 ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyIncrement();
             foreach (ILocalVariableNode nodeVariable in value.var_definition_nodes)
@@ -691,7 +691,7 @@ namespace VisualPascalABCPlugins
                 bodyBlock.Append(System.Environment.NewLine);
                 //bodyBlock.Append(ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBody);
             }
-            // если блок не пуст - уменьшаем отступ
+            // РµСЃР»Рё Р±Р»РѕРє РЅРµ РїСѓСЃС‚ - СѓРјРµРЅСЊС€Р°РµРј РѕС‚СЃС‚СѓРї
             if (bodyBlock.ToString() != "")
             {
                 //ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(bodyBlock.ToString());
@@ -699,7 +699,7 @@ namespace VisualPascalABCPlugins
             }
 
             value.function_code.visit(this);
-            // на стеке лежит тело функции
+            // РЅР° СЃС‚РµРєРµ Р»РµР¶РёС‚ С‚РµР»Рѕ С„СѓРЅРєС†РёРё
             //  
             string funcbody = ISemanticNodeConverter.SourceTextBuilder.GetNodeFromStack();
             bodyBlock.Append(funcbody);
@@ -718,9 +718,9 @@ namespace VisualPascalABCPlugins
                 if (value.parameters[value.parameters.Length-1] != nodeParameter)
                     parameters.Append(", ");
             }
-            // кладем на стек тело функции 
+            // РєР»Р°РґРµРј РЅР° СЃС‚РµРє С‚РµР»Рѕ С„СѓРЅРєС†РёРё 
             ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(bodyBlock.ToString());
-            // кладем на стек параметры ф-ции
+            // РєР»Р°РґРµРј РЅР° СЃС‚РµРє РїР°СЂР°РјРµС‚СЂС‹ С„-С†РёРё
             if (parameters.Length == 0)
                 parameters.Append("%empty%");
             ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(parameters.ToString());                       
@@ -801,7 +801,7 @@ namespace VisualPascalABCPlugins
         {
             StringBuilder bodyBlock = new StringBuilder("");
             NumNestedStatement++;
-            // увеличиваем отступ тела блока перед входом в блок
+            // СѓРІРµР»РёС‡РёРІР°РµРј РѕС‚СЃС‚СѓРї С‚РµР»Р° Р±Р»РѕРєР° РїРµСЂРµРґ РІС…РѕРґРѕРј РІ Р±Р»РѕРє
             ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyIncrement();
             foreach (ILocalBlockVariableNode nodeVar in value.LocalVariables)
             {
@@ -833,7 +833,7 @@ namespace VisualPascalABCPlugins
             }
 
             ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(bodyBlock.ToString());
-            // уменьшаем отступ тела блока перед выходом из блока
+            // СѓРјРµРЅСЊС€Р°РµРј РѕС‚СЃС‚СѓРї С‚РµР»Р° Р±Р»РѕРєР° РїРµСЂРµРґ РІС‹С…РѕРґРѕРј РёР· Р±Р»РѕРєР°
             ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyDecrement();
             if (NumNestedStatement > 1)
                 ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(ISemanticNodeConverter.ConvertPABCNETNodeStatementsNested("statements_nested", value));
@@ -858,11 +858,11 @@ namespace VisualPascalABCPlugins
         {
             //value.Location.document.file_name
             StringBuilder bodyBlock = new StringBuilder("");
-            // увеличиваем отступ тела блока перед входом в блок
+            // СѓРІРµР»РёС‡РёРІР°РµРј РѕС‚СЃС‚СѓРї С‚РµР»Р° Р±Р»РѕРєР° РїРµСЂРµРґ РІС…РѕРґРѕРј РІ Р±Р»РѕРє
             ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyIncrement();
             //bodyBlock.Append(SemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBody);
 
-            // если находимся в главном namespace программы, добваляем main в body
+            // РµСЃР»Рё РЅР°С…РѕРґРёРјСЃСЏ РІ РіР»Р°РІРЅРѕРј namespace РїСЂРѕРіСЂР°РјРјС‹, РґРѕР±РІР°Р»СЏРµРј main РІ body
             if (mainNamespace == value)
             {
                 bodyBlock.Append(System.Environment.NewLine);
@@ -915,7 +915,7 @@ namespace VisualPascalABCPlugins
             }             
 
             ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(bodyBlock.ToString());
-            // уменьшаем отступ тела блока перед выходом из блока            
+            // СѓРјРµРЅСЊС€Р°РµРј РѕС‚СЃС‚СѓРї С‚РµР»Р° Р±Р»РѕРєР° РїРµСЂРµРґ РІС‹С…РѕРґРѕРј РёР· Р±Р»РѕРєР°            
             ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyDecrement();
             ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(ISemanticNodeConverter.ConvertPABCNETNodeNamespace("namespace", value));
             
@@ -936,14 +936,14 @@ namespace VisualPascalABCPlugins
             StringBuilder bodyBlock = new StringBuilder("");
             string currNamespace = "";
 
-            // обнуляем отступ тела блокаame
+            // РѕР±РЅСѓР»СЏРµРј РѕС‚СЃС‚СѓРї С‚РµР»Р° Р±Р»РѕРєР°ame
             ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyDecrement();                                                 
 
             if (value.main_function != null)
                 value.main_function.visit(this);
             mainFunction = ISemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBody + ISemanticNodeConverter.SourceTextBuilder.GetNodeFromStack();
                         
-            // перед входом в блок ув. отступ
+            // РїРµСЂРµРґ РІС…РѕРґРѕРј РІ Р±Р»РѕРє СѓРІ. РѕС‚СЃС‚СѓРї
             //SemanticNodeConverter.SourceTextBuilder.TextFormatter.Indents.BlockBodyIncrement();
             mainNamespace = value.main_function.comprehensive_namespace;
             string outdir = System.IO.Path.GetDirectoryName(mainNamespace.Location.document.file_name);
@@ -1091,7 +1091,7 @@ namespace VisualPascalABCPlugins
                 ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(ISemanticNodeConverter.ConvertPABCNETNodeVariable("var", value));            
             else
             {
-                // кладем на стек сгенерированное в новый текст значение переменной
+                // РєР»Р°РґРµРј РЅР° СЃС‚РµРє СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅРѕРµ РІ РЅРѕРІС‹Р№ С‚РµРєСЃС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№
                 value.inital_value.visit(this);   
                 ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(ISemanticNodeConverter.ConvertPABCNETNodeVariable("var_init", value));
             }
@@ -1434,7 +1434,7 @@ namespace VisualPascalABCPlugins
                 ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(ISemanticNodeConverter.ConvertPABCNETNodeVariable("var", value));
             else
             {
-                // кладем на стек сгенерированное в новый текст значение переменной
+                // РєР»Р°РґРµРј РЅР° СЃС‚РµРє СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅРѕРµ РІ РЅРѕРІС‹Р№ С‚РµРєСЃС‚ Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРјРµРЅРЅРѕР№
                 value.inital_value.visit(this);
                 ISemanticNodeConverter.SourceTextBuilder.AddNodeInToStack(ISemanticNodeConverter.ConvertPABCNETNodeVariable("var_init", value));
             }

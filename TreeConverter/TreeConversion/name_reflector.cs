@@ -1,6 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Отображение типов операторов узлов синтаксического дерева в имена методов.
+//РћС‚РѕР±СЂР°Р¶РµРЅРёРµ С‚РёРїРѕРІ РѕРїРµСЂР°С‚РѕСЂРѕРІ СѓР·Р»РѕРІ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° РІ РёРјРµРЅР° РјРµС‚РѕРґРѕРІ.
 using System;
 
 namespace PascalABCCompiler.TreeConverter

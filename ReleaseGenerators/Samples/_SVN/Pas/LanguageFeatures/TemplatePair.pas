@@ -1,6 +1,6 @@
-// Иллюстрация шаблонов классов в стиле C++ (template)
+// РР»Р»СЋСЃС‚СЂР°С†РёСЏ С€Р°Р±Р»РѕРЅРѕРІ РєР»Р°СЃСЃРѕРІ РІ СЃС‚РёР»Рµ C++ (template)
 type
-  /// Пара объектов
+  /// РџР°СЂР° РѕР±СЉРµРєС‚РѕРІ
   Pair<T, Q> = template class
   public
     First: T;
@@ -16,7 +16,7 @@ type
     end;
   end;
   
-  /// Пара объектов, каждый из которых можно складывать с объектом того же типа
+  /// РџР°СЂР° РѕР±СЉРµРєС‚РѕРІ, РєР°Р¶РґС‹Р№ РёР· РєРѕС‚РѕСЂС‹С… РјРѕР¶РЅРѕ СЃРєР»Р°РґС‹РІР°С‚СЊ СЃ РѕР±СЉРµРєС‚РѕРј С‚РѕРіРѕ Р¶Рµ С‚РёРїР°
   PairForPlus<T, Q> = template class(Pair<T,Q>)
   public
     class function operator+(Left,Right: PairForPlus<T,Q>): PairForPlus<T,Q>; 
@@ -32,8 +32,8 @@ var
   a,b: PairForPlus<integer,string>;
   
 begin
-  a := new PairForPlus<integer,string>(1, 'один+');
-  b := new PairForPlus<integer,string>(2, 'два');
+  a := new PairForPlus<integer,string>(1, 'РѕРґРёРЅ+');
+  b := new PairForPlus<integer,string>(2, 'РґРІР°');
   Writeln(r);
   Writeln(a + b);
 end.

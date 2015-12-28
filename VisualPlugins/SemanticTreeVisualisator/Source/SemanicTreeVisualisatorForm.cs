@@ -69,24 +69,24 @@ namespace VisualPascalABCPlugins
         }
         public void ShowTree()
         {
-            //Желательно строить в отдельном потоке а потом разом выводить. Незабуть про синхронизацию.
-            //Пока можно посто в лоб.
+            //Р–РµР»Р°С‚РµР»СЊРЅРѕ СЃС‚СЂРѕРёС‚СЊ РІ РѕС‚РґРµР»СЊРЅРѕРј РїРѕС‚РѕРєРµ Р° РїРѕС‚РѕРј СЂР°Р·РѕРј РІС‹РІРѕРґРёС‚СЊ. РќРµР·Р°Р±СѓС‚СЊ РїСЂРѕ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЋ.
+            //РџРѕРєР° РјРѕР¶РЅРѕ РїРѕСЃС‚Рѕ РІ Р»РѕР±.
             try
             {
                 PascalABCCompiler.SemanticTree.IProgramNode Root = VisualEnvironmentCompiler.StandartCompiler.SemanticTree;
                 treeView.Nodes.Clear();                
-                // связываем Visitor и treeView.Nodes
+                // СЃРІСЏР·С‹РІР°РµРј Visitor Рё treeView.Nodes
                 Visitor = new SematicTreeVisitor(treeView.Nodes);
                 Visitor.CreateMyDictionaries();
                 Visitor.setTreeView(treeView);
-                // собственно проходим по дереву от корня                
+                // СЃРѕР±СЃС‚РІРµРЅРЅРѕ РїСЂРѕС…РѕРґРёРј РїРѕ РґРµСЂРµРІСѓ РѕС‚ РєРѕСЂРЅСЏ                
                 Root.visit(Visitor);
                 //Visitor.visit(Root, treeView.Nodes);             
                 //Visitor.visit(Root);
-                // устанавливаем обратные связи
+                // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РѕР±СЂР°С‚РЅС‹Рµ СЃРІСЏР·Рё
                 Visitor.makeUpRows(treeView);                
                 
-                // по умолчанию выбранным является Nodes[0]
+                // РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РІС‹Р±СЂР°РЅРЅС‹Рј СЏРІР»СЏРµС‚СЃСЏ Nodes[0]
                 treeView.SelectedNode = treeView.Nodes[0];
                 //treeView.SelectedNode.BackColor = Color.Chocolate;
                 //treeView.Invalidate();

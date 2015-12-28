@@ -1,4 +1,4 @@
-// Наследование. Полиморфизм и виртуальные функции
+// РќР°СЃР»РµРґРѕРІР°РЅРёРµ. РџРѕР»РёРјРѕСЂС„РёР·Рј Рё РІРёСЂС‚СѓР°Р»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 type 
   Person = class
   private
@@ -9,10 +9,10 @@ type
     begin
       name := n; age := a;
     end;
-    procedure Print; virtual; // Виртуальная функция. Переопределяется в классах-потомках
+    procedure Print; virtual; // Р’РёСЂС‚СѓР°Р»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ. РџРµСЂРµРѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РІ РєР»Р°СЃСЃР°С…-РїРѕС‚РѕРјРєР°С…
     begin
       var s := GetType.ToString;
-      write('Тип: ',Copy(s,pos('.',s)+1,Length(s)):7,'   Имя: ',name,'   Возраст: ',age);
+      write('РўРёРї: ',Copy(s,pos('.',s)+1,Length(s)):7,'   РРјСЏ: ',name,'   Р’РѕР·СЂР°СЃС‚: ',age);
     end;
     procedure Println;
     begin
@@ -21,19 +21,19 @@ type
     end;
   end;
   
-  Pupil = class(Person) // Pupil - наследник Person
+  Pupil = class(Person) // Pupil - РЅР°СЃР»РµРґРЅРёРє Person
   private
     clas: integer;
   public
     constructor (n: string; a,c: integer);
     begin
-      inherited Create(n,a); // Вызов унаследованного конструктора
+      inherited Create(n,a); // Р’С‹Р·РѕРІ СѓРЅР°СЃР»РµРґРѕРІР°РЅРЅРѕРіРѕ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°
       clas := c;
     end;
     procedure Print; override;
     begin
       inherited Print;
-      write('   Класс: ',clas);
+      write('   РљР»Р°СЃСЃ: ',clas);
     end;
   end;
   
@@ -43,23 +43,23 @@ type
   public
     constructor (n: string; a: integer; p: string);
     begin
-      inherited Create(n,a); // Вызов унаследованного конструктора
+      inherited Create(n,a); // Р’С‹Р·РѕРІ СѓРЅР°СЃР»РµРґРѕРІР°РЅРЅРѕРіРѕ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°
       predm := p;
     end;
     procedure Print; override;
     begin
       inherited Print;
-      write('   Предмет: ',predm);
+      write('   РџСЂРµРґРјРµС‚: ',predm);
     end;
   end;
   
-var a: array of Person := new Person[4]; // Полиморфный контейнер - контейнер объектов базового класса. Может содержать объекты производных классов
+var a: array of Person := new Person[4]; // РџРѕР»РёРјРѕСЂС„РЅС‹Р№ РєРѕРЅС‚РµР№РЅРµСЂ - РєРѕРЅС‚РµР№РЅРµСЂ РѕР±СЉРµРєС‚РѕРІ Р±Р°Р·РѕРІРѕРіРѕ РєР»Р°СЃСЃР°. РњРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РѕР±СЉРµРєС‚С‹ РїСЂРѕРёР·РІРѕРґРЅС‹С… РєР»Р°СЃСЃРѕРІ
 
 begin
-  a[0] := new Pupil('Вова',11,5);
-  a[1] := new Teacher('Марья Ивановна',30,'Информатика');
-  a[2] := new Person('Иванов',65);
-  a[3] := new Pupil('Вася',12,6);
+  a[0] := new Pupil('Р’РѕРІР°',11,5);
+  a[1] := new Teacher('РњР°СЂСЊСЏ РРІР°РЅРѕРІРЅР°',30,'РРЅС„РѕСЂРјР°С‚РёРєР°');
+  a[2] := new Person('РРІР°РЅРѕРІ',65);
+  a[3] := new Pupil('Р’Р°СЃСЏ',12,6);
   
   for var i:=0 to a.Length-1 do
     a[i].Println;

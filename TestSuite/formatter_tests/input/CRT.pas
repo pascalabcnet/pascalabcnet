@@ -1,9 +1,9 @@
 /// <summary>
-/// Модуль для работы с консолью
+/// РњРѕРґСѓР»СЊ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РєРѕРЅСЃРѕР»СЊСЋ
 /// </summary>
 unit CRT;
 
-// Версия 0.3
+// Р’РµСЂСЃРёСЏ 0.3
 // Copyright (c) 2006-2007 DarkStar, SSM (parts)
 
 {$apptype console}
@@ -33,80 +33,80 @@ const
   White        = 15;
 
 /// <summary>
-/// Задает заголовок консольного окна
+/// Р—Р°РґР°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°
 /// </summary>
-/// <param name="s">Заголовок консольного окна</param>
+/// <param name="s">Р—Р°РіРѕР»РѕРІРѕРє РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°</param>
 procedure SetWindowTitle(s: string);
 /// <summary>
-/// Задает заголовок консольного окна
+/// Р—Р°РґР°РµС‚ Р·Р°РіРѕР»РѕРІРѕРє РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°
 /// </summary>
-/// <param name="s">Заголовок консольного окна</param>
+/// <param name="s">Р—Р°РіРѕР»РѕРІРѕРє РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°</param>
 procedure SetWindowCaption(s: string);
 /// <summary>
-/// Показывает курсор если он скрыт
+/// РџРѕРєР°Р·С‹РІР°РµС‚ РєСѓСЂСЃРѕСЂ РµСЃР»Рё РѕРЅ СЃРєСЂС‹С‚
 /// </summary>
 procedure ShowCursor;
 /// <summary>
-/// Скрывает курсор
+/// РЎРєСЂС‹РІР°РµС‚ РєСѓСЂСЃРѕСЂ
 /// </summary>
 procedure HideCursor;
 /// <summary>
-/// Считыват нажатую клавишу
+/// РЎС‡РёС‚С‹РІР°С‚ РЅР°Р¶Р°С‚СѓСЋ РєР»Р°РІРёС€Сѓ
 /// </summary>
 function ReadKey: char;
 /// <summary>
-/// Возвращает true если была нажата клавиша. Считать символ можно спомощью функции ReadKey
+/// Р’РѕР·РІСЂР°С‰Р°РµС‚ true РµСЃР»Рё Р±С‹Р»Р° РЅР°Р¶Р°С‚Р° РєР»Р°РІРёС€Р°. РЎС‡РёС‚Р°С‚СЊ СЃРёРјРІРѕР» РјРѕР¶РЅРѕ СЃРїРѕРјРѕС‰СЊСЋ С„СѓРЅРєС†РёРё ReadKey
 /// </summary>
 function KeyPressed: boolean;
 /// <summary>
-/// Возвращает высоту экрана
+/// Р’РѕР·РІСЂР°С‰Р°РµС‚ РІС‹СЃРѕС‚Сѓ СЌРєСЂР°РЅР°
 /// </summary>
 function WindowWidth: integer;
 /// <summary>
-/// Возвращает ширину экрана
+/// Р’РѕР·РІСЂР°С‰Р°РµС‚ С€РёСЂРёРЅСѓ СЌРєСЂР°РЅР°
 /// </summary>
 /// <returns></returns>
 function WindowHeight: integer;
 /// <summary>
-/// Возвращает Х-координату курсора
+/// Р’РѕР·РІСЂР°С‰Р°РµС‚ РҐ-РєРѕРѕСЂРґРёРЅР°С‚Сѓ РєСѓСЂСЃРѕСЂР°
 /// </summary>
 function WhereX: integer;
 /// <summary>
-/// Возвращает Y-координату курсора
+/// Р’РѕР·РІСЂР°С‰Р°РµС‚ Y-РєРѕРѕСЂРґРёРЅР°С‚Сѓ РєСѓСЂСЃРѕСЂР°
 /// </summary>
 function WhereY: integer;
 /// <summary>
-/// Преводит курсор в координаты (x,y)
+/// РџСЂРµРІРѕРґРёС‚ РєСѓСЂСЃРѕСЂ РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ (x,y)
 /// </summary>
 procedure GotoXY(x, y: integer);
 procedure Window(x, y, w, h: integer);
 /// <summary>
-/// Задает размеры консольного окна
+/// Р—Р°РґР°РµС‚ СЂР°Р·РјРµСЂС‹ РєРѕРЅСЃРѕР»СЊРЅРѕРіРѕ РѕРєРЅР°
 /// </summary>
-/// <param name="w">Ширина</param>
-/// <param name="h">Высота</param>
+/// <param name="w">РЁРёСЂРёРЅР°</param>
+/// <param name="h">Р’С‹СЃРѕС‚Р°</param>
 procedure SetWindowSize(w, h: integer);
 procedure SetBufferSize(w, h: integer);
 /// <summary>
-/// Очищает экран, заполняя его текущим цветом фона
+/// РћС‡РёС‰Р°РµС‚ СЌРєСЂР°РЅ, Р·Р°РїРѕР»РЅСЏСЏ РµРіРѕ С‚РµРєСѓС‰РёРј С†РІРµС‚РѕРј С„РѕРЅР°
 /// </summary>
 procedure ClrScr;
 /// <summary>
-/// Задает цвет фона выводимого текста
+/// Р—Р°РґР°РµС‚ С†РІРµС‚ С„РѕРЅР° РІС‹РІРѕРґРёРјРѕРіРѕ С‚РµРєСЃС‚Р°
 /// </summary>
-/// <param name="c">Цвет фона</param>
+/// <param name="c">Р¦РІРµС‚ С„РѕРЅР°</param>
 procedure TextBackground(c: integer);
 /// <summary>
-/// Задает цвет выводимого текста
+/// Р—Р°РґР°РµС‚ С†РІРµС‚ РІС‹РІРѕРґРёРјРѕРіРѕ С‚РµРєСЃС‚Р°
 /// </summary>
-/// <param name="c">Цвет текста</param>
+/// <param name="c">Р¦РІРµС‚ С‚РµРєСЃС‚Р°</param>
 procedure TextColor(c: integer);
 /// <summary>
-/// Очищает линию на которой установлен курсор
+/// РћС‡РёС‰Р°РµС‚ Р»РёРЅРёСЋ РЅР° РєРѕС‚РѕСЂРѕР№ СѓСЃС‚Р°РЅРѕРІР»РµРЅ РєСѓСЂСЃРѕСЂ
 /// </summary>
 procedure ClearLine;
 /// <summary>
-/// Делает паузу на ms миллисекунд
+/// Р”РµР»Р°РµС‚ РїР°СѓР·Сѓ РЅР° ms РјРёР»Р»РёСЃРµРєСѓРЅРґ
 /// </summary>
 procedure Delay(ms: integer);
 
@@ -151,7 +151,7 @@ begin
   Console.CursorVisible := False;
 end;
 
-function ReadKey: char;// TODO продумать это
+function ReadKey: char;// TODO РїСЂРѕРґСѓРјР°С‚СЊ СЌС‚Рѕ
 var
   KeyInfo: ConsoleKeyInfo;
 begin
@@ -203,7 +203,7 @@ end;
 
 procedure Window(x, y, w, h: integer);
 begin
-  writeln('Функция CRT.Window не реализована');
+  writeln('Р¤СѓРЅРєС†РёСЏ CRT.Window РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅР°');
   {Console.WindowLeft:=x;
   Console.WindowTop:=y;
   Console.WindowWidth:=w;
@@ -281,8 +281,8 @@ begin
   end
   else
   begin
-    Console.WriteLine('Программу с подключенным модулем CRT нельзя запускать по F9.');
-    Console.WriteLine('Запустите программу, используя Shift-F9');
+    Console.WriteLine('РџСЂРѕРіСЂР°РјРјСѓ СЃ РїРѕРґРєР»СЋС‡РµРЅРЅС‹Рј РјРѕРґСѓР»РµРј CRT РЅРµР»СЊР·СЏ Р·Р°РїСѓСЃРєР°С‚СЊ РїРѕ F9.');
+    Console.WriteLine('Р—Р°РїСѓСЃС‚РёС‚Рµ РїСЂРѕРіСЂР°РјРјСѓ, РёСЃРїРѕР»СЊР·СѓСЏ Shift-F9');
     Halt;
   end;
 end;

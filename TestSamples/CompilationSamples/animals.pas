@@ -46,10 +46,10 @@ begin
 end;
 
 begin
-  writeln('Загадайте животное');
+  writeln('Р—Р°РіР°РґР°Р№С‚Рµ Р¶РёРІРѕС‚РЅРѕРµ');
   assign(f, 'animals_data.txt');
   if not FileExists('animals_data.txt') then
-    root := new TNode('Собака')
+    root := new TNode('РЎРѕР±Р°РєР°')
   else
   begin
     reset(f);
@@ -68,15 +68,15 @@ begin
       p:=p.right
   end;
   
-  write('Это '+p.s+'? ');
+  write('Р­С‚Рѕ '+p.s+'? ');
   readln(x);
   if x=1 then
-    writeln('Я угадала!')
+    writeln('РЇ СѓРіР°РґР°Р»Р°!')
   else
   begin
-    write('Я проиграла. Что это за животное? ');
+    write('РЇ РїСЂРѕРёРіСЂР°Р»Р°. Р§С‚Рѕ СЌС‚Рѕ Р·Р° Р¶РёРІРѕС‚РЅРѕРµ? ');
     readln(s);
-    write('Введите вопрос, отличающий это животное от '+p.s+': ');
+    write('Р’РІРµРґРёС‚Рµ РІРѕРїСЂРѕСЃ, РѕС‚Р»РёС‡Р°СЋС‰РёР№ СЌС‚Рѕ Р¶РёРІРѕС‚РЅРѕРµ РѕС‚ '+p.s+': ');
     readln(q);
     p1 := new TNode(s);
     p2 := new TNode(p.s);

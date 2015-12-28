@@ -1,12 +1,12 @@
-// Игра "Спички"
+// РРіСЂР° "РЎРїРёС‡РєРё"
 const InitialCount=15;
 
 var
-  /// Текущее количество спичек
+  /// РўРµРєСѓС‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРїРёС‡РµРє
   Count: integer;
-  /// Количество спичек, которое берет игрок
+  /// РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРїРёС‡РµРє, РєРѕС‚РѕСЂРѕРµ Р±РµСЂРµС‚ РёРіСЂРѕРє
   Num: integer;
-  /// Номер текущего игрока
+  /// РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РёРіСЂРѕРєР°
   Player: integer;
 
 begin
@@ -18,12 +18,12 @@ begin
     begin
       var Correct: boolean;
       repeat
-        write('Ваш ход. На столе ',Count,' спичек. ');
-        write('Сколько спичек Вы берете? ');
+        write('Р’Р°С€ С…РѕРґ. РќР° СЃС‚РѕР»Рµ ',Count,' СЃРїРёС‡РµРє. ');
+        write('РЎРєРѕР»СЊРєРѕ СЃРїРёС‡РµРє Р’С‹ Р±РµСЂРµС‚Рµ? ');
         readln(Num);
         Correct := (Num>=1) and (Num<=3) and (Num<=Count);
         if not Correct then
-          writeln('Неверно! Повторите ввод!');
+          writeln('РќРµРІРµСЂРЅРѕ! РџРѕРІС‚РѕСЂРёС‚Рµ РІРІРѕРґ!');
       until Correct;
     end
     else
@@ -31,7 +31,7 @@ begin
       Num := Random(1,3);
       if Num>Count then 
         Num := Count;
-      writeln('Мой ход. Я взял ',Num,' спичек');
+      writeln('РњРѕР№ С…РѕРґ. РЇ РІР·СЏР» ',Num,' СЃРїРёС‡РµРє');
     end;
     Count -= Num;
     if Player=1 then 
@@ -40,6 +40,6 @@ begin
   until Count=0;
   
   if Player=1 then
-    writeln('Вы победили!')
-  else writeln('Вы проиграли!');
+    writeln('Р’С‹ РїРѕР±РµРґРёР»Рё!')
+  else writeln('Р’С‹ РїСЂРѕРёРіСЂР°Р»Рё!');
 end.

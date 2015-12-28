@@ -1,4 +1,4 @@
-// Передвижение графических объектов мышью
+// РџРµСЂРµРґРІРёР¶РµРЅРёРµ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ РјС‹С€СЊСЋ
 uses ABCObjects,GraphABC;
 
 var 
@@ -28,7 +28,7 @@ end;
 
 
 begin
-  Window.Title := 'Передвигайте мышью объекты';
+  Window.Title := 'РџРµСЂРµРґРІРёРіР°Р№С‚Рµ РјС‹С€СЊСЋ РѕР±СЉРµРєС‚С‹';
   for var i:=1 to 10 do
   begin
     var p := new PictureABC(Random(Window.Width-100),Random(Window.Height-100),'demo.bmp');

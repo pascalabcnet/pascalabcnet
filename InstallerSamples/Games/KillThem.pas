@@ -6,34 +6,34 @@ const
 var
   kLeftKey,kRightKey: boolean;
   kSpaceKey: integer;
-  /// Игрок
+  /// РРіСЂРѕРє
   Player: RectangleABC;
-  /// Таймер движения врагов
+  /// РўР°Р№РјРµСЂ РґРІРёР¶РµРЅРёСЏ РІСЂР°РіРѕРІ
   t: Timer;
-  /// Флаг конца игры
+  /// Р¤Р»Р°Рі РєРѕРЅС†Р° РёРіСЂС‹
   EndOfGame: boolean;
-  /// Количество неигровых объектов
+  /// РљРѕР»РёС‡РµСЃС‚РІРѕ РЅРµРёРіСЂРѕРІС‹С… РѕР±СЉРµРєС‚РѕРІ
   StaticObjectsCount: integer;
-  /// Счетчик выигрышей
+  /// РЎС‡РµС‚С‡РёРє РІС‹РёРіСЂС‹С€РµР№
   Wins: integer;
-  /// Счетчик проигрышей
+  /// РЎС‡РµС‚С‡РёРє РїСЂРѕРёРіСЂС‹С€РµР№
   Falls: integer;
-  /// Информационная строка
+  /// РРЅС„РѕСЂРјР°С†РёРѕРЅРЅР°СЏ СЃС‚СЂРѕРєР°
   InfoString: RectangleABC;
-  /// Сообщение в начале игры
+  /// РЎРѕРѕР±С‰РµРЅРёРµ РІ РЅР°С‡Р°Р»Рµ РёРіСЂС‹
   NewGame: RoundRectABC;
 
 type
   KeysType = (kLeft,kRight);
   
-  /// Класс пули
+  /// РљР»Р°СЃСЃ РїСѓР»Рё
   Pulya = class(CircleABC)
   public
     constructor Create(x,y: integer);
     procedure Move; override;
   end;
   
-  /// Класс врага
+  /// РљР»Р°СЃСЃ РІСЂР°РіР°
   Enemy = class(RectangleABC)
   public
     constructor Create(x,y,w: integer);
@@ -53,7 +53,7 @@ begin
   if Top<0 then
     Visible := False;
   for var j:=StaticObjectsCount to Objects.Count-1 do
-    // При столкновении пуля и объект становятся невидимыми
+    // РџСЂРё СЃС‚РѕР»РєРЅРѕРІРµРЅРёРё РїСѓР»СЏ Рё РѕР±СЉРµРєС‚ СЃС‚Р°РЅРѕРІСЏС‚СЃСЏ РЅРµРІРёРґРёРјС‹РјРё
     if (Objects[j]<>Self) and Intersect(Objects[j]) then
     begin
       Objects[j].Visible := False;
@@ -85,7 +85,7 @@ begin
     EndOfGame := True;
 end;
 
-/// Количество врагов
+/// РљРѕР»РёС‡РµСЃС‚РІРѕ РІСЂР°РіРѕРІ
 function NumberOfEnemies: integer;
 begin
   Result := 0;
@@ -94,7 +94,7 @@ begin
       Result += 1;
 end;
 
-/// Создание игрока и врагов
+/// РЎРѕР·РґР°РЅРёРµ РёРіСЂРѕРєР° Рё РІСЂР°РіРѕРІ
 procedure CreateObjects;
 begin
   Player := new RectangleABC(280,WindowHeight-30,100,20,clPlayer);
@@ -106,21 +106,21 @@ begin
   end;
 end;
 
-/// Разрушение игрока и врагов
+/// Р Р°Р·СЂСѓС€РµРЅРёРµ РёРіСЂРѕРєР° Рё РІСЂР°РіРѕРІ
 procedure DestroyObjects;
 begin
   for var i:=Objects.Count-1 downto StaticObjectsCount do
     Objects[i].Destroy;
 end;
 
-/// Перемещение врагов
+/// РџРµСЂРµРјРµС‰РµРЅРёРµ РІСЂР°РіРѕРІ
 procedure MoveObjects;
 begin
   for var i:=StaticObjectsCount+1 to Objects.Count-1 do
     Objects[i].Move;
 end;
 
-/// Удаление уничтоженных объектов
+/// РЈРґР°Р»РµРЅРёРµ СѓРЅРёС‡С‚РѕР¶РµРЅРЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 procedure DestroyKilledObjects;
 begin
   for var i:=ObjectsCount-1 downto StaticObjectsCount+1 do
@@ -128,7 +128,7 @@ begin
       Objects[i].Destroy;
 end;
 
-/// Обработчик нажатия клавиши
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РЅР°Р¶Р°С‚РёСЏ РєР»Р°РІРёС€Рё
 procedure KeyDown(Key: integer);
 begin
   case Key of
@@ -138,7 +138,7 @@ vk_Space: if kSpaceKey=2 then kSpaceKey := 1;
   end;
 end;
 
-/// Обработчик отжатия клавиши
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РѕС‚Р¶Р°С‚РёСЏ РєР»Р°РІРёС€Рё
 procedure KeyUp(Key: integer);
 begin
   case Key of
@@ -148,16 +148,16 @@ vk_Space: kSpaceKey := 2;
   end;
 end;
 
-/// Изменение информационной строки
+/// РР·РјРµРЅРµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅРѕР№ СЃС‚СЂРѕРєРё
 procedure ChangeInfoString;
 begin
-  InfoString.Text := 'Врагов: '+IntToStr(NumberOfEnemies)+'      Побед: '+IntToStr(Wins)+'      Поражений: '+IntToStr(Falls);
+  InfoString.Text := 'Р’СЂР°РіРѕРІ: '+IntToStr(NumberOfEnemies)+'      РџРѕР±РµРґ: '+IntToStr(Wins)+'      РџРѕСЂР°Р¶РµРЅРёР№: '+IntToStr(Falls);
 end;
 
-/// Обработчик нажатия символьной клавиши
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РЅР°Р¶Р°С‚РёСЏ СЃРёРјРІРѕР»СЊРЅРѕР№ РєР»Р°РІРёС€Рё
 procedure KeyPress(Key: char);
 begin
-  if (Key in ['G','П','g','п']) and EndOfGame then
+  if (Key in ['G','Рџ','g','Рї']) and EndOfGame then
   begin
     NewGame.Visible := False;
     EndOfGame := False;
@@ -169,14 +169,14 @@ begin
   end;
 end;
 
-/// Обработчик отжатия мыши
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РѕС‚Р¶Р°С‚РёСЏ РјС‹С€Рё
 procedure MouseUp(x,y,mb: integer);
 begin
   if NewGame.PTInside(x,y) then
     KeyPress('G');
 end;
 
-/// Обработчик таймера
+/// РћР±СЂР°Р±РѕС‚С‡РёРє С‚Р°Р№РјРµСЂР°
 procedure TimerProc;
 begin
   if kLeftKey and (Player.Left>0) then
@@ -193,7 +193,7 @@ begin
   RedrawObjects;
   ChangeInfoString;
   var n := NumberOfEnemies;
-  // Страховка от случая, когда процедура таймера выполняется одновременно в нескольких потоках
+  // РЎС‚СЂР°С…РѕРІРєР° РѕС‚ СЃР»СѓС‡Р°СЏ, РєРѕРіРґР° РїСЂРѕС†РµРґСѓСЂР° С‚Р°Р№РјРµСЂР° РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ РІ РЅРµСЃРєРѕР»СЊРєРёС… РїРѕС‚РѕРєР°С…
   if n=0 then
     EndOfGame := True;
   if EndOfGame then
@@ -211,7 +211,7 @@ begin
 end;
 
 begin
-  Window.Title := 'Стрелялка';
+  Window.Title := 'РЎС‚СЂРµР»СЏР»РєР°';
   Window.IsFixedSize := True;
   ClearWindow(clBlack);
   LockDrawingObjects;
@@ -224,7 +224,7 @@ begin
   var zz := 100;
   NewGame := new RoundRectABC(zz,200,400,200,30,Color.Violet);
   NewGame.Center := Window.Center;
-  NewGame.Text := 'G - Новая игра';
+  NewGame.Text := 'G - РќРѕРІР°СЏ РёРіСЂР°';
   StaticObjectsCount := Objects.Count;
   ChangeInfoString;
   RedrawObjects;

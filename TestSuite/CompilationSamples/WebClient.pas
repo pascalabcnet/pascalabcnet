@@ -1,4 +1,4 @@
-// Использование WebClient
+// РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ WebClient
 uses System.Net;
 
 const address = 'www.yandex.ru';

@@ -1,4 +1,4 @@
-// οΰδΰες
+// ΠΏΠ°Π΄Π°ΠµΡ‚
 begin
   writeln(word.MaxValue);
   readln;  

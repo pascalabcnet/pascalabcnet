@@ -1,4 +1,4 @@
-// Быстрая сортировка Ч. Хоара
+// Р‘С‹СЃС‚СЂР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° Р§. РҐРѕР°СЂР°
 const Sz=100;
 
 type IArr=array [1..Sz] of integer;
@@ -35,8 +35,8 @@ procedure QuickSort(var A: IArr; n: integer);
     i:=l; j:=r;
     x:=A[(l+r) div 2];
     repeat
-      while A[i]<x do Inc(i); // ищем первый элемент >= x
-      while A[j]>x do Dec(j); // ищем последний элемент <= x
+      while A[i]<x do Inc(i); // РёС‰РµРј РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ >= x
+      while A[j]>x do Dec(j); // РёС‰РµРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ <= x
       if i<=j then
       begin
         swap(A[i],A[j]);
@@ -59,9 +59,9 @@ var A: IArr;
 begin
   cls;
   FillRandom(A,n);
-  writeln('До сортировки: ');
+  writeln('Р”Рѕ СЃРѕСЂС‚РёСЂРѕРІРєРё: ');
   Print(A,n);
-  writeln('После сортировки: ');
+  writeln('РџРѕСЃР»Рµ СЃРѕСЂС‚РёСЂРѕРІРєРё: ');
   QuickSort(A,n);
   Print(A,n);
 end.

@@ -1,4 +1,4 @@
-// Сортировка выбором
+// РЎРѕСЂС‚РёСЂРѕРІРєР° РІС‹Р±РѕСЂРѕРј
 uses ArrayLib;
 
 procedure SortByChoice(a: array of real);
@@ -29,9 +29,9 @@ var a: array of real;
 
 begin
   a := CreateRandomArr(20);
-  writeln('Содержимое массива: ');
+  writeln('РЎРѕРґРµСЂР¶РёРјРѕРµ РјР°СЃСЃРёРІР°: ');
   WriteArray(a);
   SortByChoice(a);
-  writeln('После сортировки выбором: ');
+  writeln('РџРѕСЃР»Рµ СЃРѕСЂС‚РёСЂРѕРІРєРё РІС‹Р±РѕСЂРѕРј: ');
   WriteArray(a);
 end.

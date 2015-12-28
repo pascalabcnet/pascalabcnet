@@ -1,16 +1,16 @@
-// Игра в 15
+// РРіСЂР° РІ 15
 uses GraphABC,ABCObjects,ABCButtons;
 
 const
-/// размер поля
+/// СЂР°Р·РјРµСЂ РїРѕР»СЏ
   n = 4;
-/// размер фишки
+/// СЂР°Р·РјРµСЂ С„РёС€РєРё
   sz = 100;
-/// зазор между фишками
+/// Р·Р°Р·РѕСЂ РјРµР¶РґСѓ С„РёС€РєР°РјРё
   zz = 10;
-/// отступ от левого и правого краев
+/// РѕС‚СЃС‚СѓРї РѕС‚ Р»РµРІРѕРіРѕ Рё РїСЂР°РІРѕРіРѕ РєСЂР°РµРІ
   x0 = 20;
-/// отступ от верхнего и нижнего краев
+/// РѕС‚СЃС‚СѓРї РѕС‚ РІРµСЂС…РЅРµРіРѕ Рё РЅРёР¶РЅРµРіРѕ РєСЂР°РµРІ
   y0 = 20;
 
 var
@@ -22,9 +22,9 @@ var
 
   EmptyCellX,EmptyCellY: integer;
   MovesCount: integer;
-  EndOfGame: boolean;  // True если все фишки стоят на своих местах
+  EndOfGame: boolean;  // True РµСЃР»Рё РІСЃРµ С„РёС€РєРё СЃС‚РѕСЏС‚ РЅР° СЃРІРѕРёС… РјРµСЃС‚Р°С…
 
-// Поменять местами две фишки
+// РџРѕРјРµРЅСЏС‚СЊ РјРµСЃС‚Р°РјРё РґРІРµ С„РёС€РєРё
 procedure Swap(var p,p1: SquareABC);
 begin
   PABCSystem.Swap(p,p1);
@@ -36,20 +36,20 @@ begin
   p1.Top := i;
 end;
 
-// Определить, являются ли клетки соседями
+// РћРїСЂРµРґРµР»РёС‚СЊ, СЏРІР»СЏСЋС‚СЃСЏ Р»Рё РєР»РµС‚РєРё СЃРѕСЃРµРґСЏРјРё
 function Sosedi(x1,y1,x2,y2: integer): boolean;
 begin
   Result := (abs(x1-x2)=1) and (y1=y2) or (abs(y1-y2)=1) and (x1=x2)
 end;
 
-// Заполнить вспомогательный массив цифр
+// Р—Р°РїРѕР»РЅРёС‚СЊ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РјР°СЃСЃРёРІ С†РёС„СЂ
 procedure FillDigitsArr;
 begin
   for var i:=1 to n*n-1 do
     digits[i] := i;
 end;
 
-// Перемешать вспомогательный массив цифр. Количество обменов должно быть четным
+// РџРµСЂРµРјРµС€Р°С‚СЊ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РјР°СЃСЃРёРІ С†РёС„СЂ. РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±РјРµРЅРѕРІ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡РµС‚РЅС‹Рј
 procedure MeshDigitsArr;
 var x: integer;
 begin
@@ -61,13 +61,13 @@ begin
     Swap(digits[i],digits[x]);
   end;
   if n mod 2=0 then
-    Swap(digits[1],digits[2]); // количество обменов должно быть четным
+    Swap(digits[1],digits[2]); // РєРѕР»РёС‡РµСЃС‚РІРѕ РѕР±РјРµРЅРѕРІ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С‡РµС‚РЅС‹Рј
 end;
 
-// Заполнить двумерный массив фишек. Вместо пустой ячейки - белая фишка с числом 0
+// Р—Р°РїРѕР»РЅРёС‚СЊ РґРІСѓРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ С„РёС€РµРє. Р’РјРµСЃС‚Рѕ РїСѓСЃС‚РѕР№ СЏС‡РµР№РєРё - Р±РµР»Р°СЏ С„РёС€РєР° СЃ С‡РёСЃР»РѕРј 0
 procedure Fill15ByDigitsArr;
 begin
-  Swap(p[EmptyCellY,EmptyCellX],p[n,n]); // Переместить пустую фишку в правый нижний угол
+  Swap(p[EmptyCellY,EmptyCellX],p[n,n]); // РџРµСЂРµРјРµСЃС‚РёС‚СЊ РїСѓСЃС‚СѓСЋ С„РёС€РєСѓ РІ РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
   EmptyCellX := n;
   EmptyCellY := n;
   var i := 1;
@@ -80,18 +80,18 @@ begin
   end;
 end;
 
-// Перемешать массив фишек
+// РџРµСЂРµРјРµС€Р°С‚СЊ РјР°СЃСЃРёРІ С„РёС€РµРє
 procedure Mesh15;
 begin
   MeshDigitsArr;
   Fill15ByDigitsArr;
   MovesCount := 0;
   EndOfGame := False;
-  StatusRect.Text := 'Количество ходов: '+IntToStr(MovesCount);
+  StatusRect.Text := 'РљРѕР»РёС‡РµСЃС‚РІРѕ С…РѕРґРѕРІ: '+IntToStr(MovesCount);
   StatusRect.Color := RGB(200,200,255);
 end;
 
-// Создать массив фишек
+// РЎРѕР·РґР°С‚СЊ РјР°СЃСЃРёРІ С„РёС€РµРє
 procedure Create15;
 begin
   EmptyCellX := n;
@@ -111,7 +111,7 @@ begin
   Fill15ByDigitsArr;
 end;
 
-// Проверить, все ли фишки стоят на своих местах
+// РџСЂРѕРІРµСЂРёС‚СЊ, РІСЃРµ Р»Рё С„РёС€РєРё СЃС‚РѕСЏС‚ РЅР° СЃРІРѕРёС… РјРµСЃС‚Р°С…
 function IsSolution: boolean;
 var x,y,i: integer;
 begin
@@ -132,24 +132,24 @@ end;
 
 procedure MouseDown(x,y,mb: integer);
 begin
-  if EndOfGame then // Если все фишки на своих местах, то не реагировать на мышь и ждать нажатия кнопки "Перемешать"
+  if EndOfGame then // Р•СЃР»Рё РІСЃРµ С„РёС€РєРё РЅР° СЃРІРѕРёС… РјРµСЃС‚Р°С…, С‚Рѕ РЅРµ СЂРµР°РіРёСЂРѕРІР°С‚СЊ РЅР° РјС‹С€СЊ Рё Р¶РґР°С‚СЊ РЅР°Р¶Р°С‚РёСЏ РєРЅРѕРїРєРё "РџРµСЂРµРјРµС€Р°С‚СЊ"
     exit;
-  if ObjectUnderPoint(x,y)=nil then // Eсли мы щелкнули не на объекте, то не реагировать на мышь
+  if ObjectUnderPoint(x,y)=nil then // EСЃР»Рё РјС‹ С‰РµР»РєРЅСѓР»Рё РЅРµ РЅР° РѕР±СЉРµРєС‚Рµ, С‚Рѕ РЅРµ СЂРµР°РіРёСЂРѕРІР°С‚СЊ РЅР° РјС‹С€СЊ
     exit;
-  var fx := (x-x0) div (sz+zz) + 1; // Вычислить координаты на доске для ячейки, на которой мы щелкнули мышью
+  var fx := (x-x0) div (sz+zz) + 1; // Р’С‹С‡РёСЃР»РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РЅР° РґРѕСЃРєРµ РґР»СЏ СЏС‡РµР№РєРё, РЅР° РєРѕС‚РѕСЂРѕР№ РјС‹ С‰РµР»РєРЅСѓР»Рё РјС‹С€СЊСЋ
   var fy := (y-y0) div (sz+zz) + 1;
   if (fx>n) or (fy>n) then
     exit;
-  if Sosedi(fx,fy,EmptyCellX,EmptyCellY) then // Если ячейка соседствует с пустой, то поменять их местами
+  if Sosedi(fx,fy,EmptyCellX,EmptyCellY) then // Р•СЃР»Рё СЏС‡РµР№РєР° СЃРѕСЃРµРґСЃС‚РІСѓРµС‚ СЃ РїСѓСЃС‚РѕР№, С‚Рѕ РїРѕРјРµРЅСЏС‚СЊ РёС… РјРµСЃС‚Р°РјРё
   begin
     Swap(p[EmptyCellY,EmptyCellX],p[fy,fx]);
     EmptyCellX := fx;
     EmptyCellY := fy;
     Inc(MovesCount);
-    StatusRect.Text := 'Количество ходов: ' + IntToStr(MovesCount);
+    StatusRect.Text := 'РљРѕР»РёС‡РµСЃС‚РІРѕ С…РѕРґРѕРІ: ' + IntToStr(MovesCount);
     if IsSolution then
     begin
-      StatusRect.Text := 'Победа! Сделано ходов: ' + IntToStr(MovesCount);
+      StatusRect.Text := 'РџРѕР±РµРґР°! РЎРґРµР»Р°РЅРѕ С…РѕРґРѕРІ: ' + IntToStr(MovesCount);
       StatusRect.Color := RGB(255,200,200);
       EndOfGame := True;
     end
@@ -158,18 +158,18 @@ end;
 
 begin
   SetSmoothingOff;
-  Window.Title := 'Игра в 15';
+  Window.Title := 'РРіСЂР° РІ 15';
   Window.IsFixedSize := True;
   SetWindowSize(2*x0+(sz+zz)*n-zz,2*y0+(sz+zz)*n-zz+90);
   
   EndOfGame := False;
   Create15;
 
-  MeshButton := ButtonABC.Create((WindowWidth-200) div 2,2*y0+(sz+zz)*n-zz,200,'Перемешать',clLightGray);
+  MeshButton := ButtonABC.Create((WindowWidth-200) div 2,2*y0+(sz+zz)*n-zz,200,'РџРµСЂРµРјРµС€Р°С‚СЊ',clLightGray);
   MeshButton.OnClick := Mesh15;
   StatusRect := new RectangleABC(0,WindowHeight-40,WindowWidth,40,RGB(200,200,255));
   StatusRect.TextVisible := True;
-  StatusRect.Text := 'Количество ходов: '+IntToStr(MovesCount);
+  StatusRect.Text := 'РљРѕР»РёС‡РµСЃС‚РІРѕ С…РѕРґРѕРІ: '+IntToStr(MovesCount);
   StatusRect.BorderWidth := 2;
   StatusRect.BorderColor := RGB(80,80,255);
 

@@ -1,17 +1,17 @@
-// Строки string, string[n], shortstring
+// РЎС‚СЂРѕРєРё string, string[n], shortstring
 var 
-  s: string; // память, занимаемая s, зависит от ее длины
-  s10: string[10]; // память под ss фиксирована
+  s: string; // РїР°РјСЏС‚СЊ, Р·Р°РЅРёРјР°РµРјР°СЏ s, Р·Р°РІРёСЃРёС‚ РѕС‚ РµРµ РґР»РёРЅС‹
+  s10: string[10]; // РїР°РјСЏС‚СЊ РїРѕРґ ss С„РёРєСЃРёСЂРѕРІР°РЅР°
   ss: shortstring := s;
   f: file of string[10];
-  // f: file of string; - ошибка
+  // f: file of string; - РѕС€РёР±РєР°
 
 begin
   s := '12345678901234567890';
-  s10 := s; // обрезание
+  s10 := s; // РѕР±СЂРµР·Р°РЅРёРµ
   writeln(s10);
   s += s; s += s;
   s += s; s += s;
   writeln(s);
-  writeln('Длина строки = ',s.Length);
+  writeln('Р”Р»РёРЅР° СЃС‚СЂРѕРєРё = ',s.Length);
 end.

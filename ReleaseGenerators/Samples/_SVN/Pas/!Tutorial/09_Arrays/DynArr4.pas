@@ -1,13 +1,13 @@
-// Передача динамического массива в качестве параметра
+// РџРµСЂРµРґР°С‡Р° РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° РІ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂР°
 
-procedure WriteArr(a: array of integer); // var указывать не нужно, т.к. динамический массив является ссылкой на реальный объект
+procedure WriteArr(a: array of integer); // var СѓРєР°Р·С‹РІР°С‚СЊ РЅРµ РЅСѓР¶РЅРѕ, С‚.Рє. РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ СЏРІР»СЏРµС‚СЃСЏ СЃСЃС‹Р»РєРѕР№ РЅР° СЂРµР°Р»СЊРЅС‹Р№ РѕР±СЉРµРєС‚
 begin
   foreach x: integer in a do
     write(x,' ');
   writeln;
 end;
 
-procedure CreateRandomArr(var a: array of integer; n: integer); // var указывать нужно, т.к. в процедуре создается новый динамический массив 
+procedure CreateRandomArr(var a: array of integer; n: integer); // var СѓРєР°Р·С‹РІР°С‚СЊ РЅСѓР¶РЅРѕ, С‚.Рє. РІ РїСЂРѕС†РµРґСѓСЂРµ СЃРѕР·РґР°РµС‚СЃСЏ РЅРѕРІС‹Р№ РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ 
 begin
   a := new integer[n];
   for var i:=0 to a.Length-1 do
@@ -17,7 +17,7 @@ end;
 var a: array of integer;
 
 begin
-  writeln('Случайный целый массив: ');
+  writeln('РЎР»СѓС‡Р°Р№РЅС‹Р№ С†РµР»С‹Р№ РјР°СЃСЃРёРІ: ');
   CreateRandomArr(a,30);
   WriteArr(a);
 end.

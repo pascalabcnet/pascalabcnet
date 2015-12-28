@@ -76,7 +76,7 @@ namespace PascalABCCompiler.SemanticTreeConverters
                 }
                 catch (Exception)
                 {
-                    //если dll не нетовская
+                    //РµСЃР»Рё dll РЅРµ РЅРµС‚РѕРІСЃРєР°СЏ
                 }
             }
 

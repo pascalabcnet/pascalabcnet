@@ -1,17 +1,17 @@
-// Использование комплексных чисел
+// РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РєРѕРјРїР»РµРєСЃРЅС‹С… С‡РёСЃРµР»
 {$reference 'System.Numerics.dll'}
 uses System.Numerics;
 
 begin
   var a := new Complex(0,1);
-  writeln('Мнимая единица: ', a);
+  writeln('РњРЅРёРјР°СЏ РµРґРёРЅРёС†Р°: ', a);
   
   var b := Complex.Sqrt(a);
-  writeln('Главный корень из мнимой единицы: ', b);
+  writeln('Р“Р»Р°РІРЅС‹Р№ РєРѕСЂРµРЅСЊ РёР· РјРЅРёРјРѕР№ РµРґРёРЅРёС†С‹: ', b);
   
   var c := a*a;
-  writeln('Квадрат мнимой единицы: ', c);
+  writeln('РљРІР°РґСЂР°С‚ РјРЅРёРјРѕР№ РµРґРёРЅРёС†С‹: ', c);
   
   var d := new Complex(1,2);
-  writelnFormat('Модуль {0} равен {1}', d,d.Magnitude);
+  writelnFormat('РњРѕРґСѓР»СЊ {0} СЂР°РІРµРЅ {1}', d,d.Magnitude);
 end.

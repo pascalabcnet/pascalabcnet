@@ -1,5 +1,5 @@
 begin
-  writeln('Запущен...1');
+  writeln('Р—Р°РїСѓС‰РµРЅ...1');
   while true do begin
     write('1 ');
     sleep(200);

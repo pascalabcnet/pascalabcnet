@@ -134,7 +134,7 @@ begin
   SetWindowSize(1024,768);
   Window.IsFixedSize := True;
   Window.CenterOnScreen;
-  Window.Title := 'Стандартные цвета (нажмите Пробел для изменения фонового цвета)';
+  Window.Title := 'РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С†РІРµС‚Р° (РЅР°Р¶РјРёС‚Рµ РџСЂРѕР±РµР» РґР»СЏ РёР·РјРµРЅРµРЅРёСЏ С„РѕРЅРѕРІРѕРіРѕ С†РІРµС‚Р°)';
   CreateStandardColors(CurrentBackColor);
   InfoString := new RectangleABC(10,Window.Height-30,Window.Width-20,25);
   OnMouseMove := MouseMove;

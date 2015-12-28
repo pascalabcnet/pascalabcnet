@@ -1,4 +1,4 @@
-// Модуль ABCObjects. Изменение свойств объекта
+// РњРѕРґСѓР»СЊ ABCObjects. РР·РјРµРЅРµРЅРёРµ СЃРІРѕР№СЃС‚РІ РѕР±СЉРµРєС‚Р°
 uses ABCObjects,GraphABC;
 
 const delay = 300;

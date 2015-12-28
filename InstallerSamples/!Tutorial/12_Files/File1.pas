@@ -1,5 +1,5 @@
-// Типизированные файлы
-// Запись в файл 10 чисел, при следующем запуске - чтение этих чисел и удаление файла
+// РўРёРїРёР·РёСЂРѕРІР°РЅРЅС‹Рµ С„Р°Р№Р»С‹
+// Р—Р°РїРёСЃСЊ РІ С„Р°Р№Р» 10 С‡РёСЃРµР», РїСЂРё СЃР»РµРґСѓСЋС‰РµРј Р·Р°РїСѓСЃРєРµ - С‡С‚РµРЅРёРµ СЌС‚РёС… С‡РёСЃРµР» Рё СѓРґР°Р»РµРЅРёРµ С„Р°Р№Р»Р°
 const filename = 'a.dat';
 
 var f: file of integer;
@@ -9,7 +9,7 @@ begin
   begin
     assign(f,filename);
     rewrite(f);
-    writeln('Запись в файл ',filename);
+    writeln('Р—Р°РїРёСЃСЊ РІ С„Р°Р№Р» ',filename);
     for var i:=1 to 10 do
     begin
       var x := random(100); 
@@ -22,7 +22,7 @@ begin
   begin
     assign(f,filename);
     reset(f);
-    writeln('Чтение из файла ',filename);
+    writeln('Р§С‚РµРЅРёРµ РёР· С„Р°Р№Р»Р° ',filename);
     for var i:=1 to 10 do
     begin
       var x: integer;

@@ -4,7 +4,7 @@ var
   v: integer;
   
 begin
-  write('Введите целое число: ');
+  write('Р’РІРµРґРёС‚Рµ С†РµР»РѕРµ С‡РёСЃР»Рѕ: ');
   readln(v);
   WriteMemoryToScreen(@v, sizeof(integer));
   readln;

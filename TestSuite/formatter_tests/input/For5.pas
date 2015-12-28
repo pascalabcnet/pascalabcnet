@@ -1,13 +1,13 @@
-// Цикл for. a в степени n
+// Г·РёРєР» for. a РІ СЃС‚РµРїРµРЅРё n
 var 
   a: real;
   n: integer;
 
 begin
-  write('Введите a,n: ');
+  write('В¬РІРµРґРёС‚Рµ a,n: ');
   readln(a,n);
   var p: real := 1;
   for var i:=1 to n do
-    p := p * a; // можно p *= a
-  writelnFormat('{0} в степени {1} = {2}',a,n,p);  
+    p := p * a; // РјРѕР¶РЅРѕ p *= a
+  writelnFormat('{0} РІ СЃС‚РµРїРµРЅРё {1} = {2}',a,n,p);  
 end.

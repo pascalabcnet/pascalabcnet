@@ -1,4 +1,4 @@
-// Перечислимый тип
+// С•РµСЂРµС‡РёСЃР»РёРјС‹Р№ С‚РёРї
 uses System;
 
 type Months = (January,February,March,April,May,June,July,August,September,October,November,December);
@@ -6,14 +6,14 @@ type Months = (January,February,March,April,May,June,July,August,September,Octob
 begin
   var t: &Type := typeof(Months);
   var names: array of string := Enum.GetNames(t);
-  writeln('Цикл по именам перечислимого типа');
+  writeln('Г·РёРєР» РїРѕ РёРјРµРЅР°Рј РїРµСЂРµС‡РёСЃР»РёРјРѕРіРѕ С‚РёРїР°');
   foreach name: string in names do
     write(name,' ');
   writeln; writeln;
   
   var v: &Array := Enum.GetValues(t);
   var mm: array of Months := new Months[v.Length];
-  writeln('Цикл по массиву всех значений перечислимого типа');
+  writeln('Г·РёРєР» РїРѕ РјР°СЃСЃРёРІСѓ РІСЃРµС… Р·РЅР°С‡РµРЅРёР№ РїРµСЂРµС‡РёСЃР»РёРјРѕРіРѕ С‚РёРїР°');
   for var i:=0 to v.Length-1 do
     mm[i] := Months(v.GetValue(i));
      

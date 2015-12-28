@@ -682,7 +682,7 @@ int NextState() {
         case eofNum:
             switch (currentStart) {
                 case 47:
-PT.AddError("Комментарий не закрыт", yylloc);
+PT.AddError("РљРѕРјРјРµРЅС‚Р°СЂРёР№ РЅРµ Р·Р°РєСЂС‹С‚", yylloc);
                     break;
             }
             if (yywrap())
@@ -767,7 +767,7 @@ int tryParseInt;
 		yylval.lVal = tryParseLong;
 		return (int)Tokens.LONGINTNUM; 
 	}
-	PT.AddError("Слишком длинное целое", yylloc);
+	PT.AddError("РЎР»РёС€РєРѕРј РґР»РёРЅРЅРѕРµ С†РµР»РѕРµ", yylloc);
             break;
         case 23:
 yylval.sVal = PT.GetStringContent(yytext);
@@ -779,7 +779,7 @@ try{
 		return (int)Tokens.CHAR_CONST;
 	}
 	catch (System.ArgumentException){
-		PT.AddError("Некорректный код символа", yylloc);
+		PT.AddError("РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ РєРѕРґ СЃРёРјРІРѕР»Р°", yylloc);
 	}
             break;
         case 25:
@@ -790,7 +790,7 @@ double tryParseDouble;
 		yylval.rVal = tryParseDouble;
 		return (int)Tokens.REALNUM; 
 	}
-	PT.AddError("Слишком длинное вещественное", yylloc);
+	PT.AddError("РЎР»РёС€РєРѕРј РґР»РёРЅРЅРѕРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ", yylloc);
             break;
         case 26:
 var _yytext = yytext.Substring(0, yytext.Length - 1); 
@@ -804,7 +804,7 @@ var _yytext = yytext.Substring(0, yytext.Length - 1);
 		yylval.lVal = tryParseHexLong;
 		return (int)Tokens.LONGINTNUM; 
 	}
-	PT.AddError("Слишком длинное шестнадцатеричное целое", yylloc);
+	PT.AddError("РЎР»РёС€РєРѕРј РґР»РёРЅРЅРѕРµ С€РµСЃС‚РЅР°РґС†Р°С‚РµСЂРёС‡РЅРѕРµ С†РµР»РѕРµ", yylloc);
             break;
         case 28:
 return (int)Tokens.DOUBLEPOINT;
@@ -933,7 +933,7 @@ static int mlCommentCnt = 0;
     PT.AddError(errorMsg,yylloc);
   }
 
-// Статический класс, определяющий ключевые слова языка
+// РЎС‚Р°С‚РёС‡РµСЃРєРёР№ РєР»Р°СЃСЃ, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РєР»СЋС‡РµРІС‹Рµ СЃР»РѕРІР° СЏР·С‹РєР°
 public static class Keywords
 {
 	private static Dictionary<string, int> keywords = new Dictionary<string, int>();

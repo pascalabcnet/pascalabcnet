@@ -1,16 +1,16 @@
-// Цикл for. Шаг цикла 2
+// Р¦РёРєР» for. РЁР°Рі С†РёРєР»Р° 2
 const n = 25;
 
 var i: integer;
 
 begin
-  writeln('Четные числа от 1 до ',2*n);
+  writeln('Р§РµС‚РЅС‹Рµ С‡РёСЃР»Р° РѕС‚ 1 РґРѕ ',2*n);
   for i:=1 to n do
     write(2*i,' ');
   writeln;
   writeln;
 
-  writeln('Четные числа от 1 до ',2*n);
+  writeln('Р§РµС‚РЅС‹Рµ С‡РёСЃР»Р° РѕС‚ 1 РґРѕ ',2*n);
   var x := 2;
   for i:=1 to n do
   begin
@@ -20,13 +20,13 @@ begin
   writeln;
   writeln;
 
-  writeln('Нечетные числа от 1 до ',2*n);
+  writeln('РќРµС‡РµС‚РЅС‹Рµ С‡РёСЃР»Р° РѕС‚ 1 РґРѕ ',2*n);
   for i:=1 to n do
     write(2*i-1,' ');
   writeln;
   writeln;
 
-  writeln('Нечетные числа от 1 до ',2*n);
+  writeln('РќРµС‡РµС‚РЅС‹Рµ С‡РёСЃР»Р° РѕС‚ 1 РґРѕ ',2*n);
   x := 1;
   for i:=1 to n do
   begin

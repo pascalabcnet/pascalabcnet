@@ -61,7 +61,7 @@ var
   ColorLinePen: System.Drawing.Pen;
      
 function ImageIntersect(b1,b2: Bitmap): boolean;
-// Предполагается, что b1 и b2 - одного размера
+// РџСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ, С‡С‚Рѕ b1 Рё b2 - РѕРґРЅРѕРіРѕ СЂР°Р·РјРµСЂР°
 type 
   RGB = record
     r,g,b: byte;

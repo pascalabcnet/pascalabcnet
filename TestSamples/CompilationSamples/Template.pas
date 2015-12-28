@@ -23,8 +23,8 @@ var
   a,b: Pair<integer, string>;
   
 begin
-  a := new Pair<integer,string>(1, 'один ');
-  b := new Pair<integer,string>(2, 'два');
+  a := new Pair<integer,string>(1, 'РѕРґРёРЅ ');
+  b := new Pair<integer,string>(2, 'РґРІР°');
   Writeln(a + b);
   readln;
 end.

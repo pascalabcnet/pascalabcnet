@@ -144,7 +144,7 @@ namespace PascalABCCompiler.PascalABCParser
         }
 
         ////////////////////////////////////tasha_16.04.2010
-        /// SSM перенес из pascalabc_lparser_rules сюда, т.к. это partial класс, а та часть генерировалась автоматически. Голову отрывать надо
+        /// SSM РїРµСЂРµРЅРµСЃ РёР· pascalabc_lparser_rules СЃСЋРґР°, С‚.Рє. СЌС‚Рѕ partial РєР»Р°СЃСЃ, Р° С‚Р° С‡Р°СЃС‚СЊ РіРµРЅРµСЂРёСЂРѕРІР°Р»Р°СЃСЊ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё. Р“РѕР»РѕРІСѓ РѕС‚СЂС‹РІР°С‚СЊ РЅР°РґРѕ
         int lambda_num = 0;
         List<function_lambda_definition> pascalABC_lambda_definitions = new List<function_lambda_definition>();
         List<var_def_statement> pascalABC_var_statements = new List<var_def_statement>();

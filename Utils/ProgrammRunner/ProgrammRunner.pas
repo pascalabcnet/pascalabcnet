@@ -14,6 +14,6 @@ begin
   p.StartInfo := psi;
   p.Start();
   p.WaitForExit();
-  System.Console.WriteLine('Программа завершена, нажмите любую клавишу . . .');
+  System.Console.WriteLine('РџСЂРѕРіСЂР°РјРјР° Р·Р°РІРµСЂС€РµРЅР°, РЅР°Р¶РјРёС‚Рµ Р»СЋР±СѓСЋ РєР»Р°РІРёС€Сѓ . . .');
   System.Console.ReadKey(true);
 end.

@@ -91,7 +91,7 @@ namespace VisualPascalABCPlugins
             }
             catch (NotSupportedException e)
             {
-                System.Windows.Forms.MessageBox.Show(string.Format("Извините, генерация кода для узла {0} не поддерживается. Текст не был сгенерирован.", e.Message));
+                System.Windows.Forms.MessageBox.Show(string.Format("РР·РІРёРЅРёС‚Рµ, РіРµРЅРµСЂР°С†РёСЏ РєРѕРґР° РґР»СЏ СѓР·Р»Р° {0} РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ. РўРµРєСЃС‚ РЅРµ Р±С‹Р» СЃРіРµРЅРµСЂРёСЂРѕРІР°РЅ.", e.Message));
             }
             catch (Exception e)
             {
@@ -115,11 +115,11 @@ namespace VisualPascalABCPlugins
             }
         }        
 
-        // стырено 
+        // СЃС‚С‹СЂРµРЅРѕ 
         private List<ISemanticNodeConverter> LoadLanguages()
         {
             List<ISemanticNodeConverter> Langs = new List<ISemanticNodeConverter>(); 
-            // директория этого плагина           
+            // РґРёСЂРµРєС‚РѕСЂРёСЏ СЌС‚РѕРіРѕ РїР»Р°РіРёРЅР°           
             string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
             DirectoryInfo di = new DirectoryInfo(dir);
             FileInfo[] dllfiles = di.GetFiles("*LanguageConverter.dll");

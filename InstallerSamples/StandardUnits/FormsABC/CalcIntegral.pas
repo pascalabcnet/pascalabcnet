@@ -24,24 +24,24 @@ var
   f2 := new FlowBreak;
   N := new IntegerField('N:');
   f3 := new FlowBreak;
-  tl := new TextLabel('Функция: ');
+  tl := new TextLabel('Р¤СѓРЅРєС†РёСЏ: ');
   f4 := new FlowBreak;
   cb := new ComboBox;
   f5 := new FlowBreak(50);
   s1 := new Space(20);
-  ok := new Button('Вычислить');
+  ok := new Button('Р’С‹С‡РёСЃР»РёС‚СЊ');
   tb: TextBox;
 
 procedure MyClick;
 begin
   var f := funs[cb.SelectedIndex];
   var res := CalcIntegral(a.Value,b.Value,N.Value,f);
-  tb.AddLine(Format('Интеграл({0},{1},{2},{3}) = {4}',a.Value,b.Value,N.Value,cb.SelectedValue,res.ToString));
+  tb.AddLine(Format('РРЅС‚РµРіСЂР°Р»({0},{1},{2},{3}) = {4}',a.Value,b.Value,N.Value,cb.SelectedValue,res.ToString));
 end;
 
 procedure InitControls;
 begin
-  MainForm.Title := 'Вычисление определенного интеграла';
+  MainForm.Title := 'Р’С‹С‡РёСЃР»РµРЅРёРµ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ РёРЅС‚РµРіСЂР°Р»Р°';
   MainForm.SetSize(500,350);
   MainForm.CenterOnScreen;
   b.Value := 1;

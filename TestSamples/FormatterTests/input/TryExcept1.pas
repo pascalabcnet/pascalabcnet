@@ -3,7 +3,7 @@ begin
     writeln(1);
     raise new Exception('xxx');
   except  
-    writeln('Θρκλώχενθε!');
+    writeln('ΠΡΠΊΠ»ΡΡ‡ΠµΠ½ΠΈΠµ!');
   end;
   readln;
 end.

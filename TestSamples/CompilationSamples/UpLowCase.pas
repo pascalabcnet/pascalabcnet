@@ -1,4 +1,4 @@
-// Функции UpCase LowCase UpperCase LowerCase
+// Р¤СѓРЅРєС†РёРё UpCase LowCase UpperCase LowerCase
 var
   c: char;
   s: string;
@@ -10,13 +10,13 @@ begin
   for c:='A' to 'Z' do
     write(LowCase(c));
   writeln;
-  for c:='А' to 'Я' do
+  for c:='Рђ' to 'РЇ' do
     write(UpCase(c));
   writeln;
-  for c:='а' to 'я' do
+  for c:='Р°' to 'СЏ' do
     write(LowCase(c));
   writeln;
-  s:='Папа у Васи силён в математике';
+  s:='РџР°РїР° Сѓ Р’Р°СЃРё СЃРёР»С‘РЅ РІ РјР°С‚РµРјР°С‚РёРєРµ';
   s:=UpperCase(s);
   writeln(s);
   s:=LowerCase(s);

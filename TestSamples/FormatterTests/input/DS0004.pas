@@ -4,8 +4,8 @@ begin
     raise new Exception('xxx');
   except  
   //on e:exception do
-    //writeln('Θρκλώχενθε: ',e);
-    writeln('Θρκλώχενθε!');
+    //writeln('ΠΡΠΊΠ»ΡΡ‡ΠµΠ½ΠΈΠµ: ',e);
+    writeln('ΠΡΠΊΠ»ΡΡ‡ΠµΠ½ΠΈΠµ!');
   end;
   readln;
 end.

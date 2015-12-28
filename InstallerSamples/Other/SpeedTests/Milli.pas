@@ -1,4 +1,4 @@
-// Демонстрация функции Milliseconds
+// Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ С„СѓРЅРєС†РёРё Milliseconds
 uses Utils;
 
 const n = 5000;

@@ -1,4 +1,4 @@
-// Переключение состояний спрайта щелчком мыши
+// РџРµСЂРµРєР»СЋС‡РµРЅРёРµ СЃРѕСЃС‚РѕСЏРЅРёР№ СЃРїСЂР°Р№С‚Р° С‰РµР»С‡РєРѕРј РјС‹С€Рё
 uses GraphABC,ABCSprites,ABCObjects,Events;
 
 var
@@ -9,19 +9,19 @@ procedure MyMouseDown(x,y,mb: integer);
 begin
   if s.PtInside(x,y) then
   begin
-    // Переход к следующему состоянию спрайта
+    // РџРµСЂРµС…РѕРґ Рє СЃР»РµРґСѓСЋС‰РµРјСѓ СЃРѕСЃС‚РѕСЏРЅРёСЋ СЃРїСЂР°Р№С‚Р°
     if s.State<s.StateCount then
       s.State := s.State + 1
     else s.State := 1;
-    t.Text := 'Состояние спрайта: ' + s.StateName;
+    t.Text := 'РЎРѕСЃС‚РѕСЏРЅРёРµ СЃРїСЂР°Р№С‚Р°: ' + s.StateName;
   end;
 end;
   
 begin
-  Window.Title := 'Щелкните мышью на спрайте';
+  Window.Title := 'Р©РµР»РєРЅРёС‚Рµ РјС‹С€СЊСЋ РЅР° СЃРїСЂР°Р№С‚Рµ';
   SetWindowSize(400,300);
   CenterWindow;
   s := new SpriteABC(150,100,'spr.spinf');
-  t := new TextABC(55,30,15,'Состояние спрайта: '+s.StateName,clRed);
+  t := new TextABC(55,30,15,'РЎРѕСЃС‚РѕСЏРЅРёРµ СЃРїСЂР°Р№С‚Р°: '+s.StateName,clRed);
   OnMouseDown := MyMouseDown;
 end.

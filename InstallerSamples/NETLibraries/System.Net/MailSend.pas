@@ -1,4 +1,4 @@
-// Исправьте имя SMTP-сервера SMTPServerName и адрес получателя toReceiver! 
+// РСЃРїСЂР°РІСЊС‚Рµ РёРјСЏ SMTP-СЃРµСЂРІРµСЂР° SMTPServerName Рё Р°РґСЂРµСЃ РїРѕР»СѓС‡Р°С‚РµР»СЏ toReceiver! 
 uses System.Net.Mail;
 
 const 

@@ -239,7 +239,7 @@ namespace NodesGenerator
             this.Name = "simple_node_editor";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Редактор узлов";
+            this.Text = "Р РµРґР°РєС‚РѕСЂ СѓР·Р»РѕРІ";
             this.ResumeLayout(false);
             this.PerformLayout();
 

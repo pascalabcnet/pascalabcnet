@@ -376,7 +376,7 @@ namespace VisualPascalABC
         void PRunner_ProcessExited(object sender, EventArgs e)
         {
             string fileName = (string)StartedFiles[sender];
-            if (fileName == null) return;//TODO: это ошибочная ситуация
+            if (fileName == null) return;//TODO: СЌС‚Рѕ РѕС€РёР±РѕС‡РЅР°СЏ СЃРёС‚СѓР°С†РёСЏ
             if (!WorkbenchServiceFactory.Workbench.UserOptions.AlwaysAttachDebuggerAtStart)
                 WorkbenchServiceFactory.Workbench.DebuggerManager.NullProcessHandleIfNeed(fileName);
             EventedStreamReaderList.Remove(fileName);
@@ -387,7 +387,7 @@ namespace VisualPascalABC
         
         void RemoveFromTables(string FileName)
         {
-            if (StartedProcesses[FileName] != null)//TODO: это ошибочная ситуация
+            if (StartedProcesses[FileName] != null)//TODO: СЌС‚Рѕ РѕС€РёР±РѕС‡РЅР°СЏ СЃРёС‚СѓР°С†РёСЏ
             {
                 EventedStreamReaderList.Remove(FileName);
                 StartedFiles.Remove(StartedProcesses[FileName]);

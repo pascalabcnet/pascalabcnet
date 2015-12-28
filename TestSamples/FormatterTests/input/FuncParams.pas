@@ -1,4 +1,4 @@
-// Переменное число параметров 
+// РџРµСЂРµРјРµРЅРЅРѕРµ С‡РёСЃР»Рѕ РїР°СЂР°РјРµС‚СЂРѕРІ 
 function Sum(params arg: array of integer): integer;
 begin
   Result := 0;

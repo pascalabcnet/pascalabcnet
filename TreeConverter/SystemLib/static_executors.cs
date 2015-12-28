@@ -1,6 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Интерпретатор константных выражений
+//РРЅС‚РµСЂРїСЂРµС‚Р°С‚РѕСЂ РєРѕРЅСЃС‚Р°РЅС‚РЅС‹С… РІС‹СЂР°Р¶РµРЅРёР№
 using System;
 
 using PascalABCCompiler.TreeRealization;
@@ -940,8 +940,8 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //TODO: Проверить опреатор ~. Это опреатор двоичного дополнения. 
-            //Его оставлять в byte с проверкой или уводить в int????
+            //TODO: РџСЂРѕРІРµСЂРёС‚СЊ РѕРїСЂРµР°С‚РѕСЂ ~. Р­С‚Рѕ РѕРїСЂРµР°С‚РѕСЂ РґРІРѕРёС‡РЅРѕРіРѕ РґРѕРїРѕР»РЅРµРЅРёСЏ. 
+            //Р•РіРѕ РѕСЃС‚Р°РІР»СЏС‚СЊ РІ byte СЃ РїСЂРѕРІРµСЂРєРѕР№ РёР»Рё СѓРІРѕРґРёС‚СЊ РІ int????
             return make_int_const((~(left.constant_value)), call_location);
         }
 
@@ -2565,7 +2565,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //TODO: Проверить опреатор ~. Это опреатор двоичного дополнения.
+            //TODO: РџСЂРѕРІРµСЂРёС‚СЊ РѕРїСЂРµР°С‚РѕСЂ ~. Р­С‚Рѕ РѕРїСЂРµР°С‚РѕСЂ РґРІРѕРёС‡РЅРѕРіРѕ РґРѕРїРѕР»РЅРµРЅРёСЏ.
             return (make_int_const((~(left.constant_value)), call_location));
         }
 
@@ -3020,7 +3020,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //TODO: Проверить опреатор ~. Это опреатор двоичного дополнения.
+            //TODO: РџСЂРѕРІРµСЂРёС‚СЊ РѕРїСЂРµР°С‚РѕСЂ ~. Р­С‚Рѕ РѕРїСЂРµР°С‚РѕСЂ РґРІРѕРёС‡РЅРѕРіРѕ РґРѕРїРѕР»РЅРµРЅРёСЏ.
             return (new uint_const_node((~(left.constant_value)), call_location));
         }
 
@@ -3477,7 +3477,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //TODO: Проверить опреатор ~. Это опреатор двоичного дополнения.
+            //TODO: РџСЂРѕРІРµСЂРёС‚СЊ РѕРїСЂРµР°С‚РѕСЂ ~. Р­С‚Рѕ РѕРїСЂРµР°С‚РѕСЂ РґРІРѕРёС‡РЅРѕРіРѕ РґРѕРїРѕР»РЅРµРЅРёСЏ.
             return (new long_const_node((~(left.constant_value)), call_location));
         }
 
@@ -3623,7 +3623,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //ТУТ Int!!!!!!!!
+            //РўРЈРў Int!!!!!!!!
             int_const_node right = parameters[1] as int_const_node;
             if (right == null)
             {
@@ -3759,7 +3759,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //TODO: Здесь, в некоторых ситуациях, программа должна падать. Потом сделать корректную обработку.
+            //TODO: Р—РґРµСЃСЊ, РІ РЅРµРєРѕС‚РѕСЂС‹С… СЃРёС‚СѓР°С†РёСЏС…, РїСЂРѕРіСЂР°РјРјР° РґРѕР»Р¶РЅР° РїР°РґР°С‚СЊ. РџРѕС‚РѕРј СЃРґРµР»Р°С‚СЊ РєРѕСЂСЂРµРєС‚РЅСѓСЋ РѕР±СЂР°Р±РѕС‚РєСѓ.
             return new long_const_node((-((long)bcn.constant_value)), call_location);
         }
 
@@ -3935,7 +3935,7 @@ namespace PascalABCCompiler.SystemLibrary
             {
                 return null;
             }
-            //TODO: Проверить опреатор ~. Это опреатор двоичного дополнения.
+            //TODO: РџСЂРѕРІРµСЂРёС‚СЊ РѕРїСЂРµР°С‚РѕСЂ ~. Р­С‚Рѕ РѕРїСЂРµР°С‚РѕСЂ РґРІРѕРёС‡РЅРѕРіРѕ РґРѕРїРѕР»РЅРµРЅРёСЏ.
             return (new ulong_const_node((~(left.constant_value)), call_location));
         }
 

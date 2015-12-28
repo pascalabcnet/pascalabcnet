@@ -12,7 +12,7 @@ using GoldParser;
 
 namespace PascalABCCompiler.ParserTools
 {
-    public class GPBParser // Странный класс, не являющийся парсером, а служащий для передачи информации. Состоит из двух частей: ссылок на парсер и грамматику и информации для передачи
+    public class GPBParser // РЎС‚СЂР°РЅРЅС‹Р№ РєР»Р°СЃСЃ, РЅРµ СЏРІР»СЏСЋС‰РёР№СЃСЏ РїР°СЂСЃРµСЂРѕРј, Р° СЃР»СѓР¶Р°С‰РёР№ РґР»СЏ РїРµСЂРµРґР°С‡Рё РёРЅС„РѕСЂРјР°С†РёРё. РЎРѕСЃС‚РѕРёС‚ РёР· РґРІСѓС… С‡Р°СЃС‚РµР№: СЃСЃС‹Р»РѕРє РЅР° РїР°СЂСЃРµСЂ Рё РіСЂР°РјРјР°С‚РёРєСѓ Рё РёРЅС„РѕСЂРјР°С†РёРё РґР»СЏ РїРµСЂРµРґР°С‡Рё
     {
         public Parser LRParser;
         public Grammar LanguageGrammar;
@@ -85,7 +85,7 @@ namespace PascalABCCompiler.ParserTools
 		private const int max_char_const=0xFFFF;
 
         public int LineCorrection = 0;
-        public GoldParser.Parser parser; // Ужас - два разных парсера! SSM 19.01.12
+        public GoldParser.Parser parser; // РЈР¶Р°СЃ - РґРІР° СЂР°Р·РЅС‹С… РїР°СЂСЃРµСЂР°! SSM 19.01.12
 
         public virtual void check_comment_text(GPBParser parser)
         {
@@ -248,8 +248,8 @@ namespace PascalABCCompiler.ParserTools
 
         public virtual const_node create_int_const(GPBParser parser, System.Globalization.NumberStyles NumberStyles)
 		{
-            //таблица целых констант на уровне синтаксиса
-            //      не может быть - 0 +
+            //С‚Р°Р±Р»РёС†Р° С†РµР»С‹С… РєРѕРЅСЃС‚Р°РЅС‚ РЅР° СѓСЂРѕРІРЅРµ СЃРёРЅС‚Р°РєСЃРёСЃР°
+            //      РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ - 0 +
             // 32--------16----8----|----8----16--------32----------------64(bits)
             // [  int64  )[       int32       ](  int64 ](      uint64     ]
             string text = parser.LRParser.TokenString;

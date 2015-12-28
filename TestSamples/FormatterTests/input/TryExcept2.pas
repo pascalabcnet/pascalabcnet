@@ -4,7 +4,7 @@ begin
     raise new Exception('xxx');
   except  
   on e:Exception do
-    writeln('Θρκλώχενθε: ',e);
+    writeln('ΠΡΠΊΠ»ΡΡ‡ΠµΠ½ΠΈΠµ: ',e);
   end;
   readln;
 end.

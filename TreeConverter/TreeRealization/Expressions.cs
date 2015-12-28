@@ -386,16 +386,16 @@ namespace PascalABCCompiler.TreeRealization
         }
         
         /// <summary>
-        /// Метод для обхода дерева посетителем.
+        /// РњРµС‚РѕРґ РґР»СЏ РѕР±С…РѕРґР° РґРµСЂРµРІР° РїРѕСЃРµС‚РёС‚РµР»РµРј.
         /// </summary>
-        /// <param name="visitor">Класс - посетитель дерева.</param>
+        /// <param name="visitor">РљР»Р°СЃСЃ - РїРѕСЃРµС‚РёС‚РµР»СЊ РґРµСЂРµРІР°.</param>
         public override void visit(SemanticTree.ISemanticVisitor visitor)
         {
             visitor.visit(this);
         }
 
         /// <summary>
-        /// Тип узла.
+        /// РўРёРї СѓР·Р»Р°.
         /// </summary>
         public override semantic_node_type semantic_node_type
         {
@@ -441,16 +441,16 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         /// <summary>
-        /// Метод для обхода дерева посетителем.
+        /// РњРµС‚РѕРґ РґР»СЏ РѕР±С…РѕРґР° РґРµСЂРµРІР° РїРѕСЃРµС‚РёС‚РµР»РµРј.
         /// </summary>
-        /// <param name="visitor">Класс - посетитель дерева.</param>
+        /// <param name="visitor">РљР»Р°СЃСЃ - РїРѕСЃРµС‚РёС‚РµР»СЊ РґРµСЂРµРІР°.</param>
         public override void visit(SemanticTree.ISemanticVisitor visitor)
         {
             visitor.visit(this);
         }
 
         /// <summary>
-        /// Тип узла.
+        /// РўРёРї СѓР·Р»Р°.
         /// </summary>
         public override semantic_node_type semantic_node_type
         {

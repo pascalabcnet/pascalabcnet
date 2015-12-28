@@ -1,4 +1,4 @@
-// Stopwatch - класс высокоточного таймера (с точностью до 0.001 с)
+// Stopwatch - РєР»Р°СЃСЃ РІС‹СЃРѕРєРѕС‚РѕС‡РЅРѕРіРѕ С‚Р°Р№РјРµСЂР° (СЃ С‚РѕС‡РЅРѕСЃС‚СЊСЋ РґРѕ 0.001 СЃ)
 begin
   var stopWatch := new System.Diagnostics.Stopwatch;
   stopWatch.Start;
@@ -7,5 +7,5 @@ begin
  
   stopWatch.Stop;
   var ts := stopWatch.Elapsed;
-  writelnFormat('Время работы: {0:00}:{1:00}:{2:00}.{3:000}',ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
+  writelnFormat('Р’СЂРµРјСЏ СЂР°Р±РѕС‚С‹: {0:00}:{1:00}:{2:00}.{3:000}',ts.Hours, ts.Minutes, ts.Seconds, ts.Milliseconds);
 end.

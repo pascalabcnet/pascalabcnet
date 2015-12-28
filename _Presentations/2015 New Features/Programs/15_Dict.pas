@@ -1,5 +1,5 @@
 begin
-  var dct := Dict(KV('цвет','color'));
+  var dct := Dict(KV('С†РІРµС‚','color'));
   foreach var s in ReadLines('translations.txt') do
   begin
     var ss := s.ToWords;
@@ -7,8 +7,8 @@ begin
   end;
   writeln(dct);
   
-  var word := ReadString('Введите слово:');
+  var word := ReadString('Р’РІРµРґРёС‚Рµ СЃР»РѕРІРѕ:');
   if dct.ContainsKey(word) then
-    Println('Перевод:',dct[word])
-  else Println('Нет такого слова!')  
+    Println('РџРµСЂРµРІРѕРґ:',dct[word])
+  else Println('РќРµС‚ С‚Р°РєРѕРіРѕ СЃР»РѕРІР°!')  
 end.

@@ -1,17 +1,17 @@
-/// Стандартные размерные типы данных и их размер
+/// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЂР°Р·РјРµСЂРЅС‹Рµ С‚РёРїС‹ РґР°РЅРЅС‹С… Рё РёС… СЂР°Р·РјРµСЂ
 var 
   i: integer;
   j: shortint;
   k: smallint;
-  l: longint; // синоним integer
+  l: longint; // СЃРёРЅРѕРЅРёРј integer
   i64: int64;
   b: byte;
   w: word;
   lw: longword;
-  car: cardinal; // синоним longword
+  car: cardinal; // СЃРёРЅРѕРЅРёРј longword
   ui64: uint64;
   r: real;
-  d: double; // синоним real
+  d: double; // СЃРёРЅРѕРЅРёРј real
   sn: single;
   c: char;
   

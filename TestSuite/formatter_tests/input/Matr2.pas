@@ -1,4 +1,4 @@
-// Матрица как динамический массив массивов
+// РњР°С‚СЂРёС†Р° РєР°Рє РґРёРЅР°РјРёС‡РµСЃРєРёР№ РјР°СЃСЃРёРІ РјР°СЃСЃРёРІРѕРІ
 type Matrix = array of array of integer;
 
 function CreateMatrix(m,n: integer): Matrix;

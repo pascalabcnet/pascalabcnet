@@ -1,4 +1,4 @@
-// Создание оконного приложения
+// РЎРѕР·РґР°РЅРёРµ РѕРєРѕРЅРЅРѕРіРѕ РїСЂРёР»РѕР¶РµРЅРёСЏ
 {$apptype windows}
 {$reference System.Windows.Forms.dll}
 
@@ -17,9 +17,9 @@ end;
 
 begin
   myForm := new Form;
-  myForm.Text := 'Оконное приложение';
+  myForm.Text := 'РћРєРѕРЅРЅРѕРµ РїСЂРёР»РѕР¶РµРЅРёРµ';
   myButton := new Button;
-  myButton.Text := '  Закрыть окно  ';
+  myButton.Text := '  Р—Р°РєСЂС‹С‚СЊ РѕРєРЅРѕ  ';
   myButton.AutoSize := True;
   myButton.Left := 90;
   myButton.Top := 110;

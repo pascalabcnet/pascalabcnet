@@ -6,7 +6,7 @@ var ii : integer;
 const max = 100;
       max2 = max+10;
 
-// Генерация больших простых чисел
+// Р“РµРЅРµСЂР°С†РёСЏ Р±РѕР»СЊС€РёС… РїСЂРѕСЃС‚С‹С… С‡РёСЃРµР»
 var i, j, count: integer;
     f: boolean;
     beg: integer;

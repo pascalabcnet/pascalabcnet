@@ -1,8 +1,8 @@
-// Графика. Точка. Случайный цвет. Скорость работы
+// Р“СЂР°С„РёРєР°. РўРѕС‡РєР°. РЎР»СѓС‡Р°Р№РЅС‹Р№ С†РІРµС‚. РЎРєРѕСЂРѕСЃС‚СЊ СЂР°Р±РѕС‚С‹
 uses GraphABC,Utils;
 
 begin
   for var i:=1 to 100000 do
     SetPixel(Random(Window.Width),Random(Window.Height),clRandom);
-  writeln('Время работы: ',Milliseconds/1000,' секунд');  
+  writeln('Р’СЂРµРјСЏ СЂР°Р±РѕС‚С‹: ',Milliseconds/1000,' СЃРµРєСѓРЅРґ');  
 end.

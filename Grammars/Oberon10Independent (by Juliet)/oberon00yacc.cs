@@ -39,40 +39,40 @@ public struct ValueType
 		public bool bVal;  
 		public string sVal; 
 		public int iVal; 
-		public long lVal;								// Длинное целое
+		public long lVal;								// Р”Р»РёРЅРЅРѕРµ С†РµР»РѕРµ
 		public char cVal;
 		public double rVal;
-		public pascal_set_constant sc;					// Константа - множество
-		public named_type_reference ntr;				// Именованное определение типа
-		public type_definition tdef;					// Сам тип		
-		public diapason dpsn;							// Тип диапазон
-		public array_type arrt;							// Тип массив
-		public class_definition cldef;					// Определение записи
-		public indexers_types indts;					// Тип типы индексов массива
-		public ref_type rft;							// Тип указатель
-		public ident_list il;							// Список идентификаторов
-		public ident id;								// Идентификатор
-		public oberon_ident_with_export_marker obrid;	// Обероновский уточненный идентификатор
-		public oberon_export_marker obrem;				// Обероновская экспортная метка
-		public var_def_statement vds;					// Описание переменных
-		public variable_definitions vdss;				// Секция описания переменных
-		public type_declarations td;					// Секция определения типов
-		public type_declaration tdec;					// Описание типа
-		public expression ex;							// Выражение
-		public expression_list el;						// Список выражений
-		public Operators ops;							// Операторы (операции)
-		public block bl;								// Программный блок
-		public statement st;							// Оператор программный
-		public statement_list sl;						// Список операторов
-		public case_variants cvars;						// Список вариантов оператора CASE
-		public case_variant cvar;							// Вариант оператора CASE
-		public declaration decsec;						// Описание
-		public declarations decl;						// Список описаний
-		public simple_const_definition scd;				// Определение константы
-		public consts_definitions_list cdl;				// Список описаний констант		
-		public procedure_definition pd;					// Описание процедуры
-		public dot_node dn;								// Узел в точечной нотации
-		public addressed_value adrv;					// Адресованное значение		
+		public pascal_set_constant sc;					// РљРѕРЅСЃС‚Р°РЅС‚Р° - РјРЅРѕР¶РµСЃС‚РІРѕ
+		public named_type_reference ntr;				// РРјРµРЅРѕРІР°РЅРЅРѕРµ РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РёРїР°
+		public type_definition tdef;					// РЎР°Рј С‚РёРї		
+		public diapason dpsn;							// РўРёРї РґРёР°РїР°Р·РѕРЅ
+		public array_type arrt;							// РўРёРї РјР°СЃСЃРёРІ
+		public class_definition cldef;					// РћРїСЂРµРґРµР»РµРЅРёРµ Р·Р°РїРёСЃРё
+		public indexers_types indts;					// РўРёРї С‚РёРїС‹ РёРЅРґРµРєСЃРѕРІ РјР°СЃСЃРёРІР°
+		public ref_type rft;							// РўРёРї СѓРєР°Р·Р°С‚РµР»СЊ
+		public ident_list il;							// РЎРїРёСЃРѕРє РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ
+		public ident id;								// РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
+		public oberon_ident_with_export_marker obrid;	// РћР±РµСЂРѕРЅРѕРІСЃРєРёР№ СѓС‚РѕС‡РЅРµРЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
+		public oberon_export_marker obrem;				// РћР±РµСЂРѕРЅРѕРІСЃРєР°СЏ СЌРєСЃРїРѕСЂС‚РЅР°СЏ РјРµС‚РєР°
+		public var_def_statement vds;					// РћРїРёСЃР°РЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С…
+		public variable_definitions vdss;				// РЎРµРєС†РёСЏ РѕРїРёСЃР°РЅРёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
+		public type_declarations td;					// РЎРµРєС†РёСЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ С‚РёРїРѕРІ
+		public type_declaration tdec;					// РћРїРёСЃР°РЅРёРµ С‚РёРїР°
+		public expression ex;							// Р’С‹СЂР°Р¶РµРЅРёРµ
+		public expression_list el;						// РЎРїРёСЃРѕРє РІС‹СЂР°Р¶РµРЅРёР№
+		public Operators ops;							// РћРїРµСЂР°С‚РѕСЂС‹ (РѕРїРµСЂР°С†РёРё)
+		public block bl;								// РџСЂРѕРіСЂР°РјРјРЅС‹Р№ Р±Р»РѕРє
+		public statement st;							// РћРїРµСЂР°С‚РѕСЂ РїСЂРѕРіСЂР°РјРјРЅС‹Р№
+		public statement_list sl;						// РЎРїРёСЃРѕРє РѕРїРµСЂР°С‚РѕСЂРѕРІ
+		public case_variants cvars;						// РЎРїРёСЃРѕРє РІР°СЂРёР°РЅС‚РѕРІ РѕРїРµСЂР°С‚РѕСЂР° CASE
+		public case_variant cvar;							// Р’Р°СЂРёР°РЅС‚ РѕРїРµСЂР°С‚РѕСЂР° CASE
+		public declaration decsec;						// РћРїРёСЃР°РЅРёРµ
+		public declarations decl;						// РЎРїРёСЃРѕРє РѕРїРёСЃР°РЅРёР№
+		public simple_const_definition scd;				// РћРїСЂРµРґРµР»РµРЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹
+		public consts_definitions_list cdl;				// РЎРїРёСЃРѕРє РѕРїРёСЃР°РЅРёР№ РєРѕРЅСЃС‚Р°РЅС‚		
+		public procedure_definition pd;					// РћРїРёСЃР°РЅРёРµ РїСЂРѕС†РµРґСѓСЂС‹
+		public dot_node dn;								// РЈР·РµР» РІ С‚РѕС‡РµС‡РЅРѕР№ РЅРѕС‚Р°С†РёРё
+		public addressed_value adrv;					// РђРґСЂРµСЃРѕРІР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ		
 	}
 // Abstract base class for GPLEX scanners
 public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
@@ -84,8 +84,8 @@ public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
 public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 {
   // Verbatim content from oberon00.y
-// Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
-    public syntax_tree_node root; // Корневой узел синтаксического дерева 
+// Р­С‚Рё РѕР±СЉСЏРІР»РµРЅРёСЏ РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ РІ РєР»Р°СЃСЃ GPPGParser, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёР№ СЃРѕР±РѕР№ РїР°СЂСЃРµСЂ, РіРµРЅРµСЂРёСЂСѓРµРјС‹Р№ СЃРёСЃС‚РµРјРѕР№ gppg
+    public syntax_tree_node root; // РљРѕСЂРЅРµРІРѕР№ СѓР·РµР» СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° 
     public GPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
   // End verbatim content from oberon00.y
 
@@ -527,17 +527,17 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
       case 2: // module -> MODULE, ident, SEMICOLUMN, mainblock, ident, COMMA
 {
 		if (ValueStack[ValueStack.Depth-5].id.name != ValueStack[ValueStack.Depth-2].id.name)
-			PT.AddError("Имя " + ValueStack[ValueStack.Depth-2].id.name + " должно совпадать с именем модуля " + ValueStack[ValueStack.Depth-5].id.name, LocationStack[LocationStack.Depth-2]);
+			PT.AddError("РРјСЏ " + ValueStack[ValueStack.Depth-2].id.name + " РґРѕР»Р¶РЅРѕ СЃРѕРІРїР°РґР°С‚СЊ СЃ РёРјРµРЅРµРј РјРѕРґСѓР»СЏ " + ValueStack[ValueStack.Depth-5].id.name, LocationStack[LocationStack.Depth-2]);
 		
-		// Подключение стандартного модуля Oberon00System, написанного на PascalABC.NET
+		// РџРѕРґРєР»СЋС‡РµРЅРёРµ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РјРѕРґСѓР»СЏ Oberon00System, РЅР°РїРёСЃР°РЅРЅРѕРіРѕ РЅР° PascalABC.NET
 		var ul = new uses_list("Oberon00System");
 		
-		// Формирование модуля основной программы (используется фабричный метод вместо конструктора)
+		// Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјРѕРґСѓР»СЏ РѕСЃРЅРѕРІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹ (РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С„Р°Р±СЂРёС‡РЅС‹Р№ РјРµС‚РѕРґ РІРјРµСЃС‚Рѕ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°)
 		root = program_module.create(ValueStack[ValueStack.Depth-5].id, ul, ValueStack[ValueStack.Depth-3].bl, CurrentLocationSpan);
     }
         break;
       case 3: // module -> INVISIBLE, expr
-{ // Для Intellisense
+{ // Р”Р»СЏ Intellisense
 		root = ValueStack[ValueStack.Depth-1].ex;
 	}
         break;
@@ -892,7 +892,7 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 		expression step;
 		if (ValueStack[ValueStack.Depth-4].ex != null) 	step = ValueStack[ValueStack.Depth-4].ex;
 		else 				step = new int32_const(1, LocationStack[LocationStack.Depth-4]);
-		// Будем моделировать цикл через while
+		// Р‘СѓРґРµРј РјРѕРґРµР»РёСЂРѕРІР°С‚СЊ С†РёРєР» С‡РµСЂРµР· while
 		statement_list forStmnt = GetForThroughWhile(ValueStack[ValueStack.Depth-9].id, ValueStack[ValueStack.Depth-7].ex, ValueStack[ValueStack.Depth-5].ex, ValueStack[ValueStack.Depth-2].sl, step, LocationStack[LocationStack.Depth-8], CurrentLocationSpan);
 		CurrentSemanticValue.st = forStmnt;
 		CurrentSemanticValue.st.source_context = CurrentLocationSpan;
@@ -901,21 +901,21 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
       case 85: // ForStep -> BY, ConstExpr
 {
 		int32_const step32 = ValueStack[ValueStack.Depth-1].ex as int32_const;
-		if (step32 != null) {	// шаг является просто целым числом (без знака)
-			if (step32.val == 0)	PT.AddError("Шаг цикла не может быть нулевым", LocationStack[LocationStack.Depth-2]);
+		if (step32 != null) {	// С€Р°Рі СЏРІР»СЏРµС‚СЃСЏ РїСЂРѕСЃС‚Рѕ С†РµР»С‹Рј С‡РёСЃР»РѕРј (Р±РµР· Р·РЅР°РєР°)
+			if (step32.val == 0)	PT.AddError("РЁР°Рі С†РёРєР»Р° РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅСѓР»РµРІС‹Рј", LocationStack[LocationStack.Depth-2]);
 			else					CurrentSemanticValue.ex = new int32_const(step32.val, CurrentLocationSpan);
 		}
-		else {					// в значении шага либо присутствует знак, либо это вообще не целое
+		else {					// РІ Р·РЅР°С‡РµРЅРёРё С€Р°РіР° Р»РёР±Рѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ Р·РЅР°Рє, Р»РёР±Рѕ СЌС‚Рѕ РІРѕРѕР±С‰Рµ РЅРµ С†РµР»РѕРµ
 			un_expr stepMinus = ValueStack[ValueStack.Depth-1].ex as un_expr;
 			int32_const stepMinusTerm = stepMinus.subnode as int32_const;
 			bool signMinus = (stepMinusTerm != null) &&	(stepMinus.operation_type == Operators.Minus);
 			if (signMinus)
 				if (stepMinusTerm.val == 0)
-					PT.AddError("Шаг цикла не может быть нулевым", LocationStack[LocationStack.Depth-2]);
+					PT.AddError("РЁР°Рі С†РёРєР»Р° РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅСѓР»РµРІС‹Рј", LocationStack[LocationStack.Depth-2]);
 				else	
 					CurrentSemanticValue.ex = new un_expr(stepMinusTerm, Operators.Minus, LocationStack[LocationStack.Depth-1]);
 			else
-				PT.AddError("Шаг цикла должен быть целым числом", LocationStack[LocationStack.Depth-2]);
+				PT.AddError("РЁР°Рі С†РёРєР»Р° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С†РµР»С‹Рј С‡РёСЃР»РѕРј", LocationStack[LocationStack.Depth-2]);
 		}
 	}
         break;
@@ -1121,7 +1121,7 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 122: // ArrayType -> ARRAY, OF, TypeDef
 {
-		// открытый массив
+		// РѕС‚РєСЂС‹С‚С‹Р№ РјР°СЃСЃРёРІ
 		diapason dp = new diapason(new int32_const(0), new int32_const(0));
 		indexers_types inxr = new indexers_types();
 		inxr.Add(dp);
@@ -1130,7 +1130,7 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 123: // ArrayType -> ARRAY, LengthList, OF, TypeDef
 {
-		// Будем искать array n of char, чтобы заменить на строку
+		// Р‘СѓРґРµРј РёСЃРєР°С‚СЊ array n of char, С‡С‚РѕР±С‹ Р·Р°РјРµРЅРёС‚СЊ РЅР° СЃС‚СЂРѕРєСѓ
 		named_type_reference ntr = ValueStack[ValueStack.Depth-1].tdef as named_type_reference;
 		bool complexArr = 	(ntr != null) && (ntr.names.Count == 1) && 
 							(ntr.names[0].name == "char");
@@ -1161,14 +1161,14 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
         break;
       case 127: // Length -> ConstExpr
 {
-		// В обероне в массиве указывается целочисленная длина
-		// Поэтому надо проверить, что выражение относится к целому типу
+		// Р’ РѕР±РµСЂРѕРЅРµ РІ РјР°СЃСЃРёРІРµ СѓРєР°Р·С‹РІР°РµС‚СЃСЏ С†РµР»РѕС‡РёСЃР»РµРЅРЅР°СЏ РґР»РёРЅР°
+		// РџРѕСЌС‚РѕРјСѓ РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ, С‡С‚Рѕ РІС‹СЂР°Р¶РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚СЃСЏ Рє С†РµР»РѕРјСѓ С‚РёРїСѓ
 		object[] types = {ValueStack[ValueStack.Depth-1].ex};
 		bool isLength = typeof(int32_const) == System.Type.GetTypeArray(types)[0];
 		if (isLength)	
 			CurrentSemanticValue.dpsn = GetDiapasonByArrLength(ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		else
-			PT.AddError("Длина должна быть целым числом", LocationStack[LocationStack.Depth-1]);
+			PT.AddError("Р”Р»РёРЅР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ С†РµР»С‹Рј С‡РёСЃР»РѕРј", LocationStack[LocationStack.Depth-1]);
 	}
         break;
       case 128: // PointerType -> POINTER, TO, TypeDef
@@ -1218,8 +1218,8 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 		if (ValueStack[ValueStack.Depth-1].decsec != null)
 			ValueStack[ValueStack.Depth-2].decl.Add(ValueStack[ValueStack.Depth-1].decsec);
 		CurrentSemanticValue.decl = ValueStack[ValueStack.Depth-2].decl;
-		CurrentSemanticValue.decl.source_context = CurrentLocationSpan;			// Необходимо показать место в программе, т.к. неявно это не сделано
-										// (например, в конструкторе)
+		CurrentSemanticValue.decl.source_context = CurrentLocationSpan;			// РќРµРѕР±С…РѕРґРёРјРѕ РїРѕРєР°Р·Р°С‚СЊ РјРµСЃС‚Рѕ РІ РїСЂРѕРіСЂР°РјРјРµ, С‚.Рє. РЅРµСЏРІРЅРѕ СЌС‚Рѕ РЅРµ СЃРґРµР»Р°РЅРѕ
+										// (РЅР°РїСЂРёРјРµСЂ, РІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ)
 	}
         break;
       case 137: // ProcedureDeclarationSect -> PROCEDURE, ident, maybeformalparams, maybereturn, 
@@ -1287,11 +1287,11 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
   }
 
 
-/* 	Возвращает последовательность операторов, соответсвующую
-	циклу for, моделируемому через while */
+/* 	Р’РѕР·РІСЂР°С‰Р°РµС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ РѕРїРµСЂР°С‚РѕСЂРѕРІ, СЃРѕРѕС‚РІРµС‚СЃРІСѓСЋС‰СѓСЋ
+	С†РёРєР»Сѓ for, РјРѕРґРµР»РёСЂСѓРµРјРѕРјСѓ С‡РµСЂРµР· while */
 public static statement_list GetForThroughWhile(ident id, expression expr, expression endExpr, statement_list stmnts,
 		expression step, SourceContext assignSC, SourceContext wholeSC){
-	// Будем моделировать цикл через while
+	// Р‘СѓРґРµРј РјРѕРґРµР»РёСЂРѕРІР°С‚СЊ С†РёРєР» С‡РµСЂРµР· while
 	statement_list forStmnt = new statement_list();
 	ident endFor = new ident("_oberon_for_end_");
 	forStmnt.Add(new var_statement(new var_def_statement(
@@ -1302,14 +1302,14 @@ public static statement_list GetForThroughWhile(ident id, expression expr, expre
 		false))
 	);
 	forStmnt.Add( new assign(id, expr, Operators.Assignment, assignSC) );
-	statement_list posStatementList = new statement_list();		// при положительном шаге
+	statement_list posStatementList = new statement_list();		// РїСЂРё РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕРј С€Р°РіРµ
 		posStatementList.Add(stmnts);
 		posStatementList.Add( new assign(id, step, Operators.AssignmentAddition) );
 	while_node posWhile = new while_node(
 		new bin_expr(id, endFor, Operators.LessEqual),
 		posStatementList,
 		WhileCycleType.While);
-	statement_list negStatementList = new statement_list();		// при отрицательном шаге
+	statement_list negStatementList = new statement_list();		// РїСЂРё РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРј С€Р°РіРµ
 		negStatementList.Add(stmnts);
 		negStatementList.Add( new assign(id, step, Operators.AssignmentAddition) );
 	while_node negWhile = new while_node(
@@ -1324,8 +1324,8 @@ public static statement_list GetForThroughWhile(ident id, expression expr, expre
 	return forStmnt;
 }
 
-/* 	Возвращает многомерный массив, в котором при необходимости
-	массив символов заменен на строку */	
+/* 	Р’РѕР·РІСЂР°С‰Р°РµС‚ РјРЅРѕРіРѕРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ, РІ РєРѕС‚РѕСЂРѕРј РїСЂРё РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
+	РјР°СЃСЃРёРІ СЃРёРјРІРѕР»РѕРІ Р·Р°РјРµРЅРµРЅ РЅР° СЃС‚СЂРѕРєСѓ */	
 public static type_definition GetArrWithStrInsteadCharArr(indexers_types lenList,
 		SourceContext lenListSC, SourceContext wholeSC){
 	List<type_definition> indxrs = lenList.indexers;
@@ -1333,15 +1333,15 @@ public static type_definition GetArrWithStrInsteadCharArr(indexers_types lenList
 	int32_const len = new int32_const();
 	len.val = (dp.right as int32_const).val + 1;
 	type_definition result = new string_num_definition(len, new ident("string", lenListSC), wholeSC);
-	if (indxrs.Count > 1) {			// надо делать массив массивов ... строк
+	if (indxrs.Count > 1) {			// РЅР°РґРѕ РґРµР»Р°С‚СЊ РјР°СЃСЃРёРІ РјР°СЃСЃРёРІРѕРІ ... СЃС‚СЂРѕРє
 		indxrs.RemoveAt(indxrs.Count - 1);
 		result = new array_type(lenList, result, wholeSC); 
 	}
 	return result;
 }
 
-/* 	Возвращает диапазон 0..Length-1, полученный по обероновской длине
-	массива, и необходимый для паскалевского синтаксического узла */	
+/* 	Р’РѕР·РІСЂР°С‰Р°РµС‚ РґРёР°РїР°Р·РѕРЅ 0..Length-1, РїРѕР»СѓС‡РµРЅРЅС‹Р№ РїРѕ РѕР±РµСЂРѕРЅРѕРІСЃРєРѕР№ РґР»РёРЅРµ
+	РјР°СЃСЃРёРІР°, Рё РЅРµРѕР±С…РѕРґРёРјС‹Р№ РґР»СЏ РїР°СЃРєР°Р»РµРІСЃРєРѕРіРѕ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ СѓР·Р»Р° */	
 public static diapason GetDiapasonByArrLength(expression lenExpr, SourceContext lenSC){
 	int32_const zero = new int32_const();
 	zero.val = 0;

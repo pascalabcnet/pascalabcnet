@@ -3,19 +3,19 @@ var s:string;
     i,j:integer;
 begin
 //  i:=i div i;
-  write('Введите строку: ');  
+  write('Р’РІРµРґРёС‚Рµ СЃС‚СЂРѕРєСѓ: ');  
   readln(s); 
-  writeln('Вы ввели: ',s);  
+  writeln('Р’С‹ РІРІРµР»Рё: ',s);  
   
-  write('Введите число: ');
+  write('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ: ');
   readln(i);
-  writeln('Вы ввели: ',i);  
+  writeln('Р’С‹ РІРІРµР»Рё: ',i);  
   
-  write('Введите два числа: ');
+  write('Р’РІРµРґРёС‚Рµ РґРІР° С‡РёСЃР»Р°: ');
   readln(i,j); 
-  writeln('Вы ввели: ',i,' ',j);  
+  writeln('Р’С‹ РІРІРµР»Рё: ',i,' ',j);  
   
   writeln('Sleep(1000)');  
   sleep(1000);
-  writeln('Конец');  
+  writeln('РљРѕРЅРµС†');  
 end.

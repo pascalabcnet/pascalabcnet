@@ -377,7 +377,7 @@ namespace TreeConverter
 			_char_type.add_internal_interface(oti);
 		}
 
-		//Спросить у Вани. Мой NetHelper не поддерживает такие операциию
+		//РЎРїСЂРѕСЃРёС‚СЊ Сѓ Р’Р°РЅРё. РњРѕР№ NetHelper РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ С‚Р°РєРёРµ РѕРїРµСЂР°С†РёРёСЋ
 		private void NetInitialize()
 		{
 			/*
@@ -400,29 +400,29 @@ namespace TreeConverter
 			_pointer_type=compiled_type_node.get_type_node(Type.GetType("System.Void*"));
 			NetInitialize();
 
-			//Преобразования типов.
+			//РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С‚РёРїРѕРІ.
 			make_type_conversion(_integer_type,_real_type,type_compare.less_type,SemanticTree.basic_function_type.itod);
 
-			//Операции для типа integer.
-			//Присваивание для integer.
+			//РћРїРµСЂР°С†РёРё РґР»СЏ С‚РёРїР° integer.
+			//РџСЂРёСЃРІР°РёРІР°РЅРёРµ РґР»СЏ integer.
 			make_assign_operator(_integer_type,SemanticTree.basic_function_type.iassign);
 
-			//Унарные операции.
+			//РЈРЅР°СЂРЅС‹Рµ РѕРїРµСЂР°С†РёРё.
 			make_unary_operator(compiler_string_consts.minus_name,_integer_type,SemanticTree.basic_function_type.iunmin);
 			make_unary_operator(compiler_string_consts.not_name,_integer_type,SemanticTree.basic_function_type.inot);
 			make_empty_operator(compiler_string_consts.plus_name,_integer_type);
 			
-			//Арифметические операции.
+			//РђСЂРёС„РјРµС‚РёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё.
 			_int_add=make_binary_operator(compiler_string_consts.plus_name,_integer_type,SemanticTree.basic_function_type.iadd);
 			_int_sub=make_binary_operator(compiler_string_consts.minus_name,_integer_type,SemanticTree.basic_function_type.isub);
 			make_binary_operator(compiler_string_consts.mul_name,_integer_type,SemanticTree.basic_function_type.imul);
 			make_binary_operator(compiler_string_consts.idiv_name,_integer_type,SemanticTree.basic_function_type.idiv);
 			make_binary_operator(compiler_string_consts.mod_name,_integer_type,SemanticTree.basic_function_type.imod);
-			//Операция / для integer.
+			//РћРїРµСЂР°С†РёСЏ / РґР»СЏ integer.
 			make_common_binary_operation(compiler_string_consts.div_name,_integer_type,_real_type,_real_type,
 				SemanticTree.basic_function_type.ddiv,_real_type);
 
-			//Опрерации сравнения.
+			//РћРїСЂРµСЂР°С†РёРё СЃСЂР°РІРЅРµРЅРёСЏ.
 			make_binary_operator(compiler_string_consts.gr_name,_integer_type,SemanticTree.basic_function_type.igr,_bool_type);
 			make_binary_operator(compiler_string_consts.greq_name,_integer_type,SemanticTree.basic_function_type.igreq,_bool_type);
 			make_binary_operator(compiler_string_consts.sm_name,_integer_type,SemanticTree.basic_function_type.ism,_bool_type);
@@ -430,7 +430,7 @@ namespace TreeConverter
 			make_binary_operator(compiler_string_consts.eq_name,_integer_type,SemanticTree.basic_function_type.ieq,_bool_type);
 			make_binary_operator(compiler_string_consts.noteq_name,_integer_type,SemanticTree.basic_function_type.inoteq,_bool_type);
 
-			//Логические опреции.
+			//Р›РѕРіРёС‡РµСЃРєРёРµ РѕРїСЂРµС†РёРё.
 			make_binary_operator(compiler_string_consts.and_name,_integer_type,SemanticTree.basic_function_type.iand);
 			make_binary_operator(compiler_string_consts.or_name,_integer_type,SemanticTree.basic_function_type.ior);
 			make_binary_operator(compiler_string_consts.xor_name,_integer_type,SemanticTree.basic_function_type.ixor);
@@ -441,17 +441,17 @@ namespace TreeConverter
 			//Assign.
 			make_assign_operator(_real_type,SemanticTree.basic_function_type.dassign);
 
-			//Унарные операции.
+			//РЈРЅР°СЂРЅС‹Рµ РѕРїРµСЂР°С†РёРё.
 			make_unary_operator(compiler_string_consts.minus_name,_real_type,SemanticTree.basic_function_type.dunmin);
 			make_empty_operator(compiler_string_consts.plus_name,_real_type);
 
-			//Арифметические операции.
+			//РђСЂРёС„РјРµС‚РёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё.
 			make_binary_operator(compiler_string_consts.plus_name,_real_type,SemanticTree.basic_function_type.dadd);
 			make_binary_operator(compiler_string_consts.minus_name,_real_type,SemanticTree.basic_function_type.dsub);
 			make_binary_operator(compiler_string_consts.mul_name,_real_type,SemanticTree.basic_function_type.dmul);
 			make_binary_operator(compiler_string_consts.div_name,_real_type,SemanticTree.basic_function_type.ddiv);
 
-			//Опрерации сравнения.
+			//РћРїСЂРµСЂР°С†РёРё СЃСЂР°РІРЅРµРЅРёСЏ.
 			make_binary_operator(compiler_string_consts.gr_name,_real_type,SemanticTree.basic_function_type.dgr,_bool_type);
 			make_binary_operator(compiler_string_consts.greq_name,_real_type,SemanticTree.basic_function_type.dgreq,_bool_type);
 			make_binary_operator(compiler_string_consts.sm_name,_real_type,SemanticTree.basic_function_type.dsm,_bool_type);
@@ -463,7 +463,7 @@ namespace TreeConverter
 			//Assign.
 			make_assign_operator(_char_type,SemanticTree.basic_function_type.charassign);
 
-			//Опрерации сравнения.
+			//РћРїСЂРµСЂР°С†РёРё СЃСЂР°РІРЅРµРЅРёСЏ.
 			make_binary_operator(compiler_string_consts.gr_name,_char_type,SemanticTree.basic_function_type.chargr,_bool_type);
 			make_binary_operator(compiler_string_consts.greq_name,_char_type,SemanticTree.basic_function_type.chargreq,_bool_type);
 			make_binary_operator(compiler_string_consts.sm_name,_char_type,SemanticTree.basic_function_type.charsm,_bool_type);
@@ -475,17 +475,17 @@ namespace TreeConverter
 			//Assign.
 			make_assign_operator(_bool_type,SemanticTree.basic_function_type.boolassign);
 
-			//Логические операции.
-			//Унарные операции.
+			//Р›РѕРіРёС‡РµСЃРєРёРµ РѕРїРµСЂР°С†РёРё.
+			//РЈРЅР°СЂРЅС‹Рµ РѕРїРµСЂР°С†РёРё.
 			make_unary_operator(compiler_string_consts.not_name,_bool_type,SemanticTree.basic_function_type.bnot);
 
-			//Логическме операции.
+			//Р›РѕРіРёС‡РµСЃРєРјРµ РѕРїРµСЂР°С†РёРё.
 			make_binary_operator(compiler_string_consts.and_name,_bool_type,SemanticTree.basic_function_type.band);
 			make_binary_operator(compiler_string_consts.or_name,_bool_type,SemanticTree.basic_function_type.bor);
 			make_binary_operator(compiler_string_consts.xor_name,_bool_type,SemanticTree.basic_function_type.bxor);
 			make_unary_operator(compiler_string_consts.not_name,_bool_type,SemanticTree.basic_function_type.boolnot);
 
-			//Опрерации сравнения.
+			//РћРїСЂРµСЂР°С†РёРё СЃСЂР°РІРЅРµРЅРёСЏ.
 			make_binary_operator(compiler_string_consts.gr_name,_bool_type,SemanticTree.basic_function_type.boolgr);
 			make_binary_operator(compiler_string_consts.greq_name,_bool_type,SemanticTree.basic_function_type.boolgreq);
 			make_binary_operator(compiler_string_consts.sm_name,_bool_type,SemanticTree.basic_function_type.boolsm);
@@ -511,7 +511,7 @@ namespace TreeConverter
 
 		private void init_temp_methods(SymbolTable.Scope sc)
 		{
-			//TODO: Сделано по быстрому. Переделать.
+			//TODO: РЎРґРµР»Р°РЅРѕ РїРѕ Р±С‹СЃС‚СЂРѕРјСѓ. РџРµСЂРµРґРµР»Р°С‚СЊ.
 			Type tp=typeof(Console);
 			compiled_function_node cfn;
 			System.Type[] arr=new System.Type[1];
@@ -636,7 +636,7 @@ namespace TreeConverter
 			_system_unit.scope=conv.symbol_table.CreateUnitInterfaceScope(new SymbolTable.Scope[0]);
 
 			SymbolTable.Scope susc=_system_unit.scope;
-			//Добавляем типы.
+			//Р”РѕР±Р°РІР»СЏРµРј С‚РёРїС‹.
 			susc.AddSymbol(compiler_string_consts.integer_type_name,new SymbolInfo(_integer_type));
 			susc.AddSymbol(compiler_string_consts.real_type_name,new SymbolInfo(_real_type));
 			susc.AddSymbol(compiler_string_consts.char_type_name,new SymbolInfo(_char_type));

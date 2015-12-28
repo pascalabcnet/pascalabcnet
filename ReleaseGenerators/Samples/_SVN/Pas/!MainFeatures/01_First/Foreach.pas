@@ -1,4 +1,4 @@
-// Пример иллюстрирует возможности оператора foreach
+// РџСЂРёРјРµСЂ РёР»Р»СЋСЃС‚СЂРёСЂСѓРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РѕРїРµСЂР°С‚РѕСЂР° foreach
 uses System.Collections.Generic;
 
 var 
@@ -7,20 +7,20 @@ var
   l: List<integer>;
 
 begin
-  write('foreach по обычному массиву: ':35);
+  write('foreach РїРѕ РѕР±С‹С‡РЅРѕРјСѓ РјР°СЃСЃРёРІСѓ: ':35);
   foreach x: integer in a do
     write(x,' ');
   writeln;  
   
   s := [2..5,10..14];
-  write('foreach по множеству: ':35);
+  write('foreach РїРѕ РјРЅРѕР¶РµСЃС‚РІСѓ: ':35);
   foreach x: integer in s do
     write(x,' ');
   writeln;  
   
   l := new List<integer>;
   l.Add(7); l.Add(2); l.Add(5);
-  write('foreach по динамическому массиву: ':35);
+  write('foreach РїРѕ РґРёРЅР°РјРёС‡РµСЃРєРѕРјСѓ РјР°СЃСЃРёРІСѓ: ':35);
   foreach x: integer in l do
     write(x,' ');
 end.

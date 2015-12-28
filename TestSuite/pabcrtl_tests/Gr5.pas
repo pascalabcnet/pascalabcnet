@@ -1,10 +1,10 @@
-// Графика. Pie
+// Р“СЂР°С„РёРєР°. Pie
 uses GraphABC;
 
 const r = 200;
 
 begin
-  Window.Title := 'Круговая гистограмма';
+  Window.Title := 'РљСЂСѓРіРѕРІР°СЏ РіРёСЃС‚РѕРіСЂР°РјРјР°';
   var x := Window.Center.X;
   var y := Window.Center.Y;
   Brush.Color := clRandom;

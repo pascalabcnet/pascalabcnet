@@ -1,4 +1,4 @@
-// Рекурсивное рисование двоичного дерева
+// Р РµРєСѓСЂСЃРёРІРЅРѕРµ СЂРёСЃРѕРІР°РЅРёРµ РґРІРѕРёС‡РЅРѕРіРѕ РґРµСЂРµРІР°
 uses GraphABC;
 
 const 
@@ -7,7 +7,7 @@ const
   delay = 10;
 
 procedure DrawTree(x,y,dx,level: integer);
-// обход: левое поддерево, корень, правое
+// РѕР±С…РѕРґ: Р»РµРІРѕРµ РїРѕРґРґРµСЂРµРІРѕ, РєРѕСЂРµРЅСЊ, РїСЂР°РІРѕРµ
 begin
   if level>0 then 
   begin
@@ -20,7 +20,7 @@ begin
 end;
 
 begin
-  Window.Title := 'Рекурсивное рисование бинарного дерева';
+  Window.Title := 'Р РµРєСѓСЂСЃРёРІРЅРѕРµ СЂРёСЃРѕРІР°РЅРёРµ Р±РёРЅР°СЂРЅРѕРіРѕ РґРµСЂРµРІР°';
   SetSmoothingOff;
   SetWindowSize(800,30+Levels*LevelHeight);
   DrawTree(WindowWidth div 2,10,WindowWidth div 5,Levels);

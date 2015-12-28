@@ -1,4 +1,4 @@
-// Οΰδΰες
+// ΠΠ°Π΄Π°ΠµΡ‚
 type A=record end;
 
 var aa:a;

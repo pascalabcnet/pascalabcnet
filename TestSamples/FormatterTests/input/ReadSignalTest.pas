@@ -1,23 +1,23 @@
 var s:string;
     i,j:integer;
 begin
-  write('Введите строку: ');  
+  write('Р’РІРµРґРёС‚Рµ СЃС‚СЂРѕРєСѓ: ');  
   readln(s); 
-  writeln('Вы ввели: ',s);  
-  write('Введите число: ');
+  writeln('Р’С‹ РІРІРµР»Рё: ',s);  
+  write('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ: ');
   readln(i);
-  writeln('Вы ввели: ',i);  
+  writeln('Р’С‹ РІРІРµР»Рё: ',i);  
   i:=i div i;
 {
 ss
 1
 2 1
 }  
-  write('Введите два числа: ');
+  write('Р’РІРµРґРёС‚Рµ РґРІР° С‡РёСЃР»Р°: ');
   readln(i,j); 
-  writeln('Вы ввели: ',i,' ',j);  
+  writeln('Р’С‹ РІРІРµР»Рё: ',i,' ',j);  
   
   writeln('Sleep(1000)');  
   sleep(1000);
-  writeln('Конец');  
+  writeln('РљРѕРЅРµС†');  
 end.

@@ -1,8 +1,8 @@
-// Демонстрация работы со шрифтами
+// Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ СЂР°Р±РѕС‚С‹ СЃРѕ С€СЂРёС„С‚Р°РјРё
 uses GraphABC;
 
 begin
-  Window.Title := 'Шрифты';
+  Window.Title := 'РЁСЂРёС„С‚С‹';
   SetWindowSize(760,460);
   Font.Name := 'Arial';
   Font.Style := fsBoldItalic;

@@ -1,4 +1,4 @@
-//Тест делегатов с использованием PCU
+//РўРµСЃС‚ РґРµР»РµРіР°С‚РѕРІ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј PCU
 uses
   del1_u, del1_u2;
 
@@ -16,6 +16,6 @@ begin
   PrintEvent += MyProc;
   PrintEvent += MyProc2;
   PrintEvent += MyProc3;
-  PrintEvent(20); //Выведет 20, 40, 60
+  PrintEvent(20); //Р’С‹РІРµРґРµС‚ 20, 40, 60
   readln;
 end.

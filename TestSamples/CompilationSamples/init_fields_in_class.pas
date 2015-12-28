@@ -25,6 +25,6 @@ begin
   writeln(cc.st2);}
   writeln(cc.static_r.x);//,' ',cc.static_r.y);
   writeln(cc.i);
-  //нужен статический конструктор
+  //РЅСѓР¶РµРЅ СЃС‚Р°С‚РёС‡РµСЃРєРёР№ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
   readln;
 end.

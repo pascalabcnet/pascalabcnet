@@ -11,12 +11,12 @@ var Files:array of FileInfo;
     
 begin
   Files:=DirectoryInfo.Create('..\..\bin\lng\rus').GetFiles('*.*');
-  Writeln('Найдено '+Files.Length.tostring+' файлов, обработка...');
+  Writeln('РќР°Р№РґРµРЅРѕ '+Files.Length.tostring+' С„Р°Р№Р»РѕРІ, РѕР±СЂР°Р±РѕС‚РєР°...');
   res:='';
   for i:=0 to Files.Length-1 do
     res:=res+#13#10#13#10'//'+Files[i].Name+#13#10'%PREFIX%='#13#10+
     	ReadFileToEnd(Files[i].FullName);
-  Writeln('Сохранение собраного файла в ресурс...');
+  Writeln('РЎРѕС…СЂР°РЅРµРЅРёРµ СЃРѕР±СЂР°РЅРѕРіРѕ С„Р°Р№Р»Р° РІ СЂРµСЃСѓСЂСЃ...');
   ResWriter:=ResourceWriter.Create('..\..\Localization\DefaultLang.resources');
   ResWriter.AddResource('DefaultLanguage', System.Text.Encoding.GetEncoding(1251).GetBytes(res));
   ResWriter.Generate;

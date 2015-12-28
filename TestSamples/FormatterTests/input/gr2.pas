@@ -18,6 +18,6 @@ begin
     Brush.Color := clRandom;
     Rectangle(10,10,500,400);
   end;
-  TextOut(10,10,'Конец');}
+  TextOut(10,10,'РљРѕРЅРµС†');}
 
 end.

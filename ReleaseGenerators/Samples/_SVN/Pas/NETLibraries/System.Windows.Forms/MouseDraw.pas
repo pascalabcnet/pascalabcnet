@@ -1,4 +1,4 @@
-// Рисование мышью на форме. Иллюстрация Windows.Forms, событий
+// Р РёСЃРѕРІР°РЅРёРµ РјС‹С€СЊСЋ РЅР° С„РѕСЂРјРµ. РР»Р»СЋСЃС‚СЂР°С†РёСЏ Windows.Forms, СЃРѕР±С‹С‚РёР№
 {$apptype windows}
 {$reference System.Windows.Forms.dll}
 {$reference System.Drawing.dll}
@@ -12,15 +12,15 @@ type
   MyForm = class(Form)
   private
     g: Graphics;
-    // Предыдущие координаты мыши
+    // РџСЂРµРґС‹РґСѓС‰РёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РјС‹С€Рё
     x,y: integer;
   public  
     constructor;
     begin
       Size := new System.Drawing.Size(640,480);
       StartPosition := FormStartPosition.CenterScreen;
-      Text := 'Рисование мышью на форме';
-      // Привязка обработчиков к событиям
+      Text := 'Р РёСЃРѕРІР°РЅРёРµ РјС‹С€СЊСЋ РЅР° С„РѕСЂРјРµ';
+      // РџСЂРёРІСЏР·РєР° РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ Рє СЃРѕР±С‹С‚РёСЏРј
       MouseDown	+= OnMouseDown;
       MouseMove	+= OnMouseMove;
       Resize	+= OnResize;

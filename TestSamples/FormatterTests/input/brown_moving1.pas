@@ -1,4 +1,4 @@
-// Броуновское движение
+// Р‘СЂРѕСѓРЅРѕРІСЃРєРѕРµ РґРІРёР¶РµРЅРёРµ
 uses GraphABC;
 
 var x,y: integer;
@@ -18,7 +18,7 @@ var i: integer;
 const len=3;
 
 begin
-  SetWindowCaption('Броуновское движение');
+  SetWindowCaption('Р‘СЂРѕСѓРЅРѕРІСЃРєРѕРµ РґРІРёР¶РµРЅРёРµ');
   SetWindowSize(640,480);
   SetBrushColor(clBlack);
   FillRect(0,0,WindowWidth div 2,WindowHeight-1);
@@ -26,15 +26,15 @@ begin
   x:=Windowwidth div 2;
   y:=WindowHeight div 2;
 {  Sleep(1000);}
-  TextOut(5,5,'Начало!');
+  TextOut(5,5,'РќР°С‡Р°Р»Рѕ!');
   MoveTo(x,y);
   for i:=1 to 100000 do
   begin
 //    if i mod 5 = 0 then Sleep(1);
-    if i mod 1000 = 0 then TextOut(5,25,IntToStr(i)+' итераций');
+    if i mod 1000 = 0 then TextOut(5,25,IntToStr(i)+' РёС‚РµСЂР°С†РёР№');
     SetPenColor(RGB(Random(256),Random(256),Random(256)));
     LineOn(Random(2*len+1)-len,Random(2*len+1)-len)
   end;  
-  TextOut(5,45,'Конец!');
+  TextOut(5,45,'РљРѕРЅРµС†!');
 //  writeln(Milliseconds);
 end.

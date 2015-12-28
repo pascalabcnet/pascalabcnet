@@ -1,16 +1,16 @@
-// Работа с классом System.DateTime
-// Вычисление времени выполнения фрагмента кода
+// Р Р°Р±РѕС‚Р° СЃ РєР»Р°СЃСЃРѕРј System.DateTime
+// Р’С‹С‡РёСЃР»РµРЅРёРµ РІСЂРµРјРµРЅРё РІС‹РїРѕР»РЅРµРЅРёСЏ С„СЂР°РіРјРµРЅС‚Р° РєРѕРґР°
 
 uses System, PABCSystem;
 
 var dt: DateTime := DateTime.Now;
 
 begin
-  // Делаем случайную паузу
+  // Р”РµР»Р°РµРј СЃР»СѓС‡Р°Р№РЅСѓСЋ РїР°СѓР·Сѓ
   var ms := Random(1000);
   Writeln('Sleep','(',ms,')');
   Sleep(ms);
   
-  // Сравниваем с показаниями DateTime.Now
+  // РЎСЂР°РІРЅРёРІР°РµРј СЃ РїРѕРєР°Р·Р°РЅРёСЏРјРё DateTime.Now
   Writeln((DateTime.Now-dt).TotalMilliseconds,'ms');
 end.

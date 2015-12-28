@@ -14,11 +14,11 @@ begin
   a := new IntegerField('a:');
   b := new IntegerField('b:');
   LineBreak;
-  sum := new IntegerField('Сумма:',220);
+  sum := new IntegerField('РЎСѓРјРјР°:',220);
   LineBreak;
-  prod := new IntegerField('Произведение:',220);
+  prod := new IntegerField('РџСЂРѕРёР·РІРµРґРµРЅРёРµ:',220);
   LineBreak;
   EmptyLine(20);
-  d := new Button('Вычислить');
+  d := new Button('Р’С‹С‡РёСЃР»РёС‚СЊ');
   d.Click += MyClick;
 end.

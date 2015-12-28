@@ -14,36 +14,36 @@ namespace VisualPascalABCPlugins
     {
         public IVisualEnvironmentCompiler VisualEnvironmentCompiler;
 
-        // Препроцессор для обработки аспектов
+        // РџСЂРµРїСЂРѕС†РµСЃСЃРѕСЂ РґР»СЏ РѕР±СЂР°Р±РѕС‚РєРё Р°СЃРїРµРєС‚РѕРІ
         public PascalABCCompiler.Preprocessor2.Preprocessor2 AspectPreprocessor;
-        // Структура для хранения связи между кодом до работы препроцессора и после
+        // РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЃРІСЏР·Рё РјРµР¶РґСѓ РєРѕРґРѕРј РґРѕ СЂР°Р±РѕС‚С‹ РїСЂРµРїСЂРѕС†РµСЃСЃРѕСЂР° Рё РїРѕСЃР»Рµ
         public PascalABCCompiler.ParserTools.SourceContextMap AspectScm;
-        // Ошибки, возникающие в препроцессоре при сборе аспектов
+        // РћС€РёР±РєРё, РІРѕР·РЅРёРєР°СЋС‰РёРµ РІ РїСЂРµРїСЂРѕС†РµСЃСЃРѕСЂРµ РїСЂРё СЃР±РѕСЂРµ Р°СЃРїРµРєС‚РѕРІ
         public List<Error> AspectErrors;
-        // Имя текущего аспекта
+        // РРјСЏ С‚РµРєСѓС‰РµРіРѕ Р°СЃРїРµРєС‚Р°
         public string AspectTxtName;        
-        // Текст текущего аспекта
+        // РўРµРєСЃС‚ С‚РµРєСѓС‰РµРіРѕ Р°СЃРїРµРєС‚Р°
         public string AspectTxt;
-        // Главный файл
+        // Р“Р»Р°РІРЅС‹Р№ С„Р°Р№Р»
         public string RootFileName;
-        // Текущий проект
+        // РўРµРєСѓС‰РёР№ РїСЂРѕРµРєС‚
         public PascalABCCompiler.IProjectInfo RootProjectInfo;
-        // Вкладка с аспектами
+        // Р’РєР»Р°РґРєР° СЃ Р°СЃРїРµРєС‚Р°РјРё
         VisualPascalABC.CodeFileDocumentControl TabWithAspects;
 
         //public List<string> UsedUnits;
 
-        // Конструктор формы
+        // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ С„РѕСЂРјС‹
         public AspectTreeForm()
         {
             InitializeComponent();
-            // Инициализация данных плагина
+            // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґР°РЅРЅС‹С… РїР»Р°РіРёРЅР°
             PascalABCCompiler.StringResources.SetTextForAllObjects(this, AspectTree_VisualPascalABCPlugin.StringsPrefix);
             SaveButtonsEnabled = false;
             SaveOneButtonEnabled = false;
             InsertButtonsEnabled = false;
 
-            // Создание подобъектов плагина
+            // РЎРѕР·РґР°РЅРёРµ РїРѕРґРѕР±СЉРµРєС‚РѕРІ РїР»Р°РіРёРЅР°
             this.AspectScm = new PascalABCCompiler.ParserTools.SourceContextMap();
             this.AspectErrors = new List<Error>();
             //this.UsedUnits = new List<string>();
@@ -51,7 +51,7 @@ namespace VisualPascalABCPlugins
             this.AspectPreprocessor = new PascalABCCompiler.Preprocessor2.Preprocessor2(sourceFilesProvider);           
         }
 
-        // Сброс значений полей
+        // РЎР±СЂРѕСЃ Р·РЅР°С‡РµРЅРёР№ РїРѕР»РµР№
         private void AspectPreprocessorReset()
         {
             this.AspectPreprocessor.AspectsNames.Clear();
@@ -61,18 +61,18 @@ namespace VisualPascalABCPlugins
             this.AspectErrors.Clear();
             this.AspectPreprocessor.InAspect = false;
             this.AspectPreprocessor.CurrentAspectDirective = "";
-            //Очищаем список ошибок
+            //РћС‡РёС‰Р°РµРј СЃРїРёСЃРѕРє РѕС€РёР±РѕРє
             VisualPascalABC.WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
             //this.UsedUnits.Clear();
         }
 
-        // Загрузка
+        // Р—Р°РіСЂСѓР·РєР°
         private void AspectTreeForm_Load(object sender, EventArgs e)
         {
 
         }
 
-        // Сброс значений перед закрытием
+        // РЎР±СЂРѕСЃ Р·РЅР°С‡РµРЅРёР№ РїРµСЂРµРґ Р·Р°РєСЂС‹С‚РёРµРј
         private void AspectTreeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             e.Cancel = true;
@@ -84,15 +84,15 @@ namespace VisualPascalABCPlugins
             SaveButtonsEnabled = false;
             SaveOneButtonEnabled = false;
             InsertButtonsEnabled = false;
-            //Отключаем обработчик
+            //РћС‚РєР»СЋС‡Р°РµРј РѕР±СЂР°Р±РѕС‚С‡РёРє
             VisualEnvironmentCompiler.StandartCompiler.OnChangeCompilerState -= Compiler_OnChangeCompilerState;
             treeView.Nodes.Clear();
             treeView.Invalidate();
             treeView.Refresh();
             treeView.Update();
-            //Очищаем список ошибок
+            //РћС‡РёС‰Р°РµРј СЃРїРёСЃРѕРє РѕС€РёР±РѕРє
             VisualPascalABC.WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
-            // Закрываем вкладку с аспектами
+            // Р—Р°РєСЂС‹РІР°РµРј РІРєР»Р°РґРєСѓ СЃ Р°СЃРїРµРєС‚Р°РјРё
             if (TabWithAspects != null)
                 VisualPascalABC.VisualPABCSingleton.MainForm.CloseAspPlugin(TabWithAspects);
             // Clear Buffer
@@ -101,12 +101,12 @@ namespace VisualPascalABCPlugins
        
         private void AspectTreeForm_Shown(object sender, EventArgs e)
         {            
-            // Добавляем новый обработчик событий компилятора
+            // Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Р№ РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёР№ РєРѕРјРїРёР»СЏС‚РѕСЂР°
             VisualEnvironmentCompiler.StandartCompiler.OnChangeCompilerState += new PascalABCCompiler.ChangeCompilerStateEventDelegate(Compiler_OnChangeCompilerState);
             treeView.Nodes.Clear();
         }
         
-        // Изменение статуса активности кнопок
+        // РР·РјРµРЅРµРЅРёРµ СЃС‚Р°С‚СѓСЃР° Р°РєС‚РёРІРЅРѕСЃС‚Рё РєРЅРѕРїРѕРє
         bool BuildButtonsEnabled
         {
             set
@@ -167,7 +167,7 @@ namespace VisualPascalABCPlugins
             }
         }
         
-        // Обработчик изменения состояния компилятора
+        // РћР±СЂР°Р±РѕС‚С‡РёРє РёР·РјРµРЅРµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРѕРјРїРёР»СЏС‚РѕСЂР°
         void Compiler_OnChangeCompilerState(PascalABCCompiler.ICompiler sender, PascalABCCompiler.CompilerState State, string FileName)
         {
             switch (State)
@@ -200,7 +200,7 @@ namespace VisualPascalABCPlugins
         }
 
         
-        // Построение и отображение дерева аспектов
+        // РџРѕСЃС‚СЂРѕРµРЅРёРµ Рё РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РґРµСЂРµРІР° Р°СЃРїРµРєС‚РѕРІ
         public void ShowTree()
         {           
             try
@@ -244,7 +244,7 @@ namespace VisualPascalABCPlugins
 
                     AspectTxt = AspectPreprocessor.Build(files, AspectErrors, AspectScm);
 
-                    // Вывод ошибок                    
+                    // Р’С‹РІРѕРґ РѕС€РёР±РѕРє                    
                     if (AspectErrors.Count > 0)
                     {
                         PascalABCCompiler.CompilerType ct = VisualEnvironmentCompiler.DefaultCompilerType;
@@ -326,14 +326,14 @@ namespace VisualPascalABCPlugins
             }            
         }
 
-        // Сбор аспектов без компиляции
+        // РЎР±РѕСЂ Р°СЃРїРµРєС‚РѕРІ Р±РµР· РєРѕРјРїРёР»СЏС†РёРё
         private void toolStripButton1_Click(object sender, EventArgs e)
         {        
             TemplateButtonEnabled = false;
             BuildButtonsEnabled = false;
             ShowTree();
             
-            // Добавление параметров
+            // Р”РѕР±Р°РІР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ
             for (int i = 0; i < treeView.Nodes.Count; i++)
                 if (treeView.Nodes[i].Text != "&all")
                     treeView.Nodes[i].Text = treeView.Nodes[i].Text + "  " + AspectPreprocessor.AspectsMap[treeView.Nodes[i].Text].Author + "  " + AspectPreprocessor.AspectsMap[treeView.Nodes[i].Text].Version;
@@ -343,7 +343,7 @@ namespace VisualPascalABCPlugins
             SaveButtonsEnabled = true;
             InsertButtonsEnabled = true;
 
-            // Обработка ошибок
+            // РћР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє
             bool finished = true;
             if (AspectErrors.Count > 0)
             {
@@ -357,7 +357,7 @@ namespace VisualPascalABCPlugins
                 VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.AddMessageToErrorListWindow, AspectErrors);
                 VisualEnvironmentCompiler.DefaultCompilerType = ct;
             }
-            // конец обработки
+            // РєРѕРЅРµС† РѕР±СЂР°Р±РѕС‚РєРё
             if ((treeView.Nodes.Count <= 1) || (!finished))
             {
                 BuildButtonsEnabled = true;
@@ -373,7 +373,7 @@ namespace VisualPascalABCPlugins
             }                            
         }
 
-        // Сбор аспектов с последующей компиляцией
+        // РЎР±РѕСЂ Р°СЃРїРµРєС‚РѕРІ СЃ РїРѕСЃР»РµРґСѓСЋС‰РµР№ РєРѕРјРїРёР»СЏС†РёРµР№
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
             BuildButtonsEnabled = false;            
@@ -385,7 +385,7 @@ namespace VisualPascalABCPlugins
 
             TemplateButtonEnabled = false;
             ShowTree();
-            //Добавление параметров
+            //Р”РѕР±Р°РІР»РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ
             for (int i = 0; i < treeView.Nodes.Count; i++)
                 if (treeView.Nodes[i].Text != "&all")
                     treeView.Nodes[i].Text = treeView.Nodes[i].Text + "  " + AspectPreprocessor.AspectsMap[treeView.Nodes[i].Text].Author + "  " + AspectPreprocessor.AspectsMap[treeView.Nodes[i].Text].Version;
@@ -409,7 +409,7 @@ namespace VisualPascalABCPlugins
             }            
         }                      
         
-        // Сохранение всех аспектов
+        // РЎРѕС…СЂР°РЅРµРЅРёРµ РІСЃРµС… Р°СЃРїРµРєС‚РѕРІ
         private void toolStripButton1_Click_1(object sender, EventArgs e)
         {
 
@@ -423,7 +423,7 @@ namespace VisualPascalABCPlugins
                 //file_names[0] = "C:\\PABCWork.NET\\program8.pas";
                 file_names[0] = RootFileName;
 
-                // Проверка сохраняемых аспектов              
+                // РџСЂРѕРІРµСЂРєР° СЃРѕС…СЂР°РЅСЏРµРјС‹С… Р°СЃРїРµРєС‚РѕРІ              
                 string check;
                 check = txt;
                 List<PascalABCCompiler.SyntaxTree.SourceContext> beg;
@@ -470,7 +470,7 @@ namespace VisualPascalABCPlugins
                         break;
                     }
                 }
-                // Конец проверки
+                // РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё
 
                 if (can_save)
                 {
@@ -483,7 +483,7 @@ namespace VisualPascalABCPlugins
                     else
                         AspectPreprocessor.WriteAspects(txt, "");
 
-                    // Обновление вкладок
+                    // РћР±РЅРѕРІР»РµРЅРёРµ РІРєР»Р°РґРѕРє
                     StreamWriter sw1;
                     VisualPascalABC.CodeFileDocumentControl tp;
                     if (!VisualPascalABC.ProjectFactory.Instance.ProjectLoaded)
@@ -508,7 +508,7 @@ namespace VisualPascalABCPlugins
                                 VisualPascalABC.VisualPABCSingleton.MainForm.SaveAspPlugin(tp);
                             }
                         }
-                        // Открываем главный файл после обновления
+                        // РћС‚РєСЂС‹РІР°РµРј РіР»Р°РІРЅС‹Р№ С„Р°Р№Р» РїРѕСЃР»Рµ РѕР±РЅРѕРІР»РµРЅРёСЏ
                         tp = VisualPascalABC.VisualPABCSingleton.MainForm.FindTab(Path.GetDirectoryName(RootProjectInfo.Path) + "\\" + file_names[0]);
                         if (tp != null)
                         {
@@ -517,11 +517,11 @@ namespace VisualPascalABCPlugins
                         }
                     }
 
-                    // Закрываем вкладку с аспектами
+                    // Р—Р°РєСЂС‹РІР°РµРј РІРєР»Р°РґРєСѓ СЃ Р°СЃРїРµРєС‚Р°РјРё
                     if (TabWithAspects != null)
                         VisualPascalABC.VisualPABCSingleton.MainForm.CloseAspPlugin(TabWithAspects);
 
-                    // Деактивируем пункт сохранения
+                    // Р”РµР°РєС‚РёРІРёСЂСѓРµРј РїСѓРЅРєС‚ СЃРѕС…СЂР°РЅРµРЅРёСЏ
                     SaveButtonsEnabled = false;
                     SaveOneButtonEnabled = false;
                     TemplateButtonEnabled = true;
@@ -570,7 +570,7 @@ namespace VisualPascalABCPlugins
             */
         }
 
-        // Загрузка выбранного аспекта, либо всех аспектов
+        // Р—Р°РіСЂСѓР·РєР° РІС‹Р±СЂР°РЅРЅРѕРіРѕ Р°СЃРїРµРєС‚Р°, Р»РёР±Рѕ РІСЃРµС… Р°СЃРїРµРєС‚РѕРІ
         private void treeView_DoubleClick(object sender, EventArgs e)
         {
             try
@@ -618,13 +618,13 @@ namespace VisualPascalABCPlugins
             }
         }
 
-        // Вызов конструктора шаблона
+        // Р’С‹Р·РѕРІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° С€Р°Р±Р»РѕРЅР°
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             VisualPascalABC.VisualPABCSingleton.MainForm.MakeTemplate();         
         }
 
-        // Сохранение текущего аспекта
+        // РЎРѕС…СЂР°РЅРµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ Р°СЃРїРµРєС‚Р°
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
             if (VisualPascalABC.VisualPABCSingleton.MainForm.CurrentCodeFileDocument == TabWithAspects)
@@ -638,7 +638,7 @@ namespace VisualPascalABCPlugins
                 file_names[0] = RootFileName;
 
                 string check;
-                // Проверка сохраняемых аспектов              
+                // РџСЂРѕРІРµСЂРєР° СЃРѕС…СЂР°РЅСЏРµРјС‹С… Р°СЃРїРµРєС‚РѕРІ              
                 check = txt;
                 List<PascalABCCompiler.SyntaxTree.SourceContext> beg;
                 bool can_save = true;
@@ -683,7 +683,7 @@ namespace VisualPascalABCPlugins
                         //exit saving                        
                     }
                 }
-                // Конец проверки
+                // РљРѕРЅРµС† РїСЂРѕРІРµСЂРєРё
                 if (can_save)
                 {
 
@@ -696,7 +696,7 @@ namespace VisualPascalABCPlugins
                     else
                         AspectPreprocessor.WriteAspect(txt, "", AspectTxtName);
 
-                    // Обновление вкладок
+                    // РћР±РЅРѕРІР»РµРЅРёРµ РІРєР»Р°РґРѕРє
 
                     StreamWriter sw1;
                     VisualPascalABC.CodeFileDocumentControl tp;
@@ -722,7 +722,7 @@ namespace VisualPascalABCPlugins
                                 VisualPascalABC.VisualPABCSingleton.MainForm.SaveAspPlugin(tp);
                             }
                         }
-                        // Открываем главный файл после обновления
+                        // РћС‚РєСЂС‹РІР°РµРј РіР»Р°РІРЅС‹Р№ С„Р°Р№Р» РїРѕСЃР»Рµ РѕР±РЅРѕРІР»РµРЅРёСЏ
                         tp = VisualPascalABC.VisualPABCSingleton.MainForm.FindTab(Path.GetDirectoryName(RootProjectInfo.Path) + "\\" + file_names[0]);
                         if (tp != null)
                         {
@@ -731,11 +731,11 @@ namespace VisualPascalABCPlugins
                         }
                     }
 
-                    // Закрываем вкладку с аспектами
+                    // Р—Р°РєСЂС‹РІР°РµРј РІРєР»Р°РґРєСѓ СЃ Р°СЃРїРµРєС‚Р°РјРё
                     if (TabWithAspects != null)
                         VisualPascalABC.VisualPABCSingleton.MainForm.CloseAspPlugin(TabWithAspects);
 
-                    // Деактивируем пункт сохранения
+                    // Р”РµР°РєС‚РёРІРёСЂСѓРµРј РїСѓРЅРєС‚ СЃРѕС…СЂР°РЅРµРЅРёСЏ
                     SaveButtonsEnabled = false;
                     SaveOneButtonEnabled = false;
                     TemplateButtonEnabled = true;

@@ -1,4 +1,4 @@
-// Движение по траектории
+// Р”РІРёР¶РµРЅРёРµ РїРѕ С‚СЂР°РµРєС‚РѕСЂРёРё
 uses ABCObjects,GraphABC;
 
 const
@@ -11,7 +11,7 @@ type
     x,y: real;
   end;
 
-function Position(t: real): PointR; // астроида
+function Position(t: real): PointR; // Р°СЃС‚СЂРѕРёРґР°
 var si,co: real;
 begin
   si := sin(1.5 * t);
@@ -20,7 +20,7 @@ begin
   Result.y := co*co*co;
 end;
 
-function Position1(t: real): PointR; // фигура Лиссажу
+function Position1(t: real): PointR; // С„РёРіСѓСЂР° Р›РёСЃСЃР°Р¶Сѓ
 begin
   Result.x := cos(4*t);
   Result.y := cos(2.97221*t + 2*Pi/3);
@@ -49,7 +49,7 @@ var
   t: real;
 
 begin
-  SetWindowCaption('Движение по траектории');
+  SetWindowCaption('Р”РІРёР¶РµРЅРёРµ РїРѕ С‚СЂР°РµРєС‚РѕСЂРёРё');
   SetWindowSize(640,480);
   CenterWindow;
 

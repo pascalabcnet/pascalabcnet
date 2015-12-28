@@ -1,9 +1,9 @@
-// Это должно работать
+// Р­С‚Рѕ РґРѕР»Р¶РЅРѕ СЂР°Р±РѕС‚Р°С‚СЊ
 
-var work: array ['а'..'я'] of integer;
+var work: array ['Р°'..'СЏ'] of integer;
 
 begin
-  Inc(work['а']);
-  writeln(work['а']);
+  Inc(work['Р°']);
+  writeln(work['Р°']);
   readln;
 end.

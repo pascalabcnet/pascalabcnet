@@ -1,27 +1,27 @@
 
-//синхронизация
-// длянный код вводит 3 имени - GetResult SetX SetY
+//СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ
+// РґР»СЏРЅРЅС‹Р№ РєРѕРґ РІРІРѕРґРёС‚ 3 РёРјРµРЅРё - GetResult SetX SetY
 function GetResult:real set SetX(x: real), SetY(y: real);
 begin
-  //зайдет сюда когда будут вызваны SetX и SetY
+  //Р·Р°Р№РґРµС‚ СЃСЋРґР° РєРѕРіРґР° Р±СѓРґСѓС‚ РІС‹Р·РІР°РЅС‹ SetX Рё SetY
   result := x*y;
 end;
 
 
-//асинхронные процедуры
+//Р°СЃРёРЅС…СЂРѕРЅРЅС‹Рµ РїСЂРѕС†РµРґСѓСЂС‹
 procedure CalcX(z:real); async;
 begin
-  z := {логика(z)};
+  z := {Р»РѕРіРёРєР°(z)};
   SetX(z);
 end;
 procedure CalcY(z:real); async;
 begin
-  z := {логика(z)};
+  z := {Р»РѕРіРёРєР°(z)};
   SetY(z);
 end;
 
 begin
-  CalcX(3.14);//запускается в потоке 1
-  CalcY(2.71);//запускается в потоке 2
+  CalcX(3.14);//Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ РІ РїРѕС‚РѕРєРµ 1
+  CalcY(2.71);//Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ РІ РїРѕС‚РѕРєРµ 2
   writeln(GetResult);
 end.

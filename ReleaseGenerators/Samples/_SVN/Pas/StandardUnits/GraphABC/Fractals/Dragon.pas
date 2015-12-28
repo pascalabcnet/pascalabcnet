@@ -1,4 +1,4 @@
-// Пример из пакета KuMir/PMir
+// РџСЂРёРјРµСЂ РёР· РїР°РєРµС‚Р° KuMir/PMir
 program Dragon;
 
 uses GraphABC,Utils;
@@ -12,7 +12,7 @@ var
 
 begin
   SetWindowSize(790,500);
-  Window.Title := 'Кривая Дракона';
+  Window.Title := 'РљСЂРёРІР°СЏ Р”СЂР°РєРѕРЅР°';
   var f := True;
   for var a := 1 to 64 do
   begin
@@ -66,5 +66,5 @@ begin
     dx := t;
     UnLockDrawing;
   end;
-  write('Время работы = ',Milliseconds/1000,' с');
+  write('Р’СЂРµРјСЏ СЂР°Р±РѕС‚С‹ = ',Milliseconds/1000,' СЃ');
 end.

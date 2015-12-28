@@ -25,7 +25,7 @@ var
   i: integer;
 
 begin
-  SetWindowCaption('Движущиеся объекты');
+  SetWindowCaption('Р”РІРёР¶СѓС‰РёРµСЃСЏ РѕР±СЉРµРєС‚С‹');
   //SetSmoothingOff;
   LockDrawingObjects;
   for i:=1 to n do

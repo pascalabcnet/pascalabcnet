@@ -1,14 +1,14 @@
 uses ABCObjects,GraphABC;
 
 const 
-/// отступ по оси x
+/// РѕС‚СЃС‚СѓРї РїРѕ РѕСЃРё x
   zx = 100;
-/// отступ по оси y
+/// РѕС‚СЃС‚СѓРї РїРѕ РѕСЃРё y
   zy = 50;
 
 begin
   Window.IsFixedSize := True;
-  Window.Title := 'Секундомер';
+  Window.Title := 'РЎРµРєСѓРЅРґРѕРјРµСЂ';
   var r := new RoundRectABC(zx,zy,Window.Width-2*zx,Window.Height-2*zy,100,clMoneyGreen);
   r.BorderWidth := 5;
   r.BorderColor := clGreen;

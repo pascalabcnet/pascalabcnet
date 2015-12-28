@@ -1,4 +1,4 @@
-// "Собачка". Иллюстрация использования таймера.
+// "РЎРѕР±Р°С‡РєР°". РР»Р»СЋСЃС‚СЂР°С†РёСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ С‚Р°Р№РјРµСЂР°.
 uses GraphABC, Timers;
 
 var
@@ -51,7 +51,7 @@ begin
 end;
 
 begin
-  SetWindowCaption('"Собачка"');
+  SetWindowCaption('"РЎРѕР±Р°С‡РєР°"');
   OnMouseMove:=MouseMove;
   xx:=100; yy:=100;
   px:=xx; py:=yy;

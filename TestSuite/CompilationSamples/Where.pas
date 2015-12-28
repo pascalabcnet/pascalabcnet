@@ -1,4 +1,4 @@
-// Секция Where - ограничение на типы параметров
+// РЎРµРєС†РёСЏ Where - РѕРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° С‚РёРїС‹ РїР°СЂР°РјРµС‚СЂРѕРІ
 uses System,System.Collections.Generic;
 
 type
@@ -15,7 +15,7 @@ type
    
 var 
   m: MyClass<IntArr,integer>;
-  //m1: MyClass<integer>; // ошибка
+  //m1: MyClass<integer>; // РѕС€РёР±РєР°
 
 begin
 end.

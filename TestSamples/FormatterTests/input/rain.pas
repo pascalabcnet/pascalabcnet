@@ -1,4 +1,4 @@
-// Имитация кругов на воде от капель дождя
+// РРјРёС‚Р°С†РёСЏ РєСЂСѓРіРѕРІ РЅР° РІРѕРґРµ РѕС‚ РєР°РїРµР»СЊ РґРѕР¶РґСЏ
 uses GraphABC;
 
 const
@@ -23,7 +23,7 @@ end;
 const z=50;
 
 begin
-  SetWindowCaption('Капли дождя');
+  SetWindowCaption('РљР°РїР»Рё РґРѕР¶РґСЏ');
   while True do
     Kaplia(Random(WindowWidth-2*z)+z,Random(WindowHeight-2*z)+z);
 end.

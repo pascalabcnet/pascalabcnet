@@ -1111,16 +1111,16 @@ namespace PascalABCCompiler.NetHelper
             }
             else
 			{
-                //(ssyy) Забираем также и не public члены
-                //(ds) добавил BindingFlags.FlattenHierarchy
-                //(ssyy) убрал BindingFlags.FlattenHierarchy. Зачем оно было нужно? :)
-                //(ds) добавил BindingFlags.FlattenHierarchy, затем что:
-                //Ваня Бондарев (00:52:19 16/12/2007)
+                //(ssyy) Р—Р°Р±РёСЂР°РµРј С‚Р°РєР¶Рµ Рё РЅРµ public С‡Р»РµРЅС‹
+                //(ds) РґРѕР±Р°РІРёР» BindingFlags.FlattenHierarchy
+                //(ssyy) СѓР±СЂР°Р» BindingFlags.FlattenHierarchy. Р—Р°С‡РµРј РѕРЅРѕ Р±С‹Р»Рѕ РЅСѓР¶РЅРѕ? :)
+                //(ds) РґРѕР±Р°РІРёР» BindingFlags.FlattenHierarchy, Р·Р°С‚РµРј С‡С‚Рѕ:
+                //Р’Р°РЅСЏ Р‘РѕРЅРґР°СЂРµРІ (00:52:19 16/12/2007)
                 //BindingFlags.FlattenHierarchy eto flag kotoryj ukazyvaet, chto chleny 
                 //tipa nado brat' ne tolko iz samogo tipa, no i ego bazovyh klassov 
                 //t.GetMembers(BindingFlags.FlattenHierarchy) naprimer. Dlja vybora staticheskih 
                 //chlenov eto objazatelno.
-                //Без этого не работает пример
+                //Р‘РµР· СЌС‚РѕРіРѕ РЅРµ СЂР°Р±РѕС‚Р°РµС‚ РїСЂРёРјРµСЂ
                 BindingFlags bf = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic;
 				MemberInfo[] mis;
                 if (t.IsInterface)
@@ -1139,10 +1139,10 @@ namespace PascalABCCompiler.NetHelper
                 {
                     mis = t.GetMembers(bf);
                 }
-                //(ssyy) DarkStar, что за предупреждение по следующей строке?
+                //(ssyy) DarkStar, С‡С‚Рѕ Р·Р° РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ РїРѕ СЃР»РµРґСѓСЋС‰РµР№ СЃС‚СЂРѕРєРµ?
 				var ht = new Dictionary<string,List<MemberInfo>>(StringComparer.CurrentCultureIgnoreCase);
                 List<MemberInfo> memb_lst = null;
-                //(ssyy) DarkStar, может быть эффективнее слить следующие 2 цикла в один?
+                //(ssyy) DarkStar, РјРѕР¶РµС‚ Р±С‹С‚СЊ СЌС„С„РµРєС‚РёРІРЅРµРµ СЃР»РёС‚СЊ СЃР»РµРґСѓСЋС‰РёРµ 2 С†РёРєР»Р° РІ РѕРґРёРЅ?
                 foreach (MemberInfo mi2 in mis)
                 {
                     //Console.WriteLine(mi2.Name.ToLower());
@@ -1222,7 +1222,7 @@ namespace PascalABCCompiler.NetHelper
 
         private static List<MemberInfo> EmptyMemberInfoList = new List<MemberInfo>();
 
-        //(ssyy) Является ли член класса видимым.
+        //(ssyy) РЇРІР»СЏРµС‚СЃСЏ Р»Рё С‡Р»РµРЅ РєР»Р°СЃСЃР° РІРёРґРёРјС‹Рј.
         public static field_access_level get_access_level(MemberInfo mi)
         {
             field_access_level amod = field_access_level.fal_public;
@@ -1429,13 +1429,13 @@ namespace PascalABCCompiler.NetHelper
 			SymbolInfo si=null;
 			
 			List<MemberInfo> mis = GetMembers(t,name);
-            //(ssyy) Изменил алгоритм.
-            //У нас некоторые алгоритмы базируются на том, что возвращённые
-            //сущности будут одной природы (например, все - методы). Это неверно,
-            //так как в случае наличия функции Ident и поля ident оба должны попасть
-            //в список.
+            //(ssyy) РР·РјРµРЅРёР» Р°Р»РіРѕСЂРёС‚Рј.
+            //РЈ РЅР°СЃ РЅРµРєРѕС‚РѕСЂС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ Р±Р°Р·РёСЂСѓСЋС‚СЃСЏ РЅР° С‚РѕРј, С‡С‚Рѕ РІРѕР·РІСЂР°С‰С‘РЅРЅС‹Рµ
+            //СЃСѓС‰РЅРѕСЃС‚Рё Р±СѓРґСѓС‚ РѕРґРЅРѕР№ РїСЂРёСЂРѕРґС‹ (РЅР°РїСЂРёРјРµСЂ, РІСЃРµ - РјРµС‚РѕРґС‹). Р­С‚Рѕ РЅРµРІРµСЂРЅРѕ,
+            //С‚Р°Рє РєР°Рє РІ СЃР»СѓС‡Р°Рµ РЅР°Р»РёС‡РёСЏ С„СѓРЅРєС†РёРё Ident Рё РїРѕР»СЏ ident РѕР±Р° РґРѕР»Р¶РЅС‹ РїРѕРїР°СЃС‚СЊ
+            //РІ СЃРїРёСЃРѕРє.
             
-            //TODO: проанализировать и изменить алгоритмы, использующие поиск.
+            //TODO: РїСЂРѕР°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ Рё РёР·РјРµРЅРёС‚СЊ Р°Р»РіРѕСЂРёС‚РјС‹, РёСЃРїРѕР»СЊР·СѓСЋС‰РёРµ РїРѕРёСЃРє.
 
             foreach (MemberInfo mi in mis)
             {
@@ -1712,7 +1712,7 @@ namespace PascalABCCompiler.NetHelper
             return cfn;
         }
 
-        //Возвращает акцессор get, если есть. Иначе возвращает акцессор set, если есть. Иначе возвращает null.
+        //Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РєС†РµСЃСЃРѕСЂ get, РµСЃР»Рё РµСЃС‚СЊ. РРЅР°С‡Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р°РєС†РµСЃСЃРѕСЂ set, РµСЃР»Рё РµСЃС‚СЊ. РРЅР°С‡Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ null.
         public static System.Reflection.MethodInfo GetAnyAccessor(PropertyInfo pi)
         {
             MethodInfo get = pi.GetGetMethod(true);

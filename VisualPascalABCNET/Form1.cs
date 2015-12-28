@@ -448,10 +448,10 @@ namespace VisualPascalABC
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             string text = Text;
-            //если запущены программы
+            //РµСЃР»Рё Р·Р°РїСѓС‰РµРЅС‹ РїСЂРѕРіСЂР°РјРјС‹
             if (WorkbenchServiceFactory.RunService.IsRun())
             {
-                //завершаем все программы
+                //Р·Р°РІРµСЂС€Р°РµРј РІСЃРµ РїСЂРѕРіСЂР°РјРјС‹
                 this.Text = string.Format(FTSFormat, MainFormText, Form1StringResources.Get("FTS_KILLPROCESS"));
                 WorkbenchServiceFactory.RunService.KillAll();
                 this.Text = text;
@@ -459,7 +459,7 @@ namespace VisualPascalABC
 
             WorkbenchServiceFactory.CodeCompletionParserController.StopParsing();
 
-            //Сохраняем Файлы
+            //РЎРѕС…СЂР°РЅСЏРµРј Р¤Р°Р№Р»С‹
             if (ProjectFactory.Instance.ProjectLoaded)
             {
                 if (!WorkbenchServiceFactory.ProjectService.CloseProject())
@@ -475,12 +475,12 @@ namespace VisualPascalABC
             }
 
 
-            //если стартовый поток запущен
+            //РµСЃР»Рё СЃС‚Р°СЂС‚РѕРІС‹Р№ РїРѕС‚РѕРє Р·Р°РїСѓС‰РµРЅ
             try
             {
                 if (VisualEnvironmentCompiler.Starting())
                 {
-                    //начинаем процедуру отмены старта компилятора
+                    //РЅР°С‡РёРЅР°РµРј РїСЂРѕС†РµРґСѓСЂСѓ РѕС‚РјРµРЅС‹ СЃС‚Р°СЂС‚Р° РєРѕРјРїРёР»СЏС‚РѕСЂР°
                     this.Text = string.Format(FTSFormat, MainFormText, Form1StringResources.Get("FTS_CANCELLOADING"));
                     VisualEnvironmentCompiler.AbortStaring();
                 }

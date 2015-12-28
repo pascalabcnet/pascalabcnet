@@ -4,7 +4,7 @@ uses Robot,RobotTaskMaker;
 
 procedure my1;
 begin
-  TaskText('Задание my1. Закрасить помеченные клетки');
+  TaskText('Р—Р°РґР°РЅРёРµ my1. Р—Р°РєСЂР°СЃРёС‚СЊ РїРѕРјРµС‡РµРЅРЅС‹Рµ РєР»РµС‚РєРё');
   Field(15,11);
   RobotBeginEnd(1,1,15,11);
   Tag(8,6);

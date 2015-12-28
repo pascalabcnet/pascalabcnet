@@ -16,7 +16,7 @@ type
 var
   a: Field;
   ships: array[1..10] of ship;
-  b: array [0..n+1, 0..n+1] of CellState; // выстрелы
+  b: array [0..n+1, 0..n+1] of CellState; // РІС‹СЃС‚СЂРµР»С‹
 
 procedure Clear(var a: Field);
 var x,y: integer;
@@ -206,7 +206,7 @@ begin
     Ships[i].life:=ships[i].len;
   if not TryPlaceShips(100) then
   begin
-    write('Не удалось расположить корабли');
+    write('РќРµ СѓРґР°Р»РѕСЃСЊ СЂР°СЃРїРѕР»РѕР¶РёС‚СЊ РєРѕСЂР°Р±Р»Рё');
     exit;
   end;
 end;
@@ -218,7 +218,7 @@ var i: integer;
 begin
   if b[x,y]<>NeStrelial then exit;
   i:=a[x,y];
-  if i>0 then // попал
+  if i>0 then // РїРѕРїР°Р»
   begin
     Dec(Ships[i].life);
     if Ships[i].life = 0 then
@@ -261,7 +261,7 @@ procedure IntellectualTryPli;
  begin
    d:=unknown;
    x:=prevgoodx; y:=prevgoody;
-   // определить направление корабля
+   // РѕРїСЂРµРґРµР»РёС‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ РєРѕСЂР°Р±Р»СЏ
    if (b[x,y+1]=Popal) or (b[x,y-1]=Popal) then
      d:=vert
    else if (b[x+1,y]=Popal) or (b[x-1,y]=Popal) then
@@ -291,7 +291,7 @@ procedure IntellectualTryPli;
        y:=y-1
      until b[x,y]<>Popal;
      if b[x,y]=NeStrelial then Exit;
-     writeln('Ошибка: корабль не потоплен, но выстрелов больше нет');
+     writeln('РћС€РёР±РєР°: РєРѕСЂР°Р±Р»СЊ РЅРµ РїРѕС‚РѕРїР»РµРЅ, РЅРѕ РІС‹СЃС‚СЂРµР»РѕРІ Р±РѕР»СЊС€Рµ РЅРµС‚');
      writeln(prevgoodx,' ',prevgoody);
    end;
  end;
@@ -299,7 +299,7 @@ procedure IntellectualTryPli;
 var x,y: integer;
 
 begin
-  if b[prevgoodx,prevgoody]=Popal then // что-то интеллектуальное - добивать
+  if b[prevgoodx,prevgoody]=Popal then // С‡С‚Рѕ-С‚Рѕ РёРЅС‚РµР»Р»РµРєС‚СѓР°Р»СЊРЅРѕРµ - РґРѕР±РёРІР°С‚СЊ
     SearchNextPli(x,y)
   else
   repeat

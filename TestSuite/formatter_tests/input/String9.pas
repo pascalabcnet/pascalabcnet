@@ -1,4 +1,4 @@
-// Пример решения задачи String9 из электронного задачника Programming Taskbook
+// РџСЂРёРјРµСЂ СЂРµС€РµРЅРёСЏ Р·Р°РґР°С‡Рё String9 РёР· СЌР»РµРєС‚СЂРѕРЅРЅРѕРіРѕ Р·Р°РґР°С‡РЅРёРєР° Programming Taskbook
 uses PT4;
 var
   n: integer;

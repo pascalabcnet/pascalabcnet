@@ -1,4 +1,4 @@
-// Графика. Сохраниение изображения графического окна в файл и загрузка из файла 
+// Р“СЂР°С„РёРєР°. РЎРѕС…СЂР°РЅРёРµРЅРёРµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ РѕРєРЅР° РІ С„Р°Р№Р» Рё Р·Р°РіСЂСѓР·РєР° РёР· С„Р°Р№Р»Р° 
 uses GraphABC;
 
 const 
@@ -6,7 +6,7 @@ const
   filename = 'GraphWindow.bmp';
 
 begin
-  Window.Title := 'Window.Save и Window.Load';
+  Window.Title := 'Window.Save Рё Window.Load';
   SetWindowSize(320,240);
   
   for var x:=0 to Window.Width - 1 do
