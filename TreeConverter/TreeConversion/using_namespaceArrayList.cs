@@ -5,7 +5,7 @@ using PascalABCCompiler.TreeRealization;
 namespace PascalABCCompiler.TreeConverter
 {
 
-    //TODO: Переделать с использованием коллекций.
+    //TODO: РџРµСЂРµРґРµР»Р°С‚СЊ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј РєРѕР»Р»РµРєС†РёР№.
 	///<summary>
 	///Collection of using_namespace
 	///</summary>

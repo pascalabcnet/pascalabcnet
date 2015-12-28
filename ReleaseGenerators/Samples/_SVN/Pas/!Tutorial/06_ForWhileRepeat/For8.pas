@@ -1,11 +1,11 @@
-// Цикл for. Максимум из введенных чисел
+// Р¦РёРєР» for. РњР°РєСЃРёРјСѓРј РёР· РІРІРµРґРµРЅРЅС‹С… С‡РёСЃРµР»
 const n = 10;
 
 var max: real;
 
 begin
-  writelnFormat('Введите {0} чисел',n);
-  max := integer.MinValue; // самое маленькое целое число
+  writelnFormat('Р’РІРµРґРёС‚Рµ {0} С‡РёСЃРµР»',n);
+  max := integer.MinValue; // СЃР°РјРѕРµ РјР°Р»РµРЅСЊРєРѕРµ С†РµР»РѕРµ С‡РёСЃР»Рѕ
   for var i:=1 to n do
   begin
     var x: real;
@@ -13,5 +13,5 @@ begin
     if x>max then
       max := x;
   end;  
-  writeln('Максимальное равно ',max);
+  writeln('РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ СЂР°РІРЅРѕ ',max);
 end.

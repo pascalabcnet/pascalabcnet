@@ -190,9 +190,9 @@ namespace ICSharpCode.FormsDesigner.Services
             menu.Items.AddRange(menuItems2);
 			Point pt = comp.PointToScreen(new Point(0, 0));
             menu.Show(comp, new Point(x - pt.X, y - pt.Y));
-            /*Следующее делается по следующей причине:
-                * почему то при menu.Items.AddRange(menuItems1); удаляются элементы из VisualPascalABC.Form1.Form1_object.cm_Designer,
-                * аналогично для menu.Items.AddRange(menuItems2);
+            /*РЎР»РµРґСѓСЋС‰РµРµ РґРµР»Р°РµС‚СЃСЏ РїРѕ СЃР»РµРґСѓСЋС‰РµР№ РїСЂРёС‡РёРЅРµ:
+                * РїРѕС‡РµРјСѓ С‚Рѕ РїСЂРё menu.Items.AddRange(menuItems1); СѓРґР°Р»СЏСЋС‚СЃСЏ СЌР»РµРјРµРЅС‚С‹ РёР· VisualPascalABC.Form1.Form1_object.cm_Designer,
+                * Р°РЅР°Р»РѕРіРёС‡РЅРѕ РґР»СЏ menu.Items.AddRange(menuItems2);
                 */
             menu.Closed += delegate   
             {

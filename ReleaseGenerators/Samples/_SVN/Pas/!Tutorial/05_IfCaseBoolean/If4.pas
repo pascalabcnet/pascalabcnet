@@ -1,18 +1,18 @@
-// Вложенные условные операторы
+// Р’Р»РѕР¶РµРЅРЅС‹Рµ СѓСЃР»РѕРІРЅС‹Рµ РѕРїРµСЂР°С‚РѕСЂС‹
 var x: integer;
 
 begin
-  writeln('Введите оценку (1..5): ');
+  writeln('Р’РІРµРґРёС‚Рµ РѕС†РµРЅРєСѓ (1..5): ');
   readln(x);
   if (x=1) then 
-    writeln('Единица')
+    writeln('Р•РґРёРЅРёС†Р°')
   else if (x=2) then 
-    writeln('Двойка')
+    writeln('Р”РІРѕР№РєР°')
   else if (x=3) then 
-    writeln('Тройка')
+    writeln('РўСЂРѕР№РєР°')
   else if (x=4) then 
-    writeln('Четверка')
+    writeln('Р§РµС‚РІРµСЂРєР°')
   else if (x=5) then 
-    writeln('Пятерка')  
-  else writeln('Такой оценки нет')  
+    writeln('РџСЏС‚РµСЂРєР°')  
+  else writeln('РўР°РєРѕР№ РѕС†РµРЅРєРё РЅРµС‚')  
 end.

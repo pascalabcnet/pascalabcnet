@@ -143,7 +143,7 @@ namespace NodesGenerator
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(152, 23);
             this.save.TabIndex = 1;
-            this.save.Text = "Сохранить";
+            this.save.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ";
             this.save.Click += new System.EventHandler(this.save_Click);
             // 
             // close
@@ -152,7 +152,7 @@ namespace NodesGenerator
             this.close.Name = "close";
             this.close.Size = new System.Drawing.Size(113, 32);
             this.close.TabIndex = 2;
-            this.close.Text = "Выход";
+            this.close.Text = "Р’С‹С…РѕРґ";
             this.close.Click += new System.EventHandler(this.close_Click);
             // 
             // nodes_list
@@ -170,7 +170,7 @@ namespace NodesGenerator
             this.save_as.Name = "save_as";
             this.save_as.Size = new System.Drawing.Size(152, 23);
             this.save_as.TabIndex = 4;
-            this.save_as.Text = "Сохранить как";
+            this.save_as.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє";
             this.save_as.Click += new System.EventHandler(this.save_as_Click);
             // 
             // open
@@ -179,13 +179,13 @@ namespace NodesGenerator
             this.open.Name = "open";
             this.open.Size = new System.Drawing.Size(152, 23);
             this.open.TabIndex = 5;
-            this.open.Text = "Открыть";
+            this.open.Text = "РћС‚РєСЂС‹С‚СЊ";
             this.open.Click += new System.EventHandler(this.open_Click);
             // 
             // openFileDialog1
             // 
             this.openFileDialog1.DefaultExt = "nin";
-            this.openFileDialog1.Filter = "Файлы синтаксического дерева (*.nin)|*.nin|Все файлы (*.*)|*.*";
+            this.openFileDialog1.Filter = "Р¤Р°Р№Р»С‹ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° (*.nin)|*.nin|Р’СЃРµ С„Р°Р№Р»С‹ (*.*)|*.*";
             // 
             // add
             // 
@@ -193,7 +193,7 @@ namespace NodesGenerator
             this.add.Name = "add";
             this.add.Size = new System.Drawing.Size(97, 23);
             this.add.TabIndex = 6;
-            this.add.Text = "Добавить";
+            this.add.Text = "Р”РѕР±Р°РІРёС‚СЊ";
             this.add.Click += new System.EventHandler(this.add_Click);
             // 
             // delete
@@ -202,7 +202,7 @@ namespace NodesGenerator
             this.delete.Name = "delete";
             this.delete.Size = new System.Drawing.Size(97, 23);
             this.delete.TabIndex = 7;
-            this.delete.Text = "Удалить";
+            this.delete.Text = "РЈРґР°Р»РёС‚СЊ";
             this.delete.Click += new System.EventHandler(this.delete_Click);
             // 
             // generate_code
@@ -212,7 +212,7 @@ namespace NodesGenerator
             this.generate_code.Name = "generate_code";
             this.generate_code.Size = new System.Drawing.Size(152, 30);
             this.generate_code.TabIndex = 8;
-            this.generate_code.Text = "Сгенерировать код";
+            this.generate_code.Text = "РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РєРѕРґ";
             this.generate_code.Click += new System.EventHandler(this.generate_code_Click);
             // 
             // generate_visitor_template
@@ -221,7 +221,7 @@ namespace NodesGenerator
             this.generate_visitor_template.Name = "generate_visitor_template";
             this.generate_visitor_template.Size = new System.Drawing.Size(152, 41);
             this.generate_visitor_template.TabIndex = 9;
-            this.generate_visitor_template.Text = "Генерировать шаблон визитора";
+            this.generate_visitor_template.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ С€Р°Р±Р»РѕРЅ РІРёР·РёС‚РѕСЂР°";
             this.generate_visitor_template.Click += new System.EventHandler(this.generate_visitor_template_Click);
             // 
             // panel1
@@ -253,7 +253,7 @@ namespace NodesGenerator
             this.generate_pcu_read_visitor.Name = "generate_pcu_read_visitor";
             this.generate_pcu_read_visitor.Size = new System.Drawing.Size(152, 43);
             this.generate_pcu_read_visitor.TabIndex = 11;
-            this.generate_pcu_read_visitor.Text = "Генерировать pcu-десериализатор";
+            this.generate_pcu_read_visitor.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ pcu-РґРµСЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_pcu_read_visitor.UseVisualStyleBackColor = true;
             this.generate_pcu_read_visitor.Click += new System.EventHandler(this.generate_pcu_read_visitor_Click);
             // 
@@ -263,7 +263,7 @@ namespace NodesGenerator
             this.generate_pcu_write_visitor.Name = "generate_pcu_write_visitor";
             this.generate_pcu_write_visitor.Size = new System.Drawing.Size(152, 42);
             this.generate_pcu_write_visitor.TabIndex = 10;
-            this.generate_pcu_write_visitor.Text = "Генерировать pcu-сериализатор";
+            this.generate_pcu_write_visitor.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ pcu-СЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_pcu_write_visitor.UseVisualStyleBackColor = true;
             this.generate_pcu_write_visitor.Click += new System.EventHandler(this.generate_pcu_write_visitor_Click);
             // 
@@ -289,7 +289,7 @@ namespace NodesGenerator
             this.Down.Name = "Down";
             this.Down.Size = new System.Drawing.Size(97, 23);
             this.Down.TabIndex = 19;
-            this.Down.Text = "Вниз";
+            this.Down.Text = "Р’РЅРёР·";
             this.Down.UseVisualStyleBackColor = true;
             this.Down.Click += new System.EventHandler(this.Down_Click);
             // 
@@ -299,7 +299,7 @@ namespace NodesGenerator
             this.Up.Name = "Up";
             this.Up.Size = new System.Drawing.Size(97, 23);
             this.Up.TabIndex = 18;
-            this.Up.Text = "Вверх";
+            this.Up.Text = "Р’РІРµСЂС…";
             this.Up.UseVisualStyleBackColor = true;
             this.Up.Click += new System.EventHandler(this.Up_Click);
             // 
@@ -310,7 +310,7 @@ namespace NodesGenerator
             this.sorted_by_name.Name = "sorted_by_name";
             this.sorted_by_name.Size = new System.Drawing.Size(86, 17);
             this.sorted_by_name.TabIndex = 17;
-            this.sorted_by_name.Text = "Сортировка";
+            this.sorted_by_name.Text = "РЎРѕСЂС‚РёСЂРѕРІРєР°";
             this.sorted_by_name.UseVisualStyleBackColor = true;
             this.sorted_by_name.CheckStateChanged += new System.EventHandler(this.sorted_by_name_CheckStateChanged);
             // 
@@ -320,7 +320,7 @@ namespace NodesGenerator
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(175, 17);
             this.label7.TabIndex = 16;
-            this.label7.Text = "Узлы синтаксического дерева";
+            this.label7.Text = "РЈР·Р»С‹ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР°";
             // 
             // edit
             // 
@@ -328,7 +328,7 @@ namespace NodesGenerator
             this.edit.Name = "edit";
             this.edit.Size = new System.Drawing.Size(97, 23);
             this.edit.TabIndex = 8;
-            this.edit.Text = "Редактировать";
+            this.edit.Text = "Р РµРґР°РєС‚РёСЂРѕРІР°С‚СЊ";
             this.edit.Click += new System.EventHandler(this.edit_Click);
             // 
             // file_name
@@ -351,7 +351,7 @@ namespace NodesGenerator
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(175, 16);
             this.label1.TabIndex = 15;
-            this.label1.Text = "Имя файла синтаксич. дерева";
+            this.label1.Text = "РРјСЏ С„Р°Р№Р»Р° СЃРёРЅС‚Р°РєСЃРёС‡. РґРµСЂРµРІР°";
             // 
             // label2
             // 
@@ -359,7 +359,7 @@ namespace NodesGenerator
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(160, 16);
             this.label2.TabIndex = 16;
-            this.label2.Text = "Пространство имен";
+            this.label2.Text = "РџСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ";
             // 
             // panel4
             // 
@@ -396,7 +396,7 @@ namespace NodesGenerator
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(148, 13);
             this.label6.TabIndex = 24;
-            this.label6.Text = "Имя pcu - десериализатора";
+            this.label6.Text = "РРјСЏ pcu - РґРµСЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂР°";
             // 
             // tb_pcu_writer
             // 
@@ -412,7 +412,7 @@ namespace NodesGenerator
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(160, 16);
             this.label5.TabIndex = 22;
-            this.label5.Text = "Имя pcu - сериализатора";
+            this.label5.Text = "РРјСЏ pcu - СЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂР°";
             // 
             // label4
             // 
@@ -420,7 +420,7 @@ namespace NodesGenerator
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(175, 16);
             this.label4.TabIndex = 20;
-            this.label4.Text = "Имя файла интерф. визитора";
+            this.label4.Text = "РРјСЏ С„Р°Р№Р»Р° РёРЅС‚РµСЂС„. РІРёР·РёС‚РѕСЂР°";
             // 
             // visitor_interface_file_name
             // 
@@ -435,7 +435,7 @@ namespace NodesGenerator
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(104, 16);
             this.label3.TabIndex = 18;
-            this.label3.Text = "Имя фабрики";
+            this.label3.Text = "РРјСЏ С„Р°Р±СЂРёРєРё";
             // 
             // factory_name
             // 
@@ -447,7 +447,7 @@ namespace NodesGenerator
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "nin";
-            this.saveFileDialog1.Filter = "Файлы синтаксического дерева (*.nin)|*.nin|Все файлы (*.*)|*.*";
+            this.saveFileDialog1.Filter = "Р¤Р°Р№Р»С‹ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° (*.nin)|*.nin|Р’СЃРµ С„Р°Р№Р»С‹ (*.*)|*.*";
             // 
             // toolStripStatusLabel1
             // 
@@ -489,8 +489,8 @@ namespace NodesGenerator
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PascalABC.NET: syntax tree generator  v1.5(с) Водолазов Н., Ткачук А.В., Иванов С" +
-                ".О., 2007-10 ";
+            this.Text = "PascalABC.NET: syntax tree generator  v1.5(СЃ) Р’РѕРґРѕР»Р°Р·РѕРІ Рќ., РўРєР°С‡СѓРє Рђ.Р’., РРІР°РЅРѕРІ РЎ" +
+                ".Рћ., 2007-10 ";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
@@ -570,7 +570,7 @@ namespace NodesGenerator
 			this.Close();
 		}
 
-        private void set_nodes_information() // set - установить поля интерфейса по node_gen
+        private void set_nodes_information() // set - СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° РїРѕ node_gen
 		{
 			if (node_gen==null)
 			{
@@ -592,7 +592,7 @@ namespace NodesGenerator
 
 		}
 
-        private void get_nodes_information() // get - получить информацию из полей интерфейса и записать ее в node_gen
+        private void get_nodes_information() // get - РїРѕР»СѓС‡РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РїРѕР»РµР№ РёРЅС‚РµСЂС„РµР№СЃР° Рё Р·Р°РїРёСЃР°С‚СЊ РµРµ РІ node_gen
 		{
 			if (node_gen==null)
 			{
@@ -643,16 +643,16 @@ namespace NodesGenerator
             }
             catch(Exception)
             {
-                MessageBox.Show("Не могу прочитать файл tree.nin");
+                MessageBox.Show("РќРµ РјРѕРіСѓ РїСЂРѕС‡РёС‚Р°С‚СЊ С„Р°Р№Р» tree.nin");
             }
         }
 
 		private bool updated=false;
         /// <summary>
-        /// Обновить информацию в node_gen - генераторе узлов
+        /// РћР±РЅРѕРІРёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РІ node_gen - РіРµРЅРµСЂР°С‚РѕСЂРµ СѓР·Р»РѕРІ
         /// </summary>
-        private void update() // получить информацию из полей интерфейса в node_gen 
-                              // то есть сделать update для node_gen
+        private void update() // РїРѕР»СѓС‡РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РїРѕР»РµР№ РёРЅС‚РµСЂС„РµР№СЃР° РІ node_gen 
+                              // С‚Рѕ РµСЃС‚СЊ СЃРґРµР»Р°С‚СЊ update РґР»СЏ node_gen
 		{
 			updated=true;
 			get_nodes_information();

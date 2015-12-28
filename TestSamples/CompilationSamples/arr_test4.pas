@@ -1,9 +1,9 @@
-var work,work1: array ['à'..'ÿ'] of integer;
+var work,work1: array ['Ğ°'..'Ñ'] of integer;
 
 begin
-  work['à']:=1;
+  work['Ğ°']:=1;
   work1:=work;
-  writeln(work1['à']);
+  writeln(work1['Ğ°']);
   readln;
 end.
 

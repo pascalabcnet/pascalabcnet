@@ -1,5 +1,5 @@
 unit u_Students;
-//Перегрузка операторов
+//РџРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С‚РѕСЂРѕРІ
 type 
   Student = class
     Name: string;

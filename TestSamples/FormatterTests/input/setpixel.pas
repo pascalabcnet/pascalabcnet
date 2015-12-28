@@ -1,4 +1,4 @@
-// Демонстрация возможностей функции SetPixel.
+// Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚РµР№ С„СѓРЅРєС†РёРё SetPixel.
 uses GraphABC;
 
 var i,j: integer;
@@ -43,7 +43,7 @@ begin
   SetFontSize(14);
   SetFontName('Arial');
   SetFontColor(clRed);
-  TextOut(50,WindowHeight div 2-14,'Модуль GraphABC!');
+  TextOut(50,WindowHeight div 2-14,'РњРѕРґСѓР»СЊ GraphABC!');
 end.
 
 

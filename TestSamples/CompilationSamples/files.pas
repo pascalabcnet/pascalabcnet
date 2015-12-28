@@ -1,10 +1,10 @@
-//Работа с текстовыми файлами
+//Р Р°Р±РѕС‚Р° СЃ С‚РµРєСЃС‚РѕРІС‹РјРё С„Р°Р№Р»Р°РјРё
 var f : Text;
     s : string;
 begin
   AssignFile(f,'output.txt');
   Rewrite(f);
-  writeln(f,'Это текстовый файл ');
+  writeln(f,'Р­С‚Рѕ С‚РµРєСЃС‚РѕРІС‹Р№ С„Р°Р№Р» ');
   writeln(f,235);
   writeln(f,3.14);
   writeln(f,'string');

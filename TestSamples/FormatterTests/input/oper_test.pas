@@ -29,7 +29,7 @@ end;
 
 function ToString:string;override;
 begin
-  //Это почему не можеш?
+  //Р­С‚Рѕ РїРѕС‡РµРјСѓ РЅРµ РјРѕР¶РµС€?
   result:=string.Format('{0}({1})',name,height);
 end;
 

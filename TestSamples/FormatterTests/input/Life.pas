@@ -1,5 +1,5 @@
-// Игра Жизнь на торе
-// Оптимизация хешированием по равномерной сетке
+// РРіСЂР° Р–РёР·РЅСЊ РЅР° С‚РѕСЂРµ
+// РћРїС‚РёРјРёР·Р°С†РёСЏ С…РµС€РёСЂРѕРІР°РЅРёРµРј РїРѕ СЂР°РІРЅРѕРјРµСЂРЅРѕР№ СЃРµС‚РєРµ
 
 //#apptype console
 
@@ -282,10 +282,10 @@ begin
 end;
 
 begin
-  SetWindowCaption('Игра "Жизнь"');
+  SetWindowCaption('РРіСЂР° "Р–РёР·РЅСЊ"');
   if (m mod mk<>0) or (n mod nk<>0) then
   begin
-    writeln('Размер кластера не согласован с размером поля. Программа завершена');
+    writeln('Р Р°Р·РјРµСЂ РєР»Р°СЃС‚РµСЂР° РЅРµ СЃРѕРіР»Р°СЃРѕРІР°РЅ СЃ СЂР°Р·РјРµСЂРѕРј РїРѕР»СЏ. РџСЂРѕРіСЂР°РјРјР° Р·Р°РІРµСЂС€РµРЅР°');
     exit
   end;
   hm:=m div mk;
@@ -296,8 +296,8 @@ begin
   SetFontName('Arial');
   SetFontSize(10);
   Init;
-  TextOut(25,0,'Поколение '+IntToStr(gen));
-  TextOut(765,0,'Жителей: '+IntToStr(count)+'    ');
+  TextOut(25,0,'РџРѕРєРѕР»РµРЅРёРµ '+IntToStr(gen));
+  TextOut(765,0,'Р–РёС‚РµР»РµР№: '+IntToStr(count)+'    ');
   DrawField;
   DrawConfiguration;
   mil:=Milliseconds;
@@ -306,8 +306,8 @@ begin
   begin
     gen:=gen+1;
     SetBrushColor(clWhite);
-    TextOut(25,0,'Поколение: '+IntToStr(gen));
-    TextOut(765,0,'Жителей: '+IntToStr(count)+'    ');
+    TextOut(25,0,'РџРѕРєРѕР»РµРЅРёРµ: '+IntToStr(gen));
+    TextOut(765,0,'Р–РёС‚РµР»РµР№: '+IntToStr(count)+'    ');
 
     a:=b;
     SosediA:=SosediB;

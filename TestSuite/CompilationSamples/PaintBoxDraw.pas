@@ -32,13 +32,13 @@ begin
 end;
 
 var 
-  Scale := new RealField('Масштаб: ');
+  Scale := new RealField('РњР°СЃС€С‚Р°Р±: ');
   l1 := new FlowBreak;
   dx := new IntegerField('dx: ');
   l2 := new FlowBreak;
   dy := new IntegerField('dy: ');
   l3 := new FlowBreak(20);
-  b := new Button(' Нарисовать ');
+  b := new Button(' РќР°СЂРёСЃРѕРІР°С‚СЊ ');
   p: PaintBox;
 
 
@@ -60,7 +60,7 @@ begin
 end;
 
 begin
-  MainForm.Title := 'Множество Мандельброта';
+  MainForm.Title := 'РњРЅРѕР¶РµСЃС‚РІРѕ РњР°РЅРґРµР»СЊР±СЂРѕС‚Р°';
   MainForm.SetSize(700, 600);
   MainPanel.Dock := Dockstyle.Left;
   MainPanel.Width := 120;

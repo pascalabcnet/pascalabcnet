@@ -1,12 +1,12 @@
 uses ABCObjects,GraphABC,Utils;
 
 const 
-/// Количество графических объектов
+/// РљРѕР»РёС‡РµСЃС‚РІРѕ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
   Count = 300;
-/// Флаг ускорения анимации
+/// Р¤Р»Р°Рі СѓСЃРєРѕСЂРµРЅРёСЏ Р°РЅРёРјР°С†РёРё
   AnimationIsFast = True;
   
-/// Возвращает случайный графический объект
+/// Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃР»СѓС‡Р°Р№РЅС‹Р№ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚
 function NewRandomABC: ObjectABC;
 begin
   case Random(3) of
@@ -16,7 +16,7 @@ begin
   end;
 end;
 
-/// Передвигает графический объект с отражением его от стенок
+/// РџРµСЂРµРґРІРёРіР°РµС‚ РіСЂР°С„РёС‡РµСЃРєРёР№ РѕР±СЉРµРєС‚ СЃ РѕС‚СЂР°Р¶РµРЅРёРµРј РµРіРѕ РѕС‚ СЃС‚РµРЅРѕРє
 procedure Move(o: ObjectABC);
 begin
   o.Move;
@@ -27,7 +27,7 @@ begin
 end;
 
 begin
-  Window.Title := 'Движущиеся объекты';
+  Window.Title := 'Р”РІРёР¶СѓС‰РёРµСЃСЏ РѕР±СЉРµРєС‚С‹';
   if AnimationIsFast then
     LockDrawingObjects;
   for var i:=1 to Count do
@@ -46,6 +46,6 @@ begin
     if AnimationIsFast then
       RedrawObjects;
     k += 1;
-    Window.Title := Format('{0,5:f2}',k/Milliseconds*1000)+' кадров в секунду';
+    Window.Title := Format('{0,5:f2}',k/Milliseconds*1000)+' РєР°РґСЂРѕРІ РІ СЃРµРєСѓРЅРґСѓ';
   end;
 end.

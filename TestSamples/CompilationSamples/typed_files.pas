@@ -37,7 +37,7 @@ begin
   writeln(f3.ElementType);
   writeln('in unit:'); 
   writeln(ff.ElementType);
-//  write(ff,ff); неправильноя ошибка при общей компиляции! перектрытие имен!
+//  write(ff,ff); РЅРµРїСЂР°РІРёР»СЊРЅРѕСЏ РѕС€РёР±РєР° РїСЂРё РѕР±С‰РµР№ РєРѕРјРїРёР»СЏС†РёРё! РїРµСЂРµРєС‚СЂС‹С‚РёРµ РёРјРµРЅ!
   test;
   //cc := new c;
   //writeln('in class:'); 

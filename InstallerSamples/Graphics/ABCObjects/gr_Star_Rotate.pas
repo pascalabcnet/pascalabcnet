@@ -1,4 +1,4 @@
-// Изменение свойств объекта StarABC
+// РР·РјРµРЅРµРЅРёРµ СЃРІРѕР№СЃС‚РІ РѕР±СЉРµРєС‚Р° StarABC
 uses ABCObjects,GraphABC;
 
 var z: StarABC;

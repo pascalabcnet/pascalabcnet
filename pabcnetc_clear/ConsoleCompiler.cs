@@ -92,7 +92,7 @@ namespace PascalABCCompiler
                     else
                         Console.WriteLine(Compiler.ErrorsList[i]);
                 }
-                break; // выйти после первой же ошибки
+                break; // РІС‹Р№С‚Рё РїРѕСЃР»Рµ РїРµСЂРІРѕР№ Р¶Рµ РѕС€РёР±РєРё
             }
             if (success)
                 return 0;

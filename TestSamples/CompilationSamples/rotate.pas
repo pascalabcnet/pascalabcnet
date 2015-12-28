@@ -1,4 +1,4 @@
-// Вращение многоугольника
+// Р’СЂР°С‰РµРЅРёРµ РјРЅРѕРіРѕСѓРіРѕР»СЊРЅРёРєР°
 uses Turtle,GraphABC;
 
 procedure MnogoUg(r: real; n: integer);
@@ -26,7 +26,7 @@ var
   i,di: integer;
 
 begin
-  SetWindowCaption('Черепашья графика: вращение');
+  SetWindowCaption('Р§РµСЂРµРїР°С€СЊСЏ РіСЂР°С„РёРєР°: РІСЂР°С‰РµРЅРёРµ');
   SetWindowSize(320,165);
   Init;
   i:=5;

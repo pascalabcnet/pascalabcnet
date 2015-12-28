@@ -1,8 +1,8 @@
-// Графика. Свойства кисти и пера
+// Р“СЂР°С„РёРєР°. РЎРІРѕР№СЃС‚РІР° РєРёСЃС‚Рё Рё РїРµСЂР°
 uses GraphABC;
 
 begin
-  Window.Title := 'Свойства кисти и пера';
+  Window.Title := 'РЎРІРѕР№СЃС‚РІР° РєРёСЃС‚Рё Рё РїРµСЂР°';
   Pen.Color := Color.Red;
   Pen.Width := 3;
   Pen.Style := psDashDot;

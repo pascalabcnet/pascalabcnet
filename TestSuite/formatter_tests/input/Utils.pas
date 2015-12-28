@@ -18,7 +18,7 @@ external 'User32.dll' name 'MessageBox';
 
 procedure ShowMessage(msg:string);
 begin
-  ShowMessage(msg,'Сообщение');
+  ShowMessage(msg,'РЎРѕРѕР±С‰РµРЅРёРµ');
 end;
 
 procedure ShowMessage(msg,capt:string);

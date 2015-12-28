@@ -8,11 +8,11 @@ const
   maxDimY=30;
 
 var
-  x,y: integer;       // текущие координаты Робота
-  Delay: integer;     // пауза между ходами
-  DimX,DimY: integer; // размеры поля
-  Cellsz: integer;    // размер клетки поля
-  x0,y0: integer;     // левый верхний углл поля в пикселах
+  x,y: integer;       // С‚РµРєСѓС‰РёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ Р РѕР±РѕС‚Р°
+  Delay: integer;     // РїР°СѓР·Р° РјРµР¶РґСѓ С…РѕРґР°РјРё
+  DimX,DimY: integer; // СЂР°Р·РјРµСЂС‹ РїРѕР»СЏ
+  Cellsz: integer;    // СЂР°Р·РјРµСЂ РєР»РµС‚РєРё РїРѕР»СЏ
+  x0,y0: integer;     // Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіР»Р» РїРѕР»СЏ РІ РїРёРєСЃРµР»Р°С…
   HorizWalls: array [1..maxDimX,0..maxDimY] of boolean;
   VertWalls: array [0..maxDimX,1..maxDimY] of boolean;
   Painted: array [1..maxDimX,1..maxDimY] of integer;
@@ -288,5 +288,5 @@ begin
 end;
 
 initialization
-  SetWindowCaption('Робот');
+  SetWindowCaption('Р РѕР±РѕС‚');
 end.

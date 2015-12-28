@@ -1,4 +1,4 @@
-// Строки. Процедура SetLength, функция Length и свойство Length 
+// РЎС‚СЂРѕРєРё. РџСЂРѕС†РµРґСѓСЂР° SetLength, С„СѓРЅРєС†РёСЏ Length Рё СЃРІРѕР№СЃС‚РІРѕ Length 
 
 var s: string;
 

@@ -120,7 +120,7 @@ namespace VisualPascalABC
             TextEditor.LoadFile(FileName);
         }
 
-        //меняем стратегию подсведки в соответсвии с расширением файла
+        //РјРµРЅСЏРµРј СЃС‚СЂР°С‚РµРіРёСЋ РїРѕРґСЃРІРµРґРєРё РІ СЃРѕРѕС‚РІРµС‚СЃРІРёРё СЃ СЂР°СЃС€РёСЂРµРЅРёРµРј С„Р°Р№Р»Р°
         public void SetHighlightingStrategyForFile(string ForFile)
         {
             TextEditor.Document.HighlightingStrategy = ICSharpCode.TextEditor.Document.HighlightingManager.Manager.FindHighlighterForFile(ForFile);
@@ -210,7 +210,7 @@ namespace VisualPascalABC
 
         private object ConvertToWin1251(string str)
         {
-            //return str.Replace("абс", "\'e0\'e1\'f1");
+            //return str.Replace("Р°Р±СЃ", "\'e0\'e1\'f1");
             return str;
         }
 
@@ -342,7 +342,7 @@ namespace VisualPascalABC
         public string FormName = "Form1";
         public bool FirstCodeGeneration = false;
 
-        //ssyy взводит кнопки "сохраниить" и "сохранить всё"
+        //ssyy РІР·РІРѕРґРёС‚ РєРЅРѕРїРєРё "СЃРѕС…СЂР°РЅРёРёС‚СЊ" Рё "СЃРѕС…СЂР°РЅРёС‚СЊ РІСЃС‘"
         public void SetDocumentChanged()
         {
             DocumentChanged = true;
@@ -593,7 +593,7 @@ namespace VisualPascalABC
                     event_description.editor = TextEditor;
                     System.Text.RegularExpressions.MatchCollection matches =
                         System.Text.RegularExpressions.Regex.Matches(generated_text, string_consts.nr);
-                    //строка, на которой последнее описание из секции реализаций
+                    //СЃС‚СЂРѕРєР°, РЅР° РєРѕС‚РѕСЂРѕР№ РїРѕСЃР»РµРґРЅРµРµ РѕРїРёСЃР°РЅРёРµ РёР· СЃРµРєС†РёРё СЂРµР°Р»РёР·Р°С†РёР№
                     PascalABCCompiler.SyntaxTree.file_position last_defs_pos = null;
                     if (implementation_not_null)
                     {
@@ -601,7 +601,7 @@ namespace VisualPascalABC
                             um.implementation_part.implementation_definitions.defs.Count - 1
                             ].source_context.end_position;
                         
-                        //Ищем описание обработчика
+                        //РС‰РµРј РѕРїРёСЃР°РЅРёРµ РѕР±СЂР°Р±РѕС‚С‡РёРєР°
                         foreach (PascalABCCompiler.SyntaxTree.declaration decl in
                             um.implementation_part.implementation_definitions.defs)
                         {
@@ -684,7 +684,7 @@ namespace VisualPascalABC
                         event_description.column_num = 3;
                         event_description.line_num = last_defs_pos.line_num + s_num - e_num + matches.Count + 7;
                         lines[last_defs_pos.line_num - 1] = lines[last_defs_pos.line_num - 1].Insert(last_defs_pos.column_num, new_event);
-                        //Добавляем заголовок события
+                        //Р”РѕР±Р°РІР»СЏРµРј Р·Р°РіРѕР»РѕРІРѕРє СЃРѕР±С‹С‚РёСЏ
                         //int last_form_member_line = form_def.body.class_def_blocks[form_def.body.class_def_blocks.Count - 1].source_context.end_position.line_num - 1;
                         lines[s_num] = string_consts.event_handler_header_trim +
                             "procedure " + new_event_header +

@@ -1,6 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Класс, представляющий внутреннюю ошибку компилятора.
+//РљР»Р°СЃСЃ, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёР№ РІРЅСѓС‚СЂРµРЅРЅСЋСЋ РѕС€РёР±РєСѓ РєРѕРјРїРёР»СЏС‚РѕСЂР°.
 using System;
 
 namespace PascalABCCompiler.TreeConverter

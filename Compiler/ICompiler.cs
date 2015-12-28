@@ -6,7 +6,7 @@ using System.Text;
 using PascalABCCompiler.SemanticTreeConverters;
 using PascalABCCompiler.Errors;
 
-///В разработке DarkStar
+///Р’ СЂР°Р·СЂР°Р±РѕС‚РєРµ DarkStar
 
 namespace PascalABCCompiler
 {

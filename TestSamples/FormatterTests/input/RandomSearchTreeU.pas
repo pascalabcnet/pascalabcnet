@@ -1,4 +1,4 @@
-// Рекурсивное рисование двоичного дерева поиска
+// Р РµРєСѓСЂСЃРёРІРЅРѕРµ СЂРёСЃРѕРІР°РЅРёРµ РґРІРѕРёС‡РЅРѕРіРѕ РґРµСЂРµРІР° РїРѕРёСЃРєР°
 unit RandomSearchTreeU;
 
 uses GraphABC;
@@ -47,6 +47,6 @@ var
 begin
   for i:=1 to 30 do
     Add(t,Random(100));
-  SetWindowCaption('Двоичное дерево поиска');
+  SetWindowCaption('Р”РІРѕРёС‡РЅРѕРµ РґРµСЂРµРІРѕ РїРѕРёСЃРєР°');
   DrawTree(t,WindowWidth div 2,10,WindowWidth div 4);
 end.

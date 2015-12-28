@@ -1,7 +1,7 @@
 {
-Для создания dll:
-1. Откомпилируйте проект \GraphTest\GraphTest.dpr с помощью Delphi
-2. Запустите файл \GraphTest\copy_up.bat
+Р”Р»СЏ СЃРѕР·РґР°РЅРёСЏ dll:
+1. РћС‚РєРѕРјРїРёР»РёСЂСѓР№С‚Рµ РїСЂРѕРµРєС‚ \GraphTest\GraphTest.dpr СЃ РїРѕРјРѕС‰СЊСЋ Delphi
+2. Р—Р°РїСѓСЃС‚РёС‚Рµ С„Р°Р№Р» \GraphTest\copy_up.bat
 }
 
 procedure SetWindowSize(width, height : integer); 	external 'GraphTest.dll' name 'SetWindowSize';

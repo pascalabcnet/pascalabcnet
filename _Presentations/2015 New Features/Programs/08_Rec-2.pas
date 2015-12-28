@@ -1,4 +1,4 @@
 begin
-  var p := Rec('Петрова',18);
+  var p := Rec('РџРµС‚СЂРѕРІР°',18);
   Println(p, p.Item1, p.Item2);
 end.

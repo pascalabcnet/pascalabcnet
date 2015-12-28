@@ -11,7 +11,7 @@ begin
     raise new MyException;
   except  
   on e:myexception do
-    writeln('Θρκλώχενθε: ',e);
+    writeln('ΠΡΠΊΠ»ΡΡ‡ΠµΠ½ΠΈΠµ: ',e);
   end;
   readln;
 end.

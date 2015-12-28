@@ -55,7 +55,7 @@ begin
         if s[1]='[' then // Section
         begin
           section := Copy(s,2,Length(s)-2);
-          // есть ли такая секция
+          // РµСЃС‚СЊ Р»Рё С‚Р°РєР°СЏ СЃРµРєС†РёСЏ
           if IndexOfSection(Section)<0 then 
             sl.Add(Section,new SortedList);
         end
@@ -74,7 +74,7 @@ begin
         end; 
       end;    
     except
-      // погасить все исключения
+      // РїРѕРіР°СЃРёС‚СЊ РІСЃРµ РёСЃРєР»СЋС‡РµРЅРёСЏ
     end;
     close(f);
   end;

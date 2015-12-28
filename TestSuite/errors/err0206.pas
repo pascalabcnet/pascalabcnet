@@ -3,5 +3,5 @@ begin
 end;
 
 begin
-  var ttt := f; // οΰδΰες!
+  var ttt := f; // ΠΏΠ°Π΄Π°ΠµΡ‚!
 end.

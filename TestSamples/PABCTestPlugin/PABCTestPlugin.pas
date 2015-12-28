@@ -1,14 +1,14 @@
 {$apptype dll}
 
-//для доступа к IVisualPascalABCPlugin, IVisualEnvironmentCompiler
+//РґР»СЏ РґРѕСЃС‚СѓРїР° Рє IVisualPascalABCPlugin, IVisualEnvironmentCompiler
 {$reference PluginsSupport.dll}
-//для доступа к IVisualEnvironmentCompiler.Compiler
+//РґР»СЏ РґРѕСЃС‚СѓРїР° Рє IVisualEnvironmentCompiler.Compiler
 {$reference Compiler.dll}
 
 {$reference System.Windows.Forms.dll}
 {$reference System.Drawing.dll}
 
-//Ресурс - иконка кнопки
+//Р РµСЃСѓСЂСЃ - РёРєРѕРЅРєР° РєРЅРѕРїРєРё
 {$resource PABCTestPlugin_newfile.png}
 
 unit PABCTestPlugin;
@@ -20,18 +20,18 @@ uses System.Collections.Generic,
 const NL = #13#10;
 
 type
-  //Тестовый плагин - должен иметь имя *_VisualPascalABCPlugin и реализовывать 
-  //интерфейс VisualPascalABCPlugins.IVisualPascalABCPlugin
-  //Этот плагин добавляет конпку на панель и в меню, по нажатию на которую:
-  // 1. создается новый pas файл
-  // 2. он открывается в оболочке
-  // 3. он компилируется и запускается
+  //РўРµСЃС‚РѕРІС‹Р№ РїР»Р°РіРёРЅ - РґРѕР»Р¶РµРЅ РёРјРµС‚СЊ РёРјСЏ *_VisualPascalABCPlugin Рё СЂРµР°Р»РёР·РѕРІС‹РІР°С‚СЊ 
+  //РёРЅС‚РµСЂС„РµР№СЃ VisualPascalABCPlugins.IVisualPascalABCPlugin
+  //Р­С‚РѕС‚ РїР»Р°РіРёРЅ РґРѕР±Р°РІР»СЏРµС‚ РєРѕРЅРїРєСѓ РЅР° РїР°РЅРµР»СЊ Рё РІ РјРµРЅСЋ, РїРѕ РЅР°Р¶Р°С‚РёСЋ РЅР° РєРѕС‚РѕСЂСѓСЋ:
+  // 1. СЃРѕР·РґР°РµС‚СЃСЏ РЅРѕРІС‹Р№ pas С„Р°Р№Р»
+  // 2. РѕРЅ РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РІ РѕР±РѕР»РѕС‡РєРµ
+  // 3. РѕРЅ РєРѕРјРїРёР»РёСЂСѓРµС‚СЃСЏ Рё Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ
   PABCTestPlugin_VisualPascalABCPlugin = class(IVisualPascalABCPlugin)
   private
-    //интерфейс на оболочку компилятора
+    //РёРЅС‚РµСЂС„РµР№СЃ РЅР° РѕР±РѕР»РѕС‡РєСѓ РєРѕРјРїРёР»СЏС‚РѕСЂР°
     compiler: IVisualEnvironmentCompiler;
     
-    //для получения нового имени файла
+    //РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РЅРѕРІРѕРіРѕ РёРјРµРЅРё С„Р°Р№Р»Р°
     function GetNewFileName():string;
     begin
       var fileTemplate := 'C:\PABCWork.NET\NewProgram{0}.pas';
@@ -43,51 +43,51 @@ type
       until(not System.IO.File.Exists(pasFile));
       result := pasFile;
     end;
-    //обработчик нажатия на кнопку
+    //РѕР±СЂР°Р±РѕС‚С‡РёРє РЅР°Р¶Р°С‚РёСЏ РЅР° РєРЅРѕРїРєСѓ
     procedure Click1;
     begin
-      //создаем файл
+      //СЃРѕР·РґР°РµРј С„Р°Р№Р»
       var fileName := GetNewFileName;
       System.IO.File.WriteAllText(fileName, string.Format('begin'+NL+'Write(''Im new program "{0}" :)'');'+NL+'end.', fileName));
-      //Открываем его в оболочке
+      //РћС‚РєСЂС‹РІР°РµРј РµРіРѕ РІ РѕР±РѕР»РѕС‡РєРµ
       compiler.ExecuteAction(VisualEnvironmentCompilerAction.OpenFile, fileName);
-      //Запускаем компиляцию и выполнение
+      //Р—Р°РїСѓСЃРєР°РµРј РєРѕРјРїРёР»СЏС†РёСЋ Рё РІС‹РїРѕР»РЅРµРЅРёРµ
       compiler.ExecuteAction(VisualEnvironmentCompilerAction.Run, nil);
     end;
   
   public
-    //обязателен конструктор с одним параметром типа IVisualEnvironmentCompiler
+    //РѕР±СЏР·Р°С‚РµР»РµРЅ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РѕРґРЅРёРј РїР°СЂР°РјРµС‚СЂРѕРј С‚РёРїР° IVisualEnvironmentCompiler
     constructor(compiler: IVisualEnvironmentCompiler);
     begin
       self.compiler := compiler;
     end;
-    //Обязательно
+    //РћР±СЏР·Р°С‚РµР»СЊРЅРѕ
     function get_Name:string;
     begin
       result := 'PABC Test Plugin';
     end;
-    //Обязательно
+    //РћР±СЏР·Р°С‚РµР»СЊРЅРѕ
     function get_Version:string;
     begin
       result := '1.0';
     end;
-    //Обязательно    
+    //РћР±СЏР·Р°С‚РµР»СЊРЅРѕ    
     function get_Copyright:string;
     begin
       result := 'PascalABCNet Team';
     end;
-    //Обязательно
-    //Визуальная оболочка с помощью этой функции получает спиок кнопок на панели и кнопок в меню:
-    //Плагин должен добавить в соответвующий список необходимые кнопки.
+    //РћР±СЏР·Р°С‚РµР»СЊРЅРѕ
+    //Р’РёР·СѓР°Р»СЊРЅР°СЏ РѕР±РѕР»РѕС‡РєР° СЃ РїРѕРјРѕС‰СЊСЋ СЌС‚РѕР№ С„СѓРЅРєС†РёРё РїРѕР»СѓС‡Р°РµС‚ СЃРїРёРѕРє РєРЅРѕРїРѕРє РЅР° РїР°РЅРµР»Рё Рё РєРЅРѕРїРѕРє РІ РјРµРЅСЋ:
+    //РџР»Р°РіРёРЅ РґРѕР»Р¶РµРЅ РґРѕР±Р°РІРёС‚СЊ РІ СЃРѕРѕС‚РІРµС‚РІСѓСЋС‰РёР№ СЃРїРёСЃРѕРє РЅРµРѕР±С…РѕРґРёРјС‹Рµ РєРЅРѕРїРєРё.
     procedure GetGUI(MenuItems:List<IPluginGUIItem>; ToolBarItems:List<IPluginGUIItem>);
     begin
-      //Грузим изображение из ресурса
+      //Р“СЂСѓР·РёРј РёР·РѕР±СЂР°Р¶РµРЅРёРµ РёР· СЂРµСЃСѓСЂСЃР°
       var img:Image := Image.FromStream(GetResourceStream('PABCTestPlugin_newfile.png'));
-      //Создаем кнопку
-      var item1 := new PluginGUIItem('Новый файл', 'Создать новый файл', img, Color.Transparent, Click1);
-      //Добавляем в меню
+      //РЎРѕР·РґР°РµРј РєРЅРѕРїРєСѓ
+      var item1 := new PluginGUIItem('РќРѕРІС‹Р№ С„Р°Р№Р»', 'РЎРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ С„Р°Р№Р»', img, Color.Transparent, Click1);
+      //Р”РѕР±Р°РІР»СЏРµРј РІ РјРµРЅСЋ
       MenuItems.Add(item1);
-      //Добавляем на панель
+      //Р”РѕР±Р°РІР»СЏРµРј РЅР° РїР°РЅРµР»СЊ
       ToolBarItems.Add(item1);
     end;
     

@@ -1,4 +1,4 @@
-// Первые 3 минимума
+// РџРµСЂРІС‹Рµ 3 РјРёРЅРёРјСѓРјР°
 begin
   SeqRandom(20).Println.Sorted.Distinct.Take(3).Println;
 end.

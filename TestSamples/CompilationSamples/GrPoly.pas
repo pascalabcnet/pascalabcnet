@@ -1,11 +1,11 @@
-// Процедуры Polyline, Polygon, Curve, ClosedCurve
-// Перенос начала системы координат
+// РџСЂРѕС†РµРґСѓСЂС‹ Polyline, Polygon, Curve, ClosedCurve
+// РџРµСЂРµРЅРѕСЃ РЅР°С‡Р°Р»Р° СЃРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚
 uses GraphABC;
 
 var a: array of Point := (new Point(0,0), new Point(50,170), new Point(100,100), new Point(150,170), new Point(200,0));
 
 begin
-  Window.Title := 'Рисование по массиву точек';
+  Window.Title := 'Р РёСЃРѕРІР°РЅРёРµ РїРѕ РјР°СЃСЃРёРІСѓ С‚РѕС‡РµРє';
   Brush.Color := Color.Beige;
   Coordinate.SetOrigin(60,30);
   Polyline(a);

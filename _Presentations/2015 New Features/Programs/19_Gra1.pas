@@ -1,7 +1,7 @@
 uses GraphABC;
 
 begin
-  Window.Title := 'Прозрачность и рисунок';
+  Window.Title := 'РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ Рё СЂРёСЃСѓРЅРѕРє';
   Brush.Color := Color.BlueViolet;
   Rectangle(50,50,200,150);
   Brush.Color := ARGB(128,50,200,0);

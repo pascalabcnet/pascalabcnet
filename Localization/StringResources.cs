@@ -490,7 +490,7 @@ namespace PascalABCCompiler
                         ICollection col = pi.GetValue(obj, noIndex) as ICollection;
                         if (col != null)
                             foreach (object ob in col)
-                                //íå ðàñìàòðèâàåì ôîðìû
+                                //Ð½Ðµ Ñ€Ð°ÑÐ¼Ð°Ñ‚Ñ€Ð¸Ð²Ð°ÐµÐ¼ Ñ„Ð¾Ñ€Ð¼Ñ‹
                                 if (!(ob is System.Windows.Forms.Form))
                                     SetTextForAllObjects(ob, prefix);
                     }
@@ -499,7 +499,7 @@ namespace PascalABCCompiler
                         IContainer cont = pi.GetValue(obj, noIndex) as IContainer;
                         if (cont != null)
                             foreach (object ob in cont.Components)
-                                //íå ðàñìàòðèâàåì ôîðìû
+                                //Ð½Ðµ Ñ€Ð°ÑÐ¼Ð°Ñ‚Ñ€Ð¸Ð²Ð°ÐµÐ¼ Ñ„Ð¾Ñ€Ð¼Ñ‹
                                 if (!(ob is System.Windows.Forms.Form))
                                     SetTextForAllObjects(ob, prefix);
                     }
@@ -600,7 +600,7 @@ namespace PascalABCCompiler
         }
         static StringResources()
         {
-            //TODO: ñäåëàòü òàê ÷òîáû ÿçûê ïîóìîë÷àíèþ áûë â ðåñóðñå
+            //TODO: ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ñ‚Ð°Ðº Ñ‡Ñ‚Ð¾Ð±Ñ‹ ÑÐ·Ñ‹Ðº Ð¿Ð¾ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ Ð±Ñ‹Ð» Ð² Ñ€ÐµÑÑƒÑ€ÑÐµ
             /*StringResourcesLanguage.ConfigFileName = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName) + "\\lng\\languages.dat";
             if (StringResourcesLanguage.AccessibleLanguages.Count > 0)
                 StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[0];

@@ -1,4 +1,4 @@
-//Папоротник
+//РџР°РїРѕСЂРѕС‚РЅРёРє
 unit Paporotnik2Data;
 
 const 

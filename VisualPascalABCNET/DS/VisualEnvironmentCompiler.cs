@@ -129,9 +129,9 @@ namespace VisualPascalABC
         }
         public void AbortStaring()
         {
-            //для того чтобы отмена прошла быстрее увеличиваем приоритет потока
+            //РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РѕС‚РјРµРЅР° РїСЂРѕС€Р»Р° Р±С‹СЃС‚СЂРµРµ СѓРІРµР»РёС‡РёРІР°РµРј РїСЂРёРѕСЂРёС‚РµС‚ РїРѕС‚РѕРєР°
             StartingThread.Priority = System.Threading.ThreadPriority.AboveNormal;
-            //даем команду на завершение и ждем завершения
+            //РґР°РµРј РєРѕРјР°РЅРґСѓ РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ Рё Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ
             StartingThread.Join();
         }
 		
@@ -176,7 +176,7 @@ namespace VisualPascalABC
                 Filter = Tools.MakeFilter(Filter, ssf.LanguageName, ssf.Extensions);
                 AllFilter = Tools.MakeAllFilter(AllFilter, ssf.LanguageName, ssf.Extensions);
             }
-            Filter += "Программы на C# (*.cs)|*.cs|";
+            Filter += "РџСЂРѕРіСЂР°РјРјС‹ РЅР° C# (*.cs)|*.cs|";
             AllFilter += "*.cs;";
             return Tools.FinishMakeFilter(Filter, AllFilter);
         }
@@ -428,10 +428,10 @@ namespace VisualPascalABC
                     ParsedFiles.Add(FullFileName);
                     break;
                 case PascalABCCompiler.CompilerState.BeginCompileFile: RusName = VECStringResources.Get("STATETEXT_BEGINCOMPILEFILE{0}"); break;
-                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Чтение {0}..."; break;
+                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Р§С‚РµРЅРёРµ {0}..."; break;
                 case PascalABCCompiler.CompilerState.CodeGeneration: RusName = VECStringResources.Get("STATETEXT_CODEGENERATION{0}"); break;
                 //case PascalABCCompiler.CompilerState.ReadDLL: 
-                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Чтение {0}..."; break;
+                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Р§С‚РµРЅРёРµ {0}..."; break;
                 case PascalABCCompiler.CompilerState.Ready:
                     if (Compiler != null)
                     {

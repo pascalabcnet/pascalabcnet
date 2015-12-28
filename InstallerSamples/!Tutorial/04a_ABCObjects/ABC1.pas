@@ -1,4 +1,4 @@
-// Модуль ABCObjects. Изменение свойств объекта
+// РњРѕРґСѓР»СЊ ABCObjects. РР·РјРµРЅРµРЅРёРµ СЃРІРѕР№СЃС‚РІ РѕР±СЉРµРєС‚Р°
 uses ABCObjects,GraphABC;
 
 const delay = 300;
@@ -13,7 +13,7 @@ var
   z: StarABC;
 
 begin
-  Window.Title := 'ABCObjects: свойства графических объектов';
+  Window.Title := 'ABCObjects: СЃРІРѕР№СЃС‚РІР° РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ';
   z := new StarABC(Window.Center.X,Window.Center.Y,70,30,6,Color.Green);
   r := new RectangleABC(100,100,200,100,Color.Gold);
   Pause;

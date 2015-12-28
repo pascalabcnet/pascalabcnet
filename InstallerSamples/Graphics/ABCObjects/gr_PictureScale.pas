@@ -1,4 +1,4 @@
-// Свойства ScaleX и ScaleY класса PictureABC
+// РЎРІРѕР№СЃС‚РІР° ScaleX Рё ScaleY РєР»Р°СЃСЃР° PictureABC
 uses ABCObjects,GraphABC;
 
 const delay = 2;
@@ -6,7 +6,7 @@ const delay = 2;
 var p: PictureABC;
 
 begin
-  Window.Title := 'Движение и масштабирование рисунка по горизонтали';
+  Window.Title := 'Р”РІРёР¶РµРЅРёРµ Рё РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ СЂРёСЃСѓРЅРєР° РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё';
   SetWindowSize(640,260);
   p := PictureABC.Create(100,100,'demo.bmp');
   while True do

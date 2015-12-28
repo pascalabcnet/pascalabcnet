@@ -1,4 +1,4 @@
-// Сортировка выбором
+// РЎРѕСЂС‚РёСЂРѕРІРєР° РІС‹Р±РѕСЂРѕРј
 procedure SortByChoice(a: array of real);
 begin
   for var i:=0 to a.Length-2 do
@@ -34,9 +34,9 @@ var a: array of real;
 
 begin
   a := CreateRandomArr(20);
-  writeln('Содержимое массива: ');
+  writeln('РЎРѕРґРµСЂР¶РёРјРѕРµ РјР°СЃСЃРёРІР°: ');
   WriteArr(a);
   SortByChoice(a);
-  writeln('После сортировки выбором: ');
+  writeln('РџРѕСЃР»Рµ СЃРѕСЂС‚РёСЂРѕРІРєРё РІС‹Р±РѕСЂРѕРј: ');
   WriteArr(a);
 end.

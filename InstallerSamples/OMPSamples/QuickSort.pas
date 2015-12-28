@@ -1,11 +1,11 @@
-//Демонстрация использования параллельных секций на примере быстрой сортировки
+//Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РїР°СЂР°Р»Р»РµР»СЊРЅС‹С… СЃРµРєС†РёР№ РЅР° РїСЂРёРјРµСЂРµ Р±С‹СЃС‚СЂРѕР№ СЃРѕСЂС‚РёСЂРѕРІРєРё
 var
   a: array of integer;
 
 var
   b: array of integer;         
 
-// Partition - разделение A[l]..A[r] на части A[l]..A[q] <= A[q+1]..A[r]
+// Partition - СЂР°Р·РґРµР»РµРЅРёРµ A[l]..A[r] РЅР° С‡Р°СЃС‚Рё A[l]..A[q] <= A[q+1]..A[r]
 function Partition(a: array of integer; l, r: integer): integer;
 begin
   var i := l - 1;
@@ -29,7 +29,7 @@ begin
   end;
 end;
 
- // Параллельная  cортировка частей
+ // РџР°СЂР°Р»Р»РµР»СЊРЅР°СЏ  cРѕСЂС‚РёСЂРѕРІРєР° С‡Р°СЃС‚РµР№
 procedure Sort(A: array of integer; l, r: integer);
 begin
   if l >= r then 
@@ -41,13 +41,13 @@ begin
     Sort(A, j + 1, r);
   end;
 end;
-// Параллельная сортировка   
+// РџР°СЂР°Р»Р»РµР»СЊРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°   
 procedure QuickSortParrallel(A: array of integer);
 begin
   Sort(A, 0, a.Length - 1)
 end;
 
-//Последовательная  Сортировка частей
+//РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅР°СЏ  РЎРѕСЂС‚РёСЂРѕРІРєР° С‡Р°СЃС‚РµР№
 procedure SortSeq(a: array of integer; l, r: integer);
 begin
   if l >= r then 
@@ -56,12 +56,12 @@ begin
   SortSeq(A, l, j);
   SortSeq(A, j + 1, r);
 end;
-//Последовательная сортировка
+//РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР°
 procedure QuickSortSeq(A: array of integer);
 begin
   SortSeq(A, 0, a.Length - 1)
 end;
- //заполнение массивов равными значениями для обоих сортировок
+ //Р·Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРІРѕРІ СЂР°РІРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РґР»СЏ РѕР±РѕРёС… СЃРѕСЂС‚РёСЂРѕРІРѕРє
 procedure FillRandArr(A, B: array of integer);
 begin
   Randomize;
@@ -71,7 +71,7 @@ begin
     b[i] := a[i];
   end;
 end;
- //Вывод массива
+ //Р’С‹РІРѕРґ РјР°СЃСЃРёРІР°
 procedure printArr(A: array of integer);
 begin
   Randomize;
@@ -87,10 +87,10 @@ begin
   FillRandArr(a, b);
   var m1 := Milliseconds;
   QuickSortSeq(B);
-  writeln('Последовательное выполнение: ', Milliseconds - m1, 'ms');
+  writeln('РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ РІС‹РїРѕР»РЅРµРЅРёРµ: ', Milliseconds - m1, 'ms');
   
   var m0 := Milliseconds;
   QuickSortParrallel(a);
-  writeln('Параллельное выполнение: ', Milliseconds - m0, 'ms');
+  writeln('РџР°СЂР°Р»Р»РµР»СЊРЅРѕРµ РІС‹РїРѕР»РЅРµРЅРёРµ: ', Milliseconds - m0, 'ms');
   
 end.

@@ -27,7 +27,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "(c) Ткачук А.В. 2006,2008";
+                return "(c) РўРєР°С‡СѓРє Рђ.Р’. 2006,2008";
             }
         }
 

@@ -1,4 +1,4 @@
-// Параметры процедур
+// РџР°СЂР°РјРµС‚СЂС‹ РїСЂРѕС†РµРґСѓСЂ
 
 procedure Operations(a,b: integer);
 begin

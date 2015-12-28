@@ -1,4 +1,4 @@
-// Параметры-переменные
+// РџР°СЂР°РјРµС‚СЂС‹-РїРµСЂРµРјРµРЅРЅС‹Рµ
 
 procedure DivMod(a,b: integer; var d,m: integer);
 begin

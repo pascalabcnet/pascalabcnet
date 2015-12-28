@@ -23,7 +23,7 @@ begin
   writeln(i);
   r:=b/10;
   writeln(r);
-  i:=f+1; //Œÿ»¡ ¿!
+  i:=f+1; //–Ω—å—Ö–∞–π—é!
   writeln(i);
   readln;
 end.

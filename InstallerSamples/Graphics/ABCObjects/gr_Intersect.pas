@@ -1,4 +1,4 @@
-// Иллюстрация метода Intersect для графических объектов
+// РР»Р»СЋСЃС‚СЂР°С†РёСЏ РјРµС‚РѕРґР° Intersect РґР»СЏ РіСЂР°С„РёС‡РµСЃРєРёС… РѕР±СЉРµРєС‚РѕРІ
 uses ABCObjects,GraphABC;
 
 var Destroyer: CircleABC;
@@ -13,7 +13,7 @@ begin
 end;
 
 begin
-  Window.Title := 'Разрушитель: метод Intersect пересечения объектов';
+  Window.Title := 'Р Р°Р·СЂСѓС€РёС‚РµР»СЊ: РјРµС‚РѕРґ Intersect РїРµСЂРµСЃРµС‡РµРЅРёСЏ РѕР±СЉРµРєС‚РѕРІ';
   for var i:=1 to 500 do
     new RectangleABC(Random(WindowWidth-200)+100,Random(WindowHeight-100),Random(200),Random(200),clRandom);
   Destroyer := new CircleABC(10,WindowHeight div 2,100,clBlack);

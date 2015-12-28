@@ -1,6 +1,6 @@
-// Вызов функции из обычной dll
-function add(a,b: integer): integer; external 'NativeDll.dll' name 'add'; // объявление внешней функции
+// Р’С‹Р·РѕРІ С„СѓРЅРєС†РёРё РёР· РѕР±С‹С‡РЅРѕР№ dll
+function add(a,b: integer): integer; external 'NativeDll.dll' name 'add'; // РѕР±СЉСЏРІР»РµРЅРёРµ РІРЅРµС€РЅРµР№ С„СѓРЅРєС†РёРё
 
-begin // основная программа
+begin // РѕСЃРЅРѕРІРЅР°СЏ РїСЂРѕРіСЂР°РјРјР°
   writeln(add(2,3));
 end.

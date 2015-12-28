@@ -18,7 +18,7 @@ begin
     Writeln(Pr.StandardOutput.ReadToEnd);
     //Pr.WaitForExit();
   except
-    Writeln('Ошибка: Не могу выполнить ' + Command);
+    Writeln('РћС€РёР±РєР°: РќРµ РјРѕРіСѓ РІС‹РїРѕР»РЅРёС‚СЊ ' + Command);
   end;            
 end;
 
@@ -80,22 +80,22 @@ begin
     exit;
   end;
   while true do begin
-    SleepSEC(CheckPeriod,'Следующая проверка через {0} секунд');
+    SleepSEC(CheckPeriod,'РЎР»РµРґСѓСЋС‰Р°СЏ РїСЂРѕРІРµСЂРєР° С‡РµСЂРµР· {0} СЃРµРєСѓРЅРґ');
     if not PingAdress(VPNIP) then begin
       if not PingAdress(IP) then begin
         Writeln;
-        WritelnWithTime('Невозможно восстановить связть т.к. отуствует доступ к удаленному узлу '+ IP);  
+        WritelnWithTime('РќРµРІРѕР·РјРѕР¶РЅРѕ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРІСЏР·С‚СЊ С‚.Рє. РѕС‚СѓСЃС‚РІСѓРµС‚ РґРѕСЃС‚СѓРї Рє СѓРґР°Р»РµРЅРЅРѕРјСѓ СѓР·Р»Сѓ '+ IP);  
       end else begin
         Writeln;
-        WritelnWithTime('Нет связи с узлом ' + VPNIP);
-        WritelnWithTime('Перзапускаю '+ServiceName+'...');
+        WritelnWithTime('РќРµС‚ СЃРІСЏР·Рё СЃ СѓР·Р»РѕРј ' + VPNIP);
+        WritelnWithTime('РџРµСЂР·Р°РїСѓСЃРєР°СЋ '+ServiceName+'...');
         StartAndWait('NET','STOP '+ServiceName);
-        SleepSEC(VPNRestartWait,'Ожидаю запуска '+ServiceName+'... {0}');
+        SleepSEC(VPNRestartWait,'РћР¶РёРґР°СЋ Р·Р°РїСѓСЃРєР° '+ServiceName+'... {0}');
         Writeln;
         StartAndWait('NET','START '+ServiceName);
       end;
     end else begin
-      WriteWithTime('Все в норме');
+      WriteWithTime('Р’СЃРµ РІ РЅРѕСЂРјРµ');
     end;
   end;
 end.

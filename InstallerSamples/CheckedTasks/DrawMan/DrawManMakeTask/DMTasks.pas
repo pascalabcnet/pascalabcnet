@@ -9,7 +9,7 @@ implementation
 procedure FirstDM;
 var i,a: integer;
 begin
-  TaskText('Задание mydm1. Начертите, используя цикл');
+  TaskText('Р—Р°РґР°РЅРёРµ mydm1. РќР°С‡РµСЂС‚РёС‚Рµ, РёСЃРїРѕР»СЊР·СѓСЏ С†РёРєР»');
   Field(14,8);
   DoToPoint(7,7);
   a:=6;
@@ -40,7 +40,7 @@ end;
 
 procedure SecondDM;
 begin
-  TaskText('Задание mydm2. Начертите, используя процедуру Cross');
+  TaskText('Р—Р°РґР°РЅРёРµ mydm2. РќР°С‡РµСЂС‚РёС‚Рµ, РёСЃРїРѕР»СЊР·СѓСЏ РїСЂРѕС†РµРґСѓСЂСѓ Cross');
   Field(18,12);
   DoToPoint(3,8);
   DoCross;
@@ -53,7 +53,7 @@ begin
 end;
 
 begin
-  RegisterGroup('mydm','Мои задания для Чертежника','DMTasks',2);
+  RegisterGroup('mydm','РњРѕРё Р·Р°РґР°РЅРёСЏ РґР»СЏ Р§РµСЂС‚РµР¶РЅРёРєР°','DMTasks',2);
   RegisterTask('mydm1',FirstDM);
   RegisterTask('mydm2',SecondDM);
 end.

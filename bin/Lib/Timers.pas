@@ -1,11 +1,11 @@
 Unit Timers;
 
 (*
-    Обертка для класса System.Timers.Timer
-    (c) Брагилевский В.Н. 2007
+    РћР±РµСЂС‚РєР° РґР»СЏ РєР»Р°СЃСЃР° System.Timers.Timer
+    (c) Р‘СЂР°РіРёР»РµРІСЃРєРёР№ Р’.Рќ. 2007
 
-    Сохранен интерфейс класса Timer из PascalABC
-    за исключением функции Handle.
+    РЎРѕС…СЂР°РЅРµРЅ РёРЅС‚РµСЂС„РµР№СЃ РєР»Р°СЃСЃР° Timer РёР· PascalABC
+    Р·Р° РёСЃРєР»СЋС‡РµРЅРёРµРј С„СѓРЅРєС†РёРё Handle.
 *)
 
 interface
@@ -13,7 +13,7 @@ interface
 uses System;
 
 type
-  /// Класс таймера
+  /// РљР»Р°СЃСЃ С‚Р°Р№РјРµСЂР°
   Timer = class
   private
     _timer: System.Timers.Timer;
@@ -24,15 +24,15 @@ type
     function GetInterval: integer;
     procedure OnTimer(sender: object; e: System.Timers.ElapsedEventArgs);
   public
-    /// Создает таймер с интервалом срабатывания ms миллисекунд и обработчиком TimerProc
+    /// РЎРѕР·РґР°РµС‚ С‚Р°Р№РјРµСЂ СЃ РёРЅС‚РµСЂРІР°Р»РѕРј СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ ms РјРёР»Р»РёСЃРµРєСѓРЅРґ Рё РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРј TimerProc
     constructor Create(ms: integer; TimerProc: procedure); 
-    /// Запускает таймер
+    /// Р—Р°РїСѓСЃРєР°РµС‚ С‚Р°Р№РјРµСЂ
     procedure Start;
-    /// Останавливает таймер
+    /// РћСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚Р°Р№РјРµСЂ
     procedure Stop;
-    /// Запущен ли таймер
+    /// Р—Р°РїСѓС‰РµРЅ Р»Рё С‚Р°Р№РјРµСЂ
     property Enabled: boolean read GetEnabled write SetEnabled;
-    /// Интервал срабатывания таймера
+    /// РРЅС‚РµСЂРІР°Р» СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ С‚Р°Р№РјРµСЂР°
     property Interval: integer read GetInterval write SetInterval;
   end;
 

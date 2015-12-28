@@ -8,7 +8,7 @@ implementation
 
 procedure FirstRob;
 begin
-  TaskText('Задание myrob1. Закрасить помеченные клетки');
+  TaskText('Р—Р°РґР°РЅРёРµ myrob1. Р—Р°РєСЂР°СЃРёС‚СЊ РїРѕРјРµС‡РµРЅРЅС‹Рµ РєР»РµС‚РєРё');
   Field(10,6);
   HorizontalWall(0,3,4);
   VerticalWall(4,3,2);
@@ -22,7 +22,7 @@ end;
 procedure SecondRob;
 var n,i: integer;
 begin
-  TaskText('Задание myrob2. Закрасить клетки под закрашенными');
+  TaskText('Р—Р°РґР°РЅРёРµ myrob2. Р—Р°РєСЂР°СЃРёС‚СЊ РєР»РµС‚РєРё РїРѕРґ Р·Р°РєСЂР°С€РµРЅРЅС‹РјРё');
   n:=Random(4)+7;
   Field(n,4);
   RobotBeginEnd(1,3,n,3);
@@ -39,6 +39,6 @@ end;
 begin
   RegisterTask('myrob1',FirstRob);
   RegisterTask('myrob2',SecondRob);
-  RegisterGroup('myrob', 'Мои задания для Робота', 'RobTasks', 2);
+  RegisterGroup('myrob', 'РњРѕРё Р·Р°РґР°РЅРёСЏ РґР»СЏ Р РѕР±РѕС‚Р°', 'RobTasks', 2);
 end.
 

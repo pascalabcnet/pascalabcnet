@@ -60,7 +60,7 @@ namespace PascalABCCompiler.Parsers
                                 {
                                     LastParser = (IParser)obj;
                                     Parsers.Add(LastParser);
-                                    LastParser.Reset();//Здесь поисходит инициализация парсеров
+                                    LastParser.Reset();//Р—РґРµСЃСЊ РїРѕРёСЃС…РѕРґРёС‚ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РїР°СЂСЃРµСЂРѕРІ
                                     LastParser.SourceFilesProvider = sourceFilesProvider;
                                     if (ParserConnected != null)
                                         ParserConnected(LastParser);

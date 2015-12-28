@@ -4,7 +4,7 @@ begin
   with System.Console do begin
     if CursorLeft >= 0 then 
       WriteLine;
-    Write('Программа завершена, нажмите любую клавишу . . .');
+    Write('РџСЂРѕРіСЂР°РјРјР° Р·Р°РІРµСЂС€РµРЅР°, РЅР°Р¶РјРёС‚Рµ Р»СЋР±СѓСЋ РєР»Р°РІРёС€Сѓ . . .');
     Readkey(true);
   end;
 end.

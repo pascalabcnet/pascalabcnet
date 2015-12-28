@@ -1,4 +1,4 @@
-// Ханойские башни
+// РҐР°РЅРѕР№СЃРєРёРµ Р±Р°С€РЅРё
 uses GraphABC;
 
 type
@@ -77,12 +77,12 @@ begin
   SetFontSize(14);
   SetFontName('Arial');
   SetBrushColor(clWhite);
-  TextOut(20,20,'Число перемещений дисков='+IntToStr(num));
+  TextOut(20,20,'Р§РёСЃР»Рѕ РїРµСЂРµРјРµС‰РµРЅРёР№ РґРёСЃРєРѕРІ='+IntToStr(num));
   Redraw;
 end;
 
 begin
-  SetWindowCaption('Ханойские башни');
+  SetWindowCaption('РҐР°РЅРѕР№СЃРєРёРµ Р±Р°С€РЅРё');
   SetWindowSize(760,400);
   Init;
   LockDrawing;

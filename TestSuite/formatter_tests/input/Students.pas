@@ -1,4 +1,4 @@
-//Перегрузка операторов
+//РџРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С‚РѕСЂРѕРІ
 type 
   Student = class
     Name: string;
@@ -10,7 +10,7 @@ type
       Self.Height := Height;
     end;
     class function operator<(left,right: Student): boolean; 
-    // Сравнение по росту
+    // РЎСЂР°РІРЅРµРЅРёРµ РїРѕ СЂРѕСЃС‚Сѓ
     begin
       Result := left.Height < right.Height;
     end;

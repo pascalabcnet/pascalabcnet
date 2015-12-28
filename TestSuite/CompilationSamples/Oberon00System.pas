@@ -1,27 +1,27 @@
 // (c) Mikst, Juliet 2010
-/// Системный модуль для языка Oberon
+/// РЎРёСЃС‚РµРјРЅС‹Р№ РјРѕРґСѓР»СЊ РґР»СЏ СЏР·С‹РєР° Oberon
 unit Oberon00System;
 
 interface
 
 type
-  /// Логический тип (TRUE | FALSE)
+  /// Р›РѕРіРёС‡РµСЃРєРёР№ С‚РёРї (TRUE | FALSE)
   BOOLEAN = System.boolean;
-  /// Целое число
+  /// Р¦РµР»РѕРµ С‡РёСЃР»Рѕ
   INTEGER = System.Int32;
-  /// Короткое целое число
+  /// РљРѕСЂРѕС‚РєРѕРµ С†РµР»РѕРµ С‡РёСЃР»Рѕ
   SHORTINT = System.byte;
-  /// Длинное целое число
+  /// Р”Р»РёРЅРЅРѕРµ С†РµР»РѕРµ С‡РёСЃР»Рѕ
   LONGINT = System.int64;
-  /// Вещественное число
+  /// Р’РµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ
   REAL = System.double;
-  /// Длинное вещественное число
+  /// Р”Р»РёРЅРЅРѕРµ РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ
   LONGREAL = System.double;
-  /// Символ
+  /// РЎРёРјРІРѕР»
   CHAR = System.char;
-  /// Строка
+  /// РЎС‚СЂРѕРєР°
   STRING = System.string;
-  /// Множество целых
+  /// РњРЅРѕР¶РµСЃС‚РІРѕ С†РµР»С‹С…
   iset = array of integer;
 
 procedure Print(o: object);
@@ -38,7 +38,7 @@ begin
   Console.Write(o);
 end;
 
-/// Вывести значение
+/// Р’С‹РІРµСЃС‚Рё Р·РЅР°С‡РµРЅРёРµ
 procedure Println(o: object);
 begin
   Console.WriteLine(o);

@@ -8,16 +8,16 @@ type
   
 procedure WritePerson(const p: Person);
 begin
-  writelnFormat('Фамилия: {0}   Пол: {1}   Возраст: {2}   Вес: {3}',p.Name,p.Sex,p.Age,p.Weight);
+  writelnFormat('Р¤Р°РјРёР»РёСЏ: {0}   РџРѕР»: {1}   Р’РѕР·СЂР°СЃС‚: {2}   Р’РµСЃ: {3}',p.Name,p.Sex,p.Age,p.Weight);
 end;
   
 var 
-  p: Person := (Name: 'Иванов'; Age: 20; Weight: 64; Sex: Male);
+  p: Person := (Name: 'РРІР°РЅРѕРІ'; Age: 20; Weight: 64; Sex: Male);
   p1: Person;  
 begin
-  p1 := p; // Присваивание записей
+  p1 := p; // РџСЂРёСЃРІР°РёРІР°РЅРёРµ Р·Р°РїРёСЃРµР№
   var p2: Person;
-  p2.Name := 'Петрова';
+  p2.Name := 'РџРµС‚СЂРѕРІР°';
   p2.Age := 18;
   p2.Weight := 50;
   p2.Sex := Female;
@@ -26,7 +26,7 @@ begin
   var p3: Person;
   with p3 do
   begin
-    Name := 'Сидоров';
+    Name := 'РЎРёРґРѕСЂРѕРІ';
     Age := 24;
     Weight := 80;
     Sex := Male;

@@ -3,7 +3,7 @@ type
     x:integer;
     function ToString: String; override;
     begin
-      result := 'Работает! ' + x.tostring;
+      result := 'Р Р°Р±РѕС‚Р°РµС‚! ' + x.tostring;
     end;
   end;
   

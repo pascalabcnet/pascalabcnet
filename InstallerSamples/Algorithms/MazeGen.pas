@@ -1,10 +1,10 @@
-// Программа генерации случайных лабиринтов
+// РџСЂРѕРіСЂР°РјРјР° РіРµРЅРµСЂР°С†РёРё СЃР»СѓС‡Р°Р№РЅС‹С… Р»Р°Р±РёСЂРёРЅС‚РѕРІ
 uses GraphABC;
 
 const
-  szw = 70;      // размер лабиринта
+  szw = 70;      // СЂР°Р·РјРµСЂ Р»Р°Р±РёСЂРёРЅС‚Р°
   szh = 50;
-  cellsz = 10;   // размер ячейки
+  cellsz = 10;   // СЂР°Р·РјРµСЂ СЏС‡РµР№РєРё
 
 type
   point = record
@@ -32,10 +32,10 @@ begin
   x := Random(szw-2)+1;
   y := Random(szh-2)+1;
 
-// Пометить клетку как принадлежащую лабиринту
+// РџРѕРјРµС‚РёС‚СЊ РєР»РµС‚РєСѓ РєР°Рє РїСЂРёРЅР°РґР»РµР¶Р°С‰СѓСЋ Р»Р°Р±РёСЂРёРЅС‚Сѓ
   maze[x][y]:= maze[x][y] and not 48;
 
-// Занести в список todo все ближайшие необработанные клетки
+// Р—Р°РЅРµСЃС‚Рё РІ СЃРїРёСЃРѕРє todo РІСЃРµ Р±Р»РёР¶Р°Р№С€РёРµ РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ РєР»РµС‚РєРё
   for var d:=0 to 3 do
     if (maze[x + dx[d]][y + dy[d]] and 16) <> 0 then
     begin
@@ -45,28 +45,28 @@ begin
       maze[x + dx[d]][y + dy[d]] := maze[x + dx[d]][y + dy[d]] and not 16;
     end;
 
-   // Пока не обработаны все клетки
+   // РџРѕРєР° РЅРµ РѕР±СЂР°Р±РѕС‚Р°РЅС‹ РІСЃРµ РєР»РµС‚РєРё
    while todonum > 0 do
    begin
-     // Выбрать из списка todo произвольную клетку
+     // Р’С‹Р±СЂР°С‚СЊ РёР· СЃРїРёСЃРєР° todo РїСЂРѕРёР·РІРѕР»СЊРЅСѓСЋ РєР»РµС‚РєСѓ
      n := Random(todonum);
      x := todo[n].x;
      y := todo[n].y;
 
-     // Удалить из списка обработанную клетку
+     // РЈРґР°Р»РёС‚СЊ РёР· СЃРїРёСЃРєР° РѕР±СЂР°Р±РѕС‚Р°РЅРЅСѓСЋ РєР»РµС‚РєСѓ
      Dec(todonum);
      todo[n]:= todo[todonum];
 
-     // Выбрать направление, которое ведет к лабиринту
+     // Р’С‹Р±СЂР°С‚СЊ РЅР°РїСЂР°РІР»РµРЅРёРµ, РєРѕС‚РѕСЂРѕРµ РІРµРґРµС‚ Рє Р»Р°Р±РёСЂРёРЅС‚Сѓ
      repeat
        dd:=Random (4);
      until not ((maze[x + dx[dd]][y + dy[dd]] and 32) <> 0);
 
-     // Присоединить выбранную клетку к лабиринту
+     // РџСЂРёСЃРѕРµРґРёРЅРёС‚СЊ РІС‹Р±СЂР°РЅРЅСѓСЋ РєР»РµС‚РєСѓ Рє Р»Р°Р±РёСЂРёРЅС‚Сѓ
      maze[x][y] := maze[x][y] and not ((1 shl dd) or 32);
      maze[x + dx[dd]][y + dy[dd]] := maze[x + dx[dd]][y + dy[dd]] and not (1 shl (dd xor 1));
 
-     // Занести в список todo все ближайшие необработанные клетки
+     // Р—Р°РЅРµСЃС‚Рё РІ СЃРїРёСЃРѕРє todo РІСЃРµ Р±Р»РёР¶Р°Р№С€РёРµ РЅРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ РєР»РµС‚РєРё
      for var d:=0 to 3 do
        if (maze[x + dx[d]][y + dy[d]] and 16) <> 0 then
        begin
@@ -77,8 +77,8 @@ begin
        end;
    end;
 
-   maze[1][1] := maze[1][1] and not 1;                 // начало лабиринта - в левом верхнем углу
-   maze[szw-2][szh-2] := maze[szw-2][szh-2] and not 2; // конец лабиринта - в правом нижнем углу
+   maze[1][1] := maze[1][1] and not 1;                 // РЅР°С‡Р°Р»Рѕ Р»Р°Р±РёСЂРёРЅС‚Р° - РІ Р»РµРІРѕРј РІРµСЂС…РЅРµРј СѓРіР»Сѓ
+   maze[szw-2][szh-2] := maze[szw-2][szh-2] and not 2; // РєРѕРЅРµС† Р»Р°Р±РёСЂРёРЅС‚Р° - РІ РїСЂР°РІРѕРј РЅРёР¶РЅРµРј СѓРіР»Сѓ
 end;
 
 procedure Draw;
@@ -86,19 +86,19 @@ begin
   for var x:=1 to szw-2 do
   for var y:=1 to szh-2 do
   begin
-   if ((maze[x][y] and 1) <> 0) then // верхняя стена
+   if ((maze[x][y] and 1) <> 0) then // РІРµСЂС…РЅСЏСЏ СЃС‚РµРЅР°
      Line(x * cellsz, y * cellsz, x * cellsz + cellsz , y * cellsz);
-   if ((maze[x][y] and 2) <> 0) then // нижняя стена
+   if ((maze[x][y] and 2) <> 0) then // РЅРёР¶РЅСЏСЏ СЃС‚РµРЅР°
      Line(x * cellsz, y * cellsz + cellsz, x * cellsz + cellsz , y * cellsz + cellsz);
-   if ((maze[x][y] and 4) <> 0) then // левая стена
+   if ((maze[x][y] and 4) <> 0) then // Р»РµРІР°СЏ СЃС‚РµРЅР°
      Line(x * cellsz, y * cellsz, x * cellsz, y * cellsz + cellsz );
-   if ((maze[x][y] and 8) <> 0) then // правая стена
+   if ((maze[x][y] and 8) <> 0) then // РїСЂР°РІР°СЏ СЃС‚РµРЅР°
      Line(x * cellsz + cellsz, y * cellsz, x * cellsz + cellsz, y * cellsz + cellsz);
   end;
 end;
 
 begin
-  Window.Title := 'Генерация лабиринта';
+  Window.Title := 'Р“РµРЅРµСЂР°С†РёСЏ Р»Р°Р±РёСЂРёРЅС‚Р°';
   SetWindowSize(szw*cellsz,szh*cellsz);
   Init;
   Draw;

@@ -70,7 +70,7 @@ public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
 public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 {
   // Verbatim content from KuMir00.y
-    public syntax_tree_node root; // Корневой узел синтаксического дерева 	
+    public syntax_tree_node root; // РљРѕСЂРЅРµРІРѕР№ СѓР·РµР» СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° 	
     public GPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
     public int unit_number;
     public System.Collections.ArrayList _units = new System.Collections.ArrayList(); // for modules
@@ -566,7 +566,7 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
       case 2: // module -> Separators_Opt, Global_part, TK_ALG, ident, Separators, TK_BEGIN, 
               //           StatementSequence, TK_END, EmptyLines, Sub_declarations
 {		
-		// Формирование главной программы
+		// Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РіР»Р°РІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
             program_module _program_module;
             program_name _program_name = new program_name(ValueStack[ValueStack.Depth-7].id);
             if ((_units[this.unit_number - 1] as unit_data).initialization.subnodes.Count != 0)
@@ -651,7 +651,7 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 	}
         break;
       case 4: // module -> INVISIBLE, expr
-{ // Для Intellisense
+{ // Р”Р»СЏ Intellisense
 		root = ValueStack[ValueStack.Depth-1].ex;
 	}
         break;

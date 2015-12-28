@@ -1,4 +1,4 @@
-// Стандартные функции Ord Chr
+// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С„СѓРЅРєС†РёРё Ord Chr
 var 
   i: integer;
   c: char;
@@ -6,8 +6,8 @@ var
 begin
   c := 'z';
   i := Ord(c);
-  writelnFormat('Код символа {0} в кодировке Windows равен {1}',c,i);
+  writelnFormat('РљРѕРґ СЃРёРјРІРѕР»Р° {0} РІ РєРѕРґРёСЂРѕРІРєРµ Windows СЂР°РІРµРЅ {1}',c,i);
   i := 193;
   c := Chr(i);
-  writelnFormat('Символ с кодом {0} в кодировке Windows - это {1}',i,c);
+  writelnFormat('РЎРёРјРІРѕР» СЃ РєРѕРґРѕРј {0} РІ РєРѕРґРёСЂРѕРІРєРµ Windows - СЌС‚Рѕ {1}',i,c);
 end.

@@ -1,4 +1,4 @@
-// E-квадраты. Демонстрация рекурсии
+// E-РєРІР°РґСЂР°С‚С‹. Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ СЂРµРєСѓСЂСЃРёРё
 uses GraphABC;
 
 const mw = 2.9;
@@ -23,7 +23,7 @@ end;
 var s: string;
     r: integer;
 begin
-  SetWindowCaption('Рекурсия: квадраты');
+  SetWindowCaption('Р РµРєСѓСЂСЃРёСЏ: РєРІР°РґСЂР°С‚С‹');
   SetWindowSize(750,530);
   SetPenColor(clWhite);
   SetBrushColor(clRandom);

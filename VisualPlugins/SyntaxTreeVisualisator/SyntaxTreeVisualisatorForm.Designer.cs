@@ -189,7 +189,7 @@ namespace VisualPascalABCPlugins
             this.tbCPSaveTree.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.tbCPSaveTree.Name = "tbCPSaveTree";
             this.tbCPSaveTree.Size = new System.Drawing.Size(23, 22);
-            this.tbCPSaveTree.Text = "Сохранить дерево на диск";
+            this.tbCPSaveTree.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ РґРµСЂРµРІРѕ РЅР° РґРёСЃРє";
             this.tbCPSaveTree.Click += new System.EventHandler(this.tbCPSaveTree_Click);
             // 
             // toolStripSeparator4

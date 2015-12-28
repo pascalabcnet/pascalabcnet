@@ -11,7 +11,7 @@ var i: integer;
 
 begin
   a[1] := 2; a[2] := 3; a[3] := 5;
-  p.name := 'Иванов'; p.age := 20;
+  p.name := 'РРІР°РЅРѕРІ'; p.age := 20;
   s := [1,3,7];
 
   for i:=1 to 3 do

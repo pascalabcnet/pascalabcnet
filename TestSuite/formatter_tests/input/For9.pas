@@ -1,4 +1,4 @@
-// Цикл for. Поиск значения. Оператор break
+// Р¦РёРєР» for. РџРѕРёСЃРє Р·РЅР°С‡РµРЅРёСЏ. РћРїРµСЂР°С‚РѕСЂ break
 const n = 10;
 
 var 
@@ -6,9 +6,9 @@ var
   found: boolean;
   
 begin
-  writeln('Введите число для поиска: ');
+  writeln('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ РґР»СЏ РїРѕРёСЃРєР°: ');
   readln(k);
-  writelnFormat('Введите {0} чисел',n);
+  writelnFormat('Р’РІРµРґРёС‚Рµ {0} С‡РёСЃРµР»',n);
   found := False;
   for var i:=1 to n do
   begin
@@ -21,6 +21,6 @@ begin
     end;
   end;
   if found then
-    writeln('Найдено')
-  else writeln('Не найдено');  
+    writeln('РќР°Р№РґРµРЅРѕ')
+  else writeln('РќРµ РЅР°Р№РґРµРЅРѕ');  
 end.

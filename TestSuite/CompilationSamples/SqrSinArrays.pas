@@ -1,25 +1,25 @@
-// демонстрация работы параллельного for
-//заполнение массива
+// РґРµРјРѕРЅСЃС‚СЂР°С†РёСЏ СЂР°Р±РѕС‚С‹ РїР°СЂР°Р»Р»РµР»СЊРЅРѕРіРѕ for
+//Р·Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРІР°
 procedure FillRandArr(A: array of real);
 begin
   Randomize;
   for var i := 0 to A.Length - 1 do
     a[i] := Random(1000);
 end;
- // вывод массива
+ // РІС‹РІРѕРґ РјР°СЃСЃРёРІР°
 procedure printArr(A: array of real);
 begin
   for var i := 0 to A.Length - 1 do
     writeln(a[i]);
 end;
-// Последовательное вычисление квадратов синусов
+// РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ РІС‹С‡РёСЃР»РµРЅРёРµ РєРІР°РґСЂР°С‚РѕРІ СЃРёРЅСѓСЃРѕРІ
 procedure SqrSinArr(A: array of real; var C: array of real);
 begin
   
   for var i := 0 to A.Length - 1 do
     C[i] := sqr(sin(A[i]));
 end;
-// Параллельное вычисление квадратов синусов
+// РџР°СЂР°Р»Р»РµР»СЊРЅРѕРµ РІС‹С‡РёСЃР»РµРЅРёРµ РєРІР°РґСЂР°С‚РѕРІ СЃРёРЅСѓСЃРѕРІ
 procedure SqrSinArrParallel(A: array of real; var C: array of real);
 begin
   
@@ -38,10 +38,10 @@ begin
   var  m0 := Milliseconds;
   SqrSinArrParallel(A, C);
   
-  writeln('Параллельное выполнение: ', Milliseconds - m0, 'ms');
+  writeln('РџР°СЂР°Р»Р»РµР»СЊРЅРѕРµ РІС‹РїРѕР»РЅРµРЅРёРµ: ', Milliseconds - m0, 'ms');
   
   m0 := Milliseconds;
   SqrSinArr(A, C);
-  writeln('Последовательное выполнение: ', Milliseconds - m0, 'ms');
+  writeln('РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ РІС‹РїРѕР»РЅРµРЅРёРµ: ', Milliseconds - m0, 'ms');
   
 end.

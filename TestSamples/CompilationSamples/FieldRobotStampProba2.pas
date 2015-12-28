@@ -3,7 +3,7 @@
 const
   MAX_DimX = 200;
   MAX_DimY = 200;
-  MaxConds = 10000; // сколько максимально условий может проверить Робот - направлено против зацикливания!
+  MaxConds = 10000; // СЃРєРѕР»СЊРєРѕ РјР°РєСЃРёРјР°Р»СЊРЅРѕ СѓСЃР»РѕРІРёР№ РјРѕР¶РµС‚ РїСЂРѕРІРµСЂРёС‚СЊ Р РѕР±РѕС‚ - РЅР°РїСЂР°РІР»РµРЅРѕ РїСЂРѕС‚РёРІ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ!
   MaxMoveNum = 10000;
 
 var
@@ -31,15 +31,15 @@ type
     procedure DrawCentered;
     procedure Draw0;
     procedure Draw(px,py: integer);
-    procedure DrawCell(x,y: integer); { нарисовать одну ячейку }
+    procedure DrawCell(x,y: integer); { РЅР°СЂРёСЃРѕРІР°С‚СЊ РѕРґРЅСѓ СЏС‡РµР№РєСѓ }
     procedure Clear;
     function IsSolution: boolean;
-    // примитивы для постановщика
+    // РїСЂРёРјРёС‚РёРІС‹ РґР»СЏ РїРѕСЃС‚Р°РЅРѕРІС‰РёРєР°
     procedure DrawLastRobotPos;
     procedure DrawTag(x,y: integer);
     procedure SetDim(DX,DY,CellSz: integer);
-    procedure SetPaintSystem(x,y: integer); { пометить ячейку как нарисованную - постановщик}
-    procedure SetTag(x,y: integer); { пометить ячейку как помеченную }
+    procedure SetPaintSystem(x,y: integer); { РїРѕРјРµС‚РёС‚СЊ СЏС‡РµР№РєСѓ РєР°Рє РЅР°СЂРёСЃРѕРІР°РЅРЅСѓСЋ - РїРѕСЃС‚Р°РЅРѕРІС‰РёРє}
+    procedure SetTag(x,y: integer); { РїРѕРјРµС‚РёС‚СЊ СЏС‡РµР№РєСѓ РєР°Рє РїРѕРјРµС‡РµРЅРЅСѓСЋ }
     procedure SetTagRect(x1,y1,x2,y2: integer);
     procedure SetFirstRobotPos(x,y: integer);
     procedure MoveRobotToFirstPos;
@@ -47,11 +47,11 @@ type
     procedure SetFirstLastRobotPos(x,y,x1,y1: integer);
     procedure HorizWall(x,y,len: integer);
     procedure VertWall(x,y,len: integer);
-    // примитивы для выполнителя
+    // РїСЂРёРјРёС‚РёРІС‹ РґР»СЏ РІС‹РїРѕР»РЅРёС‚РµР»СЏ
     procedure DrawRobot;
     procedure MoveRobot(x,y: integer);
-    procedure SetPaintUser(x,y: integer); { пометить ячейку как нарисованную - выполнитель}
-    procedure SetRobotPos(x,y: integer); // синоним MoveRobot
+    procedure SetPaintUser(x,y: integer); { РїРѕРјРµС‚РёС‚СЊ СЏС‡РµР№РєСѓ РєР°Рє РЅР°СЂРёСЃРѕРІР°РЅРЅСѓСЋ - РІС‹РїРѕР»РЅРёС‚РµР»СЊ}
+    procedure SetRobotPos(x,y: integer); // СЃРёРЅРѕРЅРёРј MoveRobot
     function WallFromLeft(x,y: integer): boolean;
     function WallFromRight(x,y: integer): boolean;
     function WallFromUp(x,y: integer): boolean;

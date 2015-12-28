@@ -501,13 +501,13 @@ namespace NodeGenerator
                                         if (f_name.Length > 7 && f_name.Substring(0, 7) == "vector<")
                                         {
                                             string type_name = f_name.Substring(0, f_name.Length - 1);
-                                            //if (имя != NULL)
+                                            //if (РёРјСЏ != NULL)
                                             //{
-                                            //  for (vector<T*>::iterator ssyy_j = имя->begin(); ssyy_j != имя->end(); ssyy_j++)
+                                            //  for (vector<T*>::iterator ssyy_j = РёРјСЏ->begin(); ssyy_j != РёРјСЏ->end(); ssyy_j++)
                                             //  {
                                             //      delete *ssyy_j;
                                             //  }
-                                            //  delete имя;
+                                            //  delete РёРјСЏ;
                                             //}
                                             destructor_code.Add(text_consts.tab2 + text_consts.if_keyword_name + text_consts.space +
                                                 text_consts.open_par + property_name + text_consts.space +
@@ -790,7 +790,7 @@ namespace NodeGenerator
 		{
 			sw.WriteLine();
 			sw.WriteLine(@"		///<summary>");
-			sw.WriteLine(@"		///Конструктор без параметров.");
+			sw.WriteLine(@"		///РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ.");
 			sw.WriteLine(@"		///</summary>");
 			sw.WriteLine(text_consts.create_simple_constructor(node_name));
 			//sw.WriteLine();
@@ -852,7 +852,7 @@ namespace NodeGenerator
                 return;
 
             sw.WriteLine(@"		///<summary>");
-            sw.WriteLine(@"		///Конструктор с параметрами.");
+            sw.WriteLine(@"		///РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂР°РјРё.");
             sw.WriteLine(@"		///</summary>");
             sw.Write(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space + node_name +
                 text_consts.open_par);
@@ -937,9 +937,9 @@ namespace NodeGenerator
 		{
 			//sw.WriteLine();
 			sw.WriteLine(@"		///<summary>");
-			sw.WriteLine(@"		///Метод для обхода дерева посетителем");
+			sw.WriteLine(@"		///РњРµС‚РѕРґ РґР»СЏ РѕР±С…РѕРґР° РґРµСЂРµРІР° РїРѕСЃРµС‚РёС‚РµР»РµРј");
 			sw.WriteLine(@"		///</summary>");
-			sw.WriteLine(@"		///<param name=""visitor"">Объект-посетитель.</param>");
+			sw.WriteLine(@"		///<param name=""visitor"">РћР±СЉРµРєС‚-РїРѕСЃРµС‚РёС‚РµР»СЊ.</param>");
 			sw.WriteLine(@"		///<returns>Return value is void</returns>");
 			string pol_type="";
 			if (base_class!=null)
@@ -970,9 +970,9 @@ namespace NodeGenerator
         {
             sw.WriteLine();
             sw.WriteLine(@"		///<summary>");
-            sw.WriteLine(@"		///Метод для обхода дерева посетителем");
+            sw.WriteLine(@"		///РњРµС‚РѕРґ РґР»СЏ РѕР±С…РѕРґР° РґРµСЂРµРІР° РїРѕСЃРµС‚РёС‚РµР»РµРј");
             sw.WriteLine(@"		///</summary>");
-            sw.WriteLine(@"		///<param name=""visitor"">Объект-посетитель.</param>");
+            sw.WriteLine(@"		///<param name=""visitor"">РћР±СЉРµРєС‚-РїРѕСЃРµС‚РёС‚РµР»СЊ.</param>");
             sw.WriteLine(@"		///<returns>Return value is void</returns>");
             string pol_type = "";
             if (base_class == null)
@@ -997,7 +997,7 @@ namespace NodeGenerator
         public void generate_subnodes_number_property(StreamWriter sw)
         {
             var subnodes = collect_subnodes(true);
-            var fieldsCount = subnodes.Count(ni=>ni.field_type!=null); // в индексаторе учитывать только syntax_tree_node SSM 27/07/15
+            var fieldsCount = subnodes.Count(ni=>ni.field_type!=null); // РІ РёРЅРґРµРєСЃР°С‚РѕСЂРµ СѓС‡РёС‚С‹РІР°С‚СЊ С‚РѕР»СЊРєРѕ syntax_tree_node SSM 27/07/15
 
             string pol_type = "";
             if (base_class != null)
@@ -1025,7 +1025,7 @@ namespace NodeGenerator
             }
 
             sw.WriteLine(@"		///<summary>");
-            sw.WriteLine(@"		///Свойство для получения количества всех подузлов без элементов поля типа List");
+            sw.WriteLine(@"		///РЎРІРѕР№СЃС‚РІРѕ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° РІСЃРµС… РїРѕРґСѓР·Р»РѕРІ Р±РµР· СЌР»РµРјРµРЅС‚РѕРІ РїРѕР»СЏ С‚РёРїР° List");
             sw.WriteLine(@"		///</summary>");
             // subnodes_without_list_elements_count
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
@@ -1043,7 +1043,7 @@ namespace NodeGenerator
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
 
             sw.WriteLine(@"		///<summary>");
-            sw.WriteLine(@"		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List");
+            sw.WriteLine(@"		///РЎРІРѕР№СЃС‚РІРѕ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕР»РёС‡РµСЃС‚РІР° РІСЃРµС… РїРѕРґСѓР·Р»РѕРІ. РџРѕРґСѓР·Р»РѕРј С‚Р°РєР¶Рµ СЃС‡РёС‚Р°РµС‚СЃСЏ РєР°Р¶РґС‹Р№ СЌР»РµРјРµРЅС‚ РїРѕР»СЏ С‚РёРїР° List");
             sw.WriteLine(@"		///</summary>");
             // subnodes_count
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword + text_consts.space +
@@ -1065,7 +1065,7 @@ namespace NodeGenerator
         {
             var subnodes = collect_subnodes(true);
 
-            var subnodesSyntaxNodes = subnodes.Where(ni => ni.field_type != null).ToList(); // только подузлы, являющиеся потомками syntax_tree_node
+            var subnodesSyntaxNodes = subnodes.Where(ni => ni.field_type != null).ToList(); // С‚РѕР»СЊРєРѕ РїРѕРґСѓР·Р»С‹, СЏРІР»СЏСЋС‰РёРµСЃСЏ РїРѕС‚РѕРјРєР°РјРё syntax_tree_node
 
             var listFields = subnodes
                 .OfType<simple_element>()
@@ -1077,7 +1077,7 @@ namespace NodeGenerator
 
             //sw.WriteLine();
             sw.WriteLine(@"		///<summary>");
-            sw.WriteLine(@"		///Индексатор для получения всех подузлов");
+            sw.WriteLine(@"		///РРЅРґРµРєСЃР°С‚РѕСЂ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РІСЃРµС… РїРѕРґСѓР·Р»РѕРІ");
             sw.WriteLine(@"		///</summary>");
             string pol_type = "";
             if (base_class != null)
@@ -1109,7 +1109,7 @@ namespace NodeGenerator
                              text_consts.index_out_of_range_exception_name + text_consts.open_par + text_consts.close_par +
                              text_consts.semicolon);
 
-            var fieldsCount = subnodesSyntaxNodes.Count(); // в индексаторе учитывать только syntax_tree_node SSM 27/07/15
+            var fieldsCount = subnodesSyntaxNodes.Count(); // РІ РёРЅРґРµРєСЃР°С‚РѕСЂРµ СѓС‡РёС‚С‹РІР°С‚СЊ С‚РѕР»СЊРєРѕ syntax_tree_node SSM 27/07/15
 
             if (fieldsCount > 0)
             {
@@ -1342,7 +1342,7 @@ namespace NodeGenerator
                 node_name + text_consts.space + text_consts.underline + node_name + text_consts.close_par);
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
 
-            // вызов DefaultVisit 28.07.15
+            // РІС‹Р·РѕРІ DefaultVisit 28.07.15
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.tab + text_consts.DefaultVisitMethodName + text_consts.open_par +
                 text_consts.underline + node_name + text_consts.close_par + text_consts.semicolon);
 
@@ -1457,16 +1457,16 @@ namespace NodeGenerator
 
         public void generate_painter(StreamWriter sw_h, StreamWriter sw_cpp)
         {
-            //Пишем процедуру visit для данного типа узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ visit РґР»СЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР° СѓР·Р»Р°
 
-            //void visit(имя_узла *_имя_узла);
+            //void visit(РёРјСЏ_СѓР·Р»Р° *_РёРјСЏ_СѓР·Р»Р°);
 
-            //void Painter::visit(имя_узла *_имя_узла)
+            //void Painter::visit(РёРјСЏ_СѓР·Р»Р° *_РёРјСЏ_СѓР·Р»Р°)
             //{
             //  PrintSpaces();
-            //  *os<<тип_узла<<endl;
+            //  *os<<С‚РёРї_СѓР·Р»Р°<<endl;
             //  nspace += 2;
-            //  write_тип_узла(_тип_узла);
+            //  write_С‚РёРї_СѓР·Р»Р°(_С‚РёРї_СѓР·Р»Р°);
             //  nspace -= 2;
             //}
             sw_h.WriteLine(text_consts.tab + text_consts.tab +
@@ -1499,7 +1499,7 @@ namespace NodeGenerator
             sw_cpp.WriteLine(text_consts.tab + text_consts.close_figure);
 
             //--------
-            //Пишем процедуру write для данного типа узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ write РґР»СЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР° СѓР·Р»Р°
             sw_h.WriteLine(text_consts.tab + text_consts.tab +
                 text_consts.void_keyword + text_consts.space +
                 text_consts.write_prefix + node_name +
@@ -1515,37 +1515,37 @@ namespace NodeGenerator
             sw_cpp.WriteLine(text_consts.tab + text_consts.open_figure);
             if (node_name != text_consts.base_tree_node_name)
             {
-                //if (base_class != null) //(ssyy) Все должны быть наследниками syntax_tree_node
+                //if (base_class != null) //(ssyy) Р’СЃРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РЅР°СЃР»РµРґРЅРёРєР°РјРё syntax_tree_node
                 {
-                    //Пишем вызов сериализации полей предка
-                    //write_<имя_типа_предка>(_<имя_типа>);
+                    //РџРёС€РµРј РІС‹Р·РѕРІ СЃРµСЂРёР°Р»РёР·Р°С†РёРё РїРѕР»РµР№ РїСЂРµРґРєР°
+                    //write_<РёРјСЏ_С‚РёРїР°_РїСЂРµРґРєР°>(_<РёРјСЏ_С‚РёРїР°>);
                     sw_cpp.WriteLine(text_consts.tab2 + text_consts.write_prefix + base_class.node_name +
                         text_consts.open_par + text_consts.underline +
                         node_name + text_consts.close_par + text_consts.semicolon);
                 }
 
-                //Пишем поля объекта
+                //РџРёС€РµРј РїРѕР»СЏ РѕР±СЉРµРєС‚Р°
                 foreach (node_field_info nfi in _subnodes)
                 {
                     simple_element se = nfi as simple_element;
 
-                    //Если поле не является узлом дерева
+                    //Р•СЃР»Рё РїРѕР»Рµ РЅРµ СЏРІР»СЏРµС‚СЃСЏ СѓР·Р»РѕРј РґРµСЂРµРІР°
                     if (se != null)
                     {
-                        //Получаем имя типа поля
+                        //РџРѕР»СѓС‡Р°РµРј РёРјСЏ С‚РёРїР° РїРѕР»СЏ
                         string tname = se.val_field_type_name;//.ToLower();
                         if (tname.Length > 4 && tname.Substring(0, 5) == "List<")
                         {
-                            //пишем:
-                            //if (<параметр_visit>-><имя_поля> != null)
+                            //РїРёС€РµРј:
+                            //if (<РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> != null)
                             //{
                             //  PrintSpaces();
-                            //  *os<<имя_узла<<" Count="<<_параметр_visit->имя_узла->size()<<endl;
-                            //  for(int ssyy_i = 0; ssyy_i < параметр_visit->имя_узла->size(); ssyy_i++)
+                            //  *os<<РёРјСЏ_СѓР·Р»Р°<<" Count="<<_РїР°СЂР°РјРµС‚СЂ_visit->РёРјСЏ_СѓР·Р»Р°->size()<<endl;
+                            //  for(int ssyy_i = 0; ssyy_i < РїР°СЂР°РјРµС‚СЂ_visit->РёРјСЏ_СѓР·Р»Р°->size(); ssyy_i++)
                             //  {
                             //      PrintSpaces();
                             //      *os<<"["<<i<<"]"<<endl;
-                            //      print_node((*(параметр_visit->имя_узла))[i]);
+                            //      print_node((*(РїР°СЂР°РјРµС‚СЂ_visit->РёРјСЏ_СѓР·Р»Р°))[i]);
                             //  }
                             //}
                             sw_cpp.WriteLine(text_consts.tab2 + text_consts.if_keyword_name + text_consts.space +
@@ -1597,12 +1597,12 @@ namespace NodeGenerator
                             sw_cpp.WriteLine(text_consts.tab2 + text_consts.close_figure);
                         }
                         else
-                            if (tname == text_consts.string_type_name) //к сожалению, у нас это иногда null
+                            if (tname == text_consts.string_type_name) //Рє СЃРѕР¶Р°Р»РµРЅРёСЋ, Сѓ РЅР°СЃ СЌС‚Рѕ РёРЅРѕРіРґР° null
                             {
-                                //if (<параметр>-><имя_поля> != null)
+                                //if (<РїР°СЂР°РјРµС‚СЂ>-><РёРјСЏ_РїРѕР»СЏ> != null)
                                 //{
                                 //  PrintSpaces();
-                                //  *os<<"имя_узла="<<<параметр>-><имя_поля><<endl;
+                                //  *os<<"РёРјСЏ_СѓР·Р»Р°="<<<РїР°СЂР°РјРµС‚СЂ>-><РёРјСЏ_РїРѕР»СЏ><<endl;
                                 //}
                                 sw_cpp.WriteLine(text_consts.tab2 + text_consts.if_keyword_name + text_consts.space +
                                     text_consts.open_par + text_consts.underline + node_name +
@@ -1622,9 +1622,9 @@ namespace NodeGenerator
                             }
                                 else
                                     {
-                                        //пишем:
+                                        //РїРёС€РµРј:
                                         //  PrintSpaces();
-                                        //  *os<<"имя_узла="<<<параметр>-><имя_поля><<endl;
+                                        //  *os<<"РёРјСЏ_СѓР·Р»Р°="<<<РїР°СЂР°РјРµС‚СЂ>-><РёРјСЏ_РїРѕР»СЏ><<endl;
                                         sw_cpp.WriteLine(text_consts.tab2 + text_consts.print_spaces_name +
                                             text_consts.open_par + text_consts.close_par + text_consts.semicolon);
                                         sw_cpp.WriteLine(text_consts.tab2 + text_consts.ostream_name +
@@ -1637,8 +1637,8 @@ namespace NodeGenerator
                     }
                     else
                     {
-                        //пишем:
-                        //print_node(<параметр_visit>-><имя_поля>);
+                        //РїРёС€РµРј:
+                        //print_node(<РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ>);
                         sw_cpp.WriteLine(text_consts.tab2 + text_consts.print_spaces_name +
                             text_consts.open_par + text_consts.close_par + text_consts.semicolon);
                         sw_cpp.WriteLine(text_consts.tab2 + text_consts.ostream_name +
@@ -1664,14 +1664,14 @@ namespace NodeGenerator
 
 
         //ssyy
-        //number - номер узла в общем списке
+        //number - РЅРѕРјРµСЂ СѓР·Р»Р° РІ РѕР±С‰РµРј СЃРїРёСЃРєРµ
         public void generate_pcu_writer(StreamWriter sw, int number, bool cross_platform)
         {
-            //пишем
-            //public void visit(<имя_типа> _<имя_типа>)
+            //РїРёС€РµРј
+            //public void visit(<РёРјСЏ_С‚РёРїР°> _<РёРјСЏ_С‚РёРїР°>)
             //{
-            //  sw.Write((Int16)<номер_типа_узла>);
-            //  write_<имя типа>(_<имя типа>);
+            //  sw.Write((Int16)<РЅРѕРјРµСЂ_С‚РёРїР°_СѓР·Р»Р°>);
+            //  write_<РёРјСЏ С‚РёРїР°>(_<РёРјСЏ С‚РёРїР°>);
             //}
 
             sw.WriteLine();
@@ -1697,7 +1697,7 @@ namespace NodeGenerator
 
             sw.WriteLine();
 
-            //Пишем процедуру write для данного типа узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ write РґР»СЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР° СѓР·Р»Р°
 
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword +
                 text_consts.space + text_consts.void_keyword + text_consts.space +
@@ -1709,33 +1709,33 @@ namespace NodeGenerator
 
             if (node_name == text_consts.base_tree_node_name)
             {
-                //пишем
-                //if (_<имя_типа>.SourceContext == null)
+                //РїРёС€РµРј
+                //if (_<РёРјСЏ_С‚РёРїР°>.SourceContext == null)
                 //{
                 //  sw.Write((byte)0);
                 //}
                 //else
                 //{
                 //  sw.Write((byte)1);
-                //  if (_<имя_типа>.SourceContext.begin_position == null)
+                //  if (_<РёРјСЏ_С‚РёРїР°>.SourceContext.begin_position == null)
                 //  {
                 //      sw.Write((byte)0);
                 //  }
                 //  else
                 //  {
                 //      sw.Write((byte)1);
-                //      sw.Write(_<имя_типа>.SourceContext.begin_position.line_num);
-                //      sw.Write(_<имя_типа>.SourceContext.begin_position.column_num);
+                //      sw.Write(_<РёРјСЏ_С‚РёРїР°>.SourceContext.begin_position.line_num);
+                //      sw.Write(_<РёРјСЏ_С‚РёРїР°>.SourceContext.begin_position.column_num);
                 //  }
-                //  if (_<имя_типа>.SourceContext.end_position == null)
+                //  if (_<РёРјСЏ_С‚РёРїР°>.SourceContext.end_position == null)
                 //  {
                 //      sw.Write((byte)0);
                 //  }
                 //  else
                 //  {
                 //      sw.Write((byte)1);
-                //      sw.Write(_<имя_типа>.SourceContext.end_position.line_num);
-                //      sw.Write(_<имя_типа>.SourceContext.end_position.column_num);
+                //      sw.Write(_<РёРјСЏ_С‚РёРїР°>.SourceContext.end_position.line_num);
+                //      sw.Write(_<РёРјСЏ_С‚РёРїР°>.SourceContext.end_position.column_num);
                 //  }
                 //}
                 sw.WriteLine(text_consts.tab3 + text_consts.if_keyword_name + text_consts.space +
@@ -1831,46 +1831,46 @@ namespace NodeGenerator
             }
             else
             {
-                //if (base_class != null) //(ssyy) Все должны быть наследниками syntax_tree_node
+                //if (base_class != null) //(ssyy) Р’СЃРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РЅР°СЃР»РµРґРЅРёРєР°РјРё syntax_tree_node
                 {
-                    //Пишем вызов сериализации полей предка
-                    //write_<имя_типа_предка>(_<имя_типа>);
+                    //РџРёС€РµРј РІС‹Р·РѕРІ СЃРµСЂРёР°Р»РёР·Р°С†РёРё РїРѕР»РµР№ РїСЂРµРґРєР°
+                    //write_<РёРјСЏ_С‚РёРїР°_РїСЂРµРґРєР°>(_<РёРјСЏ_С‚РёРїР°>);
                     sw.WriteLine(text_consts.tab3 + text_consts.write_prefix + base_class.node_name +
                         text_consts.open_par + text_consts.underline +
                         node_name + text_consts.close_par + text_consts.semicolon);
                 }
                 
-                //Пишем поля объекта
+                //РџРёС€РµРј РїРѕР»СЏ РѕР±СЉРµРєС‚Р°
                 foreach (node_field_info nfi in _subnodes)
                 {
                     simple_element se = nfi as simple_element;
 
-                    //Если поле не является узлом дерева
+                    //Р•СЃР»Рё РїРѕР»Рµ РЅРµ СЏРІР»СЏРµС‚СЃСЏ СѓР·Р»РѕРј РґРµСЂРµРІР°
                     if (se != null)
                     {
-                        //Получаем имя типа поля
+                        //РџРѕР»СѓС‡Р°РµРј РёРјСЏ С‚РёРїР° РїРѕР»СЏ
                         string tname = se.val_field_type_name;//.ToLower();
                         if (tname.Length > 4 && tname.Substring(0, 5) == "List<")
                         {
-                            //пишем:
-                            //if (<параметр_visit>.<имя_поля> == null)
+                            //РїРёС€РµРј:
+                            //if (<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> == null)
                             //{
                             //  sw.Write((byte)0);
                             //}
                             //else
                             //{
                             //  sw.Write((byte)1);
-                            //  sw.Write(<параметр_visit>.<имя_поля>.Count);
-                            //  for(int ssyy_i = 0; ssyy_i < <параметр_visit>.<имя_поля>.Count; ssyy_i++)
+                            //  sw.Write(<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ>.Count);
+                            //  for(int ssyy_i = 0; ssyy_i < <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ>.Count; ssyy_i++)
                             //  {
-                            //      if (<параметр_visit>.<имя_поля>[ssyy_i] == null)
+                            //      if (<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ>[ssyy_i] == null)
                             //      {
                             //          sw.Write((byte)0);
                             //      }
                             //      else
                             //      {
                             //          sw.Write((byte)1);
-                            //          <параметр_visit>.имя_поля[ssyy_i].visit(this);
+                            //          <РїР°СЂР°РјРµС‚СЂ_visit>.РёРјСЏ_РїРѕР»СЏ[ssyy_i].visit(this);
                             //      }
                             //  }
                             //}
@@ -1951,25 +1951,25 @@ namespace NodeGenerator
                             sw.WriteLine(text_consts.tab3 + text_consts.close_figure);
                         }
                         else
-                            if (tname == text_consts.string_type_name) //к сожалению, у нас это иногда null
+                            if (tname == text_consts.string_type_name) //Рє СЃРѕР¶Р°Р»РµРЅРёСЋ, Сѓ РЅР°СЃ СЌС‚Рѕ РёРЅРѕРіРґР° null
                             {
-                                //if (<параметр>.<имя_поля> == null)
+                                //if (<РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ> == null)
                                 //{
                                 //  sw.Write((byte)0);
                                 //}
                                 //else
                                 //{
                                 //  sw.Write((byte)1);
-                                //  sw.Write(<параметр>.<имя_поля>); //Для .NET
+                                //  sw.Write(<РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ>); //Р”Р»СЏ .NET
                                 //}
 
-                                //Для кроссплатформенных:
-                                //  sw.Write(<параметр>.<имя_поля>.Length + 1);
-                                //  for(int ssyy_i = 0; i < <параметр>.<имя_поля>.Length; i++)
+                                //Р”Р»СЏ РєСЂРѕСЃСЃРїР»Р°С‚С„РѕСЂРјРµРЅРЅС‹С…:
+                                //  sw.Write(<РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ>.Length + 1);
+                                //  for(int ssyy_i = 0; i < <РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ>.Length; i++)
                                 //  {
-                                //      sw.Write(<параметр>.<имя_поля>[ssyy_i]);
+                                //      sw.Write(<РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ>[ssyy_i]);
                                 //  }
-                                //  sw.Write((byte)0); //Последний символ
+                                //  sw.Write((byte)0); //РџРѕСЃР»РµРґРЅРёР№ СЃРёРјРІРѕР»
                                 sw.WriteLine(text_consts.tab3 + text_consts.if_keyword_name + text_consts.space +
                                     text_consts.open_par + text_consts.underline + node_name +
                                     text_consts.dot + nfi.field_name + text_consts.space +
@@ -2000,7 +2000,7 @@ namespace NodeGenerator
                                 }
                                 else
                                 {
-                                    //Пишем для последующего чтения в C-строку, т.е. в char*
+                                    //РџРёС€РµРј РґР»СЏ РїРѕСЃР»РµРґСѓСЋС‰РµРіРѕ С‡С‚РµРЅРёСЏ РІ C-СЃС‚СЂРѕРєСѓ, С‚.Рµ. РІ char*
                                     sw.WriteLine(text_consts.tab3 + text_consts.tab +
                                         text_consts.writer_name + text_consts.dot +
                                         text_consts.write_proc_name + text_consts.open_par +
@@ -2042,7 +2042,7 @@ namespace NodeGenerator
                             else
                                 if (tname == text_consts.bool_type_name && cross_platform)
                                 {
-                                    //if (_<параметр>.<имя_поля>)
+                                    //if (_<РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ>)
                                     //{
                                     //  sw.Write((byte)1);
                                     //}
@@ -2077,7 +2077,7 @@ namespace NodeGenerator
                                     tname == text_consts.bool_type_name ||
                                     tname == text_consts.char_type_name)
                                 {
-                                    //пишем: sw.Write(<параметр>.<имя_поля>);
+                                    //РїРёС€РµРј: sw.Write(<РїР°СЂР°РјРµС‚СЂ>.<РёРјСЏ_РїРѕР»СЏ>);
                                     sw.WriteLine(text_consts.tab3 + text_consts.writer_name + text_consts.dot +
                                         text_consts.write_proc_name + text_consts.open_par +
                                         text_consts.underline + node_name + text_consts.dot +
@@ -2096,15 +2096,15 @@ namespace NodeGenerator
                     }
                     else
                     {
-                        //пишем:
-                        //if (<параметр_visit>.<имя_поля> == null)
+                        //РїРёС€РµРј:
+                        //if (<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> == null)
                         //{
                         //  sw.Write((byte)0);
                         //}
                         //else
                         //{
                         //  sw.Write((byte)1);
-                        //  <параметр_visit>.<имя_поля>.visit(this);
+                        //  <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ>.visit(this);
                         //}
                         sw.WriteLine(text_consts.tab3 + text_consts.if_keyword_name + text_consts.space +
                             text_consts.open_par + text_consts.underline + node_name +
@@ -2141,10 +2141,10 @@ namespace NodeGenerator
 
         public void generate_stream_reader_cpp(StreamWriter sw_h, StreamWriter sw_cpp, string pcu_reader_name)
         {
-            //пишем
-            //void visit(<имя_типа> *_<имя_типа>)
+            //РїРёС€РµРј
+            //void visit(<РёРјСЏ_С‚РёРїР°> *_<РёРјСЏ_С‚РёРїР°>)
             //{
-            //  read_<имя типа>(_<имя типа>);
+            //  read_<РёРјСЏ С‚РёРїР°>(_<РёРјСЏ С‚РёРїР°>);
             //}
 
             sw_h.WriteLine();
@@ -2162,7 +2162,7 @@ namespace NodeGenerator
 
             sw_h.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
 
-            //пишем процедуру чтения данного типа
+            //РїРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ С‡С‚РµРЅРёСЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР°
             sw_h.WriteLine(text_consts.tab + text_consts.tab +
                 text_consts.void_keyword + text_consts.space +
                 text_consts.read_prefix + node_name +
@@ -2181,14 +2181,14 @@ namespace NodeGenerator
 
             sw_cpp.WriteLine(text_consts.tab + text_consts.open_figure);
 
-            //Пишем процедуру чтения полей для данного типа узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ С‡С‚РµРЅРёСЏ РїРѕР»РµР№ РґР»СЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР° СѓР·Р»Р°
 
             if (node_name == text_consts.base_tree_node_name)
             {
-                //пишем
+                //РїРёС€РµРј
                 //if (br.GetChar() == 0)
                 //{
-                //  _<имя_типа>->source_context = NULL;
+                //  _<РёРјСЏ_С‚РёРїР°>->source_context = NULL;
                 //}
                 //else
                 //{
@@ -2202,7 +2202,7 @@ namespace NodeGenerator
                 //  {
                 //      ssyy_end = new SourceContext(0, 0, br.GetInt(), br.GetInt());
                 //  }
-                //  _<имя_типа>->source_context = new SourceContext(ssyy_beg, ssyy_end);  
+                //  _<РёРјСЏ_С‚РёРїР°>->source_context = new SourceContext(ssyy_beg, ssyy_end);  
                 //}
                 sw_cpp.WriteLine(text_consts.tab2 + text_consts.if_keyword_name + text_consts.space +
                     text_consts.open_par + text_consts.reader_name +
@@ -2292,41 +2292,41 @@ namespace NodeGenerator
             }
             else
             {
-                //if (base_class != null) //(ssyy) Все должны быть наследниками tree_node
+                //if (base_class != null) //(ssyy) Р’СЃРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РЅР°СЃР»РµРґРЅРёРєР°РјРё tree_node
                 {
-                    //Пишем вызов десериализации полей предка
-                    //read_<имя_типа_предка>(_<имя_типа>);
+                    //РџРёС€РµРј РІС‹Р·РѕРІ РґРµСЃРµСЂРёР°Р»РёР·Р°С†РёРё РїРѕР»РµР№ РїСЂРµРґРєР°
+                    //read_<РёРјСЏ_С‚РёРїР°_РїСЂРµРґРєР°>(_<РёРјСЏ_С‚РёРїР°>);
                     sw_cpp.WriteLine(text_consts.tab2 + text_consts.read_prefix + base_class.node_name +
                         text_consts.open_par + text_consts.underline +
                         node_name + text_consts.close_par + text_consts.semicolon);
                 }
 
-                //Пишем поля объекта
+                //РџРёС€РµРј РїРѕР»СЏ РѕР±СЉРµРєС‚Р°
                 foreach (node_field_info nfi in _subnodes)
                 {
                     simple_element se = nfi as simple_element;
 
                     string write_proc_string = "";
 
-                    //Если поле не является узлом дерева
+                    //Р•СЃР»Рё РїРѕР»Рµ РЅРµ СЏРІР»СЏРµС‚СЃСЏ СѓР·Р»РѕРј РґРµСЂРµРІР°
                     if (se != null)
                     {
-                        //Получаем имя типа поля
+                        //РџРѕР»СѓС‡Р°РµРј РёРјСЏ С‚РёРїР° РїРѕР»СЏ
                         string tname = se.val_field_type_name;//.ToLower();
                         if (tname.Length > 5 && tname.Substring(0, 5) == "List<")
                         {
-                            //пишем:
+                            //РїРёС€РµРј:
                             //if (br.GetChar() == 0)
                             //{
-                            //  <параметр_visit>-><имя_поля> = NULL;
+                            //  <РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> = NULL;
                             //}
                             //else
                             //{
-                            //  <параметр_visit>-><имя_поля> = new vector<параметр_List*>();
+                            //  <РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> = new vector<РїР°СЂР°РјРµС‚СЂ_List*>();
                             //  int ssyy_count = br.GetInt();
                             //  for(int ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
                             //  {
-                            //      <параметр_visit>-><имя_поля>.push_back(static_cast<параметр_List*>(read_node()));
+                            //      <РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ>.push_back(static_cast<РїР°СЂР°РјРµС‚СЂ_List*>(read_node()));
                             //  }
                             //}
                             string list_param = tname.Substring(5, tname.Length - 6);
@@ -2393,11 +2393,11 @@ namespace NodeGenerator
                             {
                                 //if (br.GetChar() == 0)
                                 //{
-                                //  <параметр_visit>-><имя_поля> = NULL;
+                                //  <РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> = NULL;
                                 //}
                                 //else
                                 //{
-                                //  <параметр_visit>-><имя_поля> = br.GetString();
+                                //  <РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> = br.GetString();
                                 //}
                                 sw_cpp.WriteLine(text_consts.tab2 + text_consts.if_keyword_name +
                                     text_consts.space + text_consts.open_par +
@@ -2425,7 +2425,7 @@ namespace NodeGenerator
                                     text_consts.semicolon);
                                 sw_cpp.WriteLine(text_consts.tab2 + text_consts.close_figure);
                             }
-                            //простые типы - обрабатываются схожим образом:
+                            //РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ - РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ СЃС…РѕР¶РёРј РѕР±СЂР°Р·РѕРј:
                             else
                             {
                                 if (tname == text_consts.int32_type_name)
@@ -2459,7 +2459,7 @@ namespace NodeGenerator
                                                     }
                                 if (write_proc_string != "")
                                 {
-                                    //br.Read...(&<параметр_visit>-><имя_поля>);
+                                    //br.Read...(&<РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ>);
                                     sw_cpp.WriteLine(text_consts.tab2 + text_consts.reader_name +
                                     text_consts.dot + write_proc_string +
                                     text_consts.open_par + text_consts.address +
@@ -2469,7 +2469,7 @@ namespace NodeGenerator
                                 }
                                 else
                                 {
-                                    //<параметр_visit>-><имя_поля> = (<тип_поля>)br.GetByte();
+                                    //<РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> = (<С‚РёРї_РїРѕР»СЏ>)br.GetByte();
                                     sw_cpp.WriteLine(text_consts.tab2 + text_consts.underline +
                                     node_name + text_consts.arrow + nfi.field_name +
                                     text_consts.space + text_consts.assign +
@@ -2485,8 +2485,8 @@ namespace NodeGenerator
                     }
                     else
                     {
-                        //пишем:
-                        //<параметр_visit>-><имя_поля> = static_cast<тип_узла*>(read_node());
+                        //РїРёС€РµРј:
+                        //<РїР°СЂР°РјРµС‚СЂ_visit>-><РёРјСЏ_РїРѕР»СЏ> = static_cast<С‚РёРї_СѓР·Р»Р°*>(read_node());
                         sw_cpp.WriteLine(text_consts.tab2 + text_consts.underline + 
                         node_name + text_consts.arrow + nfi.field_name +
                         text_consts.space + text_consts.assign +
@@ -2511,10 +2511,10 @@ namespace NodeGenerator
 
         public void generate_pcu_reader(StreamWriter sw)
         {
-            //пишем
-            //public void visit(<имя_типа> _<имя_типа>)
+            //РїРёС€РµРј
+            //public void visit(<РёРјСЏ_С‚РёРїР°> _<РёРјСЏ_С‚РёРїР°>)
             //{
-            //  read_<имя типа>(_<имя типа>);
+            //  read_<РёРјСЏ С‚РёРїР°>(_<РёРјСЏ С‚РёРїР°>);
             //}
 
             sw.WriteLine();
@@ -2532,7 +2532,7 @@ namespace NodeGenerator
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.close_figure);
 
             
-            //пишем процедуру чтения данного типа
+            //РїРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ С‡С‚РµРЅРёСЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР°
             sw.WriteLine();
 
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.public_keyword +
@@ -2543,14 +2543,14 @@ namespace NodeGenerator
 
             sw.WriteLine(text_consts.tab + text_consts.tab + text_consts.open_figure);
 
-            //Пишем процедуру чтения полей для данного типа узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ С‡С‚РµРЅРёСЏ РїРѕР»РµР№ РґР»СЏ РґР°РЅРЅРѕРіРѕ С‚РёРїР° СѓР·Р»Р°
 
             if (node_name == text_consts.base_tree_node_name)
             {
-                //пишем
+                //РїРёС€РµРј
                 //if (br.ReadByte() == 0)
                 //{
-                //  _<имя_типа>.source_context = null;
+                //  _<РёРјСЏ_С‚РёРїР°>.source_context = null;
                 //}
                 //else
                 //{
@@ -2564,7 +2564,7 @@ namespace NodeGenerator
                 //  {
                 //      ssyy_end = new SourceContext(0, 0, br.ReadInt32(), br.ReadInt32());
                 //  }
-                //  _<имя_типа>.source_context = new SourceContext(ssyy_beg, ssyy_end);  
+                //  _<РёРјСЏ_С‚РёРїР°>.source_context = new SourceContext(ssyy_beg, ssyy_end);  
                 //}
                 sw.WriteLine(text_consts.tab3 + text_consts.if_keyword_name + text_consts.space +
                     text_consts.open_par + text_consts.reader_name +
@@ -2652,41 +2652,41 @@ namespace NodeGenerator
             }
             else
             {
-                //if (base_class != null) //(ssyy) Все должны быть наследниками tree_node
+                //if (base_class != null) //(ssyy) Р’СЃРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РЅР°СЃР»РµРґРЅРёРєР°РјРё tree_node
                 {
-                    //Пишем вызов десериализации полей предка
-                    //read_<имя_типа_предка>(_<имя_типа>);
+                    //РџРёС€РµРј РІС‹Р·РѕРІ РґРµСЃРµСЂРёР°Р»РёР·Р°С†РёРё РїРѕР»РµР№ РїСЂРµРґРєР°
+                    //read_<РёРјСЏ_С‚РёРїР°_РїСЂРµРґРєР°>(_<РёРјСЏ_С‚РёРїР°>);
                     sw.WriteLine(text_consts.tab3 + text_consts.read_prefix + base_class.node_name +
                         text_consts.open_par + text_consts.underline +
                         node_name + text_consts.close_par + text_consts.semicolon);
                 }
 
-                //Пишем поля объекта
+                //РџРёС€РµРј РїРѕР»СЏ РѕР±СЉРµРєС‚Р°
                 foreach (node_field_info nfi in _subnodes)
                 {
                     simple_element se = nfi as simple_element;
 
                     string write_proc_string = "";
 
-                    //Если поле не является узлом дерева
+                    //Р•СЃР»Рё РїРѕР»Рµ РЅРµ СЏРІР»СЏРµС‚СЃСЏ СѓР·Р»РѕРј РґРµСЂРµРІР°
                     if (se != null)
                     {
-                        //Получаем имя типа поля
+                        //РџРѕР»СѓС‡Р°РµРј РёРјСЏ С‚РёРїР° РїРѕР»СЏ
                         string tname = se.val_field_type_name;//.ToLower();
                         if (tname.Length > 5 && tname.Substring(0, 5) == "List<")
                         {
-                            //пишем:
+                            //РїРёС€РµРј:
                             //if (br.ReadByte() == 0)
                             //{
-                            //  <параметр_visit>.<имя_поля> = null;
+                            //  <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = null;
                             //}
                             //else
                             //{
-                            //  <параметр_visit>.<имя_поля> = new <тип_поля>();
+                            //  <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = new <С‚РёРї_РїРѕР»СЏ>();
                             //  Int32 ssyy_count = br.ReadInt32();
                             //  for(int ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
                             //  {
-                            //      <параметр_visit>.<имя_поля>.Add(read_node() as <параметр_List>);
+                            //      <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ>.Add(read_node() as <РїР°СЂР°РјРµС‚СЂ_List>);
                             //  }
                             //}
                             sw.WriteLine(text_consts.tab3 + text_consts.if_keyword_name + text_consts.space +
@@ -2748,11 +2748,11 @@ namespace NodeGenerator
                             {
                                 //if (br.ReadByte() == 0)
                                 //{
-                                //  <параметр_visit>.<имя_поля> = null;
+                                //  <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = null;
                                 //}
                                 //else
                                 //{
-                                //  <параметр_visit>.<имя_поля> = br.ReadString();
+                                //  <РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = br.ReadString();
                                 //}
                                 sw.WriteLine(text_consts.tab3 + text_consts.if_keyword_name +
                                     text_consts.space + text_consts.open_par +
@@ -2780,7 +2780,7 @@ namespace NodeGenerator
                                     text_consts.semicolon);
                                 sw.WriteLine(text_consts.tab3 + text_consts.close_figure);
                             }
-                            //простые типы - обрабатываются схожим образом:
+                            //РїСЂРѕСЃС‚С‹Рµ С‚РёРїС‹ - РѕР±СЂР°Р±Р°С‚С‹РІР°СЋС‚СЃСЏ СЃС…РѕР¶РёРј РѕР±СЂР°Р·РѕРј:
                             else
                             {
                                 if (tname == text_consts.int32_type_name)
@@ -2814,7 +2814,7 @@ namespace NodeGenerator
                                                     }
                                 if (write_proc_string != "")
                                 {
-                                    //<параметр_visit>.<имя_поля> = br.Read...();
+                                    //<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = br.Read...();
                                     sw.WriteLine(text_consts.tab3 + text_consts.underline +
                                     node_name + text_consts.dot + nfi.field_name +
                                     text_consts.space + text_consts.assign +
@@ -2825,7 +2825,7 @@ namespace NodeGenerator
                                 }
                                 else
                                 {
-                                    //<параметр_visit>.<имя_поля> = (<тип_поля>)br.ReadByte();
+                                    //<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = (<С‚РёРї_РїРѕР»СЏ>)br.ReadByte();
                                     sw.WriteLine(text_consts.tab3 + text_consts.underline +
                                     node_name + text_consts.dot + nfi.field_name +
                                     text_consts.space + text_consts.assign +
@@ -2841,8 +2841,8 @@ namespace NodeGenerator
                     }
                     else
                     {
-                        //пишем:
-                        //<параметр_visit>.<имя_поля> = read_node() as <тип_узла>;
+                        //РїРёС€РµРј:
+                        //<РїР°СЂР°РјРµС‚СЂ_visit>.<РёРјСЏ_РїРѕР»СЏ> = read_node() as <С‚РёРї_СѓР·Р»Р°>;
                         sw.WriteLine(text_consts.tab3 + text_consts.underline + 
                         node_name + text_consts.dot + nfi.field_name +
                         text_consts.space + text_consts.assign +
@@ -3350,10 +3350,10 @@ namespace NodeGenerator
         public void generate_header_code(StreamWriter sw)
         {
             sw.WriteLine("/********************************************************************************************");
-            sw.WriteLine("Этот файл создан программой");
-            sw.WriteLine("PascalABC.NET: syntax tree generator  v1.5(с) Водолазов Н., Ткачук А.В., Иванов С.О., 2007");
+            sw.WriteLine("Р­С‚РѕС‚ С„Р°Р№Р» СЃРѕР·РґР°РЅ РїСЂРѕРіСЂР°РјРјРѕР№");
+            sw.WriteLine("PascalABC.NET: syntax tree generator  v1.5(СЃ) Р’РѕРґРѕР»Р°Р·РѕРІ Рќ., РўРєР°С‡СѓРє Рђ.Р’., РРІР°РЅРѕРІ РЎ.Рћ., 2007");
             sw.WriteLine();
-            sw.WriteLine("Вручную не редактировать!");
+            sw.WriteLine("Р’СЂСѓС‡РЅСѓСЋ РЅРµ СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ!");
             sw.WriteLine("*********************************************************************************************/");
             sw.WriteLine(text_consts.using_system);
             sw.WriteLine(text_consts.using_system_io);
@@ -3863,7 +3863,7 @@ namespace NodeGenerator
                 text_consts.space + text_consts.reader_name + text_consts.semicolon);
             sw_h.WriteLine();
 
-            //Пишем конструктор узлов.
+            //РџРёС€РµРј РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СѓР·Р»РѕРІ.
 
             //tree_node* construct_node(short node_class_number);
             
@@ -3871,8 +3871,8 @@ namespace NodeGenerator
             //{
             //  switch(node_class_number)
             //  {
-            //      case <номер>:
-            //          return new <узел_дерева>();
+            //      case <РЅРѕРјРµСЂ>:
+            //          return new <СѓР·РµР»_РґРµСЂРµРІР°>();
             //      ...
             //  }
             //  return NULL;
@@ -3914,7 +3914,7 @@ namespace NodeGenerator
             sw_cpp.WriteLine(text_consts.tab + text_consts.close_figure);
             sw_cpp.WriteLine();
 
-            //Пишем процедуру чтения узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ С‡С‚РµРЅРёСЏ СѓР·Р»Р°
 
             //tree_node* read_node();
 
@@ -4022,13 +4022,13 @@ namespace NodeGenerator
                 text_consts.space + text_consts.reader_name + text_consts.semicolon);
             sw.WriteLine();
 
-            //Пишем конструктор узлов.
+            //РџРёС€РµРј РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СѓР·Р»РѕРІ.
             //public tree_node construct_node(Int16 node_class_number)
             //{
             //  switch(node_class_number)
             //  {
-            //      case <номер>:
-            //          return new <узел_дерева>();
+            //      case <РЅРѕРјРµСЂ>:
+            //          return new <СѓР·РµР»_РґРµСЂРµРІР°>();
             //      ...
             //  }
             //  return null;
@@ -4061,7 +4061,7 @@ namespace NodeGenerator
                 text_consts.space + text_consts.null_keyword_name + text_consts.semicolon);
             sw.WriteLine(text_consts.tab2 + text_consts.close_figure);
 
-            //Пишем процедуру чтения узла
+            //РџРёС€РµРј РїСЂРѕС†РµРґСѓСЂСѓ С‡С‚РµРЅРёСЏ СѓР·Р»Р°
             //public tree_node read_node()
             //{
             //  if (br.ReadByte() == 1)

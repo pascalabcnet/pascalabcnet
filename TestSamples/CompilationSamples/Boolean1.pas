@@ -1,16 +1,16 @@
-// Ëîãè÷åñêèé òèï. Ëîãè÷åñêèå âûğàæåíèÿ ñ and, or è not
+// Ğ›Ğ¾Ğ³Ğ¸Ñ‡ĞµÑĞºĞ¸Ğ¹ Ñ‚Ğ¸Ğ¿. Ğ›Ğ¾Ğ³Ğ¸Ñ‡ĞµÑĞºĞ¸Ğµ Ğ²Ñ‹Ñ€Ğ°Ğ¶ĞµĞ½Ğ¸Ñ Ñ and, or Ğ¸ not
 var 
   b: boolean;
   x: integer;
 begin
-  write('Ââåäèòå x (îò 1 äî 9): ');
+  write('Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ x (Ğ¾Ñ‚ 1 Ğ´Ğ¾ 9): ');
   readln(x);
   b := x=5;
   writeln('x=5? ',b);
   b := (x>=3) and (x<=5);
-  writeln('x=3,4 èëè 5? ',b);
+  writeln('x=3,4 Ğ¸Ğ»Ğ¸ 5? ',b);
   b := (x=3) or (x=4) or (x=5);
-  writeln('x=3,4 èëè 5? ',b);
+  writeln('x=3,4 Ğ¸Ğ»Ğ¸ 5? ',b);
   b := not Odd(x);
-  writeln('x - ÷åòíîå? ',b);
+  writeln('x - Ñ‡ĞµÑ‚Ğ½Ğ¾Ğµ? ',b);
 end.

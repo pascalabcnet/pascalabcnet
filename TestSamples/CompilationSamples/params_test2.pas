@@ -8,7 +8,7 @@ var x:array of integer;
     
 
 begin
-  //test;  //должно?
+  //test;  //РґРѕР»Р¶РЅРѕ?
   test(1);
   test(1,2);
   SetLength(x,2);

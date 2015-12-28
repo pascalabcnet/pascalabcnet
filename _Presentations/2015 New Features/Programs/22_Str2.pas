@@ -5,8 +5,8 @@ begin
   writeln(s.Length);
   writeln(s.ToLower);
   writeln(s.Inverse);
-  s := 'красный зеленый синий красный';
-  writeln(s.Replace('красный','желтый'));
+  s := 'РєСЂР°СЃРЅС‹Р№ Р·РµР»РµРЅС‹Р№ СЃРёРЅРёР№ РєСЂР°СЃРЅС‹Р№';
+  writeln(s.Replace('РєСЂР°СЃРЅС‹Р№','Р¶РµР»С‚С‹Р№'));
   
   s := '12345';
   var i: integer := s.ToInteger;

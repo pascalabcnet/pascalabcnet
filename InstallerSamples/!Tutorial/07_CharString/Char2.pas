@@ -1,13 +1,13 @@
-// Стандартные функции OrdUnicode ChrUnicode
+// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С„СѓРЅРєС†РёРё OrdUnicode ChrUnicode
 var 
   i: integer;
   c: char;
 
 begin
-  c := 'Д';
+  c := 'Р”';
   i := OrdUnicode(c);
-  writelnFormat('Код символа {0} в кодировке Unicode равен {1}',c,i);
+  writelnFormat('РљРѕРґ СЃРёРјРІРѕР»Р° {0} РІ РєРѕРґРёСЂРѕРІРєРµ Unicode СЂР°РІРµРЅ {1}',c,i);
   i := 1046;
   c := ChrUnicode(i);
-  writelnFormat('Символ с кодом {0} в кодировке Unicode - это {1}',i,c);
+  writelnFormat('РЎРёРјРІРѕР» СЃ РєРѕРґРѕРј {0} РІ РєРѕРґРёСЂРѕРІРєРµ Unicode - СЌС‚Рѕ {1}',i,c);
 end.

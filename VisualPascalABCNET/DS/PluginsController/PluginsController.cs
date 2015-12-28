@@ -190,7 +190,7 @@ namespace VisualPascalABCPlugins
                 }
                 catch (Exception e)
                 {
-                    //если dll не нетовская
+                    //РµСЃР»Рё dll РЅРµ РЅРµС‚РѕРІСЃРєР°СЏ
                 }
             }
             

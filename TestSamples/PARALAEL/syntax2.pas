@@ -1,26 +1,26 @@
-//синтаксис 2
+//СЃРёРЅС‚Р°РєСЃРёСЃ 2
 
 procedure CalcX(z:real); async;
 begin
-  GetResult.x := {логика(z)};
+  GetResult.x := {Р»РѕРіРёРєР°(z)};
 end;
 procedure CalcY(z:real); async;
 begin
-  GetResult.y := {логика(z)};
+  GetResult.y := {Р»РѕРіРёРєР°(z)};
 end;
 
 function GetResult:real;
 asyncparam x,y:real;
 var z:real;
 begin
-  //зайдет сюда когда будут вызваны GetResult.X:= и GetResult.Y:=
-  //Выполнится в основном потоке 
+  //Р·Р°Р№РґРµС‚ СЃСЋРґР° РєРѕРіРґР° Р±СѓРґСѓС‚ РІС‹Р·РІР°РЅС‹ GetResult.X:= Рё GetResult.Y:=
+  //Р’С‹РїРѕР»РЅРёС‚СЃСЏ РІ РѕСЃРЅРѕРІРЅРѕРј РїРѕС‚РѕРєРµ 
   z := x*y;
   result := z;
 end;
 
 begin
-  CalcX(3.14);//запускается в потоке 1
-  CalcY(2.71);//запускается в потоке 2
+  CalcX(3.14);//Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ РІ РїРѕС‚РѕРєРµ 1
+  CalcY(2.71);//Р·Р°РїСѓСЃРєР°РµС‚СЃСЏ РІ РїРѕС‚РѕРєРµ 2
   writeln(GetResult);
 end.

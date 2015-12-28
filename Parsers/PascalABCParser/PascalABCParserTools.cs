@@ -31,7 +31,7 @@ namespace PascalABCCompiler.PascalABCParser
         int NewLineLength = Environment.NewLine.Length;
         int GetLinesCount(string s)
         {
-            //Íå ó÷èòûâàåò ïîñëåäíèé ïåðåâîä åñëè çà íèì íè÷åãî
+            //ÐÐµ ÑƒÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°ÐµÑ‚ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´ ÐµÑÐ»Ð¸ Ð·Ð° Ð½Ð¸Ð¼ Ð½Ð¸Ñ‡ÐµÐ³Ð¾
             int i = s.IndexOf(Environment.NewLine);
             int res = 0;
             if (i >= 0 && i < s.Length - NewLineLength)

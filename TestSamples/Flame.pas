@@ -17,20 +17,20 @@ begin
 end;
 
 begin  
-  //Создаюм буфер экрана
+  //РЎРѕР·РґР°СЋРј Р±СѓС„РµСЂ СЌРєСЂР°РЅР°
   var ScreenBuffer := new array of byte[size+1];
   for var i:=0 to size do
     ScreenBuffer[i] := new byte[size+1];
-  //Создаем палитру
+  //РЎРѕР·РґР°РµРј РїР°Р»РёС‚СЂСѓ
   var ColorsTable := new Color[256];
   FillPallete(ColorsTable);
-  //Настраиваем окно
+  //РќР°СЃС‚СЂР°РёРІР°РµРј РѕРєРЅРѕ
   SetWindowSize(size,size);
   SetBrushColor(clBlack);
   FillRectangle(0,0,WindowWidth,WindowHeight);
   SetSmoothingOff;
   LockDrawing;
-  //Поехали
+  //РџРѕРµС…Р°Р»Рё
   var x, y, s, tt, xx, yy: Integer;
   var dt := System.DateTime.Now;
   var ds := WindowWidth div 4;

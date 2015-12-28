@@ -662,7 +662,7 @@ namespace PascalABCCompiler
             switch (en.semantic_node_type)
             {
                 case semantic_node_type.exit_procedure:
-                    /*ничего писать не надо*/
+                    /*РЅРёС‡РµРіРѕ РїРёСЃР°С‚СЊ РЅРµ РЅР°РґРѕ*/
                     break;
                 case semantic_node_type.typeof_operator:
                     //VisitTypeOfOperator((typeof_operator)en); 

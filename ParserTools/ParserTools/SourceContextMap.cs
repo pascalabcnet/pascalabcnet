@@ -45,7 +45,7 @@ namespace PascalABCCompiler.ParserTools
         
         SourceContext Find(SourceContext tf)
         {
-            //TODO Надо сделать половинным делением
+            //TODO РќР°РґРѕ СЃРґРµР»Р°С‚СЊ РїРѕР»РѕРІРёРЅРЅС‹Рј РґРµР»РµРЅРёРµРј
             //foreach (SourceContext t in AreaList.Keys)
             //    if (tf.In(t))
             //        return t;
@@ -66,7 +66,7 @@ namespace PascalABCCompiler.ParserTools
         }
         public SourceContext GetSourceContext(SourceContext scv)
         {
-            //Это надо считать только по мере надобности!!!
+            //Р­С‚Рѕ РЅР°РґРѕ СЃС‡РёС‚Р°С‚СЊ С‚РѕР»СЊРєРѕ РїРѕ РјРµСЂРµ РЅР°РґРѕР±РЅРѕСЃС‚Рё!!!
             SourceContext scvf;
             if (CurrentSourceContext != null && scv.In(CurrentSourceContext))
                 scvf = CurrentSourceContext;

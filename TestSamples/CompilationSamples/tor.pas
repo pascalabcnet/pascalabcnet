@@ -8,7 +8,7 @@ type
 	begin
 	  Height:=600;
 	  Width:=800;
-	  Text:='Гусеница';
+	  Text:='Р“СѓСЃРµРЅРёС†Р°';
 	  BackColor:=Color.FromArgb(255,255,255,255);
      end;
   end;

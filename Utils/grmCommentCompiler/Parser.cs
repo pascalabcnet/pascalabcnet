@@ -480,7 +480,7 @@ namespace com.calitha.goldparser
                     TerminalsDefs.Add(str, " {errors.Add(new nonterminal_token_return_null(current_file_name,parsertools.GetTokenSourceContext(),(syntax_tree_node)prev_node,\"" + str + "\"));}return null;"); 
 					return;
 				}
-				//для праил типа <rule> ::= term или <rule> ::= <rule2> добавляем $$=$1
+				//РґР»СЏ РїСЂР°РёР» С‚РёРїР° <rule> ::= term РёР»Рё <rule> ::= <rule2> РґРѕР±Р°РІР»СЏРµРј $$=$1
 				TerminalsDefs.Add(str,"$$=$1;");
 				return;
 			}
@@ -698,14 +698,14 @@ namespace com.calitha.goldparser
                 //<Rule Decl> ::= Nonterminal <nl opt> '::=' <Handles> <nl>
 					string nonterm=(string)token.Tokens[0].UserObject;
 					string handles=(string)token.Tokens[3].UserObject;
-					string[] parts=handles.Split("Ё".ToCharArray());
+					string[] parts=handles.Split("РЃ".ToCharArray());
 					foreach (string s in parts) 
 						MakeNonTerminal(nonterm,s);
 				return null;
 
                 case (int)RuleConstants.RULE_HANDLES_PIPE :
                 //<Handles> ::= <Handles> <nl opt> '|' <Handle>
-                return (string)token.Tokens[0].UserObject+"Ё"+(string)token.Tokens[3].UserObject;
+                return (string)token.Tokens[0].UserObject+"РЃ"+(string)token.Tokens[3].UserObject;
 
                 case (int)RuleConstants.RULE_HANDLES :
                 //<Handles> ::= <Handle>

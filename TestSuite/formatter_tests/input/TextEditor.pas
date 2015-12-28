@@ -8,7 +8,7 @@ uses System.Windows.Forms;
 
 const 
   TextFileExt = 'txt';
-  TextFileFilter = 'Текстовые файлы (*.'+TextFileExt+')|*.'+TextFileExt;
+  TextFileFilter = 'РўРµРєСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹ (*.'+TextFileExt+')|*.'+TextFileExt;
 
 var
   myForm: Form;
@@ -16,7 +16,7 @@ var
 
 procedure SaveFile(FileName: string);
 begin
-  //Создаем файловый поток с кодировкой Windows 1251, необходимо для корректного сохранения русских букв
+  //РЎРѕР·РґР°РµРј С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє СЃ РєРѕРґРёСЂРѕРІРєРѕР№ Windows 1251, РЅРµРѕР±С…РѕРґРёРјРѕ РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ СЃРѕС…СЂР°РЅРµРЅРёСЏ СЂСѓСЃСЃРєРёС… Р±СѓРєРІ
   var f := new System.IO.StreamWriter(FileName, false, System.Text.Encoding.Default);
   f.Write(TextBox1.Text);
   f.Close;
@@ -24,7 +24,7 @@ end;
 
 procedure OpenFile(FileName: string);
 begin
-  //Создаем файловый поток с кодировкой Windows 1251, необходимо для корректного чтения русских букв
+  //РЎРѕР·РґР°РµРј С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє СЃ РєРѕРґРёСЂРѕРІРєРѕР№ Windows 1251, РЅРµРѕР±С…РѕРґРёРјРѕ РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ С‡С‚РµРЅРёСЏ СЂСѓСЃСЃРєРёС… Р±СѓРєРІ
   var f := new System.IO.StreamReader(FileName, System.Text.Encoding.Default);
   TextBox1.Text := f.ReadToEnd;
   f.Close;
@@ -37,14 +37,14 @@ end;
 
 procedure MenuSaveClick(sender:object; args:System.EventArgs);
 begin
-  //Диалог для выбора файла
+  //Р”РёР°Р»РѕРі РґР»СЏ РІС‹Р±РѕСЂР° С„Р°Р№Р»Р°
   var sd := new SaveFileDialog;
-  //Расширение поумолчанию
+  //Р Р°СЃС€РёСЂРµРЅРёРµ РїРѕСѓРјРѕР»С‡Р°РЅРёСЋ
   sd.DefaultExt := TextFileExt;
-  //Фильтр для диалга
+  //Р¤РёР»СЊС‚СЂ РґР»СЏ РґРёР°Р»РіР°
   sd.Filter := TextFileFilter;
   if sd.ShowDialog=DialogResult.OK then 
-    //если результат выполнения sd.ShowDialog это нажатие кнопки подтверждения то
+    //РµСЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ sd.ShowDialog СЌС‚Рѕ РЅР°Р¶Р°С‚РёРµ РєРЅРѕРїРєРё РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ С‚Рѕ
     SaveFile(sd.FileName);
 end;
 
@@ -59,31 +59,31 @@ end;
 
 begin
   myForm := new Form;
-  myForm.Text := 'Простой текстовый редактор';
+  myForm.Text := 'РџСЂРѕСЃС‚РѕР№ С‚РµРєСЃС‚РѕРІС‹Р№ СЂРµРґР°РєС‚РѕСЂ';
 
   TextBox1 := new TextBox;
   TextBox1.Multiline := True;
   TextBox1.Height := 100;
   TextBox1.Dock := DockStyle.Fill;
-  //Полосы прокрутки
+  //РџРѕР»РѕСЃС‹ РїСЂРѕРєСЂСѓС‚РєРё
   TextBox1.ScrollBars := ScrollBars.Both;
-  //Устанавливаем шрифт
+  //РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚
   TextBox1.Font := new System.Drawing.Font('Courier New',10);
 
   myForm.Controls.Add(TextBox1);
   
-  //Создаем меню
+  //РЎРѕР·РґР°РµРј РјРµРЅСЋ
   var toolStrip1 := new ToolStrip;
   toolStrip1.GripStyle := System.Windows.Forms.ToolStripGripStyle.Hidden;
-  var miFile := new ToolStripMenuItem('Файл');  
-  miFile.DropDownItems.Add(new ToolStripMenuItem('Открыть',         new System.Drawing.Bitmap(GetResourceStream('Open.png')),MenuOpenClick));
-  miFile.DropDownItems.Add(new ToolStripMenuItem('Сохранить как...',new System.Drawing.Bitmap(GetResourceStream('Save.png')),MenuSaveClick));
-  miFile.DropDownItems.Add(new ToolStripMenuItem('Выход',nil,FormClose));
+  var miFile := new ToolStripMenuItem('Р¤Р°Р№Р»');  
+  miFile.DropDownItems.Add(new ToolStripMenuItem('РћС‚РєСЂС‹С‚СЊ',         new System.Drawing.Bitmap(GetResourceStream('Open.png')),MenuOpenClick));
+  miFile.DropDownItems.Add(new ToolStripMenuItem('РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє...',new System.Drawing.Bitmap(GetResourceStream('Save.png')),MenuSaveClick));
+  miFile.DropDownItems.Add(new ToolStripMenuItem('Р’С‹С…РѕРґ',nil,FormClose));
   toolStrip1.Items.Add(miFile);
   myForm.Controls.Add(toolStrip1);
   
-  //Посмотрим в аргументы командной строки
-  //Если их количество = 1, то открываем 
+  //РџРѕСЃРјРѕС‚СЂРёРј РІ Р°СЂРіСѓРјРµРЅС‚С‹ РєРѕРјР°РЅРґРЅРѕР№ СЃС‚СЂРѕРєРё
+  //Р•СЃР»Рё РёС… РєРѕР»РёС‡РµСЃС‚РІРѕ = 1, С‚Рѕ РѕС‚РєСЂС‹РІР°РµРј 
   if CommandLineArgs.Length = 1 then 
     OpenFile(CommandLineArgs[0]);
       

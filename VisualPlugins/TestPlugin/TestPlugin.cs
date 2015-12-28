@@ -4,7 +4,7 @@ using System.Text;
 
 namespace VisualPascalABCPlugins
 {
-    //имя класса *_VisualPascalABCPlugin
+    //РёРјСЏ РєР»Р°СЃСЃР° *_VisualPascalABCPlugin
     public class TestPlugin_VisualPascalABCPlugin : IVisualPascalABCPlugin
     {
         public static string StringsPrefix = "VPP_TESTPLUGIN_";
@@ -29,7 +29,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "(c) Ткачук А.В. 2009";
+                return "(c) РўРєР°С‡СѓРє Рђ.Р’. 2009";
             }
         }
 

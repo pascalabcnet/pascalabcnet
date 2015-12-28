@@ -1,4 +1,4 @@
-// Перегрузка операций. Класс "Дробь"
+// РџРµСЂРµРіСЂСѓР·РєР° РѕРїРµСЂР°С†РёР№. РљР»Р°СЃСЃ "Р”СЂРѕР±СЊ"
 type 
   Frac = record
   private
@@ -9,7 +9,7 @@ type
       Self.n := n; 
       Self.m := m;
     end;
-    class function operator+(f1,f2: Frac): Frac; // операция перегружается как классовая функция
+    class function operator+(f1,f2: Frac): Frac; // РѕРїРµСЂР°С†РёСЏ РїРµСЂРµРіСЂСѓР¶Р°РµС‚СЃСЏ РєР°Рє РєР»Р°СЃСЃРѕРІР°СЏ С„СѓРЅРєС†РёСЏ
     begin
       Result.n := f1.n*f2.m+f1.m*f2.n;
       Result.m := f1.n*f1.m;
@@ -19,7 +19,7 @@ type
       Result.n := f1.n*f2.m-f1.m*f2.n;
       Result.m := f1.n*f1.m;
     end;
-    function ToString: string; override; // Требуется переопределить эту функцию чтобы выводить переменные типа Frac в write
+    function ToString: string; override; // РўСЂРµР±СѓРµС‚СЃСЏ РїРµСЂРµРѕРїСЂРµРґРµР»РёС‚СЊ СЌС‚Сѓ С„СѓРЅРєС†РёСЋ С‡С‚РѕР±С‹ РІС‹РІРѕРґРёС‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ С‚РёРїР° Frac РІ write
     begin
       Result := Format('{0}/{1}',n,m);
     end;
@@ -31,6 +31,6 @@ begin
   f := new Frac(2,3);
   f1 := new Frac(1,2);
   writelnFormat('{0} + {1} = {2} ',f,f1,f+f1);
-  // f+f1 переводится компилятором в Frac.operator+(f,f1)
+  // f+f1 РїРµСЂРµРІРѕРґРёС‚СЃСЏ РєРѕРјРїРёР»СЏС‚РѕСЂРѕРј РІ Frac.operator+(f,f1)
   writelnFormat('{0} - {1} = {2} ',f,f1,f-f1);
 end.

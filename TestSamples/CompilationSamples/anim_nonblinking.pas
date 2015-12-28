@@ -8,10 +8,10 @@ begin
   for i:=1 to 500 do
   begin
     SetBrushColor(clGreen);
-    FillEllipse(i,100,i+100,200);
+    FillEllipse(i,100,i흍,200);
     Redraw;
     Sleep(1);
     SetBrushColor(clWhite);
-    FillRect(i,100,i+100,200);
+    FillRect(i,100,i흍,200);
   end;
 end.

@@ -289,7 +289,7 @@ namespace NodesGenerator
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(120, 18);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Имя узла";
+            this.label1.Text = "РРјСЏ СѓР·Р»Р°";
             // 
             // cancel
             // 
@@ -323,7 +323,7 @@ namespace NodesGenerator
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(120, 19);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Базовый класс";
+            this.label2.Text = "Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ";
             // 
             // help_context
             // 
@@ -361,7 +361,7 @@ namespace NodesGenerator
             this.Name = "node_def";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Определение узла";
+            this.Text = "РћРїСЂРµРґРµР»РµРЅРёРµ СѓР·Р»Р°";
             this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -431,7 +431,7 @@ namespace NodesGenerator
 				subnodes.Items[t]=simple_node_editor.edit_element(se,ni,ng);
 				return;
 			}
-            // node_field_info должен быть последним
+            // node_field_info РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїРѕСЃР»РµРґРЅРёРј
             node_field_info nfi = subnodes.Items[t] as node_field_info; 
             if (nfi != null)
             {

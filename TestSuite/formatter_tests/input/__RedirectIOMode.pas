@@ -2,14 +2,14 @@
 unit __RedirectIOMode;
 
 //------------------------------------------------------------------------------
-// Модуль подключаемый в режиме запуска со связью с оболочкой                  
-// (с) DarkStar 2007
-// Функции:
-//    1. Посылка в поток ErrorStream сигнала [READLNSIGNAL]
-//    2. Перехват исключений по AppDomain.CurrentDomain.UnhandledException и 
-//       пердача их в поток ErrorStream
-//    3. Перехват исключений по Application.ThreadException и 
-//       пердача их в поток ErrorStream  
+// РњРѕРґСѓР»СЊ РїРѕРґРєР»СЋС‡Р°РµРјС‹Р№ РІ СЂРµР¶РёРјРµ Р·Р°РїСѓСЃРєР° СЃРѕ СЃРІСЏР·СЊСЋ СЃ РѕР±РѕР»РѕС‡РєРѕР№                  
+// (СЃ) DarkStar 2007
+// Р¤СѓРЅРєС†РёРё:
+//    1. РџРѕСЃС‹Р»РєР° РІ РїРѕС‚РѕРє ErrorStream СЃРёРіРЅР°Р»Р° [READLNSIGNAL]
+//    2. РџРµСЂРµС…РІР°С‚ РёСЃРєР»СЋС‡РµРЅРёР№ РїРѕ AppDomain.CurrentDomain.UnhandledException Рё 
+//       РїРµСЂРґР°С‡Р° РёС… РІ РїРѕС‚РѕРє ErrorStream
+//    3. РџРµСЂРµС…РІР°С‚ РёСЃРєР»СЋС‡РµРЅРёР№ РїРѕ Application.ThreadException Рё 
+//       РїРµСЂРґР°С‡Р° РёС… РІ РїРѕС‚РѕРє ErrorStream  
 //------------------------------------------------------------------------------
 
 {$reference 'System.Windows.Forms.dll'}
@@ -110,7 +110,7 @@ begin
         if AppDomain.CurrentDomain.GetData('_RedirectIO_SpecialArgs') = nil then
           Console.ReadLine;
         RedirectIOInDebugMode := true;
-        if IOStandardSystem(CurrentIOSystem).GetType = typeof(IOStandardSystem) then // SSM 30.04.06 - не менять! Влияет на PT4!
+        if IOStandardSystem(CurrentIOSystem).GetType = typeof(IOStandardSystem) then // SSM 30.04.06 - РЅРµ РјРµРЅСЏС‚СЊ! Р’Р»РёСЏРµС‚ РЅР° PT4!
           CurrentIOSystem := new __ReadSignalOISystem;        
         AppDomain.CurrentDomain.UnhandledException += DbgExceptionHandler;
         System.Windows.Forms.Application.ThreadException += Application_ThreadException;

@@ -168,7 +168,7 @@ namespace NodesGenerator
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripButton toolStripButtonTagSelected;
         private Button filterSelected;
-        private ToolStripMenuItem присвоитьТегToolStripMenuItem;
+        private ToolStripMenuItem РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem;
         private Splitter splitter3;
         private Button filterAncestors;
         private IContainer components;
@@ -299,7 +299,7 @@ namespace NodesGenerator
             this.deleteNodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.sortToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.присвоитьТегToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.globalRenamerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -342,12 +342,12 @@ namespace NodesGenerator
             // openFileDialog1
             // 
             this.openFileDialog1.DefaultExt = "nin";
-            this.openFileDialog1.Filter = "Файлы синтаксического дерева (*.nin)|*.nin|Все файлы (*.*)|*.*";
+            this.openFileDialog1.Filter = "Р¤Р°Р№Р»С‹ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° (*.nin)|*.nin|Р’СЃРµ С„Р°Р№Р»С‹ (*.*)|*.*";
             // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "nin";
-            this.saveFileDialog1.Filter = "Файлы синтаксического дерева (*.nin)|*.nin|Все файлы (*.*)|*.*";
+            this.saveFileDialog1.Filter = "Р¤Р°Р№Р»С‹ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° (*.nin)|*.nin|Р’СЃРµ С„Р°Р№Р»С‹ (*.*)|*.*";
             // 
             // toolStripStatusLabel1
             // 
@@ -410,7 +410,7 @@ namespace NodesGenerator
             this.toolStripButtonNew.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonNew.Name = "toolStripButtonNew";
             this.toolStripButtonNew.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButtonNew.Text = "Новый";
+            this.toolStripButtonNew.Text = "РќРѕРІС‹Р№";
             this.toolStripButtonNew.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // toolStripOpenButton
@@ -420,7 +420,7 @@ namespace NodesGenerator
             this.toolStripOpenButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripOpenButton.Name = "toolStripOpenButton";
             this.toolStripOpenButton.Size = new System.Drawing.Size(24, 24);
-            this.toolStripOpenButton.Text = "Открыть...";
+            this.toolStripOpenButton.Text = "РћС‚РєСЂС‹С‚СЊ...";
             this.toolStripOpenButton.Click += new System.EventHandler(this.open_Click);
             // 
             // toolStripSaveButton
@@ -430,7 +430,7 @@ namespace NodesGenerator
             this.toolStripSaveButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSaveButton.Name = "toolStripSaveButton";
             this.toolStripSaveButton.Size = new System.Drawing.Size(24, 24);
-            this.toolStripSaveButton.Text = "Сохранить";
+            this.toolStripSaveButton.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ";
             this.toolStripSaveButton.Click += new System.EventHandler(this.save_Click);
             // 
             // toolStripSaveAsButton
@@ -440,7 +440,7 @@ namespace NodesGenerator
             this.toolStripSaveAsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripSaveAsButton.Name = "toolStripSaveAsButton";
             this.toolStripSaveAsButton.Size = new System.Drawing.Size(24, 24);
-            this.toolStripSaveAsButton.Text = "Сохранить как...";
+            this.toolStripSaveAsButton.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє...";
             this.toolStripSaveAsButton.Click += new System.EventHandler(this.save_as_Click);
             // 
             // toolStripButtonSaveStore
@@ -450,7 +450,7 @@ namespace NodesGenerator
             this.toolStripButtonSaveStore.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonSaveStore.Name = "toolStripButtonSaveStore";
             this.toolStripButtonSaveStore.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButtonSaveStore.Text = "Сохранить и сделать копию";
+            this.toolStripButtonSaveStore.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ Рё СЃРґРµР»Р°С‚СЊ РєРѕРїРёСЋ";
             this.toolStripButtonSaveStore.Click += new System.EventHandler(this.toolStripButtonSaveStore_Click);
             // 
             // toolStripSeparator1
@@ -465,7 +465,7 @@ namespace NodesGenerator
             this.toolStripOptionsButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripOptionsButton.Name = "toolStripOptionsButton";
             this.toolStripOptionsButton.Size = new System.Drawing.Size(24, 24);
-            this.toolStripOptionsButton.Text = "Настройки...";
+            this.toolStripOptionsButton.Text = "РќР°СЃС‚СЂРѕР№РєРё...";
             this.toolStripOptionsButton.Click += new System.EventHandler(this.toolStripOptionsButton_Click);
             // 
             // toolStripSeparator2
@@ -480,7 +480,7 @@ namespace NodesGenerator
             this.toolStripGenerateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripGenerateButton.Name = "toolStripGenerateButton";
             this.toolStripGenerateButton.Size = new System.Drawing.Size(24, 24);
-            this.toolStripGenerateButton.Text = "Генерировать";
+            this.toolStripGenerateButton.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ";
             this.toolStripGenerateButton.Click += new System.EventHandler(this.toolStripGenerateButton_Click);
             // 
             // groupBox1
@@ -493,7 +493,7 @@ namespace NodesGenerator
             this.groupBox1.Size = new System.Drawing.Size(295, 532);
             this.groupBox1.TabIndex = 20;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Узлы:";
+            this.groupBox1.Text = "РЈР·Р»С‹:";
             // 
             // nodes_list
             // 
@@ -530,7 +530,7 @@ namespace NodesGenerator
             this.addToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("addToolStripMenuItem.Image")));
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.addToolStripMenuItem.Text = "Добавить";
+            this.addToolStripMenuItem.Text = "Р”РѕР±Р°РІРёС‚СЊ";
             this.addToolStripMenuItem.Click += new System.EventHandler(this.add_Click);
             // 
             // toolStripMenuItem6
@@ -543,7 +543,7 @@ namespace NodesGenerator
             this.moveUpToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveUpToolStripMenuItem.Image")));
             this.moveUpToolStripMenuItem.Name = "moveUpToolStripMenuItem";
             this.moveUpToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.moveUpToolStripMenuItem.Text = "Передвинуть вверх";
+            this.moveUpToolStripMenuItem.Text = "РџРµСЂРµРґРІРёРЅСѓС‚СЊ РІРІРµСЂС…";
             this.moveUpToolStripMenuItem.Click += new System.EventHandler(this.Up_Click);
             // 
             // moveDownToolStripMenuItem
@@ -551,7 +551,7 @@ namespace NodesGenerator
             this.moveDownToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveDownToolStripMenuItem.Image")));
             this.moveDownToolStripMenuItem.Name = "moveDownToolStripMenuItem";
             this.moveDownToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.moveDownToolStripMenuItem.Text = "Передвинуть вниз";
+            this.moveDownToolStripMenuItem.Text = "РџРµСЂРµРґРІРёРЅСѓС‚СЊ РІРЅРёР·";
             this.moveDownToolStripMenuItem.Click += new System.EventHandler(this.Down_Click);
             // 
             // toolStripMenuItem7
@@ -564,7 +564,7 @@ namespace NodesGenerator
             this.deleteToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("deleteToolStripMenuItem.Image")));
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(215, 26);
-            this.deleteToolStripMenuItem.Text = "Удалить";
+            this.deleteToolStripMenuItem.Text = "РЈРґР°Р»РёС‚СЊ";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.delete_Click);
             // 
             // nodesToolStrip
@@ -665,7 +665,7 @@ namespace NodesGenerator
             this.toolStripButtonTagSelected.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonTagSelected.Name = "toolStripButtonTagSelected";
             this.toolStripButtonTagSelected.Size = new System.Drawing.Size(24, 24);
-            this.toolStripButtonTagSelected.Text = "Присвоить тег";
+            this.toolStripButtonTagSelected.Text = "РџСЂРёСЃРІРѕРёС‚СЊ С‚РµРі";
             this.toolStripButtonTagSelected.Click += new System.EventHandler(this.saveTempFilter_Click);
             // 
             // groupBox2
@@ -682,7 +682,7 @@ namespace NodesGenerator
             this.groupBox2.Size = new System.Drawing.Size(793, 532);
             this.groupBox2.TabIndex = 21;
             this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Содержимое узлов:";
+            this.groupBox2.Text = "РЎРѕРґРµСЂР¶РёРјРѕРµ СѓР·Р»РѕРІ:";
             // 
             // panel3
             // 
@@ -826,7 +826,7 @@ namespace NodesGenerator
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(787, 18);
             this.label3.TabIndex = 26;
-            this.label3.Text = "Справочная информация:";
+            this.label3.Text = "РЎРїСЂР°РІРѕС‡РЅР°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ:";
             // 
             // splitter1
             // 
@@ -859,7 +859,7 @@ namespace NodesGenerator
             this.tags.Name = "tags";
             this.tags.Size = new System.Drawing.Size(42, 17);
             this.tags.TabIndex = 3;
-            this.tags.Text = "Теги:";
+            this.tags.Text = "РўРµРіРё:";
             // 
             // tagItems
             // 
@@ -891,7 +891,7 @@ namespace NodesGenerator
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(81, 17);
             this.label4.TabIndex = 0;
-            this.label4.Text = "Категории:";
+            this.label4.Text = "РљР°С‚РµРіРѕСЂРёРё:";
             // 
             // panel1
             // 
@@ -913,7 +913,7 @@ namespace NodesGenerator
             this.saveNodeButton.Name = "saveNodeButton";
             this.saveNodeButton.Size = new System.Drawing.Size(116, 26);
             this.saveNodeButton.TabIndex = 32;
-            this.saveNodeButton.Text = "Применить";
+            this.saveNodeButton.Text = "РџСЂРёРјРµРЅРёС‚СЊ";
             this.saveNodeButton.UseVisualStyleBackColor = true;
             this.saveNodeButton.Click += new System.EventHandler(this.saveNodeButton_Click);
             // 
@@ -923,7 +923,7 @@ namespace NodesGenerator
             this.reloadButton.Name = "reloadButton";
             this.reloadButton.Size = new System.Drawing.Size(116, 25);
             this.reloadButton.TabIndex = 31;
-            this.reloadButton.Text = "Перезагрузить";
+            this.reloadButton.Text = "РџРµСЂРµР·Р°РіСЂСѓР·РёС‚СЊ";
             this.reloadButton.UseVisualStyleBackColor = true;
             this.reloadButton.Click += new System.EventHandler(this.reloadButton_Click_1);
             // 
@@ -942,7 +942,7 @@ namespace NodesGenerator
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(110, 17);
             this.label2.TabIndex = 29;
-            this.label2.Text = "Базовый класс:";
+            this.label2.Text = "Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ:";
             // 
             // label1
             // 
@@ -951,7 +951,7 @@ namespace NodesGenerator
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(73, 17);
             this.label1.TabIndex = 28;
-            this.label1.Text = "Имя узла:";
+            this.label1.Text = "РРјСЏ СѓР·Р»Р°:";
             // 
             // node_name
             // 
@@ -1008,7 +1008,7 @@ namespace NodesGenerator
             // 
             this.editInTagsCollectionToolStripMenuItem.Name = "editInTagsCollectionToolStripMenuItem";
             this.editInTagsCollectionToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.editInTagsCollectionToolStripMenuItem.Text = "Редактор тегов...";
+            this.editInTagsCollectionToolStripMenuItem.Text = "Р РµРґР°РєС‚РѕСЂ С‚РµРіРѕРІ...";
             this.editInTagsCollectionToolStripMenuItem.Click += new System.EventHandler(this.tagsCollectionToolStripMenuItem_Click);
             // 
             // filterCategories
@@ -1047,7 +1047,7 @@ namespace NodesGenerator
             this.filterSelected.Name = "filterSelected";
             this.filterSelected.Size = new System.Drawing.Size(140, 50);
             this.filterSelected.TabIndex = 1;
-            this.filterSelected.Text = "Только выделенные";
+            this.filterSelected.Text = "РўРѕР»СЊРєРѕ РІС‹РґРµР»РµРЅРЅС‹Рµ";
             this.filterSelected.UseVisualStyleBackColor = true;
             this.filterSelected.Click += new System.EventHandler(this.customFilterMode_CheckedChanged);
             // 
@@ -1062,7 +1062,7 @@ namespace NodesGenerator
             this.filterAncestors.Name = "filterAncestors";
             this.filterAncestors.Size = new System.Drawing.Size(140, 29);
             this.filterAncestors.TabIndex = 2;
-            this.filterAncestors.Text = "Только предки";
+            this.filterAncestors.Text = "РўРѕР»СЊРєРѕ РїСЂРµРґРєРё";
             this.filterAncestors.UseVisualStyleBackColor = true;
             this.filterAncestors.Click += new System.EventHandler(this.filterAncestors_Click);
             // 
@@ -1077,7 +1077,7 @@ namespace NodesGenerator
             this.resetFilterButton.Name = "resetFilterButton";
             this.resetFilterButton.Size = new System.Drawing.Size(140, 29);
             this.resetFilterButton.TabIndex = 0;
-            this.resetFilterButton.Text = "Очистить фильтр";
+            this.resetFilterButton.Text = "РћС‡РёСЃС‚РёС‚СЊ С„РёР»СЊС‚СЂ";
             this.resetFilterButton.UseVisualStyleBackColor = true;
             this.resetFilterButton.Click += new System.EventHandler(this.resetFilterButton_Click);
             // 
@@ -1093,7 +1093,7 @@ namespace NodesGenerator
             this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 22);
-            this.fileToolStripMenuItem.Text = "Файл";
+            this.fileToolStripMenuItem.Text = "Р¤Р°Р№Р»";
             // 
             // newToolStripMenuItem
             // 
@@ -1101,7 +1101,7 @@ namespace NodesGenerator
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.newToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.newToolStripMenuItem.Text = "Новый";
+            this.newToolStripMenuItem.Text = "РќРѕРІС‹Р№";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
@@ -1110,7 +1110,7 @@ namespace NodesGenerator
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.openToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.openToolStripMenuItem.Text = "Открыть...";
+            this.openToolStripMenuItem.Text = "РћС‚РєСЂС‹С‚СЊ...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.open_Click);
             // 
             // saveToolStripMenuItem
@@ -1119,7 +1119,7 @@ namespace NodesGenerator
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.saveToolStripMenuItem.Text = "Сохранить";
+            this.saveToolStripMenuItem.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.save_Click);
             // 
             // saveAsToolStripMenuItem
@@ -1129,7 +1129,7 @@ namespace NodesGenerator
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.S)));
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.saveAsToolStripMenuItem.Text = "Сохранить как...";
+            this.saveAsToolStripMenuItem.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.save_as_Click);
             // 
             // saveAndStoreToolStripMenuItem
@@ -1137,7 +1137,7 @@ namespace NodesGenerator
             this.saveAndStoreToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveAndStoreToolStripMenuItem.Image")));
             this.saveAndStoreToolStripMenuItem.Name = "saveAndStoreToolStripMenuItem";
             this.saveAndStoreToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.saveAndStoreToolStripMenuItem.Text = "Сохранить и сделать копию";
+            this.saveAndStoreToolStripMenuItem.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ Рё СЃРґРµР»Р°С‚СЊ РєРѕРїРёСЋ";
             // 
             // toolStripMenuItem1
             // 
@@ -1148,7 +1148,7 @@ namespace NodesGenerator
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
             this.quitToolStripMenuItem.Size = new System.Drawing.Size(273, 26);
-            this.quitToolStripMenuItem.Text = "Выйти";
+            this.quitToolStripMenuItem.Text = "Р’С‹Р№С‚Рё";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
             // nodesToolStripMenuItem
@@ -1162,11 +1162,11 @@ namespace NodesGenerator
             this.deleteNodeToolStripMenuItem,
             this.toolStripMenuItem4,
             this.sortToolStripMenuItem,
-            this.присвоитьТегToolStripMenuItem,
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem,
             this.globalRenamerToolStripMenuItem});
             this.nodesToolStripMenuItem.Name = "nodesToolStripMenuItem";
             this.nodesToolStripMenuItem.Size = new System.Drawing.Size(54, 22);
-            this.nodesToolStripMenuItem.Text = "Узлы";
+            this.nodesToolStripMenuItem.Text = "РЈР·Р»С‹";
             // 
             // addNodeToolStripMenuItem
             // 
@@ -1174,7 +1174,7 @@ namespace NodesGenerator
             this.addNodeToolStripMenuItem.Name = "addNodeToolStripMenuItem";
             this.addNodeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.addNodeToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.addNodeToolStripMenuItem.Text = "Добавить узел";
+            this.addNodeToolStripMenuItem.Text = "Р”РѕР±Р°РІРёС‚СЊ СѓР·РµР»";
             this.addNodeToolStripMenuItem.Click += new System.EventHandler(this.add_Click);
             // 
             // toolStripMenuItem2
@@ -1187,7 +1187,7 @@ namespace NodesGenerator
             this.moveNodeUpToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveNodeUpToolStripMenuItem.Image")));
             this.moveNodeUpToolStripMenuItem.Name = "moveNodeUpToolStripMenuItem";
             this.moveNodeUpToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.moveNodeUpToolStripMenuItem.Text = "Передвинуть узел вверх";
+            this.moveNodeUpToolStripMenuItem.Text = "РџРµСЂРµРґРІРёРЅСѓС‚СЊ СѓР·РµР» РІРІРµСЂС…";
             this.moveNodeUpToolStripMenuItem.Click += new System.EventHandler(this.Up_Click);
             // 
             // moveNodeDownToolStripMenuItem
@@ -1195,7 +1195,7 @@ namespace NodesGenerator
             this.moveNodeDownToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("moveNodeDownToolStripMenuItem.Image")));
             this.moveNodeDownToolStripMenuItem.Name = "moveNodeDownToolStripMenuItem";
             this.moveNodeDownToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.moveNodeDownToolStripMenuItem.Text = "Передвинуть узел вниз";
+            this.moveNodeDownToolStripMenuItem.Text = "РџРµСЂРµРґРІРёРЅСѓС‚СЊ СѓР·РµР» РІРЅРёР·";
             this.moveNodeDownToolStripMenuItem.Click += new System.EventHandler(this.Down_Click);
             // 
             // toolStripMenuItem3
@@ -1208,7 +1208,7 @@ namespace NodesGenerator
             this.deleteNodeToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("deleteNodeToolStripMenuItem.Image")));
             this.deleteNodeToolStripMenuItem.Name = "deleteNodeToolStripMenuItem";
             this.deleteNodeToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.deleteNodeToolStripMenuItem.Text = "Удалить узел";
+            this.deleteNodeToolStripMenuItem.Text = "РЈРґР°Р»РёС‚СЊ СѓР·РµР»";
             this.deleteNodeToolStripMenuItem.Click += new System.EventHandler(this.delete_Click);
             // 
             // toolStripMenuItem4
@@ -1221,22 +1221,22 @@ namespace NodesGenerator
             this.sortToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("sortToolStripMenuItem.Image")));
             this.sortToolStripMenuItem.Name = "sortToolStripMenuItem";
             this.sortToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.sortToolStripMenuItem.Text = "Отсортировать узлы";
+            this.sortToolStripMenuItem.Text = "РћС‚СЃРѕСЂС‚РёСЂРѕРІР°С‚СЊ СѓР·Р»С‹";
             this.sortToolStripMenuItem.Click += new System.EventHandler(this.sortToolStripMenuItem_Click);
             // 
-            // присвоитьТегToolStripMenuItem
+            // РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem
             // 
-            this.присвоитьТегToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("присвоитьТегToolStripMenuItem.Image")));
-            this.присвоитьТегToolStripMenuItem.Name = "присвоитьТегToolStripMenuItem";
-            this.присвоитьТегToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.присвоитьТегToolStripMenuItem.Text = "Присвоить тег";
-            this.присвоитьТегToolStripMenuItem.Click += new System.EventHandler(this.saveTempFilter_Click);
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem.Image")));
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem.Name = "РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem";
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem.Text = "РџСЂРёСЃРІРѕРёС‚СЊ С‚РµРі";
+            this.РїСЂРёСЃРІРѕРёС‚СЊРўРµРіToolStripMenuItem.Click += new System.EventHandler(this.saveTempFilter_Click);
             // 
             // globalRenamerToolStripMenuItem
             // 
             this.globalRenamerToolStripMenuItem.Name = "globalRenamerToolStripMenuItem";
             this.globalRenamerToolStripMenuItem.Size = new System.Drawing.Size(279, 26);
-            this.globalRenamerToolStripMenuItem.Text = "Глобальное переименование";
+            this.globalRenamerToolStripMenuItem.Text = "Р“Р»РѕР±Р°Р»СЊРЅРѕРµ РїРµСЂРµРёРјРµРЅРѕРІР°РЅРёРµ";
             this.globalRenamerToolStripMenuItem.Click += new System.EventHandler(this.globalRenamerToolStripMenuItem_Click);
             // 
             // contentsToolStripMenuItem
@@ -1250,7 +1250,7 @@ namespace NodesGenerator
             this.redoToolStripMenuItem});
             this.contentsToolStripMenuItem.Name = "contentsToolStripMenuItem";
             this.contentsToolStripMenuItem.Size = new System.Drawing.Size(69, 22);
-            this.contentsToolStripMenuItem.Text = "Правка";
+            this.contentsToolStripMenuItem.Text = "РџСЂР°РІРєР°";
             // 
             // cutToolStripMenuItem
             // 
@@ -1258,7 +1258,7 @@ namespace NodesGenerator
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
             this.cutToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
             this.cutToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.cutToolStripMenuItem.Text = "Вырезать";
+            this.cutToolStripMenuItem.Text = "Р’С‹СЂРµР·Р°С‚СЊ";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonCut_Click);
             // 
             // copyToolStripMenuItem
@@ -1267,7 +1267,7 @@ namespace NodesGenerator
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
             this.copyToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
             this.copyToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.copyToolStripMenuItem.Text = "Копировать";
+            this.copyToolStripMenuItem.Text = "РљРѕРїРёСЂРѕРІР°С‚СЊ";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonCopy_Click);
             // 
             // pasteToolStripMenuItem
@@ -1276,7 +1276,7 @@ namespace NodesGenerator
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             this.pasteToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
             this.pasteToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.pasteToolStripMenuItem.Text = "Вставить";
+            this.pasteToolStripMenuItem.Text = "Р’СЃС‚Р°РІРёС‚СЊ";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonPaste_Click);
             // 
             // toolStripMenuItem5
@@ -1290,7 +1290,7 @@ namespace NodesGenerator
             this.undoToolStripMenuItem.Name = "undoToolStripMenuItem";
             this.undoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
             this.undoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.undoToolStripMenuItem.Text = "Отменить";
+            this.undoToolStripMenuItem.Text = "РћС‚РјРµРЅРёС‚СЊ";
             this.undoToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonUndo_Click);
             // 
             // redoToolStripMenuItem
@@ -1300,7 +1300,7 @@ namespace NodesGenerator
             this.redoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
             this.redoToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.redoToolStripMenuItem.Text = "Вернуть";
+            this.redoToolStripMenuItem.Text = "Р’РµСЂРЅСѓС‚СЊ";
             this.redoToolStripMenuItem.Click += new System.EventHandler(this.toolStripButtonRedo_Click);
             // 
             // viewToolStripMenuItem
@@ -1309,7 +1309,7 @@ namespace NodesGenerator
             this.filterPanelToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
             this.viewToolStripMenuItem.Size = new System.Drawing.Size(45, 22);
-            this.viewToolStripMenuItem.Text = "Вид";
+            this.viewToolStripMenuItem.Text = "Р’РёРґ";
             // 
             // filterPanelToolStripMenuItem
             // 
@@ -1318,7 +1318,7 @@ namespace NodesGenerator
             this.filterPanelToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.filterPanelToolStripMenuItem.Name = "filterPanelToolStripMenuItem";
             this.filterPanelToolStripMenuItem.Size = new System.Drawing.Size(191, 26);
-            this.filterPanelToolStripMenuItem.Text = "Панель фильтра";
+            this.filterPanelToolStripMenuItem.Text = "РџР°РЅРµР»СЊ С„РёР»СЊС‚СЂР°";
             this.filterPanelToolStripMenuItem.CheckedChanged += new System.EventHandler(this.filterPanelToolStripMenuItem_CheckedChanged);
             // 
             // optionsToolStripMenuItem
@@ -1328,20 +1328,20 @@ namespace NodesGenerator
             this.tagsCollectionToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
-            this.optionsToolStripMenuItem.Text = "Настройки";
+            this.optionsToolStripMenuItem.Text = "РќР°СЃС‚СЂРѕР№РєРё";
             // 
             // optionsToolStripMenuItem1
             // 
             this.optionsToolStripMenuItem1.Name = "optionsToolStripMenuItem1";
             this.optionsToolStripMenuItem1.Size = new System.Drawing.Size(197, 22);
-            this.optionsToolStripMenuItem1.Text = "Настройки...";
+            this.optionsToolStripMenuItem1.Text = "РќР°СЃС‚СЂРѕР№РєРё...";
             this.optionsToolStripMenuItem1.Click += new System.EventHandler(this.toolStripOptionsButton_Click);
             // 
             // tagsCollectionToolStripMenuItem
             // 
             this.tagsCollectionToolStripMenuItem.Name = "tagsCollectionToolStripMenuItem";
             this.tagsCollectionToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
-            this.tagsCollectionToolStripMenuItem.Text = "Редактор тегов...";
+            this.tagsCollectionToolStripMenuItem.Text = "Р РµРґР°РєС‚РѕСЂ С‚РµРіРѕРІ...";
             this.tagsCollectionToolStripMenuItem.Click += new System.EventHandler(this.tagsCollectionToolStripMenuItem_Click);
             // 
             // runToolStripMenuItem
@@ -1351,7 +1351,7 @@ namespace NodesGenerator
             this.grammarBrowserToolStripMenuItem});
             this.runToolStripMenuItem.Name = "runToolStripMenuItem";
             this.runToolStripMenuItem.Size = new System.Drawing.Size(81, 22);
-            this.runToolStripMenuItem.Text = "Команды";
+            this.runToolStripMenuItem.Text = "РљРѕРјР°РЅРґС‹";
             // 
             // generateToolStripMenuItem
             // 
@@ -1359,14 +1359,14 @@ namespace NodesGenerator
             this.generateToolStripMenuItem.Name = "generateToolStripMenuItem";
             this.generateToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F9;
             this.generateToolStripMenuItem.Size = new System.Drawing.Size(205, 26);
-            this.generateToolStripMenuItem.Text = "Генерировать";
+            this.generateToolStripMenuItem.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ";
             this.generateToolStripMenuItem.Click += new System.EventHandler(this.toolStripGenerateButton_Click);
             // 
             // grammarBrowserToolStripMenuItem
             // 
             this.grammarBrowserToolStripMenuItem.Name = "grammarBrowserToolStripMenuItem";
             this.grammarBrowserToolStripMenuItem.Size = new System.Drawing.Size(205, 26);
-            this.grammarBrowserToolStripMenuItem.Text = "Иерархия узлов...";
+            this.grammarBrowserToolStripMenuItem.Text = "РРµСЂР°СЂС…РёСЏ СѓР·Р»РѕРІ...";
             // 
             // mainMenu
             // 
@@ -1391,14 +1391,14 @@ namespace NodesGenerator
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(76, 22);
-            this.helpToolStripMenuItem.Text = "Справка";
+            this.helpToolStripMenuItem.Text = "РЎРїСЂР°РІРєР°";
             this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.aboutToolStripMenuItem.Text = "О программе...";
+            this.aboutToolStripMenuItem.Text = "Рћ РїСЂРѕРіСЂР°РјРјРµ...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // splitter3
@@ -1480,7 +1480,7 @@ namespace NodesGenerator
             nodes_list.Items.AddRange(node_gen.all_nodes.ToArray());
         }
 
-        private void set_nodes_information() // set - установить поля интерфейса по node_gen
+        private void set_nodes_information() // set - СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕР»СЏ РёРЅС‚РµСЂС„РµР№СЃР° РїРѕ node_gen
         {
             if (node_gen == null)
             {
@@ -1509,7 +1509,7 @@ namespace NodesGenerator
             }
         }
 
-        private void get_nodes_information() // get - получить информацию из полей интерфейса и записать ее в node_gen
+        private void get_nodes_information() // get - РїРѕР»СѓС‡РёС‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РїРѕР»РµР№ РёРЅС‚РµСЂС„РµР№СЃР° Рё Р·Р°РїРёСЃР°С‚СЊ РµРµ РІ node_gen
         {
             if (node_gen == null)
             {
@@ -1606,7 +1606,7 @@ namespace NodesGenerator
                 delete_selected_items();                
                 nodes_list.SelectedIndex = Math.Min(nodes_list.Items.Count - 1, ind);
 
-                // Голову отрывать надо за такой небрежный код
+                // Р“РѕР»РѕРІСѓ РѕС‚СЂС‹РІР°С‚СЊ РЅР°РґРѕ Р·Р° С‚Р°РєРѕР№ РЅРµР±СЂРµР¶РЅС‹Р№ РєРѕРґ
                 selected_node = nodes_list.SelectedItem as node_info;
                 selected_node_index = nodes_list.SelectedIndex;
             }
