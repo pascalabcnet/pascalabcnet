@@ -21,10 +21,11 @@ namespace PascalABCCompiler
             {
                 case SourceFileOperation.GetText:
                     if (!File.Exists(FileName)) return null;
-                    TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
+                    /*TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
                     //TextReader tr = new StreamReader(FileName, System.Text.Encoding.);
                     string Text = tr.ReadToEnd();
-                    tr.Close();
+                    tr.Close();*/
+                    string Text = FileReader.ReadFileContent(FileName, null);
                     return Text;
                 case SourceFileOperation.Exists:
                     return File.Exists(FileName);

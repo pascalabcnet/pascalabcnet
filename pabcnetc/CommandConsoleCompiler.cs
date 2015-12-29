@@ -67,9 +67,10 @@ namespace PascalABCCompiler
                         return text;
                     if (!File.Exists(FileName))
                         return null;
-                    TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
+                    /*TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
                     text = tr.ReadToEnd();
-                    tr.Close();
+                    tr.Close();*/
+                    text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
                     return text;
                 case SourceFileOperation.Exists:
                     if (SourceFiles.ContainsKey(fn))

@@ -1,3 +1,4 @@
+//winonly
 {$reference 'System.Windows.Forms.dll'}
 {$reference 'System.Drawing.dll'}
 {$reference 'System.Xml.dll'}
