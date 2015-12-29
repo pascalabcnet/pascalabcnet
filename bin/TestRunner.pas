@@ -11,6 +11,11 @@ uses PascalABCCompiler, System.IO, System.Diagnostics;
 var TestSuiteDir: string;
 var PathSeparator: string := Path.DirectorySeparatorChar;
 
+function IsUnix: boolean;
+begin
+  Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);  
+end;
+
 function GetTestSuiteDir: string;
 begin
   var dir := Path.GetDirectoryName(GetEXEFileName());
@@ -32,6 +37,9 @@ begin
   var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'errors','*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir+PathSeparator+'errors';
@@ -63,6 +71,9 @@ begin
   var files := Directory.GetFiles(TestSuiteDir,'*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir+PathSeparator+'exe';
@@ -91,6 +102,9 @@ begin
   var files := Directory.GetFiles(TestSuiteDir+PathSeparator+dir,'*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir+PathSeparator+dir;
@@ -117,6 +131,9 @@ begin
   var dir := TestSuiteDir+PathSeparator+'units'+PathSeparator;
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := dir;
@@ -142,6 +159,9 @@ begin
   var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'usesunits','*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := TestSuiteDir+PathSeparator+'exe';
