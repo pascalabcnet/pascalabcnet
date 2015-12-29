@@ -1,5 +1,6 @@
 #!/bin/sh
-MONO_IOMAP=case xbuild pabcnetc.sln
+MONO_IOMAP=case xbuild /p:Configuration=release pabcnetc.sln
+MONO_IOMAP=case xbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
 export MONO_IOMAP=all
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModules.pas /rebuild
@@ -18,7 +19,8 @@ if [ $? -eq 0 ]; then
             sn -Vu PABCRtl32.dll
             cp PABCRtl32.dll ../../bin/Lib
             gacutil -u PABCRtl
-            gacutil -i ../bin/Lib/PABCRtl.dll
+            gacutil -i ../../bin/Lib/PABCRtl.dll
+	    cd ..
             mono ../bin/pabcnetc.exe RebuildStandartModules.pas /rebuild
             if [ $? -eq 0 ]; then
                 cd ../bin
