@@ -1,3 +1,4 @@
+//winonly
 unit u_assemblies1;
 {$reference 'System.Windows.Forms.dll'}
 {$reference 'System.Drawing.dll'}
