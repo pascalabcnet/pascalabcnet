@@ -1,3 +1,4 @@
+//winonly
 procedure Test;
 var 
   b : byte;
