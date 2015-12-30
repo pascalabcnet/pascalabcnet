@@ -1,3 +1,4 @@
+//winonly
 procedure Test(p : ^integer);
 begin
 assert(p^=77);
