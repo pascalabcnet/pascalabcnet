@@ -1,6 +1,17 @@
 #!/bin/sh
 MONO_IOMAP=case xbuild /p:Configuration=release pabcnetc.sln
 MONO_IOMAP=case xbuild /p:Configuration=release CodeCompletion/CodeCompletion.csproj
+mono --aot pabcnetc.exe
+mono --aot NETGenerator.dll
+mono --aot TreeConverter.dll
+mono --aot Compiler.dll
+mono --aot SyntaxTree.dll
+mono --aot SemanticTree.dll
+mono --aot PascalABCParser.dll
+mono --aot ParserTools.dll
+mono --aot CompilerTools.dll
+mono --aot OptimizerConversion.dll
+mono --aot Errors.dll
 export MONO_IOMAP=all
 cd ReleaseGenerators
 mono ../bin/pabcnetc.exe RebuildStandartModules.pas /rebuild
