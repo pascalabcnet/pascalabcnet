@@ -1,3 +1,4 @@
+//winonly
 unit u_copyarr1;
 var arr : array of integer := (1,2,3);
     arr2 : array of integer;
@@ -18,9 +19,6 @@ arr4 := Copy(arr3);
 assert(arr4[1,0]=3);
 arr4[1,0] := 7;
 assert(arr3[1,0]=3);
-if (System.Environment.OSVersion.Platform <> System.PlatformID.Unix) and (System.Environment.OSVersion.Platform <> System.PlatformID.MacOSX) then
-begin
 arr6 := Copy(arr5);
 assert(arr6[0]=@i);
-end;
 end.
