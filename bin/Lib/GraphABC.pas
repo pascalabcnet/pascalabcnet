@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
@@ -3251,6 +3251,8 @@ end;
 procedure Redraw;
 var tempbmp: Bitmap;
 begin
+  if IsUnix then
+    exit;
   //TODO Без этого падает если свернуто
   if MainForm.WindowState=FormWindowState.Minimized then 
     exit;
@@ -3269,6 +3271,8 @@ end;
 
 procedure FullRedraw;
 begin
+  if IsUnix then
+    exit;
   Monitor.Enter(f);
   if gr<>nil then 
     gr.DrawImage(bmp,0,0);
@@ -3277,6 +3281,8 @@ end;
 
 procedure LockDrawing;
 begin
+  if IsUnix then
+    exit;
   NotLockDrawing := False;
 end;
 
