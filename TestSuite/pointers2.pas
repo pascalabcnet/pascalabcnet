@@ -1,4 +1,5 @@
-﻿uses pointers2u;
+﻿//winonly
+uses pointers2u;
 
 begin
 Start;
