@@ -1,3 +1,4 @@
+//winonly
 unit u_arrayofpointer1;
 var s : string[10];
     arr : array of pinteger;

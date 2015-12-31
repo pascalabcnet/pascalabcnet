@@ -1,3 +1,4 @@
+//winonly
 procedure Test1(b : byte);
 begin
 assert(b=45);

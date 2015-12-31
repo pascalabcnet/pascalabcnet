@@ -1641,10 +1641,13 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     else
                     {
-                        par_type = compiled_type_node.get_type_node(pi.ParameterType);
-                        if (NetHelper.NetHelper.IsExtensionMethod(mi))
+                        if (pi.Position == 0)
                         {
-                            connected_to_type = par_type as compiled_type_node;
+                            par_type = compiled_type_node.get_type_node(pi.ParameterType);
+                            if (NetHelper.NetHelper.IsExtensionMethod(mi))
+                            {
+                                connected_to_type = par_type as compiled_type_node;
+                            }
                         }
                     }
                     string name = pi.Name;

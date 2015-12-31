@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 /// Стандартный модуль
@@ -1616,6 +1616,8 @@ function RuntimeInitialize(kind: byte; variable: object): object;
 function GetRuntimeSize<T>: integer;
 ///Возвращает строку для вывода в write
 function _ObjectToString(o: object): string;
+
+function IsUnix: boolean;
 
 //------------------------------------------------------------------------------
 // WINAPI
@@ -7738,7 +7740,10 @@ begin
   Result := not __from_dll and (IO.Path.GetExtension(System.Reflection.Assembly.GetExecutingAssembly.ManifestModule.FullyQualifiedName).ToLower = '.dll');
 end;
 
-
+function IsUnix: boolean;
+begin
+  Result := (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX);
+end;
 //------------------------------------------------------------------------------
 //OMP
 

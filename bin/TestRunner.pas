@@ -253,10 +253,12 @@ procedure ClearExeDir;
 begin
   ClearDirByPattern(TestSuiteDir+PathSeparator+'exe','*.*');
   ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.exe');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.mdb');
   ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.pdb');
   ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.pcu');
   ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.exe');
   ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.pdb');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.mdb');
   ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.pcu');
 end;
 

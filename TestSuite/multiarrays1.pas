@@ -17,7 +17,7 @@ begin
   SetLength(arr,1,1);
   assert(arr[0,0]=17);
   SetLength(arr5,2,3);
-  arr5[1,1] := @arr;
+  //arr5[1,1] := @arr;
  
   SetLength(arr2,3,4,3);
   arr2[1,2,1] := 50;
