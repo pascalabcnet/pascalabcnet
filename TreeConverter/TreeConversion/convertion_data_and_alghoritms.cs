@@ -1625,7 +1625,9 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if ((exprs.Count < fn.parameters.Count) && (fn.node_kind == SemanticTree.node_kind.compiled))
             {
-                if (exprs.Count == 0 && fn.parameters != null && fn.parameters.Count == 1 && fn.parameters[0].is_params)
+                if (exprs.Count == 0 && fn.parameters != null && fn.parameters.Count == 1 && fn.parameters[0].is_params ||
+                    exprs.Count == 1 && fn.parameters != null && fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null &&
+                    fn.parameters.Count == 2 && fn.parameters[1].is_params)
                 {
                     statements_expression_node sre = new statements_expression_node(ptcal.snl, ptcal.var_ref, ptcal.var_ref.location);
                     exprs.AddElement(sre);
@@ -1820,7 +1822,10 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else if (parameters.Count == 1 && fn is common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null && fn.parameters.Count == 2 && fn.parameters[1].is_params)
                     set_of_possible_functions.AddElement(fn);
-                functions=functions.Next;
+                else if (parameters.Count == 1 && fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null && fn.parameters.Count == 2 && fn.parameters[1].is_params)
+                    if (!set_of_possible_functions.Contains(fn))
+                        set_of_possible_functions.AddElement(fn);
+                functions =functions.Next;
 			}
 
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
