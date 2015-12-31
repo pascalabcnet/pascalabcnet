@@ -4971,7 +4971,7 @@ namespace PascalABCCompiler.TreeConverter
                                         }
                                         else
                                         {
-                                            dot_node_as_expression_dot_ident(exp, id_right, motivation.expression_evaluation);
+                                            dot_node_as_expression_dot_ident(exp, id_right, motivation.expression_evaluation, _dot_node.left);
                                             exp = ret.get_expression();
                                             internal_interface ii = exp.type.get_internal_interface(internal_interface_kind.delegate_interface);
                                             if (ii == null)
@@ -8381,7 +8381,7 @@ namespace PascalABCCompiler.TreeConverter
                 case general_node_type.variable_node:
                     {
                         expression_node ex_nd = ident_value_reciving(si_left, id_left);
-                        dot_node_as_expression_dot_ident(ex_nd, id_right, mot);
+                        dot_node_as_expression_dot_ident(ex_nd, id_right, mot, id_left);
                         return;
                     }
                 case general_node_type.namespace_node:
@@ -8700,7 +8700,7 @@ namespace PascalABCCompiler.TreeConverter
             throw new CompilerInternalError("Undefined expression to address reciving");
         }
 
-        private void dot_node_as_expression_dot_ident(expression_node en, SyntaxTree.ident id_right, motivation mot)
+        private void dot_node_as_expression_dot_ident(expression_node en, SyntaxTree.ident id_right, motivation mot, addressed_value syntax_node)
         {
             if (en is typed_expression)
                 try_convert_typed_expression_to_function_call(ref en);
@@ -8736,6 +8736,13 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
             			//try_convert_typed_expression_to_function_call(ref en);
             			//return_value(en);
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                        {
+                            dot_node dnode = new dot_node(syntax_node, id_right);
+                            method_call mc = new method_call(dnode, new expression_list());
+                            mc.visit(this);
+                            return;
+                        }
                         return_value(expression_value_reciving(id_right, si, en, true));
                         return;
                     }
@@ -8757,7 +8764,7 @@ namespace PascalABCCompiler.TreeConverter
                 case general_node_type.expression:
                     {
                         expression_node en = (expression_node)sn;
-                        dot_node_as_expression_dot_ident(en, id_right, mot);
+                        dot_node_as_expression_dot_ident(en, id_right, mot, left_dot);
                         return;
                     }
                 case general_node_type.namespace_node:
@@ -8825,7 +8832,7 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }
                 expression_node en = convert_strong(_dot_node.left);
-                dot_node_as_expression_dot_ident(en, id_right, mot);
+                dot_node_as_expression_dot_ident(en, id_right, mot, _dot_node.left);
                 return;
             }
         }
