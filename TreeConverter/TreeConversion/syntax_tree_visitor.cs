@@ -9019,7 +9019,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                if (current_function_header.proc_attributes != null && has_extensionmethod_attr(current_function_header.proc_attributes.proc_attributes))
+                if (current_function_header != null && current_function_header.proc_attributes != null && has_extensionmethod_attr(current_function_header.proc_attributes.proc_attributes))
                     context.create_function(_method_name.meth_name.name, loc_name, false);
                 else
                     context.create_function(_method_name.meth_name.name, loc_name);
