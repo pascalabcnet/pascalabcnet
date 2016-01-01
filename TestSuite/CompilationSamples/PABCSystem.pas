@@ -1155,8 +1155,12 @@ function Power(x, y: integer): real;
 function Power(x: BigInteger; y: integer): BigInteger;
 /// Возвращает x, округленное до ближайшего целого
 function Round(x: real): integer;
-/// Возвращает целую часть числа x
+/// Возвращает x, округленное до ближайшего большого целого
+function RoundBigInteger(x: real): BigInteger;
+/// Возвращает целую часть вещественного числа x
 function Trunc(x: real): integer;
+/// Возвращает целую часть вещественного числа x как BigInteger
+function TruncBigInteger(x: real): BigInteger;
 /// Возвращает целую часть числа x
 function Int(x: real): real;
 /// Возвращает дробную часть числа x
@@ -2977,6 +2981,66 @@ end;
 //------------------------------------------------------------------------------
 // Extension methods for BigInteger
 //------------------------------------------------------------------------------
+function BigInteger.operator>(p: BigInteger; q: integer): boolean;
+begin
+  Result := p > BigInteger.Create(q);
+end;
+
+function BigInteger.operator>(p: integer; q: BigInteger): boolean;
+begin
+  Result := BigInteger.Create(p) > q;
+end;
+
+function BigInteger.operator<(p: BigInteger; q: integer): boolean;
+begin
+  Result := p < BigInteger.Create(q);
+end;
+
+function BigInteger.operator<(p: integer; q: BigInteger): boolean;
+begin
+  Result := BigInteger.Create(p) < q;
+end;
+
+function BigInteger.operator>=(p: BigInteger; q: integer): boolean;
+begin
+  Result := p >= BigInteger.Create(q);
+end;
+
+function BigInteger.operator>=(p: integer; q: BigInteger): boolean;
+begin
+  Result := BigInteger.Create(p) >= q;
+end;
+
+function BigInteger.operator<=(p: BigInteger; q: integer): boolean;
+begin
+  Result := p <= BigInteger.Create(q);
+end;
+
+function BigInteger.operator<=(p: integer; q: BigInteger): boolean;
+begin
+  Result := BigInteger.Create(p) <= q;
+end;
+
+function BigInteger.operator=(p: BigInteger; q: integer): boolean;
+begin
+  Result := p = BigInteger.Create(q);
+end;
+
+function BigInteger.operator=(p: integer; q: BigInteger): boolean;
+begin
+  Result := BigInteger.Create(p) = q;
+end;
+
+function BigInteger.operator<>(p: BigInteger; q: integer): boolean;
+begin
+  Result := p <> BigInteger.Create(q);
+end;
+
+function BigInteger.operator<>(p: integer; q: BigInteger): boolean;
+begin
+  Result := BigInteger.Create(p) <> q;
+end;
+
 procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger);
 begin
   p := p + q;
@@ -6095,9 +6159,19 @@ begin
   Result := Convert.ToInt32(Math.Round(x));
 end;
 
+function RoundBigInteger(x: real): BigInteger;
+begin
+  Result := BigInteger.Create(Math.Round(x));
+end;
+
 function Trunc(x: real): integer;
 begin
   Result := Convert.ToInt32(Math.Truncate(x));
+end;
+
+function TruncBigInteger(x: real): BigInteger;
+begin
+  Result := BigInteger.Create(Math.Truncate(x));
 end;
 
 function Int(x: real): real;
@@ -7169,7 +7243,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//    char ext
+//    char методы расширения
 //------------------------------------------------------------------------------
 // Преобразовать символ в цифру
 function char.ToDigit(self: char): integer; extensionmethod;
@@ -7230,12 +7304,18 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//    string ext
+//    string методы расширения
 //------------------------------------------------------------------------------
 /// Преобразует строку в целое
 function string.ToInteger: integer;
 begin
   Result := integer.Parse(Self);
+end;
+
+/// Преобразует строку в BigInteger
+function string.ToBigInteger: BigInteger;
+begin
+  Result := BigInteger.Parse(Self);
 end;
 
 /// Преобразует строку в вещественное

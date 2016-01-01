@@ -582,6 +582,10 @@ function ClientRectangle: System.Drawing.Rectangle;
 //------------------------------------------
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
+procedure Draw(f: real -> real; a,b,min,max: real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
+procedure Draw(f: real -> real; a,b,min,max: real);
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
@@ -3505,17 +3509,26 @@ begin
   Rectangle(x1,y1,x2+1,y2+1);
   var n := (x2-x1) div 3;
   var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
-  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+  Polyline(Range(a,b,n).Select(fso.Apply).ToArray);
+end;
+
+procedure Draw(f: real -> real; a,b,min,max: real; r: System.Drawing.Rectangle);
+var x1 := r.X; y1 := r.Y;
+    x2 := r.X+r.Width-1;
+    y2 := r.Y+r.Height-1;
+begin
+  Draw(f,a,b,min,max,x1,y1,x2,y2);  
+end;
+
+procedure Draw(f: real -> real; a,b,min,max: real);
+begin
+  Draw(f,a,b,min,max,ClientRectangle);
 end;
 
 procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
 begin
-  Rectangle(x1,y1,x2+1,y2+1);
   var n := (x2-x1) div 3;
-  var min := Range(a,b,n).Min(f);
-  var max := Range(a,b,n).Max(f);
-  var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
-  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+  Draw(f,a,b,Range(a,b,n).Min(f),Range(a,b,n).Max(f),x1,y1,x2,y2)
 end;
 
 procedure Draw(f: real -> real; a,b: real; r: System.Drawing.Rectangle);
