@@ -1135,8 +1135,6 @@ function Log10(x: real): real;
 function LogN(base, x: real): real;
 /// Возвращает квадратный корень числа x
 function Sqrt(x: real): real;
-/// Возвращает квадратный корень числа x
-function Sqrt(x: BigInteger): real;
 /// Возвращает квадрат числа x
 function Sqr(x: integer): int64;
 /// Возвращает квадрат числа x
@@ -6109,11 +6107,6 @@ end;
 function Sqrt(x: real): real;
 begin
   Result := Math.Sqrt(x);
-end;
-
-function Sqrt(x: BigInteger): real;
-begin
-  Result := Math.Sqrt(real(x));
 end;
 
 function Sqr(x: integer): int64;
