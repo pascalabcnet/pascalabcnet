@@ -580,16 +580,18 @@ function ClientRectangle: System.Drawing.Rectangle;
 //------------------------------------------
 ////        Рисование графиков функций 
 //------------------------------------------
-/// Рисует график функции f на отрезке [a,b] в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure Draw(f: Func<real,real>; a,b: real; x1,y1,x2,y2: integer);
-/// Рисует график функции f на отрезке [a,b] в прямоугольнике r 
-procedure Draw(f: Func<real,real>; a,b: real; r: System.Drawing.Rectangle);
-/// Рисует график функции f на отрезке [-5,5] в прямоугольнике r 
-procedure Draw(f: Func<real,real>; r: System.Drawing.Rectangle);
-/// Рисует график функции f на отрезке [a,b] на полное графическое окно 
-procedure Draw(f: Func<real,real>; a,b: real);
-/// Рисует график функции f на отрезке [-5,5] на полное графическое окно  
-procedure Draw(f: Func<real,real>);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
+procedure Draw(f: real -> real; a,b: real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
+procedure Draw(f: real -> real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
+procedure Draw(f: real -> real; a,b: real);
+/// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
+procedure Draw(f: real -> real);
 
 //------------------------------------------
 ////        Рисование изображений
@@ -3490,7 +3492,7 @@ end;
 type FS = auto class
   mx,my,a,max: real;
   x0,y0: integer;
-  f: Func<real,real>;
+  f: real -> real;
 
   function Apply(x: real): Point;
   begin
@@ -3498,7 +3500,15 @@ type FS = auto class
   end;
 end;
 
-procedure Draw(f: Func<real,real>; a,b: real; x1,y1,x2,y2: integer);
+procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
+begin
+  Rectangle(x1,y1,x2+1,y2+1);
+  var n := (x2-x1) div 3;
+  var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
+  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+end;
+
+procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
 begin
   Rectangle(x1,y1,x2+1,y2+1);
   var n := (x2-x1) div 3;
@@ -3508,7 +3518,7 @@ begin
   Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
 end;
 
-procedure Draw(f: Func<real,real>; a,b: real; r: System.Drawing.Rectangle);
+procedure Draw(f: real -> real; a,b: real; r: System.Drawing.Rectangle);
 var x1 := r.X; y1 := r.Y;
     x2 := r.X+r.Width-1;
     y2 := r.Y+r.Height-1;
@@ -3516,12 +3526,12 @@ begin
   Draw(f,a,b,x1,y1,x2,y2);
 end;
 
-procedure Draw(f: Func<real,real>; r: System.Drawing.Rectangle);
+procedure Draw(f: real -> real; r: System.Drawing.Rectangle);
 begin
   Draw(f,-5,5,r);
 end;
 
-procedure Draw(f: Func<real,real>; a,b: real);
+procedure Draw(f: real -> real; a,b: real);
 var x1 := 0; y1 := 0;
     x2 := Window.Width-1;
     y2 := Window.Height-1;
@@ -3529,7 +3539,7 @@ begin
   Draw(f,a,b,x1,y1,x2,y2);
 end;
 
-procedure Draw(f: Func<real,real>);
+procedure Draw(f: real -> real);
 begin
   Draw(f,-5,5);
 end;
