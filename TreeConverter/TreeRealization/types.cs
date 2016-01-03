@@ -2149,8 +2149,7 @@ namespace PascalABCCompiler.TreeRealization
         		}
         		return null;
         	}
-        	else
-        		return null;
+            return null;
         }
 
         public override function_node get_explicit_conversion_to(type_node ctn)
@@ -3310,9 +3309,11 @@ namespace PascalABCCompiler.TreeRealization
             function_node fn = null;
             if (!_implicit_convertions_to.TryGetValue(cctn, out fn))
             {
-                fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn);
-                _implicit_convertions_to.Add(cctn, fn);
+                fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
+                if (fn is compiled_function_node)
+                    _implicit_convertions_to.Add(cctn, fn);
             }
+            
             return fn;
         }
 
@@ -3327,8 +3328,9 @@ namespace PascalABCCompiler.TreeRealization
             function_node fn = null;
             if (!_implicit_convertions_from.TryGetValue(cctn, out fn))
             {
-                fn = NetHelper.NetHelper.get_implicit_conversion(this, cctn, this);
-                _implicit_convertions_from.Add(cctn, fn);
+                fn = NetHelper.NetHelper.get_implicit_conversion(this, cctn, this, scope);
+                if (fn is compiled_function_node)
+                    _implicit_convertions_from.Add(cctn, fn);
             }
             return fn;
         }
@@ -3346,8 +3348,9 @@ namespace PascalABCCompiler.TreeRealization
             function_node fn = null;
             if (_explicit_convertions_to.TryGetValue(ctn, out fn))
                 return fn;
-            fn = NetHelper.NetHelper.get_explicit_conversion(this, this, cctn);
-            _explicit_convertions_to.Add(ctn, fn);
+            fn = NetHelper.NetHelper.get_explicit_conversion(this, this, cctn, scope);
+            if (fn is compiled_function_node)
+                _explicit_convertions_to.Add(ctn, fn);
             return fn;
         }
 
@@ -3383,8 +3386,9 @@ namespace PascalABCCompiler.TreeRealization
                 return fn;
             }
             
-            fn = NetHelper.NetHelper.get_explicit_conversion(this, cctn, this);
-            _explicit_convertions_from.Add(ctn, fn);
+            fn = NetHelper.NetHelper.get_explicit_conversion(this, cctn, this, scope);
+            if (fn is compiled_function_node)
+                _explicit_convertions_from.Add(ctn, fn);
             return fn;
         }
 

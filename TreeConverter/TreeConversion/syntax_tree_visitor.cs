@@ -11347,6 +11347,8 @@ namespace PascalABCCompiler.TreeConverter
 
                     if ((cnfn.name == compiler_string_consts.implicit_operator_name || cnfn.name == compiler_string_consts.explicit_operator_name))
                     {
+                        if (cnfn.parameters.Count != 1)
+                            AddError(new SimpleSemanticError(cnfn.loc,"EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER"));
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cnfn.ConnectedToType) && !convertion_data_and_alghoritms.eq_type_nodes(cnfn.ConnectedToType as type_node, cnfn.parameters[0].type))
                         {
                             AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cnfn.ConnectedToType as type_node).PrintableName);
