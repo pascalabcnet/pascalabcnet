@@ -994,16 +994,17 @@ namespace PascalABCCompiler.NetHelper
             return new List<MethodInfo>().ToArray();
         }
 
-        private static compiled_function_node get_conversion(compiled_type_node in_type,compiled_type_node from,
-            compiled_type_node to,string op_name)
+        private static function_node get_conversion(compiled_type_node in_type,compiled_type_node from,
+            compiled_type_node to,string op_name, NetTypeScope scope)
         {
-            MethodInfo[] mia = in_type.compiled_type.GetMethods();
-            foreach (MethodInfo mi in mia)
+            //MethodInfo[] mia = in_type.compiled_type.GetMethods();
+            List<MemberInfo> mia = GetMembers(in_type.compiled_type, op_name);
+           
+            foreach (MemberInfo mbi in mia)
             {
-                if (mi.Name != op_name)
-                {
+                if (!(mbi is MethodInfo))
                     continue;
-                }
+                MethodInfo mi = mbi as MethodInfo;
                 if (mi.ReturnType != to.compiled_type)
                 {
                     continue;
@@ -1019,32 +1020,35 @@ namespace PascalABCCompiler.NetHelper
                 }
                 return compiled_function_node.get_compiled_method(mi);
             }
+            if (scope != null)
+            {
+                SymbolInfo si = scope.FindOnlyInType(op_name, scope);
+                while (si != null)
+                {
+                    if (si.sym_info is common_namespace_function_node)
+                    {
+                        function_node fn = si.sym_info as function_node;
+                        if (fn.return_value_type == to && fn.parameters.Count == 1 && fn.parameters[0].type == from)
+                        {
+                            return fn;
+                        }
+                    }
+                    si = si.Next;
+                }
+            }
             return null;
-            /*Type[] arr = new Type[1];
-            arr[0] = from.compiled_type;
-            MethodInfo mi=in_type.compiled_type.GetMethod(op_name,arr);
-            if (mi == null)
-            {
-                return null;
-            }
-            if (mi.ReturnType != to.compiled_type)
-            {
-                return null;
-            }
-            return compiled_function_node.get_compiled_method(mi);
-            */
         }
 
-        public static compiled_function_node get_implicit_conversion(compiled_type_node in_type, compiled_type_node from,
-            compiled_type_node to)
+        public static function_node get_implicit_conversion(compiled_type_node in_type, compiled_type_node from,
+            compiled_type_node to, NetTypeScope scope)
         {
-            return get_conversion(in_type, from, to, compiler_string_consts.implicit_operator_name);
+            return get_conversion(in_type, from, to, compiler_string_consts.implicit_operator_name, scope);
         }
 
-        public static compiled_function_node get_explicit_conversion(compiled_type_node in_type, compiled_type_node from,
-            compiled_type_node to)
+        public static function_node get_explicit_conversion(compiled_type_node in_type, compiled_type_node from,
+            compiled_type_node to, NetTypeScope scope)
         {
-            return get_conversion(in_type, from, to, compiler_string_consts.explicit_operator_name);
+            return get_conversion(in_type, from, to, compiler_string_consts.explicit_operator_name, scope);
         }
 
         public static compiled_type_node get_array_type(compiled_type_node element_type)
