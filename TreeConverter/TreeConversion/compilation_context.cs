@@ -3041,39 +3041,6 @@ _cmn.types.AddElement(tctn);*/
                 si = _func_stack.top().scope.FindOnlyInScope(fn.name);
 				_func_stack.push(temp);
 			}
-			//SymbolInfo si=find_only_in_namespace(fn.name);
-
-			//И эта проверка наверно не нужна, но пусть пока повисит
-			//Тем более с ней, наверное, быстрее работает
-			//if (si.Next==null)
-			//{
-			//	return;
-			//}
-
-			//Тут я добавляю проверку: если это предописание, то все хорошо
-			/*if (si.Next.Next==null)
-			{
-				if (fnd.function_code==null)
-				{
-					
-				}
-			}*/
-
-			//Как я понимаю все должно работать правильно без следующего фрагмента
-			/*if (fn.is_overload==false)
-			{
-				//fnd - найденная функция
-				common_function_node fnd=null;
-				if (si.sym_info==fn)
-				{
-					fnd=(common_function_node)si.Next.sym_info;
-				}
-				else
-				{
-					fnd=(common_function_node)si.sym_info;
-				}
-				throw new FunctionMustBeWithOverloadDirective(fnd,fn);
-			}*/
             bool predef_find = false;
             SymbolInfo tmp_si = si;
             int overloads = 0;
@@ -3117,7 +3084,7 @@ _cmn.types.AddElement(tctn);*/
                     {
                         AddError(new FunctionMustBeWithOverloadDirective(compar, fn));
                     }
-                    if (convertion_data_and_alghoritms.function_eq_params(fn, compar, false))
+                    if (convertion_data_and_alghoritms.function_eq_params(fn, compar, false) && fn.is_extension_method == compar.is_extension_method)
                     {
                     	if (fn.IsOperator && (fn.name == compiler_string_consts.explicit_operator_name || fn.name == compiler_string_consts.implicit_operator_name))
                     	{
