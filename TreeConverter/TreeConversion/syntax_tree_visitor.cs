@@ -11374,7 +11374,7 @@ namespace PascalABCCompiler.TreeConverter
                             type_node ptn = p.type;
                             if (ptn.is_generic_type_instance)
                                 ptn = ptn.original_generic;
-                            if (ptn == cnfn.ConnectedToType || ptn == cnfn.ConnectedToType.original_generic)
+                            if (cnfn.ConnectedToType != null && (ptn == cnfn.ConnectedToType || ptn == cnfn.ConnectedToType.original_generic))
                                 has_types = true;
                         }
                         if (cnfn.ConnectedToType == null)
