@@ -16102,7 +16102,7 @@ namespace PascalABCCompiler.TreeConverter
         public List<type_node> visit_type_list_with_check(List<SyntaxTree.type_definition> types, List<generic_parameter_eliminations> gpe_list, bool where_checking)
         {
             List<type_node> tparams = new List<type_node>();
-            foreach (SyntaxTree.named_type_reference id in types)
+            foreach (SyntaxTree.type_definition id in types)
             {
                 type_node tn = ret.visit(id);
                 CompilationErrorWithLocation not_useful = generic_parameter_eliminations.check_type_generic_useful(tn, get_location(id));
