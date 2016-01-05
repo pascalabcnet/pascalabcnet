@@ -1598,6 +1598,8 @@ function FormatValue(value: object; NumOfChars: integer): string;
 ///--
 function FormatValue(value: integer; NumOfChars: integer): string;
 ///--
+function FormatValue(value: int64; NumOfChars: integer): string;
+///--
 function FormatValue(value: real; NumOfChars: integer): string;
 ///--
 function FormatValue(value: real; NumOfChars, NumOfSignesAfterDot: integer): string;
@@ -7408,6 +7410,12 @@ begin
 end;
 
 function FormatValue(value: integer; NumOfChars: integer): string;
+begin
+  Result := value.ToString;
+  Result := Result.PadLeft(NumOfChars);
+end;
+
+function FormatValue(value: int64; NumOfChars: integer): string;
 begin
   Result := value.ToString;
   Result := Result.PadLeft(NumOfChars);
