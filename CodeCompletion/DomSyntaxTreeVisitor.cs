@@ -4078,8 +4078,16 @@ namespace CodeCompletion
         {
             template_type_reference ttr = new template_type_reference();
             List<ident> names = new List<ident>();
-            names.Add(new ident("System"));
-            names.Add(new ident("Func"));
+            if (_modern_proc_type.res != null)
+            {
+                names.Add(new ident("System"));
+                names.Add(new ident("Func"));
+            }
+            else
+            {
+                names.Add(new ident("System"));
+                names.Add(new ident("Action"));
+            }
             ttr.name = new named_type_reference(names);
             ttr.source_context = _modern_proc_type.source_context;
             ttr.params_list = new template_param_list();
@@ -4091,6 +4099,7 @@ namespace CodeCompletion
             }
             else
             {
+                if (_modern_proc_type.el != null)
                 foreach (enumerator en in _modern_proc_type.el.enumerators)
                 {
                     ttr.params_list.params_list.Add(new named_type_reference(en.name.name));
