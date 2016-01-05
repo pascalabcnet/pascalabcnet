@@ -96,6 +96,7 @@
     File ..\bin\Lib\Collections.pcu
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
+    File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
@@ -139,6 +140,7 @@
     ${AddFile} "Collections.pcu"
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
+    ${AddFile} "ClientServer.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
