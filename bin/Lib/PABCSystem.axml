@@ -1158,6 +1158,44 @@
             </OuterContext>
             <Items />
           </PointOfInterest>
+          <PointOfInterest>
+            <Name>Операции над последовательностями</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function System.Collections.Generic.IEnumerable&lt;T&gt;.operator+(a,b: sequence of T): sequence of T;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>.</string>
+                <string>IEnumerable</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>.</string>
+                <string>operator</string>
+                <string>+</string>
+                <string>(</string>
+                <string>a</string>
+                <string>,</string>
+                <string>b</string>
+                <string>:</string>
+                <string>sequence</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>sequence</string>
+                <string>of</string>
+                <string>T</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
         </Items>
       </PointOfInterest>
       <PointOfInterest>
