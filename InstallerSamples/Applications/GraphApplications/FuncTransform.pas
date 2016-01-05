@@ -9,6 +9,10 @@ var
   dx := 0.0;
   f: real -> real := x -> x * sin(x);
 
+const
+  boundx = 5;
+  boundy = 3;
+
 function Transform(f: real -> real): real -> real;
 begin
   Result := x -> my * f(mx * (x + dx)) + dy;
@@ -16,7 +20,7 @@ end;
 
 procedure DrawGraphic(f: real -> real);
 begin
-  Draw(f, -5, 5, -3, 3); 
+  Draw(f, -boundx, boundx, -boundy, boundy); 
   Window.Title := Format('mx={0:f2}  my={1:f2}  dx={2:f2}  dy={3:f2}', mx, my, dx, dy);
   Redraw;
 end;

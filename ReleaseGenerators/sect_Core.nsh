@@ -185,6 +185,7 @@
     File ..\bin\Lib\Collections.pas
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
+    File ..\bin\Lib\ClientServer.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -229,6 +230,7 @@
     ${AddFile} "Collections.pas"
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
+    ${AddFile} "ClientServer.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

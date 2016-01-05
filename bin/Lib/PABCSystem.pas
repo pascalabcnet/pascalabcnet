@@ -1155,11 +1155,11 @@ function Power(x, y: integer): real;
 function Power(x: BigInteger; y: integer): BigInteger;
 /// Возвращает x, округленное до ближайшего целого
 function Round(x: real): integer;
-/// Возвращает x, округленное до ближайшего большого целого
+/// Возвращает x, округленное до ближайшего длинного целого
 function RoundBigInteger(x: real): BigInteger;
 /// Возвращает целую часть вещественного числа x
 function Trunc(x: real): integer;
-/// Возвращает целую часть вещественного числа x как BigInteger
+/// Возвращает целую часть вещественного числа x как длинное целое
 function TruncBigInteger(x: real): BigInteger;
 /// Возвращает целую часть числа x
 function Int(x: real): real;
@@ -6109,6 +6109,23 @@ begin
   Result := Math.Sqrt(x);
 end;
 
+/// Возвращает квадратный корень числа
+function Sqrt(Self: real): real; extensionmethod;
+begin
+  Result := Sqrt(Self);
+end;
+
+/// Возвращает квадратный корень числа
+function Sqrt(Self: integer): real; extensionmethod;
+begin
+  Result := Sqrt(Self);
+end;
+
+function Sqrt(Self: BigInteger): real; extensionmethod;
+begin
+  Result := Sqrt(real(Self));
+end;
+
 function Sqr(x: integer): int64;
 begin
   Result := x * x;
@@ -6159,9 +6176,21 @@ begin
   Result := Convert.ToInt32(Math.Round(x));
 end;
 
+/// Возвращает число, округленное до ближайшего целого
+function Round(Self: real): integer; extensionmethod;
+begin
+  Result := Round(Self);
+end;
+
 function RoundBigInteger(x: real): BigInteger;
 begin
   Result := BigInteger.Create(Math.Round(x));
+end;
+
+/// Возвращает число, округленное до ближайшего длинного целого
+function RoundBigInteger(Self: real): BigInteger; extensionmethod;
+begin
+  Result := RoundBigInteger(Self);
 end;
 
 function Trunc(x: real): integer;
@@ -6169,9 +6198,21 @@ begin
   Result := Convert.ToInt32(Math.Truncate(x));
 end;
 
+/// Возвращает целую часть вещественного числа
+function Trunc(Self: real): integer; extensionmethod;
+begin
+  Result := Trunc(Self);
+end;
+
 function TruncBigInteger(x: real): BigInteger;
 begin
   Result := BigInteger.Create(Math.Truncate(x));
+end;
+
+/// Возвращает целую часть вещественного числа как длинное целое
+function TruncBigInteger(Self: real): BigInteger; extensionmethod;
+begin
+  Result := TruncBigInteger(Self);
 end;
 
 function Int(x: real): real;

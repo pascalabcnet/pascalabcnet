@@ -582,6 +582,10 @@ function ClientRectangle: System.Drawing.Rectangle;
 //------------------------------------------
 /// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
+procedure Draw(f: real -> real; a,b,min,max: real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
+procedure Draw(f: real -> real; a,b,min,max: real);
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
 /// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
@@ -3490,32 +3494,100 @@ begin
 end;
 
 type FS = auto class
-  mx,my,a,max: real;
-  x0,y0: integer;
+  mx,my,a,min,max: real;
+  x1,y1: integer;
   f: real -> real;
 
   function Apply(x: real): Point;
   begin
-    Result := Pnt(x0+Round(mx*(x-a)),y0+Round(my*(max-f(x))));
+    Result := Pnt(x1+Round(mx*(x-a)),y1+Round(my*(max-f(x))));
   end;
+  
+  function RealToScreenX(x: real): integer := Round(x1 + mx * (x-a));
+
+  function RealToScreenY(y: real): integer := Round(y1 - my * (y+min));
 end;
 
 procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
 begin
+  var coefx := (x2-x1)/(b-a);
+  var coefy := (y2-y1)/(max-min);
+  
+  Pen.Color := Color.Black;
   Rectangle(x1,y1,x2+1,y2+1);
+
+  var fso := new FS(coefx,coefy,a,min,max,x1,y1,f);
+
+  // Линии 
+  {Pen.Color := Color.LightGray;
+
+  var hx := 1.0;
+  var xx := hx;
+  while xx<b do
+  begin
+    var x0 := fso.RealToScreenX(xx);
+    Line(x0,y1,x0,y2);
+    xx += hx
+  end;
+
+  xx := -hx;
+  while xx>a do
+  begin
+    var x0 := fso.RealToScreenX(xx);
+    Line(x0,y1,x0,y2);
+    xx -= hx
+  end;
+  
+  var hy := 1.0;
+  var yy := hy;
+  while yy<max do
+  begin
+    var y0 := fso.RealToScreenY(yy);
+    Line(x1,y0,x2,y0);
+    yy += hy
+  end;
+
+  yy := -hy;
+  while yy>min do
+  begin
+    var y0 := fso.RealToScreenY(yy);
+    Line(x1,y0,x2,y0);
+    yy -= hy
+  end;
+
+  // Оси 
+  Pen.Color := Color.Blue;
+
+  var x0 := fso.RealToScreenX(0);
+  var y0 := fso.RealToScreenY(0);
+  
+  Line(x0,y1,x0,y2);
+  Line(x1,y0,x2,y0);}
+
+  // График
+
+  Pen.Color := Color.Black;
   var n := (x2-x1) div 3;
-  var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
-  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+  Polyline(Range(a,b,n).Select(fso.Apply).ToArray);
+end;
+
+procedure Draw(f: real -> real; a,b,min,max: real; r: System.Drawing.Rectangle);
+var x1 := r.X; y1 := r.Y;
+    x2 := r.X+r.Width-1;
+    y2 := r.Y+r.Height-1;
+begin
+  Draw(f,a,b,min,max,x1,y1,x2,y2);  
+end;
+
+procedure Draw(f: real -> real; a,b,min,max: real);
+begin
+  Draw(f,a,b,min,max,ClientRectangle);
 end;
 
 procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
 begin
-  Rectangle(x1,y1,x2+1,y2+1);
   var n := (x2-x1) div 3;
-  var min := Range(a,b,n).Min(f);
-  var max := Range(a,b,n).Max(f);
-  var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
-  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+  Draw(f,a,b,Range(a,b,n).Min(f),Range(a,b,n).Max(f),x1,y1,x2,y2)
 end;
 
 procedure Draw(f: real -> real; a,b: real; r: System.Drawing.Rectangle);
