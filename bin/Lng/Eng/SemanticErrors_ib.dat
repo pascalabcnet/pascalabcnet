@@ -111,3 +111,4 @@ PARAMETER_REFERENCE_IN_DEFAULT_PARAMETER_NOT_ALLOWED=Parameter references in def
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
+INVALID_ASSEMBLY_PATH=Assembly path has invalid characters
