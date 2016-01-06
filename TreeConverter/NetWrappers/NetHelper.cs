@@ -505,11 +505,9 @@ namespace PascalABCCompiler.NetHelper
                                         List<MethodInfo> mths = null;
                                         List<MethodInfo> mths2 = null;
                                         Type tmp = prms[0].ParameterType;
-                                        bool generic_type = false;
                                         if (tmp.IsGenericType)
                                         {
                                             tmp = tmp.GetGenericTypeDefinition();
-                                            generic_type = true;
                                         }
                                         if (!type_extensions.TryGetValue(tmp, out mths))
                                         {
@@ -1145,7 +1143,6 @@ namespace PascalABCCompiler.NetHelper
                 }
                 //(ssyy) DarkStar, что за предупреждение по следующей строке?
 				var ht = new Dictionary<string,List<MemberInfo>>(StringComparer.CurrentCultureIgnoreCase);
-                List<MemberInfo> memb_lst = null;
                 //(ssyy) DarkStar, может быть эффективнее слить следующие 2 цикла в один?
                 foreach (MemberInfo mi2 in mis)
                 {

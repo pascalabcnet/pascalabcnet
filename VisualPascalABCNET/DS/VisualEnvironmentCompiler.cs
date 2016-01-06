@@ -134,10 +134,6 @@ namespace VisualPascalABC
             //даем команду на завершение и ждем завершения
             StartingThread.Join();
         }
-		
-        private AppDomain ad = null;
-        private System.Reflection.Assembly comp_assm=null;
-        private PascalABCCompiler.Compiler rem_comp;
         
         private void CreateCompiler()
         {
@@ -532,11 +528,6 @@ namespace VisualPascalABC
                 if (defaultCompilerType == PascalABCCompiler.CompilerType.Remote && remoteCompiler == null)
                 {
                     LoadRemoteCompiler();
-                }
-                else
-                {
-                    //remoteCompiler.Free();
-                    //remoteCompiler = null;
                 }
             }
         }

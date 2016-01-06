@@ -400,15 +400,6 @@ namespace PascalABCCompiler.SystemLibrary
         private static basic_function_node _ulong_shr;
 
         //float
-        private static basic_function_node _float_to_byte;
-        private static basic_function_node _float_to_sbyte;
-        private static basic_function_node _float_to_short;
-        private static basic_function_node _float_to_ushort;
-        private static basic_function_node _float_to_int;
-        private static basic_function_node _float_to_uint;
-        private static basic_function_node _float_to_long;
-        private static basic_function_node _float_to_ulong;
-        private static basic_function_node _float_to_char;
         private static basic_function_node _float_to_double;
         private static basic_function_node _float_assign;
         private static basic_function_node _float_unmin;
@@ -4742,77 +4733,7 @@ namespace PascalABCCompiler.SystemLibrary
         
 
         //float
-        public static function_node float_to_byte
-        {
-            get
-            {
-                return _float_to_byte;
-            }
-        }
-
-        public static function_node float_to_sbyte
-        {
-            get
-            {
-                return _float_to_sbyte;
-            }
-        }
-
-        public static function_node float_to_short
-        {
-            get
-            {
-                return _float_to_short;
-            }
-        }
-
-        public static function_node float_to_ushort
-        {
-            get
-            {
-                return _float_to_ushort;
-            }
-        }
-
-        public static function_node float_to_int_bfn
-        {
-            get
-            {
-                return _float_to_int;
-            }
-        }
-
-        public static function_node float_to_uint
-        {
-            get
-            {
-                return _float_to_uint;
-            }
-        }
-
-        public static function_node float_to_long
-        {
-            get
-            {
-                return _float_to_long;
-            }
-        }
-
-        public static function_node float_to_ulong
-        {
-            get
-            {
-                return _float_to_ulong;
-            }
-        }
-
-        public static function_node float_to_char
-        {
-            get
-            {
-                return _float_to_char;
-            }
-        }
+        
 
         public static function_node float_to_double
         {

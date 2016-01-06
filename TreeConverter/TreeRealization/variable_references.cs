@@ -86,7 +86,6 @@ namespace PascalABCCompiler.TreeRealization
     public class local_block_variable_reference : variable_reference, SemanticTree.ILocalBlockVariableReferenceNode
     {
         private local_block_variable _var;
-        private int _static_depth;
 
         public local_block_variable_reference(local_block_variable var, location loc)
             : base(var.type, loc)

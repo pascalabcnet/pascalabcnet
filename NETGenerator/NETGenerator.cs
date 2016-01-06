@@ -2330,13 +2330,11 @@ namespace PascalABCCompiler.NETGenerator
             num_scope++; //увеличиваем глубину обл. видимости
             TypeBuilder tb = null, tmp_type = cur_type;
             Frame frm = null;
-            bool nested = false;
 
             //func.functions_nodes.Length > 0 - имеет вложенные
             //funcs.Count > 0 - сама вложенная
             if (func.functions_nodes.Length > 0 || funcs.Count > 0)
             {
-                nested = true;
                 frm = MakeAuxType(func);//создаем запись активации
                 tb = frm.tb;
                 cur_type = tb;
@@ -6633,7 +6631,6 @@ namespace PascalABCCompiler.NETGenerator
             MethInfo mi = null;
             mi = helper.AddConstructor(value, cnstr);
             mi.num_scope = num_scope + 1;
-            ParameterBuilder pb = null;
             if (save_debug_info)
             {
                 if (value.function_code is IStatementsListNode)
@@ -7053,7 +7050,6 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             is_dot_expr = false;
             bool is_comp_gen = false;
-            bool need_fee = false;
             IParameterNode[] parameters = value.static_method.parameters;
             for (int i = 0; i < real_parameters.Length; i++)
             {
@@ -7075,7 +7071,6 @@ namespace PascalABCCompiler.NETGenerator
                     is_dot_expr = true;
                 is_comp_gen = CheckForCompilerGenerated(real_parameters[i]);
                 //if (save_debug_info) MarkSequencePoint(il, 0xFeeFee, 1, 0xFeeFee, 1);
-                need_fee = true;
                 //вызов фактического параметра
                 real_parameters[i].visit(this);
 
@@ -7280,7 +7275,6 @@ namespace PascalABCCompiler.NETGenerator
                 }
             }
             bool is_comp_gen = false;
-            bool need_fee = false;
             IParameterNode[] parameters = value.common_function.parameters;
             for (int i = 0; i < real_parameters.Length; i++)
             {
@@ -7301,7 +7295,6 @@ namespace PascalABCCompiler.NETGenerator
                 if (ti.clone_meth != null && ti.tp != null && ti.tp.IsValueType && !box_awaited && !parameters[i].is_const)
                     is_dot_expr = true;
                 is_comp_gen = CheckForCompilerGenerated(real_parameters[i]);
-                if (is_comp_gen) need_fee = true;
                 real_parameters[i].visit(this);
                 is_dot_expr = false;
                 CallCloneIfNeed(il, parameters[i], real_parameters[i]);
@@ -7561,7 +7554,6 @@ namespace PascalABCCompiler.NETGenerator
             bool tmp_dot = is_dot_expr;
             is_dot_expr = false;
             bool is_comp_gen = false;
-            bool need_fee = false;
             MethodInfo mi = meth.mi;
             IParameterNode[] parameters = value.namespace_function.parameters;
             for (int i = 0; i < real_parameters.Length; i++)
@@ -7587,7 +7579,6 @@ namespace PascalABCCompiler.NETGenerator
                 }
                 //if (is_comp_gen == false)
                 is_comp_gen = CheckForCompilerGenerated(real_parameters[i]);
-                if (is_comp_gen) need_fee = true;
                 real_parameters[i].visit(this);
                 is_dot_expr = false;
                 CallCloneIfNeed(il, parameters[i], real_parameters[i]);
@@ -9840,7 +9831,6 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
                 elem_type = ti.tp.GetElementType();
-            MethodInfo get_meth = null;
             MethodInfo addr_meth = null;
             if (indices == null)
             {

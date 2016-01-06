@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("VBNETParser")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

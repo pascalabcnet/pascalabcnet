@@ -104,33 +104,6 @@ namespace VisualPascalABC
 				else if (pos.end_line != lineNumber+1 && pos.column <= columnNumber+1) return true;
 				else if (pos.line != lineNumber+1 && pos.end_column >= columnNumber+1) return true;
 				return false;
-				/*if (!isInCurrentPart)
-					return false;
-				IClass classItem = item as IClass;
-				if (classItem != null) {
-					if (classItem.Region.IsEmpty)
-						return false;
-					return classItem.Region.BeginLine - 1 <= lineNumber &&
-						classItem.Region.EndLine - 1 >= lineNumber;
-				}
-				
-				IMember member = item as IMember;
-				if (member == null || member.Region.IsEmpty) {
-					return false;
-				}
-				bool isInside = member.Region.BeginLine - 1 <= lineNumber;
-				
-				if (member is IMethodOrProperty) {
-					if (((IMethodOrProperty)member).BodyRegion.EndLine >= 0) {
-						isInside &= lineNumber <= ((IMethodOrProperty)member).BodyRegion.EndLine - 1;
-					} else {
-						return member.Region.BeginLine - 1 == lineNumber;
-					}
-				} else {
-					isInside &= lineNumber <= member.Region.EndLine - 1;
-				}
-				return isInside;*/
-				return false;
 			}
 			
 			public int CompareItemTo(object obj)

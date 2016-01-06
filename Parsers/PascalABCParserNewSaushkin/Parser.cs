@@ -107,7 +107,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         //public Preprocessor2.Preprocessor2 preprocessor2 = new PascalABCCompiler.Preprocessor2.Preprocessor2(null);
 
         public PascalABCNewLanguageParser()
-            : base("PascalABC.NET", "1.2", "(c) Mikhalkovich S.S., Saushkin R., 2012-13", false, new string[] { ".pas" })
+            : base("PascalABC.NET", "1.2", "Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich", false, new string[] { ".pas" })
         {
         }
 

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ExtendedCompilerInformation")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("DSS")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ExtendedCompilerInformation")]
-[assembly: AssemblyCopyright("Copyright © DSS 2006")]
+[assembly: AssemblyCopyright("Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

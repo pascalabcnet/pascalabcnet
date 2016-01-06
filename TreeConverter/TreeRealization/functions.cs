@@ -1324,8 +1324,6 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        private bool _last_result_function_call;
-
         //\ssyy
 
         private function_node _overrided_method;
