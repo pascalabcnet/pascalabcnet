@@ -1,4 +1,0 @@
-uses robot;
-
-begin
-end.
