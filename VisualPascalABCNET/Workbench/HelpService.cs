@@ -75,8 +75,8 @@ namespace VisualPascalABC
 
         private bool isDotNetItem(string s, ref Position position)
         {
-            if (!File.Exists(DotNetHelpFileName))
-                return false;
+            /*if (!File.Exists(DotNetHelpFileName))
+                return false;*/
             switch (s.ToLower())
             {
                 case "integer":
