@@ -1045,15 +1045,6 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Extension methods for BigInteger</Name>
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension methods for BigInteger</Text>
-            <OuterContext>
-              <OuterContextItem Type="PAS_TreeNode" />
-            </OuterContext>
-            <Items />
-          </PointOfInterest>
-          <PointOfInterest>
             <Name>Extension methods for IEnumerable&lt;T&gt;</Name>
             <FileName>\PABCSystem.pas</FileName>
             <Text>// Extension methods for IEnumerable&lt;T&gt;</Text>
@@ -1134,27 +1125,27 @@
           <PointOfInterest>
             <Name>Операции с BigInteger</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger);</Text>
+            <Text>function BigInteger.operator&gt;(p: BigInteger; q: integer): boolean;</Text>
             <OuterContext>
               <OuterContextItem Type="Method">
-                <string>procedure</string>
+                <string>function</string>
                 <string>BigInteger</string>
                 <string>.</string>
                 <string>operator</string>
-                <string>+</string>
-                <string>=</string>
+                <string>&gt;</string>
                 <string>(</string>
-                <string>var</string>
                 <string>p</string>
                 <string>:</string>
                 <string>BigInteger</string>
                 <string>;</string>
                 <string>q</string>
                 <string>:</string>
-                <string>BigInteger</string>
+                <string>integer</string>
                 <string>)</string>
+                <string>:</string>
+                <string>boolean</string>
               </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
             <Items />
           </PointOfInterest>
@@ -1191,6 +1182,77 @@
                 <string>sequence</string>
                 <string>of</string>
                 <string>T</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Операции для List&lt;T&gt;, Dictionary&lt;T&gt; и т.д.</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function List&lt;T&gt;.operator+=(var Self: List&lt;T&gt;; x: T): List&lt;T&gt;;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>List</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>.</string>
+                <string>operator</string>
+                <string>+</string>
+                <string>=</string>
+                <string>(</string>
+                <string>var</string>
+                <string>Self</string>
+                <string>:</string>
+                <string>List</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>;</string>
+                <string>x</string>
+                <string>:</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>List</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Операции для HashSet</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function HashSet&lt;T&gt;.operator in(x: T; Self: HashSet&lt;T&gt;): boolean;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>HashSet</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>.</string>
+                <string>operator</string>
+                <string>in</string>
+                <string>(</string>
+                <string>x</string>
+                <string>:</string>
+                <string>T</string>
+                <string>;</string>
+                <string>Self</string>
+                <string>:</string>
+                <string>HashSet</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>)</string>
+                <string>:</string>
+                <string>boolean</string>
               </OuterContextItem>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>

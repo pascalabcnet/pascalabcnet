@@ -113,11 +113,20 @@ type
   /// Представляет базовый класс для реализации интерфейса IComparer
   Comparer<T> = System.Collections.Generic.Comparer<T>;
   
-  /// Представляет множество значений
+  /// Представляет множество значений, реализованное на базе хеш-таблицы
   HashSet<T> = System.Collections.Generic.HashSet<T>;
   
+  /// Представляет множество значений, реализованное на базе бинарного дерева поиска
+  SortedSet<T> = System.Collections.Generic.SortedSet<T>;
+
   /// Представляет ассоциативный массив (набор пар Ключ-Значение), реализованный на базе хеш-таблицы
   Dictionary<Key,Value> = System.Collections.Generic.Dictionary<Key,Value>;
+  
+  /// Представляет ассоциативный массив, реализованный на базе бинарного дерева поиска
+  SortedDictionary<Key,Value> = System.Collections.Generic.SortedDictionary<Key,Value>;
+  
+  /// Представляет ассоциативный массив (набор пар ключ-значение), реализованный на базе динамического массива пар
+  SortedList<Key,Value> = System.Collections.Generic.SortedList<Key,Value>;
   
   /// Представляет пару Ключ-Значение для ассоциативного массива 
   KeyValuePair<Key,Value> = System.Collections.Generic.KeyValuePair<Key,Value>;
@@ -130,14 +139,6 @@ type
   
   /// Представляет очередь - набор элементов, реализованных по принципу "первый вошел-первый вышел"
   Queue<T> = System.Collections.Generic.Queue<T>;
-  
-  /// Представляет ассоциативный массив, реализованный на базе бинарного дерева поиска
-  SortedDictionary<Key,Value> = System.Collections.Generic.SortedDictionary<Key,Value>;
-  
-  /// Представляет ассоциативный массив (набор пар ключ-значение), реализованный на базе динамического массива пар
-  SortedList<T> = System.Collections.Generic.SortedList<T>;
-  
-  SortedSet<T> = System.Collections.Generic.SortedSet<T>;
   
   /// Представляет стек - набор элементов, реализованных по принципу "последний вошел-первый вышел"
   Stack<T> = System.Collections.Generic.Stack<T>;
@@ -2979,9 +2980,76 @@ begin
   left := sb.ToString;
 end;
 
+//------------------------------------------------------------------------------
+// Операции для List<T>, Dictionary<T> 
+//------------------------------------------------------------------------------
+
+/// Объединяет два массива
+function operator+<T>(a, b: array of T): array of T; extensionmethod;
+begin
+  Result := new T[a.Length+b.Length];
+  a.CopyTo(Result,0);
+  b.CopyTo(Result,a.Length);
+end;
+
+function List<T>.operator+=(var Self: List<T>; x: T): List<T>;
+begin
+  Self.Add(x);
+  Result := Self;
+end;
+
+{function operator in<T>(x: T; Self: List<T>): boolean; extensionmethod;
+begin
+  Result := Self.Contains(x);
+end;}
+
+function List<T>.operator in(x: T; Self: List<T>): boolean;
+begin
+  Result := Self.Contains(x);
+end;
+
+function HashSet<T>.operator in(x: T; Self: HashSet<T>): boolean;
+begin
+  Result := Self.Contains(x);
+end;
+
+function HashSet<T>.operator=(x,y: HashSet<T>): boolean;
+begin
+  Result := x.SetEquals(y)
+end;
+
+function HashSet<T>.operator<>(x,y: HashSet<T>): boolean;
+begin
+  Result := not x.SetEquals(y)
+end;
+
+function SortedSet<T>.operator in(x: T; Self: SortedSet<T>): boolean;
+begin
+  Result := Self.Contains(x);
+end;
+
+function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
+begin
+  Result := a.Contains(x);
+end;
+
+function Dictionary<K,V>.operator in(key: K; d: Dictionary<K,V>): boolean;
+begin
+  Result := d.ContainsKey(key);
+end;
+
+function SortedDictionary<K,V>.operator in(key: K; d: SortedDictionary<K,V>): boolean;
+begin
+  Result := d.ContainsKey(key);
+end;
+
+function SortedList<K,V>.operator in(key: K; d: SortedList<K,V>): boolean;
+begin
+  Result := d.ContainsKey(key);
+end;
 
 //------------------------------------------------------------------------------
-// Extension methods for BigInteger
+// Операции для BigInteger
 //------------------------------------------------------------------------------
 function BigInteger.operator>(p: BigInteger; q: integer): boolean;
 begin
@@ -3184,14 +3252,6 @@ end;
 function System.Collections.Generic.IEnumerable<T>.operator*(n: integer; a: sequence of T): sequence of T;
 begin
   Result := a*n;
-end;
-
-/// Объединяет два массива
-function operator+<T>(a, b: array of T): array of T; extensionmethod;
-begin
-  Result := new T[a.Length+b.Length];
-  a.CopyTo(Result,0);
-  b.CopyTo(Result,a.Length);
 end;
 
 // -----------------------------------------------------
