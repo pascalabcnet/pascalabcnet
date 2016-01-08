@@ -3054,9 +3054,9 @@ begin
   Result := Self;
 end;
 
-function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
+function operator in<T>(x: T; self: array of T): boolean; extensionmethod;
 begin
-  Result := a.Contains(x);
+  Result := self.Contains(x);
 end;
 
 function Dictionary<K,V>.operator in(key: K; d: Dictionary<K,V>): boolean;

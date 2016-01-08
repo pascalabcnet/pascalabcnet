@@ -12076,6 +12076,11 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
                             top_function.ConnectedToType = context.top_function.parameters[0].type;
+                            if (context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word
+                                && context.top_function.parameters.Count == 2 && context.top_function.parameters[1].name.ToLower() == compiler_string_consts.self_word)
+                            {
+                                top_function.ConnectedToType = context.top_function.parameters[1].type;
+                            }
                             if (top_function.ConnectedToType.Scope == null && top_function.ConnectedToType is compiled_type_node)
                             {
                                 (top_function.ConnectedToType as compiled_type_node).init_scope();
