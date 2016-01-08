@@ -1226,7 +1226,7 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Операции для HashSet</Name>
+            <Name>Операции для HashSet, SortedSet</Name>
             <FileName>\PABCSystem.pas</FileName>
             <Text>function HashSet&lt;T&gt;.operator in(x: T; Self: HashSet&lt;T&gt;): boolean;</Text>
             <OuterContext>
@@ -1397,6 +1397,197 @@
                 <string>BigInteger</string>
               </OuterContextItem>
               <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+        </Items>
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>Короткие функции</Name>
+        <Items>
+          <PointOfInterest>
+            <Name>Arr</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Arr&lt;T&gt;(params a: array of T): array of T;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>Arr</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>a</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Seq</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Seq&lt;T&gt;(params a: array of T): sequence of T;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>Seq</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>a</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>sequence</string>
+                <string>of</string>
+                <string>T</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>HSet</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function HSet&lt;T&gt;(params a: array of T): HashSet&lt;T&gt;;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>HSet</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>a</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>HashSet</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>SSet</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SSet&lt;T&gt;(params a: array of T): HashSet&lt;T&gt;;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>SSet</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>a</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>T</string>
+                <string>)</string>
+                <string>:</string>
+                <string>HashSet</string>
+                <string>&lt;</string>
+                <string>T</string>
+                <string>&gt;</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Dict</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Dict&lt;TKey, TVal&gt;(params pairs: array of KeyValuePair&lt;TKey, TVal&gt;): Dictionary&lt;TKey, TVal&gt;;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>Dict</string>
+                <string>&lt;</string>
+                <string>TKey</string>
+                <string>,</string>
+                <string>TVal</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>params</string>
+                <string>pairs</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>KeyValuePair</string>
+                <string>&lt;</string>
+                <string>TKey</string>
+                <string>,</string>
+                <string>TVal</string>
+                <string>&gt;</string>
+                <string>)</string>
+                <string>:</string>
+                <string>Dictionary</string>
+                <string>&lt;</string>
+                <string>TKey</string>
+                <string>,</string>
+                <string>TVal</string>
+                <string>&gt;</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>KV</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function KV&lt;TKey, TVal&gt;(key: TKey; value: TVal): KeyValuePair&lt;TKey, TVal&gt;;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>KV</string>
+                <string>&lt;</string>
+                <string>TKey</string>
+                <string>,</string>
+                <string>TVal</string>
+                <string>&gt;</string>
+                <string>(</string>
+                <string>key</string>
+                <string>:</string>
+                <string>TKey</string>
+                <string>;</string>
+                <string>value</string>
+                <string>:</string>
+                <string>TVal</string>
+                <string>)</string>
+                <string>:</string>
+                <string>KeyValuePair</string>
+                <string>&lt;</string>
+                <string>TKey</string>
+                <string>,</string>
+                <string>TVal</string>
+                <string>&gt;</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
             <Items />
           </PointOfInterest>

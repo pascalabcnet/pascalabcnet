@@ -1507,8 +1507,10 @@ function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of 
 function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
 /// Возвращает последовательность из n случайных вещественных элементов
 function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): sequence of real;
-/// Возвращает массив, заполненный указанными элементами
+/// Возвращает массив, заполненный указанными значениями
 function Arr<T>(params a: array of T): array of T;
+/// Возвращает массив, заполненный значениями из последовательнсти
+function Arr<T>(a: sequence of T): array of T;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
 /// Возвращает массив из count элементов, заполненных значениями f(i)
@@ -1583,12 +1585,24 @@ function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): Tuple<T1,T
 /// Возвращает кортеж из 6 элементов
 function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): Tuple<T1,T2,T3,T4,T5,T6>;
 // -----------------------------------------------------
-//                Dict
+//                Dict, SSet, HSet, Lst
 // -----------------------------------------------------
 
-/// Возвращает словарь пар элементов
+/// Возвращает список, заполненный указанными значениями
+function Lst<T>(params a: array of T): List<T>;
+/// Возвращает список, заполненное значениями из последовательности
+function Lst<T>(a: sequence of T): List<T>;
+/// Возвращает множество на базе хеш таблицы, заполненное указанными значениями
+function HSet<T>(params a: array of T): HashSet<T>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+function SSet<T>(params a: array of T): SortedSet<T>;
+/// Возвращает множество на базе хеш таблицы, заполненное значениями из последовательности
+function HSet<T>(a: sequence of T): HashSet<T>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+function SSet<T>(a: sequence of T): SortedSet<T>;
+/// Возвращает словарь пар элементов (ключ, значение)
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
-/// Возвращает пару элементов
+/// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 
 //------------------------------------------------------------------------------
@@ -2981,7 +2995,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-// Операции для List<T>, Dictionary<T> 
+// Операции для List<T>, Dictionary<T>
 //------------------------------------------------------------------------------
 
 /// Объединяет два массива
@@ -3013,7 +3027,13 @@ begin
   Result := Self.Contains(x);
 end;
 
-function HashSet<T>.operator=(x,y: HashSet<T>): boolean;
+function HashSet<T>.operator+=(var Self: HashSet<T>; x: T): HashSet<T>;
+begin
+  Self.Add(x);
+  Result := Self;
+end;
+
+{function HashSet<T>.operator=(x,y: HashSet<T>): boolean;
 begin
   Result := x.SetEquals(y)
 end;
@@ -3021,11 +3041,17 @@ end;
 function HashSet<T>.operator<>(x,y: HashSet<T>): boolean;
 begin
   Result := not x.SetEquals(y)
-end;
+end;}
 
 function SortedSet<T>.operator in(x: T; Self: SortedSet<T>): boolean;
 begin
   Result := Self.Contains(x);
+end;
+
+function SortedSet<T>.operator+=(var Self: SortedSet<T>; x: T): SortedSet<T>;
+begin
+  Self.Add(x);
+  Result := Self;
 end;
 
 function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
@@ -3342,6 +3368,11 @@ function Arr<T>(params a: array of T): array of T;
 begin
   Result := new T[a.Length];
   System.Array.Copy(a,Result,a.Length);
+end;
+
+function Arr<T>(a: sequence of T): array of T;
+begin
+  Result := a.ToArray;
 end;
 
 function Seq<T>(params a: array of T): sequence of T;
@@ -3672,6 +3703,16 @@ begin
     Result := default(Value);
 end;
 
+function Lst<T>(params a: array of T): List<T>;
+begin
+  Result := new List<T>(a);
+end;
+
+function Lst<T>(a: sequence of T): List<T>;
+begin
+  Result := new List<T>(a);
+end;
+
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 begin
   Result := new Dictionary<TKey, TVal>();
@@ -3682,6 +3723,26 @@ end;
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
+end;
+
+function HSet<T>(params a: array of T): HashSet<T>;
+begin
+  Result := new HashSet<T>(a);
+end;
+
+function SSet<T>(params a: array of T): SortedSet<T>;
+begin
+  Result := new SortedSet<T>(a);
+end;
+
+function HSet<T>(a: sequence of T): HashSet<T>;
+begin
+  Result := new HashSet<T>(a);
+end;
+
+function SSet<T>(a: sequence of T): SortedSet<T>;
+begin
+  Result := new SortedSet<T>(a);
 end;
 
 //------------------------------------------------------------------------------
