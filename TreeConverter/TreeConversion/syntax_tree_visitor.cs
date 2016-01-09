@@ -14107,7 +14107,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.indexer _indexer)
         {
             // SSM 09.01.16 Tuple t[i]
-            var ee = convert_strong(_indexer.dereferencing_value);
+            /*var ee = convert_strong(_indexer.dereferencing_value);
 
             var ent = ee.type as compiled_type_node;
 
@@ -14127,7 +14127,7 @@ namespace PascalABCCompiler.TreeConverter
                         return;
                     }
                 }
-            }
+            }*/
             // end SSM 09.01.16 Tuple t[i]
 
             //lroman

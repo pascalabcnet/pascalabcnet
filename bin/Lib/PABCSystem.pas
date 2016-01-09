@@ -3039,15 +3039,56 @@ begin
   Result := Self;
 end;
 
-{function HashSet<T>.operator=(x,y: HashSet<T>): boolean;
+function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod;
 begin
   Result := x.SetEquals(y)
 end;
 
-function HashSet<T>.operator<>(x,y: HashSet<T>): boolean;
+function operator<><T>(x,y: HashSet<T>): boolean; extensionmethod;
 begin
   Result := not x.SetEquals(y)
-end;}
+end;
+
+function operator-<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.ExceptWith(y);
+  Result := v;
+end;
+
+function operator+<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.UnionWith(y);
+  Result := v;
+end;
+
+function operator*<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.IntersectWith(y);
+  Result := v;
+end;
+
+function operator< <T>(x,y: HashSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsProperSubsetOf(y);
+end;
+
+function operator<= <T>(x,y: HashSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsSubsetOf(y);
+end;
+
+function operator> <T>(x,y: HashSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsProperSupersetOf(y);
+end;
+
+function operator>= <T>(x,y: HashSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsSupersetOf(y);
+end;
 
 function SortedSet<T>.operator in(x: T; Self: SortedSet<T>): boolean;
 begin
