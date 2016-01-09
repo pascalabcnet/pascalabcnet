@@ -3033,6 +3033,12 @@ begin
   Result := Self;
 end;
 
+function HashSet<T>.operator-=(var Self: HashSet<T>; x: T): HashSet<T>;
+begin
+  Self.Remove(x);
+  Result := Self;
+end;
+
 {function HashSet<T>.operator=(x,y: HashSet<T>): boolean;
 begin
   Result := x.SetEquals(y)
@@ -3051,6 +3057,12 @@ end;
 function SortedSet<T>.operator+=(var Self: SortedSet<T>; x: T): SortedSet<T>;
 begin
   Self.Add(x);
+  Result := Self;
+end;
+
+function SortedSet<T>.operator-=(var Self: SortedSet<T>; x: T): SortedSet<T>;
+begin
+  Self.Remove(x);
   Result := Self;
 end;
 

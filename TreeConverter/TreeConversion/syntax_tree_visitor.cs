@@ -14106,6 +14106,30 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.indexer _indexer)
         {
+            // SSM 09.01.16 Tuple t[i]
+            var ee = convert_strong(_indexer.dereferencing_value);
+
+            var ent = ee.type as compiled_type_node;
+
+            if (ent != null)
+            {
+                var t = ent.compiled_type;
+                if (t.FullName.StartsWith("System.Tuple"))
+                {
+                    expression eee = _indexer.indexes.expressions[0];
+                    var cn = convert_strong_to_constant_node(eee);
+                    var v = cn as int_const_node;
+
+                    if (v != null)
+                    {
+                        var dn = new dot_node(_indexer.dereferencing_value, new ident("Item" + (v.constant_value + 1).ToString(), eee.source_context));
+                        visit(dn);
+                        return;
+                    }
+                }
+            }
+            // end SSM 09.01.16 Tuple t[i]
+
             //lroman
             if (_indexer.dereferencing_value is closure_substituting_node)
             {
