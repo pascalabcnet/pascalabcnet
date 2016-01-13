@@ -26776,6 +26776,240 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class semantic_addr_value : addressed_value
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public semantic_addr_value()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_addr_value(Object _expr)
+		{
+			this._expr=_expr;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public semantic_addr_value(Object _expr,SourceContext sc)
+		{
+			this._expr=_expr;
+			source_context = sc;
+		}
+
+		protected Object _expr;
+
+		///<summary>
+		///
+		///</summary>
+		public Object expr
+		{
+			get
+			{
+				return _expr;
+			}
+			set
+			{
+				_expr=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pair_type_stlist : syntax_tree_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pair_type_stlist()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pair_type_stlist(type_definition _tn,statement_list _exprs)
+		{
+			this._tn=_tn;
+			this._exprs=_exprs;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pair_type_stlist(type_definition _tn,statement_list _exprs,SourceContext sc)
+		{
+			this._tn=_tn;
+			this._exprs=_exprs;
+			source_context = sc;
+		}
+
+		protected type_definition _tn;
+		protected statement_list _exprs;
+
+		///<summary>
+		///
+		///</summary>
+		public type_definition tn
+		{
+			get
+			{
+				return _tn;
+			}
+			set
+			{
+				_tn=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement_list exprs
+		{
+			get
+			{
+				return _exprs;
+			}
+			set
+			{
+				_exprs=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return tn;
+					case 1:
+						return exprs;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						tn = (type_definition)value;
+						break;
+					case 1:
+						exprs = (statement_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

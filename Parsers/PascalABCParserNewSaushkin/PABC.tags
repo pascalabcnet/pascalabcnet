@@ -21,7 +21,6 @@
     <name value="allowable_expr_as_stmt" />
     <name value="expr" />
     <name value="expr_l1" />
-    <name value="sizeof_expr" />
     <name value="typeof_expr" />
     <name value="question_expr" />
     <name value="new_expr" />
@@ -33,7 +32,6 @@
     <name value="default_expr" />
     <name value="factor" />
     <name value="literal_or_number" />
-    <name value="variable" />
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
@@ -196,7 +194,6 @@
     <name value="inclass_proc_func_decl_noclass" />
     <name value="simple_fp_sect" />
     <name value="func_decl_lambda" />
-    <name value="expl_func_decl_lambda" />
   </tag>
   <tag value="Операторы">
     <name value="stmt_or_expression" />
@@ -342,7 +339,6 @@
   </tag>
   <tag value="Лямбда-выражения">
     <name value="func_decl_lambda" />
-    <name value="expl_func_decl_lambda" />
     <name value="full_lambda_fp_list" />
     <name value="expr" />
     <name value="var_decl_part" />

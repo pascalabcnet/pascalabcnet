@@ -1222,6 +1222,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_template_operator_name">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(template_operator_name _template_operator_name);
+		///<summary>
+		///Method to visit semantic_addr_value.
+		///</summary>
+		///<param name="_semantic_addr_value">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(semantic_addr_value _semantic_addr_value);
+		///<summary>
+		///Method to visit pair_type_stlist.
+		///</summary>
+		///<param name="_pair_type_stlist">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pair_type_stlist _pair_type_stlist);
 	}
 
 

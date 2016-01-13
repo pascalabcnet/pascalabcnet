@@ -426,6 +426,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new yield_node();
 				case 202:
 					return new template_operator_name();
+				case 203:
+					return new semantic_addr_value();
+				case 204:
+					return new pair_type_stlist();
 			}
 			return null;
 		}
@@ -3606,6 +3610,31 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_template_type_name(_template_operator_name);
 			_template_operator_name.opname = _read_node() as operator_name_ident;
+		}
+
+
+		public void visit(semantic_addr_value _semantic_addr_value)
+		{
+			read_semantic_addr_value(_semantic_addr_value);
+		}
+
+		public void read_semantic_addr_value(semantic_addr_value _semantic_addr_value)
+		{
+			read_addressed_value(_semantic_addr_value);
+			_semantic_addr_value.expr = (Object)br.ReadByte();
+		}
+
+
+		public void visit(pair_type_stlist _pair_type_stlist)
+		{
+			read_pair_type_stlist(_pair_type_stlist);
+		}
+
+		public void read_pair_type_stlist(pair_type_stlist _pair_type_stlist)
+		{
+			read_syntax_tree_node(_pair_type_stlist);
+			_pair_type_stlist.tn = _read_node() as type_definition;
+			_pair_type_stlist.exprs = _read_node() as statement_list;
 		}
 
 	}

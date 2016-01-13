@@ -48,6 +48,8 @@ ONE_TKIDENTIFIER=Expected identefier
 ONE_OPERATOR=Expected operator
 ONE_STMT=Expected statement
 
+BAD_TUPLE=Badly formed Tuple
+
 DUPLICATE_NAMES_IN_ANON_TYPE=Duplicate field names in anonymous type
 BAD_ANON_TYPE=Bad field name in anonymous type
 ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=The alone typed parameter must be without parentheses
