@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 13.01.2016 21:22:18
+// DateTime: 13.01.2016 22:24:22
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -5372,6 +5372,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				if (ValueStack[ValueStack.Depth-3].stn != null)
 					parsertools.AddErrorFromResource("BAD_TUPLE",LocationStack[LocationStack.Depth-4]);
 				(ValueStack[ValueStack.Depth-5].stn as expression_list).expressions.Insert(0,ValueStack[ValueStack.Depth-7].ex);
+				if ((ValueStack[ValueStack.Depth-5].stn as expression_list).expressions.Count>7) 
+					parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",LocationStack[LocationStack.Depth-4]);
+				
 				CurrentSemanticValue.ex = new method_call(new dot_node("Tuple","Create"),ValueStack[ValueStack.Depth-5].stn as expression_list,CurrentLocationSpan);
 			}
 			else  // It is a lambda-expression. Expressions must be identifiers. 

@@ -3417,6 +3417,9 @@ func_decl_lambda
 				if ($6 != null)
 					parsertools.AddErrorFromResource("BAD_TUPLE",@5);
 				($4 as expression_list).expressions.Insert(0,$2);
+				if (($4 as expression_list).expressions.Count>7) 
+					parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
+				
 				$$ = new method_call(new dot_node("Tuple","Create"),$4 as expression_list,@$);
 			}
 			else  // It is a lambda-expression. Expressions must be identifiers. 
