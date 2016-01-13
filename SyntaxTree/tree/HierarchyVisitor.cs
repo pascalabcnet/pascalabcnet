@@ -1629,6 +1629,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(semantic_addr_value _semantic_addr_value)
+		{
+		}
+
+		public virtual void post_do_visit(semantic_addr_value _semantic_addr_value)
+		{
+		}
+
+		public virtual void pre_do_visit(pair_type_stlist _pair_type_stlist)
+		{
+		}
+
+		public virtual void post_do_visit(pair_type_stlist _pair_type_stlist)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3372,6 +3388,22 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_template_operator_name);
 			visit(template_operator_name.opname);
 			post_do_visit(_template_operator_name);
+		}
+
+		public override void visit(semantic_addr_value _semantic_addr_value)
+		{
+			DefaultVisit(_semantic_addr_value);
+			pre_do_visit(_semantic_addr_value);
+			post_do_visit(_semantic_addr_value);
+		}
+
+		public override void visit(pair_type_stlist _pair_type_stlist)
+		{
+			DefaultVisit(_pair_type_stlist);
+			pre_do_visit(_pair_type_stlist);
+			visit(pair_type_stlist.tn);
+			visit(pair_type_stlist.exprs);
+			post_do_visit(_pair_type_stlist);
 		}
 	}
 

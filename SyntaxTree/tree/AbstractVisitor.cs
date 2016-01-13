@@ -1022,6 +1022,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_template_operator_name);
 		}
+
+		public virtual void visit(semantic_addr_value _semantic_addr_value)
+		{
+			DefaultVisit(_semantic_addr_value);
+		}
+
+		public virtual void visit(pair_type_stlist _pair_type_stlist)
+		{
+			DefaultVisit(_pair_type_stlist);
+		}
 	}
 
 

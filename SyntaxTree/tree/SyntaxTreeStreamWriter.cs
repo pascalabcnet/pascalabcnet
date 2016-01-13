@@ -5670,6 +5670,49 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(semantic_addr_value _semantic_addr_value)
+		{
+			bw.Write((Int16)203);
+			write_semantic_addr_value(_semantic_addr_value);
+		}
+
+		public void write_semantic_addr_value(semantic_addr_value _semantic_addr_value)
+		{
+			write_addressed_value(_semantic_addr_value);
+			bw.Write((byte)_semantic_addr_value.expr);
+		}
+
+
+		public void visit(pair_type_stlist _pair_type_stlist)
+		{
+			bw.Write((Int16)204);
+			write_pair_type_stlist(_pair_type_stlist);
+		}
+
+		public void write_pair_type_stlist(pair_type_stlist _pair_type_stlist)
+		{
+			write_syntax_tree_node(_pair_type_stlist);
+			if (_pair_type_stlist.tn == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pair_type_stlist.tn.visit(this);
+			}
+			if (_pair_type_stlist.exprs == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pair_type_stlist.exprs.visit(this);
+			}
+		}
+
 	}
 
 

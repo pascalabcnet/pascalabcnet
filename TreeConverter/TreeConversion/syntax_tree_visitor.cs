@@ -13407,6 +13407,37 @@ namespace PascalABCCompiler.TreeConverter
             motivation mot, location loc)
         {
             try_convert_typed_expression_to_function_call(ref expr);
+
+            // SSM 10.01.16 Tuple t[i]
+            var ent = expr.type as compiled_type_node;
+
+            if (ent != null)
+            {
+                var t = ent.compiled_type;
+                if (t.FullName.StartsWith("System.Tuple"))
+                {
+                    expression eee = parameters.expressions[0];
+
+                    if (parameters.expressions.Count > 1)
+                        AddError(get_location(eee), "TUPLE_CAN_HAVE_ONLY_ONE_INDEX");
+
+                    var cn = convert_strong_to_constant_node(eee);
+
+                    var v = cn as int_const_node;
+
+                    if (v != null)
+                    {
+                        if (v.constant_value<0 || v.constant_value >= t.GetGenericArguments().Count())
+                            AddError(cn.location, "TUPLE_INDEX_OUT_OF_RANGE_{0}", t.GetGenericArguments().Count()-1);
+                        var dn = new dot_node(new semantic_addr_value(expr), new ident("Item" + (v.constant_value + 1).ToString(), eee.source_context),new SourceContext(loc.begin_line_num,loc.begin_column_num,loc.end_line_num,loc.end_column_num));
+                        visit(dn);
+                        return;
+                    }
+                    else AddError(cn.location, "TUPLE_INDEX_MUST_BE_INTEGER_CONSTANT");
+                }
+            }
+            // end SSM 09.01.16 Tuple t[i]
+
             if (expr.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
             {
                 internal_interface ii = expr.type.get_internal_interface(internal_interface_kind.unsized_array_interface);
@@ -13837,7 +13868,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.indexer _indexer)
         {
             // SSM 09.01.16 Tuple t[i]
-            /*var ee = convert_strong(_indexer.dereferencing_value);
+            /*var ee = convert_strong(_indexer.dereferencing_value);  // Это не работает - конкурирует со следующими вызовами. Нельзя такое вызывать дважды. Вообще, надо сделать функцию, которая возвращает по выражению тип
 
             var ent = ee.type as compiled_type_node;
 
@@ -18175,6 +18206,12 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.semantic_type_node stn)
         {
             return_value(stn.type as type_node);
+        }
+
+        // SSM 10.01.16 впервые для реализации Tuple - t[0]
+        public override void visit(SyntaxTree.semantic_addr_value sav)
+        {
+            return_value(sav.expr as expression_node);
         }
 
         public bool SameTypeAutoClasses(List<string> names, List<type_node> types, common_type_node t)
