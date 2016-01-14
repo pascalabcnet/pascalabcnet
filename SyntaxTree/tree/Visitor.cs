@@ -1234,6 +1234,18 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_pair_type_stlist">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(pair_type_stlist _pair_type_stlist);
+		///<summary>
+		///Method to visit assign_tuple.
+		///</summary>
+		///<param name="_assign_tuple">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(assign_tuple _assign_tuple);
+		///<summary>
+		///Method to visit addressed_value_list.
+		///</summary>
+		///<param name="_addressed_value_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(addressed_value_list _addressed_value_list);
 	}
 
 

@@ -1645,6 +1645,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(assign_tuple _assign_tuple)
+		{
+		}
+
+		public virtual void post_do_visit(assign_tuple _assign_tuple)
+		{
+		}
+
+		public virtual void pre_do_visit(addressed_value_list _addressed_value_list)
+		{
+		}
+
+		public virtual void post_do_visit(addressed_value_list _addressed_value_list)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3404,6 +3420,24 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(pair_type_stlist.tn);
 			visit(pair_type_stlist.exprs);
 			post_do_visit(_pair_type_stlist);
+		}
+
+		public override void visit(assign_tuple _assign_tuple)
+		{
+			DefaultVisit(_assign_tuple);
+			pre_do_visit(_assign_tuple);
+			visit(assign_tuple.vars);
+			visit(assign_tuple.expr);
+			post_do_visit(_assign_tuple);
+		}
+
+		public override void visit(addressed_value_list _addressed_value_list)
+		{
+			DefaultVisit(_addressed_value_list);
+			pre_do_visit(_addressed_value_list);
+			for (int i = 0; i < variables.Count; i++)
+				visit(addressed_value_list.variables[i]);
+			post_do_visit(_addressed_value_list);
 		}
 	}
 

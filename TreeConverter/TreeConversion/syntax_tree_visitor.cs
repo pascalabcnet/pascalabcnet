@@ -18634,6 +18634,36 @@ namespace PascalABCCompiler.TreeConverter
                 visit(ntr);
             }
         }
-    }
 
+        public override void visit(SyntaxTree.assign_tuple asstup)
+        {
+            // Проверить, что справа - Tuple
+            var expr = convert_strong(asstup.expr);
+            var ent = expr.type as compiled_type_node;
+
+            if (ent == null)
+                AddError(expr.location, "TUPLE_EXPECTED");
+            var t = ent.compiled_type;
+            if (!t.FullName.StartsWith("System.Tuple"))
+                AddError(expr.location, "TUPLE_EXPECTED");
+
+            var n = asstup.vars.variables.Count();
+            if (n > t.GetGenericArguments().Count())
+                AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+
+            var tname = "#temp_var"+UniqueNumStr();
+
+
+            var tt = new var_statement(new ident(tname),new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            //visit(tt);
+
+            var st = new statement_list(tt);
+            for (var i=0; i<n; i++)
+            {
+                var a = new assign(asstup.vars.variables[i],new dot_node(new ident(tname), new ident("Item" +(i+1).ToString())), Operators.Assignment, asstup.vars.variables[i].source_context);
+                st.Add(a);
+            }
+            visit(st);
+        }
+    }
 }

@@ -201,7 +201,6 @@
     <name value="unlabelled_stmt" />
     <name value="var_stmt" />
     <name value="assignment" />
-    <name value="proc_call" />
     <name value="goto_stmt" />
     <name value="compound_stmt" />
     <name value="if_stmt" />

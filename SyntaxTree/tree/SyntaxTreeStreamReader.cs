@@ -430,6 +430,10 @@ namespace PascalABCCompiler.SyntaxTree
 					return new semantic_addr_value();
 				case 204:
 					return new pair_type_stlist();
+				case 205:
+					return new assign_tuple();
+				case 206:
+					return new addressed_value_list();
 			}
 			return null;
 		}
@@ -3635,6 +3639,43 @@ namespace PascalABCCompiler.SyntaxTree
 			read_syntax_tree_node(_pair_type_stlist);
 			_pair_type_stlist.tn = _read_node() as type_definition;
 			_pair_type_stlist.exprs = _read_node() as statement_list;
+		}
+
+
+		public void visit(assign_tuple _assign_tuple)
+		{
+			read_assign_tuple(_assign_tuple);
+		}
+
+		public void read_assign_tuple(assign_tuple _assign_tuple)
+		{
+			read_statement(_assign_tuple);
+			_assign_tuple.vars = _read_node() as addressed_value_list;
+			_assign_tuple.expr = _read_node() as expression;
+		}
+
+
+		public void visit(addressed_value_list _addressed_value_list)
+		{
+			read_addressed_value_list(_addressed_value_list);
+		}
+
+		public void read_addressed_value_list(addressed_value_list _addressed_value_list)
+		{
+			read_syntax_tree_node(_addressed_value_list);
+			if (br.ReadByte() == 0)
+			{
+				_addressed_value_list.variables = null;
+			}
+			else
+			{
+				_addressed_value_list.variables = new List<addressed_value>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_addressed_value_list.variables.Add(_read_node() as addressed_value);
+				}
+			}
 		}
 
 	}

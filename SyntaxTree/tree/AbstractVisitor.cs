@@ -1032,6 +1032,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_pair_type_stlist);
 		}
+
+		public virtual void visit(assign_tuple _assign_tuple)
+		{
+			DefaultVisit(_assign_tuple);
+		}
+
+		public virtual void visit(addressed_value_list _addressed_value_list)
+		{
+			DefaultVisit(_addressed_value_list);
+		}
 	}
 
 

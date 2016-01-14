@@ -166,7 +166,7 @@
 %type <ex> func_decl_lambda expl_func_decl_lambda
 %type <td> lambda_type_ref lambda_type_ref_noproctype
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
-%type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda
+%type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list
 %type <ti> tkAssignOrEqual
 
 %%
@@ -1081,11 +1081,6 @@ template_identifier_with_equal
 type_decl_type
     : type_ref
 		{ $$ = $1; }
-    | tkType type_ref                                 
-        {
-			$$ = $2;
-			$$.source_context = @$;
-		}
     | object_type
 		{ $$ = $1; }
     ;
@@ -2283,8 +2278,29 @@ assignment
         {      
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
         }
+    | tkRoundOpen variable tkComma variable_list tkRoundClose assign_operator expr
+		{
+			if ($6.type != Operators.Assignment)
+			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
+			($4 as addressed_value_list).variables.Insert(0,$2 as addressed_value);
+			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@2,@3,@4);
+			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
+		}		
     ;
-        
+      
+variable_list
+	: variable
+	{
+		$$ = new addressed_value_list($1 as addressed_value,@1);
+	}
+	| variable_list tkComma variable
+	{
+		($1 as addressed_value_list).Add($3 as addressed_value);
+		($1 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3);
+		$$ = $1;
+	}
+	;
+
 proc_call
     : var_reference                                    
         { 
