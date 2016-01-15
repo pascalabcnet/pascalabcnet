@@ -270,6 +270,11 @@ namespace PascalABCCompiler.SyntaxTree
                 sb.Append("." + names[i].ToString());
             return sb.ToString();
         }
+
+        public ident FirstIdent
+        {
+            get { return names[0]; }
+        }
     }
 
     public partial class template_type_reference

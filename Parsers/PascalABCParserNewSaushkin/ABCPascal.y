@@ -1184,13 +1184,6 @@ range_factor
         { 
 			$$ = new method_call($1 as addressed_value, $3 as expression_list, @$);
         }
-    | tkRoundOpen const_expr tkRoundClose      
-        { 
-			if (!parsertools.build_tree_for_brackets) 
-				$$ = $2; 
-			else 
-               $$ = new bracket_expr($2, @$);      
-		}
     ;
 
 simple_type_identifier        
@@ -1217,11 +1210,11 @@ enumeration_id_list
 	;
 	
 enumeration_id
-    : identifier          
+    : type_ref          
         { 
 			$$ = new enumerator($1, null, @$); 
 		}
-    | identifier tkEqual expr
+    | type_ref tkEqual expr
         { 
 			$$ = new enumerator($1, $3, @$); 
 		}

@@ -2758,14 +2758,15 @@ namespace CodeCompletion
             if (_enum_type_definition.enumerators != null)
                 foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
                 {
-                    ElementScope ss = new ElementScope(new SymInfo(en.name.name, SymbolKind.Constant, en.name.name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope, cur_scope);
+                    var name = (en.name as named_type_reference).FirstIdent.name;
+                    ElementScope ss = new ElementScope(new SymInfo(name, SymbolKind.Constant, name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope, cur_scope);
                     ss.is_static = true;
-                    ss.cnst_val = en.name.name;
+                    ss.cnst_val = name;
                     elems.Add(ss);
                     ss.loc = get_location(en);
-                    cur_scope.AddName(en.name.name, ss);
-                    enum_scope.AddName(en.name.name, ss);
-                    enum_scope.AddEnumConstant(en.name.name);
+                    cur_scope.AddName(name, ss);
+                    enum_scope.AddName(name, ss);
+                    enum_scope.AddEnumConstant(name);
                     ss.AddDocumentation(this.converter.controller.docs[en]);
                 }
             for (int i=0; i<elems.Count; i++)
@@ -4102,7 +4103,7 @@ namespace CodeCompletion
                 if (_modern_proc_type.el != null)
                 foreach (enumerator en in _modern_proc_type.el.enumerators)
                 {
-                    ttr.params_list.params_list.Add(new named_type_reference(en.name.name));
+                    ttr.params_list.params_list.Add(en.name); // Здесь исправил SSM 15.1.16
                 }
                 if (_modern_proc_type.res != null)
                     ttr.params_list.params_list.Add(_modern_proc_type.res);

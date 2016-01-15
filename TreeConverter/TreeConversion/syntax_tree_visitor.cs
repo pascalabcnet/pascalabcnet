@@ -3411,6 +3411,55 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.enum_type_definition _enum_type_definition)
         {
+            //SSM Proba 15/01/16 для (integer,integer)
+            // Если кто-то - не named_type_reference с одним ident, то надо идти по ветке типов - это не м.б.перечисление
+            bool is_tuple_type = false;
+            foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
+            {
+                if (!((en.name is named_type_reference) && (en.name as named_type_reference).names.Count()==1)) 
+                {
+                    is_tuple_type = true;
+                    break;
+                }
+            }
+
+            bool is_enum = false;
+            if (!is_tuple_type) // Значит, все - идентификаторы и сказать пока ничего нельзя
+                foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
+                {
+                    SyntaxTree.ident id = (en.name as named_type_reference).FirstIdent;
+                    var si = context.CurrentScope.Find(id.name);
+                    if ((si==null) || !(si.sym_info is type_node))
+                    {
+                        is_enum = true;
+                        break;
+                    }
+                }
+
+            if (!is_enum) // Значит, это определение типа
+            {
+                var lt = new List<type_definition>();
+                for (var iii=0; iii<_enum_type_definition.enumerators.enumerators.Count(); iii++)
+                {
+                    var name = _enum_type_definition.enumerators.enumerators[iii].name;
+                    lt.Add(name);
+                }
+
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Tuple"));
+
+                var tp = new template_param_list(lt);
+                // значит, это Tuple - создать его, обойти и выйти
+                var ttr = new SyntaxTree.template_type_reference(new named_type_reference(l), tp);
+                visit(ttr);
+                return;
+            }
+
+            //end SSM
+
+            // Если мы здесь - значит, это перечислимый тип
+
             //throw new NotSupportedError(get_location(_enum_type_definition));
             //ivan added
             int num = 0;
@@ -3418,7 +3467,8 @@ namespace PascalABCCompiler.TreeConverter
             check_if_has_enum_consts(_enum_type_definition);
             foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
             {
-                SyntaxTree.ident id = en.name;
+                SyntaxTree.ident id = (en.name as named_type_reference).FirstIdent; // это - точно идентификаторы
+
                 constant_definition_node cdn = context.add_const_definition(id.name, get_location(id));
                 if (en.value == null)
                 cdn.const_value = new enum_const_node(num++, null, get_location(id));
@@ -3434,7 +3484,7 @@ namespace PascalABCCompiler.TreeConverter
             num = 0;
             foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
             {
-                SyntaxTree.ident id = en.name;
+                SyntaxTree.ident id = (en.name as named_type_reference).FirstIdent;
                 constant_definition_node cdn = context.add_const_definition(id.name, get_location(id));
                 if (en.value == null)
                 cdn.const_value = new enum_const_node(num++, null, get_location(id));
@@ -9906,8 +9956,8 @@ namespace PascalABCCompiler.TreeConverter
             		}
 
             		SyntaxTree.array_type arr = tpars.vars_type as SyntaxTree.array_type;
-            		if (tpars.vars_type is SyntaxTree.class_definition || tpars.vars_type is SyntaxTree.enum_type_definition ||
-                    (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
+            		if (tpars.vars_type is SyntaxTree.class_definition || /*tpars.vars_type is SyntaxTree.enum_type_definition ||*/
+                        (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
             		{
                         AddError(get_location(tpars.vars_type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
             		}
@@ -12171,7 +12221,7 @@ namespace PascalABCCompiler.TreeConverter
         public void check_parameter_on_complex_type(SyntaxTree.type_definition type)
         {
             SyntaxTree.array_type arr = type as SyntaxTree.array_type;
-            if (type is SyntaxTree.class_definition || type is SyntaxTree.enum_type_definition ||
+            if (type is SyntaxTree.class_definition || /*type is SyntaxTree.enum_type_definition ||*/
                 (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
             {
                 AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_FORMAL_PARAM");
@@ -18593,7 +18643,11 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
-                        t.Add(new named_type_reference(en.enumerators[i].name, en.enumerators[i].name.source_context));
+
+                        if (!(en.enumerators[i].name is named_type_reference))
+                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+
+                        t.Add(en.enumerators[i].name); // ???????????????
                     }
                 }
                 t.Add(_modern_proc_type.res, _modern_proc_type.res.source_context);
@@ -18616,9 +18670,14 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(get_location(en.enumerators[0].name), "ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES");
                     for (int i = 0; i < en.enumerators.Count; i++)
                     {
+
                         if (en.enumerators[i].value != null)
                             AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
-                        t.Add(new named_type_reference(en.enumerators[i].name, en.enumerators[i].name.source_context));
+
+                        if (!(en.enumerators[i].name is named_type_reference))
+                            AddError(get_location(en.enumerators[i].name), "ONE_TKIDENTIFIER");
+
+                        t.Add(en.enumerators[i].name);
                     }
                 }
                 t.source_context = _modern_proc_type.source_context;

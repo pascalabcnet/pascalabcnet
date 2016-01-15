@@ -2936,7 +2936,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_enumerator(enumerator _enumerator)
 		{
 			read_syntax_tree_node(_enumerator);
-			_enumerator.name = _read_node() as ident;
+			_enumerator.name = _read_node() as type_definition;
 			_enumerator.value = _read_node() as expression;
 		}
 

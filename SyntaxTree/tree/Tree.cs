@@ -21363,7 +21363,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public enumerator(ident _name,expression _value)
+		public enumerator(type_definition _name,expression _value)
 		{
 			this._name=_name;
 			this._value=_value;
@@ -21372,20 +21372,20 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public enumerator(ident _name,expression _value,SourceContext sc)
+		public enumerator(type_definition _name,expression _value,SourceContext sc)
 		{
 			this._name=_name;
 			this._value=_value;
 			source_context = sc;
 		}
 
-		protected ident _name;
+		protected type_definition _name;
 		protected expression _value;
 
 		///<summary>
 		///
 		///</summary>
-		public ident name
+		public type_definition name
 		{
 			get
 			{
@@ -21458,7 +21458,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						name = (ident)value;
+						name = (type_definition)value;
 						break;
 					case 1:
 						value = (expression)value;
