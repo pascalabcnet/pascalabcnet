@@ -5713,6 +5713,69 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(assign_tuple _assign_tuple)
+		{
+			bw.Write((Int16)205);
+			write_assign_tuple(_assign_tuple);
+		}
+
+		public void write_assign_tuple(assign_tuple _assign_tuple)
+		{
+			write_statement(_assign_tuple);
+			if (_assign_tuple.vars == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_tuple.vars.visit(this);
+			}
+			if (_assign_tuple.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_tuple.expr.visit(this);
+			}
+		}
+
+
+		public void visit(addressed_value_list _addressed_value_list)
+		{
+			bw.Write((Int16)206);
+			write_addressed_value_list(_addressed_value_list);
+		}
+
+		public void write_addressed_value_list(addressed_value_list _addressed_value_list)
+		{
+			write_syntax_tree_node(_addressed_value_list);
+			if (_addressed_value_list.variables == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_addressed_value_list.variables.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _addressed_value_list.variables.Count; ssyy_i++)
+				{
+					if (_addressed_value_list.variables[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_addressed_value_list.variables[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
 	}
 
 
