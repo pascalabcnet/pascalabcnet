@@ -77,7 +77,7 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term typed_const typed_const_or_new expr const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference 
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -1949,19 +1949,19 @@ inclass_proc_func_decl_noclass
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign relop_expr tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
-			if (parsertools.build_tree_for_brackets)
+			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign relop_expr tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
-			if (parsertools.build_tree_for_brackets)
+			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
 	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign stmt tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
-			if (parsertools.build_tree_for_brackets)
+			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
     ;
@@ -2616,8 +2616,6 @@ expr
 		{ $$ = $1; }
     | format_expr
 		{ $$ = $1; }
-    | func_decl_lambda
-        { $$ = $1; }
     ;
 
 expr_l1
@@ -2906,6 +2904,8 @@ factor
 		}
     | var_reference
 		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
     ;
       
 literal_or_number
@@ -2967,7 +2967,7 @@ variable
 		}
     | tkRoundOpen expr tkRoundClose         
         {
-		    if (!parsertools.build_tree_for_brackets) 
+		    if (!parsertools.build_tree_for_formatter) 
             {
                 $2.source_context = @$;
                 $$ = $2;
@@ -3429,9 +3429,12 @@ func_decl_lambda
 				if (($4 as expression_list).expressions.Count>7) 
 					parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
 				
-				$$ = new method_call(new dot_node("Tuple","Create"),$4 as expression_list,@$);
+				if (parsertools.build_tree_for_formatter)
+					$$ = new tuple_node_for_formatter($4 as expression_list);
+				else	
+					$$ = new method_call(new dot_node("Tuple","Create"),$4 as expression_list,@$);
 			}
-			else  // It is a lambda-expression. Expressions must be identifiers. 
+			else  // It is a lambda-expression. Expressions in parameters must be identifiers. 
 			{
 				var pair = $8 as pair_type_stlist;
 				

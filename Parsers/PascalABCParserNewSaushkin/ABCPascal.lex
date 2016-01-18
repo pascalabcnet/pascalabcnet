@@ -59,7 +59,7 @@ ALPHABET [^ a-zA-Z_0-9\r\n\t\'$#&,:.;@\+\-\*/=<>\^()\[\]\x01]
 }
 
 {DIRECTIVE} {
-	if (parsertools.build_tree_for_brackets)
+	if (parsertools.build_tree_for_formatter)
 		break;
 
 	parsertools.DivideDirectiveOn(yytext,out directivename,out directiveparam);

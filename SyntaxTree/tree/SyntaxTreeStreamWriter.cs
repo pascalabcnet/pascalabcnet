@@ -5776,6 +5776,27 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			bw.Write((Int16)207);
+			write_tuple_node_for_formatter(_tuple_node_for_formatter);
+		}
+
+		public void write_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			write_expression(_tuple_node_for_formatter);
+			if (_tuple_node_for_formatter.el == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_tuple_node_for_formatter.el.visit(this);
+			}
+		}
+
 	}
 
 

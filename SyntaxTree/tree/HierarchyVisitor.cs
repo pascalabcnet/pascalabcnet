@@ -1661,6 +1661,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+		}
+
+		public virtual void post_do_visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3438,6 +3446,14 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < variables.Count; i++)
 				visit(addressed_value_list.variables[i]);
 			post_do_visit(_addressed_value_list);
+		}
+
+		public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			DefaultVisit(_tuple_node_for_formatter);
+			pre_do_visit(_tuple_node_for_formatter);
+			visit(tuple_node_for_formatter.el);
+			post_do_visit(_tuple_node_for_formatter);
 		}
 	}
 
