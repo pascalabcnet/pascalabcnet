@@ -2749,9 +2749,44 @@ namespace CodeCompletion
 
         public override void visit(enum_type_definition _enum_type_definition)
         {
+            bool is_tuple = false;
+            template_type_reference tuple = new template_type_reference();
+            tuple.name = new named_type_reference(new ident_list(new ident("System"), new ident("Tuple")).idents);
+            template_param_list tpl = new template_param_list();
+            tuple.params_list = tpl;
+            if (_enum_type_definition.enumerators != null)
+                foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
+                {
+                    if (!(en.name is named_type_reference))
+                    {
+                        is_tuple = true;
+                    }
+                    else
+                    {
+                        named_type_reference ntr = en.name as named_type_reference;
+                        if (ntr.names.Count > 1 || ntr.names.Count == 0)
+                        {
+                            is_tuple = true;
+                        }
+                        else
+                        {
+                            SymScope ss = cur_scope.FindName(ntr.FirstIdent.name);
+                            if (ss != null && ss is TypeScope)
+                            {
+                                is_tuple = true;
+                            }
+                        }
+                    }
+                    tpl.Add(en.name);
+                }
+            if (is_tuple)
+            {
+                tuple.visit(this);
+                return;
+            }
             //throw new Exception("The method or operation is not implemented.");
-            EnumScope enum_scope = new EnumScope(SymbolKind.Enum,cur_scope,
-                                                 TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum,typeof(Enum).FullName),typeof(Enum)));
+            EnumScope enum_scope = new EnumScope(SymbolKind.Enum, cur_scope,
+                                         TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum, typeof(Enum).FullName), typeof(Enum)));
             enum_scope.loc = get_location(_enum_type_definition);
             enum_scope.topScope = cur_scope;
             List<ElementScope> elems = new List<ElementScope>();
@@ -2767,10 +2802,11 @@ namespace CodeCompletion
                     cur_scope.AddName(name, ss);
                     enum_scope.AddName(name, ss);
                     enum_scope.AddEnumConstant(name);
-                    ss.AddDocumentation(this.converter.controller.docs[en]);
+                    if (this.converter.controller.docs.ContainsKey(en))
+                        ss.AddDocumentation(this.converter.controller.docs[en]);
                 }
-            for (int i=0; i<elems.Count; i++)
-            	elems[i].MakeDescription();
+            for (int i = 0; i < elems.Count; i++)
+                elems[i].MakeDescription();
             returned_scope = enum_scope;
         }
 

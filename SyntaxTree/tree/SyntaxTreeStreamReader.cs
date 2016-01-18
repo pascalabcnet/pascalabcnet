@@ -434,6 +434,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new assign_tuple();
 				case 206:
 					return new addressed_value_list();
+				case 207:
+					return new tuple_node_for_formatter();
 			}
 			return null;
 		}
@@ -3676,6 +3678,18 @@ namespace PascalABCCompiler.SyntaxTree
 					_addressed_value_list.variables.Add(_read_node() as addressed_value);
 				}
 			}
+		}
+
+
+		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			read_tuple_node_for_formatter(_tuple_node_for_formatter);
+		}
+
+		public void read_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			read_expression(_tuple_node_for_formatter);
+			_tuple_node_for_formatter.el = _read_node() as expression_list;
 		}
 
 	}

@@ -1042,6 +1042,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_addressed_value_list);
 		}
+
+		public virtual void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			DefaultVisit(_tuple_node_for_formatter);
+		}
 	}
 
 
