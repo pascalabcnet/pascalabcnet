@@ -27386,6 +27386,123 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class uses_closure : syntax_tree_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public uses_closure()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public uses_closure(List<uses_list> _listunitsections)
+		{
+			this._listunitsections=_listunitsections;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public uses_closure(List<uses_list> _listunitsections,SourceContext sc)
+		{
+			this._listunitsections=_listunitsections;
+			source_context = sc;
+		}
+
+		protected List<uses_list> _listunitsections=new List<uses_list>();
+
+		///<summary>
+		///
+		///</summary>
+		public List<uses_list> listunitsections
+		{
+			get
+			{
+				return _listunitsections;
+			}
+			set
+			{
+				_listunitsections=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (listunitsections == null ? 0 : listunitsections.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(listunitsections != null)
+				{
+					if(index_counter < listunitsections.Count)
+					{
+						return listunitsections[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(listunitsections != null)
+				{
+					if(index_counter < listunitsections.Count)
+					{
+						listunitsections[index_counter]= (uses_list)value;
+						return;
+					}
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

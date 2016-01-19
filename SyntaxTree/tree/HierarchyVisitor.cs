@@ -1669,6 +1669,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(uses_closure _uses_closure)
+		{
+		}
+
+		public virtual void post_do_visit(uses_closure _uses_closure)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3454,6 +3462,15 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_tuple_node_for_formatter);
 			visit(tuple_node_for_formatter.el);
 			post_do_visit(_tuple_node_for_formatter);
+		}
+
+		public override void visit(uses_closure _uses_closure)
+		{
+			DefaultVisit(_uses_closure);
+			pre_do_visit(_uses_closure);
+			for (int i = 0; i < listunitsections.Count; i++)
+				visit(uses_closure.listunitsections[i]);
+			post_do_visit(_uses_closure);
 		}
 	}
 

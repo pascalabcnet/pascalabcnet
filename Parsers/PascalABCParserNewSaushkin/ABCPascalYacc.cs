@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 18.01.2016 8:09:33
+// DateTime: 19.01.2016 22:49:35
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -2321,6 +2321,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 36: // uses_clause -> tkUses, used_units_list, tkSemiColon
 { 
+        	//if ($1 == null)
+        		//$1 = new uses_closure($3 as uses_list,@$);
+        	//else ($1 as uses_closure).Add($3 as uses_list,@$);
+			//$$ = $1;
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-2].stn;
 			CurrentSemanticValue.stn.source_context = CurrentLocationSpan;
 		}
@@ -5390,7 +5394,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 					parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",LocationStack[LocationStack.Depth-4]);
 				
 				if (parsertools.build_tree_for_formatter)
-					CurrentSemanticValue.ex = new tuple_node_for_formatter(ValueStack[ValueStack.Depth-5].stn as expression_list);
+					CurrentSemanticValue.ex = new tuple_node_for_formatter(ValueStack[ValueStack.Depth-5].stn as expression_list,CurrentLocationSpan);
 				else	
 					CurrentSemanticValue.ex = new method_call(new dot_node("Tuple","Create"),ValueStack[ValueStack.Depth-5].stn as expression_list,CurrentLocationSpan);
 			}

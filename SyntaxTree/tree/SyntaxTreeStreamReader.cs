@@ -436,6 +436,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new addressed_value_list();
 				case 207:
 					return new tuple_node_for_formatter();
+				case 208:
+					return new uses_closure();
 			}
 			return null;
 		}
@@ -3690,6 +3692,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_expression(_tuple_node_for_formatter);
 			_tuple_node_for_formatter.el = _read_node() as expression_list;
+		}
+
+
+		public void visit(uses_closure _uses_closure)
+		{
+			read_uses_closure(_uses_closure);
+		}
+
+		public void read_uses_closure(uses_closure _uses_closure)
+		{
+			read_syntax_tree_node(_uses_closure);
+			if (br.ReadByte() == 0)
+			{
+				_uses_closure.listunitsections = null;
+			}
+			else
+			{
+				_uses_closure.listunitsections = new List<uses_list>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_uses_closure.listunitsections.Add(_read_node() as uses_list);
+				}
+			}
 		}
 
 	}

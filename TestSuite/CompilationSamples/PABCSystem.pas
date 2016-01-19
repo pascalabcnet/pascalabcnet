@@ -1574,16 +1574,19 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 // -----------------------------------------------------
 //                       Tuples
 // -----------------------------------------------------
-/// Возвращает кортеж из 2 элементов
-function Rec<T1,T2>(x1: T1; x2: T2): Tuple<T1,T2>;
-/// Возвращает кортеж из 3 элементов
-function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3): Tuple<T1,T2,T3>;
-/// Возвращает кортеж из 4 элементов
-function Rec<T1,T2,T3,T4>(x1: T1; x2: T2; x3: T3; x4: T4): Tuple<T1,T2,T3,T4>;
-/// Возвращает кортеж из 5 элементов
-function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): Tuple<T1,T2,T3,T4,T5>;
-/// Возвращает кортеж из 6 элементов
-function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): Tuple<T1,T2,T3,T4,T5,T6>;
+///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
+/// Возвращает кортеж из элементов разных типов
+function Rec<T1,T2>(x1: T1; x2: T2): System.Tuple<T1,T2>;
+///--
+function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3): (T1,T2,T3);
+///--
+function Rec<T1,T2,T3,T4>(x1: T1; x2: T2; x3: T3; x4: T4): (T1,T2,T3,T4);
+///--
+function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): (T1,T2,T3,T4,T5);
+///--
+function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): (T1,T2,T3,T4,T5,T6);
+///--
+function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
 // -----------------------------------------------------
 //                Dict, SSet, HSet, Lst
 // -----------------------------------------------------
@@ -3724,29 +3727,34 @@ begin
 end;
 
 
-function Rec<T1,T2>(x1: T1; x2: T2): Tuple<T1,T2>;
+function Rec<T1,T2>(x1: T1; x2: T2): System.Tuple<T1,T2>;
 begin
   Result := Tuple.Create(x1,x2);
 end;
 
-function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3): Tuple<T1,T2,T3>;
+function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3): (T1,T2,T3);
 begin
   Result := Tuple.Create(x1,x2,x3);
 end;
 
-function Rec<T1,T2,T3,T4>(x1: T1; x2: T2; x3: T3; x4: T4): Tuple<T1,T2,T3,T4>;
+function Rec<T1,T2,T3,T4>(x1: T1; x2: T2; x3: T3; x4: T4): (T1,T2,T3,T4);
 begin
   Result := Tuple.Create(x1,x2,x3,x4);
 end;
 
-function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): Tuple<T1,T2,T3,T4,T5>;
+function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): (T1,T2,T3,T4,T5);
 begin
   Result := Tuple.Create(x1,x2,x3,x4,x5);
 end;
 
-function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): Tuple<T1,T2,T3,T4,T5,T6>;
+function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): (T1,T2,T3,T4,T5,T6);
 begin
   Result := Tuple.Create(x1,x2,x3,x4,x5,x6);
+end;
+
+function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
+begin
+  Result := Tuple.Create(x1,x2,x3,x4,x5,x6,x7);
 end;
 
 function System.Collections.Generic.IDictionary<Key,Value>.Get(K: Key): Value;

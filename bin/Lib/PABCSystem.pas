@@ -1576,7 +1576,7 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 // -----------------------------------------------------
 ///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
 /// Возвращает кортеж из элементов разных типов
-function Rec<T1,T2>(x1: T1; x2: T2): (T1,T2);
+function Rec<T1,T2>(x1: T1; x2: T2): System.Tuple<T1,T2>;
 ///--
 function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3): (T1,T2,T3);
 ///--
@@ -3727,7 +3727,7 @@ begin
 end;
 
 
-function Rec<T1,T2>(x1: T1; x2: T2): (T1,T2);
+function Rec<T1,T2>(x1: T1; x2: T2): System.Tuple<T1,T2>;
 begin
   Result := Tuple.Create(x1,x2);
 end;

@@ -1663,5 +1663,21 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class uses_closure
+    {
+        public uses_closure(uses_list st, SourceContext sc)
+        {
+            Add(st, sc);
+        }
+        public uses_closure Add(uses_list ul, SourceContext sc = null)
+        {
+            listunitsections.Add(ul);
+            if (sc != null)
+                source_context = sc;
+            return this;
+        }
+    }
+
+
 }
 
