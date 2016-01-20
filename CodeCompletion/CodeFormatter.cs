@@ -2769,6 +2769,18 @@ namespace CodeFormatters
             }
         }
 
+        public override void visit(uses_closure uc)
+        {
+            var i = 0;
+            foreach (var ul in uc.listunitsections)
+            {
+                if (i>0)
+                    visit_node(ul);
+                i++;
+            }
+        }
+
+
         #endregion
     }
 }

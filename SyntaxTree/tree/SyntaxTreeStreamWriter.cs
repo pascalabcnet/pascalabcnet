@@ -5806,7 +5806,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_uses_closure(uses_closure _uses_closure)
 		{
-			write_syntax_tree_node(_uses_closure);
+			write_uses_list(_uses_closure);
 			if (_uses_closure.listunitsections == null)
 			{
 				bw.Write((byte)0);

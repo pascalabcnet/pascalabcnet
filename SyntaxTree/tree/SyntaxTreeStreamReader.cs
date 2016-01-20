@@ -3702,7 +3702,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_uses_closure(uses_closure _uses_closure)
 		{
-			read_syntax_tree_node(_uses_closure);
+			read_uses_list(_uses_closure);
 			if (br.ReadByte() == 0)
 			{
 				_uses_closure.listunitsections = null;

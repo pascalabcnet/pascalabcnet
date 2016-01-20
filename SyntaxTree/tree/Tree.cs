@@ -27390,7 +27390,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class uses_closure : syntax_tree_node
+	public partial class uses_closure : uses_list
 	{
 
 		///<summary>
@@ -27414,6 +27414,25 @@ namespace PascalABCCompiler.SyntaxTree
 		///</summary>
 		public uses_closure(List<uses_list> _listunitsections,SourceContext sc)
 		{
+			this._listunitsections=_listunitsections;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public uses_closure(List<unit_or_namespace> _units,List<uses_list> _listunitsections)
+		{
+			this._units=_units;
+			this._listunitsections=_listunitsections;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public uses_closure(List<unit_or_namespace> _units,List<uses_list> _listunitsections,SourceContext sc)
+		{
+			this._units=_units;
 			this._listunitsections=_listunitsections;
 			source_context = sc;
 		}
@@ -27453,7 +27472,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 0 + (listunitsections == null ? 0 : listunitsections.Count);
+				return 0 + (units == null ? 0 : units.Count) + (listunitsections == null ? 0 : listunitsections.Count);
 			}
 		}
 		///<summary>
@@ -27466,6 +27485,15 @@ namespace PascalABCCompiler.SyntaxTree
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
 				Int32 index_counter=ind - 0;
+				if(units != null)
+				{
+					if(index_counter < units.Count)
+					{
+						return units[index_counter];
+					}
+					else
+						index_counter = index_counter - units.Count;
+				}
 				if(listunitsections != null)
 				{
 					if(index_counter < listunitsections.Count)
@@ -27480,6 +27508,16 @@ namespace PascalABCCompiler.SyntaxTree
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
 				Int32 index_counter=ind - 0;
+				if(units != null)
+				{
+					if(index_counter < units.Count)
+					{
+						units[index_counter]= (unit_or_namespace)value;
+						return;
+					}
+					else
+						index_counter = index_counter - units.Count;
+				}
 				if(listunitsections != null)
 				{
 					if(index_counter < listunitsections.Count)
