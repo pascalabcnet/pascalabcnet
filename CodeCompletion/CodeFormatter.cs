@@ -2769,6 +2769,11 @@ namespace CodeFormatters
             }
         }
 
+        public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+        {
+            visit_node(_tuple_node_for_formatter.el);
+        }
+
         #endregion
     }
 }
