@@ -301,14 +301,23 @@ uses_clause
 		{ 
 			$$ = null; 
 		}
-    | tkUses used_units_list tkSemiColon            
+    | uses_clause tkUses used_units_list tkSemiColon            
         { 
-        	//if ($1 == null)
-        		//$1 = new uses_closure($3 as uses_list,@$);
-        	//else ($1 as uses_closure).Add($3 as uses_list,@$);
-			//$$ = $1;
-			$$ = $2;
-			$$.source_context = @$;
+   			if (parsertools.build_tree_for_formatter)
+   			{
+	        	if ($1 == null)
+	        		$1 = new uses_closure($3 as uses_list,@$);
+	        	else ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
+				$$ = $1;
+   			}
+   			else 
+   			{
+	        	if ($1 == null)
+	        		$1 = $3;
+	        	else ($1 as uses_list).AddUsesList($3 as uses_list,@$);
+				$$ = $1;
+				$$.source_context = @$;
+			}
 		}
     ;
 

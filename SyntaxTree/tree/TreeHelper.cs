@@ -916,6 +916,14 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
+        public uses_list AddUsesList(uses_list ul, SourceContext sc = null)
+        {
+            foreach (var un in ul.units)
+                units.Add(un);
+            if (sc != null)
+                source_context = sc;
+            return this;
+        }
     }
 
     public partial class unit_module
