@@ -3252,7 +3252,7 @@ namespace PascalABCCompiler.TreeConverter
         
         public override void visit(SyntaxTree.enum_type_definition _enum_type_definition)
         {
-            //SSM Proba 15/01/16 для (integer,integer)
+            //SSM 15/01/16 - реализация (integer,integer)
             // Если кто-то - не named_type_reference с одним ident, то надо идти по ветке типов - это не м.б.перечисление
             bool is_tuple_type = false;
             foreach (SyntaxTree.enumerator en in _enum_type_definition.enumerators.enumerators)
@@ -3282,7 +3282,10 @@ namespace PascalABCCompiler.TreeConverter
                 var lt = new List<type_definition>();
                 for (var iii=0; iii<_enum_type_definition.enumerators.enumerators.Count(); iii++)
                 {
-                    var name = _enum_type_definition.enumerators.enumerators[iii].name;
+                    var en = _enum_type_definition.enumerators.enumerators[iii];
+                    var name = en.name;
+                    if (en.value != null)
+                        AddError(get_location(en.value), "TUPLE_TYPE_ERROR");
                     lt.Add(name);
                 }
 
