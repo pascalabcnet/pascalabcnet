@@ -400,10 +400,10 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="top_function">Функция в которой мы находимся.</param>
         /// <param name="allow_procedure">Может ли это быть вызов процедуры. false если вызов стоит в выражении или правой части опреатора присваивания.</param>
         /// <returns>Возвращает узел вызова метода.</returns>
-		public expression_node create_full_function_call(expressions_list exprs,SymbolInfo si,location loc,
-			common_type_node converted_type,common_function_node top_function,bool allow_procedure)
-		{
-			function_node fn=select_function(exprs,si,loc);
+		public expression_node create_full_function_call(expressions_list exprs, SymbolInfo si, location loc,
+            common_type_node converted_type, common_function_node top_function, bool allow_procedure)
+        {
+            function_node fn = select_function(exprs, si, loc);
 
             /*
             if (fn.compile_time_executor != null)
@@ -416,108 +416,114 @@ namespace PascalABCCompiler.TreeConverter
             }
             */
             //allow_procedure = true;
-			if ((!allow_procedure)&&(fn.return_value_type==null))
-			{
+            if ((!allow_procedure) && (fn.return_value_type == null))
+            {
                 throw new SimpleSemanticError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
-			}
+            }
 
-			expression_node expr_node=null;
-			switch (fn.semantic_node_type)
-			{
-				case semantic_node_type.basic_function_node:
-				case semantic_node_type.common_namespace_function_node:
-				{
-					expr_node=create_simple_function_call(fn,loc,exprs.ToArray());
-					break;
-				}
-				case semantic_node_type.common_method_node:
-				case semantic_node_type.compiled_function_node:
-				{
-					SemanticTree.IClassMemberNode icmn=(SemanticTree.IClassMemberNode)fn;
-					if (icmn.polymorphic_state==SemanticTree.polymorphic_state.ps_static)
-					{
-						expr_node=create_simple_function_call(fn,loc,exprs.ToArray());
-						break;
-					}
-                    //expression_node tn = new this_node(converted_type,loc);
-					base_function_call cmc=null;
-					switch (fn.semantic_node_type)
-					{
-						case semantic_node_type.common_method_node:
-						{
-                            //ssyy добавил
-                            if (((common_method_node)fn).is_constructor)
-                            {
-                                common_constructor_call ccc = new common_constructor_call((common_method_node)fn, loc);
-                                //(ssyy) По-видимому, здесь всегда можно присваивать false, так как при создании нового объекта мы сюда не заходим...
-                                ccc._new_obj_awaited = false;
-                                if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+            expression_node expr_node = null;
+            switch (fn.semantic_node_type)
+            {
+                case semantic_node_type.basic_function_node:
+                case semantic_node_type.common_namespace_function_node:
+                    {
+                        expr_node = create_simple_function_call(fn, loc, exprs.ToArray());
+                        break;
+                    }
+                case semantic_node_type.common_method_node:
+                case semantic_node_type.compiled_function_node:
+                    {
+                        SemanticTree.IClassMemberNode icmn = (SemanticTree.IClassMemberNode)fn;
+                        if (icmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                        {
+                            expr_node = create_simple_function_call(fn, loc, exprs.ToArray());
+                            break;
+                        }
+                        //expression_node tn = new this_node(converted_type,loc);
+                        base_function_call cmc = null;
+                        switch (fn.semantic_node_type)
+                        {
+                            case semantic_node_type.common_method_node:
                                 {
-                                    throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                                    //ssyy добавил
+                                    if (((common_method_node)fn).is_constructor)
+                                    {
+                                        common_constructor_call ccc = new common_constructor_call((common_method_node)fn, loc);
+                                        //(ssyy) По-видимому, здесь всегда можно присваивать false, так как при создании нового объекта мы сюда не заходим...
+                                        ccc._new_obj_awaited = false;
+                                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                                        {
+                                            throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                                        }
+                                        cmc = ccc;
+                                    }
+                                    else
+                                    //\ssyy
+                                    {
+                                        if (fn is generic_method_instance_node)
+                                        {
+                                            common_method_node cmn = (fn as generic_method_instance_node).original_function as common_method_node;
+                                            cmc = new common_method_call((common_method_node)fn, syntax_tree_visitor.GetCurrentObjectReference(cmn.cont_type.Scope, fn, loc), loc);
+                                        }
+                                        else
+                                            cmc = new common_method_call((common_method_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((common_method_node)fn).cont_type.Scope, fn, loc), loc);
+                                        (cmc as common_method_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
+                                    }
+                                    break;
                                 }
-                                cmc = ccc;
-                            }
-                            else
-                            //\ssyy
-                            {
-                                cmc = new common_method_call((common_method_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((common_method_node)fn).cont_type.Scope, fn, loc), loc);
-                                (cmc as common_method_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
-                            }
-							break;
-						}
-						case semantic_node_type.compiled_function_node:
-						{
-                            cmc = new compiled_function_call((compiled_function_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((compiled_function_node)fn).cont_type.Scope, fn, loc), loc);
-                            (cmc as compiled_function_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
-							break;
-						}
-					}
-					cmc.parameters.AddRange(exprs);
-					expr_node=cmc;
-					break;
-				}
-				case semantic_node_type.common_in_function_function_node:
-				{
-					common_in_function_function_node cffn=(common_in_function_function_node)fn;
-					common_in_function_function_call cffc=new common_in_function_function_call(cffn,
-						symtab.GetRelativeScopeDepth(cffn.function.scope,top_function.scope),loc);
-					cffc.parameters.AddRange(exprs);
-					expr_node=cffc;
-					break;
-				}
+                            case semantic_node_type.compiled_function_node:
+                                {
+                                    cmc = new compiled_function_call((compiled_function_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((compiled_function_node)fn).cont_type.Scope, fn, loc), loc);
+                                    (cmc as compiled_function_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
+                                    break;
+                                }
+                        }
+                        cmc.parameters.AddRange(exprs);
+                        expr_node = cmc;
+                        break;
+                    }
+                case semantic_node_type.common_in_function_function_node:
+                    {
+                        common_in_function_function_node cffn = (common_in_function_function_node)fn;
+                        common_in_function_function_call cffc = new common_in_function_function_call(cffn,
+                            symtab.GetRelativeScopeDepth(cffn.function.scope, top_function.scope), loc);
+                        cffc.parameters.AddRange(exprs);
+                        expr_node = cffc;
+                        break;
+                    }
                 //ssyy добавил
                 case semantic_node_type.compiled_constructor_node:
-                {
-                    compiled_constructor_node ccn = fn as compiled_constructor_node;
-                    if (ccn == null)
                     {
-                        throw new CompilerInternalError("compiled_constructor_node expected");
+                        compiled_constructor_node ccn = fn as compiled_constructor_node;
+                        if (ccn == null)
+                        {
+                            throw new CompilerInternalError("compiled_constructor_node expected");
+                        }
+                        compiled_constructor_call ccc = new compiled_constructor_call(ccn, loc);
+                        ccc.parameters.AddRange(exprs);
+                        ccc._new_obj_awaited = false;
+                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                        {
+                            throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                        }
+                        expr_node = ccc;
+                        break;
                     }
-                    compiled_constructor_call ccc = new compiled_constructor_call(ccn, loc);
-                    ccc.parameters.AddRange(exprs);
-                    ccc._new_obj_awaited = false;
-                    if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
-                    {
-                        throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
-                    }
-                    expr_node = ccc;
-                    break;
-                }
                 case semantic_node_type.indefinite_definition_node:
-                {
-                    indefinite_function_call ifc = new indefinite_function_call(fn, loc);
-                    ifc.parameters.AddRange(exprs);
-                    expr_node = ifc;
-                    break;
-                }
+                    {
+                        indefinite_function_call ifc = new indefinite_function_call(fn, loc);
+                        ifc.parameters.AddRange(exprs);
+                        expr_node = ifc;
+                        break;
+                    }
                 //\ssyy
-				default:
-				{
-                    throw new NotSupportedError(loc);
-				}
-			}
-			return expr_node;
-		}
+                default:
+                    {
+                        throw new NotSupportedError(loc);
+                    }
+            }
+            return expr_node;
+        }
 
         /// <summary>
         /// Проверяет, что оператор статический метод класса.
