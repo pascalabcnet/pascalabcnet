@@ -3287,7 +3287,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
                 var l = new List<ident>();
-                l.Add(new ident("System"));
+                l.Add(new ident("?System"));
                 l.Add(new ident("Tuple"));
 
                 var tp = new template_param_list(lt);
@@ -13917,30 +13917,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.indexer _indexer)
         {
-            // SSM 09.01.16 Tuple t[i]
-            /*var ee = convert_strong(_indexer.dereferencing_value);  // Это не работает - конкурирует со следующими вызовами. Нельзя такое вызывать дважды. Вообще, надо сделать функцию, которая возвращает по выражению тип
-
-            var ent = ee.type as compiled_type_node;
-
-            if (ent != null)
-            {
-                var t = ent.compiled_type;
-                if (t.FullName.StartsWith("System.Tuple"))
-                {
-                    expression eee = _indexer.indexes.expressions[0];
-                    var cn = convert_strong_to_constant_node(eee);
-                    var v = cn as int_const_node;
-
-                    if (v != null)
-                    {
-                        var dn = new dot_node(_indexer.dereferencing_value, new ident("Item" + (v.constant_value + 1).ToString(), eee.source_context));
-                        visit(dn);
-                        return;
-                    }
-                }
-            }*/
-            // end SSM 09.01.16 Tuple t[i]
-
             //lroman
             if (_indexer.dereferencing_value is closure_substituting_node)
             {
@@ -18328,7 +18304,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             // SSM 11/05/15 sugared node
             var l = new List<ident>();
-            l.Add(new ident("System"));
+            l.Add(new ident("?System"));
             l.Add(new ident("Collections"));
             l.Add(new ident("Generic"));
             l.Add(new ident("IEnumerable"));
@@ -18340,7 +18316,7 @@ namespace PascalABCCompiler.TreeConverter
             if (_modern_proc_type.res != null)
             {
                 var l = new List<ident>();
-                l.Add(new ident("System"));
+                l.Add(new ident("?System"));
                 l.Add(new ident("Func"));
                 var t = new template_param_list();
                 if (_modern_proc_type.aloneparam != null)
@@ -18369,7 +18345,7 @@ namespace PascalABCCompiler.TreeConverter
             else if (_modern_proc_type.aloneparam != null || _modern_proc_type.el != null)
             {
                 var l = new List<ident>();
-                l.Add(new ident("System"));
+                l.Add(new ident("?System"));
                 l.Add(new ident("Action"));
                 var t = new template_param_list();
                 if (_modern_proc_type.aloneparam != null)
@@ -18398,7 +18374,7 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 var l = new List<ident>();
-                l.Add(new ident("System"));
+                l.Add(new ident("?System"));
                 l.Add(new ident("Action"));
                 var ntr = new named_type_reference(l);
                 visit(ntr);

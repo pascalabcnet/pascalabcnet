@@ -995,7 +995,13 @@ namespace SymbolTable
 			int Area=scope.ScopeNum;
 			Scope[] used_units=null;
 			int tn=HashTable.Find(Name);		//найдем имя в хеше
-			if (tn<0 || scope is DotNETScope)//если нет такого ищем в областях .NET
+
+            // SSM 21.01.16
+            if (Name.StartsWith("?"))     // это значит, надо искать в областях .NET
+                Name = Name.Substring(1); // съели ? и ищем т.к. tn<0
+            // end SSM 
+
+            if (tn<0 || scope is DotNETScope)//если нет такого ищем в областях .NET
 			{
                 //ssyy
                 int NextUnitArea = -2;
@@ -1130,7 +1136,7 @@ namespace SymbolTable
 					//иначе ищем дальше
 				}
                 else
-                if (ScopeTable[CurrentArea] is WithScope)//мы очутились в Width
+                if (ScopeTable[CurrentArea] is WithScope)//мы очутились в With
                 {
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!

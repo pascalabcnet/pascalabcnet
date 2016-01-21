@@ -3445,7 +3445,10 @@ func_decl_lambda
 				if (parsertools.build_tree_for_formatter)
 					$$ = new tuple_node_for_formatter($4 as expression_list,@$);
 				else	
-					$$ = new method_call(new dot_node("Tuple","Create"),$4 as expression_list,@$);
+				{
+				    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
+					$$ = new method_call(dn,$4 as expression_list,@$);
+				}
 			}
 			else  // It is a lambda-expression. Expressions in parameters must be identifiers. 
 			{

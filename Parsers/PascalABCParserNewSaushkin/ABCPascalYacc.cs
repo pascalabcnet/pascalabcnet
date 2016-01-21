@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 20.01.2016 7:56:03
+// DateTime: 21.01.2016 15:14:12
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -5405,7 +5405,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				if (parsertools.build_tree_for_formatter)
 					CurrentSemanticValue.ex = new tuple_node_for_formatter(ValueStack[ValueStack.Depth-5].stn as expression_list,CurrentLocationSpan);
 				else	
-					CurrentSemanticValue.ex = new method_call(new dot_node("Tuple","Create"),ValueStack[ValueStack.Depth-5].stn as expression_list,CurrentLocationSpan);
+				{
+				    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",CurrentLocationSpan));
+					CurrentSemanticValue.ex = new method_call(dn,ValueStack[ValueStack.Depth-5].stn as expression_list,CurrentLocationSpan);
+				}
 			}
 			else  // It is a lambda-expression. Expressions in parameters must be identifiers. 
 			{
