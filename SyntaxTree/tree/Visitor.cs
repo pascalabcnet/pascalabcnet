@@ -1252,6 +1252,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_tuple_node_for_formatter">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(tuple_node_for_formatter _tuple_node_for_formatter);
+		///<summary>
+		///Method to visit uses_closure.
+		///</summary>
+		///<param name="_uses_closure">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(uses_closure _uses_closure);
 	}
 
 

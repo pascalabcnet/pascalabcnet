@@ -301,10 +301,23 @@ uses_clause
 		{ 
 			$$ = null; 
 		}
-    | tkUses used_units_list tkSemiColon           
+    | uses_clause tkUses used_units_list tkSemiColon            
         { 
-			$$ = $2;
-			$$.source_context = @$;
+   			if (parsertools.build_tree_for_formatter)
+   			{
+	        	if ($1 == null)
+	        		$1 = new uses_closure($3 as uses_list,@$);
+	        	else ($1 as uses_closure).AddUsesList($3 as uses_list,@$);
+				$$ = $1;
+   			}
+   			else 
+   			{
+	        	if ($1 == null)
+	        		$1 = $3;
+	        	else ($1 as uses_list).AddUsesList($3 as uses_list,@$);
+				$$ = $1;
+				$$.source_context = @$;
+			}
 		}
     ;
 
@@ -3430,7 +3443,7 @@ func_decl_lambda
 					parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
 				
 				if (parsertools.build_tree_for_formatter)
-					$$ = new tuple_node_for_formatter($4 as expression_list);
+					$$ = new tuple_node_for_formatter($4 as expression_list,@$);
 				else	
 					$$ = new method_call(new dot_node("Tuple","Create"),$4 as expression_list,@$);
 			}

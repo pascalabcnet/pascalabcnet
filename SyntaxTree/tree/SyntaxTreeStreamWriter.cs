@@ -5797,6 +5797,39 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(uses_closure _uses_closure)
+		{
+			bw.Write((Int16)208);
+			write_uses_closure(_uses_closure);
+		}
+
+		public void write_uses_closure(uses_closure _uses_closure)
+		{
+			write_uses_list(_uses_closure);
+			if (_uses_closure.listunitsections == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_uses_closure.listunitsections.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _uses_closure.listunitsections.Count; ssyy_i++)
+				{
+					if (_uses_closure.listunitsections[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_uses_closure.listunitsections[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
 	}
 
 
