@@ -975,10 +975,16 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class dot_node
     {
-        public dot_node (ident left, ident right)
+        public dot_node(ident left, ident right)
         {
             this.left = left;
             this.right = right;
+        }
+        public dot_node(ident left, ident right, SourceContext sc)
+        {
+            this.left = left;
+            this.right = right;
+            this.source_context = sc;
         }
         public override string ToString()
         {
