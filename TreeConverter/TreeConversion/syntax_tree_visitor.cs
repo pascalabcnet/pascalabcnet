@@ -13464,6 +13464,13 @@ namespace PascalABCCompiler.TreeConverter
             // SSM 10.01.16 Tuple t[i]
             var ent = expr.type as compiled_type_node;
 
+            if (ent== null)
+            {
+                var eeee = expr.type as compiled_generic_instance_type_node;
+                if (eeee!= null)
+                    ent = eeee.original_generic as compiled_type_node;
+            }
+
             if (ent != null)
             {
                 var t = ent.compiled_type;

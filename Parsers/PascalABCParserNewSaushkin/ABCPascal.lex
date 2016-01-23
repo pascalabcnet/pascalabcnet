@@ -46,6 +46,8 @@ DIRECTIVE \{\${DotChr1}*\}
 
 ALPHABET [^ a-zA-Z_0-9\r\n\t\'$#&,:.;@\+\-\*/=<>\^()\[\]\x01]
 
+UNICODEARROW \x890
+
 %x COMMENT
 %x COMMENT1
 %x COMMENTONELINE
@@ -202,6 +204,7 @@ ALPHABET [^ a-zA-Z_0-9\r\n\t\'$#&,:.;@\+\-\*/=<>\^()\[\]\x01]
 "<>"            { yylval = new Union(); yylval.op = new op_type_node(Operators.NotEqual); return (int)Tokens.tkNotEqual; }
 "^"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Deref); return (int)Tokens.tkDeref; }
 "->"            { yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
+\x2192 			{ yylval = new Union(); yylval.ti = new token_info(yytext); return (int)Tokens.tkArrow; }
 \<\<expression\>\> { return (int)Tokens.tkParseModeExpression; }
 \<\<statement\>\>  { return (int)Tokens.tkParseModeStatement; }
 \<\<type\>\>  { return (int)Tokens.tkParseModeType; }
