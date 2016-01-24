@@ -3263,9 +3263,16 @@ begin
 end;
 
 /// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
-function Println<T>(self: sequence of T): sequence of T; extensionmethod;
+function Println<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.Println(' ');  
+end;
+
+/// Выводит последовательность строк в файл
+function WriteLines(Self: sequence of string; fname: string): sequence of string; extensionmethod;
+begin
+  WriteLines(fname,Self);
+  Result := Self
 end;
 
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
@@ -3281,7 +3288,7 @@ begin
 end;
 
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
-function System.Collections.Generic.IEnumerable<T>.JoinIntoString(): string;
+function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
 begin
   Result := Self.JoinIntoString(' ');  
 end;

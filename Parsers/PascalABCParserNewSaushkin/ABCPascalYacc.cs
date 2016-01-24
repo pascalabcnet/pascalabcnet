@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 23.01.2016 8:12:35
+// DateTime: 24.01.2016 22:58:49
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -710,7 +710,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     states[556] = new State(-255);
     states[557] = new State(-245);
     states[558] = new State(new int[]{49,559});
-    states[559] = new State(new int[]{129,23,74,25,75,26,69,28,67,29},new int[]{-246,560,-155,162,-120,164,-125,24,-126,27,-264,165});
+    states[559] = new State(new int[]{129,325,74,25,75,26,69,28,67,29,139,143,141,144,140,145,103,203,102,204,130,139,131,140,8,466,128,480,18,485,39,493,40,543,27,554,65,558,56,561,35,566,30,568},new int[]{-243,560,-239,319,-155,320,-120,164,-125,24,-126,27,-81,449,-88,465,-89,464,-15,460,-174,461,-139,463,-141,137,-140,141,-226,478,-219,479,-247,482,-248,483,-245,484,-237,491,-27,492,-234,542,-102,553,-103,557,-197,563,-195,564,-194,565,-264,572});
     states[560] = new State(-246);
     states[561] = new State(new int[]{18,485,39,493,40,543,27,554,65,558},new int[]{-248,562,-245,484,-237,491,-27,492,-234,542,-102,553,-103,557});
     states[562] = new State(-240);
@@ -1651,7 +1651,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
     rules[243] = new Rule(-248, new int[]{-234});
     rules[244] = new Rule(-248, new int[]{-102});
     rules[245] = new Rule(-248, new int[]{-103});
-    rules[246] = new Rule(-103, new int[]{65,49,-246});
+    rules[246] = new Rule(-103, new int[]{65,49,-243});
     rules[247] = new Rule(-245, new int[]{18,11,-138,12,49,-243});
     rules[248] = new Rule(-245, new int[]{-237});
     rules[249] = new Rule(-237, new int[]{18,49,-243});
@@ -3230,7 +3230,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 245: // unpacked_structured_type -> sequence_type
 { CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td; }
         break;
-      case 246: // sequence_type -> tkSequence, tkOf, template_param
+      case 246: // sequence_type -> tkSequence, tkOf, type_ref
 {
 			CurrentSemanticValue.td = new sequence_type(ValueStack[ValueStack.Depth-1].td,CurrentLocationSpan);
 		}

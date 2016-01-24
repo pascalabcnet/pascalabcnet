@@ -1261,7 +1261,7 @@ unpacked_structured_type
     ;
     
 sequence_type
-	: tkSequence tkOf template_param
+	: tkSequence tkOf type_ref
 		{
 			$$ = new sequence_type($3,@$);
 		}
