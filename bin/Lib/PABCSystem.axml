@@ -1156,19 +1156,11 @@
             <OuterContext>
               <OuterContextItem Type="Method">
                 <string>function</string>
-                <string>System</string>
-                <string>.</string>
-                <string>Collections</string>
-                <string>.</string>
-                <string>Generic</string>
-                <string>.</string>
-                <string>IEnumerable</string>
+                <string>operator</string>
+                <string>+</string>
                 <string>&lt;</string>
                 <string>T</string>
                 <string>&gt;</string>
-                <string>.</string>
-                <string>operator</string>
-                <string>+</string>
                 <string>(</string>
                 <string>a</string>
                 <string>,</string>
@@ -1182,6 +1174,7 @@
                 <string>sequence</string>
                 <string>of</string>
                 <string>T</string>
+                <string>extensionmethod</string>
               </OuterContextItem>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
