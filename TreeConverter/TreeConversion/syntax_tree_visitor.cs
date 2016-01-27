@@ -15942,17 +15942,32 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 return true;
             }  */
-            else // если мы самостоятельно определяем этот тип - можно реализовать в PascalABC.NET только IEnumerable. 
+            else // если мы самостоятельно определяем этот тип - можно реализовать в PascalABC.NET только IEnumerable. // Сейчас уже можно!!!!!
             // Попытка реализовать IEnumerable<T> натыкается на необходимость определять GetEnumerator, возвращающий IEnumerator и IEnumerator<T>
             {
                 if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
                     return false;
                 foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces)
                 {
-                    if (itn == ctn)
+                    //if (itn == ctn)
+                    if (itn is compiled_type_node)
                     {
-                        elem_type = SystemLibrary.SystemLibrary.object_type;
-                        return true;
+                        var itnc = (itn as compiled_type_node).compiled_type;
+                        if (itnc.IsGenericType)
+                        {
+                            var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
+                            if (my == typeof(System.Collections.Generic.IEnumerable<>))
+                            {
+                                var aarg1 = itnc.GetGenericArguments().First();
+                                elem_type = compiled_type_node.get_type_node(aarg1);
+                                return true;
+                            }
+                        }
+                        else if (itn == ctn)
+                        {
+                            elem_type = SystemLibrary.SystemLibrary.object_type;
+                            return true;
+                        }
                     }
                 }
             }
