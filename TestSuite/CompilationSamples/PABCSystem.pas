@@ -1241,9 +1241,9 @@ function Odd(i: uint64): boolean;
 //                Char and String manipulation
 // -----------------------------------------------------
 /// Преобразует код в символ в кодировке Windows
-function Chr(a: byte): char;
+function ChrAnsi(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
-function Ord(a: char): byte;
+function OrdAnsi(a: char): byte;
 /// Возвращает порядковый номер значения a
 function Ord(a: integer): integer;
 /// Возвращает порядковый номер значения a
@@ -1254,6 +1254,10 @@ function Ord(a: int64): int64;
 function Ord(a: uint64): uint64;
 /// Возвращает порядковый номер значения a
 function Ord(a: boolean): integer;
+/// Преобразует код в символ 
+function Chr(a: word): char;
+/// Преобразует символ в код 
+function Ord(a: char): word;
 /// Преобразует код в символ в кодировке Unicode
 function ChrUnicode(a: word): char;
 /// Преобразует символ в код в кодировке Unicode
@@ -3232,6 +3236,7 @@ function BigInteger.operator+(p,q: BigInteger): BigInteger;
 begin
   Result := BigInteger.Add(p,q);
 end;}
+
 //------------------------------------------------------------------------------
 // Extension methods for IEnumerable<T>
 //------------------------------------------------------------------------------
@@ -3300,45 +3305,47 @@ begin
     action(x);
 end;
 
-function Ident<T>(x: T): T;
-begin
-  Result := x;
-end;
-
+/// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.OrderBy(Ident&<T>);
+  Result := Self.OrderBy(x -> x);
+end;
+
+/// Возвращает отсортированную по убыванию последовательность
+function SortedDescending<T>(self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.OrderByDescending(x -> x);
 end;
 
 /// Объединяет две последовательности
-function System.Collections.Generic.IEnumerable<T>.operator+(a,b: sequence of T): sequence of T;
+function operator+<T>(a,b: sequence of T): sequence of T; extensionmethod;
 begin
   Result := a.Concat(b);
 end;
 
 /// Объединяет последовательность a и значение b
-function System.Collections.Generic.IEnumerable<T>.operator+(a: sequence of T; b: T): sequence of T;
+function operator+<T>(a: sequence of T; b: T): sequence of T; extensionmethod;
 begin
   Result := a.Concat(new T[1](b));
 end;
 
 /// Объединяет значение b и последовательность a 
-function System.Collections.Generic.IEnumerable<T>.operator+(b: T; a: sequence of T): sequence of T;
+function operator+<T>(b: T; a: sequence of T): sequence of T; extensionmethod;
 begin
   Result := new T[1](b);
   Result := Result.Concat(a);
 end;
 
-/// Возвращае последовательность a, повторенную n раз 
-function System.Collections.Generic.IEnumerable<T>.operator*(a: sequence of T; n: integer): sequence of T;
+///--
+function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
 begin
   Result := System.Linq.Enumerable.Empty&<T>();
   for var i:=1 to n do
     Result := Result.Concat(a);
 end;
 
-/// Возвращае последовательность a, повторенную n раз 
-function System.Collections.Generic.IEnumerable<T>.operator*(n: integer; a: sequence of T): sequence of T;
+///--
+function operator*<T>(n: integer; a: sequence of T): sequence of T; extensionmethod;
 begin
   Result := a*n;
 end;
@@ -3393,7 +3400,9 @@ type
 
 function Range(a, b, step: integer): sequence of integer;
 begin
-  var n := (b-a) div step + 1;
+  if step=0 then
+    raise new System.ArgumentException('step=0');
+  var n := abs((b-a) div step) + 1;
   var ar := new ArithmSeq(a,step);
   Result := System.Linq.Enumerable.Range(0, n).Select(ar.f);
 end;
@@ -6607,7 +6616,7 @@ end;
 // -----------------------------------------------------
 //                Char and String manipulation
 // -----------------------------------------------------
-function Chr(a: Byte): char;
+function ChrAnsi(a: Byte): char;
 begin
   if a < 128 then
     Result := char(a)
@@ -6618,7 +6627,7 @@ begin
   end;
 end;
 
-function Ord(a: char): byte;
+function OrdAnsi(a: char): byte;
 begin
   if a < #128 then
     Result := byte(a)
@@ -6652,6 +6661,16 @@ end;
 function Ord(a: boolean): integer;
 begin
   Result := integer(a);
+end;
+
+function Chr(a: word): char;
+begin
+  Result := Convert.ToChar(a);
+end;
+
+function Ord(a: char): word;
+begin
+  Result := word(a);
 end;
 
 function ChrUnicode(a: word): char;
