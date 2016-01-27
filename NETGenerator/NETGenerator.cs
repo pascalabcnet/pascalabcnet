@@ -1521,6 +1521,8 @@ namespace PascalABCCompiler.NETGenerator
                     else
                     {
                         MethodInfo meth = helper.GetMethod(icmn).mi;
+                        if (meth.GetType().FullName == "System.Reflection.Emit.MethodOnTypeBuilderInstantiation")
+                            meth = meth.GetGenericMethodDefinition();
                         MethodInfo mi = TypeBuilder.GetMethod(t, meth);
                         helper.AddMethod(value.used_members[dn] as IFunctionNode, mi);
                         continue;

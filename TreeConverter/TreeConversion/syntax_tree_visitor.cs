@@ -17967,6 +17967,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 SyntaxTree.assign _assign = new SyntaxTree.assign(_function_lambda_call.f_lambda_def.parameters.expressions[i] as SyntaxTree.addressed_value, _function_lambda_call.parameters.expressions[i] as SyntaxTree.expression, _op_type_node.type);
                 ((SyntaxTree.statement_list)_function_lambda_call.f_lambda_def.proc_body).subnodes.Insert(0, _assign);
+                _assign.source_context = _function_lambda_call.source_context;
             }
             SyntaxTree.expression_list el = new SyntaxTree.expression_list();
             for (int i = 0; i < _function_lambda_call.f_lambda_def.formal_parameters.params_list.Count; i++)
@@ -17974,12 +17975,12 @@ namespace PascalABCCompiler.TreeConverter
                     el.expressions.Add(_function_lambda_call.parameters.expressions[i]);
                 else
                 {
-                    el.expressions.Add(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.formal_parameters.params_list[i].idents.idents[0].name));
+                    el.expressions.Add(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.formal_parameters.params_list[i].idents.idents[0].name, _function_lambda_call.source_context));
                 }
             SyntaxTree.method_call _method_call = new SyntaxTree.method_call(el);
             if (_method_call is SyntaxTree.dereference)
             {
-                ((SyntaxTree.dereference)_method_call).dereferencing_value = (SyntaxTree.addressed_value)(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.lambda_name));
+                ((SyntaxTree.dereference)_method_call).dereferencing_value = (SyntaxTree.addressed_value)(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.lambda_name, _function_lambda_call.source_context));
             }
             _method_call.visit(this);
         }
