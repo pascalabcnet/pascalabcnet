@@ -779,5 +779,31 @@ namespace PascalABCSavParser
             stlist.Add(wh);
             return stlist;
         }
+        public expression ConvertNamedTypeReferenceToDotNode(named_type_reference ntr) // либо ident либо dot_node
+        {
+            if (ntr.names.Count == 1)
+                return ntr.names[0];
+            else
+            {
+                var dn = new dot_node(ntr.names[0], ntr.names[1]);
+                for (var i = 2; i < ntr.names.Count; i++)
+                    dn = new dot_node(dn, ntr.names[i]);
+                dn.source_context = ntr.source_context;
+                return dn;
+            }
+        }
+        public named_type_reference ConvertDotNodeToNamedTypeReference(dot_node dn)
+        {
+            var ids = new List<ident>();
+            ids.Add(dn.right as ident);
+            while (dn.left is dot_node)
+            {
+                dn = dn.left as dot_node;
+                ids.Add(dn.right as ident);
+            }
+            ids.Add(dn.left as ident);
+            ids.Reverse();
+            return new named_type_reference(ids,dn.source_context);
+        }
     }
 }

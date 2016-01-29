@@ -86,7 +86,6 @@
 %type <td> file_type sequence_type 
 %type <stn> var_address  
 %type <stn> goto_stmt 
-%type <stn> my_stmt 
 %type <id> func_name_ident param_name const_field_name func_name_with_template_args identifier_or_keyword unit_name exception_variable const_name func_meth_name_ident label_name type_decl_identifier template_identifier_with_equal 
 %type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident optional_identifier visibility_specifier 
 %type <id> property_specifier_directives non_reserved 
@@ -1180,10 +1179,7 @@ range_term
 range_factor
     : simple_type_identifier                   
         { 
-			if(($1 as named_type_reference).names.Count>0)
-				$$ = ($1 as named_type_reference).names[0];
-			else
-				$$ = null;
+			$$ = parsertools.ConvertNamedTypeReferenceToDotNode($1 as named_type_reference);
         }
     | unsigned_number
 		{ $$ = $1; }
@@ -1932,7 +1928,7 @@ proc_func_decl_noclass
 		{
 			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, null, $5, @1.Merge(@3));
 		}
-	| tkProcedure proc_name fp_list tkAssign stmt tkSemiColon
+	| tkProcedure proc_name fp_list tkAssign unlabelled_stmt tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, $5 as statement, @1.Merge(@3));
 		}
@@ -1971,7 +1967,7 @@ inclass_proc_func_decl_noclass
 			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
-	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign stmt tkSemiColon
+	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
 			if (parsertools.build_tree_for_formatter)
@@ -2252,12 +2248,10 @@ unlabelled_stmt
 		{ $$ = $1; }
     | lock_stmt
 		{ $$ = $1; }
-	| my_stmt	
-		{ $$ = $1; }
 	| yield_stmt	
 		{ $$ = $1; }
     ;
-	
+    
 yield_stmt
 	: tkYield expr_l1
 		{
@@ -2265,13 +2259,6 @@ yield_stmt
 		}
 	;
 	
-my_stmt
-	: tkCycle expr unlabelled_stmt
-		{
-			$$ = parsertools.MyStmt($2,$3 as statement); 
-		}
-	;
-		
 var_stmt
     : tkVar var_decl_part
         { 
@@ -2343,18 +2330,18 @@ stmt_list
     ;
 
 if_stmt
-	: tkIf expr tkThen stmt
+	: tkIf expr_l1 tkThen unlabelled_stmt
         { 
 			$$ = new if_node($2, $4 as statement, null, @$); 
         }
-	| tkIf expr tkThen stmt tkElse stmt
+	| tkIf expr_l1 tkThen unlabelled_stmt tkElse unlabelled_stmt
         {
 			$$ = new if_node($2, $4 as statement, $6 as statement, @$); 
         }
     ;
 
 case_stmt
-    : tkCase expr tkOf case_list else_case tkEnd 
+    : tkCase expr_l1 tkOf case_list else_case tkEnd 
         { 
 			$$ = new case_node($2, $4 as case_variants, $5 as statement, @$); 
 		}                          
@@ -2378,7 +2365,7 @@ case_item
         { 
 			$$ = new empty_statement(); 
 		}
-    | case_label_list tkColon stmt            
+    | case_label_list tkColon unlabelled_stmt            
         { 
 			$$ = new case_variant($1 as expression_list, $3 as statement, @$); 
 		}
@@ -2418,7 +2405,7 @@ repeat_stmt
 	;
 	
 while_stmt
-    : tkWhile expr optional_tk_do stmt                        
+    : tkWhile expr_l1 optional_tk_do unlabelled_stmt                        
         { 
 			$$ = NewWhileStmt($1, $2, $3, $4 as statement, @$);    
         }
@@ -2432,22 +2419,22 @@ optional_tk_do
     ;
         
 lock_stmt
-    : tkLock expr tkDo stmt            
+    : tkLock expr_l1 tkDo unlabelled_stmt            
         { 
 			$$ = new lock_stmt($2, $4 as statement, @$); 
         }
 	;
 	
 foreach_stmt
-    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr tkDo stmt
+    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($2, $3, $5, $7 as statement, @$); 
         }
-    | tkForeach tkVar identifier tkColon type_ref tkIn expr tkDo stmt
+    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($3, $5, $7, $9 as statement, @$); 
         }
-    | tkForeach tkVar identifier tkIn expr tkDo stmt
+    | tkForeach tkVar identifier tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$7, @$); 
         }
@@ -2460,7 +2447,7 @@ foreach_stmt_ident_dype_opt
     ;
            
 for_stmt
-    : tkFor optional_var identifier for_stmt_decl_or_assign expr for_cycle_type expr optional_tk_do stmt
+    : tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
         { 
 			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
         }
@@ -2487,7 +2474,7 @@ for_cycle_type
     ;
 
 with_stmt
-    : tkWith expr_list tkDo stmt               
+    : tkWith expr_list tkDo unlabelled_stmt               
         { 
 			$$ = new with_statement($4 as statement, $2 as expression_list, @$); 
 		}  
@@ -2562,7 +2549,7 @@ exception_block_else_branch
     ;
 
 exception_handler
-    : tkOn exception_identifier tkDo stmt            
+    : tkOn exception_identifier tkDo unlabelled_stmt            
         { 
 			$$ = new exception_handler(($2 as exception_ident).variable, ($2 as exception_ident).type_name, $4 as statement, @$);
 		}
@@ -3634,6 +3621,14 @@ lambda_procedure_body
 		{
 			$$ = $1;
 		}
+	/*| if_stmt
+		{
+			$$ = $1;
+		}
+      | tkWhile expr_l1 optional_tk_do while_stmt                        
+        { 
+			$$ = NewWhileStmt($1, $2, $3, $4 as statement, @$);    
+        }*/
 	;
 
 %%

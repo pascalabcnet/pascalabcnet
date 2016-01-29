@@ -294,7 +294,6 @@
     <name value="object_type" />
     <name value="record_type" />
     <name value="proc_type_decl" />
-    <name value="simple_type" />
     <name value="sequence_type" />
     <name value="enumeration_id" />
     <name value="template_param" />
