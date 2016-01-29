@@ -1146,8 +1146,10 @@ template_param
     ;
 
 simple_type
-    : simple_type_identifier
-	    { $$ = $1; }
+    : range_expr
+	    {
+	    	$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); 
+	    }
     | range_expr tkDotDot range_expr  
         { 
 			$$ = new diapason($1, $3, @$); 
@@ -1179,7 +1181,7 @@ range_term
 range_factor
     : simple_type_identifier                   
         { 
-			$$ = parsertools.ConvertNamedTypeReferenceToDotNode($1 as named_type_reference);
+			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
         }
     | unsigned_number
 		{ $$ = $1; }
@@ -3621,11 +3623,47 @@ lambda_procedure_body
 		{
 			$$ = $1;
 		}
-	/*| if_stmt
+	| if_stmt
 		{
-			$$ = $1;
+			$$ = new statement_list($1 as statement, @$);
 		}
-      | tkWhile expr_l1 optional_tk_do while_stmt                        
+	| while_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| repeat_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| for_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| foreach_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| case_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| try_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| lock_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| yield_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| assignment
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+    /*  | tkWhile expr_l1 optional_tk_do while_stmt                        
         { 
 			$$ = NewWhileStmt($1, $2, $3, $4 as statement, @$);    
         }*/

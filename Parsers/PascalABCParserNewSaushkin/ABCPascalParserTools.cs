@@ -779,7 +779,7 @@ namespace PascalABCSavParser
             stlist.Add(wh);
             return stlist;
         }
-        public expression ConvertNamedTypeReferenceToDotNode(named_type_reference ntr) // либо ident либо dot_node
+        public expression ConvertNamedTypeReferenceToDotNodeOrIdent(named_type_reference ntr) // либо ident либо dot_node
         {
             if (ntr.names.Count == 1)
                 return ntr.names[0];
@@ -792,18 +792,26 @@ namespace PascalABCSavParser
                 return dn;
             }
         }
-        public named_type_reference ConvertDotNodeToNamedTypeReference(dot_node dn)
+        public named_type_reference ConvertDotNodeOrIdentToNamedTypeReference(expression en)
         {
-            var ids = new List<ident>();
-            ids.Add(dn.right as ident);
-            while (dn.left is dot_node)
+            if (en is ident)
+                return new named_type_reference(en as ident, en.source_context);
+            if (en is dot_node)
             {
-                dn = dn.left as dot_node;
+                var dn = en as dot_node;
+                var ids = new List<ident>();
                 ids.Add(dn.right as ident);
+                while (dn.left is dot_node)
+                {
+                    dn = dn.left as dot_node;
+                    ids.Add(dn.right as ident);
+                }
+                ids.Add(dn.left as ident);
+                ids.Reverse();
+                return new named_type_reference(ids, dn.source_context);
             }
-            ids.Add(dn.left as ident);
-            ids.Reverse();
-            return new named_type_reference(ids,dn.source_context);
+            this.AddError("TYPE_NAME_EXPECTED", null);
+            return null;
         }
     }
 }
