@@ -3797,7 +3797,8 @@ namespace CodeCompletion
         		case Operators.Plus : return PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name;
         		case Operators.Minus : return PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name;
         		case Operators.Division : return PascalABCCompiler.TreeConverter.compiler_string_consts.div_name;
-        		case Operators.Multiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name;
+                case Operators.IntegerDivision: return PascalABCCompiler.TreeConverter.compiler_string_consts.div_name;
+                case Operators.Multiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name;
         		case Operators.ModulusRemainder : return PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name;
         		case Operators.Less : return PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name;
         		case Operators.LessEqual : return PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name;
@@ -3809,16 +3810,20 @@ namespace CodeCompletion
         		case Operators.AssignmentMultiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.multassign_name;
         		case Operators.AssignmentSubtraction : return PascalABCCompiler.TreeConverter.compiler_string_consts.minusassign_name;
         		case Operators.AssignmentDivision : return PascalABCCompiler.TreeConverter.compiler_string_consts.divassign_name;
-        		case Operators.Implicit : return " implicit";
-        		case Operators.Explicit : return " explicit";
-        	}
+        		case Operators.Implicit : return "implicit";
+        		case Operators.Explicit : return "explicit";
+                case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
+            }
         	return "";
         }
         
         public override void visit(operator_name_ident _operator_name_ident)
         {
             //throw new Exception("The method or operation is not implemented.");
-            meth_name = "operator"+get_operator_sign(_operator_name_ident.operator_type);
+            string sign = get_operator_sign(_operator_name_ident.operator_type);
+            if (sign.Length > 0 && char.IsLetter(sign[0]))
+                sign = " " + sign;
+            meth_name = "operator"+sign;
         }
 
         public override void visit(var_statement _var_statement)
