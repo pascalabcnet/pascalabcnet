@@ -10893,13 +10893,12 @@ namespace PascalABCCompiler.TreeConverter
 		
         public override void visit(SyntaxTree.procedure_definition _procedure_definition)
         {
-            var proc_name = _procedure_definition.proc_header != null && _procedure_definition.proc_header.name != null
-                                ? _procedure_definition.proc_header.name.meth_name
-                                : null;
-            // SSM 20.07.13 если это - узел с коротким определением функции без типа возвращаемого значения, то вывести его
+            // SSM 20.07.13 если это - узел с коротким определением функции без типа возвращаемого значения, то вывести этот тип
             var fh = (_procedure_definition.proc_header as SyntaxTree.function_header);
             if (fh != null && fh.return_type == null)
             {
+                // попытаемся поступить как в лямбдах
+                //fh.return_type = new semantic_type_node(new LambdaResultTypeInferrer(fh, _procedure_definition.proc_body, this).InferResultType(1));
                 var bl = _procedure_definition.proc_body as SyntaxTree.block;
                 if (bl != null && bl.program_code != null)
                 {
@@ -10912,6 +10911,10 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             //\ SSM
+
+            var proc_name = _procedure_definition.proc_header != null && _procedure_definition.proc_header.name != null
+                                ? _procedure_definition.proc_header.name.meth_name
+                                : null;
             if (_procedure_definition.proc_header.attributes != null && context.converted_func_stack.size >= 1)
                 AddError(get_location(_procedure_definition.proc_header), "ATTRIBUTES_FOR_NESTED_FUNCTIONS_NOT_ALLOWED");
             if (context.top_function != null && context.top_function.generic_params != null && !LambdaHelper.IsLambdaName(proc_name))
@@ -11005,7 +11008,6 @@ namespace PascalABCCompiler.TreeConverter
                 hard_node_test_and_visit(_procedure_definition.proc_header);
             }
             //\lroman//
-
 
             //ssyy
             if (context.converted_template_type != null)
@@ -11315,7 +11317,11 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(new SimpleSemanticError(cmmn.loc, "OPERATORS_SHOULD_HAVE_1_OR_2_PARAMETERS"));
                         }
                         else if (cmmn.parameters.Count != expected_params)
-                            AddError(new SimpleSemanticError(cmmn.loc, "OPERATORS_SHOULD_HAVE_{0}_PARAMETERS",expected_params));
+                        {
+                            if (expected_params==1)
+                                AddError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
+                            else AddError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
+                        }
                         bool has_types = false;
                         foreach (parameter p in cmmn.parameters)
                         {
@@ -11357,7 +11363,11 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(new SimpleSemanticError(cnfn.loc, "OPERATORS_SHOULD_HAVE_1_OR_2_PARAMETERS"));
                         }
                         else if (cnfn.parameters.Count != expected_params)
-                            AddError(new SimpleSemanticError(cnfn.loc, "OPERATORS_SHOULD_HAVE_{0}_PARAMETERS", expected_params));
+                        {
+                            if (expected_params == 1)
+                                AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
+                            else AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
+                        }
                         bool has_types = false;
                         foreach (parameter p in cnfn.parameters)
                         {
@@ -15918,6 +15928,12 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
+                    if (tn.element_type != null) // значит, это массив любой размерности
+                    {
+                        elem_type = tn.element_type;
+                        return true;
+                    }
+
                     var ttt = tn.ImplementingInterfaces;
                     foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces)
                     {

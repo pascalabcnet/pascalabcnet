@@ -3663,10 +3663,6 @@ lambda_procedure_body
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}
-    /*  | tkWhile expr_l1 optional_tk_do while_stmt                        
-        { 
-			$$ = NewWhileStmt($1, $2, $3, $4 as statement, @$);    
-        }*/
 	;
 
 %%

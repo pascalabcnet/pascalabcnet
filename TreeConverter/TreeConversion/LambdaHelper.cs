@@ -325,8 +325,8 @@ namespace PascalABCCompiler.TreeConverter
             return procDef;    
         }
 
-        #region Поиск всех result - ов
-        public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew
+        #region Поиск всех result - ов 
+        public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew // Нигде в проекте не используется потому что expr могут использовать локальные переменные, тип которых неизвестен до семантического разбора
         {
             public List<expression> exprList = new List<expression>();
             public ResultNodesSearcher(syntax_tree_node root)

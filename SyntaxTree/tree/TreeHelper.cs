@@ -1554,7 +1554,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class function_lambda_definition
     {
-        public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучщего выбора среди перегруженных методов с параметрами-лямбдами
+        public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучшего выбора среди перегруженных методов с параметрами-лямбдами
         public object RealSemTypeOfResult = null;
 
         public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)
