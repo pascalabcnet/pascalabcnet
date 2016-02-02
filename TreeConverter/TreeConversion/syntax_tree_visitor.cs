@@ -5282,7 +5282,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         si = tn.find_in_type(id_right.name, context.CurrentScope);//CurrentScope
                                         delete_inherited_constructors(ref si, tn);
-                                        delete_extension_methods(ref si);
+                                        // delete_extension_methods(ref si); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
                                     }
 
                                     //definition_node ddn2=check_name_node_type(id_right.name,si,get_location(id_right),
@@ -15928,7 +15928,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    if (tn.element_type != null) // значит, это массив любой размерности
+                    if (tn.element_type != null) // значит, это массив любой размерности - 02.02.16 SSM
                     {
                         elem_type = tn.element_type;
                         return true;
