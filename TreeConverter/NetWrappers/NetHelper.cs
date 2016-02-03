@@ -902,18 +902,9 @@ namespace PascalABCCompiler.NetHelper
 			Type t = namespaces[name] as Type;
 			full_ns = name;
 			if (t != null)
-			/*for (int i = 0; i < _unar.Count; i++)
-            {
-                string full_name = _unar[i].namespace_name + "." + name;
-                t = namespaces[full_name] as Type;
-                if (t != null) 
-                {
-                    full_ns = full_name;
-                    return IsNetNamespace(full_ns, t);
-                }
-            }
-			else*/
 			{
+                if (PABCSystemType != null && t.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
+                    return false;
                 Type tt = t;
                 if (string.Compare(t.Namespace, name, true) == 0)
                 {
