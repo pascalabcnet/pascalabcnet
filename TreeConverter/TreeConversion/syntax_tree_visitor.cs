@@ -5282,7 +5282,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         si = tn.find_in_type(id_right.name, context.CurrentScope);//CurrentScope
                                         delete_inherited_constructors(ref si, tn);
-                                        delete_extension_methods(ref si); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
+                                        delete_extension_methods(ref si, tn); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
                                     }
 
                                     //definition_node ddn2=check_name_node_type(id_right.name,si,get_location(id_right),
@@ -6516,14 +6516,28 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //remove extension methods when static methods called
-        private void delete_extension_methods(ref SymbolInfo si)
+        private void delete_extension_methods(ref SymbolInfo si, type_node tn)
         {
             List<SymbolInfo> si_list = new List<SymbolInfo>();
             SymbolInfo tmp_si = si;
             while (tmp_si != null)
             {
-                if (!(tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method))
+                var fn = tmp_si.sym_info as function_node;
+                if (fn != null)
+                {
+                    if (fn.is_extension_method)
+                    {
+                        compiled_function_node cfn = fn as compiled_function_node;
+                        if (cfn != null && cfn.cont_type == tn)
+                            si_list.Add(tmp_si);
+                    }
+                    else
+                        si_list.Add(tmp_si);
+                }
+                else
                     si_list.Add(tmp_si);
+                /*if (!(fn != null && fn.is_extension_method))
+                    si_list.Add(tmp_si);*/
                 tmp_si = tmp_si.Next;
             }
             /*tmp_si = si;
