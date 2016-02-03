@@ -5282,7 +5282,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         si = tn.find_in_type(id_right.name, context.CurrentScope);//CurrentScope
                                         delete_inherited_constructors(ref si, tn);
-                                        // delete_extension_methods(ref si); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
+                                        delete_extension_methods(ref si); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
                                     }
 
                                     //definition_node ddn2=check_name_node_type(id_right.name,si,get_location(id_right),
@@ -6526,6 +6526,25 @@ namespace PascalABCCompiler.TreeConverter
                     si_list.Add(tmp_si);
                 tmp_si = tmp_si.Next;
             }
+            /*tmp_si = si;
+            while (tmp_si != null)
+            {
+                var fn = tmp_si.sym_info as function_node;
+                if (fn != null && fn.is_extension_method)
+                {
+                    var b = si_list.Any(x =>
+                        {
+                            var xn = x.sym_info as function_node;
+                            if (xn == null)
+                                return true;
+                            else return convertion_data_and_alghoritms.function_eq_params(fn, xn);
+                        }
+                    );
+                    if (!b)
+                        si_list.Add(tmp_si);
+                }
+                tmp_si = tmp_si.Next;
+            }*/
             SymbolInfo new_si = null;
             for (int i = 0; i < si_list.Count; i++)
             {
