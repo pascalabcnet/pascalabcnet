@@ -5282,7 +5282,7 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         si = tn.find_in_type(id_right.name, context.CurrentScope);//CurrentScope
                                         delete_inherited_constructors(ref si, tn);
-                                        delete_extension_methods(ref si); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
+                                        delete_extension_methods(ref si, tn); // SSM 2.2.2016 Пока временно закомментировал - в старом коде этого не было. Из-за этого не работает System.Linq.Enumerable.Select
                                     }
 
                                     //definition_node ddn2=check_name_node_type(id_right.name,si,get_location(id_right),
@@ -6516,14 +6516,28 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //remove extension methods when static methods called
-        private void delete_extension_methods(ref SymbolInfo si)
+        private void delete_extension_methods(ref SymbolInfo si, type_node tn)
         {
             List<SymbolInfo> si_list = new List<SymbolInfo>();
             SymbolInfo tmp_si = si;
             while (tmp_si != null)
             {
-                if (!(tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method))
+                var fn = tmp_si.sym_info as function_node;
+                if (fn != null)
+                {
+                    if (fn.is_extension_method)
+                    {
+                        compiled_function_node cfn = fn as compiled_function_node;
+                        if (cfn != null && cfn.cont_type == tn)
+                            si_list.Add(tmp_si);
+                    }
+                    else
+                        si_list.Add(tmp_si);
+                }
+                else
                     si_list.Add(tmp_si);
+                /*if (!(fn != null && fn.is_extension_method))
+                    si_list.Add(tmp_si);*/
                 tmp_si = tmp_si.Next;
             }
             /*tmp_si = si;
@@ -11901,7 +11915,8 @@ namespace PascalABCCompiler.TreeConverter
                             top_function.ConnectedToType.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && top_function.ConnectedToType.element_type.is_generic_parameter)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
-                            
+                            else if (top_function.ConnectedToType.is_generic_parameter)
+                                top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             break;
                         }
                     default:
@@ -16345,6 +16360,8 @@ namespace PascalABCCompiler.TreeConverter
             context.converted_type = null;
             template_class current_template = context.converted_template_type;
             context.converted_template_type = null;
+            compiled_type_node current_compiled_type = context.converted_compiled_type;
+            context.converted_compiled_type = null;
             common_function_node_stack current_funk_stack = context.converted_func_stack;
             context.converted_func_stack = new common_function_node_stack(); //Думаю, это будет работать
 
@@ -16385,6 +16402,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 using_list.AddElement(un);
             }
+            context.converted_type = null; 
             context.enter_code_block_without_bind();
 
             common_type_node ctn;
@@ -16489,6 +16507,7 @@ namespace PascalABCCompiler.TreeConverter
             context.converted_template_type = current_template;
             context.set_field_access_level(current_fal);
             context.converted_func_stack = current_funk_stack;
+            context.converted_compiled_type = current_compiled_type;
             convertion_data_and_alghoritms.statement_list_stack = statement_list_stack;
             current_document = current_doc;
             body_exists = current_body_exists;
@@ -18030,6 +18049,7 @@ namespace PascalABCCompiler.TreeConverter
                     el.expressions.Add(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.formal_parameters.params_list[i].idents.idents[0].name, _function_lambda_call.source_context));
                 }
             SyntaxTree.method_call _method_call = new SyntaxTree.method_call(el);
+            _method_call.source_context = _function_lambda_call.source_context;
             if (_method_call is SyntaxTree.dereference)
             {
                 ((SyntaxTree.dereference)_method_call).dereferencing_value = (SyntaxTree.addressed_value)(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.lambda_name, _function_lambda_call.source_context));

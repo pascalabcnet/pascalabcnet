@@ -662,9 +662,15 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             _visitor.context.SaveContextAndUpToGlobalLevel();
             _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase;
-            procedures.ForEach(p => _visitor.visit(p));
-            _visitor.context.RestoreCurrentContext();
-            _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
+            try
+            { 
+                procedures.ForEach(p => _visitor.visit(p));
+            }
+            finally
+            {
+                _visitor.context.RestoreCurrentContext();
+                _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
+            }
         }
 
         private void SubstituteVarDefInProcedure(statement_list statementList) //TODO: сейчас обрабатывается так, как будто блока объявлений declarations в функции нет. Нужно будет предусмотреть, но не только для функций, а еще для всех узлов где есть block, который содержит declarations
