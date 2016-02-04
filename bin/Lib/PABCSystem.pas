@@ -7611,7 +7611,7 @@ end;
 function FormatValue(value: object; NumOfChars: integer): string;
 begin
   if value <> nil then
-    Result := value.ToString
+    Result := StructuredObjectToString(value)
   else
     Result := 'nil';
   Result := Result.PadLeft(NumOfChars);

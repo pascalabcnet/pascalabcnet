@@ -1689,6 +1689,72 @@
         </OuterContext>
         <Items />
       </PointOfInterest>
+      <PointOfInterest>
+        <Name>FormatValue</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function FormatValue(value: object; NumOfChars: integer): string;</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>function</string>
+            <string>FormatValue</string>
+            <string>(</string>
+            <string>value</string>
+            <string>:</string>
+            <string>object</string>
+            <string>;</string>
+            <string>NumOfChars</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>)</string>
+            <string>:</string>
+            <string>string</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>StructuredObjectToString</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function StructuredObjectToString(o: Object; n: integer := 0): string;</Text>
+        <OuterContext>
+          <OuterContextItem Type="Method">
+            <string>function</string>
+            <string>StructuredObjectToString</string>
+            <string>(</string>
+            <string>o</string>
+            <string>:</string>
+            <string>Object</string>
+            <string>;</string>
+            <string>n</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>:</string>
+            <string>=</string>
+            <string>0</string>
+            <string>)</string>
+            <string>:</string>
+            <string>string</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <InnerContext>
+          <InnerContextItem Type="Field">
+            <string>nmax</string>
+            <string>=</string>
+            <string>100</string>
+          </InnerContextItem>
+          <InnerContextItem Type="Field">
+            <string>nmax1</string>
+            <string>=</string>
+            <string>50</string>
+          </InnerContextItem>
+          <InnerContextItem Type="Defs">
+            <string>const</string>
+          </InnerContextItem>
+        </InnerContext>
+        <Items />
+      </PointOfInterest>
     </Items>
   </PointOfInterest>
 </AspectFile>
