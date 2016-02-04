@@ -6532,14 +6532,16 @@ namespace PascalABCCompiler.TreeConverter
                 var fn = tmp_si.sym_info as function_node;
                 if (fn != null && fn.is_extension_method)
                 {
-                    var b = si_list.Any(x =>
+                    var b = false;
+                    foreach (var x in si_list)
+                    {
+                        var xn = x.sym_info as function_node;
+                        if (convertion_data_and_alghoritms.function_eq_params(fn, xn))
                         {
-                            var xn = x.sym_info as function_node;
-                            if (xn == null)
-                                return true;
-                            else return convertion_data_and_alghoritms.function_eq_params(fn, xn);
+                            b = true;
+                            break;
                         }
-                    );
+                    }
                     if (!b)
                         si_list.Add(tmp_si);
                 }

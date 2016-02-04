@@ -4,14 +4,14 @@ begin
   Result := Self;
 end;}
 
-{function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
+function BinarySearch<T>(self: array of T; item: T): integer; extensionmethod;
 begin
   Result := System.Array.BinarySearch(self,item);
-end;}
+end;
 
 
 begin
-  var a := Arr(1,2,3);
+  //var a := Arr(1,2,3);
   //System.Linq.Enumerable.Select(a,x->x); - жаль - пока не работает. Закомментил чтобы тесты не падали
   //a.Reverse.Print;
 end.
