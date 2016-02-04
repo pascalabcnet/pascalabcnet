@@ -18047,6 +18047,7 @@ namespace PascalABCCompiler.TreeConverter
                     el.expressions.Add(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.formal_parameters.params_list[i].idents.idents[0].name, _function_lambda_call.source_context));
                 }
             SyntaxTree.method_call _method_call = new SyntaxTree.method_call(el);
+            _method_call.source_context = _function_lambda_call.source_context;
             if (_method_call is SyntaxTree.dereference)
             {
                 ((SyntaxTree.dereference)_method_call).dereferencing_value = (SyntaxTree.addressed_value)(new SyntaxTree.ident(_function_lambda_call.f_lambda_def.lambda_name, _function_lambda_call.source_context));
