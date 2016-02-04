@@ -16357,6 +16357,8 @@ namespace PascalABCCompiler.TreeConverter
             context.converted_type = null;
             template_class current_template = context.converted_template_type;
             context.converted_template_type = null;
+            compiled_type_node current_compiled_type = context.converted_compiled_type;
+            context.converted_compiled_type = null;
             common_function_node_stack current_funk_stack = context.converted_func_stack;
             context.converted_func_stack = new common_function_node_stack(); //Думаю, это будет работать
 
@@ -16397,6 +16399,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 using_list.AddElement(un);
             }
+            context.converted_type = null; 
             context.enter_code_block_without_bind();
 
             common_type_node ctn;
@@ -16501,6 +16504,7 @@ namespace PascalABCCompiler.TreeConverter
             context.converted_template_type = current_template;
             context.set_field_access_level(current_fal);
             context.converted_func_stack = current_funk_stack;
+            context.converted_compiled_type = current_compiled_type;
             convertion_data_and_alghoritms.statement_list_stack = statement_list_stack;
             current_document = current_doc;
             body_exists = current_body_exists;
