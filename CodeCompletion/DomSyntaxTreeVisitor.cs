@@ -1231,6 +1231,8 @@ namespace CodeCompletion
                         }
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
+                        /*if (topScope is TemplateParameterScope || topScope is UnknownScope)
+                            TypeTable.obj_type.AddExtensionMethod(meth_name, ps, ts);*/
                         pr = new ProcRealization(ps, cur_scope);
                         pr.already_defined = true;
                         ps.proc_realization = pr;

@@ -356,7 +356,7 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray))
+                            if (t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray) || (t is TemplateParameterScope || t is UnknownScope))
                             {
                                 lst.AddRange(extension_methods[t]);
                             }
