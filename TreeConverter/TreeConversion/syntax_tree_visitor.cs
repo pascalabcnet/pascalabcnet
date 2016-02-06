@@ -11455,9 +11455,20 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             CheckOverrideOrReintroduceExpectedWarning(get_location(_function_header));
-
+            common_type_node common_converted_type_tmp = context.converted_type;
+            compiled_type_node compiled_converted_type_tmp = context.converted_compiled_type;
+            common_namespace_function_node cnfn2 = context.top_function as common_namespace_function_node;
+            if (cnfn2 != null && cnfn2.ConnectedToType != null)
+            {
+                if (cnfn2.ConnectedToType is compiled_type_node)
+                    context.converted_compiled_type = cnfn2.ConnectedToType as compiled_type_node;
+                else if (cnfn2.ConnectedToType is common_type_node)
+                    context.converted_type = cnfn2.ConnectedToType as common_type_node;
+            }
+                
             bool unique = context.close_function_params(body_exists);
-            
+            context.converted_type = common_converted_type_tmp;
+            context.converted_compiled_type = compiled_converted_type_tmp;
             if (context.top_function.return_value_type == null)
                 AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             if (_function_header.where_defs != null)

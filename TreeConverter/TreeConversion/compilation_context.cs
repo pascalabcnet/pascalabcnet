@@ -3024,7 +3024,29 @@ _cmn.types.AddElement(tctn);*/
 				if (_ctn!=null)
 				{
 					si=_ctn.Scope.FindOnlyInScope(fn.name);
-				}
+                    if (_ctn is compiled_generic_instance_type_node && fn is common_namespace_function_node)
+                    { 
+                        si = (_ctn as compiled_generic_instance_type_node).compiled_original_generic.find_in_type(fn.name);
+                        SymbolInfo si_tmp = si;
+                        while (si_tmp != null)
+                        {
+                            if (si_tmp.sym_info.general_node_type != general_node_type.function_node)
+                            {
+                                TreeRealization.BasePCUReader.RestoreSymbols(si_tmp, fn.name);
+                            }
+                            common_namespace_function_node cnfn = si_tmp.sym_info as common_namespace_function_node;
+                            if (cnfn != null)
+                            {
+                                if (cnfn.namespace_node == (fn as common_namespace_function_node).namespace_node)
+                                {
+                                    break;
+                                }
+                            }
+                            si_tmp = si_tmp.Next;
+                        }
+                        si = si_tmp;
+                    }
+                }
                 else if (_compiled_tn != null)
                 {
                     si = _compiled_tn.find_in_type(fn.name);
