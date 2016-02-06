@@ -2543,6 +2543,24 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        List<compiled_type_node> _generic_params = null;
+
+        public List<compiled_type_node> generic_params
+        {
+            get
+            {
+                if (_generic_params == null)
+                {
+                    _generic_params = new List<compiled_type_node>();
+                    foreach (Type t in _compiled_type.GetGenericArguments())
+                    {
+                        _generic_params.Add(compiled_type_node.get_type_node(t));
+                    }
+                }
+                return _generic_params;
+            }
+        }
+
         public override bool is_generic_parameter
         {
             get
@@ -2568,7 +2586,7 @@ namespace PascalABCCompiler.TreeRealization
 						if (i<tt.Length-1)
 							sb.Append(",");
 					}
-					sb.Append("}");
+                    sb.Append("}");
 				}
 				return sb.ToString();
 			}

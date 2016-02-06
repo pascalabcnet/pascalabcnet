@@ -1403,13 +1403,29 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     return false;
                 }
-                common_type_node ctdef = tdef as common_type_node;
-                int count = ctdef.generic_params.Count;
-                for (int i = 0; i < count; ++i)
+                
+                if (tdef is common_type_node)
                 {
-                    if (ctdef.generic_params[i] != tinst.instance_params[i])
+                    common_type_node ctdef = tdef as common_type_node;
+                    int count = ctdef.generic_params.Count;
+                    for (int i = 0; i < count; ++i)
                     {
-                        return false;
+                        if (ctdef.generic_params[i] != tinst.instance_params[i])
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (tdef is compiled_type_node)
+                {
+                    compiled_type_node ctdef = tdef as compiled_type_node;
+                    int count = ctdef.generic_params.Count;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        if (ctdef.generic_params[i] != tinst.instance_params[i])
+                        {
+                            return false;
+                        }
                     }
                 }
                 return true;
