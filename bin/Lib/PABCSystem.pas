@@ -3360,7 +3360,9 @@ end;
 
 function Range(a, b: integer): sequence of integer;
 begin
-  Result := System.Linq.Enumerable.Range(a, b - a + 1);
+  if b<a then 
+    Result := System.Linq.Enumerable.Empty&<integer>
+  else Result := System.Linq.Enumerable.Range(a, b - a + 1);
 end;
 
 function Range(c1,c2: char): sequence of char;
@@ -3379,7 +3381,7 @@ type AB = class
   end;
   function F(x: integer): real;
   begin
-    Result := a + (b-a)/n*x;
+    Result := a + h*x;
   end;
 end;
 
@@ -3403,11 +3405,14 @@ begin
   if step=0 then
     raise new System.ArgumentException('step=0');
   var n := abs((b-a) div step) + 1;
-  var ar := new ArithmSeq(a,step);
+  var ar: ArithmSeq;
+  if step<0 then
+    ar := new ArithmSeq(b,step)
+  else ar := new ArithmSeq(a,step);
   Result := System.Linq.Enumerable.Range(0, n).Select(ar.f);
 end;
 
-function ArrRandom(n: integer; a: integer; b: integer): array of integer;
+function ArrRandom(n: integer; a: integer; b: integer): array of integer; 
 begin
   Result := new integer[n];
   for var i:=0 to Result.Length-1 do
