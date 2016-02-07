@@ -2186,9 +2186,15 @@ namespace CodeCompletion
 				{
 					if (!search_all)
 					{
+                        if (returned_scope is NamespaceScope)
+                        {
+                            returned_scope = returned_scope.FindNameOnlyInType((_dot_node.right as ident).name);
+                            return;
+                        }
                         TypeScope ts = returned_scope as TypeScope;
                         if (returned_scope is ProcScope)
                             ts = (returned_scope as ProcScope).return_type;
+
 						returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
                         if (returned_scope == null)
                         {
@@ -2448,11 +2454,29 @@ namespace CodeCompletion
         	SymScope[] names = returned_scopes.ToArray();
         	ProcScope ps = select_method(names,null,null,_method_call.parameters != null?_method_call.parameters.expressions.ToArray():null);
         	returned_scopes.Clear();
+
         	if (ps != null)
         	{
         		if (ps.return_type != null)
                 {
-					returned_scope = ps.return_type;
+                    /*if (ps.IsGeneric())
+                    {
+                        List<TypeScope> gen_args = new List<TypeScope>();
+                        if (_method_call.parameters != null)
+                            foreach (expression expr in _method_call.parameters.expressions)
+                            {
+                                expr.visit(this);
+                                if (returned_scope == null || !(returned_scope is TypeScope))
+                                {
+                                    gen_args.Clear();
+                                    break;
+                                }
+                                gen_args.Add(returned_scope as TypeScope);
+                            }
+                        if (gen_args.Count > 0)
+                            ps = ps.GetInstance(gen_args);
+                    }*/
+                    returned_scope = ps.return_type;
                 }
 				else 
 					returned_scope = null;

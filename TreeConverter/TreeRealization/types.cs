@@ -3233,6 +3233,8 @@ namespace PascalABCCompiler.TreeRealization
                         if (start == null)
                         {
                             start = tmp;
+                            if (result != null)
+                                result.Next = start;
                         }
                         else
                         {

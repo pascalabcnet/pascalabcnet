@@ -736,6 +736,8 @@ namespace CodeCompletion
         //eto nuzhno tak kak u nas tablicy vse zapolneny
         protected SymScope internal_find(string name, bool check_for_def)
         {
+            if (name.Length > 0 && name[0] == '?')
+                name = name.Substring(1);
             if (symbol_table != null)
             {
                 object o = symbol_table[name];
@@ -6340,6 +6342,10 @@ namespace CodeCompletion
             {
                 generic_args = new List<string>();
                 generic_args.AddRange(args);
+            }
+            if (mi.GetGenericArguments().Length > 0)
+            {
+                
             }
             if (mi.ReturnType != typeof(void))
             {
