@@ -294,6 +294,7 @@ namespace PascalABCCompiler.TreeConverter
             skip_check_where_sections = false;
             LambdaHelper.Reset(); //lroman//
             SavedContext = null;
+            SavedContextStack.Clear();
             compiled_tc_cache.Clear();
         }
         
