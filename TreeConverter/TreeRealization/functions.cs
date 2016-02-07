@@ -1283,12 +1283,25 @@ namespace PascalABCCompiler.TreeRealization
 		private SemanticTree.field_access_level _field_access_level;
 		private SemanticTree.polymorphic_state _polymorphic_state;
 
+        private type_node _explicit_interface;
 		private bool _is_constructor;
         public bool first_statement = true;
         public bool inherited_ctor_called = false;
         public bool name_case_fixed = false;
 
         private bool _is_final = false;
+
+        public type_node explicit_interface
+        {
+            get
+            {
+                return _explicit_interface;
+            }
+            set
+            {
+                _explicit_interface = value;
+            }
+        }
 
         public bool IsStatic
         {
@@ -1597,6 +1610,7 @@ namespace PascalABCCompiler.TreeRealization
         private int _num_of_default_parameters;
         private bool _is_extension_method=false;
         private compiled_type_node connected_to_type;
+        private List<compiled_type_node> _generic_params;
         private static System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node> compiled_methods =
             new System.Collections.Generic.Dictionary<System.Reflection.MethodInfo, compiled_function_node>();
 

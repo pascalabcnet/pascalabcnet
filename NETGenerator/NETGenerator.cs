@@ -6668,7 +6668,6 @@ namespace PascalABCCompiler.NETGenerator
             MethodBuilder methb = null;
             bool is_prop_acc = IsPropertyAccessor(value);
             MethodAttributes attrs = GetMethodAttributes(value, is_prop_acc);
-
             IRuntimeManagedMethodBody irmmb = value.function_code as IRuntimeManagedMethodBody;
             if (irmmb != null)
             {

@@ -342,6 +342,14 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public virtual string BaseFullName
+        {
+            get
+            {
+                return full_name;
+            }
+        }
+
         /// <summary>
         /// Свойство по умолчанию.
         /// </summary>
@@ -1732,6 +1740,14 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 		
+        public override string BaseFullName
+        {
+            get
+            {
+                return this.comprehensive_namespace.namespace_full_name + "." + name;
+            }
+        }
+
         public override string PrintableName
         {
             get
@@ -3449,6 +3465,17 @@ namespace PascalABCCompiler.TreeRealization
                 if (!_compiled_type.IsPrimitive && base.PrintableName == _compiled_type.Name)
                     return _compiled_type.FullName;
                 return base.PrintableName;
+            }
+        }
+
+        public override string BaseFullName
+        {
+            get
+            {
+                Type t = _compiled_type;
+                if (t.IsGenericType)
+                    t = t.GetGenericTypeDefinition();
+                return t.FullName;
             }
         }
     }
