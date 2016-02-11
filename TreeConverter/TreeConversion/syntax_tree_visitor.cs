@@ -14215,6 +14215,17 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.indexer _indexer)
         {
+            //SSM 11/02/16 - нет, это глупость
+            /*if (_indexer.dereferencing_value is SyntaxTree.question_colon_expression) // то разбросать индекс по компонентам
+            {
+                var q = _indexer.dereferencing_value as SyntaxTree.question_colon_expression;
+                var nodeToVisit = new SyntaxTree.question_colon_expression(q.condition, new indexer(q.ret_if_true as addressed_value, _indexer.indexes, _indexer.source_context),
+                    new indexer(q.ret_if_false as addressed_value, _indexer.indexes, _indexer.source_context), _indexer.source_context);
+                visit(nodeToVisit);
+                return;
+            }*/
+            //end SSM 11/02/16
+
             //lroman
             if (_indexer.dereferencing_value is closure_substituting_node)
             {
@@ -18733,19 +18744,36 @@ namespace PascalABCCompiler.TreeConverter
             if (n > t.GetGenericArguments().Count())
                 AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
 
-            var tname = "#temp_var"+UniqueNumStr();
+            var tname = "#temp_var" + UniqueNumStr();
 
 
-            var tt = new var_statement(new ident(tname),new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             //visit(tt);
 
             var st = new statement_list(tt);
-            for (var i=0; i<n; i++)
+            for (var i = 0; i < n; i++)
             {
-                var a = new assign(asstup.vars.variables[i],new dot_node(new ident(tname), new ident("Item" +(i+1).ToString())), Operators.Assignment, asstup.vars.variables[i].source_context);
+                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())), Operators.Assignment, asstup.vars.variables[i].source_context);
                 st.Add(a);
             }
             visit(st);
+        }
+
+        public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
+        {
+            // Неверно работает. Пока не используется. Доделать
+            addressed_value left = dqn.left;
+            addressed_value right = dqn.right;
+            var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
+            var dn = new dot_node(left, right, dqn.source_context);
+            var q = new SyntaxTree.question_colon_expression(eq, new nil_const(), dn, dqn.source_context);
+            return q;
+        }
+        public override void visit(SyntaxTree.dot_question_node dqn)
+        {
+            // a?.b
+            var q = ConvertToQCE(dqn);
+            visit(q);
         }
     }
 }

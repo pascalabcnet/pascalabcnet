@@ -27541,6 +27541,140 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class dot_question_node : addressed_value_funcname
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public dot_question_node()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public dot_question_node(addressed_value _left,addressed_value _right)
+		{
+			this._left=_left;
+			this._right=_right;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public dot_question_node(addressed_value _left,addressed_value _right,SourceContext sc)
+		{
+			this._left=_left;
+			this._right=_right;
+			source_context = sc;
+		}
+
+		protected addressed_value _left;
+		protected addressed_value _right;
+
+		///<summary>
+		///
+		///</summary>
+		public addressed_value left
+		{
+			get
+			{
+				return _left;
+			}
+			set
+			{
+				_left=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public addressed_value right
+		{
+			get
+			{
+				return _right;
+			}
+			set
+			{
+				_right=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return left;
+					case 1:
+						return right;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						left = (addressed_value)value;
+						break;
+					case 1:
+						right = (addressed_value)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

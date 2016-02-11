@@ -5830,6 +5830,36 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(dot_question_node _dot_question_node)
+		{
+			bw.Write((Int16)209);
+			write_dot_question_node(_dot_question_node);
+		}
+
+		public void write_dot_question_node(dot_question_node _dot_question_node)
+		{
+			write_addressed_value_funcname(_dot_question_node);
+			if (_dot_question_node.left == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_dot_question_node.left.visit(this);
+			}
+			if (_dot_question_node.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_dot_question_node.right.visit(this);
+			}
+		}
+
 	}
 
 
