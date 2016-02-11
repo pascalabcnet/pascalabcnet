@@ -16398,7 +16398,14 @@ namespace PascalABCCompiler.TreeConverter
             condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
             expression_node left = convert_strong(node.ret_if_true);
             expression_node right = convert_strong(node.ret_if_false);
-            right = convertion_data_and_alghoritms.convert_type(right, left.type);
+
+            var typeComparisonResult = type_table.compare_types(left.type, right.type);
+            if (typeComparisonResult == type_compare.greater_type)
+                right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            else left = convertion_data_and_alghoritms.convert_type(left, right.type);
+            /*if (left is null_const_node)
+                left = convertion_data_and_alghoritms.convert_type(left, right.type);
+            else right = convertion_data_and_alghoritms.convert_type(right, left.type); */
             return_value(new question_colon_expression(condition, left, right, get_location(node)));
         }
 
