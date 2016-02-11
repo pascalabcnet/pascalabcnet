@@ -28,7 +28,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkMatching
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkMatching tkQuestionPoint
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -53,7 +53,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable var_specifiers literal_or_number unsigned_number
+%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number  
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -2984,36 +2984,33 @@ variable
         { 
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
-    | variable var_specifiers                
+    | variable tkSquareOpen expr_list tkSquareClose                
         {
-			$$ = NewVariable($1 as addressed_value, $2, @$);
+			$$ = new indexer($1 as addressed_value,$3 as expression_list, @$);
+        }
+    | variable tkRoundOpen optional_expr_list tkRoundClose                
+        {
+			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
+        }
+    | variable tkPoint identifier_keyword_operatorname
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+    | variable tkQuestionPoint identifier_keyword_operatorname                
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+    | variable tkDeref              
+        {
+			$$ = new roof_dereference($1 as addressed_value,@$);
+        }
+    | variable tkAmpersend template_type_params                
+        {
+			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
+			//($$ as ident_with_templateparams).name = (addressed_value_funcname)$1;
         }
     ;
-
-var_specifiers
-    : tkSquareOpen expr_list tkSquareClose     
-        { 
-			$$ = new indexer($2 as expression_list, @$);  
-		}
-    | tkRoundOpen optional_expr_list tkRoundClose
-        { 
-			$$ = new method_call($2 as expression_list, @$);  
-		}
-    | tkPoint identifier_keyword_operatorname   
-        { 
-			$$ = new dot_node(null, $2 as addressed_value, @$);  
-		}
-    | tkDeref                             
-        { 
-			$$ = new roof_dereference();  
-			$$.source_context = @$;
-		}
-    | tkAmpersend template_type_params         
-        { 
-			$$ = new ident_with_templateparams(null, $2 as template_param_list, @$);  
-		}
-    ;
-
+    
 optional_expr_list
     : expr_list
 		{ $$ = $1; }
