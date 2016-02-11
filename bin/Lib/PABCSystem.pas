@@ -819,23 +819,41 @@ procedure Close(f: Text);
 /// Закрывает файл f
 procedure CloseFile(f: Text);
 /// Открывает текстовый файл f на чтение
-procedure Reset(f: Text; en: Encoding := Encoding.Default);
+procedure Reset(f: Text);
+/// Открывает текстовый файл f на чтение
+procedure Reset(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение
-procedure Reset(f: Text; name: string; en: Encoding := Encoding.Default);
+procedure Reset(f: Text; name: string);
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение
+procedure Reset(f: Text; name: string; en: Encoding);
 /// Открывает текстовый файл f на запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
-procedure Rewrite(f: Text; en: Encoding := Encoding.Default);
+procedure Rewrite(f: Text);
+/// Открывает текстовый файл f на запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+procedure Rewrite(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись, при этом обнуляя его содержимое
-procedure Rewrite(f: Text; name: string; en: Encoding := Encoding.Default);
+procedure Rewrite(f: Text; name: string);
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись, при этом обнуляя его содержимое
+procedure Rewrite(f: Text; name: string; en: Encoding);
 /// Открывает текстовый f файл на дополнение
-procedure Append(f: Text; en: Encoding := Encoding.Default);
+procedure Append(f: Text);
+/// Открывает текстовый f файл на дополнение
+procedure Append(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение
-procedure Append(f: Text; name: string; en: Encoding := Encoding.Default);
+procedure Append(f: Text; name: string);
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение
+procedure Append(f: Text; name: string; en: Encoding);
 /// Возвращает текстовый файл с именем fname, открытый на чтение
-function OpenRead(fname: string; en: Encoding := Encoding.Default): Text;
+function OpenRead(fname: string): Text;
+/// Возвращает текстовый файл с именем fname, открытый на чтение
+function OpenRead(fname: string; en: Encoding): Text;
 /// Возвращает текстовый файл с именем fname, открытый на запись
-function OpenWrite(fname: string; en: Encoding := Encoding.Default): Text;
+function OpenWrite(fname: string): Text;
+/// Возвращает текстовый файл с именем fname, открытый на запись
+function OpenWrite(fname: string; en: Encoding): Text;
 /// Возвращает текстовый файл с именем fname, открытый на дополнение
-function OpenAppend(fname: string; en: Encoding := Encoding.Default): Text;
+function OpenAppend(fname: string): Text;
+/// Возвращает текстовый файл с именем fname, открытый на дополнение
+function OpenAppend(fname: string; en: Encoding): Text;
 
 /// Возвращает True, если достигнут конец файла f
 ///!! Returns True if the file-pointer has reached the end of the file
@@ -5220,6 +5238,11 @@ begin
   Close(f);
 end;
 
+procedure Reset(f: Text);
+begin
+  Reset(f,Encoding.Default)
+end;
+
 procedure Reset(f: Text; en: Encoding);
 begin
   if f.fi = nil then
@@ -5240,10 +5263,20 @@ begin
   end;
 end;
 
+procedure Reset(f: Text; name: string);
+begin
+  Reset(f,name,Encoding.Default)
+end;
+
 procedure Reset(f: Text; name: string; en: Encoding);
 begin
   assign(f, name);
   reset(f,en);
+end;
+
+procedure Rewrite(f: Text);
+begin
+  Rewrite(f,Encoding.Default)
 end;
 
 procedure Rewrite(f: Text; en: Encoding);
@@ -5265,10 +5298,20 @@ begin
   end;
 end;
 
+procedure Rewrite(f: Text; name: string);
+begin
+  Rewrite(f,name,Encoding.Default)
+end;
+
 procedure Rewrite(f: Text; name: string; en: Encoding);
 begin
   Assign(f, name);
   Rewrite(f,en);
+end;
+
+procedure Append(f: Text);
+begin
+  Append(f,Encoding.Default)
 end;
 
 procedure Append(f: Text; en: Encoding);
@@ -5278,10 +5321,20 @@ begin
   f.sw := new StreamWriter(f.fi.FullName, True, en);
 end;
 
+procedure Append(f: Text; name: string);
+begin
+  Append(f,name,Encoding.Default)
+end;
+
 procedure Append(f: Text; name: string; en: Encoding);
 begin
   Assign(f, name);
   Append(f,en);
+end;
+
+function OpenRead(fname: string): Text;
+begin
+  Result := OpenRead(fname,Encoding.Default)
 end;
 
 function OpenRead(fname: string; en: Encoding): Text;
@@ -5291,11 +5344,21 @@ begin
   Result := f;
 end;
 
+function OpenWrite(fname: string): Text;
+begin
+  Result := OpenWrite(fname,Encoding.Default)
+end;
+
 function OpenWrite(fname: string; en: Encoding): Text;
 begin
   var f: Text := new Text;
   Rewrite(f,fname,en);
   Result := f;
+end;
+
+function OpenAppend(fname: string): Text;
+begin
+  Result := OpenAppend(fname,Encoding.Default)
 end;
 
 function OpenAppend(fname: string; en: Encoding): Text;
