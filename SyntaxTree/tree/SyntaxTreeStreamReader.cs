@@ -438,6 +438,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new tuple_node_for_formatter();
 				case 208:
 					return new uses_closure();
+				case 209:
+					return new dot_question_node();
 			}
 			return null;
 		}
@@ -3716,6 +3718,19 @@ namespace PascalABCCompiler.SyntaxTree
 					_uses_closure.listunitsections.Add(_read_node() as uses_list);
 				}
 			}
+		}
+
+
+		public void visit(dot_question_node _dot_question_node)
+		{
+			read_dot_question_node(_dot_question_node);
+		}
+
+		public void read_dot_question_node(dot_question_node _dot_question_node)
+		{
+			read_addressed_value_funcname(_dot_question_node);
+			_dot_question_node.left = _read_node() as addressed_value;
+			_dot_question_node.right = _read_node() as addressed_value;
 		}
 
 	}

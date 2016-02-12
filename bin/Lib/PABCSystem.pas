@@ -820,22 +820,40 @@ procedure Close(f: Text);
 procedure CloseFile(f: Text);
 /// Открывает текстовый файл f на чтение
 procedure Reset(f: Text);
+/// Открывает текстовый файл f на чтение
+procedure Reset(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение
 procedure Reset(f: Text; name: string);
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение
+procedure Reset(f: Text; name: string; en: Encoding);
 /// Открывает текстовый файл f на запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
 procedure Rewrite(f: Text);
+/// Открывает текстовый файл f на запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+procedure Rewrite(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись, при этом обнуляя его содержимое
 procedure Rewrite(f: Text; name: string);
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись, при этом обнуляя его содержимое
+procedure Rewrite(f: Text; name: string; en: Encoding);
 /// Открывает текстовый f файл на дополнение
 procedure Append(f: Text);
+/// Открывает текстовый f файл на дополнение
+procedure Append(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение
 procedure Append(f: Text; name: string);
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение
+procedure Append(f: Text; name: string; en: Encoding);
 /// Возвращает текстовый файл с именем fname, открытый на чтение
 function OpenRead(fname: string): Text;
+/// Возвращает текстовый файл с именем fname, открытый на чтение
+function OpenRead(fname: string; en: Encoding): Text;
 /// Возвращает текстовый файл с именем fname, открытый на запись
 function OpenWrite(fname: string): Text;
+/// Возвращает текстовый файл с именем fname, открытый на запись
+function OpenWrite(fname: string; en: Encoding): Text;
 /// Возвращает текстовый файл с именем fname, открытый на дополнение
 function OpenAppend(fname: string): Text;
+/// Возвращает текстовый файл с именем fname, открытый на дополнение
+function OpenAppend(fname: string; en: Encoding): Text;
 
 /// Возвращает True, если достигнут конец файла f
 ///!! Returns True if the file-pointer has reached the end of the file
@@ -5186,7 +5204,7 @@ begin
   if f = output then
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
-    f.sr := new StreamReader(f.fi.FullName, System.Text.Encoding.GetEncoding(1251));
+    f.sr := new StreamReader(f.fi.FullName, Encoding.GetEncoding(1251));
 end;
 
 procedure AssignFile(f: Text; name: string);
@@ -5197,7 +5215,7 @@ end;
 procedure Close(f: Text);
 begin
   if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+    raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sr <> nil then 
   begin
     f.sr.Close; 
@@ -5212,7 +5230,7 @@ begin
     f.sw := nil;
     //    f.fi := nil;
   end
-  else raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+  else raise new IOException(GetTranslation(FILE_NOT_OPENED));
 end;
 
 procedure CloseFile(f: Text);
@@ -5222,11 +5240,16 @@ end;
 
 procedure Reset(f: Text);
 begin
+  Reset(f,Encoding.Default)
+end;
+
+procedure Reset(f: Text; en: Encoding);
+begin
   if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+    raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sr = nil then
   begin
-    f.sr := System.IO.StreamReader.Create(f.fi.FullName, System.Text.Encoding.GetEncoding(1251));
+    f.sr := new StreamReader(f.fi.FullName, en);
     if f.sw <> nil then
     begin
       f.sw.Close;
@@ -5242,17 +5265,27 @@ end;
 
 procedure Reset(f: Text; name: string);
 begin
+  Reset(f,name,Encoding.Default)
+end;
+
+procedure Reset(f: Text; name: string; en: Encoding);
+begin
   assign(f, name);
-  reset(f);
+  reset(f,en);
 end;
 
 procedure Rewrite(f: Text);
 begin
+  Rewrite(f,Encoding.Default)
+end;
+
+procedure Rewrite(f: Text; en: Encoding);
+begin
   if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+    raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.sw = nil then
   begin
-    f.sw := System.IO.StreamWriter.Create(f.fi.FullName, False, System.Text.Encoding.GetEncoding(1251));
+    f.sw := new StreamWriter(f.fi.FullName, False, en);
     if f.sr <> nil then
     begin
       f.sr.Close;
@@ -5267,41 +5300,71 @@ end;
 
 procedure Rewrite(f: Text; name: string);
 begin
+  Rewrite(f,name,Encoding.Default)
+end;
+
+procedure Rewrite(f: Text; name: string; en: Encoding);
+begin
   Assign(f, name);
-  Rewrite(f);
+  Rewrite(f,en);
 end;
 
 procedure Append(f: Text);
 begin
+  Append(f,Encoding.Default)
+end;
+
+procedure Append(f: Text; en: Encoding);
+begin
   if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
-  f.sw := System.IO.StreamWriter.Create(f.fi.FullName, True, System.Text.Encoding.GetEncoding(1251));
+    raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
+  f.sw := new StreamWriter(f.fi.FullName, True, en);
 end;
 
 procedure Append(f: Text; name: string);
 begin
+  Append(f,name,Encoding.Default)
+end;
+
+procedure Append(f: Text; name: string; en: Encoding);
+begin
   Assign(f, name);
-  Append(f);
+  Append(f,en);
 end;
 
 function OpenRead(fname: string): Text;
 begin
+  Result := OpenRead(fname,Encoding.Default)
+end;
+
+function OpenRead(fname: string; en: Encoding): Text;
+begin
   var f: Text := new Text;
-  Reset(f,fname);
+  Reset(f,fname,en);
   Result := f;
 end;
 
 function OpenWrite(fname: string): Text;
 begin
+  Result := OpenWrite(fname,Encoding.Default)
+end;
+
+function OpenWrite(fname: string; en: Encoding): Text;
+begin
   var f: Text := new Text;
-  Rewrite(f,fname);
+  Rewrite(f,fname,en);
   Result := f;
 end;
 
 function OpenAppend(fname: string): Text;
 begin
+  Result := OpenAppend(fname,Encoding.Default)
+end;
+
+function OpenAppend(fname: string; en: Encoding): Text;
+begin
   var f: Text := new Text;
-  Append(f,fname);
+  Append(f,fname,en);
   Result := f;
 end;
 
@@ -5310,8 +5373,8 @@ begin
   if f.sr <> nil then
     Result := f.sr.EndOfStream
   else if f.sw <> nil then
-    raise new System.IO.IOException(GetTranslation(EOF_FOR_TEXT_WRITEOPENED))
-  else raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+    raise new IOException(GetTranslation(EOF_FOR_TEXT_WRITEOPENED))
+  else raise new IOException(GetTranslation(FILE_NOT_OPENED));
 end;
 
 function Eoln(f: Text): boolean;
@@ -5319,8 +5382,8 @@ begin
   if f.sr <> nil then
     Result := f.sr.EndOfStream or (f.sr.Peek = 13) or (f.sr.Peek = 10) 
   else if f.sw <> nil then
-    raise new System.IO.IOException(GetTranslation(EOLN_FOR_TEXT_WRITEOPENED))
-  else raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+    raise new IOException(GetTranslation(EOLN_FOR_TEXT_WRITEOPENED))
+  else raise new IOException(GetTranslation(FILE_NOT_OPENED));
 end;
 
 function SeekEof(f: Text): boolean;
@@ -5328,9 +5391,9 @@ var
   i: integer;
 begin
   if f.sw <> nil then
-    raise new System.IO.IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
+    raise new IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+    raise new IOException(GetTranslation(FILE_NOT_OPENED));
   repeat
     if f.sr.EndOfStream then
       break;
@@ -5345,9 +5408,9 @@ end;
 function SeekEoln(f: Text): boolean;
 begin
   if f.sw <> nil then
-    raise new System.IO.IOException(GetTranslation(SEEKEOLN_FOR_TEXT_WRITEOPENED));
+    raise new IOException(GetTranslation(SEEKEOLN_FOR_TEXT_WRITEOPENED));
   if f.sr = nil then  
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
+    raise new IOException(GetTranslation(FILE_NOT_OPENED));
   repeat
     if f.sr.EndOfStream then
       break;
@@ -5369,14 +5432,14 @@ end;
 procedure Erase(f: Text);
 begin
   if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+    raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
   f.fi.Delete;
 end;
 
 procedure Rename(f: Text; newname: string);
 begin
   if f.fi = nil then
-    raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
+    raise new IOException(GetTranslation(FILE_NOT_ASSIGNED));
   System.IO.File.Move(f.fi.FullName, newname);
 end;
 

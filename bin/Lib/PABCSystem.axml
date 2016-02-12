@@ -1755,6 +1755,33 @@
         </InnerContext>
         <Items />
       </PointOfInterest>
+      <PointOfInterest>
+        <Name>Reset</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>procedure Reset(f: Text; en: Encoding := Encoding.Default);</Text>
+        <OuterContext>
+          <OuterContextItem Type="MethodHeader">
+            <string>procedure</string>
+            <string>Reset</string>
+            <string>(</string>
+            <string>f</string>
+            <string>:</string>
+            <string>Text</string>
+            <string>;</string>
+            <string>en</string>
+            <string>:</string>
+            <string>Encoding</string>
+            <string>:</string>
+            <string>=</string>
+            <string>Encoding</string>
+            <string>.</string>
+            <string>Default</string>
+            <string>)</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
     </Items>
   </PointOfInterest>
 </AspectFile>
