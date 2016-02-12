@@ -150,8 +150,8 @@ namespace GPPGParserScanner
 
         public procedure_header NewProcfuncHeading(procedure_header ph)
         {
-            ph.name.explicit_interface_name = ph.name.class_name;
-			ph.name.class_name = null;
+            //ph.name.explicit_interface_name = ph.name.class_name;
+			//ph.name.class_name = null;
             return ph;
         }
 
