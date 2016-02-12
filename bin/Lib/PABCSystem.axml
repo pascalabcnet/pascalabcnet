@@ -180,112 +180,311 @@
                 </OuterContext>
                 <Items />
               </PointOfInterest>
-              <PointOfInterest>
-                <Name>Класс текстового файла</Name>
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>Text = class</Text>
-                <OuterContext>
-                  <OuterContextItem Type="Class">
-                    <string>Text</string>
-                    <string>=</string>
-                    <string>class</string>
-                  </OuterContextItem>
-                  <OuterContextItem Type="" />
-                </OuterContext>
-                <Items />
-              </PointOfInterest>
-              <PointOfInterest>
-                <Name>Класс стандартного множества</Name>
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>TypedSet = class (System.Collections.IEnumerable)</Text>
-                <OuterContext>
-                  <OuterContextItem Type="Class">
-                    <string>TypedSet</string>
-                    <string>=</string>
-                    <string>class</string>
-                    <string>(</string>
-                    <string>System</string>
-                    <string>.</string>
-                    <string>Collections</string>
-                    <string>.</string>
-                    <string>IEnumerable</string>
-                    <string>)</string>
-                  </OuterContextItem>
-                  <OuterContextItem Type="" />
-                </OuterContext>
-                <Items />
-              </PointOfInterest>
-              <PointOfInterest>
-                <Name>Класс AbstractBinaryFile</Name>
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>AbstractBinaryFile = class</Text>
-                <OuterContext>
-                  <OuterContextItem Type="Class">
-                    <string>AbstractBinaryFile</string>
-                    <string>=</string>
-                    <string>class</string>
-                  </OuterContextItem>
-                  <OuterContextItem Type="" />
-                </OuterContext>
-                <Items />
-              </PointOfInterest>
-              <PointOfInterest>
-                <Name>Класс TypedFile</Name>
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>TypedFile = sealed class(AbstractBinaryFile)</Text>
-                <OuterContext>
-                  <OuterContextItem Type="Class">
-                    <string>TypedFile</string>
-                    <string>=</string>
-                    <string>sealed</string>
-                    <string>class</string>
-                    <string>(</string>
-                    <string>AbstractBinaryFile</string>
-                    <string>)</string>
-                  </OuterContextItem>
-                  <OuterContextItem Type="" />
-                </OuterContext>
-                <Items />
-              </PointOfInterest>
-              <PointOfInterest>
-                <Name>Класс BinaryFile</Name>
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>BinaryFile = sealed class(AbstractBinaryFile)</Text>
-                <OuterContext>
-                  <OuterContextItem Type="Class">
-                    <string>BinaryFile</string>
-                    <string>=</string>
-                    <string>sealed</string>
-                    <string>class</string>
-                    <string>(</string>
-                    <string>AbstractBinaryFile</string>
-                    <string>)</string>
-                  </OuterContextItem>
-                  <OuterContextItem Type="" />
-                </OuterContext>
-                <Items />
-              </PointOfInterest>
             </Items>
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Класс текстового файла Text</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>Text = class</Text>
+            <OuterContext>
+              <OuterContextItem Type="Class">
+                <string>Text</string>
+                <string>=</string>
+                <string>class</string>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Класс стандартного множества TypedSet</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>TypedSet = class (System.Collections.IEnumerable)</Text>
+            <OuterContext>
+              <OuterContextItem Type="Class">
+                <string>TypedSet</string>
+                <string>=</string>
+                <string>class</string>
+                <string>(</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>IEnumerable</string>
+                <string>)</string>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Класс AbstractBinaryFile</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>AbstractBinaryFile = class</Text>
+            <OuterContext>
+              <OuterContextItem Type="Class">
+                <string>AbstractBinaryFile</string>
+                <string>=</string>
+                <string>class</string>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Класс TypedFile</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>TypedFile = sealed class(AbstractBinaryFile)</Text>
+            <OuterContext>
+              <OuterContextItem Type="Class">
+                <string>TypedFile</string>
+                <string>=</string>
+                <string>sealed</string>
+                <string>class</string>
+                <string>(</string>
+                <string>AbstractBinaryFile</string>
+                <string>)</string>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Класс BinaryFile</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>BinaryFile = sealed class(AbstractBinaryFile)</Text>
+            <OuterContext>
+              <OuterContextItem Type="Class">
+                <string>BinaryFile</string>
+                <string>=</string>
+                <string>sealed</string>
+                <string>class</string>
+                <string>(</string>
+                <string>AbstractBinaryFile</string>
+                <string>)</string>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Интерфейс подсистемы ввода/вывода</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>/// Интерфейс подсистемы ввода/вывода</Text>
+            <OuterContext>
+              <OuterContextItem Type="Defs">
+                <string>type</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>ElementSize</string>
+                <string>:</string>
+                <string>int64</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>offset</string>
+                <string>:</string>
+                <string>integer</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>offsets</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>integer</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>ElementType</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Type</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>constructor</string>
+                <string>Create</string>
+                <string>(</string>
+                <string>ElementType</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Type</string>
+                <string>)</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>constructor</string>
+                <string>Create</string>
+                <string>(</string>
+                <string>ElementType</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Type</string>
+                <string>;</string>
+                <string>offs</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>;</string>
+                <string>params</string>
+                <string>offsets</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>integer</string>
+                <string>)</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>function</string>
+                <string>ToString</string>
+                <string>:</string>
+                <string>string</string>
+                <string>override</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>function</string>
+                <string>FilePos</string>
+                <string>:</string>
+                <string>int64</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>function</string>
+                <string>FileSize</string>
+                <string>:</string>
+                <string>int64</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>procedure</string>
+                <string>Seek</string>
+                <string>(</string>
+                <string>n</string>
+                <string>:</string>
+                <string>int64</string>
+                <string>)</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Стандартная подсистема ввода-вывода</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>/// Стандартная подсистема ввода-вывода</Text>
+            <OuterContext>
+              <OuterContextItem Type="Defs">
+                <string>type</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>ElementSize</string>
+                <string>:</string>
+                <string>int64</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>offset</string>
+                <string>:</string>
+                <string>integer</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>offsets</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>integer</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>ElementType</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Type</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>constructor</string>
+                <string>Create</string>
+                <string>(</string>
+                <string>ElementType</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Type</string>
+                <string>)</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>constructor</string>
+                <string>Create</string>
+                <string>(</string>
+                <string>ElementType</string>
+                <string>:</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Type</string>
+                <string>;</string>
+                <string>offs</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>;</string>
+                <string>params</string>
+                <string>offsets</string>
+                <string>:</string>
+                <string>array</string>
+                <string>of</string>
+                <string>integer</string>
+                <string>)</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>function</string>
+                <string>ToString</string>
+                <string>:</string>
+                <string>string</string>
+                <string>override</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>function</string>
+                <string>FilePos</string>
+                <string>:</string>
+                <string>int64</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>function</string>
+                <string>FileSize</string>
+                <string>:</string>
+                <string>int64</string>
+              </InnerContextItem>
+              <InnerContextItem Type="ClassMethod">
+                <string>procedure</string>
+                <string>Seek</string>
+                <string>(</string>
+                <string>n</string>
+                <string>:</string>
+                <string>int64</string>
+                <string>)</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
           </PointOfInterest>
           <PointOfInterest>
             <Name>Функции работы со стандартными множествами</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>function Union(s1, s2: TypedSet): TypedSet;</Text>
+            <Text>procedure Include(var s: TypedSet; el: object);</Text>
             <OuterContext>
               <OuterContextItem Type="MethodHeader">
-                <string>function</string>
-                <string>Union</string>
+                <string>procedure</string>
+                <string>Include</string>
                 <string>(</string>
-                <string>s1</string>
-                <string>,</string>
-                <string>s2</string>
+                <string>var</string>
+                <string>s</string>
                 <string>:</string>
                 <string>TypedSet</string>
+                <string>;</string>
+                <string>el</string>
+                <string>:</string>
+                <string>object</string>
                 <string>)</string>
-                <string>:</string>
-                <string>TypedSet</string>
               </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
             <Items />
           </PointOfInterest>
@@ -329,22 +528,96 @@
           <PointOfInterest>
             <Name>Процедуры Print</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>procedure Print(params args: array of object);</Text>
+            <Text>//                  Print</Text>
             <OuterContext>
-              <OuterContextItem Type="MethodHeader">
-                <string>procedure</string>
-                <string>Print</string>
-                <string>(</string>
-                <string>params</string>
-                <string>args</string>
-                <string>:</string>
-                <string>array</string>
-                <string>of</string>
-                <string>object</string>
-                <string>)</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
             <Items />
           </PointOfInterest>
           <PointOfInterest>
@@ -489,21 +762,96 @@
           <PointOfInterest>
             <Name>Подпрограммы для работы с символами и строками</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>function Chr(a: byte): char;</Text>
+            <Text>//                Char and String manipulation</Text>
             <OuterContext>
-              <OuterContextItem Type="MethodHeader">
-                <string>function</string>
-                <string>Chr</string>
-                <string>(</string>
-                <string>a</string>
-                <string>:</string>
-                <string>byte</string>
-                <string>)</string>
-                <string>:</string>
-                <string>char</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
             <Items />
           </PointOfInterest>
           <PointOfInterest>
@@ -526,7 +874,7 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Подпрограммы для работы с динамическими массивами</Name>
+            <Name>П/п для работы с динамическими массивами</Name>
             <FileName>\PABCSystem.pas</FileName>
             <Text>function Low(i: System.Array): integer;</Text>
             <OuterContext>
@@ -548,32 +896,197 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Подпрограммы для работы с последовательностями</Name>
+            <Name>П/п для работы с последовательностями и дин. массивами</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>function Range(a,b: integer): IEnumerable&lt;integer&gt;;</Text>
+            <Text>//              Sequences and dynamic arrays</Text>
             <OuterContext>
-              <OuterContextItem Type="MethodHeader">
-                <string>function</string>
-                <string>Range</string>
-                <string>(</string>
-                <string>a</string>
-                <string>,</string>
-                <string>b</string>
-                <string>:</string>
-                <string>integer</string>
-                <string>)</string>
-                <string>:</string>
-                <string>IEnumerable</string>
-                <string>&lt;</string>
-                <string>integer</string>
-                <string>&gt;</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Подпрограммы для работы с Tuplами</Name>
+            <Name>П/п для генерации случайных матриц</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                       Matrices</Text>
+            <OuterContext>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>П/п Rec для созданияTuplов</Name>
             <FileName>\PABCSystem.pas</FileName>
             <Text>//                Tuples</Text>
             <OuterContext>
@@ -582,27 +1095,692 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Подпрограммы работы со словарями</Name>
+            <Name>Подпрограммы создания Lst, HSet, SSet, Dict, KV</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//                Dict</Text>
+            <Text>//                Lst, HSet, SSet, Dict, KV</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Стандартные классы исключений</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                  Standard Exceptions</Text>
+            <OuterContext>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
             <Items />
           </PointOfInterest>
           <PointOfInterest>
             <Name>Общедоступные переменные</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>CurrentIOSystem: IOSystem;</Text>
+            <Text>//                  Global variables</Text>
             <OuterContext>
-              <OuterContextItem Type="Field">
-                <string>CurrentIOSystem</string>
-                <string>:</string>
-                <string>IOSystem</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
-            <Items />
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items>
+              <PointOfInterest>
+                <Name>input, output</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>output: TextFile;</Text>
+                <OuterContext>
+                  <OuterContextItem Type="Field">
+                    <string>output</string>
+                    <string>:</string>
+                    <string>TextFile</string>
+                  </OuterContextItem>
+                  <OuterContextItem Type="Defs">
+                    <string>var</string>
+                  </OuterContextItem>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <Items />
+              </PointOfInterest>
+            </Items>
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Internal subprograms and variables</Name>
+            <Items>
+              <PointOfInterest>
+                <Name>Internal System subprograms</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>//                  Internal System subprograms</Text>
+                <OuterContext>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>unit</string>
+                    <string>PABCSystem</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>uses</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Runtime</string>
+                    <string>.</string>
+                    <string>InteropServices</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>IO</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>Generic</string>
+                    <string>,</string>
+                    <string>System</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxShortInt</string>
+                    <string>=</string>
+                    <string>shortint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxByte</string>
+                    <string>=</string>
+                    <string>byte</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxSmallInt</string>
+                    <string>=</string>
+                    <string>smallint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxWord</string>
+                    <string>=</string>
+                    <string>word</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxLongWord</string>
+                    <string>=</string>
+                    <string>longword</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxInt64</string>
+                    <string>=</string>
+                    <string>int64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxUInt64</string>
+                    <string>=</string>
+                    <string>uint64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxDouble</string>
+                    <string>=</string>
+                    <string>real</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
+              <PointOfInterest>
+                <Name>Internal typed sets operations</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>//                  Internal typed sets operations</Text>
+                <OuterContext>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>unit</string>
+                    <string>PABCSystem</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>uses</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Runtime</string>
+                    <string>.</string>
+                    <string>InteropServices</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>IO</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>Generic</string>
+                    <string>,</string>
+                    <string>System</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxShortInt</string>
+                    <string>=</string>
+                    <string>shortint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxByte</string>
+                    <string>=</string>
+                    <string>byte</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxSmallInt</string>
+                    <string>=</string>
+                    <string>smallint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxWord</string>
+                    <string>=</string>
+                    <string>word</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxLongWord</string>
+                    <string>=</string>
+                    <string>longword</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxInt64</string>
+                    <string>=</string>
+                    <string>int64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxUInt64</string>
+                    <string>=</string>
+                    <string>uint64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxDouble</string>
+                    <string>=</string>
+                    <string>real</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
+              <PointOfInterest>
+                <Name>Internal for OpenMPSupport</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>//                  Internal for OpenMPSupport</Text>
+                <OuterContext>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>unit</string>
+                    <string>PABCSystem</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>uses</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Runtime</string>
+                    <string>.</string>
+                    <string>InteropServices</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>IO</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>Generic</string>
+                    <string>,</string>
+                    <string>System</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxShortInt</string>
+                    <string>=</string>
+                    <string>shortint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxByte</string>
+                    <string>=</string>
+                    <string>byte</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxSmallInt</string>
+                    <string>=</string>
+                    <string>smallint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxWord</string>
+                    <string>=</string>
+                    <string>word</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxLongWord</string>
+                    <string>=</string>
+                    <string>longword</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxInt64</string>
+                    <string>=</string>
+                    <string>int64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxUInt64</string>
+                    <string>=</string>
+                    <string>uint64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxDouble</string>
+                    <string>=</string>
+                    <string>real</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
+              <PointOfInterest>
+                <Name>Internal procedures for PABCRTL.dll</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>//                  Internal procedures for PABCRTL.dll</Text>
+                <OuterContext>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>unit</string>
+                    <string>PABCSystem</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>uses</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Runtime</string>
+                    <string>.</string>
+                    <string>InteropServices</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>IO</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>Generic</string>
+                    <string>,</string>
+                    <string>System</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxShortInt</string>
+                    <string>=</string>
+                    <string>shortint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxByte</string>
+                    <string>=</string>
+                    <string>byte</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxSmallInt</string>
+                    <string>=</string>
+                    <string>smallint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxWord</string>
+                    <string>=</string>
+                    <string>word</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxLongWord</string>
+                    <string>=</string>
+                    <string>longword</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxInt64</string>
+                    <string>=</string>
+                    <string>int64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxUInt64</string>
+                    <string>=</string>
+                    <string>uint64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxDouble</string>
+                    <string>=</string>
+                    <string>real</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
+            </Items>
           </PointOfInterest>
         </Items>
       </PointOfInterest>
@@ -613,7 +1791,198 @@
         <OuterContext>
           <OuterContextItem Type="PAS_TreeNode" />
         </OuterContext>
-        <Items />
+        <Items>
+          <PointOfInterest>
+            <Name>Подпрограммы для работы с динамическими массивами</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                Dynamic arrays</Text>
+            <OuterContext>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Подпрограммы для работы с символами и строками</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//                Char and String: implementation</Text>
+            <OuterContext>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
+          </PointOfInterest>
+        </Items>
       </PointOfInterest>
       <PointOfInterest>
         <Name>Подсистема ввода-вывода</Name>
@@ -963,6 +2332,29 @@
         <Name>Методы расширения</Name>
         <Items>
           <PointOfInterest>
+            <Name>Методы расширения для char</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function char.ToDigit(self: char): integer; extensionmethod;</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>function</string>
+                <string>char</string>
+                <string>.</string>
+                <string>ToDigit</string>
+                <string>(</string>
+                <string>self</string>
+                <string>:</string>
+                <string>char</string>
+                <string>)</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>extensionmethod</string>
+              </OuterContextItem>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
             <Name>Методы расширения для string</Name>
             <FileName>\PABCSystem.pas</FileName>
             <Text>function string.ToInteger: integer;</Text>
@@ -978,15 +2370,6 @@
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
             <Items>
-              <PointOfInterest>
-                <Name>Extension methods for String 1</Name>
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>//    Linq ext</Text>
-                <OuterContext>
-                  <OuterContextItem Type="PAS_TreeNode" />
-                </OuterContext>
-                <Items />
-              </PointOfInterest>
               <PointOfInterest>
                 <Name>Операции со строками как методы расширения</Name>
                 <FileName>\PABCSystem.pas</FileName>
@@ -1019,30 +2402,102 @@
                 </OuterContext>
                 <Items />
               </PointOfInterest>
+              <PointOfInterest>
+                <Name>string методы расширения 2</Name>
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>//    string методы расширения</Text>
+                <OuterContext>
+                  <OuterContextItem Type="PAS_TreeNode" />
+                </OuterContext>
+                <InnerContext>
+                  <InnerContextItem Type="Field">
+                    <string>unit</string>
+                    <string>PABCSystem</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>uses</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Runtime</string>
+                    <string>.</string>
+                    <string>InteropServices</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>IO</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>,</string>
+                    <string>System</string>
+                    <string>.</string>
+                    <string>Collections</string>
+                    <string>.</string>
+                    <string>Generic</string>
+                    <string>,</string>
+                    <string>System</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxShortInt</string>
+                    <string>=</string>
+                    <string>shortint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxByte</string>
+                    <string>=</string>
+                    <string>byte</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxSmallInt</string>
+                    <string>=</string>
+                    <string>smallint</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxWord</string>
+                    <string>=</string>
+                    <string>word</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxLongWord</string>
+                    <string>=</string>
+                    <string>longword</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxInt64</string>
+                    <string>=</string>
+                    <string>int64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxUInt64</string>
+                    <string>=</string>
+                    <string>uint64</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                  <InnerContextItem Type="Field">
+                    <string>MaxDouble</string>
+                    <string>=</string>
+                    <string>real</string>
+                    <string>.</string>
+                    <string>MaxValue</string>
+                  </InnerContextItem>
+                </InnerContext>
+                <Items />
+              </PointOfInterest>
             </Items>
-          </PointOfInterest>
-          <PointOfInterest>
-            <Name>Методы расширения для char</Name>
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function char.ToDigit(self: char): integer; extensionmethod;</Text>
-            <OuterContext>
-              <OuterContextItem Type="Method">
-                <string>function</string>
-                <string>char</string>
-                <string>.</string>
-                <string>ToDigit</string>
-                <string>(</string>
-                <string>self</string>
-                <string>:</string>
-                <string>char</string>
-                <string>)</string>
-                <string>:</string>
-                <string>integer</string>
-                <string>extensionmethod</string>
-              </OuterContextItem>
-              <OuterContextItem Type="PAS_TreeNode" />
-            </OuterContext>
-            <Items />
           </PointOfInterest>
           <PointOfInterest>
             <Name>Extension methods for IEnumerable&lt;T&gt;</Name>

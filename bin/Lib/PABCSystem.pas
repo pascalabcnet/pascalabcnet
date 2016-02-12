@@ -22,7 +22,6 @@ interface
 uses
   System.Runtime.InteropServices,
   System.IO, 
-  //System.Reflection, 
   System.Collections, 
   System.Collections.Generic,
   System;
@@ -68,17 +67,6 @@ const
   /// !! The newline string defined for this environment.
   NewLine = System.Environment.NewLine;
 
-
-function RunTimeSizeOf(t: System.Type): integer;
-
-/// Содержит аргумены командой строки, с которыми была запущена программа
-var
-  CommandLineArgs: array of string;
-
-///--
-var
-  __CONFIG__: Dictionary<string, object> := new Dictionary<string, object>;
-  
 //Маркер того, что это системный модуль
 ///--
 const
@@ -251,6 +239,7 @@ type
   ShortString = string[255];
   
   /// Тип текстового файла
+type
   Text = class
   private 
     fi: FileInfo;
@@ -364,67 +353,15 @@ type
     function ToString: string; override;
   end;
 
-var
-  output: TextFile;
-  input: TextFile;
-
-///--
-function Union(s1, s2: TypedSet): TypedSet;
-///--
-function Subtract(s1, s2: TypedSet): TypedSet;
+// -----------------------------------------------------
+//                  Typed sets
+// -----------------------------------------------------
 ///- Include(var s : set of T; el : T)
 ///Добавляет елемент el во множество s
 procedure Include(var s: TypedSet; el: object);
 ///- Exclude(var s : set of T; el : T)
 ///Удаляет элемент el из множества s
 procedure Exclude(var s: TypedSet; el: object);
-///--
-function Intersect(s1, s2: TypedSet): TypedSet;
-///--
-function CreateSet(params elems: array of object): TypedSet;
-///--
-function CreateSet: TypedSet;
-///--
-function CreateBoundedSet(low, high: object): TypedSet;
-///--
-function InSet(obj: object; s: TypedSet): boolean;
-///--
-function CreateDiapason(low, high: integer): Diapason;
-///--
-function CreateObjDiapason(low, high: object): Diapason;
-///--
-function CompareSetEquals(s1, s2: TypedSet): boolean;
-///--
-function CompareSetInEquals(s1, s2: TypedSet): boolean;
-///--
-function CompareSetLess(s1, s2: TypedSet): boolean;
-///--
-function CompareSetGreaterEqual(s1, s2: TypedSet): boolean;
-///--
-function CompareSetLessEqual(s1, s2: TypedSet): boolean;
-///--
-function CompareSetGreater(s1, s2: TypedSet): boolean;
-///--
-procedure ClipSet(var s: TypedSet; low, high: object);
-///--
-procedure AssignSet(var left: TypedSet; right: TypedSet);
-///--
-function ClipSetFunc(s: TypedSet; low, high: object): TypedSet;
-///--
-function ClipShortStringInSet(s: TypedSet; len: integer): TypedSet;
-///--
-procedure ClipShortStringInSetProcedure(var s: TypedSet; len: integer);
-///--
-procedure AssignSetWithBounds(var left: TypedSet; right: TypedSet; low, high: object);
-///--
-procedure TypedSetInit(var st: TypedSet);
-///--
-procedure TypedSetInitWithBounds(var st: TypedSet; low, high: object);
-///--
-procedure TypedSetInitWithShortString(var st: TypedSet; len: integer);
-
-///--
-function ExecuteAssemlyIsDll: boolean;
 
 // Base class for typed and binary files
 ///--
@@ -451,8 +388,9 @@ type
     procedure Write(params vals: array of object);
   end;
 
-///--
 type
+  // Class for typed files
+  ///--
   TypedFile = sealed class(AbstractBinaryFile)
   private 
     ElementSize: int64;
@@ -471,6 +409,7 @@ type
     procedure Seek(n: int64);
   end;
   
+  // Class for binary files
   ///--
   BinaryFile = sealed class(AbstractBinaryFile)
   public 
@@ -506,6 +445,7 @@ type
     procedure writeln;
   end;
   
+  /// Стандартная подсистема ввода-вывода
   IOStandardSystem = class(IOSystem)
     state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
     sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
@@ -543,42 +483,6 @@ type
     function GetEnumerator: System.Collections.IEnumerator;
   end;
   
-  ///Базовый класс для исключений, бросаемых при создании инстанции generic-типа
-  BadGenericInstanceParameterException = class(Exception)
-  protected 
-    InstanceType: System.Type;
-  public 
-    constructor Create(ActualParameterType: System.Type);
-  end;
-  
-  ///Бросается если тип непригоден для указателей
-  CanNotUseTypeForPointersException = class(BadGenericInstanceParameterException)
-  public 
-    function ToString: string; override;
-  end;
-  
-  ///Бросается если тип непригоден для типизированных файлов
-  CanNotUseTypeForTypedFilesException = class(BadGenericInstanceParameterException)
-  public 
-    function ToString: string; override;
-  end;
-  
-  ///Бросается если тип непригоден для бинарных файлов
-  CanNotUseTypeForFilesException = class(BadGenericInstanceParameterException)
-  public 
-    function ToString: string; override;
-  end;
-
-///--
-function GetCharInShortString(s: string; ind, n: integer): char;
-///--
-function SetCharInShortString(s: string; ind, n: integer; c: char): string;
-///--
-function ClipShortString(s: string; len: integer): string;
-///--
-function GetResourceStream(ResourceFileName: string): Stream;
-
-
 // -----------------------------------------------------
 //                  read - readln
 // -----------------------------------------------------
@@ -796,6 +700,9 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 ///и осуществляет переход на новую строку
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
+// -----------------------------------------------------
+//                  Print
+// -----------------------------------------------------
 /// Выводит значения s на экран
 procedure Print(s: string);
 /// Выводит значения args на экран, выводя после каждого значения пробел
@@ -1055,11 +962,6 @@ procedure Halt;
 /// Завершает работу программы, возвращая код ошибки exitCode
 procedure Halt(exitCode: integer);
 
-/// Для совместимости с Pascal ABC. Не выполняет никаких действий
-procedure cls;
-
-// Непонятно, что делать после такой паузы. Убрал (SS)
-//procedure Pause;
 /// Делает паузу на ms миллисекунд
 procedure Sleep(ms: integer);
 /// Возващает имя запущенного .exe-файла
@@ -1503,8 +1405,6 @@ procedure Sort<T>(l: List<T>);
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
 procedure Reverse<T>(a: array of T; index,length: integer);
-
-//function Copy<T>(a: array of T): array of T;
 ///--
 function CopyWithSize(source, dest: &Array): &Array;
 
@@ -1560,12 +1460,6 @@ function ArrFill<T>(count: integer; x: T): array of T;
 /// Возвращает последовательность из count элементов x 
 function SeqFill<T>(count: integer; x: T): sequence of T;
 
-/// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
-function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
-/// Возвращает матрицу размера m x n, заполненную случайными вещественными значениями
-function MatrixRandomReal(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 10): array [,] of real;
-
-
 /// Возвращает массив из n целых, введенных с клавиатуры
 function ReadArrInteger(n: integer): array of integer;
 /// Возвращает массив из n вещественных, введенных с клавиатуры
@@ -1593,6 +1487,15 @@ function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
 function ReadSeqReal(const prompt: string; n: integer): sequence of real;
 /// Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры
 function ReadSeqString(const prompt: string; n: integer): sequence of string;
+
+// -----------------------------------------------------
+//                       Matrices
+// -----------------------------------------------------
+/// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
+function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
+/// Возвращает матрицу размера m x n, заполненную случайными вещественными значениями
+function MatrixRandomReal(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 10): array [,] of real;
+
 // -----------------------------------------------------
 //                       Tuples
 // -----------------------------------------------------
@@ -1609,10 +1512,10 @@ function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): (T1,T2,T3,
 function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): (T1,T2,T3,T4,T5,T6);
 ///--
 function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
-// -----------------------------------------------------
-//                Dict, SSet, HSet, Lst
-// -----------------------------------------------------
 
+// -----------------------------------------------------
+//                Lst, HSet, SSet, Dict, KV
+// -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
 function Lst<T>(params a: array of T): List<T>;
 /// Возвращает список, заполненное значениями из последовательности
@@ -1630,9 +1533,80 @@ function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dict
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 
-//------------------------------------------------------------------------------
 
-// Вспомогательные подпрограммы. Из раздела интерфейса не убирать! 
+// -----------------------------------------------------
+//                  Standard Exceptions
+// -----------------------------------------------------
+type
+  ///Базовый класс для исключений, бросаемых при создании инстанции generic-типа
+  BadGenericInstanceParameterException = class(Exception)
+  protected 
+    InstanceType: System.Type;
+  public 
+    constructor Create(ActualParameterType: System.Type);
+  end;
+  
+  ///Бросается если тип непригоден для указателей
+  CanNotUseTypeForPointersException = class(BadGenericInstanceParameterException)
+  public 
+    function ToString: string; override;
+  end;
+  
+  ///Бросается если тип непригоден для типизированных файлов
+  CanNotUseTypeForTypedFilesException = class(BadGenericInstanceParameterException)
+  public 
+    function ToString: string; override;
+  end;
+  
+  ///Бросается если тип непригоден для бинарных файлов
+  CanNotUseTypeForFilesException = class(BadGenericInstanceParameterException)
+  public 
+    function ToString: string; override;
+  end;
+
+// -----------------------------------------------------
+//                  Global variables
+// -----------------------------------------------------
+///--
+var
+  __CONFIG__: Dictionary<string, object> := new Dictionary<string, object>;
+
+var
+/// Содержит аргумены командой строки, с которыми была запущена программа
+  CommandLineArgs: array of string;
+  /// Стандартный текстовый файл для вывода. Связывается процедурой Assign с файлом на диске, после чего весь вывод на консоль перенаправляется в этот файл
+  output: TextFile;
+  /// Стандартный текстовый файл для ввода. Связывается процедурой Assign с файлом на диске, после чего весь ввод с консоли перенаправляется из этого файла
+  input: TextFile;
+  /// Определяет текущую систему ввода-вывода
+  CurrentIOSystem: IOSystem;
+  /// Принимает значение True, если приложение имеет консольное окно
+  IsConsoleApplication: boolean;
+  ///--
+  RedirectIOInDebugMode := False;
+  ///--
+  ExecuteBeforeProcessTerminateIn__Mode: procedure(e: Exception);
+  //GCHandlersForReferencePointers := new GCHandlersController;
+  ///--
+  ExitCode := 0; // TODO Сделать возврат в Main
+  ///--
+  DefaultEncoding: Encoding;
+
+
+// Вспомогательные подпрограммы. Из раздела интерфейса не убирать!!! 
+// -----------------------------------------------------
+//                  Internal System subprograms
+// -----------------------------------------------------
+///--
+function RunTimeSizeOf(t: System.Type): integer;
+///--
+function GetCharInShortString(s: string; ind, n: integer): char;
+///--
+function SetCharInShortString(s: string; ind, n: integer; c: char): string;
+///--
+function ClipShortString(s: string; len: integer): string;
+///--
+function GetResourceStream(ResourceFileName: string): Stream;
 ///--
 function FormatValue(value: object; NumOfChars: integer): string;
 ///--
@@ -1664,35 +1638,74 @@ function GetRuntimeSize<T>: integer;
 function _ObjectToString(o: object): string;
 
 function IsUnix: boolean;
-
-//------------------------------------------------------------------------------
-// WINAPI
-// Использование этих функций вводит платформенную зависимость. Желательно обойти
 ///--
-function WINAPI_TerminateProcess(Handle: IntPtr; ExitCode: integer): boolean;
-//------------------------------------------------------------------------------
+function ExecuteAssemlyIsDll: boolean;
 
-//------------------------------------------------------------------------------
-// OpenMPSupport
+// -----------------------------------------------------
+//                  Internal typed sets operations
+// -----------------------------------------------------
+///--
+function Union(s1, s2: TypedSet): TypedSet;
+///--
+function Subtract(s1, s2: TypedSet): TypedSet;
+///--
+function Intersect(s1, s2: TypedSet): TypedSet;
+///--
+function CreateSet(params elems: array of object): TypedSet;
+///--
+function CreateSet: TypedSet;
+///--
+function CreateBoundedSet(low, high: object): TypedSet;
+///--
+function InSet(obj: object; s: TypedSet): boolean;
+///--
+function CreateDiapason(low, high: integer): Diapason;
+///--
+function CreateObjDiapason(low, high: object): Diapason;
+///--
+function CompareSetEquals(s1, s2: TypedSet): boolean;
+///--
+function CompareSetInEquals(s1, s2: TypedSet): boolean;
+///--
+function CompareSetLess(s1, s2: TypedSet): boolean;
+///--
+function CompareSetGreaterEqual(s1, s2: TypedSet): boolean;
+///--
+function CompareSetLessEqual(s1, s2: TypedSet): boolean;
+///--
+function CompareSetGreater(s1, s2: TypedSet): boolean;
+///--
+procedure ClipSet(var s: TypedSet; low, high: object);
+///--
+procedure AssignSet(var left: TypedSet; right: TypedSet);
+///--
+function ClipSetFunc(s: TypedSet; low, high: object): TypedSet;
+///--
+function ClipShortStringInSet(s: TypedSet; len: integer): TypedSet;
+///--
+procedure ClipShortStringInSetProcedure(var s: TypedSet; len: integer);
+///--
+procedure AssignSetWithBounds(var left: TypedSet; right: TypedSet; low, high: object);
+///--
+procedure TypedSetInit(var st: TypedSet);
+///--
+procedure TypedSetInitWithBounds(var st: TypedSet; low, high: object);
+///--
+procedure TypedSetInitWithShortString(var st: TypedSet; len: integer);
+
+// -----------------------------------------------------
+//                  Internal for OpenMPSupport
+// -----------------------------------------------------
+///--
 procedure omp_set_nested(nested: integer);
+///--
 function omp_get_nested: integer;
-var
-  OMP_NESTED: boolean := false;
-//------------------------------------------------------------------------------
+///--
+var OMP_NESTED: boolean := false;
 
-var
-  /// Определяет текущую систему ввода-вывода
-  CurrentIOSystem: IOSystem;
-  /// Принимает значение True, если приложение имеет консольное окно
-  IsConsoleApplication: boolean;
-  ///--
-  RedirectIOInDebugMode := False;
-  ///--
-  ExecuteBeforeProcessTerminateIn__Mode: procedure(e: Exception);
-  //GCHandlersForReferencePointers := new GCHandlersController;
-  ///--
-  ExitCode := 0;//TODO Сделать возврат в Main
-
+// -----------------------------------------------------
+//                  Internal procedures for PABCRTL.dll
+// -----------------------------------------------------
 ///--
 procedure __InitModule__;
 ///--
@@ -1707,10 +1720,10 @@ var
   //  ENCultureInfo: System.Globalization.CultureInfo;
   nfi: System.Globalization.NumberFormatInfo;
   LastReadChar := #0;
-  DefaultOrdChrEncoding := System.Text.Encoding.GetEncoding(1251);
+  AnsiOrdChrEncoding := Encoding.GetEncoding(1251);
   __one_char := new char[1];
   __one_byte := new byte[1];
-  StartTime: DateTime;// Для Milliseconds
+  StartTime: DateTime; // Для Milliseconds
   
 const
   WRITELN_IN_BINARYFILE_ERROR_MESSAGE = 'Операция Writeln не применима к бинарным файлам!!Writeln is not applicable to binary files';
@@ -1747,19 +1760,13 @@ begin
     Result := arr[0]
 end;
 
-//------------------------------------------------------------------------------
-// WINAPI
-
-function WINAPI_TerminateProcess(Handle: IntPtr; ExitCode: integer): boolean;
-external 'kernel32.dll' name 'TerminateProcess';
+// -----------------------------------------------------
+//                  WINAPI
+// -----------------------------------------------------
 
 function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConsole';
 
-var
-  console_alloc: boolean := false;
-  curr_time := DateTime.Now;
-
-//------------------------------------------------------------------------------
+var console_alloc: boolean := false;
 
 // -----------------------------------------------------
 //                  Internal functions
@@ -3042,11 +3049,13 @@ begin
   Result := Self.Contains(x);
 end;}
 
+///--
 function List<T>.operator in(x: T; Self: List<T>): boolean;
 begin
   Result := Self.Contains(x);
 end;
 
+///--
 function HashSet<T>.operator in(x: T; Self: HashSet<T>): boolean;
 begin
   Result := Self.Contains(x);
@@ -3132,6 +3141,7 @@ begin
   Result := Self;
 end;
 
+///--
 function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
 begin
   Result := a.Contains(x);
@@ -3347,7 +3357,7 @@ begin
   Result := a.Concat(new T[1](b));
 end;
 
-/// Объединяет значение b и последовательность a 
+///--
 function operator+<T>(b: T; a: sequence of T): sequence of T; extensionmethod;
 begin
   Result := new T[1](b);
@@ -5204,7 +5214,7 @@ begin
   if f = output then
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
-    f.sr := new StreamReader(f.fi.FullName, Encoding.GetEncoding(1251));
+    f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
 end;
 
 procedure AssignFile(f: Text; name: string);
@@ -5240,7 +5250,7 @@ end;
 
 procedure Reset(f: Text);
 begin
-  Reset(f,Encoding.Default)
+  Reset(f,DefaultEncoding)
 end;
 
 procedure Reset(f: Text; en: Encoding);
@@ -5265,7 +5275,7 @@ end;
 
 procedure Reset(f: Text; name: string);
 begin
-  Reset(f,name,Encoding.Default)
+  Reset(f,name,DefaultEncoding)
 end;
 
 procedure Reset(f: Text; name: string; en: Encoding);
@@ -5276,7 +5286,7 @@ end;
 
 procedure Rewrite(f: Text);
 begin
-  Rewrite(f,Encoding.Default)
+  Rewrite(f,DefaultEncoding)
 end;
 
 procedure Rewrite(f: Text; en: Encoding);
@@ -5300,7 +5310,7 @@ end;
 
 procedure Rewrite(f: Text; name: string);
 begin
-  Rewrite(f,name,Encoding.Default)
+  Rewrite(f,name,DefaultEncoding)
 end;
 
 procedure Rewrite(f: Text; name: string; en: Encoding);
@@ -5311,7 +5321,7 @@ end;
 
 procedure Append(f: Text);
 begin
-  Append(f,Encoding.Default)
+  Append(f,DefaultEncoding)
 end;
 
 procedure Append(f: Text; en: Encoding);
@@ -5323,7 +5333,7 @@ end;
 
 procedure Append(f: Text; name: string);
 begin
-  Append(f,name,Encoding.Default)
+  Append(f,name,DefaultEncoding)
 end;
 
 procedure Append(f: Text; name: string; en: Encoding);
@@ -5334,7 +5344,7 @@ end;
 
 function OpenRead(fname: string): Text;
 begin
-  Result := OpenRead(fname,Encoding.Default)
+  Result := OpenRead(fname,DefaultEncoding)
 end;
 
 function OpenRead(fname: string; en: Encoding): Text;
@@ -5346,7 +5356,7 @@ end;
 
 function OpenWrite(fname: string): Text;
 begin
-  Result := OpenWrite(fname,Encoding.Default)
+  Result := OpenWrite(fname,DefaultEncoding)
 end;
 
 function OpenWrite(fname: string; en: Encoding): Text;
@@ -5358,7 +5368,7 @@ end;
 
 function OpenAppend(fname: string): Text;
 begin
-  Result := OpenAppend(fname,Encoding.Default)
+  Result := OpenAppend(fname,DefaultEncoding)
 end;
 
 function OpenAppend(fname: string; en: Encoding): Text;
@@ -5450,7 +5460,7 @@ end;
 
 function ReadLines(path: string): sequence of string;
 begin
-  Result := ReadLines(path,Encoding.GetEncoding(1251));
+  Result := ReadLines(path,DefaultEncoding);
 end;
 
 function ReadLines(path: string; en: Encoding): sequence of string;
@@ -5460,7 +5470,7 @@ end;
 
 function ReadAllLines(path: string): array of string;
 begin
-  Result := ReadAllLines(path,Encoding.GetEncoding(1251));
+  Result := ReadAllLines(path,DefaultEncoding);
 end;
 
 function ReadAllLines(path: string; en: Encoding): array of string;
@@ -5470,7 +5480,7 @@ end;
 
 function ReadAllText(path: string): string;
 begin
-  Result := ReadAllText(path,Encoding.GetEncoding(1251));
+  Result := ReadAllText(path,DefaultEncoding);
 end;
 
 function ReadAllText(path: string; en: Encoding): string;
@@ -5480,7 +5490,7 @@ end;
 
 procedure WriteLines(path: string; ss: sequence of string);
 begin
-  WriteLines(path,ss,Encoding.GetEncoding(1251));
+  WriteLines(path,ss,DefaultEncoding);
 end;
 
 procedure WriteLines(path: string; ss: sequence of string; en: Encoding);
@@ -5490,7 +5500,7 @@ end;
 
 procedure WriteAllLines(path: string; ss: array of string);
 begin
-  WriteAllLines(path,ss,Encoding.GetEncoding(1251));
+  WriteAllLines(path,ss,DefaultEncoding);
 end;
 
 procedure WriteAllLines(path: string; ss: array of string; en: Encoding);
@@ -5500,7 +5510,7 @@ end;
 
 procedure WriteAllText(path: string; s: string);
 begin
-  System.IO.File.WriteAllText(path,s,Encoding.GetEncoding(1251));
+  System.IO.File.WriteAllText(path,s,DefaultEncoding);
 end;
 
 procedure WriteAllText(path: string; s: string; en: Encoding);
@@ -5569,8 +5579,8 @@ begin
   if f.fs = nil then 
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Open);
-    f.br := new BinaryReader(f.fs, System.Text.Encoding.Default);
-    f.bw := new BinaryWriter(f.fs, System.Text.Encoding.Default);
+    f.br := new BinaryReader(f.fs, DefaultEncoding);
+    f.bw := new BinaryWriter(f.fs, DefaultEncoding);
   end 
   else
     f.fs.Position := 0;
@@ -5589,8 +5599,8 @@ begin
   if f.fs = nil then
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Create);
-    f.bw := new BinaryWriter(f.fs, System.Text.Encoding.Default);
-    f.br := new BinaryReader(f.fs, System.Text.Encoding.Default);
+    f.bw := new BinaryWriter(f.fs, DefaultEncoding);
+    f.br := new BinaryReader(f.fs, DefaultEncoding);
   end
   else 
   begin
@@ -6165,6 +6175,8 @@ begin
   Result := DiskSize(ConvertDiskToDiskName(disk));
 end;
 
+var curr_time := DateTime.Now;
+
 function Milliseconds: integer;
 begin
   curr_time := DateTime.Now;
@@ -6667,6 +6679,9 @@ begin
   result := (i mod 2) <> 0;
 end;
 
+// -----------------------------------------------------
+//                Dynamic arrays
+// -----------------------------------------------------
 function Low(i: System.Array): integer;
 begin
   if i <> nil then 
@@ -6681,8 +6696,22 @@ begin
   else Result := -1;
 end;
 
+function Length(a: &Array): integer;
+begin
+  if a = nil then
+    Result := 0
+  else Result := a.Length;
+end;
+
+function Length(a: &Array; dim: integer): integer;
+begin
+  if a = nil then
+    Result := 0
+  else Result := a.GetLength(dim);
+end;
+
 // -----------------------------------------------------
-//                Char and String manipulation
+//                Char and String: implementation
 // -----------------------------------------------------
 function ChrAnsi(a: Byte): char;
 begin
@@ -6691,7 +6720,7 @@ begin
   else
   begin
     __one_byte[0] := a;
-    Result := DefaultOrdChrEncoding.GetChars(__one_byte)[0];
+    Result := AnsiOrdChrEncoding.GetChars(__one_byte)[0];
   end;
 end;
 
@@ -6702,7 +6731,7 @@ begin
   else
   begin
     __one_char[0] := a;
-    Result := DefaultOrdChrEncoding.GetBytes(__one_char)[0];
+    Result := AnsiOrdChrEncoding.GetBytes(__one_char)[0];
   end;
 end;
 
@@ -7344,20 +7373,6 @@ end;
 // -----------------------------------------------------
 //                Common Routines
 // -----------------------------------------------------
-function Length(a: &Array): integer;
-begin
-  if a = nil then
-    Result := 0
-  else Result := a.Length;
-end;
-
-function Length(a: &Array; dim: integer): integer;
-begin
-  if a = nil then
-    Result := 0
-  else Result := a.GetLength(dim);
-end;
-
 procedure Halt;
 begin
   Halt(ExitCode);
@@ -7368,13 +7383,6 @@ begin
   //System.Diagnostics.Process.GetCurrentProcess.Kill;
   //WINAPI_TerminateProcess(System.Diagnostics.Process.GetCurrentProcess.Handle, exitCode);
   System.Environment.Exit(exitCode);
-end;
-
-procedure cls;
-begin
-  //для совместимости
-  {  if IsConsoleApplication then
-  Console.Clear;}
 end;
 
 procedure Sleep(ms: integer);
@@ -7670,6 +7678,8 @@ begin
   Result := sb.ToString;
 end;
 
+//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 function GetEXEFileName: string;
 begin
@@ -8172,6 +8182,7 @@ var
 
 procedure __InitModule;
 begin
+  DefaultEncoding := Encoding.GetEncoding(1251);
   var arg := Environment.GetCommandLineArgs();
   if arg.Length > 1 then begin
     CommandLineArgs := new string[arg.Length - 1];
