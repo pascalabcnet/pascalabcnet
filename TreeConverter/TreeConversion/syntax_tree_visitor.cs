@@ -18768,7 +18768,7 @@ namespace PascalABCCompiler.TreeConverter
             visit(st);
         }
 
-        public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
+        /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
         {
             // Неверно работает. Пока не используется. Доделать
             addressed_value left = dqn.left;
@@ -18783,6 +18783,6 @@ namespace PascalABCCompiler.TreeConverter
             // a?.b
             var q = ConvertToQCE(dqn);
             visit(q);
-        }
+        }*/
     }
 }
