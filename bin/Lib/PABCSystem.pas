@@ -92,6 +92,9 @@ type
   /// Представляет произвольно большое целое число
   BigInteger = System.Numerics.BigInteger;
   
+  /// Представляет комплексное число
+  Complex = System.Numerics.Complex;
+  
   /// Представляет кортеж
   Tuple = System.Tuple;
   
@@ -997,33 +1000,35 @@ function ExpandFileName(fname: string): string;
 // -----------------------------------------------------
 //                Mathematical routines
 // -----------------------------------------------------
+///-function Sign(x: число): число;
 /// Возвращает знак числа x
 function Sign(x: shortint): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: smallint): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: integer): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: BigInteger): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: longword): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: int64): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: uint64): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: real): integer;
+///-function Abs(x: число): число;
 /// Возвращает модуль числа x
 function Abs(x: integer): integer;
-/// Возвращает модуль числа x
+///--
 function Abs(x: BigInteger): BigInteger;
-/// Возвращает модуль числа x
+///--
 function Abs(x: longword): longword;
-/// Возвращает модуль числа x
+///--
 function Abs(x: int64): int64;
-/// Возвращает модуль числа x
+///--
 function Abs(x: uint64): uint64;
-/// Возвращает модуль числа x
+///--
 function Abs(x: real): real;
 /// Возвращает синус числа x
 function Sin(x: real): real;
@@ -1056,17 +1061,18 @@ function Log10(x: real): real;
 function LogN(base, x: real): real;
 /// Возвращает квадратный корень числа x
 function Sqrt(x: real): real;
+///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
 function Sqr(x: integer): int64;
-/// Возвращает квадрат числа x
+///--
 function Sqr(x: BigInteger): BigInteger;
-/// Возвращает квадрат числа x
+///--
 function Sqr(x: longword): uint64;
-/// Возвращает квадрат числа x
+///--
 function Sqr(x: int64): int64;
-/// Возвращает квадрат числа x
+///--
 function Sqr(x: uint64): uint64;
-/// Возвращает квадрат числа x
+///--
 function Sqr(x: real): real;
 /// Возвращает x в степени y
 function Power(x, y: real): real;
@@ -1106,56 +1112,69 @@ function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
 
+///-function Max(a: число, b: число): число;
 /// Возвращает максимальное из чисел a,b
 function Max(a, b: byte): byte;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: shortint): shortint;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: smallint): smallint;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: word): word;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: integer): integer;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: BigInteger): BigInteger;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: longword): longword;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: int64): int64;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: uint64): uint64;
-/// Возвращает максимальное из чисел a,b
+///--
 function Max(a, b: real): real;
+///-function Min(a: число, b: число): число;
 /// Возвращает минимальное из чисел a,b
 function Min(a, b: byte): byte;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: shortint): shortint;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: word): word;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: smallint): smallint;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: integer): integer;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: BigInteger): BigInteger;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: longword): longword;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: int64): int64;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: uint64): uint64;
-/// Возвращает минимальное из чисел a,b
+///--
 function Min(a, b: real): real;
+///-function Odd(i: целое): boolean;
 /// Возвращает True, если i нечетно
+function Odd(i: byte): boolean;
+///--
+function Odd(i: shortint): boolean;
+///--
+function Odd(i: word): boolean;
+///--
+function Odd(i: smallint): boolean;
+///--
 function Odd(i: integer): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: BigInteger): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: longword): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: int64): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: uint64): boolean;
+/// Конструирует комплексное число с вещественной частью re и мнимой частью im
+function Cplx(re,im: real): Complex;
 
 // -----------------------------------------------------
 //                Char and String manipulation
@@ -1164,15 +1183,16 @@ function Odd(i: uint64): boolean;
 function ChrAnsi(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
 function OrdAnsi(a: char): byte;
+///-function Ord(a: целое): целое;
 /// Возвращает порядковый номер значения a
 function Ord(a: integer): integer;
-/// Возвращает порядковый номер значения a
+///--
 function Ord(a: longword): longword;
-/// Возвращает порядковый номер значения a
+///--
 function Ord(a: int64): int64;
-/// Возвращает порядковый номер значения a
+///--
 function Ord(a: uint64): uint64;
-/// Возвращает порядковый номер значения a
+///--
 function Ord(a: boolean): integer;
 /// Преобразует код в символ 
 function Chr(a: word): char;
@@ -3266,6 +3286,19 @@ begin
 end;}
 
 //------------------------------------------------------------------------------
+// Extension methods for Complex
+//------------------------------------------------------------------------------
+function Conjugate(self: Complex): Complex; extensionmethod;
+begin
+  Result := Complex.Conjugate(Self);
+end;
+
+function operator-(Self: Complex): Complex; extensionmethod;
+begin
+  Result := Complex.Negate(Self);
+end;
+
+//------------------------------------------------------------------------------
 // Extension methods for IEnumerable<T>
 //------------------------------------------------------------------------------
 /// Выводит последовательность на экран, используя delim в качестве разделителя
@@ -3345,6 +3378,9 @@ begin
   Result := Self.OrderByDescending(x -> x);
 end;
 
+//------------------------------------------------------------------------------
+// Extension operators for IEnumerable<T>
+//------------------------------------------------------------------------------
 /// Объединяет две последовательности
 function operator+<T>(a,b: sequence of T): sequence of T; extensionmethod;
 begin
@@ -6654,6 +6690,26 @@ begin
   Result := Math.Min(a, b);
 end;
 
+function Odd(i: byte): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
+function Odd(i: shortint): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
+function Odd(i: word): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
+function Odd(i: smallint): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
 function Odd(i: integer): boolean;
 begin
   result := (i mod 2) <> 0;
@@ -6677,6 +6733,11 @@ end;
 function Odd(i: uint64): boolean;
 begin
   result := (i mod 2) <> 0;
+end;
+
+function Cplx(re,im: real): Complex;
+begin
+  Result := new Complex(re,im);
 end;
 
 // -----------------------------------------------------
