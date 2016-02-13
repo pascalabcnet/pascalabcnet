@@ -72,12 +72,15 @@ const
 const
   __IS_SYSTEM_MODULE = true;
 
+// -----------------------------------------------------
+//                  Standard types
+// -----------------------------------------------------
 type
   /// Базовый тип объектов
   object   = System.Object;
   
   /// Базовый тип исключений
-  exception = System.Exception;
+  Exception = System.Exception;
   
   double   = System.Double;
   
@@ -241,8 +244,64 @@ type
   //------------------------------------------------------------------------------
   ShortString = string[255];
   
-  /// Тип текстового файла
+// -----------------------------------------------------
+// IOSystem interface & IOStandardSystem implementation
+// -----------------------------------------------------
 type
+  /// Интерфейс подсистемы ввода/вывода
+  IOSystem = interface
+    function peek: integer;
+    function read_symbol: char;
+    procedure read(var x: integer);
+    procedure read(var x: real);
+    procedure read(var x: char);
+    procedure read(var x: string);
+    procedure read(var x: byte);
+    procedure read(var x: shortint);
+    procedure read(var x: smallint);
+    procedure read(var x: word);
+    procedure read(var x: longword);
+    procedure read(var x: int64);
+    procedure read(var x: uint64);
+    procedure read(var x: single);
+    procedure read(var x: boolean);
+    procedure readln;
+    procedure write(obj: object);
+    procedure write(p: pointer);
+    procedure writeln;
+  end;
+  
+  /// Стандартная подсистема ввода-вывода
+  IOStandardSystem = class(IOSystem)
+    state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
+    sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
+  public 
+    function peek: integer;          virtual; // использует state и sym
+    function read_symbol: char;      virtual; // использует state и sym 
+    procedure read(var x: integer);  virtual;
+    procedure read(var x: real);     virtual;
+    procedure read(var x: char);     virtual;
+    procedure read(var x: string);   virtual;
+    procedure read(var x: byte);     virtual;
+    procedure read(var x: shortint); virtual;
+    procedure read(var x: smallint); virtual;
+    procedure read(var x: word);     virtual;
+    procedure read(var x: longword); virtual;
+    procedure read(var x: int64);    virtual;
+    procedure read(var x: uint64);   virtual;
+    procedure read(var x: single);   virtual;
+    procedure read(var x: boolean);  virtual;
+    procedure readln;                virtual;
+    procedure write(p: pointer);     virtual;
+    procedure write(obj: object);    virtual;
+    procedure writeln;               virtual;
+  end;
+  
+// -----------------------------------------------------
+//                  Classes for files & typed sets
+// -----------------------------------------------------
+type
+  /// Тип текстового файла
   Text = class
   private 
     fi: FileInfo;
@@ -297,11 +356,10 @@ type
     function ReadToEnd: string;
   end;
   
+  /// Тип текстового файла
   TextFile = Text;
   
-  RangeException = class(SystemException) end;
-  CommandLineArgumentOutOfRangeException = class(SystemException) end;
-  
+type 
   // Вспомогательный тип для диапазонного типа
   ///--
   Diapason = record
@@ -312,11 +370,12 @@ type
   end;
   
   ///--
-  TypedSetComparer = class(System.Collections.IEqualityComparer)
+  {TypedSetComparer = class(System.Collections.IEqualityComparer)
     public function Equals(x: System.Object; y: System.Object): boolean;
     public function GetHashCode(obj: System.Object): integer;
-  end;
+  end;}
   
+type
   // Вспомогательный тип для множества
   ///-- 
   TypedSet = class (System.Collections.IEnumerable)
@@ -356,19 +415,9 @@ type
     function ToString: string; override;
   end;
 
-// -----------------------------------------------------
-//                  Typed sets
-// -----------------------------------------------------
-///- Include(var s : set of T; el : T)
-///Добавляет елемент el во множество s
-procedure Include(var s: TypedSet; el: object);
-///- Exclude(var s : set of T; el : T)
-///Удаляет элемент el из множества s
-procedure Exclude(var s: TypedSet; el: object);
-
+type
 // Base class for typed and binary files
 ///--
-type
   AbstractBinaryFile = class
   private 
     fi: FileInfo;
@@ -391,7 +440,6 @@ type
     procedure Write(params vals: array of object);
   end;
 
-type
   // Class for typed files
   ///--
   TypedFile = sealed class(AbstractBinaryFile)
@@ -423,67 +471,6 @@ type
     function FileSize: int64;
     /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n  
     procedure Seek(n: int64);
-  end;
-  
-  /// Интерфейс подсистемы ввода/вывода
-  IOSystem = interface
-    function peek: integer;
-    function read_symbol: char;
-    procedure read(var x: integer);
-    procedure read(var x: real);
-    procedure read(var x: char);
-    procedure read(var x: string);
-    procedure read(var x: byte);
-    procedure read(var x: shortint);
-    procedure read(var x: smallint);
-    procedure read(var x: word);
-    procedure read(var x: longword);
-    procedure read(var x: int64);
-    procedure read(var x: uint64);
-    procedure read(var x: single);
-    procedure read(var x: boolean);
-    procedure readln;
-    procedure write(obj: object);
-    procedure write(p: pointer);
-    procedure writeln;
-  end;
-  
-  /// Стандартная подсистема ввода-вывода
-  IOStandardSystem = class(IOSystem)
-    state := 0; // 0 - нет символа в буфере char, 1 - есть символ в буфере char
-    sym: integer;  // буфер в 1 символ для моделирования Peek в консоли
-  public 
-    function peek: integer;          virtual; // использует state и sym
-    function read_symbol: char;      virtual; // использует state и sym 
-    procedure read(var x: integer);  virtual;
-    procedure read(var x: real);     virtual;
-    procedure read(var x: char);     virtual;
-    procedure read(var x: string);   virtual;
-    procedure read(var x: byte);     virtual;
-    procedure read(var x: shortint); virtual;
-    procedure read(var x: smallint); virtual;
-    procedure read(var x: word);     virtual;
-    procedure read(var x: longword); virtual;
-    procedure read(var x: int64);    virtual;
-    procedure read(var x: uint64);   virtual;
-    procedure read(var x: single);   virtual;
-    procedure read(var x: boolean);  virtual;
-    procedure readln;                virtual;
-    procedure write(p: pointer);     virtual;
-    procedure write(obj: object);    virtual;
-    procedure writeln;               virtual;
-  end;
-  
-  ///--
-  GCHandlersController = class(System.Collections.IEnumerable)
-  private 
-    Counters, Handlers: Hashtable;
-  public 
-    constructor;
-    procedure Add(obj: Object);
-    procedure Remove(obj: Object);
-    function GetCounter(obj: Object): integer;
-    function GetEnumerator: System.Collections.IEnumerator;
   end;
   
 // -----------------------------------------------------
@@ -636,20 +623,6 @@ function Eoln: boolean;
 /// Возвращает True, если достигнут конец файла
 function Eof: boolean;
 
-///--
-function check_in_range(val: int64; low, up: int64): int64;
-///--
-function check_in_range_char(val: char; low, up: char): char;
-
-type
-  ///--
-  PointerOutput = class
-  public 
-    p: pointer;
-    function ToString: string; override;
-    constructor(ptr: pointer);
-  end;
-
 // -----------------------------------------------------
 //                  write - writeln
 // -----------------------------------------------------
@@ -718,7 +691,7 @@ procedure Print(f: Text; params args: array of object);
 procedure Println(f: Text; params args: array of object);
 
 // -----------------------------------------------------
-//                  Text files
+//                  Text files subroutines
 // -----------------------------------------------------
 /// Связывает файловую переменную f с именем файла name
 procedure Assign(f: Text; name: string);
@@ -818,7 +791,7 @@ function EnumerateDirectories(path: string): sequence of string;
 function EnumerateAllDirectories(path: string): sequence of string;
 
 // -----------------------------------------------------
-//                  Abstract binary files
+//                Abstract binary files subroutines
 // -----------------------------------------------------
 ///- Assign(f: file of T; name: string)
 /// Связывает файловую переменную f с именем файла name
@@ -871,7 +844,7 @@ procedure Writeln(f: AbstractBinaryFile; val: object);
 procedure Writeln(f: AbstractBinaryFile; params vals: array of object);
 
 // -----------------------------------------------------
-//                  Typed files
+//                Typed files subroutines
 // -----------------------------------------------------
 ///- FilePos(f : file of T): int64
 /// Возвращает текущую позицию файлового указателя в типизированном файле f 
@@ -892,7 +865,7 @@ procedure TypedFileInitWithShortString(var f: TypedFile; ElementType: System.Typ
 function TypedFileRead(f: TypedFile): object;
 
 // -----------------------------------------------------
-//                  Binary files
+//                Binary files subroutines
 // -----------------------------------------------------
 ///- FilePos(f : file): int64
 /// Возвращает текущую позицию файлового указателя в нетипизированном файле f 
@@ -909,7 +882,7 @@ procedure BinaryFileInit(var f: BinaryFile);
 function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 
 // -----------------------------------------------------
-//                Operating System routines
+//                Operating System subroutines
 // -----------------------------------------------------
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
@@ -982,7 +955,7 @@ procedure Execute(filename: string);
 procedure Execute(filename: string; args: string);
 
 // -----------------------------------------------------
-//                File name routines
+//                File name functions
 // -----------------------------------------------------
 /// Выделяет имя файла из полного имени файла fname
 function ExtractFileName(fname: string): string;
@@ -998,7 +971,7 @@ function ExtractFileDrive(fname: string): string;
 function ExpandFileName(fname: string): string;
 
 // -----------------------------------------------------
-//                Mathematical routines
+//                Mathematical functions
 // -----------------------------------------------------
 ///-function Sign(x: число): число;
 /// Возвращает знак числа x
@@ -1177,7 +1150,17 @@ function Odd(i: uint64): boolean;
 function Cplx(re,im: real): Complex;
 
 // -----------------------------------------------------
-//                Char and String manipulation
+//                Typed sets
+// -----------------------------------------------------
+///- Include(var s : set of T; el : T)
+///Добавляет елемент el во множество s
+procedure Include(var s: TypedSet; el: object);
+///- Exclude(var s : set of T; el : T)
+///Удаляет элемент el из множества s
+procedure Exclude(var s: TypedSet; el: object);
+
+// -----------------------------------------------------
+//                Char and String subroutines
 // -----------------------------------------------------
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
@@ -1425,8 +1408,6 @@ procedure Sort<T>(l: List<T>);
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
 procedure Reverse<T>(a: array of T; index,length: integer);
-///--
-function CopyWithSize(source, dest: &Array): &Array;
 
 // -----------------------------------------------------
 //              Sequences and dynamic arrays
@@ -1514,7 +1495,7 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 /// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает матрицу размера m x n, заполненную случайными вещественными значениями
-function MatrixRandomReal(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 10): array [,] of real;
+function MatrixRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 
 // -----------------------------------------------------
 //                       Tuples
@@ -1584,6 +1565,10 @@ type
     function ToString: string; override;
   end;
 
+  RangeException = class(SystemException) end;
+  CommandLineArgumentOutOfRangeException = class(SystemException) end;
+  
+
 // -----------------------------------------------------
 //                  Global variables
 // -----------------------------------------------------
@@ -1617,6 +1602,12 @@ var
 // -----------------------------------------------------
 //                  Internal System subprograms
 // -----------------------------------------------------
+///--
+function CopyWithSize(source, dest: &Array): &Array;
+///--
+function check_in_range(val: int64; low, up: int64): int64;
+///--
+function check_in_range_char(val: char; low, up: char): char;
 ///--
 function RunTimeSizeOf(t: System.Type): integer;
 ///--
@@ -1660,6 +1651,16 @@ function _ObjectToString(o: object): string;
 function IsUnix: boolean;
 ///--
 function ExecuteAssemlyIsDll: boolean;
+
+// -----------------------------------------------------
+//                  Internal for OpenMPSupport
+// -----------------------------------------------------
+///--
+procedure omp_set_nested(nested: integer);
+///--
+function omp_get_nested: integer;
+///--
+var OMP_NESTED: boolean := false;
 
 // -----------------------------------------------------
 //                  Internal typed sets operations
@@ -1714,14 +1715,29 @@ procedure TypedSetInitWithBounds(var st: TypedSet; low, high: object);
 procedure TypedSetInitWithShortString(var st: TypedSet; len: integer);
 
 // -----------------------------------------------------
-//                  Internal for OpenMPSupport
+//                  Internal classes
 // -----------------------------------------------------
-///--
-procedure omp_set_nested(nested: integer);
-///--
-function omp_get_nested: integer;
-///--
-var OMP_NESTED: boolean := false;
+type  
+  ///--
+  GCHandlersController = class(System.Collections.IEnumerable)
+  private 
+    Counters, Handlers: Hashtable;
+  public 
+    constructor;
+    procedure Add(obj: Object);
+    procedure Remove(obj: Object);
+    function GetCounter(obj: Object): integer;
+    function GetEnumerator: System.Collections.IEnumerator;
+  end;
+  
+type
+  ///--
+  PointerOutput = class
+  public 
+    p: pointer;
+    function ToString: string; override;
+    constructor(ptr: pointer);
+  end;
 
 // -----------------------------------------------------
 //                  Internal procedures for PABCRTL.dll
@@ -1761,6 +1777,18 @@ const
   PARAMETER_COUNT_MUST_BE_GREATER_0 = 'Параметр count должен быть > 0!!Parameter count must be > 0';
   PARAMETER_COUNT_MUST_BE_GREATER_1 = 'Параметр count должен быть > 1!!Parameter count must be > 1';
 
+// -----------------------------------------------------
+//                  WINAPI
+// -----------------------------------------------------
+
+function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConsole';
+
+var console_alloc: boolean := false;
+
+// -----------------------------------------------------
+//                  Internal functions
+// -----------------------------------------------------
+
 function GetCurrentLocale: string;
 begin
   var locale: object;
@@ -1779,18 +1807,6 @@ begin
   else
     Result := arr[0]
 end;
-
-// -----------------------------------------------------
-//                  WINAPI
-// -----------------------------------------------------
-
-function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConsole';
-
-var console_alloc: boolean := false;
-
-// -----------------------------------------------------
-//                  Internal functions
-// -----------------------------------------------------
 
 function IsWDE: boolean;
 begin
@@ -1816,91 +1832,9 @@ begin
     Result := nil;
 end;
 
-function RunTimeSizeOf(t: System.Type): integer;
-var
-  t1: System.Type;
-  elem: object;
-  fa: array of System.Reflection.FieldInfo;
-  NullBasedArray: System.Array;
-  i: integer;
-  fi: System.Reflection.FieldInfo;
-begin
-  if t.IsPrimitive or t.IsEnum then 
-    //begin
-    case System.Type.GetTypeCode(t) of
-      TypeCode.Boolean: Result := sizeof(Boolean);
-      TypeCode.Byte:    Result := sizeof(Byte);
-      TypeCode.Char:    Result := 1;//sizeof(Char);
-      TypeCode.Decimal: Result := sizeof(Decimal);
-      TypeCode.Double:  Result := sizeof(Double);
-      TypeCode.Int16:   Result := sizeof(Int16);
-      TypeCode.Int32:   Result := sizeof(Int32);
-      TypeCode.Int64:   Result := sizeof(Int64);
-      TypeCode.UInt16:  Result := sizeof(UInt16);
-      TypeCode.UInt32:  Result := sizeof(UInt32);
-      TypeCode.UInt64:  Result := sizeof(UInt64);
-      TypeCode.SByte:   Result := sizeof(SByte);
-      TypeCode.Single:  Result := sizeof(Single);
-    else if t.IsEnum then result := sizeof(integer);
-    end//;
-  //end 
-  else
-  if t.IsValueType then // it is a record
-  begin
-    //elem := Activator.CreateInstance(t); //ssyy commented
-    fa := t.GetFields;
-    Result := 0;
-    for i := 0 to fa.Length - 1 do
-      if not fa[i].IsStatic then 
-        Result := Result + RunTimeSizeOf(fa[i].FieldType)
-  end
-  else if t = typeof(string) then
-    Result := 0
-  else
-  if t = typeof(TypedSet) then
-  begin
-    //elem := Activator.CreateInstance(t); //ssyy commented
-    Result := 256 div 8;
-  end
-  else
-  begin
-    fi := t.GetField(InternalNullBasedArrayName);
-    if fi = nil then 
-      raise new SystemException(GetTranslation(BAD_TYPE_IN_RUNTIMESIZEOF));
-    elem := Activator.CreateInstance(t);
-    NullBasedArray := GetNullBasedArray(elem);
-    
-    t1 := NullBasedArray.GetType.GetElementType;
-    Result := RunTimeSizeOf(t1) * NullBasedArray.Length;
-  end;
-end;
-
-// -----------------------------------------------------
-//                  Diapason
-// -----------------------------------------------------
-constructor Diapason.Create(_low, _high: integer);
-begin
-  low := _low; high := _high;
-end;
-
-constructor Diapason.Create(_low, _high: object);
-begin
-  clow := _low; chigh := _high;
-end;
-
 function FormatFloatNumber(s: string): string;
 begin
   Result := s.Replace(',', '.');
-end;
-
-procedure Pause;
-begin
-  System.Threading.Thread.CurrentThread.Suspend;
-end;
-
-function GetResourceStream(ResourceFileName: string): Stream;
-begin
-  result := System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream(ResourceFileName);
 end;
 
 procedure ClipSet(var s: TypedSet; low, high: object);
@@ -1961,6 +1895,22 @@ begin
     st := new TypedSet(len);
 end;
 
+// -----------------------------------------------------
+//                  Diapason
+// -----------------------------------------------------
+constructor Diapason.Create(_low, _high: integer);
+begin
+  low := _low; high := _high;
+end;
+
+constructor Diapason.Create(_low, _high: object);
+begin
+  clow := _low; chigh := _high;
+end;
+
+// -----------------------------------------------------
+//                  TypedSet
+// -----------------------------------------------------
 constructor TypedSet.Create;
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2413,124 +2363,6 @@ begin
   result := '[' + result + ']';
 end;
 
-// -----------------------------------------------------
-//                      TypedFile
-// -----------------------------------------------------
-constructor TypedFile.Create(ElementType: System.Type);
-begin
-  self.ElementType := ElementType;
-  ElementSize := RuntimeSizeOf(ElementType);
-end;
-
-constructor TypedFile.Create(ElementType: System.Type; offs: integer; params offsets: array of integer);
-begin
-  self.ElementType := ElementType;
-  ElementSize := RuntimeSizeOf(ElementType);
-  self.offsets := offsets;
-  if offs <> 0 then
-  begin
-    ElementSize := ElementSize + offs{*2};
-    offset := offs{*2};
-  end;
-end;
-
-function TypedFile.ToString: string;
-begin
-  Result := string.Format('file of {0}', ElementType);
-end;
-
-// -----------------------------------------------------
-//                      BinaryFile
-// -----------------------------------------------------
-function BinaryFile.ToString: string;
-begin
-  Result := 'file';
-end;
-
-
-// -----------------------------------------------------
-//                  GCHandlersController    
-// -----------------------------------------------------
-constructor GCHandlersController.Create;
-begin
-  Counters := new Hashtable;
-  Handlers := new Hashtable;
-end;
-
-procedure GCHandlersController.Add(obj: Object);
-begin
-  if obj <> nil then begin
-    if Counters.Contains(obj) then
-      Counters[obj] := integer(Counters[obj]) + 1
-    else begin
-      Counters.Add(obj, 1);          
-      Handlers.Add(obj, GCHandle.Alloc(obj, GCHandleType.Pinned));
-      //var ptr := Marshal.AllocHGlobal(Marshal.SizeOf(obj));
-      //Marshal.StructureToPtr(obj, ptr, false);
-      //Handlers.Add(obj, ptr);
-      //GC.KeepAlive(obj);
-      //var ptr:=IntPtr(pointer(@obj));
-      //Handlers.Add(obj,new IntPtr(integer(ptr) or 1));
-    end;
-  end;
-end;
-
-procedure GCHandlersController.Remove(obj: Object);
-begin
-  if obj <> nil then begin
-    if Counters.Contains(obj) then begin
-      var Count := integer(Counters[obj]);
-      if Count > 1 then 
-        Counters[obj] := Count - 1
-      else begin
-        Counters.Remove(obj);
-        GCHandle(Handlers[obj]).Free;
-        Handlers.Remove(obj);
-      end;
-    end else
-      raise new SystemException('PABCSystem.GCHandleForPointersController not contains object ' + obj.ToString);
-  end;  
-end;
-
-function GCHandlersController.GetCounter(obj: Object): integer;
-begin
-  result := 0;
-  if Counters.Contains(obj) then
-    result := integer(Counters[obj]);      
-end;
-
-function GCHandlersController.GetEnumerator: System.Collections.IEnumerator;
-begin
-  result := Counters.Keys.GetEnumerator; 
-end;
-
-// -----------------------------------------------------
-[System.Diagnostics.DebuggerStepThrough]
-function CreateSet: TypedSet;
-begin
-  Result := new TypedSet();
-end;
-
-[System.Diagnostics.DebuggerStepThrough]
-function CreateBoundedSet(low, high: object): TypedSet;
-begin
-  Result := new TypedSet(low, high);
-end;
-
-[System.Diagnostics.DebuggerStepThrough]
-function CreateDiapason(low, high: integer): Diapason;
-begin
-  Result.low := low;
-  Result.high := high;
-end;
-
-[System.Diagnostics.DebuggerStepThrough]
-function CreateObjDiapason(low, high: object): Diapason;
-begin
-  Result.clow := low;
-  Result.chigh := high;
-end;
-
 function TypedSet.CompareEquals(s: TypedSet): boolean;
 begin
   Result := CompareSetEquals(self, s);
@@ -2559,6 +2391,35 @@ end;
 function TypedSet.CompareGreaterEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetGreaterEqual(self, s);
+end;
+
+// -----------------------------------------------------
+//                  Typed Set functions
+// -----------------------------------------------------
+[System.Diagnostics.DebuggerStepThrough]
+function CreateSet: TypedSet;
+begin
+  Result := new TypedSet();
+end;
+
+[System.Diagnostics.DebuggerStepThrough]
+function CreateBoundedSet(low, high: object): TypedSet;
+begin
+  Result := new TypedSet(low, high);
+end;
+
+[System.Diagnostics.DebuggerStepThrough]
+function CreateDiapason(low, high: integer): Diapason;
+begin
+  Result.low := low;
+  Result.high := high;
+end;
+
+[System.Diagnostics.DebuggerStepThrough]
+function CreateObjDiapason(low, high: object): Diapason;
+begin
+  Result.clow := low;
+  Result.chigh := high;
 end;
 
 [System.Diagnostics.DebuggerStepThrough]
@@ -2803,8 +2664,98 @@ begin
   Result := greater;
 end;
 
+// -----------------------------------------------------
+//                      TypedFile
+// -----------------------------------------------------
+constructor TypedFile.Create(ElementType: System.Type);
+begin
+  self.ElementType := ElementType;
+  ElementSize := RuntimeSizeOf(ElementType);
+end;
+
+constructor TypedFile.Create(ElementType: System.Type; offs: integer; params offsets: array of integer);
+begin
+  self.ElementType := ElementType;
+  ElementSize := RuntimeSizeOf(ElementType);
+  self.offsets := offsets;
+  if offs <> 0 then
+  begin
+    ElementSize := ElementSize + offs{*2};
+    offset := offs{*2};
+  end;
+end;
+
+function TypedFile.ToString: string;
+begin
+  Result := string.Format('file of {0}', ElementType);
+end;
+
+// -----------------------------------------------------
+//                      BinaryFile
+// -----------------------------------------------------
+function BinaryFile.ToString: string;
+begin
+  Result := 'file';
+end;
+
+// -----------------------------------------------------
+//                  GCHandlersController    
+// -----------------------------------------------------
+constructor GCHandlersController.Create;
+begin
+  Counters := new Hashtable;
+  Handlers := new Hashtable;
+end;
+
+procedure GCHandlersController.Add(obj: Object);
+begin
+  if obj <> nil then begin
+    if Counters.Contains(obj) then
+      Counters[obj] := integer(Counters[obj]) + 1
+    else begin
+      Counters.Add(obj, 1);          
+      Handlers.Add(obj, GCHandle.Alloc(obj, GCHandleType.Pinned));
+      //var ptr := Marshal.AllocHGlobal(Marshal.SizeOf(obj));
+      //Marshal.StructureToPtr(obj, ptr, false);
+      //Handlers.Add(obj, ptr);
+      //GC.KeepAlive(obj);
+      //var ptr:=IntPtr(pointer(@obj));
+      //Handlers.Add(obj,new IntPtr(integer(ptr) or 1));
+    end;
+  end;
+end;
+
+procedure GCHandlersController.Remove(obj: Object);
+begin
+  if obj <> nil then begin
+    if Counters.Contains(obj) then begin
+      var Count := integer(Counters[obj]);
+      if Count > 1 then 
+        Counters[obj] := Count - 1
+      else begin
+        Counters.Remove(obj);
+        GCHandle(Handlers[obj]).Free;
+        Handlers.Remove(obj);
+      end;
+    end else
+      raise new SystemException('PABCSystem.GCHandleForPointersController not contains object ' + obj.ToString);
+  end;  
+end;
+
+function GCHandlersController.GetCounter(obj: Object): integer;
+begin
+  result := 0;
+  if Counters.Contains(obj) then
+    result := integer(Counters[obj]);      
+end;
+
+function GCHandlersController.GetEnumerator: System.Collections.IEnumerator;
+begin
+  result := Counters.Keys.GetEnumerator; 
+end;
+
 //------------------------------------------------------------------------------
-// StructuredObjectToString
+//              StructuredObjectToString
 //------------------------------------------------------------------------------
 
 // Возвращает переопределенный в последнем потомке ToString или nil если ToString определен в Object
@@ -2839,6 +2790,11 @@ begin
     Result := 'nil' 
   else if (o.GetType = typeof(real)) or (o.GetType = typeof(decimal)) or (o.GetType = typeof(single)) then
     Result := FormatFloatNumber(o.ToString)
+  else if (o.GetType = typeof(Complex)) then 
+  begin
+    var c := Complex(o);
+    Result := '('+StructuredObjectToString(c.Real)+','+StructuredObjectToString(c.Imaginary)+')';
+  end
   else if (o.GetType.IsPrimitive) or (o.GetType = typeof(string)) then
     Result := o.ToString
   else if o is System.Array then
@@ -2941,7 +2897,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-// Extension methods for String
+//          Operations for String
 //------------------------------------------------------------------------------
 procedure string.operator+=(var left: string; right: string);
 begin
@@ -3047,9 +3003,8 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-// Операции для List<T>, Dictionary<T>
+//          Операции для array of T
 //------------------------------------------------------------------------------
-
 /// Объединяет два массива
 function operator+<T>(a, b: array of T): array of T; extensionmethod;
 begin
@@ -3058,16 +3013,20 @@ begin
   b.CopyTo(Result,a.Length);
 end;
 
+///--
+function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
+begin
+  Result := a.Contains(x);
+end;
+
+//------------------------------------------------------------------------------
+//          Операции для List<T> 
+//------------------------------------------------------------------------------
 function List<T>.operator+=(var Self: List<T>; x: T): List<T>;
 begin
   Self.Add(x);
   Result := Self;
 end;
-
-{function operator in<T>(x: T; Self: List<T>): boolean; extensionmethod;
-begin
-  Result := Self.Contains(x);
-end;}
 
 ///--
 function List<T>.operator in(x: T; Self: List<T>): boolean;
@@ -3075,6 +3034,9 @@ begin
   Result := Self.Contains(x);
 end;
 
+//------------------------------------------------------------------------------
+//          Операции для HashSet<T> 
+//------------------------------------------------------------------------------
 ///--
 function HashSet<T>.operator in(x: T; Self: HashSet<T>): boolean;
 begin
@@ -3144,6 +3106,9 @@ begin
   Result := x.IsSupersetOf(y);
 end;
 
+//------------------------------------------------------------------------------
+//          Операции для SortedSet<T> 
+//------------------------------------------------------------------------------
 function SortedSet<T>.operator in(x: T; Self: SortedSet<T>): boolean;
 begin
   Result := Self.Contains(x);
@@ -3161,12 +3126,9 @@ begin
   Result := Self;
 end;
 
-///--
-function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
-begin
-  Result := a.Contains(x);
-end;
-
+//------------------------------------------------------------------------------
+//          Операции для Dictionary<K,V>, SortedDictionary<K,V>, SortedList<K,V>
+//------------------------------------------------------------------------------
 function Dictionary<K,V>.operator in(key: K; d: Dictionary<K,V>): boolean;
 begin
   Result := d.ContainsKey(key);
@@ -3183,7 +3145,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-// Операции для BigInteger
+//          Операции для BigInteger
 //------------------------------------------------------------------------------
 function BigInteger.operator>(p: BigInteger; q: integer): boolean;
 begin
@@ -3270,12 +3232,12 @@ begin
   Result := BigInteger.Remainder(p,q);
 end;
 
-{function BigInteger.operator-(p: BigInteger): BigInteger;
+function BigInteger.operator-(p: BigInteger): BigInteger;
 begin
   Result := BigInteger.Negate(p)
 end;
 
-function BigInteger.operator+(p: BigInteger): BigInteger;
+{function BigInteger.operator+(p: BigInteger): BigInteger;
 begin
   Result := p
 end;
@@ -3286,7 +3248,7 @@ begin
 end;}
 
 //------------------------------------------------------------------------------
-// Extension methods for Complex
+//          Операции для Complex
 //------------------------------------------------------------------------------
 function Conjugate(self: Complex): Complex; extensionmethod;
 begin
@@ -3298,8 +3260,48 @@ begin
   Result := Complex.Negate(Self);
 end;
 
+function operator implicit(c: (real,real)): Complex; extensionmethod;
+begin
+  Result := Cplx(c[0],c[1]);
+end;
+
+function operator implicit(c: (real,integer)): Complex; extensionmethod;
+begin
+  Result := Cplx(c[0],c[1]);
+end;
+
+function operator implicit(c: (integer,real)): Complex; extensionmethod;
+begin
+  Result := Cplx(c[0],c[1]);
+end;
+
+function operator implicit(c: (integer,integer)): Complex; extensionmethod;
+begin
+  Result := Cplx(c[0],c[1]);
+end;
+
+procedure operator+=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c + x;
+end;
+
+procedure operator*=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c * x;
+end;
+
+procedure operator-=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c - x;
+end;
+
+procedure operator/=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c / x;
+end;
+
 //------------------------------------------------------------------------------
-// Extension methods for IEnumerable<T>
+//          Методы расширения для sequence of T
 //------------------------------------------------------------------------------
 /// Выводит последовательность на экран, используя delim в качестве разделителя
 function Print<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
@@ -3378,8 +3380,20 @@ begin
   Result := Self.OrderByDescending(x -> x);
 end;
 
+/// Возвращает множество HashSet по данной последовательности
+function ToHashSet<T>(self: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Result := new HashSet<T>(self);
+end;
+
+/// Возвращает множество SortedSet по данной последовательности
+function ToSortedSet<T>(self: sequence of T): SortedSet<T>; extensionmethod;
+begin
+  Result := new SortedSet<T>(self);
+end;
+
 //------------------------------------------------------------------------------
-// Extension operators for IEnumerable<T>
+//          Операции для sequence of T
 //------------------------------------------------------------------------------
 /// Объединяет две последовательности
 function operator+<T>(a,b: sequence of T): sequence of T; extensionmethod;
@@ -3414,9 +3428,9 @@ begin
   Result := a*n;
 end;
 
-// -----------------------------------------------------
-//                Sequences
-// -----------------------------------------------------
+// -----------------------------------------------------------------------------
+//                Функции для последовательностей и динамических массивов
+// -----------------------------------------------------------------------------
 function Range(self: integer): sequence of integer; extensionmethod;
 begin
   Result := Range(1,self);  
@@ -3722,7 +3736,7 @@ begin
   Result := Range(0,count-1).Select(f)
 end;
 
-function MatrixRandom(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
+function MatrixRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
 begin
   Result := new integer[m,n];
   for var i:=0 to Result.GetLength(0)-1 do
@@ -3730,14 +3744,13 @@ begin
     Result[i,j] := Random(a,b);
 end;
 
-function MatrixRandomReal(m: integer; n: integer; a: integer; b: integer): array [,] of real;
+function MatrixRandomReal(m: integer; n: integer; a,b: real): array [,] of real;
 begin
   Result := new real[m,n];
   for var i:=0 to Result.GetLength(0)-1 do
   for var j:=0 to Result.GetLength(1)-1 do
     Result[i,j] := Random()*(b-a) + a;
 end;
-
 
 function ReadArrInteger(n: integer): array of integer;
 begin
@@ -3811,7 +3824,9 @@ begin
   Result := ReadSeqString(n);
 end;
 
-
+// -----------------------------------------------------------------------------
+//                Функции Rec для создания кортежей
+// -----------------------------------------------------------------------------
 function Rec<T1,T2>(x1: T1; x2: T2): System.Tuple<T1,T2>;
 begin
   Result := Tuple.Create(x1,x2);
@@ -3842,13 +3857,9 @@ begin
   Result := Tuple.Create(x1,x2,x3,x4,x5,x6,x7);
 end;
 
-function System.Collections.Generic.IDictionary<Key,Value>.Get(K: Key): Value;
-begin
-  var b := Self.TryGetValue(K,Result);
-  if not b then 
-    Result := default(Value);
-end;
-
+// -----------------------------------------------------------------------------
+//                Функции Lst, Dict, KV, HSet, SSet
+// -----------------------------------------------------------------------------
 function Lst<T>(params a: array of T): List<T>;
 begin
   Result := new List<T>(a);
@@ -3857,18 +3868,6 @@ end;
 function Lst<T>(a: sequence of T): List<T>;
 begin
   Result := new List<T>(a);
-end;
-
-function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
-begin
-  Result := new Dictionary<TKey, TVal>();
-  for var i := 0 to pairs.Length - 1 do
-    Result.Add(pairs[i].Key, pairs[i].Value);
-end;
-
-function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
-begin
-  Result := new KeyValuePair<TKey, TVal>(key, value);
 end;
 
 function HSet<T>(params a: array of T): HashSet<T>;
@@ -3891,51 +3890,26 @@ begin
   Result := new SortedSet<T>(a);
 end;
 
-//------------------------------------------------------------------------------
-
-[System.Diagnostics.DebuggerStepThrough]
-function GetCharInShortString(s: string; ind, n: integer): char;
+function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 begin
-  if ind < 0 then 
-    raise new IndexOutOfRangeException;
-  if ind = 0 then 
-    Result := char(s.Length)
-  else 
-    try
-      Result := s[ind];
-    except 
-      on e: Exception do
-        if ind > n then raise;
-    end;
+  Result := new Dictionary<TKey, TVal>();
+  for var i := 0 to pairs.Length - 1 do
+    Result.Add(pairs[i].Key, pairs[i].Value);
 end;
 
-[System.Diagnostics.DebuggerStepThrough]
-function SetCharInShortString(s: string; ind, n: integer; c: char): string;
+function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
-  if ind < 0 then 
-    raise new IndexOutOfRangeException;
-  if ind <> 0 then
-  begin
-    var sb := new System.Text.StringBuilder();
-    sb.Append(s);
-    if ind - 1 < sb.Length then
-      sb[ind - 1] := c;
-    if ind > n then raise new IndexOutOfRangeException;
-    Result := sb.ToString;
-  end
-  else
-  begin
-    //Result := s.PadRight(integer(c));
-    raise new IndexOutOfRangeException;
-  end;
+  Result := new KeyValuePair<TKey, TVal>(key, value);
 end;
 
-[System.Diagnostics.DebuggerStepThrough]
-function ClipShortString(s: string; len: integer): string;
+// -----------------------------------------------------------------------------
+//                Методы расширения IDictionary 
+// -----------------------------------------------------------------------------
+function System.Collections.Generic.IDictionary<Key,Value>.Get(K: Key): Value;
 begin
-  if s.Length <= len then 
-    Result := s
-  else Result := s.Substring(0, len);
+  var b := Self.TryGetValue(K,Result);
+  if not b then 
+    Result := default(Value);
 end;
 
 {function read_lexem: string; 
@@ -3954,6 +3928,9 @@ begin
   Result := sb.ToString;
 end;}
 
+// -----------------------------------------------------------------------------
+//                read_lexem
+// -----------------------------------------------------------------------------
 function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать
 var
   c: char;
@@ -4002,7 +3979,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//                  IOStandardSystem
+//          IOStandardSystem: implementation
 // -----------------------------------------------------
 function IOStandardSystem.peek: integer;
 begin
@@ -4093,7 +4070,6 @@ begin
   end;
 end;
 
-
 procedure IOStandardSystem.read(var x: byte);
 begin
   x := Convert.ToByte(read_lexem);
@@ -4134,7 +4110,6 @@ begin
   x := Convert.ToSingle(read_lexem, nfi);
 end;
 
-// ------------ IOStandardSystem ------------ 
 procedure IOStandardSystem.read(var x: boolean);
 begin
   var s := read_lexem.ToLower;
@@ -4150,27 +4125,11 @@ begin
   while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do;
 end;
 
-// string for writeln
-function _ObjectToString(o: object): string;
-begin
-  Result := StructuredObjectToString(o);
-  {if o = nil then
-    Result := 'nil'
-  else case System.Type.GetTypeCode(o.GetType) of
-      TypeCode.Double,  
-      TypeCode.Single,  
-      TypeCode.Decimal:
-      Result := FormatFloatNumber(o.ToString);
-    else
-      Result := o.ToString;
-    end;}
-end;
-
 procedure IOStandardSystem.write(obj: object);
 begin
   if not console_alloc then
     AllocConsole;
-  Console.Write(_ObjectToString(obj));  
+  Console.Write(StructuredObjectToString(obj));  
 end;
 
 procedure IOStandardSystem.write(p: pointer);
@@ -4184,6 +4143,11 @@ begin
     AllocConsole;
   Console.WriteLine;
   System.Diagnostics.Debug.WriteLine('');
+end;
+
+function _ObjectToString(o: object): string;
+begin
+  Result := StructuredObjectToString(o);
 end;
 
 // -----------------------------------------------------
@@ -4501,7 +4465,6 @@ begin
   Print(prompt);
   Result := ReadlnBoolean;
 end;
-
 
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
 begin
@@ -4915,7 +4878,6 @@ begin
   Result := sr.ReadToEnd  
 end;
 
-
 // -----------------------------------------------------
 //                AbstractBinaryFile methods
 // -----------------------------------------------------
@@ -4949,6 +4911,9 @@ begin
   PABCSystem.Write(Self, vals);
 end;
 
+// -----------------------------------------------------
+//                TypedFile & BinaryFile methods
+// -----------------------------------------------------
 function TypedFile.FilePos: int64;
 begin
   Result := PABCSystem.FilePos(Self);
@@ -4980,7 +4945,8 @@ begin
 end;
 
 // -----------------------------------------------------
-
+//                  Eoln - Eof
+// -----------------------------------------------------
 function Eoln: boolean;
 begin
   if not console_alloc then
@@ -5006,14 +4972,6 @@ end;
 constructor PointerOutput.Create(ptr: pointer);
 begin
   p := ptr;
-end;
-
-function PointerToString(p: pointer): string;
-begin
-  //result:= Convert.ToString(integer(p), 16);
-  if p = nil then
-    result := 'nil'
-  else result := '$' + integer(p).ToString('X');
 end;
 
 procedure write;
@@ -5204,6 +5162,9 @@ begin
   writeln(f, s);
 end;
 
+// -----------------------------------------------------
+//                  Print - Println
+// -----------------------------------------------------
 procedure Print(s: string);
 begin
   write(s, ' ');
@@ -5494,6 +5455,9 @@ begin
   f := new Text;  
 end;
 
+// -----------------------------------------------------
+// ReadLines, ReadAllText, WriteLines, WriteAllText
+// -----------------------------------------------------
 function ReadLines(path: string): sequence of string;
 begin
   Result := ReadLines(path,DefaultEncoding);
@@ -5554,6 +5518,9 @@ begin
   System.IO.File.WriteAllText(path,s,en);
 end;
 
+// -----------------------------------------------------
+// EnumerateFiles, EnumerateDirectories
+// -----------------------------------------------------
 function EnumerateFiles(path: string; searchPattern: string): sequence of string;
 begin
   Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.TopDirectoryOnly)
@@ -6010,7 +5977,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//                  Operating System routines
+// Operating System subroutines: implementation
 // -----------------------------------------------------
 function ParamCount: integer;
 begin
@@ -6226,8 +6193,58 @@ begin
   curr_time := DateTime.Now;
 end;
 
+procedure Halt;
+begin
+  Halt(ExitCode);
+end;
+
+procedure Halt(exitCode: integer);
+begin
+  //System.Diagnostics.Process.GetCurrentProcess.Kill;
+  //WINAPI_TerminateProcess(System.Diagnostics.Process.GetCurrentProcess.Handle, exitCode);
+  System.Environment.Exit(exitCode);
+end;
+
+procedure Sleep(ms: integer);
+begin
+  System.Threading.Thread.Sleep(ms);
+end;
+
+function GetEXEFileName: string;
+begin
+  Result := System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
+end;
+
+function PointerToString(p: pointer): string;
+begin
+  //result:= Convert.ToString(integer(p), 16);
+  if p = nil then
+    result := 'nil'
+  else result := '$' + integer(p).ToString('X');
+end;
+
+procedure Exec(filename: string);
+begin
+  System.Diagnostics.Process.Start(filename)
+end;
+
+procedure Exec(filename: string; args: string);
+begin
+  System.Diagnostics.Process.Start(filename, args)
+end;
+
+procedure Execute(filename: string);
+begin
+  System.Diagnostics.Process.Start(filename)
+end;
+
+procedure Execute(filename: string; args: string);
+begin
+  System.Diagnostics.Process.Start(filename, args)
+end;
+
 // -----------------------------------------------------
-//                File name routines
+//                File name functions: implementation
 // -----------------------------------------------------
 function ExtractFileName(fname: string): string;
 begin
@@ -6276,9 +6293,8 @@ begin
   Result := fi.FullName;
 end;
 
-
 // -----------------------------------------------------
-//                Mathematical routines
+//                Mathematical functions: implementation
 // -----------------------------------------------------
 function Sign(x: shortint): integer;
 begin
@@ -6492,21 +6508,9 @@ begin
   Result := Convert.ToInt32(Math.Round(x));
 end;
 
-/// Возвращает число, округленное до ближайшего целого
-function Round(Self: real): integer; extensionmethod;
-begin
-  Result := Round(Self);
-end;
-
 function RoundBigInteger(x: real): BigInteger;
 begin
   Result := BigInteger.Create(Math.Round(x));
-end;
-
-/// Возвращает число, округленное до ближайшего длинного целого
-function RoundBigInteger(Self: real): BigInteger; extensionmethod;
-begin
-  Result := RoundBigInteger(Self);
 end;
 
 function Trunc(x: real): integer;
@@ -6514,21 +6518,9 @@ begin
   Result := Convert.ToInt32(Math.Truncate(x));
 end;
 
-/// Возвращает целую часть вещественного числа
-function Trunc(Self: real): integer; extensionmethod;
-begin
-  Result := Trunc(Self);
-end;
-
 function TruncBigInteger(x: real): BigInteger;
 begin
   Result := BigInteger.Create(Math.Truncate(x));
-end;
-
-/// Возвращает целую часть вещественного числа как длинное целое
-function TruncBigInteger(Self: real): BigInteger; extensionmethod;
-begin
-  Result := TruncBigInteger(Self);
 end;
 
 function Int(x: real): real;
@@ -6741,7 +6733,34 @@ begin
 end;
 
 // -----------------------------------------------------
-//                Dynamic arrays
+//                Методы расширения типа real
+// -----------------------------------------------------
+/// Возвращает число, округленное до ближайшего целого
+function Round(Self: real): integer; extensionmethod;
+begin
+  Result := Round(Self);
+end;
+
+/// Возвращает число, округленное до ближайшего длинного целого
+function RoundBigInteger(Self: real): BigInteger; extensionmethod;
+begin
+  Result := RoundBigInteger(Self);
+end;
+
+/// Возвращает целую часть вещественного числа
+function Trunc(Self: real): integer; extensionmethod;
+begin
+  Result := Trunc(Self);
+end;
+
+/// Возвращает целую часть вещественного числа как длинное целое
+function TruncBigInteger(Self: real): BigInteger; extensionmethod;
+begin
+  Result := TruncBigInteger(Self);
+end;
+
+// -----------------------------------------------------
+//                Dynamic arrays: implementation
 // -----------------------------------------------------
 function Low(i: System.Array): integer;
 begin
@@ -6769,6 +6788,31 @@ begin
   if a = nil then
     Result := 0
   else Result := a.GetLength(dim);
+end;
+
+function Copy(a: &Array): &Array;
+begin
+  Result := &Array(a.Clone());
+end;
+
+procedure Sort<T>(a: array of T);
+begin
+  System.Array.Sort(a);
+end;
+
+procedure Sort<T>(l: List<T>);
+begin
+  l.Sort();
+end;
+
+procedure Reverse<T>(a: array of T);
+begin
+  System.Array.Reverse(a);
+end;
+
+procedure Reverse<T>(a: array of T; index,length: integer);
+begin
+  System.Array.Reverse(a,index,length);
 end;
 
 // -----------------------------------------------------
@@ -7300,21 +7344,6 @@ begin
   Result := real.Parse(ReadWordFromString(s, from));  
 end;
 
-function string.ReadInteger(var from: integer): integer;
-begin
-  Result := ReadIntegerFromString(Self, from);
-end;
-
-function string.ReadReal(var from: integer): real;
-begin
-  Result := ReadRealFromString(Self, from);
-end;
-
-function string.ReadWord(var from: integer): string;
-begin
-  Result := ReadwordFromString(Self, from);
-end;
-
 function TryReadRealFromString(s: string; var from: integer; var res: real): boolean;
 begin
   Result := real.TryParse(ReadWordFromString(s, from), res);
@@ -7432,25 +7461,8 @@ begin
 end;
 
 // -----------------------------------------------------
-//                Common Routines
+//                Общие подпрограммы
 // -----------------------------------------------------
-procedure Halt;
-begin
-  Halt(ExitCode);
-end;
-
-procedure Halt(exitCode: integer);
-begin
-  //System.Diagnostics.Process.GetCurrentProcess.Kill;
-  //WINAPI_TerminateProcess(System.Diagnostics.Process.GetCurrentProcess.Handle, exitCode);
-  System.Environment.Exit(exitCode);
-end;
-
-procedure Sleep(ms: integer);
-begin
-  System.Threading.Thread.Sleep(ms);
-end;
-
 procedure Inc(var i: integer);
 begin
   i += 1;
@@ -7631,10 +7643,10 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//    char методы расширения
+//          Методы расширения типа char
 //------------------------------------------------------------------------------
 // Преобразовать символ в цифру
-function char.ToDigit(self: char): integer; extensionmethod;
+function ToDigit(self: char): integer; extensionmethod;
 begin
   Result := OrdUnicode(self) - OrdUnicode('0');
   if (Result<0) or (Result>=10) then
@@ -7642,58 +7654,73 @@ begin
 end;
 
 // Следующий символ
-function char.Succ(self: char): char; extensionmethod;
+function integer.Succ(self: char): char; extensionmethod;
 begin
   Result := PABCSystem.succ(self);
 end;
 
 // Код символа
-function char.Code(self: char): integer; extensionmethod;
+function Code(self: char): integer; extensionmethod;
 begin
   Result := word(self);
 end;
 
 // Предыдущий символ
-function char.Pred(self: char): char; extensionmethod;
+function Pred(self: char): char; extensionmethod;
 begin
   Result := PABCSystem.pred(self);
 end;
 
 // Является ли символ цифрой
-function char.IsDigit(self: char): boolean; extensionmethod;
+function IsDigit(self: char): boolean; extensionmethod;
 begin
   Result := char.IsDigit(self);
 end;
 
 // Является ли символ буквой
-function char.IsLetter(self: char): boolean; extensionmethod;
+function IsLetter(self: char): boolean; extensionmethod;
 begin
   Result := char.IsLetter(self);
 end;
 
-function char.IsLower(self: char): boolean; extensionmethod;
+function IsLower(self: char): boolean; extensionmethod;
 begin
   Result := char.IsLower(self);
 end;
 
-function char.IsUpper(self: char): boolean; extensionmethod;
+function IsUpper(self: char): boolean; extensionmethod;
 begin
   Result := char.IsUpper(self);
 end;
 
-function char.ToUpper(self: char): char; extensionmethod;
+function ToUpper(self: char): char; extensionmethod;
 begin
   Result := char.ToUpper(self);
 end;
 
-function char.ToLower(self: char): char; extensionmethod;
+function ToLower(self: char): char; extensionmethod;
 begin
   Result := char.ToLower(self);
 end;
 
 //------------------------------------------------------------------------------
-//    string методы расширения
+//          Методы расширения типа string
 //------------------------------------------------------------------------------
+function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
+begin
+  Result := ReadIntegerFromString(Self, from);
+end;
+
+function ReadReal(Self: string; var from: integer): real; extensionmethod;
+begin
+  Result := ReadRealFromString(Self, from);
+end;
+
+function ReadWord(Self: string; var from: integer): string; extensionmethod;
+begin
+  Result := ReadwordFromString(Self, from);
+end;
+
 /// Преобразует строку в целое
 function string.ToInteger: integer;
 begin
@@ -7739,12 +7766,159 @@ begin
   Result := sb.ToString;
 end;
 
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-//------------------------------------------------------------------------------
-function GetEXEFileName: string;
+//{{{ Конец секции реализации прикладных методов }}}
+
+//{{{ Начало секции реализации внутренних системных методов }}}
+// -----------------------------------------------------
+//                  Standard Exceptions: implementation
+// -----------------------------------------------------
+constructor BadGenericInstanceParameterException.Create(ActualParameterType: System.Type);
 begin
-  Result := System.Reflection.Assembly.GetEntryAssembly().ManifestModule.FullyQualifiedName;
+  InstanceType := ActualParameterType;
+end;
+
+function CanNotUseTypeForPointersException.ToString: string;
+begin
+  result := InstanceType.FullName + ' непригоден для указателей.';
+end;
+
+function CanNotUseTypeForTypedFilesException.ToString: string;
+begin
+  result := InstanceType.FullName + ' непригоден для типизированных файлов.';
+end;
+
+function CanNotUseTypeForFilesException.ToString: string;
+begin
+  result := InstanceType.FullName + ' непригоден для файлов.';
+end;
+
+// -----------------------------------------------------
+// Internal System subprograms: implementation
+// -----------------------------------------------------
+function check_in_range(val: int64; low, up: int64): int64;
+begin
+  if (val < low) or (val > up) then
+    raise new RangeException(GetTranslation(RANGE_ERROR_MESSAGE));
+  Result := val;
+end;
+
+function check_in_range_char(val: char; low, up: char): char;
+begin
+  if (val < low) or (val > up) then
+    raise new RangeException(GetTranslation(RANGE_ERROR_MESSAGE));
+  Result := val;
+end;
+
+function RunTimeSizeOf(t: System.Type): integer;
+var
+  t1: System.Type;
+  elem: object;
+  fa: array of System.Reflection.FieldInfo;
+  NullBasedArray: System.Array;
+  i: integer;
+  fi: System.Reflection.FieldInfo;
+begin
+  if t.IsPrimitive or t.IsEnum then 
+    //begin
+    case System.Type.GetTypeCode(t) of
+      TypeCode.Boolean: Result := sizeof(Boolean);
+      TypeCode.Byte:    Result := sizeof(Byte);
+      TypeCode.Char:    Result := 1;//sizeof(Char);
+      TypeCode.Decimal: Result := sizeof(Decimal);
+      TypeCode.Double:  Result := sizeof(Double);
+      TypeCode.Int16:   Result := sizeof(Int16);
+      TypeCode.Int32:   Result := sizeof(Int32);
+      TypeCode.Int64:   Result := sizeof(Int64);
+      TypeCode.UInt16:  Result := sizeof(UInt16);
+      TypeCode.UInt32:  Result := sizeof(UInt32);
+      TypeCode.UInt64:  Result := sizeof(UInt64);
+      TypeCode.SByte:   Result := sizeof(SByte);
+      TypeCode.Single:  Result := sizeof(Single);
+    else if t.IsEnum then result := sizeof(integer);
+    end//;
+  //end 
+  else
+  if t.IsValueType then // it is a record
+  begin
+    //elem := Activator.CreateInstance(t); //ssyy commented
+    fa := t.GetFields;
+    Result := 0;
+    for i := 0 to fa.Length - 1 do
+      if not fa[i].IsStatic then 
+        Result := Result + RunTimeSizeOf(fa[i].FieldType)
+  end
+  else if t = typeof(string) then
+    Result := 0
+  else
+  if t = typeof(TypedSet) then
+  begin
+    //elem := Activator.CreateInstance(t); //ssyy commented
+    Result := 256 div 8;
+  end
+  else
+  begin
+    fi := t.GetField(InternalNullBasedArrayName);
+    if fi = nil then 
+      raise new SystemException(GetTranslation(BAD_TYPE_IN_RUNTIMESIZEOF));
+    elem := Activator.CreateInstance(t);
+    NullBasedArray := GetNullBasedArray(elem);
+    
+    t1 := NullBasedArray.GetType.GetElementType;
+    Result := RunTimeSizeOf(t1) * NullBasedArray.Length;
+  end;
+end;
+
+// -----------------------------------------------------------------------------
+//                Внутренние функции для работы с короткими строками 
+// -----------------------------------------------------------------------------
+[System.Diagnostics.DebuggerStepThrough]
+function GetCharInShortString(s: string; ind, n: integer): char;
+begin
+  if ind < 0 then 
+    raise new IndexOutOfRangeException;
+  if ind = 0 then 
+    Result := char(s.Length)
+  else 
+    try
+      Result := s[ind];
+    except 
+      on e: Exception do
+        if ind > n then raise;
+    end;
+end;
+
+[System.Diagnostics.DebuggerStepThrough]
+function SetCharInShortString(s: string; ind, n: integer; c: char): string;
+begin
+  if ind < 0 then 
+    raise new IndexOutOfRangeException;
+  if ind <> 0 then
+  begin
+    var sb := new System.Text.StringBuilder();
+    sb.Append(s);
+    if ind - 1 < sb.Length then
+      sb[ind - 1] := c;
+    if ind > n then raise new IndexOutOfRangeException;
+    Result := sb.ToString;
+  end
+  else
+  begin
+    //Result := s.PadRight(integer(c));
+    raise new IndexOutOfRangeException;
+  end;
+end;
+
+[System.Diagnostics.DebuggerStepThrough]
+function ClipShortString(s: string; len: integer): string;
+begin
+  if s.Length <= len then 
+    Result := s
+  else Result := s.Substring(0, len);
+end;
+
+function GetResourceStream(ResourceFileName: string): Stream;
+begin
+  result := System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream(ResourceFileName);
 end;
 
 function FormatValue(value: object; NumOfChars: integer): string;
@@ -7809,11 +7983,6 @@ begin
   result := s;}
 end;
 
-procedure ChangeChar(var c: char; val: char);
-begin
-  c := val;
-end;
-
 procedure StringDefaultPropertySet(var s: string; index: integer; c: char);
 begin
   //s := string.Concat( s.Copy(0,index-1), c, s.Copy(index, s.Length - index));
@@ -7822,6 +7991,11 @@ begin
   var chars := s.ToCharArray;
   chars[index] := c;
   s := new String(chars);
+end;
+
+procedure ChangeChar(var c: char; val: char);
+begin
+  c := val;
 end;
 
 procedure CheckCanUsePointerOnType(T: System.Type);
@@ -7883,26 +8057,6 @@ begin
   CheckCanUseTypeForFiles(T, false);
 end;
 
-constructor BadGenericInstanceParameterException.Create(ActualParameterType: System.Type);
-begin
-  InstanceType := ActualParameterType;
-end;
-
-function CanNotUseTypeForPointersException.ToString: string;
-begin
-  result := InstanceType.FullName + ' непригоден для указателей.';
-end;
-
-function CanNotUseTypeForTypedFilesException.ToString: string;
-begin
-  result := InstanceType.FullName + ' непригоден для типизированных файлов.';
-end;
-
-function CanNotUseTypeForFilesException.ToString: string;
-begin
-  result := InstanceType.FullName + ' непригоден для файлов.';
-end;
-
 function RuntimeDetermineType(T: System.Type): byte;
 begin
   result := 0;
@@ -7952,12 +8106,14 @@ begin
 end;
 
 function GetRuntimeSize<T>: integer;
-var
-  val: T;
+var val: T;
 begin
   result := System.Runtime.InteropServices.Marshal.SizeOf(val);
 end;
 
+// -----------------------------------------------------------------------------
+//                Внутренние вспомогательные функции 
+// -----------------------------------------------------------------------------
 function get_sizes(a: &Array): array of integer;
 begin
   var rank := a.Rank;
@@ -8016,52 +8172,7 @@ begin
     Result := dest;
 end;
 
-function Copy(a: &Array): &Array;
-begin
-  Result := &Array(a.Clone());
-end;
-
-procedure Sort<T>(a: array of T);
-begin
-  System.Array.Sort(a);
-end;
-
-procedure Reverse<T>(a: array of T);
-begin
-  System.Array.Reverse(a);
-end;
-
-procedure Reverse<T>(a: array of T; index,length: integer);
-begin
-  System.Array.Reverse(a,index,length);
-end;
-
-procedure Sort<T>(l: List<T>);
-begin
-  l.Sort();
-end;
-
-procedure Exec(filename: string);
-begin
-  System.Diagnostics.Process.Start(filename)
-end;
-
-procedure Exec(filename: string; args: string);
-begin
-  System.Diagnostics.Process.Start(filename, args)
-end;
-
-procedure Execute(filename: string);
-begin
-  System.Diagnostics.Process.Start(filename)
-end;
-
-procedure Execute(filename: string; args: string);
-begin
-  System.Diagnostics.Process.Start(filename, args)
-end;
-
-function TypedSetComparer.Equals(x: System.Object; y: System.Object): boolean;
+{function TypedSetComparer.Equals(x: System.Object; y: System.Object): boolean;
 begin
   //Result := object.Equals(x,y);
   Result := object.Equals(x, y);
@@ -8192,21 +8303,7 @@ begin
   else
     Result := obj.GetHashCode();
   end;
-end;
-
-function check_in_range(val: int64; low, up: int64): int64;
-begin
-  if (val < low) or (val > up) then
-    raise new RangeException(GetTranslation(RANGE_ERROR_MESSAGE));
-  Result := val;
-end;
-
-function check_in_range_char(val: char; low, up: char): char;
-begin
-  if (val < low) or (val > up) then
-    raise new RangeException(GetTranslation(RANGE_ERROR_MESSAGE));
-  Result := val;
-end;
+end;}
 
 var
   __from_dll := false;
@@ -8236,8 +8333,9 @@ begin
     result := 0;
 end;
 
-//------------------------------------------------------------------------------
-
+// -----------------------------------------------------
+// Internal procedures for PABCRTL.dll: implementation
+// -----------------------------------------------------
 var
   __initialized := false;
 
