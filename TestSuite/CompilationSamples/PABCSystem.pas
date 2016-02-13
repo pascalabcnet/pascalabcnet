@@ -92,6 +92,9 @@ type
   /// Представляет произвольно большое целое число
   BigInteger = System.Numerics.BigInteger;
   
+  /// Представляет комплексное число
+  Complex = System.Numerics.Complex;
+  
   /// Представляет кортеж
   Tuple = System.Tuple;
   
@@ -997,23 +1000,24 @@ function ExpandFileName(fname: string): string;
 // -----------------------------------------------------
 //                Mathematical routines
 // -----------------------------------------------------
+///-Sign(x: число)
 /// Возвращает знак числа x
 function Sign(x: shortint): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: smallint): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: integer): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: BigInteger): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: longword): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: int64): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: uint64): integer;
-/// Возвращает знак числа x
+///--
 function Sign(x: real): integer;
-/// Возвращает модуль числа x
+///--
 function Abs(x: integer): integer;
 /// Возвращает модуль числа x
 function Abs(x: BigInteger): BigInteger;
@@ -1146,16 +1150,27 @@ function Min(a, b: int64): int64;
 function Min(a, b: uint64): uint64;
 /// Возвращает минимальное из чисел a,b
 function Min(a, b: real): real;
+///-Odd(i: целое)
 /// Возвращает True, если i нечетно
+function Odd(i: byte): boolean;
+///--
+function Odd(i: shortint): boolean;
+///--
+function Odd(i: word): boolean;
+///--
+function Odd(i: smallint): boolean;
+///--
 function Odd(i: integer): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: BigInteger): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: longword): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: int64): boolean;
-/// Возвращает True, если i нечетно
+///--
 function Odd(i: uint64): boolean;
+/// Конструирует комплексное число с вещественной частью re и мнимой частью im
+function Cplx(re,im: real): Complex;
 
 // -----------------------------------------------------
 //                Char and String manipulation
@@ -1589,6 +1604,8 @@ var
   //GCHandlersForReferencePointers := new GCHandlersController;
   ///--
   ExitCode := 0; // TODO Сделать возврат в Main
+  ///--
+  DefaultEncoding: Encoding;
 
 
 // Вспомогательные подпрограммы. Из раздела интерфейса не убирать!!! 
@@ -1718,7 +1735,7 @@ var
   //  ENCultureInfo: System.Globalization.CultureInfo;
   nfi: System.Globalization.NumberFormatInfo;
   LastReadChar := #0;
-  DefaultOrdChrEncoding := System.Text.Encoding.GetEncoding(1251);
+  AnsiOrdChrEncoding := Encoding.GetEncoding(1251);
   __one_char := new char[1];
   __one_byte := new byte[1];
   StartTime: DateTime; // Для Milliseconds
@@ -3262,6 +3279,14 @@ function BigInteger.operator+(p,q: BigInteger): BigInteger;
 begin
   Result := BigInteger.Add(p,q);
 end;}
+
+//------------------------------------------------------------------------------
+// Extension methods for Complex
+//------------------------------------------------------------------------------
+function Conjugate(self: Complex): Complex; extensionmethod;
+begin
+  Result := Complex.Conjugate(Self);
+end;
 
 //------------------------------------------------------------------------------
 // Extension methods for IEnumerable<T>
@@ -5212,7 +5237,7 @@ begin
   if f = output then
     f.sw := new StreamWriter(f.fi.FullName);
   if f = input then
-    f.sr := new StreamReader(f.fi.FullName, Encoding.GetEncoding(1251));
+    f.sr := new StreamReader(f.fi.FullName, DefaultEncoding);
 end;
 
 procedure AssignFile(f: Text; name: string);
@@ -5248,7 +5273,7 @@ end;
 
 procedure Reset(f: Text);
 begin
-  Reset(f,Encoding.Default)
+  Reset(f,DefaultEncoding)
 end;
 
 procedure Reset(f: Text; en: Encoding);
@@ -5273,7 +5298,7 @@ end;
 
 procedure Reset(f: Text; name: string);
 begin
-  Reset(f,name,Encoding.Default)
+  Reset(f,name,DefaultEncoding)
 end;
 
 procedure Reset(f: Text; name: string; en: Encoding);
@@ -5284,7 +5309,7 @@ end;
 
 procedure Rewrite(f: Text);
 begin
-  Rewrite(f,Encoding.Default)
+  Rewrite(f,DefaultEncoding)
 end;
 
 procedure Rewrite(f: Text; en: Encoding);
@@ -5308,7 +5333,7 @@ end;
 
 procedure Rewrite(f: Text; name: string);
 begin
-  Rewrite(f,name,Encoding.Default)
+  Rewrite(f,name,DefaultEncoding)
 end;
 
 procedure Rewrite(f: Text; name: string; en: Encoding);
@@ -5319,7 +5344,7 @@ end;
 
 procedure Append(f: Text);
 begin
-  Append(f,Encoding.Default)
+  Append(f,DefaultEncoding)
 end;
 
 procedure Append(f: Text; en: Encoding);
@@ -5331,7 +5356,7 @@ end;
 
 procedure Append(f: Text; name: string);
 begin
-  Append(f,name,Encoding.Default)
+  Append(f,name,DefaultEncoding)
 end;
 
 procedure Append(f: Text; name: string; en: Encoding);
@@ -5342,7 +5367,7 @@ end;
 
 function OpenRead(fname: string): Text;
 begin
-  Result := OpenRead(fname,Encoding.Default)
+  Result := OpenRead(fname,DefaultEncoding)
 end;
 
 function OpenRead(fname: string; en: Encoding): Text;
@@ -5354,7 +5379,7 @@ end;
 
 function OpenWrite(fname: string): Text;
 begin
-  Result := OpenWrite(fname,Encoding.Default)
+  Result := OpenWrite(fname,DefaultEncoding)
 end;
 
 function OpenWrite(fname: string; en: Encoding): Text;
@@ -5366,7 +5391,7 @@ end;
 
 function OpenAppend(fname: string): Text;
 begin
-  Result := OpenAppend(fname,Encoding.Default)
+  Result := OpenAppend(fname,DefaultEncoding)
 end;
 
 function OpenAppend(fname: string; en: Encoding): Text;
@@ -5458,7 +5483,7 @@ end;
 
 function ReadLines(path: string): sequence of string;
 begin
-  Result := ReadLines(path,Encoding.GetEncoding(1251));
+  Result := ReadLines(path,DefaultEncoding);
 end;
 
 function ReadLines(path: string; en: Encoding): sequence of string;
@@ -5468,7 +5493,7 @@ end;
 
 function ReadAllLines(path: string): array of string;
 begin
-  Result := ReadAllLines(path,Encoding.GetEncoding(1251));
+  Result := ReadAllLines(path,DefaultEncoding);
 end;
 
 function ReadAllLines(path: string; en: Encoding): array of string;
@@ -5478,7 +5503,7 @@ end;
 
 function ReadAllText(path: string): string;
 begin
-  Result := ReadAllText(path,Encoding.GetEncoding(1251));
+  Result := ReadAllText(path,DefaultEncoding);
 end;
 
 function ReadAllText(path: string; en: Encoding): string;
@@ -5488,7 +5513,7 @@ end;
 
 procedure WriteLines(path: string; ss: sequence of string);
 begin
-  WriteLines(path,ss,Encoding.GetEncoding(1251));
+  WriteLines(path,ss,DefaultEncoding);
 end;
 
 procedure WriteLines(path: string; ss: sequence of string; en: Encoding);
@@ -5498,7 +5523,7 @@ end;
 
 procedure WriteAllLines(path: string; ss: array of string);
 begin
-  WriteAllLines(path,ss,Encoding.GetEncoding(1251));
+  WriteAllLines(path,ss,DefaultEncoding);
 end;
 
 procedure WriteAllLines(path: string; ss: array of string; en: Encoding);
@@ -5508,7 +5533,7 @@ end;
 
 procedure WriteAllText(path: string; s: string);
 begin
-  System.IO.File.WriteAllText(path,s,Encoding.GetEncoding(1251));
+  System.IO.File.WriteAllText(path,s,DefaultEncoding);
 end;
 
 procedure WriteAllText(path: string; s: string; en: Encoding);
@@ -5577,8 +5602,8 @@ begin
   if f.fs = nil then 
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Open);
-    f.br := new BinaryReader(f.fs, System.Text.Encoding.Default);
-    f.bw := new BinaryWriter(f.fs, System.Text.Encoding.Default);
+    f.br := new BinaryReader(f.fs, DefaultEncoding);
+    f.bw := new BinaryWriter(f.fs, DefaultEncoding);
   end 
   else
     f.fs.Position := 0;
@@ -5597,8 +5622,8 @@ begin
   if f.fs = nil then
   begin
     f.fs := new FileStream(f.fi.FullName, FileMode.Create);
-    f.bw := new BinaryWriter(f.fs, System.Text.Encoding.Default);
-    f.br := new BinaryReader(f.fs, System.Text.Encoding.Default);
+    f.bw := new BinaryWriter(f.fs, DefaultEncoding);
+    f.br := new BinaryReader(f.fs, DefaultEncoding);
   end
   else 
   begin
@@ -6652,6 +6677,26 @@ begin
   Result := Math.Min(a, b);
 end;
 
+function Odd(i: byte): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
+function Odd(i: shortint): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
+function Odd(i: word): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
+function Odd(i: smallint): boolean;
+begin
+  result := (i mod 2) <> 0;
+end;
+
 function Odd(i: integer): boolean;
 begin
   result := (i mod 2) <> 0;
@@ -6675,6 +6720,11 @@ end;
 function Odd(i: uint64): boolean;
 begin
   result := (i mod 2) <> 0;
+end;
+
+function Cplx(re,im: real): Complex;
+begin
+  Result := new Complex(re,im);
 end;
 
 // -----------------------------------------------------
@@ -6718,7 +6768,7 @@ begin
   else
   begin
     __one_byte[0] := a;
-    Result := DefaultOrdChrEncoding.GetChars(__one_byte)[0];
+    Result := AnsiOrdChrEncoding.GetChars(__one_byte)[0];
   end;
 end;
 
@@ -6729,7 +6779,7 @@ begin
   else
   begin
     __one_char[0] := a;
-    Result := DefaultOrdChrEncoding.GetBytes(__one_char)[0];
+    Result := AnsiOrdChrEncoding.GetBytes(__one_char)[0];
   end;
 end;
 
@@ -8180,6 +8230,7 @@ var
 
 procedure __InitModule;
 begin
+  DefaultEncoding := Encoding.GetEncoding(1251);
   var arg := Environment.GetCommandLineArgs();
   if arg.Length > 1 then begin
     CommandLineArgs := new string[arg.Length - 1];
