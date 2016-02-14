@@ -2810,8 +2810,8 @@ namespace PascalABCCompiler.PCU
                 cnfn = new common_namespace_function_node(name,null,cun.namespaces[1],null);
                 impl_members.Add(cnfn);
 			}
-            ReadGenericFunctionInformation(cnfn);
             AddMember(cnfn, offset);
+            ReadGenericFunctionInformation(cnfn);
             int cur_pos = (int)br.BaseStream.Position;
             br.BaseStream.Seek(connected_to_type_pos, SeekOrigin.Begin);
             if (CanReadObject())

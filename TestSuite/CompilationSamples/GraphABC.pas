@@ -869,7 +869,7 @@ type
 /// Выводит часть рисунка, заключенную в прямоугольнике r, в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования g
     procedure Draw(x,y,w,h: integer; r: System.Drawing.Rectangle; g: Graphics);
 /// Выводит рисунок, повернутый на угол rotateAngle, масштабируя его к размеру (w,h)
-    procedure Picture.Draw(x,y: integer; rotateAngle: real; w,h: integer);
+    procedure Draw(x,y: integer; rotateAngle: real; w,h: integer);
 /// Копирует прямоугольник src рисунка p в прямоугольник dst текущего рисунка
     procedure CopyRect(dst: System.Drawing.Rectangle; p: Picture; src: System.Drawing.Rectangle);
 /// Копирует прямоугольник src битового образа bmp в прямоугольник dst текущего рисунка
