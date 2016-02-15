@@ -1495,7 +1495,7 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 /// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает матрицу размера m x n, заполненную случайными вещественными значениями
-function MatrixRandomReal(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 10): array [,] of real;
+function MatrixRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 
 // -----------------------------------------------------
 //                       Tuples
@@ -3280,6 +3280,26 @@ begin
   Result := Cplx(c[0],c[1]);
 end;
 
+procedure operator+=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c + x;
+end;
+
+procedure operator*=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c * x;
+end;
+
+procedure operator-=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c - x;
+end;
+
+procedure operator/=(var c: Complex; x: Complex); extensionmethod;
+begin
+  c := c / x;
+end;
+
 //------------------------------------------------------------------------------
 //          Методы расширения для sequence of T
 //------------------------------------------------------------------------------
@@ -3716,7 +3736,7 @@ begin
   Result := Range(0,count-1).Select(f)
 end;
 
-function MatrixRandom(m: integer; n: integer; a: integer; b: integer): array [,] of integer;
+function MatrixRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
 begin
   Result := new integer[m,n];
   for var i:=0 to Result.GetLength(0)-1 do
@@ -3724,7 +3744,7 @@ begin
     Result[i,j] := Random(a,b);
 end;
 
-function MatrixRandomReal(m: integer; n: integer; a: integer; b: integer): array [,] of real;
+function MatrixRandomReal(m: integer; n: integer; a,b: real): array [,] of real;
 begin
   Result := new real[m,n];
   for var i:=0 to Result.GetLength(0)-1 do

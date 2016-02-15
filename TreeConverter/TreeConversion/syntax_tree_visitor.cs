@@ -11725,11 +11725,16 @@ namespace PascalABCCompiler.TreeConverter
             //TODO: Разобрать подробнее.
             if (!body_exists)
             {
+                if (_function_header.name.class_name != null && context.converted_explicit_interface_type != null)
+                {
+                    AddError(get_location(_function_header), "EXPLICIT_IMPLEMENTATION_EXPECTED");
+                }
                 if ((context.top_function.semantic_node_type == semantic_node_type.common_method_node)
                     || ((context.func_stack_size_is_one()) && (_is_interface_part)))
                 {
                     context.leave_block();
                 }
+                
             }
             body_exists = false;
         }
@@ -11888,6 +11893,10 @@ namespace PascalABCCompiler.TreeConverter
             	AddError(get_dll_import_attribute(context.top_function).location, "DLLIMPORT_ATTRIBUTE_CANNOT_BE_APPLIED_TO_METHOD");
             if (!body_exists)
             {
+                if (_procedure_header.name.class_name != null && context.converted_explicit_interface_type != null)
+                {
+                    AddError(get_location(_procedure_header), "EXPLICIT_IMPLEMENTATION_EXPECTED");
+                }
                 if ((context.top_function.semantic_node_type == semantic_node_type.common_method_node)
                     || ((context.func_stack_size_is_one()) && (_is_interface_part)))
                 {
