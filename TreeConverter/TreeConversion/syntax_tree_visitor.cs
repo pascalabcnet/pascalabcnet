@@ -4931,7 +4931,8 @@ namespace PascalABCCompiler.TreeConverter
                                             }
                                             //lroman//
                                             #endregion
-                                            exprs.AddElement(convert_strong(en));
+                                            var cen = convert_strong(en);
+                                            exprs.AddElement(cen);
                                         }
                                     }
 
@@ -11161,6 +11162,7 @@ namespace PascalABCCompiler.TreeConverter
             if (fh != null && fh.return_type == null)
             {
                 // попытаемся поступить как в лямбдах
+                //fh.return_type = new SyntaxTree.lambda_inferred_type();
                 //fh.return_type = new semantic_type_node(new LambdaResultTypeInferrer(fh, _procedure_definition.proc_body, this).InferResultType(1));
                 var bl = _procedure_definition.proc_body as SyntaxTree.block;
                 if (bl != null && bl.program_code != null)

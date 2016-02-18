@@ -8054,6 +8054,108 @@
         </OuterContext>
         <Items />
       </PointOfInterest>
+      <PointOfInterest>
+        <Name>SeqBase class</Name>
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>SeqBase = class(IEnumerable&lt;object&gt;,IEnumerator&lt;object&gt;)</Text>
+        <OuterContext>
+          <OuterContextItem Type="Class">
+            <string>SeqBase</string>
+            <string>=</string>
+            <string>class</string>
+            <string>(</string>
+            <string>IEnumerable</string>
+            <string>&lt;</string>
+            <string>object</string>
+            <string>&gt;</string>
+            <string>,</string>
+            <string>IEnumerator</string>
+            <string>&lt;</string>
+            <string>object</string>
+            <string>&gt;</string>
+            <string>)</string>
+          </OuterContextItem>
+          <OuterContextItem Type="Defs">
+            <string>type</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <InnerContext>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>System</string>
+            <string>.</string>
+            <string>Collections</string>
+            <string>.</string>
+            <string>IEnumerable</string>
+            <string>.</string>
+            <string>GetEnumerator</string>
+            <string>(</string>
+            <string>)</string>
+            <string>:</string>
+            <string>System</string>
+            <string>.</string>
+            <string>Collections</string>
+            <string>.</string>
+            <string>IEnumerator</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>GetEnumerator</string>
+            <string>(</string>
+            <string>)</string>
+            <string>:</string>
+            <string>IEnumerator</string>
+            <string>&lt;</string>
+            <string>object</string>
+            <string>&gt;</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>get_Current</string>
+            <string>:</string>
+            <string>object</string>
+            <string>virtual</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>System</string>
+            <string>.</string>
+            <string>Collections</string>
+            <string>.</string>
+            <string>IEnumerator</string>
+            <string>.</string>
+            <string>get_Current</string>
+            <string>(</string>
+            <string>)</string>
+            <string>:</string>
+            <string>object</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>MoveNext</string>
+            <string>(</string>
+            <string>)</string>
+            <string>:</string>
+            <string>boolean</string>
+            <string>virtual</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>procedure</string>
+            <string>Dispose</string>
+            <string>(</string>
+            <string>)</string>
+            <string>virtual</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>procedure</string>
+            <string>Reset</string>
+            <string>(</string>
+            <string>)</string>
+          </InnerContextItem>
+        </InnerContext>
+        <Items />
+      </PointOfInterest>
     </Items>
   </PointOfInterest>
 </AspectFile>
