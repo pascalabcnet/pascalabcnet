@@ -2828,10 +2828,9 @@ begin
     else sb.Append(']');
     Result := sb.ToString;
   end
-  else if o.GetType.Name.StartsWith('$pascal_array') then
+  else if o.GetType.GetField('NullBasedArray')<>nil then
   begin
-    var t := o.GetType;
-    var f := t.GetField('NullBasedArray');
+    var f := o.GetType.GetField('NullBasedArray');
     Result := StructuredObjectToString(f.GetValue(o));
   end
   else
@@ -3366,6 +3365,17 @@ procedure &ForEach<T>(self: sequence of T; action: T -> ()); extensionmethod;
 begin
   foreach x: T in Self do
     action(x);
+end;
+
+/// Применяет действие к каждому элементу последовательности, зависящее от номера элемента
+procedure &ForEach<T>(self: sequence of T; action: (T,integer) -> ()); extensionmethod;
+begin
+  var i := 0;
+  foreach x: T in Self do
+  begin
+    action(x,i);
+    i += 1;
+  end;
 end;
 
 /// Возвращает отсортированную по возрастанию последовательность

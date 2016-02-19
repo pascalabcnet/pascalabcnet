@@ -2828,10 +2828,9 @@ begin
     else sb.Append(']');
     Result := sb.ToString;
   end
-  else if o.GetType.Name.StartsWith('$pascal_array') then
+  else if o.GetType.GetField('NullBasedArray')<>nil then
   begin
-    var t := o.GetType;
-    var f := t.GetField('NullBasedArray');
+    var f := o.GetType.GetField('NullBasedArray');
     Result := StructuredObjectToString(f.GetValue(o));
   end
   else
@@ -3368,6 +3367,17 @@ begin
     action(x);
 end;
 
+/// Применяет действие к каждому элементу последовательности, зависящее от номера элемента
+procedure &ForEach<T>(self: sequence of T; action: (T,integer) -> ()); extensionmethod;
+begin
+  var i := 0;
+  foreach x: T in Self do
+  begin
+    action(x,i);
+    i += 1;
+  end;
+end;
+
 /// Возвращает отсортированную по возрастанию последовательность
 function Sorted<T>(self: sequence of T): sequence of T; extensionmethod;
 begin
@@ -3431,6 +3441,45 @@ end;
 // -----------------------------------------------------------------------------
 //                Функции для последовательностей и динамических массивов
 // -----------------------------------------------------------------------------
+
+type
+// Вспомогательный класс для генерации всех последовательностей. К сожалению, пока с object
+  SeqBase = class(IEnumerable<object>,IEnumerator<object>)
+  public
+    function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
+    begin
+      Result := Self;
+    end;
+
+    function GetEnumerator(): IEnumerator<object>;
+    begin
+      Result := Self;
+    end;
+
+    function get_Current: object; virtual;
+    begin
+      Result := nil;
+    end;
+
+    function System.Collections.IEnumerator.get_Current(): object;
+    begin
+      Result := Self.get_Current();
+    end;
+
+    function MoveNext(): boolean; virtual; 
+    begin
+      Result := True;
+    end;
+
+    procedure Dispose(); virtual;
+    begin
+    end;
+
+    procedure Reset();
+    begin
+    end;
+  end;
+  
 function Range(self: integer): sequence of integer; extensionmethod;
 begin
   Result := Range(1,self);  
@@ -3445,7 +3494,7 @@ end;
 
 function Range(c1,c2: char): sequence of char;
 begin
-  Result := Range(integer(c1),integer(c2)).Select(x->ChrUnicode(x));
+  Result := Range(integer(c1),integer(c2)).Select(x->Chr(x));
 end;
 
 type AB = class
@@ -3538,122 +3587,123 @@ begin
 end;
 
 type
-  SeqGenClass<T> = class
+// Вспомогательный класс для генерации рекуррентных последовательностей
+  IterateClass<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
+  private
     first: T;
-    next: Func<T,T>;
-    count: integer;
-    constructor (f: T; n: Func<T,T>; c: integer);
+    cur: T;
+    next: T->T;
+    isfirst := true;
+  public
+    constructor (first: T; next: T->T);
     begin
-      first := f;
-      next := n;
-      count := c;
+      Self.first := first;
+      cur := first;
+      Self.next := next;
     end;
     
-    function lam(x: integer): T;
+    function get_Current: object; virtual;
     begin
-      Result := first; first := next(first);
+      Result := cur;
     end;
-    
-    function f(): sequence of T;
+
+    function MoveNext(): boolean; virtual; 
     begin
-      Result := Range(1,count).Select(lam)
+      Result := True;
+      if isfirst then 
+        isfirst := false
+      else cur := next(cur)
+    end;
+
+    procedure Dispose(); override;
+    begin
+      cur := first;
+      isfirst := true;
     end;
   end;
-  
-  SeqGenClass2<T> = class
+
+// Вспомогательный класс для генерации рекуррентных последовательностей по двум предыдущим значениям
+  Iterate2Class<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
+  private
     first,second: T;
-    next: Func2<T,T,T>;
-    count: integer;
-    constructor (f,s: T; n: Func2<T,T,T>; c: integer);
+    a,b: T;
+    next: (T,T)->T;
+    isfirst := true;
+  public
+    constructor (first,second: T; next: (T,T)->T);
     begin
-      first := f;
-      second := s;
-      next := n;
-      count := c;
+      Self.first := first;
+      Self.second := second;
+      a := first;
+      b := second;
+      Self.next := next;
     end;
     
-    function lam(x: integer): T;
+    function get_Current: object; virtual;
     begin
-      Result := first; first := second; second := next(Result,first); 
-    end;
-    
-    function f(): sequence of T;
-    begin
-      Result := Range(1,count).Select(lam)
-    end;
-  end;
-  
-  SeqWhileClass<T> = class
-    first: T; 
-    next: Func<T,T>; 
-    pred: Func<T,boolean>;
-    constructor (f: T; n: Func<T,T>; p: Func<T,boolean>);
-    begin
-      first := f;
-      next := n;
-      pred := p;
+      Result := a;
     end;
 
-    function lam(x: integer): T;
+    function MoveNext(): boolean; virtual; 
     begin
-      Result := first; first := next(first); 
+      Result := True;
+      if isfirst then 
+        isfirst := false
+      else
+      begin
+        var v := next(a,b);
+        a := b;
+        b := v;
+      end;  
     end;
 
-    function f(): sequence of T;
+    procedure Dispose(); override;
     begin
-      Result := Range(1,1000000000).Select(lam).TakeWhile(pred);
+      a := first;
+      b := second;
+      isfirst := true;
     end;
   end;
-  
-  SeqWhileClass2<T> = class
-    first,second: T; 
-    next: Func2<T,T,T>; 
-    pred: Func<T,boolean>;
-    constructor (f,s: T; n: Func2<T,T,T>; p: Func<T,boolean>);
-    begin
-      first := f;
-      second := s;
-      next := n;
-      pred := p;
-    end;
-    
-    function lam(x: integer): T;
-    begin
-      Result := first; first := second; second := next(Result,first);  
-    end;
-    
-    function f(): sequence of T;
-    begin
-      Result := Range(1,1000000000).Select(lam).TakeWhile(pred);
-    end;
-  end;
+
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
+function Iterate<T>(first: T; next: T->T): sequence of T;
+begin
+  Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
+end;
+
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом и функцией next
+function Iterate<T>(Self: T; next: T -> T): sequence of T; extensionmethod;
+begin
+  Result := Iterate&<T>(Self,next);
+end;
+
+function Iterate<T>(first,second: T; next: (T,T)->T): sequence of T;
+begin
+  Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
+end;
 
 function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
 begin
   if count<1 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
-  var tt := new SeqGenClass<T>(first,next,count);
-  Result := tt.f();
+  Result := Iterate(first,next).Take(count);
 end;  
 
 function SeqGen<T>(count: integer; first,second: T; next: (T,T) -> T): sequence of T;
 begin
   if count<1 then
     raise new System.ArgumentOutOfRangeException('count',count,GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
-  var tt := new SeqGenClass2<T>(first,second,next,count);
-  Result := tt.f();
+  Result := Iterate(first,second,next).Take(count);
 end;  
 
 function SeqWhile<T>(first: T; next: T -> T; pred: T -> boolean): sequence of T;
 begin
-  var tt := new SeqWhileClass<T>(first,next,pred);
-  Result := tt.f();
+  Result := Iterate(first,next).TakeWhile(pred);
 end;  
 
 function SeqWhile<T>(first,second: T; next: (T,T) -> T; pred: T -> boolean): sequence of T;
 begin
-  var tt := new SeqWhileClass2<T>(first,second,next,pred);
-  Result := tt.f();
+  Result := Iterate(first,second,next).TakeWhile(pred);
 end;
 
 function ArrGen<T>(count: integer; first: T; next: T -> T): array of T;
