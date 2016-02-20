@@ -24,7 +24,7 @@ INCLUDE_EMPTY_FILE=Директива компилятора $include: не ук
 UNNECESSARY $endif=Лишний $endif
 ENDIF_ABSENT=Незакрытая директива $ifdef или $ifndef - отсутствует $endif
 UNNECESSARY $else=Лишний $else
-TYPE_NAME_EXPECTED=Ожидалось имя типа
+TYPE_NAME_EXPECTED=Ожидался тип
 
 EOF1=конец файла
 EOF=(конец файла)

@@ -24,7 +24,7 @@ INCLUDE_EMPTY_FILE=Compiler directive $include: file name is absent
 UNNECESSARY $endif=Extra $endif
 ENDIF_ABSENT=Not closed directive $ifdef or $ifndef - $endif is absent
 UNNECESSARY $else=Extra $else
-TYPE_NAME_EXPECTED=Type name expected
+TYPE_NAME_EXPECTED=Type expected
 
 EOF1=end of file
 EOF=(end of file)
