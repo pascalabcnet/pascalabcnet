@@ -810,7 +810,7 @@ namespace PascalABCSavParser
                 ids.Reverse();
                 return new named_type_reference(ids, dn.source_context);
             }
-            this.AddError("TYPE_NAME_EXPECTED", null);
+            this.AddErrorFromResource("TYPE_NAME_EXPECTED",  en.source_context);
             return null;
         }
     }
