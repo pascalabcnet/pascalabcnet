@@ -295,7 +295,9 @@ namespace PascalABCCompiler.NetHelper
         private static Dictionary<Type,MethodInfo[]> extension_methods = new Dictionary<Type,MethodInfo[]>();
         private static Dictionary<Type,List<MethodInfo>> type_extensions = new Dictionary<Type, List<MethodInfo>>();
         private static Dictionary<Type, Type> arrays_with_extension_methods = new Dictionary<Type, Type>();
+        private static Dictionary<Type, Type> generics_with_extension_methods = new Dictionary<Type, Type>();
         private static Dictionary<int, List<MethodInfo>> generic_array_type_extensions = new Dictionary<int, List<MethodInfo>>();
+        private static List<MethodInfo> generic_parameter_type_extensions = new List<MethodInfo>();
         public static Type PABCSystemType = null;
         public static Type PT4Type = null;
         public static Type StringType = typeof(string);
@@ -522,6 +524,7 @@ namespace PascalABCCompiler.NetHelper
                                         }
                                         if (mths2 != null)
                                             mths2.Add(mi);
+                                        
                                         Dictionary<string, List<MemberInfo>> mht;
                                         if (members.TryGetValue(tmp, out mht))
                                         {
@@ -537,9 +540,49 @@ namespace PascalABCCompiler.NetHelper
                                             if (!mis2.Contains(mi))
                                                 mis2.Add(mi);
                                         }
+                                        if (tmp.IsGenericParameter && !generic_parameter_type_extensions.Contains(mi))
+                                        {
+                                            generic_parameter_type_extensions.Add(mi);
+                                            foreach (Type tt in members.Keys)
+                                            {
+                                                if (members.TryGetValue(tt, out mht))
+                                                {
+                                                    List<MemberInfo> mis2 = null;
+                                                    string name = compiler_string_consts.GetNETOperName(mi.Name);
+                                                    if (name == null)
+                                                        name = mi.Name;
+                                                    if (!mht.TryGetValue(name, out mis2))
+                                                    {
+                                                        mis2 = new List<MemberInfo>();
+                                                        mht.Add(name, mis2);
+                                                    }
+                                                    if (!mis2.Contains(mi))
+                                                        mis2.Add(mi);
+                                                }
+                                            }
+                                        }
+                                        
                                         foreach (Type arr_t in arrays_with_extension_methods.Keys)
                                         {
                                             if (members.TryGetValue(arr_t, out mht))
+                                            {
+                                                List<MemberInfo> mis2 = null;
+                                                string name = compiler_string_consts.GetNETOperName(mi.Name);
+                                                if (name == null)
+                                                    name = mi.Name;
+                                                if (!mht.TryGetValue(name, out mis2))
+                                                {
+                                                    mis2 = new List<MemberInfo>();
+                                                    mht.Add(name, mis2);
+                                                }
+                                                if (!mis2.Contains(mi))
+                                                    mis2.Add(mi);
+                                            }
+                                        }
+
+                                        foreach (Type gen_t in generics_with_extension_methods.Keys)
+                                        {
+                                            if (members.TryGetValue(gen_t, out mht))
                                             {
                                                 List<MemberInfo> mis2 = null;
                                                 string name = compiler_string_consts.GetNETOperName(mi.Name);
@@ -1077,11 +1120,6 @@ namespace PascalABCCompiler.NetHelper
             }
         }
 
-        //public static void AddMembersOfInterfaceToList(Type t, BindingFlags bf, List<MemberInfo> mem_info)
-        //{
-        //
-        //}
-
         public static bool IsExtensionMethod(MethodInfo mi)
         {
             if (ExtensionAttributeType != null && mi.GetCustomAttributes(ExtensionAttributeType, false).Length > 0)
@@ -1104,16 +1142,6 @@ namespace PascalABCCompiler.NetHelper
             }
             else
 			{
-                //(ssyy) Забираем также и не public члены
-                //(ds) добавил BindingFlags.FlattenHierarchy
-                //(ssyy) убрал BindingFlags.FlattenHierarchy. Зачем оно было нужно? :)
-                //(ds) добавил BindingFlags.FlattenHierarchy, затем что:
-                //Ваня Бондарев (00:52:19 16/12/2007)
-                //BindingFlags.FlattenHierarchy eto flag kotoryj ukazyvaet, chto chleny 
-                //tipa nado brat' ne tolko iz samogo tipa, no i ego bazovyh klassov 
-                //t.GetMembers(BindingFlags.FlattenHierarchy) naprimer. Dlja vybora staticheskih 
-                //chlenov eto objazatelno.
-                //Без этого не работает пример
                 BindingFlags bf = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic;
 				MemberInfo[] mis;
                 if (t.IsInterface)
@@ -1146,20 +1174,36 @@ namespace PascalABCCompiler.NetHelper
 				{
                     ht[mi.Name].Add(mi);
 				}
-                if (ExtensionAttributeType != null /*&& t != StringType*/ && cur_used_assemblies.ContainsKey(SystemCoreAssembly))
+                if (ExtensionAttributeType != null)
                 {
                     List<MethodInfo> meths = null;
                     Type tmp_t = t;
                     if (tmp_t.IsArray)
                         arrays_with_extension_methods[tmp_t] = tmp_t;
+                    if (tmp_t.IsGenericTypeDefinition)
+                        generics_with_extension_methods[tmp_t] = tmp_t;
                     cached_type_extensions[t] = t;
                     while (tmp_t != null)
                     {
-                        if (type_extensions.TryGetValue(tmp_t, out meths) 
-                            || tmp_t.IsGenericType && type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths)
-                            || tmp_t.IsArray && generic_array_type_extensions.TryGetValue(tmp_t.GetArrayRank(), out meths))
+                        List<MethodInfo> meths1 = null;
+                        List<MethodInfo> meths2 = null;
+                        List<MethodInfo> meths3 = generic_parameter_type_extensions;
+                        if (tmp_t.IsGenericType && !tmp_t.IsGenericTypeDefinition)
+                            type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths1);
+                        if (tmp_t.IsArray)
+                            generic_array_type_extensions.TryGetValue(tmp_t.GetArrayRank(), out meths2);
+                        if (type_extensions.TryGetValue(tmp_t, out meths) || meths1 != null || meths2 != null || meths3 != null)
                         {
-                            foreach (MethodInfo mi in meths)
+                            List<MethodInfo> all_meths = new List<MethodInfo>();
+                            if (meths != null)
+                                all_meths.AddRange(meths);
+                            if (meths1 != null)
+                                all_meths.AddRange(meths1);
+                            if (meths2 != null)
+                                all_meths.AddRange(meths2);
+                            if (meths3 != null)
+                                all_meths.AddRange(meths3);
+                            foreach (MethodInfo mi in all_meths)
                             {
                                 if (cur_used_assemblies.ContainsKey(mi.DeclaringType.Assembly))
                                 {

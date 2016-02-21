@@ -1997,61 +1997,6 @@ namespace PascalABCCompiler.TreeConverter
 
             }
 
-            // TODO: Исправить этот алгоритм, сделав каждый с каждым - вроде исправил - см. выше
-            /*j = 1;
-				while(j<set_of_possible_functions.Count)
-				{
-                    method_compare mc = compare_methods(set_of_possible_functions[0],
-                        set_of_possible_functions[j], tcll[0], tcll[j]);
-					if (mc==method_compare.greater_method)
-					{
-						tcll.remove_at(j);
-						set_of_possible_functions.remove_at(j);
-						remove=true;
-					}
-					else if (mc==method_compare.less_method)
-					{
-						tcll[0]=tcll[j];
-						set_of_possible_functions[0]=set_of_possible_functions[j];
-						tcll.remove_at(j);
-						set_of_possible_functions.remove_at(j);
-						remove=true;
-					}
-					else
-					{
-						j++;
-					}
-				}
-			}*/
-
-            /*remove=true;
-            while (remove)
-            {
-                if (set_of_possible_functions.Count == 1)
-                {
-                    check_single_possible_convertion(loc, tcll[0]);
-                    convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
-                    return set_of_possible_functions[0];
-                }
-                remove = false;
-                j = 1;
-                while (j < set_of_possible_functions.Count)
-                {
-
-                }
-            }*/
-			//Тут некоторое дублирование кода, но сюда программа не должна никогда зайти.
-			//Должен быть выполнен if выше.
-			//Но пусть пока повисит. Потом нужно разобраться и убрать.
-			/*if (set_of_possible_functions.Count==1)
-			{
-				check_single_possible_conversion(func_call,tcll[0]);
-				func_call.function=set_of_possible_functions[0];
-				convert_function_call_expressions(func_call,tcll[0]);
-				func_call.type=func_call.function.return_value_type;
-				return func_call;
-			}*/
-
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
@@ -2083,8 +2028,58 @@ namespace PascalABCCompiler.TreeConverter
                 return new indefinite_functions_set(indefinits);
             }
 
+            SortedDictionary<int, List<function_node>> distances = new SortedDictionary<int, List<function_node>>();
+            foreach (function_node fn in set_of_possible_functions)
+            {
+                int distance = 0;
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    type_node from = parameters[i].type;
+                    type_node to = fn.parameters[Math.Min(i,fn.parameters.Count-1)].type;
+                    if (fn.parameters[Math.Min(i, fn.parameters.Count - 1)].is_params)
+                        to = to.element_type;
+                    distance += get_type_distance(from, to);
+                }
+                List<function_node> lst;
+                if (distances.TryGetValue(distance,out lst))
+                {
+                    lst.Add(fn);
+                }
+                else
+                {
+                    lst = new List<function_node>();
+                    lst.Add(fn);
+                    distances[distance] = lst;
+                }
+            }
+            foreach (int dist in distances.Keys)
+            {
+                List<function_node> funcs = distances[dist];
+                if (funcs.Count == 1)
+                {
+                    possible_type_convertions_list tcl = get_conversions(parameters, funcs[0].parameters, true, loc);
+                    convert_function_call_expressions(funcs[0], parameters, tcl);
+                    return funcs[0];
+                }
+            }
             return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));
 		}
+
+        private int get_type_distance(type_node from, type_node to)
+        {
+            if (from == to)
+                return 0;
+            type_compare tc = type_table.compare_types(from, to);
+            if (tc == type_compare.non_comparable_type)
+                return 1000;
+            if (!from.IsInterface && to.IsInterface)
+                return 2;
+            if (tc == type_compare.less_type)
+                return 1;
+            if (tc == type_compare.greater_type)
+                return 3;
+            return 1000;
+        }
 
         private function_node is_exist_eq_return_value_method(function_node fn, function_node_list funcs)
         {
