@@ -17801,6 +17801,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             SyntaxTree.expression ex = _ident_with_templateparams.name;
             SyntaxTree.ident id_ex = _ident_with_templateparams.name as SyntaxTree.ident;
+            dot_node dn = _ident_with_templateparams.name as dot_node;
             int par_count = _ident_with_templateparams.template_params.params_list.Count;
             if (id_ex != null)
             {
@@ -17811,6 +17812,48 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }
                 type_si = context.find(id_ex.name);
+                if (type_si != null && type_si.sym_info.general_node_type == general_node_type.template_type)
+                {
+                    template_class tc = type_si.sym_info as template_class;
+                    List<type_node> tpars = visit_type_list(_ident_with_templateparams.template_params.params_list);
+                    return_value(instance_any(tc, tpars, get_location(_ident_with_templateparams)));
+                    return;
+                }
+            }
+            else if (dn != null && dn.right is ident)
+            {
+                semantic_node sn = convert_semantic_strong(dn.left);
+                id_ex = dn.right as SyntaxTree.ident;
+                type_node tn = null;
+                namespace_node nn = null;
+                unit_node un = null;
+                switch (sn.general_node_type)
+                {
+                    case general_node_type.expression: tn = (sn as expression_node).type; break;
+                    case general_node_type.type_node: tn = sn as type_node; break;
+                    case general_node_type.namespace_node: nn = sn as namespace_node; break;
+                    case general_node_type.unit_node: un = sn as unit_node; break;
+                    default:
+                        AddError(get_location(dn.left), "EXPECTED_ANOTHER_KIND_OF_OBJECT"); break;
+                }
+                SymbolInfo type_si = null;
+                if (tn != null)
+                    type_si = tn.find_in_type(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                else if (nn != null)
+                    type_si = nn.find(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                else if (un != null)
+                    type_si = un.find_only_in_namespace(id_ex.name + compiler_string_consts.generic_params_infix + par_count.ToString());
+                if (type_si != null)
+                {
+                    return_value(get_generic_instance(type_si, _ident_with_templateparams.template_params.params_list));
+                    return;
+                }
+                if (tn != null)
+                    type_si = tn.find_in_type(id_ex.name);
+                else if (nn != null)
+                    type_si = nn.find(id_ex.name);
+                else if (un != null)
+                    type_si = un.find_only_in_namespace(id_ex.name);
                 if (type_si != null && type_si.sym_info.general_node_type == general_node_type.template_type)
                 {
                     template_class tc = type_si.sym_info as template_class;
