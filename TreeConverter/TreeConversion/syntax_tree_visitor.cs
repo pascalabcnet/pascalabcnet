@@ -16316,7 +16316,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (!FindIEnumerableElementType(_foreach_stmt, in_what.type, ref elem_type))
             //if (!IsGetEnumerator(in_what.type, ref elem_type))
-                AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type);
+                AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
 
             if (_foreach_stmt.type_name == null)
             {
