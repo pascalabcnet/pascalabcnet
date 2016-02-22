@@ -16179,6 +16179,7 @@ namespace PascalABCCompiler.TreeConverter
             // IEnumerable<integer>, Range(1,10), Dictionary<string,integer>: tn = compiled_type_node
             // IEnumerable<T>: tn = compiled_generic_instance_type_node
             // FibGen = class(IEnumerable,IEnumerator): tn = common_type_node, en = compiled_type_node
+            // array of Person: tn = common_type_node
             {
                 System.Type ct;
                 if (tn is compiled_type_node)
@@ -16198,7 +16199,7 @@ namespace PascalABCCompiler.TreeConverter
                     r = ct.GetInterface(IEnTstring);
                 if (r != null)
                 {
-                    Type arg1 = r.GetGenericArguments().First();
+                    Type arg1 = r.GetGenericArguments().First(); // тип параметра IEnumerable
                     var str = arg1.GetGenericArguments().Count();
                     if (tn is compiled_type_node)
                     {
@@ -16230,7 +16231,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else
                 {
-                    if (tn.element_type != null) // значит, это массив любой размерности - 02.02.16 SSM
+                    if (tn.element_type != null) // значит, это массив любой размерности - 02.02.16 SSM - еще может быть множество set of T - 22.02.16 SSM
                     {
                         elem_type = tn.element_type;
                         return true;
@@ -16265,6 +16266,27 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (tn == null || tn is null_type_node || tn.ImplementingInterfaces == null)
                     return false;
+
+                if (tn.element_type != null) // еще может быть множество set of T - 22.02.16 SSM
+                {
+                    elem_type = tn.element_type;
+                    return true;
+                }
+
+                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T> и возвращаем T в качестве elem_type
+                {
+                    if (itn is compiled_generic_instance_type_node)
+                    {
+                        var itnc = (itn as compiled_generic_instance_type_node);
+                        var tt = (itnc.original_generic as compiled_type_node).compiled_type;
+                        if (tt == typeof(System.Collections.Generic.IEnumerable<>))
+                        {
+                            elem_type = itnc.generic_parameters[0] as common_type_node;
+                            return true;
+                        }
+                    }
+                }
+
                 foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces)
                 {
                     //if (itn == ctn)
