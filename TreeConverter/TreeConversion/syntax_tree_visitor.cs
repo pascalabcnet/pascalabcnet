@@ -16287,12 +16287,11 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
 
-                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces)
+                foreach (SemanticTree.ITypeNode itn in tn.ImplementingInterfaces) // если не нашли - ищем интерфейс IEnumerable и возвращаем object в качестве elem_type
                 {
-                    //if (itn == ctn)
                     if (itn is compiled_type_node)
                     {
-                        var itnc = (itn as compiled_type_node).compiled_type;
+                        /*var itnc = (itn as compiled_type_node).compiled_type;
                         if (itnc.IsGenericType)
                         {
                             var my = itnc.GetGenericTypeDefinition();// = typeof(System.Collections.Generic.IEnumerable<>)
@@ -16303,7 +16302,8 @@ namespace PascalABCCompiler.TreeConverter
                                 return true;
                             }
                         }
-                        else if (itn == ctn)
+                        else */
+                        if (itn == ctn)
                         {
                             elem_type = SystemLibrary.SystemLibrary.object_type;
                             return true;
