@@ -474,7 +474,7 @@ namespace PascalABCCompiler.PCU
                 else
                 {
                     
-                    type_node tn = GetSpecialTypeRefernce(names[i].offset);
+                    type_node tn = GetSpecialTypeReference(names[i].offset);
                     if (tn is compiled_type_node)
                         (tn as compiled_type_node).scope.AddSymbol(names[i].name, si);
                     else if (tn is generic_instance_type_node)
@@ -2808,7 +2808,7 @@ namespace PascalABCCompiler.PCU
 		}
 
 
-        private type_node GetSpecialTypeRefernce(int offset)
+        private type_node GetSpecialTypeReference(int offset)
         {
             int pos = (int)br.BaseStream.Position;
             br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
@@ -2898,7 +2898,7 @@ namespace PascalABCCompiler.PCU
 				cnfn.functions_nodes_list.AddElement(GetNestedFunction());
 			//br.ReadInt32();//code;
 			cnfn.loc = ReadDebugInfo();
-            cnfn.function_code = /*new statements_list(null);//*/ (restore_code || cnfn.is_generic_function) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
+            cnfn.function_code = (restore_code /*|| cnfn.is_generic_function*/) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
             cnfn.ConnectedToType = ConnectedToType;
             if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && cnfn.ConnectedToType.element_type.is_generic_parameter)
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
@@ -3965,7 +3965,7 @@ namespace PascalABCCompiler.PCU
             definition_node dn = null;
             if (members.TryGetValue(offset, out dn))
                 return dn as common_namespace_function_node;
-			common_namespace_function_node cnf = GetNamespaceFunction(offset);
+			common_namespace_function_node cnf = GetNamespaceFunction(offset, false);
 			return cnf;
 		}
 		

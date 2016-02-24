@@ -26,6 +26,9 @@ uses
   System.Collections.Generic,
   System;
 
+// -----------------------------------------------------
+//     Стандартные константы
+// -----------------------------------------------------
 const
   /// Максимальное значение типа shortint
   MaxShortInt = shortint.MaxValue; 
@@ -53,7 +56,6 @@ const
   MaxSingle = single.MaxValue; 
   /// Минимальное положительное значение типа single
   MinSingle = single.Epsilon;
-  
   /// Максимальное значение типа integer
   MaxInt = integer.MaxValue;
   /// Константа Pi
@@ -73,7 +75,7 @@ const
   __IS_SYSTEM_MODULE = true;
 
 // -----------------------------------------------------
-//                  Standard types
+//     Стандартные типы
 // -----------------------------------------------------
 type
   /// Базовый тип объектов
@@ -182,7 +184,7 @@ type
   /// Представляет функцию с одним параметром вещественного типа, возвращающую вещественное
   RealFunc = Func<real,real>;
   
-  /// Представляет функцию с одним параметром строкового типа, возвращающую строковое
+  /// Представляет функцию с одним параметром строкового типа, возвращающую строку
   StringFunc = Func<string,string>;
 
   /// Представляет функцию с одним параметром, возвращающую boolean 
@@ -215,6 +217,8 @@ type
   /// Представляет результаты из набора групп при выполнении Regex.Match
   RegexGroupCollection = System.Text.RegularExpressions.GroupCollection;
   
+  /// Представляет тип короткой строки фиксированной длины 255 символов
+  ShortString = string[255];
     //------------------------------------------------------------------------------
     //Pointers
     //------------------------------------------------------------------------------
@@ -242,7 +246,6 @@ type
   PReal     = ^real;//double
   PDouble   = ^double;//double  //ошибка, не сохранится, надо исправить
   //------------------------------------------------------------------------------
-  ShortString = string[255];
   
 // -----------------------------------------------------
 // IOSystem interface & IOStandardSystem implementation
@@ -474,9 +477,9 @@ type
   end;
   
 // -----------------------------------------------------
-//                  read - readln
+//     Процедуры и функции ввода Read
 // -----------------------------------------------------
-///- read(a,b,...)
+///- procedure Read(a,b,...);
 /// Вводит значения a,b,... с клавиатуры
 procedure Read;
 ///--
@@ -505,6 +508,9 @@ procedure Read(var x: uint64);
 procedure Read(var x: single);
 ///--
 procedure Read(var x: boolean);
+///- procedure Readln(a,b,...);
+/// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
+procedure Readln;
 
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
@@ -539,15 +545,20 @@ function ReadString(prompt: string): string;
 /// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры
 function ReadBoolean(prompt: string): boolean;
 
-/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, и переходит на следующую строку ввода
+/// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
 function ReadlnInteger(prompt: string): integer;
-/// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры, и переходит на следующую строку ввода
+/// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
 function ReadlnReal(prompt: string): real;
-/// Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры, и переходит на следующую строку ввода
+/// Выводит приглашение к вводу и возвращает значение типа char, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
 function ReadlnChar(prompt: string): char;
-/// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры, и переходит на следующую строку ввода
+/// Выводит приглашение к вводу и возвращает значение типа string, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
 function ReadlnString(prompt: string): string;
-/// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода
+/// Выводит приглашение к вводу и возвращает значение типа boolean, введенное с клавиатуры, 
+///и осуществляет переход на следующую строку ввода
 function ReadlnBoolean(prompt: string): boolean;
 
 
@@ -556,12 +567,8 @@ procedure ReadShortString(var s: string; n: integer);
 ///--
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
 
-///- readln(a,b,...)
-/// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
-procedure Readln;
-
-///- read(f,a,b,...)
-/// Вводит значения a,b,... из файла f
+///- procedure Read(f,a,b,...);
+/// Вводит значения a,b,... из текстового файла f
 procedure Read(f: Text);
 ///--
 procedure Read(f: Text; var x: integer);
@@ -607,64 +614,64 @@ function ReadString(f: Text): string;
 /// Возвращает значение типа boolean, введенное из текстового файла f
 function ReadBoolean(f: Text): boolean;
 
-/// Возвращает значение типа integer, введенное из текстового файла f, и переходит на следующую строку
+/// Возвращает значение типа integer, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
 function ReadlnInteger(f: Text): integer;
-/// Возвращает значение типа real, введенное из текстового файла f, и переходит на следующую строку
+/// Возвращает значение типа real, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
 function ReadlnReal(f: Text): real;
-/// Возвращает значение типа char, введенное из текстового файла f, и переходит на следующую строку
+/// Возвращает значение типа char, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
 function ReadlnChar(f: Text): char;
-/// Возвращает значение типа string, введенное из текстового файла f, и переходит на следующую строку
+/// Возвращает значение типа string, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
 function ReadlnString(f: Text): string;
-/// Возвращает значение типа boolean, введенное из текстового файла f, и переходит на следующую строку
+/// Возвращает значение типа boolean, введенное из текстового файла f, 
+///и осуществляет переход на следующую строку
 function ReadlnBoolean(f: Text): boolean;
 
-/// Возвращает True, если достигнут конец строки
-function Eoln: boolean;
-/// Возвращает True, если достигнут конец файла
-function Eof: boolean;
-
 // -----------------------------------------------------
-//                  write - writeln
+//     Процедуры вывода Write
 // -----------------------------------------------------
-///- write(a,b,...)
+///- procedure Write(a,b,...);
 /// Выводит значения a,b,... на экран
-procedure write;
+procedure Write;
 ///--
-procedure write(obj: object);
+procedure Write(obj: object);
 ///--
-procedure write(obj1, obj2: object);
+procedure Write(obj1, obj2: object);
 ///--
-procedure write(params args: array of object);
+procedure Write(params args: array of object);
 
-///- writeln(a,b,...)
+///- procedure Writeln(a,b,...);
 /// Выводит значения a,b,... на экран и осуществляет переход на новую строку
-///!!- writeln(a,b,...)
+///!!- Writeln(a,b,...)
 /// Writes a,b,... to standart output stream and appends newline
-procedure writeln;
+procedure Writeln;
 ///--
-procedure writeln(obj: object);
+procedure Writeln(obj: object);
 ///--
 //procedure writeln(ptr: pointer); 
 ///--
-procedure writeln(obj1, obj2: object);
+procedure Writeln(obj1, obj2: object);
 ///--
-procedure writeln(params args: array of object);
+procedure Writeln(params args: array of object);
 
-///- write(f: Text; a,b,...)
+///- procedure Write(f: Text; a,b,...);
 /// Выводит значения a,b,... в текстовый файл f
-procedure write(f: Text);
+procedure Write(f: Text);
 ///--
-procedure write(f: Text; val: object);
+procedure Write(f: Text; val: object);
 ///--
-procedure write(f: Text; params args: array of object);
+procedure Write(f: Text; params args: array of object);
 
-///- writeln(f: Text; a,b,...)
+///- procedure Writeln(f: Text; a,b,...);
 /// Выводит значения a,b,... в текстовый файл f и осуществляет переход на новую строку
-procedure writeln(f: Text);
+procedure Writeln(f: Text);
 ///--
-procedure writeln(f: Text; val: object);
+procedure Writeln(f: Text; val: object);
 ///--
-procedure writeln(f: Text; params args: array of object);
+procedure Writeln(f: Text; params args: array of object);
 
 /// Выводит значения args согласно форматной строке formatstr
 procedure WriteFormat(formatstr: string; params args: array of object);
@@ -679,19 +686,23 @@ procedure WritelnFormat(f: Text; formatstr: string; params args: array of object
 // -----------------------------------------------------
 //                  Print
 // -----------------------------------------------------
-/// Выводит значения s на экран
+///- procedure Print(a,b,...);
+/// Выводит значения a,b,... на экран, после каждого значения выводит пробел
 procedure Print(s: string);
-/// Выводит значения args на экран, выводя после каждого значения пробел
+///--
 procedure Print(params args: array of object);
-/// Выводит значения args на экран, выводя после каждого значения пробел, и переходит на новую строчку
-procedure Println(params args: array of object);
-/// Выводит значения args в текстовый файл f, выводя после каждого значения пробел
+///- procedure Print(f,a,b,...);
+/// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел
 procedure Print(f: Text; params args: array of object);
-/// Выводит значения args в текстовый файл f, выводя после каждого значения пробел, и переходит на новую строчку
+///- procedure Println(a,b,...);
+/// Выводит значения a,b,... на экран, после каждого значения выводит пробел и переходит на новую строку
+procedure Println(params args: array of object);
+///- procedure Println(f,a,b,...);
+/// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(f: Text; params args: array of object);
 
 // -----------------------------------------------------
-//                  Text files subroutines
+//     Подпрограммы для работы с текстовыми файлами 
 // -----------------------------------------------------
 /// Связывает файловую переменную f с именем файла name
 procedure Assign(f: Text; name: string);
@@ -701,41 +712,45 @@ procedure AssignFile(f: Text; name: string);
 procedure Close(f: Text);
 /// Закрывает файл f
 procedure CloseFile(f: Text);
-/// Открывает текстовый файл f на чтение
+/// Открывает текстовый файл f на чтение в кодировке Windows
 procedure Reset(f: Text);
-/// Открывает текстовый файл f на чтение
+/// Открывает текстовый файл f на чтение в указанной кодировке
 procedure Reset(f: Text; en: Encoding);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в кодировке Windows
 procedure Reset(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в указанной кодировке
 procedure Reset(f: Text; name: string; en: Encoding);
-/// Открывает текстовый файл f на запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+/// Открывает текстовый файл f на запись в кодировке Windows. 
+///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text);
-/// Открывает текстовый файл f на запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+/// Открывает текстовый файл f на запись в указанной кодировке. 
+///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; en: Encoding);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись, при этом обнуляя его содержимое
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись в кодировке Windows. 
+///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись, при этом обнуляя его содержимое
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись в указанной кодировке. 
+///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; name: string; en: Encoding);
-/// Открывает текстовый f файл на дополнение
+/// Открывает текстовый f файл на дополнение в кодировке Windows
 procedure Append(f: Text);
-/// Открывает текстовый f файл на дополнение
+/// Открывает текстовый f файл на дополнение в указанной кодировке
 procedure Append(f: Text; en: Encoding);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в кодировке Windows
 procedure Append(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение
+/// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в указанной кодировке
 procedure Append(f: Text; name: string; en: Encoding);
-/// Возвращает текстовый файл с именем fname, открытый на чтение
+/// Возвращает текстовый файл с именем fname, открытый на чтение в кодировке Windows
 function OpenRead(fname: string): Text;
-/// Возвращает текстовый файл с именем fname, открытый на чтение
+/// Возвращает текстовый файл с именем fname, открытый на чтение в указанной кодировке 
 function OpenRead(fname: string; en: Encoding): Text;
-/// Возвращает текстовый файл с именем fname, открытый на запись
+/// Возвращает текстовый файл с именем fname, открытый на запись в кодировке Windows
 function OpenWrite(fname: string): Text;
-/// Возвращает текстовый файл с именем fname, открытый на запись
+/// Возвращает текстовый файл с именем fname, открытый на запись в указанной кодировке
 function OpenWrite(fname: string; en: Encoding): Text;
-/// Возвращает текстовый файл с именем fname, открытый на дополнение
+/// Возвращает текстовый файл с именем fname, открытый на дополнение в кодировке Windows
 function OpenAppend(fname: string): Text;
-/// Возвращает текстовый файл с именем fname, открытый на дополнение
+/// Возвращает текстовый файл с именем fname, открытый на дополнение в указанной кодировке 
 function OpenAppend(fname: string; en: Encoding): Text;
 
 /// Возвращает True, если достигнут конец файла f
@@ -756,84 +771,75 @@ procedure Rename(f: Text; newname: string);
 ///--
 procedure TextFileInit(var f: Text);
 
-/// Считывает строки из файла и превращает их в последовательность строк
+/// Открывает файл, считывает из него строки в кодировке Windows и закрывает файл. В каждый момент в памяти хранится только текущая строка
 function ReadLines(path: string): sequence of string;
-/// Считывает строки из файла с кодировкой en и превращает их в последовательность строк 
+/// Открывает файл, считывает из него строки в указаной кодировке и закрывает файл. В каждый момент в памяти хранится только текущая строка 
 function ReadLines(path: string; en: Encoding): sequence of string;
-/// Считывает строки из файла в массив строк
+/// Открывает файл, считывает из него строки в кодировке Windows в виде массива строк, после чего закрывает файл
 function ReadAllLines(path: string): array of string;
-/// Считывает строки из файла с кодировкой en в массив строк 
+/// Открывает файл, считывает из него строки в указаной кодировке в виде массива строк, после чего закрывает файл
 function ReadAllLines(path: string; en: Encoding): array of string;
-/// Считывает содержимое файла в строку
+/// Открывает файл, считывает его содержимое в кодировке Windows в виде строки, после чего закрывает файл
 function ReadAllText(path: string): string;
-/// Считывает содержимое файла с кодировкой en в строку
+/// Открывает файл, считывает его содержимое в указаной кодировке в виде строки, после чего закрывает файл
 function ReadAllText(path: string; en: Encoding): string;
-/// Создает новый файл, записывает в него строки из последовательности
+/// Создает новый файл, записывает в него строки из последовательности в кодировке Windows, после чего закрывает файл
 procedure WriteLines(path: string; ss: sequence of string);
-/// Создает новый файл с кодировкой en, записывает в него строки из последовательности 
+/// Создает новый файл, записывает в него строки из последовательности в указанной кодировке, после чего закрывает файл
 procedure WriteLines(path: string; ss: sequence of string; en: Encoding);
-/// Создает новый файл, записывает в него строки из массива
+/// Создает новый файл, записывает в него строки из массива в кодировке Windows, после чего закрывает файл
 procedure WriteAllLines(path: string; ss: array of string);
-/// Создает новый файл с кодировкой en, записывает в него строки из массива  
+/// Создает новый файл, записывает в него строки из массива в указанной кодировке, после чего закрывает файл
 procedure WriteAllLines(path: string; ss: array of string; en: Encoding);
-/// Создает новый файл, записывает в него содержимое строки 
+/// Создает новый файл, записывает в него строку в кодировке Windows, после чего закрывает файл
 procedure WriteAllText(path: string; s: string);
-/// Создает новый файл с кодировкой en, записывает в него содержимое строки 
+/// Создает новый файл, записывает в него строку в указанной кодировке, после чего закрывает файл
 procedure WriteAllText(path: string; s: string; en: Encoding);
 
-/// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска 
-function EnumerateFiles(path: string; searchPattern: string := '*.*'): sequence of string;
-/// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включая подкаталоги 
-function EnumerateAllFiles(path: string; searchPattern: string := '*.*'): sequence of string;
-/// Возвращает последовательность имен каталогов по заданному пути
-function EnumerateDirectories(path: string): sequence of string;
-/// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
-function EnumerateAllDirectories(path: string): sequence of string;
-
 // -----------------------------------------------------
-//                Abstract binary files subroutines
+//     Подпрограммы для работы с двоичными файлами
 // -----------------------------------------------------
-///- Assign(f: file of T; name: string)
+///- procedure Assign(f: file of T; name: string);
 /// Связывает файловую переменную f с именем файла name
 procedure Assign(f: AbstractBinaryFile; name: string);
-///- AssignFile(f: file of T; name: string)
+///- procedure AssignFile(f: file of T; name: string);
 /// Связывает файловую переменную f с именем файла name
 procedure AssignFile(f: AbstractBinaryFile; name: string);
-///- Close(f: file of T)
+///- procedure Close(f: file of T);
 /// Закрывает файл f
 procedure Close(f: AbstractBinaryFile);
-///- CloseFile(f: file of T)
+///- procedure CloseFile(f: file of T);
 /// Закрывает файл f
 procedure CloseFile(f: AbstractBinaryFile);
-///- Reset(f: file of T)
+///- procedure Reset(f: file of T);
 /// Открывает двоичный файл f на чтение и запись
 procedure Reset(f: AbstractBinaryFile);
-///- Reset(f: file of T; name: string)
+///- procedure Reset(f: file of T; name: string);
 /// Связывает файловую переменную f с именем файла name и открывает двоичный файл f на чтение и запись
 procedure Reset(f: AbstractBinaryFile; name: string);
-///- Rewrite(f: file of T)
+///- procedure Rewrite(f: file of T);
 /// Открывает двоичный файл f на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
 procedure Rewrite(f: AbstractBinaryFile);
-///- Rewrite(f: file of T)
+///- procedure Rewrite(f: file of T);
 /// Связывает файловую переменную f с именем файла name и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое
 procedure Rewrite(f: AbstractBinaryFile; name: string);
-///- Truncate(f: file of T)
+///- procedure Truncate(f: file of T);
 /// Усекает двоичный файл f, отбрасывая все элементы с позиции файлового указателя
 procedure Truncate(f: AbstractBinaryFile);
-///- Eof(f: file of T)
+///- function Eof(f: file of T): boolean;
 /// Возвращает True, если достигнут конец файла f
 function Eof(f: AbstractBinaryFile): boolean;
-///- Erase(f: file of T)
+///- procedure Erase(f: file of T);
 /// Удаляет файл, связанный с файловой переменной f
 procedure Erase(f: AbstractBinaryFile);
-///- Rename(f: file of T; newname: string)
+///- procedure Rename(f: file of T; newname: string);
 /// Переименовывает файл, связаный с файловой переменной f, давая ему имя newname. 
 procedure Rename(f: AbstractBinaryFile; newname: string);
 
 ///- write(f: file of T; a,b,...)
 /// Выводит значения a,b,... в типизированный файл f
 //procedure Write(f: AbstractBinaryFile; val: object; arr: boolean); 
-///- write(f: file; a,b,...)
+///- procedure Write(f: file; a,b,...);
 /// Выводит значения a,b,... в нетипизированный файл f
 procedure Write(f: AbstractBinaryFile; params vals: array of object);
 ///--
@@ -844,15 +850,15 @@ procedure Writeln(f: AbstractBinaryFile; val: object);
 procedure Writeln(f: AbstractBinaryFile; params vals: array of object);
 
 // -----------------------------------------------------
-//                Typed files subroutines
+//    Подпрограммы для работы с типизированными файлами
 // -----------------------------------------------------
-///- FilePos(f : file of T): int64
+///- function FilePos(f: file of T): int64;
 /// Возвращает текущую позицию файлового указателя в типизированном файле f 
 function FilePos(f: TypedFile): int64;
-///- FileSize(f : file of T): int64
+///- function FileSize(f: file of T): int64;
 /// Возвращает количество элементов в типизированном файле f 
 function FileSize(f: TypedFile): int64;
-///- Seek(f : file of T; n : int64)
+///- procedure Seek(f: file of T; n: int64);
 /// Устанавливает текущую позицию файлового указателя в типизированном файле f на элемент с номером n  
 procedure Seek(f: TypedFile; n: int64);
 ///--
@@ -865,15 +871,15 @@ procedure TypedFileInitWithShortString(var f: TypedFile; ElementType: System.Typ
 function TypedFileRead(f: TypedFile): object;
 
 // -----------------------------------------------------
-//                Binary files subroutines
+//    Подпрограммы для работы с бестиповыми файлами
 // -----------------------------------------------------
-///- FilePos(f : file): int64
+///- function FilePos(f: file): int64;
 /// Возвращает текущую позицию файлового указателя в нетипизированном файле f 
 function FilePos(f: BinaryFile): int64;
-///- FileSize(f : file): int64
+///- function FileSize(f: file): int64;
 /// Возвращает количество байт в нетипизированном файле f 
 function FileSize(f: BinaryFile): int64;
-///- Seek(f : file; n : int64)
+///- procedure Seek(f: file; n: int64);
 /// Устанавливает текущую позицию файлового указателя в нетипизированном файле f на байт с номером n  
 procedure Seek(f: BinaryFile; n: int64);
 ///--
@@ -882,7 +888,7 @@ procedure BinaryFileInit(var f: BinaryFile);
 function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 
 // -----------------------------------------------------
-//                Operating System subroutines
+//    Cистемные подпрограммы
 // -----------------------------------------------------
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
@@ -954,8 +960,17 @@ procedure Execute(filename: string);
 /// Запускает программу или документ с именем filename и параметрами командной строки args
 procedure Execute(filename: string; args: string);
 
+/// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска 
+function EnumerateFiles(path: string; searchPattern: string := '*.*'): sequence of string;
+/// Возвращает последовательность имен файлов по заданному пути, соответствующих шаблону поиска, включая подкаталоги 
+function EnumerateAllFiles(path: string; searchPattern: string := '*.*'): sequence of string;
+/// Возвращает последовательность имен каталогов по заданному пути
+function EnumerateDirectories(path: string): sequence of string;
+/// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
+function EnumerateAllDirectories(path: string): sequence of string;
+
 // -----------------------------------------------------
-//                File name functions
+//     Функции для работы с именами файлов
 // -----------------------------------------------------
 /// Выделяет имя файла из полного имени файла fname
 function ExtractFileName(fname: string): string;
@@ -971,7 +986,7 @@ function ExtractFileDrive(fname: string): string;
 function ExpandFileName(fname: string): string;
 
 // -----------------------------------------------------
-//                Mathematical functions
+//     Математические подпрограммы
 // -----------------------------------------------------
 ///-function Sign(x: число): число;
 /// Возвращает знак числа x
@@ -1150,36 +1165,25 @@ function Odd(i: uint64): boolean;
 function Cplx(re,im: real): Complex;
 
 // -----------------------------------------------------
-//                Typed sets
+//     Процедуры для работы со стандартными множествами
 // -----------------------------------------------------
-///- Include(var s : set of T; el : T)
+///- procedure Include(var s: set of T; element: T);
 ///Добавляет елемент el во множество s
 procedure Include(var s: TypedSet; el: object);
-///- Exclude(var s : set of T; el : T)
+///- procedure Exclude(var s: set of T; element: T);
 ///Удаляет элемент el из множества s
 procedure Exclude(var s: TypedSet; el: object);
 
 // -----------------------------------------------------
-//                Char and String subroutines
+//     Подпрограммы для работы с символами и строками
 // -----------------------------------------------------
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
 function OrdAnsi(a: char): byte;
-///-function Ord(a: целое): целое;
-/// Возвращает порядковый номер значения a
-function Ord(a: integer): integer;
-///--
-function Ord(a: longword): longword;
-///--
-function Ord(a: int64): int64;
-///--
-function Ord(a: uint64): uint64;
-///--
-function Ord(a: boolean): integer;
-/// Преобразует код в символ 
+/// Преобразует код в символ в кодировке Unicode 
 function Chr(a: word): char;
-/// Преобразует символ в код 
+/// Преобразует символ в код в кодировке Unicode 
 function Ord(a: char): word;
 /// Преобразует код в символ в кодировке Unicode
 function ChrUnicode(a: word): char;
@@ -1194,6 +1198,7 @@ function UpCase(ch: char): char;
 /// Преобразует символ в нижний регистр
 function LowCase(ch: char): char;
 
+///-procedure Str(i: целое; var s: string);
 /// Преобразует целое значение i к строковому представлению и записывает результат в s
 procedure Str(i: integer; var s: string);
 ///--
@@ -1209,7 +1214,7 @@ procedure Str(r: single; var s: string);
 ///--
 procedure Str(s1: string; var s: string);
 /// Возвращает позицию подстроки subs в строке s. Если не найдена, возвращает 0 
-function Pos(subs, s: string): integer;
+function Pos(subs, s: string; from: integer := 1): integer;
 /// Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function PosEx(subs, s: string; from: integer := 1): integer;
 /// Возвращает длину строки 
@@ -1226,7 +1231,7 @@ procedure InsertInShortString(source: string; var s: string; index, n: integer);
 procedure Delete(var s: string; index, count: integer);
 /// Возвращает подстроку строки s длины count с позиции index
 function Copy(s: string; index, count: integer): string;
-///-Concat(s1,s2,...): string 
+///-function Concat(s1,s2,...): string; 
 /// Возвращает строку, являющуюся результатом слияния строк s1,s2,...
 function Concat(params strs: array of string): string;
 /// Возвращает строку, являющуюся результатом слияния строк s1 и s2
@@ -1259,13 +1264,17 @@ function StrToInt(s: string): integer;
 function StrToInt64(s: string): int64;
 /// Преобразует строковое представление вещественного числа к числовому значению
 function StrToFloat(s: string): real;
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+/// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. 
+///При невозможности преобразования возвращается False
 function TryStrToInt(s: string; var value: integer): boolean;
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+/// Преобразует строковое представление s целого числа к числовому значению и записывает его в value. 
+///При невозможности преобразования возвращается False
 function TryStrToInt64(s: string; var value: int64): boolean;
-/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. 
+///При невозможности преобразования возвращается False
 function TryStrToFloat(s: string; var value: real): boolean;
-/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. При невозможности преобразования возвращается False
+/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. 
+///При невозможности преобразования возвращается False
 function TryStrToFloat(s: string; var value: single): boolean;
 /// Считывает целое из строки
 function ReadIntegerFromString(s: string; var from: integer): integer;
@@ -1280,25 +1289,27 @@ function TryReadIntegerFromString(s: string; var from: integer; var res: integer
 /// Считывает вещественное из строки. Возвращает True если считывание удачно и False в противном случае
 function TryReadRealFromString(s: string; var from: integer; var res: real): boolean;
 
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///-procedure Val(s: string; var value: число; var err: integer);
+/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. 
+///Если преобразование успешно, то err=0, иначе err>0
 procedure Val(s: string; var value: integer; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: shortint; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: smallint; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: int64; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: byte; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: word; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: longword; var err: integer);
-/// Преобразует строковое представление s целого числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: uint64; var err: integer);
-/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: real; var err: integer);
-/// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в переменную value. Если преобразование успешно, то err=0, иначе err>0
+///--
 procedure Val(s: string; var value: single; var err: integer);
 
 /// Преобразует целое число к строковому представлению
@@ -1308,11 +1319,11 @@ function IntToStr(a: int64): string;
 /// Преобразует вещественное число к строковому представлению
 function FloatToStr(a: real): string;
 
-/// Возвращает отформатированную строку, построенную по форматной строке fmtstr и списку форматиуемых параметров pars
-function Format(fmtstr: string; params pars: array of object): string;
+/// Возвращает отформатированную строку, построенную по форматной строке и списку форматируемых параметров 
+function Format(formatstring: string; params pars: array of object): string;
 
 // -----------------------------------------------------
-//                Common Routines
+//     Общие подпрограммы
 // -----------------------------------------------------
 /// Увеличивает значение переменной i на 1
 procedure Inc(var i: integer);
@@ -1340,66 +1351,84 @@ procedure Dec(var b: byte);
 procedure Dec(var b: byte; n: integer);
 procedure Inc(var f: boolean);
 procedure Dec(var f: boolean);
+///-function Ord(a: целое): целое;
+/// Возвращает порядковый номер значения a
+function Ord(a: integer): integer;
+///--
+function Ord(a: longword): longword;
+///--
+function Ord(a: int64): int64;
+///--
+function Ord(a: uint64): uint64;
+///--
+function Ord(a: boolean): integer;
 
-//------------------------------------------------------------------------------
-//PRED-SUCC
+///-function Succ(x: целое): целое;
 /// Возвращает следующее за x значение
-function succ(x: integer): integer;
-/// Возвращает следующее за x значение
-function succ(x: boolean): boolean;
-/// Возвращает следующее за x значение
-function succ(x: byte): byte;
-/// Возвращает следующее за x значение
-function succ(x: shortint): shortint;
-/// Возвращает следующее за x значение
-function succ(x: smallint): smallint;
-/// Возвращает следующее за x значение
-function succ(x: word): word;
-/// Возвращает следующее за x значение
-function succ(x: longword): longword;
-/// Возвращает следующее за x значение
-function succ(x: int64): int64;
-/// Возвращает следующее за x значение
-function succ(x: uint64): uint64;
-/// Возвращает следующее за x значение
-function succ(x: char): char;
+function Succ(x: integer): integer;
+///--
+function Succ(x: byte): byte;
+///--
+function Succ(x: shortint): shortint;
+///--
+function Succ(x: smallint): smallint;
+///--
+function Succ(x: word): word;
+///--
+function Succ(x: longword): longword;
+///--
+function Succ(x: int64): int64;
+///--
+function Succ(x: uint64): uint64;
+///-function Succ(x: char): char;
+/// Возвращает следующий за x символ
+function Succ(x: char): char;
+///--
+function Succ(x: boolean): boolean;
+
+///-function Pred(x);
 /// Возвращает предшествующее x значение
-function pred(x: boolean): boolean;
-/// Возвращает предшествующее x значение
-function pred(x: byte): byte;
-/// Возвращает предшествующее x значение
-function pred(x: shortint): shortint;
-/// Возвращает предшествующее x значение
-function pred(x: smallint): smallint;
-/// Возвращает предшествующее x значение
-function pred(x: word): word;
-/// Возвращает предшествующее x значение
-function pred(x: integer): integer;
-/// Возвращает предшествующее x значение
-function pred(x: longword): longword;
-/// Возвращает предшествующее x значение
-function pred(x: int64): int64;
-/// Возвращает предшествующее x значение
-function pred(x: uint64): uint64;
-/// Возвращает предшествующее x значение
-function pred(x: char): char;
+function Pred(x: integer): integer;
+///--
+function Pred(x: byte): byte;
+///--
+function Pred(x: shortint): shortint;
+///--
+function Pred(x: smallint): smallint;
+///--
+function Pred(x: word): word;
+///--
+function Pred(x: longword): longword;
+///--
+function Pred(x: int64): int64;
+///--
+function Pred(x: uint64): uint64;
+///-function Pred(x: char): char;
+/// Возвращает предшествующий x символ
+function Pred(x: char): char;
+///--
+function Pred(x: boolean): boolean;
 
 /// Меняет местами значения двух переменных
 procedure Swap<T>(var a, b: T);
+/// Возвращает True, если достигнут конец строки
+function Eoln: boolean;
+/// Возвращает True, если достигнут конец потока ввода
+function Eof: boolean;
 
 // -----------------------------------------------------
-//                Dynamic arrays
+//     Подпрограммы для работы с динамическими массивами
 // -----------------------------------------------------
-///- Low(i: array): integer
+///- function Low(i: array): integer;
 function Low(i: System.Array): integer;
-///- High(i: array): integer
+///- function High(i: array): integer;
 function High(i: System.Array): integer;
 /// Возвращает длину динамического массива
-function Length(a: &Array): integer;
+function Length(a: System.Array): integer;
 /// Возвращает длину динамического массива по размерности dim
-function Length(a: &Array; dim: integer): integer;
+function Length(a: System.Array; dim: integer): integer;
 /// Создаёт копию динамического массива
-function Copy(a: &Array): &Array;
+function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию
 procedure Sort<T>(a: array of T);
 /// Сортирует список по возрастанию
@@ -1410,7 +1439,7 @@ procedure Reverse<T>(a: array of T);
 procedure Reverse<T>(a: array of T; index,length: integer);
 
 // -----------------------------------------------------
-//              Sequences and dynamic arrays
+//     Подпрограммы для генерации последовательностей
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a,b: integer): sequence of integer;
@@ -1420,60 +1449,31 @@ function Range(c1,c2: char): sequence of char;
 function Range(a,b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a,b,step: integer): sequence of integer;
-/// Возвращает массив размера n, заполненный случайными целыми значениями
-function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
-/// Возвращает массив размера n, заполненный случайными целыми значениями
-function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
-/// Возвращает массив размера n, заполненный случайными вещественными значениями
-function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
-/// Возвращает последовательность из n случайных целых элементов
-function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
-/// Возвращает последовательность из n случайных вещественных элементов
-function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): sequence of real;
-/// Возвращает массив, заполненный указанными значениями
-function Arr<T>(params a: array of T): array of T;
-/// Возвращает массив, заполненный значениями из последовательнсти
-function Arr<T>(a: sequence of T): array of T;
 /// Возвращает последовательность указанных элементов
 function Seq<T>(params a: array of T): sequence of T;
-/// Возвращает массив из count элементов, заполненных значениями f(i)
-function ArrGen<T>(count: integer; f: integer -> T): array of T;
-/// Возвращает массив из count элементов, заполненных значениями f(i), начиная с i=from
-function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
-/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
-function ArrGen<T>(count: integer; first: T; next: T -> T): array of T;
-/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
-function ArrGen<T>(count: integer; first,second: T; next: (T,T) -> T): array of T;
+/// Возвращает последовательность из n случайных целых элементов
+function SeqRandom(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
+/// Возвращает последовательность из n случайных целых элементов
+function SeqRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): sequence of integer;
+/// Возвращает последовательность из n случайных вещественных элементов
+function SeqRandomReal(n: integer := 10; a: real := 0; b: real := 10): sequence of real;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i)
 function SeqGen<T>(count: integer; f: integer -> T): sequence of T;
 /// Возвращает последовательность из count элементов, заполненных значениями f(i), начиная с i=from
 function SeqGen<T>(count: integer; f: integer -> T; from: integer): sequence of T;
 /// Возвращает последовательность из count элементов, начинающуюся с first, с функцией next перехода от предыдущего к следующему 
 function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
-/// Возвращает последовательность из count элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему 
+/// Возвращает последовательность из count элементов, начинающуюся с first и second, 
+///с функцией next перехода от двух предыдущих к следующему 
 function SeqGen<T>(count: integer; first,second: T; next: (T,T) -> T): sequence of T;
-/// Возвращает последовательность элементов с начальным значением first, функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
+/// Возвращает последовательность элементов с начальным значением first, 
+///функцией next перехода от предыдущего к следующему и условием pred продолжения последовательности 
 function SeqWhile<T>(first: T; next: T -> T; pred: T -> boolean): sequence of T;
-/// Возвращает последовательность элементов, начинающуюся с first и second, с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности 
+/// Возвращает последовательность элементов, начинающуюся с first и second, 
+///с функцией next перехода от двух предыдущих к следующему и условием pred продолжения последовательности 
 function SeqWhile<T>(first,second: T; next: (T,T) -> T; pred: T -> boolean): sequence of T;
-/// Возвращает массив из count элементов x 
-function ArrFill<T>(count: integer; x: T): array of T;
 /// Возвращает последовательность из count элементов x 
 function SeqFill<T>(count: integer; x: T): sequence of T;
-
-/// Возвращает массив из n целых, введенных с клавиатуры
-function ReadArrInteger(n: integer): array of integer;
-/// Возвращает массив из n вещественных, введенных с клавиатуры
-function ReadArrReal(n: integer): array of real;
-/// Возвращает массив из n строк, введенных с клавиатуры
-function ReadArrString(n: integer): array of string;
-
-/// Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры
-function ReadArrInteger(const prompt: string; n: integer): array of integer;
-/// Выводит приглашение к вводу и возвращает массив из n вещественных, введенных с клавиатуры
-function ReadArrReal(const prompt: string; n: integer): array of real;
-/// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
-function ReadArrString(const prompt: string; n: integer): array of string;
 
 /// Возвращает последовательность из n целых, введенных с клавиатуры
 function ReadSeqInteger(n: integer): sequence of integer;
@@ -1489,16 +1489,55 @@ function ReadSeqReal(const prompt: string; n: integer): sequence of real;
 /// Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры
 function ReadSeqString(const prompt: string; n: integer): sequence of string;
 
+
 // -----------------------------------------------------
-//                       Matrices
+//     Подпрограммы для генерации динамических массивов
 // -----------------------------------------------------
-/// Возвращает матрицу размера m x n, заполненную случайными целыми значениями
+/// Возвращает массив, заполненный указанными значениями
+function Arr<T>(params a: array of T): array of T;
+/// Возвращает массив, заполненный значениями из последовательнсти
+function Arr<T>(a: sequence of T): array of T;
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+/// Возвращает массив размера n, заполненный случайными целыми значениями
+function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
+/// Возвращает массив размера n, заполненный случайными вещественными значениями
+function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
+/// Возвращает массив из count элементов, заполненных значениями f(i)
+function ArrGen<T>(count: integer; f: integer -> T): array of T;
+/// Возвращает массив из count элементов, заполненных значениями f(i), начиная с i=from
+function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
+/// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
+function ArrGen<T>(count: integer; first: T; next: T -> T): array of T;
+/// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
+function ArrGen<T>(count: integer; first,second: T; next: (T,T) -> T): array of T;
+/// Возвращает массив из count элементов x 
+function ArrFill<T>(count: integer; x: T): array of T;
+
+/// Возвращает массив из n целых, введенных с клавиатуры
+function ReadArrInteger(n: integer): array of integer;
+/// Возвращает массив из n вещественных, введенных с клавиатуры
+function ReadArrReal(n: integer): array of real;
+/// Возвращает массив из n строк, введенных с клавиатуры
+function ReadArrString(n: integer): array of string;
+
+/// Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры
+function ReadArrInteger(const prompt: string; n: integer): array of integer;
+/// Выводит приглашение к вводу и возвращает массив из n вещественных, введенных с клавиатуры
+function ReadArrReal(const prompt: string; n: integer): array of real;
+/// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
+function ReadArrString(const prompt: string; n: integer): array of string;
+
+// -----------------------------------------------------
+//     Подпрограммы для генерации случайных матриц
+// -----------------------------------------------------
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
-/// Возвращает матрицу размера m x n, заполненную случайными вещественными значениями
+/// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrixRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 
 // -----------------------------------------------------
-//                       Tuples
+//     Подпрограммы для создания кортежей
 // -----------------------------------------------------
 ///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
 /// Возвращает кортеж из элементов разных типов
@@ -1515,7 +1554,7 @@ function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6):
 function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
 
 // -----------------------------------------------------
-//                Lst, HSet, SSet, Dict, KV
+//     Короткие функции Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
 function Lst<T>(params a: array of T): List<T>;
@@ -1536,7 +1575,7 @@ function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 
 
 // -----------------------------------------------------
-//                  Standard Exceptions
+//     Стандартные классы исключений
 // -----------------------------------------------------
 type
   ///Базовый класс для исключений, бросаемых при создании инстанции generic-типа
@@ -1570,12 +1609,8 @@ type
   
 
 // -----------------------------------------------------
-//                  Global variables
+//     Общедоступные переменные
 // -----------------------------------------------------
-///--
-var
-  __CONFIG__: Dictionary<string, object> := new Dictionary<string, object>;
-
 var
 /// Содержит аргумены командой строки, с которыми была запущена программа
   CommandLineArgs: array of string;
@@ -1597,6 +1632,9 @@ var
   ///--
   DefaultEncoding: Encoding;
 
+///--
+var
+  __CONFIG__: Dictionary<string, object> := new Dictionary<string, object>;
 
 // Вспомогательные подпрограммы. Из раздела интерфейса не убирать!!! 
 // -----------------------------------------------------
@@ -3563,6 +3601,11 @@ begin
   Result := Range(1,n).Select(i->Random(a,b))
 end;
 
+function SeqRandomInteger(n: integer; a: integer; b: integer): sequence of integer;
+begin
+  Result := Range(1,n).Select(i->Random(a,b))
+end;
+
 function SeqRandomReal(n: integer; a: real; b: real): sequence of real;
 begin
   Result := Range(1,n).Select(i->Random()*(b-a)+a)
@@ -4201,7 +4244,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//                  read - readln
+//     Read - Readln
 // -----------------------------------------------------
 procedure read;
 begin
@@ -5569,29 +5612,6 @@ begin
 end;
 
 // -----------------------------------------------------
-// EnumerateFiles, EnumerateDirectories
-// -----------------------------------------------------
-function EnumerateFiles(path: string; searchPattern: string): sequence of string;
-begin
-  Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.TopDirectoryOnly)
-end;
-
-function EnumerateAllFiles(path: string; searchPattern: string): sequence of string;
-begin
-  Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.AllDirectories)
-end;
-
-function EnumerateDirectories(path: string): sequence of string;
-begin
-  Result := System.IO.Directory.EnumerateDirectories(path,'*.*',System.IO.SearchOption.TopDirectoryOnly)
-end;
-
-function EnumerateAllDirectories(path: string): sequence of string;
-begin
-  Result := System.IO.Directory.EnumerateDirectories(path,'*.*',System.IO.SearchOption.AllDirectories)
-end;
-
-// -----------------------------------------------------
 //                  Abstract binary files
 // -----------------------------------------------------
 procedure Assign(f: AbstractBinaryFile; name: string);
@@ -6294,6 +6314,29 @@ begin
 end;
 
 // -----------------------------------------------------
+// EnumerateFiles, EnumerateDirectories
+// -----------------------------------------------------
+function EnumerateFiles(path: string; searchPattern: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.TopDirectoryOnly)
+end;
+
+function EnumerateAllFiles(path: string; searchPattern: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateFiles(path,searchPattern,System.IO.SearchOption.AllDirectories)
+end;
+
+function EnumerateDirectories(path: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateDirectories(path,'*.*',System.IO.SearchOption.TopDirectoryOnly)
+end;
+
+function EnumerateAllDirectories(path: string): sequence of string;
+begin
+  Result := System.IO.Directory.EnumerateDirectories(path,'*.*',System.IO.SearchOption.AllDirectories)
+end;
+
+// -----------------------------------------------------
 //                File name functions: implementation
 // -----------------------------------------------------
 function ExtractFileName(fname: string): string;
@@ -6990,16 +7033,18 @@ begin
   s := Convert.ToString(r, nfi);
 end;
 
-function Pos(subs, s: string): integer;
+function Pos(subs, s: string; from: integer): integer;
 begin
   if (subs = nil) or (subs.Length = 0) then
     Result := 0
-  else Result := s.IndexOf(subs) + 1;
+  else Result := s.IndexOf(subs, from - 1) + 1;
 end;
 
 function PosEx(subs, s: string; from: integer): integer;
 begin
-  Result := s.IndexOf(subs, from - 1) + 1;
+  if (subs = nil) or (subs.Length = 0) then
+    Result := 0
+  else Result := s.IndexOf(subs, from - 1) + 1;
 end;
 
 function Length(s: string): integer;
@@ -7500,10 +7545,10 @@ begin
   Result := a.ToString(nfi);
 end;
 
-function Format(fmtstr: string; params pars: array of object): string;
+function Format(formatstring: string; params pars: array of object): string;
 begin
   try
-    Result := string.Format(nfi, fmtstr, pars);
+    Result := string.Format(nfi, formatstring, pars);
   except
     on e: Exception do
       raise e;

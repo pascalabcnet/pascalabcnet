@@ -2313,7 +2313,10 @@ namespace PascalABCCompiler.NETGenerator
             }
             else
             {
-                mi = helper.GetMethod(igfi.original_function).mi;
+                MethInfo methi = helper.GetMethod(igfi.original_function);
+                if (methi == null)//not used functions from pcu
+                    return;
+                mi = methi.mi;
             }
             int tcount = igfi.generic_parameters.Count;
             Type[] tpars = new Type[tcount];
