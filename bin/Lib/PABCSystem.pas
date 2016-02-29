@@ -3595,11 +3595,11 @@ type
       Self.first := first;
       cur := first-1;
     end;
-    function get_Current: integer; override;
+    function get_Current: integer; virtual;
     begin
       Result := cur;
     end;
-    function MoveNext(): boolean; override; 
+    function MoveNext(): boolean; virtual; 
     begin
       Result := True;
       cur += 1;
@@ -3625,12 +3625,12 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; override;
+    function get_Current: object; virtual;
     begin
       Result := cur;
     end;
 
-    function MoveNext(): boolean; override; 
+    function MoveNext(): boolean; virtual; 
     begin
       Result := True;
       if isfirst then 
@@ -3662,12 +3662,12 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; override;
+    function get_Current: object; virtual;
     begin
       Result := a;
     end;
 
-    function MoveNext(): boolean; override; 
+    function MoveNext(): boolean; virtual; 
     begin
       Result := True;
       if isfirst then 
@@ -7896,6 +7896,12 @@ end;
 function Partition<T>(Self: sequence of T; cond: T->boolean): (sequence of T,sequence of T); extensionmethod;
 begin
   Result := (Self.Where(cond),Self.Where(x->not cond(x)));
+end;
+
+/// Разделяет последовательности на две по заданному условию, в котором участвует индекс
+function Partition<T>(Self: sequence of T; cond: (T,integer)->boolean): (sequence of T,sequence of T); extensionmethod;
+begin
+  Result := (Self.Where(cond),Self.Where((x,i)->not cond(x,i)));
 end;
 
 /// Объединяет две последовательности в последовательность двухэлементных кортежей
