@@ -26,8 +26,10 @@ uses
   System.Collections.Generic,
   System;
 
+//{{{doc: Начало секции стандартных констант для документации }}} 
+
 // -----------------------------------------------------
-//     Стандартные константы
+//>>     Стандартные константы
 // -----------------------------------------------------
 const
   /// Максимальное значение типа shortint
@@ -64,35 +66,41 @@ const
   /// Константа E
   /// !! E constant
   E  = 2.718281828459045;
-  END_OF_LINE_SYMBOL = #10;
   /// Константа перехода на новую строку
   /// !! The newline string defined for this environment.
   NewLine = System.Environment.NewLine;
+//{{{--doc: Конец секции стандартных констант для документации }}} 
+
 
 //Маркер того, что это системный модуль
 ///--
 const
+  END_OF_LINE_SYMBOL = #10;
   __IS_SYSTEM_MODULE = true;
 
+//{{{doc: Начало секции стандартных типов для документации }}} 
 // -----------------------------------------------------
-//     Стандартные типы
+//>>     Стандартные типы
 // -----------------------------------------------------
 type
   /// Базовый тип объектов
-  object   = System.Object;
+  object = System.Object;
   
   /// Базовый тип исключений
   Exception = System.Exception;
   
-  double   = System.Double;
+  /// type double = real
+  double = System.Double;
   
-  longint  = System.Int32;
+  /// type longint = integer
+  longint = System.Int32;
   
+  /// type cardinal = longword
   cardinal = System.UInt32;
   
   /// Представляет 128-битное вещественное число
   /// !! Represents a decimal number
-  decimal  = System.Decimal;
+  decimal = System.Decimal;
   
   /// Представляет произвольно большое целое число
   BigInteger = System.Numerics.BigInteger;
@@ -139,15 +147,30 @@ type
   /// Представляет стек - набор элементов, реализованных по принципу "последний вошел-первый вышел"
   Stack<T> = System.Collections.Generic.Stack<T>;
 
+  /// Представляет интерфейс для коллекции
+  ICollection<T> = System.Collections.Generic.ICollection<T>;
+
+  /// Представляет интерфейс для сравнения двух элементов
+  IComparer<T> = System.Collections.Generic.IComparer<T>;
+  
+  /// Представляет интерфейс для набора пар Ключ-Значение
+  IDictionary<Key,Value> = System.Collections.Generic.IDictionary<Key,Value>;
+  
   /// Представляет интерфейс, предоставляющий перечислитель для перебора элементов коллекции
   IEnumerable<T> = System.Collections.Generic.IEnumerable<T>;
 
   /// Представляет интерфейс для перебора элементов коллекции
   IEnumerator<T> = System.Collections.Generic.IEnumerator<T>;
   
-  /// Представляет интерфейс для сравнения двух элементов
-  IComparer<T> = System.Collections.Generic.IComparer<T>;
-  
+  /// Представляет интерфейс для поддержки сравнения на равенство
+  IEqualityComparer<T> = System.Collections.Generic.IEqualityComparer<T>;
+
+  /// Представляет интерфейс для коллекции с доступом по индексу
+  IList<T> = System.Collections.Generic.IList<T>;
+
+  /// Представляет интерфейс для множества
+  ISet<T> = System.Collections.Generic.ISet<T>;
+
   /// Представляет изменяемую строку символов
   StringBuilder = System.Text.StringBuilder;
   
@@ -219,9 +242,12 @@ type
   
   /// Представляет тип короткой строки фиксированной длины 255 символов
   ShortString = string[255];
-    //------------------------------------------------------------------------------
-    //Pointers
-    //------------------------------------------------------------------------------
+
+//{{{--doc: Конец секции стандартных типов для документации }}} 
+
+//------------------------------------------------------------------------------
+//Pointers
+//------------------------------------------------------------------------------
   
   //1                   //pointed to
   PBoolean  = ^boolean;//bool
@@ -475,9 +501,11 @@ type
     /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n  
     procedure Seek(n: int64);
   end;
-  
+ 
+//{{{doc: Начало секции интерфейса для документации }}} 
+
 // -----------------------------------------------------
-//     Процедуры и функции ввода Read
+//>>     Процедуры и функции ввода Read
 // -----------------------------------------------------
 ///- procedure Read(a,b,...);
 /// Вводит значения a,b,... с клавиатуры
@@ -597,7 +625,7 @@ procedure Read(f: Text; var x: single);
 ///--
 procedure Read(f: Text; var x: boolean);
 
-///- readln(f: Text; a,b,...)
+///- procedure Readln(f: Text; a,b,...);
 /// Вводит значения a,b,... из текстового файла f и осуществляет переход на следующую строку
 procedure Readln(f: Text);
 ///--
@@ -631,7 +659,7 @@ function ReadlnString(f: Text): string;
 function ReadlnBoolean(f: Text): boolean;
 
 // -----------------------------------------------------
-//     Процедуры вывода Write
+//>>     Процедуры вывода Write
 // -----------------------------------------------------
 ///- procedure Write(a,b,...);
 /// Выводит значения a,b,... на экран
@@ -684,7 +712,7 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
 // -----------------------------------------------------
-//                  Print
+//>>                  Print
 // -----------------------------------------------------
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
@@ -702,7 +730,7 @@ procedure Println(params args: array of object);
 procedure Println(f: Text; params args: array of object);
 
 // -----------------------------------------------------
-//     Подпрограммы для работы с текстовыми файлами 
+//>>     Подпрограммы для работы с текстовыми файлами 
 // -----------------------------------------------------
 /// Связывает файловую переменную f с именем файла name
 procedure Assign(f: Text; name: string);
@@ -754,7 +782,7 @@ function OpenAppend(fname: string): Text;
 function OpenAppend(fname: string; en: Encoding): Text;
 
 /// Возвращает True, если достигнут конец файла f
-///!! Returns True if the file-pointer has reached the end of the file
+/// !! Returns True if the file-pointer has reached the end of the file
 function Eof(f: Text): boolean;
 /// Возвращает True, если достигнут конец строки в файле f
 function Eoln(f: Text): boolean;
@@ -797,7 +825,7 @@ procedure WriteAllText(path: string; s: string);
 procedure WriteAllText(path: string; s: string; en: Encoding);
 
 // -----------------------------------------------------
-//     Подпрограммы для работы с двоичными файлами
+//>>     Подпрограммы для работы с двоичными файлами
 // -----------------------------------------------------
 ///- procedure Assign(f: file of T; name: string);
 /// Связывает файловую переменную f с именем файла name
@@ -836,9 +864,6 @@ procedure Erase(f: AbstractBinaryFile);
 /// Переименовывает файл, связаный с файловой переменной f, давая ему имя newname. 
 procedure Rename(f: AbstractBinaryFile; newname: string);
 
-///- write(f: file of T; a,b,...)
-/// Выводит значения a,b,... в типизированный файл f
-//procedure Write(f: AbstractBinaryFile; val: object; arr: boolean); 
 ///- procedure Write(f: file; a,b,...);
 /// Выводит значения a,b,... в нетипизированный файл f
 procedure Write(f: AbstractBinaryFile; params vals: array of object);
@@ -850,7 +875,7 @@ procedure Writeln(f: AbstractBinaryFile; val: object);
 procedure Writeln(f: AbstractBinaryFile; params vals: array of object);
 
 // -----------------------------------------------------
-//    Подпрограммы для работы с типизированными файлами
+//>>    Подпрограммы для работы с типизированными файлами
 // -----------------------------------------------------
 ///- function FilePos(f: file of T): int64;
 /// Возвращает текущую позицию файлового указателя в типизированном файле f 
@@ -871,7 +896,7 @@ procedure TypedFileInitWithShortString(var f: TypedFile; ElementType: System.Typ
 function TypedFileRead(f: TypedFile): object;
 
 // -----------------------------------------------------
-//    Подпрограммы для работы с бестиповыми файлами
+//>>     Подпрограммы для работы с бестиповыми файлами
 // -----------------------------------------------------
 ///- function FilePos(f: file): int64;
 /// Возвращает текущую позицию файлового указателя в нетипизированном файле f 
@@ -888,7 +913,7 @@ procedure BinaryFileInit(var f: BinaryFile);
 function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 
 // -----------------------------------------------------
-//    Cистемные подпрограммы
+//>>     Cистемные подпрограммы
 // -----------------------------------------------------
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
@@ -970,7 +995,7 @@ function EnumerateDirectories(path: string): sequence of string;
 function EnumerateAllDirectories(path: string): sequence of string;
 
 // -----------------------------------------------------
-//     Функции для работы с именами файлов
+//>>     Функции для работы с именами файлов
 // -----------------------------------------------------
 /// Выделяет имя файла из полного имени файла fname
 function ExtractFileName(fname: string): string;
@@ -986,7 +1011,7 @@ function ExtractFileDrive(fname: string): string;
 function ExpandFileName(fname: string): string;
 
 // -----------------------------------------------------
-//     Математические подпрограммы
+//>>     Математические подпрограммы
 // -----------------------------------------------------
 ///-function Sign(x: число): число;
 /// Возвращает знак числа x
@@ -1165,7 +1190,7 @@ function Odd(i: uint64): boolean;
 function Cplx(re,im: real): Complex;
 
 // -----------------------------------------------------
-//     Процедуры для работы со стандартными множествами
+//>>     Процедуры для работы со стандартными множествами
 // -----------------------------------------------------
 ///- procedure Include(var s: set of T; element: T);
 ///Добавляет елемент el во множество s
@@ -1175,7 +1200,7 @@ procedure Include(var s: TypedSet; el: object);
 procedure Exclude(var s: TypedSet; el: object);
 
 // -----------------------------------------------------
-//     Подпрограммы для работы с символами и строками
+//>>     Подпрограммы для работы с символами и строками
 // -----------------------------------------------------
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
@@ -1276,17 +1301,19 @@ function TryStrToFloat(s: string; var value: real): boolean;
 /// Преобразует строковое представление s вещественного числа к числовому значению и записывает его в value. 
 ///При невозможности преобразования возвращается False
 function TryStrToFloat(s: string; var value: single): boolean;
-/// Считывает целое из строки
+/// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadIntegerFromString(s: string; var from: integer): integer;
-/// Считывает вещественное из строки
+/// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadRealFromString(s: string; var from: integer): real;
-/// Считывает из строки последовательность символов до пробельного символа
+/// Считывает из строки последовательность символов до пробельного символа начиная с позиции from и устанавливает from за считанным значением
 function ReadWordFromString(s: string; var from: integer): string;
 /// Возвращает True если достигнут конец строки или в строке остались только пробельные символы и False в противном случае
 function StringIsEmpty(s: string; var from: integer): boolean;
-/// Считывает целое из строки. Возвращает True если считывание удачно и False в противном случае
+/// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением. 
+///Возвращает True если считывание удачно и False в противном случае
 function TryReadIntegerFromString(s: string; var from: integer; var res: integer): boolean;
-/// Считывает вещественное из строки. Возвращает True если считывание удачно и False в противном случае
+/// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением. 
+///Возвращает True если считывание удачно и False в противном случае
 function TryReadRealFromString(s: string; var from: integer; var res: real): boolean;
 
 ///-procedure Val(s: string; var value: число; var err: integer);
@@ -1323,7 +1350,7 @@ function FloatToStr(a: real): string;
 function Format(formatstring: string; params pars: array of object): string;
 
 // -----------------------------------------------------
-//     Общие подпрограммы
+//>>     Общие подпрограммы
 // -----------------------------------------------------
 /// Увеличивает значение переменной i на 1
 procedure Inc(var i: integer);
@@ -1349,7 +1376,9 @@ procedure Inc(var b: byte; n: integer);
 procedure Dec(var b: byte);
 ///--
 procedure Dec(var b: byte; n: integer);
+///--
 procedure Inc(var f: boolean);
+///--
 procedure Dec(var f: boolean);
 ///-function Ord(a: целое): целое;
 /// Возвращает порядковый номер значения a
@@ -1417,7 +1446,7 @@ function Eoln: boolean;
 function Eof: boolean;
 
 // -----------------------------------------------------
-//     Подпрограммы для работы с динамическими массивами
+//>>     Подпрограммы для работы с динамическими массивами
 // -----------------------------------------------------
 ///- function Low(i: array): integer;
 function Low(i: System.Array): integer;
@@ -1439,7 +1468,7 @@ procedure Reverse<T>(a: array of T);
 procedure Reverse<T>(a: array of T; index,length: integer);
 
 // -----------------------------------------------------
-//     Подпрограммы для генерации последовательностей
+//>>     Подпрограммы для генерации последовательностей
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a,b: integer): sequence of integer;
@@ -1491,7 +1520,7 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 
 
 // -----------------------------------------------------
-//     Подпрограммы для генерации динамических массивов
+//>>     Подпрограммы для генерации динамических массивов
 // -----------------------------------------------------
 /// Возвращает массив, заполненный указанными значениями
 function Arr<T>(params a: array of T): array of T;
@@ -1529,7 +1558,7 @@ function ReadArrReal(const prompt: string; n: integer): array of real;
 function ReadArrString(const prompt: string; n: integer): array of string;
 
 // -----------------------------------------------------
-//     Подпрограммы для генерации случайных матриц
+//>>     Подпрограммы для генерации случайных матриц
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
@@ -1537,7 +1566,7 @@ function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: inte
 function MatrixRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 
 // -----------------------------------------------------
-//     Подпрограммы для создания кортежей
+//>>     Подпрограммы для создания кортежей
 // -----------------------------------------------------
 ///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
 /// Возвращает кортеж из элементов разных типов
@@ -1554,7 +1583,7 @@ function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6):
 function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
 
 // -----------------------------------------------------
-//     Короткие функции Lst, HSet, SSet, Dict, KV
+//>>     Короткие функции Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
 function Lst<T>(params a: array of T): List<T>;
@@ -1572,6 +1601,8 @@ function SSet<T>(a: sequence of T): SortedSet<T>;
 function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dictionary<TKey, TVal>;
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
+
+//{{{--doc: Конец секции интерфейса для документации }}} 
 
 
 // -----------------------------------------------------
@@ -3287,11 +3318,6 @@ end;}
 //------------------------------------------------------------------------------
 //          Операции для Complex
 //------------------------------------------------------------------------------
-function Conjugate(self: Complex): Complex; extensionmethod;
-begin
-  Result := Complex.Conjugate(Self);
-end;
-
 function operator-(Self: Complex): Complex; extensionmethod;
 begin
   Result := Complex.Negate(Self);
@@ -3338,118 +3364,15 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//          Методы расширения для sequence of T
-//------------------------------------------------------------------------------
-/// Выводит последовательность на экран, используя delim в качестве разделителя
-function Print<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
-begin
-  var g := Self.GetEnumerator();
-  if g.MoveNext() then
-    write(g.Current);
-  while g.MoveNext() do
-    if delim<>'' then
-      write(delim, g.Current)
-    else write(g.Current);
-  Result := Self;  
-end;
-
-/// Выводит последовательность на экран, используя пробел в качестве разделителя
-function Print<T>(self: sequence of T): sequence of T; extensionmethod;
-begin
-  Result := Self.Print(' ');  
-end;
-
-/// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
-function Println<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
-begin
-  Self.Print(delim);
-  Writeln;
-  Result := Self;  
-end;
-
-/// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
-function Println<T>(Self: sequence of T): sequence of T; extensionmethod;
-begin
-  Result := Self.Println(' ');  
-end;
-
-/// Выводит последовательность строк в файл
-function WriteLines(Self: sequence of string; fname: string): sequence of string; extensionmethod;
-begin
-  WriteLines(fname,Self);
-  Result := Self
-end;
-
-/// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
-function System.Collections.Generic.IEnumerable<T>.JoinIntoString(delim: string): string;
-begin
-  var g := Self.GetEnumerator();
-  var sb := new System.Text.StringBuilder('');
-  if g.MoveNext() then
-    sb.Append(g.Current.ToString());
-  while g.MoveNext() do 
-    sb.Append(delim + g.Current.ToString());
-  Result := sb.ToString;  
-end;
-
-/// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
-function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
-begin
-  Result := Self.JoinIntoString(' ');  
-end;
-
-/// Применяет действие к каждому элементу последовательности
-procedure &ForEach<T>(self: sequence of T; action: T -> ()); extensionmethod;
-begin
-  foreach x: T in Self do
-    action(x);
-end;
-
-/// Применяет действие к каждому элементу последовательности, зависящее от номера элемента
-procedure &ForEach<T>(self: sequence of T; action: (T,integer) -> ()); extensionmethod;
-begin
-  var i := 0;
-  foreach x: T in Self do
-  begin
-    action(x,i);
-    i += 1;
-  end;
-end;
-
-/// Возвращает отсортированную по возрастанию последовательность
-function Sorted<T>(self: sequence of T): sequence of T; extensionmethod;
-begin
-  Result := Self.OrderBy(x -> x);
-end;
-
-/// Возвращает отсортированную по убыванию последовательность
-function SortedDescending<T>(self: sequence of T): sequence of T; extensionmethod;
-begin
-  Result := Self.OrderByDescending(x -> x);
-end;
-
-/// Возвращает множество HashSet по данной последовательности
-function ToHashSet<T>(self: sequence of T): HashSet<T>; extensionmethod;
-begin
-  Result := new HashSet<T>(self);
-end;
-
-/// Возвращает множество SortedSet по данной последовательности
-function ToSortedSet<T>(self: sequence of T): SortedSet<T>; extensionmethod;
-begin
-  Result := new SortedSet<T>(self);
-end;
-
-//------------------------------------------------------------------------------
 //          Операции для sequence of T
 //------------------------------------------------------------------------------
-/// Объединяет две последовательности
+///--
 function operator+<T>(a,b: sequence of T): sequence of T; extensionmethod;
 begin
   Result := a.Concat(b);
 end;
 
-/// Объединяет последовательность a и значение b
+///--
 function operator+<T>(a: sequence of T; b: T): sequence of T; extensionmethod;
 begin
   Result := a.Concat(new T[1](b));
@@ -3518,11 +3441,43 @@ type
     end;
   end;
   
-function Range(self: integer): sequence of integer; extensionmethod;
-begin
-  Result := Range(1,self);  
-end;
+// Вспомогательный класс для генерации целых последовательностей
+  SeqBaseInteger = class(IEnumerable<integer>,IEnumerator<integer>)
+  public
+    function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
+    begin
+      Result := Self;
+    end;
 
+    function GetEnumerator(): IEnumerator<integer>;
+    begin
+      Result := Self;
+    end;
+
+    function get_Current: integer; virtual;
+    begin
+      Result := 0;
+    end;
+
+    function System.Collections.IEnumerator.get_Current(): object;
+    begin
+      Result := Self.get_Current();
+    end;
+
+    function MoveNext(): boolean; virtual; 
+    begin
+      Result := True;
+    end;
+
+    procedure Dispose(); virtual;
+    begin
+    end;
+
+    procedure Reset();
+    begin
+    end;
+  end;
+  
 function Range(a, b: integer): sequence of integer;
 begin
   if b<a then 
@@ -3630,6 +3585,31 @@ begin
 end;
 
 type
+// Вспомогательный класс для генерации бесконечной последовательности целых, начиная с заданного значения
+  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
+  private
+    first,cur: integer;
+  public
+    constructor (first: integer := 0);
+    begin
+      Self.first := first;
+      cur := first-1;
+    end;
+    function get_Current: integer; override;
+    begin
+      Result := cur;
+    end;
+    function MoveNext(): boolean; override; 
+    begin
+      Result := True;
+      cur += 1;
+    end;
+    procedure Dispose(); override;
+    begin
+      cur := first;
+    end;
+  end;
+
 // Вспомогательный класс для генерации рекуррентных последовательностей
   IterateClass<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
   private
@@ -3645,12 +3625,12 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; virtual;
+    function get_Current: object; override;
     begin
       Result := cur;
     end;
 
-    function MoveNext(): boolean; virtual; 
+    function MoveNext(): boolean; override; 
     begin
       Result := True;
       if isfirst then 
@@ -3682,12 +3662,12 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; virtual;
+    function get_Current: object; override;
     begin
       Result := a;
     end;
 
-    function MoveNext(): boolean; virtual; 
+    function MoveNext(): boolean; override; 
     begin
       Result := True;
       if isfirst then 
@@ -3714,12 +3694,7 @@ begin
   Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
 end;
 
-/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом и функцией next
-function Iterate<T>(Self: T; next: T -> T): sequence of T; extensionmethod;
-begin
-  Result := Iterate&<T>(Self,next);
-end;
-
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальными элементами first, second и функцией next
 function Iterate<T>(first,second: T; next: (T,T)->T): sequence of T;
 begin
   Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
@@ -3993,16 +3968,6 @@ end;
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
-end;
-
-// -----------------------------------------------------------------------------
-//                Методы расширения IDictionary 
-// -----------------------------------------------------------------------------
-function System.Collections.Generic.IDictionary<Key,Value>.Get(K: Key): Value;
-begin
-  var b := Self.TryGetValue(K,Result);
-  if not b then 
-    Result := default(Value);
 end;
 
 {function read_lexem: string; 
@@ -6534,23 +6499,6 @@ begin
   Result := Math.Sqrt(x);
 end;
 
-/// Возвращает квадратный корень числа
-function Sqrt(Self: real): real; extensionmethod;
-begin
-  Result := Sqrt(Self);
-end;
-
-/// Возвращает квадратный корень числа
-function Sqrt(Self: integer): real; extensionmethod;
-begin
-  Result := Sqrt(Self);
-end;
-
-function Sqrt(Self: BigInteger): real; extensionmethod;
-begin
-  Result := Sqrt(real(Self));
-end;
-
 function Sqr(x: integer): int64;
 begin
   Result := x * x;
@@ -6823,33 +6771,6 @@ end;
 function Cplx(re,im: real): Complex;
 begin
   Result := new Complex(re,im);
-end;
-
-// -----------------------------------------------------
-//                Методы расширения типа real
-// -----------------------------------------------------
-/// Возвращает число, округленное до ближайшего целого
-function Round(Self: real): integer; extensionmethod;
-begin
-  Result := Round(Self);
-end;
-
-/// Возвращает число, округленное до ближайшего длинного целого
-function RoundBigInteger(Self: real): BigInteger; extensionmethod;
-begin
-  Result := RoundBigInteger(Self);
-end;
-
-/// Возвращает целую часть вещественного числа
-function Trunc(Self: real): integer; extensionmethod;
-begin
-  Result := Trunc(Self);
-end;
-
-/// Возвращает целую часть вещественного числа как длинное целое
-function TruncBigInteger(Self: real): BigInteger; extensionmethod;
-begin
-  Result := TruncBigInteger(Self);
 end;
 
 // -----------------------------------------------------
@@ -7737,10 +7658,475 @@ begin
   b := v;
 end;
 
+//{{{doc: Начало методов расширения }}}
+
+// -----------------------------------------------------
+//>>     Генерация бесконечных последовательностей
+// -----------------------------------------------------
+// Дополнения февраль 2016: Iterate, Step, &Repeat, Cycle
+
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом и функцией next
+function Iterate<T>(Self: T; next: T -> T): sequence of T; extensionmethod;
+begin
+  Result := Iterate&<T>(Self,next);
+end;
+
+/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом, следующим за ним элементом и функцией next
+function Iterate<T>(Self,second: T; next: (T,T) -> T): sequence of T; extensionmethod;
+begin
+  Result := Iterate&<T>(Self,second,next);
+end;
+
+/// Возвращает бесконечную последовательность целых от текущего значения с шагом 1
+function Step(Self: integer): sequence of integer; extensionmethod;
+begin
+  Result := IntNumbersClass.Create(Self);
+end;
+
+/// Возвращает бесконечную последовательность целых от текущего значения с шагом step
+function Step(Self: integer; step: integer): sequence of integer; extensionmethod;
+begin
+  var slf := Self;
+  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+end;
+
+/// Возвращает бесконечную последовательность вещественных от текущего значения с шагом step
+function Step(Self: real; step: real): sequence of real; extensionmethod;
+begin
+  var slf := Self;
+  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+end;
+
+/// Возвращает бесконечную последовательность элементов, совпадающих с данным
+function &Repeat<T>(Self: T): sequence of T; extensionmethod;
+begin
+  Result := SeqFill(MaxInt,Self);
+end;
+
+/// Повторяет последовательность бесконечное число раз
+function Cycle<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
+end;
+
 //------------------------------------------------------------------------------
-//          Методы расширения типа char
+//>>     Методы расширения для sequence of T
 //------------------------------------------------------------------------------
-// Преобразовать символ в цифру
+/// Выводит последовательность на экран, используя delim в качестве разделителя
+function Print<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
+begin
+  var g := Self.GetEnumerator();
+  if g.MoveNext() then
+    write(g.Current);
+  while g.MoveNext() do
+    if delim<>'' then
+      write(delim, g.Current)
+    else write(g.Current);
+  Result := Self;  
+end;
+
+/// Выводит последовательность на экран, используя пробел в качестве разделителя
+function Print<T>(self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.Print(' ');  
+end;
+
+/// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
+function Println<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
+begin
+  Self.Print(delim);
+  Writeln;
+  Result := Self;  
+end;
+
+/// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
+function Println<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.Println(' ');  
+end;
+
+/// Выводит последовательность строк в файл
+function WriteLines(Self: sequence of string; fname: string): sequence of string; extensionmethod;
+begin
+  WriteLines(fname,Self);
+  Result := Self
+end;
+
+/// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
+function System.Collections.Generic.IEnumerable<T>.JoinIntoString(delim: string): string;
+begin
+  var g := Self.GetEnumerator();
+  var sb := new System.Text.StringBuilder('');
+  if g.MoveNext() then
+    sb.Append(g.Current.ToString());
+  while g.MoveNext() do 
+    sb.Append(delim + g.Current.ToString());
+  Result := sb.ToString;  
+end;
+
+/// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
+function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
+begin
+  Result := Self.JoinIntoString(' ');  
+end;
+
+/// Применяет действие к каждому элементу последовательности
+procedure &ForEach<T>(self: sequence of T; action: T -> ()); extensionmethod;
+begin
+  foreach x: T in Self do
+    action(x);
+end;
+
+/// Применяет действие к каждому элементу последовательности, зависящее от номера элемента
+procedure &ForEach<T>(self: sequence of T; action: (T,integer) -> ()); extensionmethod;
+begin
+  var i := 0;
+  foreach x: T in Self do
+  begin
+    action(x,i);
+    i += 1;
+  end;
+end;
+
+/// Возвращает отсортированную по возрастанию последовательность
+function Sorted<T>(self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.OrderBy(x -> x);
+end;
+
+/// Возвращает отсортированную по убыванию последовательность
+function SortedDescending<T>(self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.OrderByDescending(x -> x);
+end;
+
+/// Возвращает множество HashSet по данной последовательности
+function ToHashSet<T>(self: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Result := new HashSet<T>(self);
+end;
+
+/// Возвращает множество SortedSet по данной последовательности
+function ToSortedSet<T>(self: sequence of T): SortedSet<T>; extensionmethod;
+begin
+  Result := new SortedSet<T>(self);
+end;
+
+// Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
+//   Partition, ZipTuple, UnZipTuple, Interleave, Numerate, Tabulate, Pairwise, Batch 
+
+/// Возвращает элемент последовательности с минимальным значением ключа
+function MinBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
+begin
+  if selector = nil then
+    raise new ArgumentNullException('selector');
+  if not Self.Any() then
+    raise new InvalidOperationException('Empty sequence');
+
+  var comp := Comparer&<TKey>.Default;
+  Result := Self.Aggregate((min,x)-> comp.Compare(selector(x),selector(min))<0 ? x : min);
+end;
+
+/// Возвращает элемент последовательности с максимальным значением ключа
+function MaxBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
+begin
+  if selector = nil then
+    raise new ArgumentNullException('selector');
+  if not Self.Any() then
+    raise new InvalidOperationException('Empty sequence');
+ 
+  var comp := Comparer&<TKey>.Default;
+  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))<0 ? max : x);
+end;
+
+/// Возвращает последние count элементов последовательности
+function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  var q := new Queue<T>;
+  foreach var x in Self do
+  begin
+    if q.Count = count then
+      q.Dequeue();
+    q.Enqueue(x);
+  end;
+  Result := q;
+end;
+
+// ToDo: SkipLast
+
+/// Возвращает срез последовательности от номера from с шагом step
+function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0);
+end;
+
+/// Возвращает срез последовательности от номера from с шагом step длины не более count
+function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
+end;
+
+/// Декартово произведение последовательностей
+function Cartesian<T,T1>(Self: sequence of T; b: sequence of T1): sequence of (T,T1); extensionmethod;
+begin
+  if b=nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x);
+end;
+
+/// Декартово произведение последовательностей
+function Cartesian<T,T1,T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)->T2): sequence of T2; extensionmethod;
+begin
+  if b=nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x).Select(x->func(x[0],x[1]));
+end;
+
+/// Разбивает последовательности на две в позиции ind
+function SplitAt<T>(Self: sequence of T; ind: integer): (sequence of T,sequence of T); extensionmethod;
+begin
+  Result := (Self.Take(ind),Self.Skip(ind));
+end;
+
+// ToDo: то же для TakeWhile
+
+// ToDo: SequenceCompare
+
+/// Разделяет последовательности на две по заданному условию
+function Partition<T>(Self: sequence of T; cond: T->boolean): (sequence of T,sequence of T); extensionmethod;
+begin
+  Result := (Self.Where(cond),Self.Where(x->not cond(x)));
+end;
+
+/// Объединяет две последовательности в последовательность двухэлементных кортежей
+function ZipTuple<T,T1>(Self: sequence of T; a: sequence of T1): sequence of (T,T1); extensionmethod;
+begin
+  if a=nil then
+    raise new System.ArgumentNullException('a');
+  Result := Self.Zip(a,(x,y)->(x,y));
+end;
+
+/// Объединяет три последовательности в последовательность трехэлементных кортежей
+function ZipTuple<T,T1,T2>(Self: sequence of T; a: sequence of T1; b: sequence of T2): sequence of (T,T1,T2); extensionmethod;
+begin
+  if a=nil then
+    raise new System.ArgumentNullException('a');
+  if b=nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.Zip(a,(x,y)->(x,y)).Zip(b,(p,z)->(p[0],p[1],z));
+end;
+
+/// Объединяет четыре последовательности в последовательность четырехэлементных кортежей
+function ZipTuple<T,T1,T2,T3>(Self: sequence of T; a: sequence of T1; b: sequence of T2; c: sequence of T3): sequence of (T,T1,T2,T3); extensionmethod;
+begin
+  if a=nil then
+    raise new System.ArgumentNullException('a');
+  if b=nil then
+    raise new System.ArgumentNullException('b');
+  if c=nil then
+    raise new System.ArgumentNullException('c');
+  Result := Self.Zip(a,(x,y)->(x,y)).Zip(b,(p,z)->(p[0],p[1],z)).Zip(c,(p,z)->(p[0],p[1],p[2],z));
+end;
+
+/// Разъединяет последовательность двухэлементных кортежей на две последовательности
+function UnZipTuple<T,T1>(Self: sequence of (T,T1)): (sequence of T,sequence of T1); extensionmethod;
+begin
+  Result := (Self.Select(x->x[0]),Self.Select(x->x[1]))
+end;
+
+/// Разъединяет последовательность трехэлементных кортежей на три последовательности
+function UnZipTuple<T,T1,T2>(Self: sequence of (T,T1,T2)): (sequence of T,sequence of T1,sequence of T2); extensionmethod;
+begin
+  Result := (Self.Select(x->x[0]),Self.Select(x->x[1]),Self.Select(x->x[2]))
+end;
+
+/// Разъединяет последовательность четырехэлементных кортежей на три последовательности
+function UnZipTuple<T,T1,T2,T3>(Self: sequence of (T,T1,T2,T3)): (sequence of T,sequence of T1,sequence of T2,sequence of T3); extensionmethod;
+begin
+  Result := (Self.Select(x->x[0]),Self.Select(x->x[1]),Self.Select(x->x[2]),Self.Select(x->x[3]))
+end;
+
+// ToDo - сделать UnZipTuple с функцией-проекцией
+
+/// Чередует элементы двух последовательностей
+function Interleave<T>(Self: sequence of T; a: sequence of T): sequence of T; extensionmethod;
+begin
+  if a=nil then
+    raise new System.ArgumentNullException('a');
+  Result := Self.ZipTuple(a).SelectMany(x->Seq(x[0],x[1]))
+end;
+
+/// Чередует элементы трех последовательностей
+function Interleave<T>(Self: sequence of T; a,b: sequence of T): sequence of T; extensionmethod;
+begin
+  if a=nil then
+    raise new System.ArgumentNullException('a');
+  if b=nil then
+    raise new System.ArgumentNullException('b');
+  Result := Self.ZipTuple(a,b).SelectMany(x->Seq(x[0],x[1],x[2]))
+end;
+
+/// Чередует элементы четырех последовательностей
+function Interleave<T>(Self: sequence of T; a,b,c: sequence of T): sequence of T; extensionmethod;
+begin
+  if a=nil then
+    raise new System.ArgumentNullException('a');
+  if b=nil then
+    raise new System.ArgumentNullException('b');
+  if c=nil then
+    raise new System.ArgumentNullException('c');
+  Result := Self.ZipTuple(a,b,c).SelectMany(x->Seq(x[0],x[1],x[2],x[3]))
+end;
+
+/// Нумерует последовательность с единицы
+function Numerate<T>(Self: sequence of T): sequence of (integer,T); extensionmethod;
+begin
+  Result := 1.Step.ZipTuple(Self);
+end;
+
+/// Нумерует последовательность с номера from
+function Numerate<T>(Self: sequence of T; from: integer): sequence of (integer,T); extensionmethod;
+begin
+  Result := from.Step.ZipTuple(Self);
+end;
+
+/// Табулирует функцию последовательностью
+function Tabulate<T,T1>(Self: sequence of T; F: T->T1): sequence of (T,T1); extensionmethod;
+begin
+  Result := Self.Select(x->(x,f(x)));
+end;
+
+/// Превращает последовательность в последовательность пар соседних элементов
+function Pairwise<T>(Self: sequence of T): sequence of (T,T); extensionmethod;
+begin
+  Result := Self.ZipTuple(Self.Skip(1));
+end;
+
+/// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
+function Pairwise<T,Res>(Self: sequence of T; func:(T,T)->Res): sequence of Res; extensionmethod;
+begin
+  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
+end;
+
+/// Разбивает последовательность на серии длины size
+function Batch<T>(self: sequence of T; size: integer): sequence of sequence of T; extensionmethod;
+begin
+  Result := SeqWhile(self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size))
+end;
+
+/// Разбивает последовательность на серии длины size и применяет проекцию к каждой серии
+function Batch<T,Res>(self: sequence of T; size: integer; proj: Func<IEnumerable<T>,Res>): sequence of Res; extensionmethod;
+begin
+  Result := SeqWhile(self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
+end;
+
+// -----------------------------------------------------
+//>>     Методы расширения типа integer
+// -----------------------------------------------------
+/// Возвращает квадратный корень числа
+function Sqrt(Self: integer): real; extensionmethod;
+begin
+  Result := Sqrt(Self);
+end;
+
+/// Возвращает квадрат числа
+function Sqr(Self: integer): integer; extensionmethod;
+begin
+  Result := Sqr(Self);
+end;
+
+// Дополнения февраль 2016: IsEven, IsOdd
+
+/// Возвращает, является ли целое четным
+function IsEven(self: integer): boolean; extensionmethod;
+begin
+	Result := self mod 2 = 0;
+end;
+
+/// Возвращает, является ли целое нечетным
+function IsOdd(self: integer): boolean; extensionmethod;
+begin
+	Result := self mod 2 <> 0;
+end;
+
+/// Возвращает последовательность чисел от 1 до данного
+function Range(self: integer): sequence of integer; extensionmethod;
+begin
+  Result := Range(1,self);  
+end;
+
+// Дополнения февраль 2016: &To, &Downto, Times
+
+/// Генерирует последовательность целых от текущего значения до n
+function &To(Self: integer; n: integer): sequence of integer; extensionmethod;
+begin
+  Result := Range(Self, n);
+end;
+
+/// Генерирует последовательность целых от текущего значения до n в убывающем порядке
+function &Downto(Self: integer; n: integer): sequence of integer; extensionmethod;
+begin
+  Result := Range(n, Self, -1); // неверно - исправить
+end;
+
+/// Возвращает последовательность целых 0,1,...n-1
+function Times(Self: integer): sequence of integer; extensionmethod;
+begin
+  Result := Range(0,Self-1);
+end;
+
+// -----------------------------------------------------
+//>>     Методы расширения типа BigInteger
+// -----------------------------------------------------
+/// Возвращает квадратный корень числа
+function Sqrt(Self: BigInteger): real; extensionmethod;
+begin
+  Result := Sqrt(real(Self));
+end;
+
+// -----------------------------------------------------
+//>>     Методы расширения типа real
+// -----------------------------------------------------
+/// Возвращает квадратный корень числа
+function Sqrt(Self: real): real; extensionmethod;
+begin
+  Result := Sqrt(Self);
+end;
+
+/// Возвращает квадрат числа
+function Sqr(Self: real): real; extensionmethod;
+begin
+  Result := Sqr(Self);
+end;
+
+/// Возвращает число, округленное до ближайшего целого
+function Round(Self: real): integer; extensionmethod;
+begin
+  Result := Round(Self);
+end;
+
+/// Возвращает число, округленное до ближайшего длинного целого
+function RoundBigInteger(Self: real): BigInteger; extensionmethod;
+begin
+  Result := RoundBigInteger(Self);
+end;
+
+/// Возвращает целую часть вещественного числа
+function Trunc(Self: real): integer; extensionmethod;
+begin
+  Result := Trunc(Self);
+end;
+
+/// Возвращает целую часть вещественного числа как длинное целое
+function TruncBigInteger(Self: real): BigInteger; extensionmethod;
+begin
+  Result := TruncBigInteger(Self);
+end;
+
+//------------------------------------------------------------------------------
+//>>     Методы расширения типа char
+//------------------------------------------------------------------------------
+/// Преобразует символ в цифру
 function ToDigit(self: char): integer; extensionmethod;
 begin
   Result := OrdUnicode(self) - OrdUnicode('0');
@@ -7748,69 +8134,76 @@ begin
     raise new System.FormatException('not a Digit');
 end;
 
-// Следующий символ
-function integer.Succ(self: char): char; extensionmethod;
+/// Следующий символ
+function Succ(self: char): char; extensionmethod;
 begin
   Result := PABCSystem.succ(self);
 end;
 
-// Код символа
+/// Код символа
 function Code(self: char): integer; extensionmethod;
 begin
   Result := word(self);
 end;
 
-// Предыдущий символ
+/// Предыдущий символ
 function Pred(self: char): char; extensionmethod;
 begin
   Result := PABCSystem.pred(self);
 end;
 
-// Является ли символ цифрой
+/// Является ли символ цифрой
 function IsDigit(self: char): boolean; extensionmethod;
 begin
   Result := char.IsDigit(self);
 end;
 
-// Является ли символ буквой
+/// Является ли символ буквой
 function IsLetter(self: char): boolean; extensionmethod;
 begin
   Result := char.IsLetter(self);
 end;
 
+/// Принадлежит ли символ к категории букв нижнего регистра
 function IsLower(self: char): boolean; extensionmethod;
 begin
   Result := char.IsLower(self);
 end;
 
+/// Принадлежит ли символ к категории букв верхнего регистра
 function IsUpper(self: char): boolean; extensionmethod;
 begin
   Result := char.IsUpper(self);
 end;
 
+/// Преобразует символ в верхний регистр
 function ToUpper(self: char): char; extensionmethod;
 begin
   Result := char.ToUpper(self);
 end;
 
+/// Преобразует символ в нижний регистр
 function ToLower(self: char): char; extensionmethod;
 begin
   Result := char.ToLower(self);
 end;
 
 //------------------------------------------------------------------------------
-//          Методы расширения типа string
+//>>     Методы расширения типа string
 //------------------------------------------------------------------------------
+/// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
 begin
   Result := ReadIntegerFromString(Self, from);
 end;
 
+/// Считывает вещественное из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadReal(Self: string; var from: integer): real; extensionmethod;
 begin
   Result := ReadRealFromString(Self, from);
 end;
 
+/// Считывает слово из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadWord(Self: string; var from: integer): string; extensionmethod;
 begin
   Result := ReadwordFromString(Self, from);
@@ -7860,6 +8253,157 @@ begin
     sb.Append(Self[i]);
   Result := sb.ToString;
 end;
+
+// Дополнения февраль 2016: Matches, MatchValues, Remove, Right, Left
+
+/// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
+function Matches(self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
+begin
+	Result := (new Regex (reg, options)).Matches (self).Cast&<Match>();
+end;
+
+/// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности строк
+function MatchValues(self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of string; extensionmethod;
+begin
+	Result := self.Matches(reg,options).Select(m->m.Value);
+end;
+
+/// Удаляет в строке все вхождения указанных строк
+function Remove(self: string; params targets: array of string): string; extensionmethod;
+begin
+	var builder := new StringBuilder (self);
+
+	for var i := 0 to targets.Length-1 do
+		builder.Replace (targets[i], String.Empty);
+
+	Result := builder.ToString();
+end;
+
+/// Возвращает подстроку, полученную вырезанием из строки length самых правых символов
+function Right(self: string; length: integer): string; extensionmethod;
+begin
+  length := Max(length, 0);
+
+  if self.Length > length then
+      Result := self.Substring(self.Length - length, length)
+  else Result := self;
+end;
+
+/// Возвращает подстроку, полученную вырезанием из строки length самых левых символов
+function Left(self: string; length: integer): string; extensionmethod;
+begin
+  length := Max(length, 0);
+
+  if self.Length > length then
+      Result := self.Substring(0, length)
+  else Result := self;
+end;
+
+//--------------------------------------------
+//>>     Методы расширения типа Func
+//--------------------------------------------
+/// Суперпозиция функций
+function Compose<T1, T2, TResult> (Self: T2 -> TResult; composer: T1 -> T2): T1 -> TResult; extensionmethod;
+begin
+  if composer=nil then
+    raise new System.ArgumentNullException('composer');
+  var Slf := Self;
+  Result := x -> Slf(composer(x));
+end;
+
+///--
+function operator*<T1, T2, TResult> (Self: T2 -> TResult; composer: T1 -> T2): T1 -> TResult; extensionmethod;
+begin
+  if composer=nil then
+    raise new System.ArgumentNullException('composer');
+  Result := Self.Compose(composer);
+end;
+
+//--------------------------------------------
+//>>     Методы расширения типа Tuple
+//--------------------------------------------
+// Дополнения февраль 2016
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
+begin
+  Result := (Self[0],Self[1],v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
+end;
+
+/// Добавляет поле к кортежу
+function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
+end;
+
+///--
+function operator+<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
+begin
+  Result := (Self[0],Self[1],v);
+end;
+
+///--
+function operator+<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],v);
+end;
+
+///--
+function operator+<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],v);
+end;
+
+///--
+function operator+<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
+end;
+
+///--
+function operator+<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
+end;
+
+//------------------------------------------------------------------------------
+//>>     Методы расширения типа Complex
+//------------------------------------------------------------------------------
+function Conjugate(self: Complex): Complex; extensionmethod;
+begin
+  Result := Complex.Conjugate(Self);
+end;
+
+// -----------------------------------------------------------------------------
+//>>     Методы расширения IDictionary 
+// -----------------------------------------------------------------------------
+function System.Collections.Generic.IDictionary<Key,Value>.Get(K: Key): Value;
+begin
+  var b := Self.TryGetValue(K,Result);
+  if not b then 
+    Result := default(Value);
+end;
+
+
+//{{{--doc: Конец методов расширения }}}
 
 //{{{ Конец секции реализации прикладных методов }}}
 

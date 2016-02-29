@@ -11161,9 +11161,6 @@ namespace PascalABCCompiler.TreeConverter
             var fh = (_procedure_definition.proc_header as SyntaxTree.function_header);
             if (fh != null && fh.return_type == null)
             {
-                // попытаемся поступить как в лямбдах
-                //fh.return_type = new SyntaxTree.lambda_inferred_type();
-                //fh.return_type = new semantic_type_node(new LambdaResultTypeInferrer(fh, _procedure_definition.proc_body, this).InferResultType(1));
                 var bl = _procedure_definition.proc_body as SyntaxTree.block;
                 if (bl != null && bl.program_code != null)
                 {
@@ -18733,7 +18730,9 @@ namespace PascalABCCompiler.TreeConverter
             l.Add(new ident("Collections"));
             l.Add(new ident("Generic"));
             l.Add(new ident("IEnumerable"));
-            var tr = new template_type_reference(new named_type_reference(l), new template_param_list(_sequence_type.elements_type, _sequence_type.elements_type.source_context), _sequence_type.source_context);
+            var tr = new template_type_reference(new named_type_reference(l), 
+                new template_param_list(_sequence_type.elements_type, _sequence_type.elements_type.source_context), 
+                _sequence_type.source_context);
             visit(tr);
         }
         public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)
@@ -18810,8 +18809,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             // Проверить, что справа - Tuple
             var expr = convert_strong(asstup.expr);
-            var ent = expr.type as compiled_type_node;
 
+            var ent = expr.type as compiled_type_node;
             if (ent == null)
                 AddError(expr.location, "TUPLE_EXPECTED");
             var t = ent.compiled_type;
@@ -18824,14 +18823,14 @@ namespace PascalABCCompiler.TreeConverter
 
             var tname = "#temp_var" + UniqueNumStr();
 
-
             var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            //visit(tt);
 
             var st = new statement_list(tt);
             for (var i = 0; i < n; i++)
             {
-                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname), new ident("Item" + (i + 1).ToString())), Operators.Assignment, asstup.vars.variables[i].source_context);
+                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname), 
+                    new ident("Item" + (i + 1).ToString())), Operators.Assignment, 
+                    asstup.vars.variables[i].source_context);
                 st.Add(a);
             }
             visit(st);
