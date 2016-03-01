@@ -129,15 +129,11 @@ namespace VisualPascalABC
         }
         public void AbortStaring()
         {
-            //для того чтобы отмена прошла быстрее увеличиваем приоритет потока
+            //РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РѕС‚РјРµРЅР° РїСЂРѕС€Р»Р° Р±С‹СЃС‚СЂРµРµ СѓРІРµР»РёС‡РёРІР°РµРј РїСЂРёРѕСЂРёС‚РµС‚ РїРѕС‚РѕРєР°
             StartingThread.Priority = System.Threading.ThreadPriority.AboveNormal;
-            //даем команду на завершение и ждем завершения
+            //РґР°РµРј РєРѕРјР°РЅРґСѓ РЅР° Р·Р°РІРµСЂС€РµРЅРёРµ Рё Р¶РґРµРј Р·Р°РІРµСЂС€РµРЅРёСЏ
             StartingThread.Join();
         }
-		
-        private AppDomain ad = null;
-        private System.Reflection.Assembly comp_assm=null;
-        private PascalABCCompiler.Compiler rem_comp;
         
         private void CreateCompiler()
         {
@@ -176,7 +172,7 @@ namespace VisualPascalABC
                 Filter = Tools.MakeFilter(Filter, ssf.LanguageName, ssf.Extensions);
                 AllFilter = Tools.MakeAllFilter(AllFilter, ssf.LanguageName, ssf.Extensions);
             }
-            Filter += "Программы на C# (*.cs)|*.cs|";
+            Filter += "РџСЂРѕРіСЂР°РјРјС‹ РЅР° C# (*.cs)|*.cs|";
             AllFilter += "*.cs;";
             return Tools.FinishMakeFilter(Filter, AllFilter);
         }
@@ -249,9 +245,10 @@ namespace VisualPascalABC
                         return ed.Document.TextContent;
                     if (!File.Exists(FileName))
                         return null;
-                    TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
+                    /*TextReader tr = new StreamReader(FileName, System.Text.Encoding.GetEncoding(1251));
                     string Text = tr.ReadToEnd();
-                    tr.Close();
+                    tr.Close();*/
+                    string Text = PascalABCCompiler.FileReader.ReadFileContent(FileName, null);
                     return Text;
                 case PascalABCCompiler.SourceFileOperation.Exists:
                     if (tp != null)
@@ -428,10 +425,10 @@ namespace VisualPascalABC
                     ParsedFiles.Add(FullFileName);
                     break;
                 case PascalABCCompiler.CompilerState.BeginCompileFile: RusName = VECStringResources.Get("STATETEXT_BEGINCOMPILEFILE{0}"); break;
-                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Чтение {0}..."; break;
+                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Р§С‚РµРЅРёРµ {0}..."; break;
                 case PascalABCCompiler.CompilerState.CodeGeneration: RusName = VECStringResources.Get("STATETEXT_CODEGENERATION{0}"); break;
                 //case PascalABCCompiler.CompilerState.ReadDLL: 
-                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Чтение {0}..."; break;
+                //case PascalABCCompiler.CompilerState.ReadPCUFile: RusName = "Р§С‚РµРЅРёРµ {0}..."; break;
                 case PascalABCCompiler.CompilerState.Ready:
                     if (Compiler != null)
                     {
@@ -531,11 +528,6 @@ namespace VisualPascalABC
                 if (defaultCompilerType == PascalABCCompiler.CompilerType.Remote && remoteCompiler == null)
                 {
                     LoadRemoteCompiler();
-                }
-                else
-                {
-                    //remoteCompiler.Free();
-                    //remoteCompiler = null;
                 }
             }
         }

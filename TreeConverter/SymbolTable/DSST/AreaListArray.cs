@@ -46,7 +46,7 @@ namespace SymbolTable
 				data[i].InfoList.Add(node.InfoList[0]);
                 //data[i].InfoList[0].Next = node.InfoList[0];
 				return;
-				//throw new Exception("Îøèáêà ïğè äîáàâëåíèè îáëàñòè âèäèìîñòè ê èäåíòåôèêàòîğó: òàêàÿ îáëàñòü óæå ñóùåñòâóåò");
+				//throw new Exception("ĞÑˆĞ¸Ğ±ĞºĞ° Ğ¿Ñ€Ğ¸ Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ĞµĞ½Ğ¸Ğ¸ Ğ¾Ğ±Ğ»Ğ°ÑÑ‚Ğ¸ Ğ²Ğ¸Ğ´Ğ¸Ğ¼Ğ¾ÑÑ‚Ğ¸ Ğº Ğ¸Ğ´ĞµĞ½Ñ‚ĞµÑ„Ğ¸ĞºĞ°Ñ‚Ğ¾Ñ€Ñƒ: Ñ‚Ğ°ĞºĞ°Ñ Ğ¾Ğ±Ğ»Ğ°ÑÑ‚ÑŒ ÑƒĞ¶Ğµ ÑÑƒÑ‰ĞµÑÑ‚Ğ²ÑƒĞµÑ‚");
 			}
 			int k=i;
 			for (i=count;i>=k+1;i--) data[i]=data[i-1];

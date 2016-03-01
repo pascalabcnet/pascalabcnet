@@ -5403,7 +5403,6 @@ namespace VisualPascalABC
             {
                 return s.Substring(index - 1, s.Length - index + 1);
             }
-            return "";
         }
 
         private System.Text.Encoding enc = System.Text.Encoding.GetEncoding(1251);
@@ -5559,7 +5558,6 @@ namespace VisualPascalABC
                             arr[0] = Convert.ToByte(pars[0]);
                             return enc.GetChars(arr)[0];
                         }
-                        break;
                     case "ord":
                         {
                             TypeCode tc = Type.GetTypeCode(pars[0].GetType());
@@ -5580,7 +5578,6 @@ namespace VisualPascalABC
                                         arr[0] = Convert.ToChar(pars[0]);
                                         return enc.GetBytes(arr)[0];
                                     }
-                                    break;
                                 default:
                                     throw new WrongTypeOfArgument(name);
                             }
@@ -5688,7 +5685,6 @@ namespace VisualPascalABC
                             else
                                 throw new WrongTypeOfArgument(name);
                         }
-                        break;
                     case "eof":
                         if (pars[0] is Value)
                             return _eof(pars[0] as Value, name);
@@ -5714,7 +5710,6 @@ namespace VisualPascalABC
                             case TypeCode.Char: return Convert.ToChar(Convert.ToInt32(Convert.ToChar(pars[0])) + 1);
                             default: throw new WrongTypeOfArgument(name);
                         }
-                        break;
                     case "pred":
                         switch (Type.GetTypeCode(pars[0].GetType()))
                         {
@@ -5730,7 +5725,6 @@ namespace VisualPascalABC
                             case TypeCode.Char: return Convert.ToChar(Convert.ToInt32(Convert.ToChar(pars[0])) - 1);
                             default: throw new WrongTypeOfArgument(name);
                         }
-                        break;
                     case "low":
                         {
                             if (pars[0] is Value)
@@ -5886,7 +5880,6 @@ namespace VisualPascalABC
             by_dot = tmp;
             RetValue rv = eval_stack.Pop();
             List<object> indices = new List<object>();
-            Value _val = null;
             names.Add("[");
             for (int i = 0; i < _indexer.indexes.expressions.Count; i++)
             {

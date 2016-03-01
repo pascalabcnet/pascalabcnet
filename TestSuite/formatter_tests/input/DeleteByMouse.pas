@@ -3,22 +3,22 @@ uses ABCObjects,GraphABC;
 const CountSquares = 20;
 
 var
-  /// Текущая цифра
+  /// РўРµРєСѓС‰Р°СЏ С†РёС„СЂР°
   CurrentDigit: integer;
-  /// Количество ошибок
+  /// РљРѕР»РёС‡РµСЃС‚РІРѕ РѕС€РёР±РѕРє
   Mistakes: integer;
-  /// Строка информации
+  /// РЎС‚СЂРѕРєР° РёРЅС„РѕСЂРјР°С†РёРё
   StatusRect: RectangleABC;
 
-/// Вывод информационной строки
+/// Р’С‹РІРѕРґ РёРЅС„РѕСЂРјР°С†РёРѕРЅРЅРѕР№ СЃС‚СЂРѕРєРё
 procedure DrawStatusText;
 begin
   if CurrentDigit<=CountSquares then
-    StatusRect.Text := 'Удалено квадратов: ' + IntToStr(CurrentDigit-1) + '    Ошибок: ' + IntToStr(Mistakes)
-  else StatusRect.Text := 'Игра окончена. Время: ' + IntToStr(Milliseconds div 1000) + ' с.    Ошибок: ' + IntToStr(Mistakes);
+    StatusRect.Text := 'РЈРґР°Р»РµРЅРѕ РєРІР°РґСЂР°С‚РѕРІ: ' + IntToStr(CurrentDigit-1) + '    РћС€РёР±РѕРє: ' + IntToStr(Mistakes)
+  else StatusRect.Text := 'РРіСЂР° РѕРєРѕРЅС‡РµРЅР°. Р’СЂРµРјСЏ: ' + IntToStr(Milliseconds div 1000) + ' СЃ.    РћС€РёР±РѕРє: ' + IntToStr(Mistakes);
 end;
 
-/// Обработчик события мыши
+/// РћР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР±С‹С‚РёСЏ РјС‹С€Рё
 procedure MyMouseDown(x,y,mb: integer);
 begin
   var ob := ObjectUnderPoint(x,y);
@@ -38,7 +38,7 @@ begin
 end;
 
 begin
-  Window.Title := 'Игра: удали все квадраты по порядку';
+  Window.Title := 'РРіСЂР°: СѓРґР°Р»Рё РІСЃРµ РєРІР°РґСЂР°С‚С‹ РїРѕ РїРѕСЂСЏРґРєСѓ';
   Window.IsFixedSize := True;
   for var i:=1 to CountSquares do
   begin
@@ -51,6 +51,6 @@ begin
   CurrentDigit := 1;
   Mistakes := 0;
   DrawStatusText;
-  // Установка обработчиков 
+  // РЈСЃС‚Р°РЅРѕРІРєР° РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ 
   OnMouseDown := MyMouseDown;
 end.

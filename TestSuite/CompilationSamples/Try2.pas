@@ -1,15 +1,15 @@
-// Обработка нескольких исключений
+// РћР±СЂР°Р±РѕС‚РєР° РЅРµСЃРєРѕР»СЊРєРёС… РёСЃРєР»СЋС‡РµРЅРёР№
 var x: integer;
 
 begin
   try 
-    writeln('Введите число (1 - ошибка деления на 0): ');
+    writeln('Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ (1 - РѕС€РёР±РєР° РґРµР»РµРЅРёСЏ РЅР° 0): ');
     readln(x);
     x := 10 div (x-1);
   except
     on System.FormatException do
-      writeln('Ошибка ввода');
+      writeln('РћС€РёР±РєР° РІРІРѕРґР°');
     on System.DivideByZeroException do
-      writeln('Деление на 0');  
+      writeln('Р”РµР»РµРЅРёРµ РЅР° 0');  
   end;
 end.

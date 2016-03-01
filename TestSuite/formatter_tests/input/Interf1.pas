@@ -1,4 +1,4 @@
-// Интерфейсы. Интерфейс IComparer
+// РРЅС‚РµСЂС„РµР№СЃС‹. РРЅС‚РµСЂС„РµР№СЃ IComparer
 uses System,System.Collections;
 
 type 
@@ -16,7 +16,7 @@ type
     end;
     function ToString: string; override;
     begin
-      Result := Format('Имя: {0,9}   Возраст: {1}   Курс: {2}   Группа: {3}',name,age,course,group);
+      Result := Format('РРјСЏ: {0,9}   Р’РѕР·СЂР°СЃС‚: {1}   РљСѓСЂСЃ: {2}   Р“СЂСѓРїРїР°: {3}',name,age,course,group);
     end;
   end;
   
@@ -48,14 +48,14 @@ var a: array of Student;
 
 begin
   SetLength(a,5);
-  a[0] := new Student('Иванова',18,2,3);
-  a[1] := new Student('Козлов',19,3,10);
-  a[2] := new Student('Сидорова',22,5,1);
-  a[3] := new Student('Крикунов',17,1,2);
-  a[4] := new Student('Лихачев',25,4,8);
-  WriteArray('Исходный массив:',a);
+  a[0] := new Student('РРІР°РЅРѕРІР°',18,2,3);
+  a[1] := new Student('РљРѕР·Р»РѕРІ',19,3,10);
+  a[2] := new Student('РЎРёРґРѕСЂРѕРІР°',22,5,1);
+  a[3] := new Student('РљСЂРёРєСѓРЅРѕРІ',17,1,2);
+  a[4] := new Student('Р›РёС…Р°С‡РµРІ',25,4,8);
+  WriteArray('РСЃС…РѕРґРЅС‹Р№ РјР°СЃСЃРёРІ:',a);
   &Array.Sort(a,new SortByName);
-  WriteArray('Сортировка по имени: ',a);
+  WriteArray('РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РёРјРµРЅРё: ',a);
   &Array.Sort(a,new SortByAge);
-  WriteArray('Сортировка по возрасту: ',a);
+  WriteArray('РЎРѕСЂС‚РёСЂРѕРІРєР° РїРѕ РІРѕР·СЂР°СЃС‚Сѓ: ',a);
 end.

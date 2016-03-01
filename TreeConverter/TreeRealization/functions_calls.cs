@@ -250,7 +250,17 @@ namespace PascalABCCompiler.TreeRealization
         public common_namespace_function_call(common_namespace_function_node namespace_func,location loc)
             : base(namespace_func,loc)
         {
-            if (namespace_func.function_code is wrapped_statement)
+            if (namespace_func is generic_namespace_function_instance_node)
+            {
+                common_namespace_function_node cnfn = (namespace_func as generic_namespace_function_instance_node).original_function as common_namespace_function_node;
+                if (cnfn.function_code is wrapped_statement)
+                {
+                    wrapped_statement ws = cnfn.function_code as wrapped_statement;
+                    cnfn.function_code = new empty_statement(null);
+                    cnfn.function_code = ws.restore();
+                }
+            }
+            else if (namespace_func.function_code is wrapped_statement)
             {
                 wrapped_statement ws = namespace_func.function_code as wrapped_statement;
                 namespace_func.function_code = new empty_statement(null);

@@ -2,15 +2,15 @@ var Country: string;
 
 begin
   read(Country);
-  write('Столица: ');
+  write('РЎС‚РѕР»РёС†Р°: ');
   
-  if Country = 'Россия' then
-    writeln('Москва')
-  else if Country = 'Франция' then
-    writeln('Париж')
-  else if Country = 'Италия' then
-    writeln('Рим')
-  else if Country = 'Германия' then
-    writeln('Берлин')
-  else writeln('Нет в базе данных'); 
+  if Country = 'Р РѕСЃСЃРёСЏ' then
+    writeln('РњРѕСЃРєРІР°')
+  else if Country = 'Р¤СЂР°РЅС†РёСЏ' then
+    writeln('РџР°СЂРёР¶')
+  else if Country = 'РС‚Р°Р»РёСЏ' then
+    writeln('Р РёРј')
+  else if Country = 'Р“РµСЂРјР°РЅРёСЏ' then
+    writeln('Р‘РµСЂР»РёРЅ')
+  else writeln('РќРµС‚ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…'); 
 end.

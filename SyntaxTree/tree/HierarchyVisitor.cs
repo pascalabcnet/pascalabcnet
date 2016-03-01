@@ -1629,6 +1629,62 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(semantic_addr_value _semantic_addr_value)
+		{
+		}
+
+		public virtual void post_do_visit(semantic_addr_value _semantic_addr_value)
+		{
+		}
+
+		public virtual void pre_do_visit(pair_type_stlist _pair_type_stlist)
+		{
+		}
+
+		public virtual void post_do_visit(pair_type_stlist _pair_type_stlist)
+		{
+		}
+
+		public virtual void pre_do_visit(assign_tuple _assign_tuple)
+		{
+		}
+
+		public virtual void post_do_visit(assign_tuple _assign_tuple)
+		{
+		}
+
+		public virtual void pre_do_visit(addressed_value_list _addressed_value_list)
+		{
+		}
+
+		public virtual void post_do_visit(addressed_value_list _addressed_value_list)
+		{
+		}
+
+		public virtual void pre_do_visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+		}
+
+		public virtual void post_do_visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+		}
+
+		public virtual void pre_do_visit(uses_closure _uses_closure)
+		{
+		}
+
+		public virtual void post_do_visit(uses_closure _uses_closure)
+		{
+		}
+
+		public virtual void pre_do_visit(dot_question_node _dot_question_node)
+		{
+		}
+
+		public virtual void post_do_visit(dot_question_node _dot_question_node)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3372,6 +3428,66 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_template_operator_name);
 			visit(template_operator_name.opname);
 			post_do_visit(_template_operator_name);
+		}
+
+		public override void visit(semantic_addr_value _semantic_addr_value)
+		{
+			DefaultVisit(_semantic_addr_value);
+			pre_do_visit(_semantic_addr_value);
+			post_do_visit(_semantic_addr_value);
+		}
+
+		public override void visit(pair_type_stlist _pair_type_stlist)
+		{
+			DefaultVisit(_pair_type_stlist);
+			pre_do_visit(_pair_type_stlist);
+			visit(pair_type_stlist.tn);
+			visit(pair_type_stlist.exprs);
+			post_do_visit(_pair_type_stlist);
+		}
+
+		public override void visit(assign_tuple _assign_tuple)
+		{
+			DefaultVisit(_assign_tuple);
+			pre_do_visit(_assign_tuple);
+			visit(assign_tuple.vars);
+			visit(assign_tuple.expr);
+			post_do_visit(_assign_tuple);
+		}
+
+		public override void visit(addressed_value_list _addressed_value_list)
+		{
+			DefaultVisit(_addressed_value_list);
+			pre_do_visit(_addressed_value_list);
+			for (int i = 0; i < variables.Count; i++)
+				visit(addressed_value_list.variables[i]);
+			post_do_visit(_addressed_value_list);
+		}
+
+		public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			DefaultVisit(_tuple_node_for_formatter);
+			pre_do_visit(_tuple_node_for_formatter);
+			visit(tuple_node_for_formatter.el);
+			post_do_visit(_tuple_node_for_formatter);
+		}
+
+		public override void visit(uses_closure _uses_closure)
+		{
+			DefaultVisit(_uses_closure);
+			pre_do_visit(_uses_closure);
+			for (int i = 0; i < listunitsections.Count; i++)
+				visit(uses_closure.listunitsections[i]);
+			post_do_visit(_uses_closure);
+		}
+
+		public override void visit(dot_question_node _dot_question_node)
+		{
+			DefaultVisit(_dot_question_node);
+			pre_do_visit(_dot_question_node);
+			visit(dot_question_node.left);
+			visit(dot_question_node.right);
+			post_do_visit(_dot_question_node);
 		}
 	}
 

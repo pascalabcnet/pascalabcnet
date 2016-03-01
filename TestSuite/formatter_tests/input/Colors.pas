@@ -1,3 +1,3 @@
-//Для совместимости с Pascal ABC
+//Р”Р»СЏ СЃРѕРІРјРµСЃС‚РёРјРѕСЃС‚Рё СЃ Pascal ABC
 unit Colors;
 end.

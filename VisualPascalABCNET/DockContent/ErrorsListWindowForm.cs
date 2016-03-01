@@ -117,7 +117,7 @@ namespace VisualPascalABC
                     {
                         if (ErrorsList[0] is VisualPascalABC.RuntimeException)
                             MainForm.ExecuteErrorPos(er.SourceLocation, 2);
-                        else // ImageIndex==2 - ошибка выполнения
+                        else // ImageIndex==2 - РѕС€РёР±РєР° РІС‹РїРѕР»РЅРµРЅРёСЏ
                             MainForm.ExecuteErrorPos(er.SourceLocation, 1);
                         //OpenFile(er.SourceLocation.FileName);
                         //(tabControl1.SelectedTab.ag as CodeFileDocumentControl).TextEditor.CaretPosition(er.SourceLocation.BeginPosition.Line,er.SourceLocation.BeginPosition.Column);

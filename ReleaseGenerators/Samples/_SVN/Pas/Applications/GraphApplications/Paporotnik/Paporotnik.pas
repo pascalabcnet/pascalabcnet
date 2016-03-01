@@ -1,17 +1,17 @@
-///Модуль для рисования фракталов семейства "Лист папоротника"
+///РњРѕРґСѓР»СЊ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ С„СЂР°РєС‚Р°Р»РѕРІ СЃРµРјРµР№СЃС‚РІР° "Р›РёСЃС‚ РїР°РїРѕСЂРѕС‚РЅРёРєР°"
 unit Paporotnik;
 
 uses GraphABC;
 
 type
 
-  ///Настройки фрактала
+  ///РќР°СЃС‚СЂРѕР№РєРё С„СЂР°РєС‚Р°Р»Р°
   PaporotnikFractalInitalData = record
     data: array of array of real; 
     P0,P1,P2,P3:real;
   end;
   
-  ///Фрактал "Лист папоротника"  
+  ///Р¤СЂР°РєС‚Р°Р» "Р›РёСЃС‚ РїР°РїРѕСЂРѕС‚РЅРёРєР°"  
   PaporotnikFractal = class
   private
     data: array of array of real; 

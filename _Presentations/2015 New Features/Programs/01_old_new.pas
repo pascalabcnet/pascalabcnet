@@ -7,6 +7,6 @@ begin
 end;
 
 begin
-  var n := ReadInteger('Ââåäèòå n:');
+  var n := ReadInteger('Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ n:');
   writeln('n!=',fact(n));  
 end.

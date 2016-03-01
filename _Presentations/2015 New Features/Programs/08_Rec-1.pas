@@ -6,7 +6,7 @@ end;
 var p: Pupil;
 
 begin
-  p.name := 'Петрова';
+  p.name := 'РџРµС‚СЂРѕРІР°';
   p.age := 18;
   writeln(p.name,' ',p.age);
 end.

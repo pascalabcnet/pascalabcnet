@@ -1,14 +1,14 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Автор ssyy
-//Описывает метки и переходы.
+//РђРІС‚РѕСЂ ssyy
+//РћРїРёСЃС‹РІР°РµС‚ РјРµС‚РєРё Рё РїРµСЂРµС…РѕРґС‹.
 
 using System;
 using System.Collections.Generic;
 
 namespace PascalABCCompiler.TreeRealization
 {
-    //(ssyy) Характеризует блок кода, нужно для меток.
+    //(ssyy) РҐР°СЂР°РєС‚РµСЂРёР·СѓРµС‚ Р±Р»РѕРє РєРѕРґР°, РЅСѓР¶РЅРѕ РґР»СЏ РјРµС‚РѕРє.
     public class code_block
     {
         private code_block _up_block;
@@ -29,16 +29,16 @@ namespace PascalABCCompiler.TreeRealization
 
     public class label_node : definition_node, SemanticTree.ILabelNode
     {
-        //имя метки
+        //РёРјСЏ РјРµС‚РєРё
         private string _name;
 
-        //расположение в программе
+        //СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ РІ РїСЂРѕРіСЂР°РјРјРµ
         private location _loc;
 
-        //определяет, встретилась ли метка в коде
+        //РѕРїСЂРµРґРµР»СЏРµС‚, РІСЃС‚СЂРµС‚РёР»Р°СЃСЊ Р»Рё РјРµС‚РєР° РІ РєРѕРґРµ
         private bool _is_defined = false;
 
-        //goto на данную метку
+        //goto РЅР° РґР°РЅРЅСѓСЋ РјРµС‚РєСѓ
         private List<goto_statement> _goto_statements = new List<goto_statement>();
 
         public List<goto_statement> goto_statements
@@ -47,7 +47,7 @@ namespace PascalABCCompiler.TreeRealization
             //set { _goto_statements = value; }
         }
 
-        //Блок кода, в котором встречена метка
+        //Р‘Р»РѕРє РєРѕРґР°, РІ РєРѕС‚РѕСЂРѕРј РІСЃС‚СЂРµС‡РµРЅР° РјРµС‚РєР°
         private code_block _comprehensive_code_block = null;
 
         public code_block comprehensive_code_block
@@ -62,7 +62,7 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        //запрещены ли переходы на метку
+        //Р·Р°РїСЂРµС‰РµРЅС‹ Р»Рё РїРµСЂРµС…РѕРґС‹ РЅР° РјРµС‚РєСѓ
         //private bool _goto_blocked = false;
 
         //public bool goto_blocked
@@ -107,7 +107,7 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         /// <summary>
-        /// Тип узла.
+        /// РўРёРї СѓР·Р»Р°.
         /// </summary>
         public override semantic_node_type semantic_node_type
         {
@@ -118,7 +118,7 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         /// <summary>
-        /// Обобщенный тип узла.
+        /// РћР±РѕР±С‰РµРЅРЅС‹Р№ С‚РёРї СѓР·Р»Р°.
         /// </summary>
         public override general_node_type general_node_type
         {
@@ -187,7 +187,7 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         /// <summary>
-        /// Тип узла.
+        /// РўРёРї СѓР·Р»Р°.
         /// </summary>
         public override semantic_node_type semantic_node_type
         {
@@ -232,7 +232,7 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         /// <summary>
-        /// Тип узла.
+        /// РўРёРї СѓР·Р»Р°.
         /// </summary>
         public override semantic_node_type semantic_node_type
         {

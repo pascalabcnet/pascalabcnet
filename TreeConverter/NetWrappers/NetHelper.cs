@@ -295,7 +295,9 @@ namespace PascalABCCompiler.NetHelper
         private static Dictionary<Type,MethodInfo[]> extension_methods = new Dictionary<Type,MethodInfo[]>();
         private static Dictionary<Type,List<MethodInfo>> type_extensions = new Dictionary<Type, List<MethodInfo>>();
         private static Dictionary<Type, Type> arrays_with_extension_methods = new Dictionary<Type, Type>();
+        private static Dictionary<Type, Type> generics_with_extension_methods = new Dictionary<Type, Type>();
         private static Dictionary<int, List<MethodInfo>> generic_array_type_extensions = new Dictionary<int, List<MethodInfo>>();
+        private static List<MethodInfo> generic_parameter_type_extensions = new List<MethodInfo>();
         public static Type PABCSystemType = null;
         public static Type PT4Type = null;
         public static Type StringType = typeof(string);
@@ -505,11 +507,9 @@ namespace PascalABCCompiler.NetHelper
                                         List<MethodInfo> mths = null;
                                         List<MethodInfo> mths2 = null;
                                         Type tmp = prms[0].ParameterType;
-                                        bool generic_type = false;
                                         if (tmp.IsGenericType)
                                         {
                                             tmp = tmp.GetGenericTypeDefinition();
-                                            generic_type = true;
                                         }
                                         if (!type_extensions.TryGetValue(tmp, out mths))
                                         {
@@ -524,6 +524,7 @@ namespace PascalABCCompiler.NetHelper
                                         }
                                         if (mths2 != null)
                                             mths2.Add(mi);
+                                        
                                         Dictionary<string, List<MemberInfo>> mht;
                                         if (members.TryGetValue(tmp, out mht))
                                         {
@@ -539,9 +540,49 @@ namespace PascalABCCompiler.NetHelper
                                             if (!mis2.Contains(mi))
                                                 mis2.Add(mi);
                                         }
+                                        if (tmp.IsGenericParameter && !generic_parameter_type_extensions.Contains(mi))
+                                        {
+                                            generic_parameter_type_extensions.Add(mi);
+                                            foreach (Type tt in members.Keys)
+                                            {
+                                                if (members.TryGetValue(tt, out mht))
+                                                {
+                                                    List<MemberInfo> mis2 = null;
+                                                    string name = compiler_string_consts.GetNETOperName(mi.Name);
+                                                    if (name == null)
+                                                        name = mi.Name;
+                                                    if (!mht.TryGetValue(name, out mis2))
+                                                    {
+                                                        mis2 = new List<MemberInfo>();
+                                                        mht.Add(name, mis2);
+                                                    }
+                                                    if (!mis2.Contains(mi))
+                                                        mis2.Add(mi);
+                                                }
+                                            }
+                                        }
+                                        
                                         foreach (Type arr_t in arrays_with_extension_methods.Keys)
                                         {
                                             if (members.TryGetValue(arr_t, out mht))
+                                            {
+                                                List<MemberInfo> mis2 = null;
+                                                string name = compiler_string_consts.GetNETOperName(mi.Name);
+                                                if (name == null)
+                                                    name = mi.Name;
+                                                if (!mht.TryGetValue(name, out mis2))
+                                                {
+                                                    mis2 = new List<MemberInfo>();
+                                                    mht.Add(name, mis2);
+                                                }
+                                                if (!mis2.Contains(mi))
+                                                    mis2.Add(mi);
+                                            }
+                                        }
+
+                                        foreach (Type gen_t in generics_with_extension_methods.Keys)
+                                        {
+                                            if (members.TryGetValue(gen_t, out mht))
                                             {
                                                 List<MemberInfo> mis2 = null;
                                                 string name = compiler_string_consts.GetNETOperName(mi.Name);
@@ -904,18 +945,9 @@ namespace PascalABCCompiler.NetHelper
 			Type t = namespaces[name] as Type;
 			full_ns = name;
 			if (t != null)
-			/*for (int i = 0; i < _unar.Count; i++)
-            {
-                string full_name = _unar[i].namespace_name + "." + name;
-                t = namespaces[full_name] as Type;
-                if (t != null) 
-                {
-                    full_ns = full_name;
-                    return IsNetNamespace(full_ns, t);
-                }
-            }
-			else*/
 			{
+                if (PABCSystemType != null && t.Assembly == PABCSystemType.Assembly && !UsePABCRtl)
+                    return false;
                 Type tt = t;
                 if (string.Compare(t.Namespace, name, true) == 0)
                 {
@@ -994,16 +1026,17 @@ namespace PascalABCCompiler.NetHelper
             return new List<MethodInfo>().ToArray();
         }
 
-        private static compiled_function_node get_conversion(compiled_type_node in_type,compiled_type_node from,
-            compiled_type_node to,string op_name)
+        private static function_node get_conversion(compiled_type_node in_type,compiled_type_node from,
+            compiled_type_node to,string op_name, NetTypeScope scope)
         {
-            MethodInfo[] mia = in_type.compiled_type.GetMethods();
-            foreach (MethodInfo mi in mia)
+            //MethodInfo[] mia = in_type.compiled_type.GetMethods();
+            List<MemberInfo> mia = GetMembers(in_type.compiled_type, op_name);
+           
+            foreach (MemberInfo mbi in mia)
             {
-                if (mi.Name != op_name)
-                {
+                if (!(mbi is MethodInfo))
                     continue;
-                }
+                MethodInfo mi = mbi as MethodInfo;
                 if (mi.ReturnType != to.compiled_type)
                 {
                     continue;
@@ -1019,32 +1052,35 @@ namespace PascalABCCompiler.NetHelper
                 }
                 return compiled_function_node.get_compiled_method(mi);
             }
+            if (scope != null)
+            {
+                SymbolInfo si = scope.FindOnlyInType(op_name, scope);
+                while (si != null)
+                {
+                    if (si.sym_info is common_namespace_function_node)
+                    {
+                        function_node fn = si.sym_info as function_node;
+                        if (fn.return_value_type == to && fn.parameters.Count == 1 && fn.parameters[0].type == from)
+                        {
+                            return fn;
+                        }
+                    }
+                    si = si.Next;
+                }
+            }
             return null;
-            /*Type[] arr = new Type[1];
-            arr[0] = from.compiled_type;
-            MethodInfo mi=in_type.compiled_type.GetMethod(op_name,arr);
-            if (mi == null)
-            {
-                return null;
-            }
-            if (mi.ReturnType != to.compiled_type)
-            {
-                return null;
-            }
-            return compiled_function_node.get_compiled_method(mi);
-            */
         }
 
-        public static compiled_function_node get_implicit_conversion(compiled_type_node in_type, compiled_type_node from,
-            compiled_type_node to)
+        public static function_node get_implicit_conversion(compiled_type_node in_type, compiled_type_node from,
+            compiled_type_node to, NetTypeScope scope)
         {
-            return get_conversion(in_type, from, to, compiler_string_consts.implicit_operator_name);
+            return get_conversion(in_type, from, to, compiler_string_consts.implicit_operator_name, scope);
         }
 
-        public static compiled_function_node get_explicit_conversion(compiled_type_node in_type, compiled_type_node from,
-            compiled_type_node to)
+        public static function_node get_explicit_conversion(compiled_type_node in_type, compiled_type_node from,
+            compiled_type_node to, NetTypeScope scope)
         {
-            return get_conversion(in_type, from, to, compiler_string_consts.explicit_operator_name);
+            return get_conversion(in_type, from, to, compiler_string_consts.explicit_operator_name, scope);
         }
 
         public static compiled_type_node get_array_type(compiled_type_node element_type)
@@ -1084,11 +1120,6 @@ namespace PascalABCCompiler.NetHelper
             }
         }
 
-        //public static void AddMembersOfInterfaceToList(Type t, BindingFlags bf, List<MemberInfo> mem_info)
-        //{
-        //
-        //}
-
         public static bool IsExtensionMethod(MethodInfo mi)
         {
             if (ExtensionAttributeType != null && mi.GetCustomAttributes(ExtensionAttributeType, false).Length > 0)
@@ -1111,16 +1142,6 @@ namespace PascalABCCompiler.NetHelper
             }
             else
 			{
-                //(ssyy) Забираем также и не public члены
-                //(ds) добавил BindingFlags.FlattenHierarchy
-                //(ssyy) убрал BindingFlags.FlattenHierarchy. Зачем оно было нужно? :)
-                //(ds) добавил BindingFlags.FlattenHierarchy, затем что:
-                //Ваня Бондарев (00:52:19 16/12/2007)
-                //BindingFlags.FlattenHierarchy eto flag kotoryj ukazyvaet, chto chleny 
-                //tipa nado brat' ne tolko iz samogo tipa, no i ego bazovyh klassov 
-                //t.GetMembers(BindingFlags.FlattenHierarchy) naprimer. Dlja vybora staticheskih 
-                //chlenov eto objazatelno.
-                //Без этого не работает пример
                 BindingFlags bf = BindingFlags.FlattenHierarchy | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic;
 				MemberInfo[] mis;
                 if (t.IsInterface)
@@ -1139,10 +1160,9 @@ namespace PascalABCCompiler.NetHelper
                 {
                     mis = t.GetMembers(bf);
                 }
-                //(ssyy) DarkStar, что за предупреждение по следующей строке?
+                //(ssyy) DarkStar, С‡С‚Рѕ Р·Р° РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ РїРѕ СЃР»РµРґСѓСЋС‰РµР№ СЃС‚СЂРѕРєРµ?
 				var ht = new Dictionary<string,List<MemberInfo>>(StringComparer.CurrentCultureIgnoreCase);
-                List<MemberInfo> memb_lst = null;
-                //(ssyy) DarkStar, может быть эффективнее слить следующие 2 цикла в один?
+                //(ssyy) DarkStar, РјРѕР¶РµС‚ Р±С‹С‚СЊ СЌС„С„РµРєС‚РёРІРЅРµРµ СЃР»РёС‚СЊ СЃР»РµРґСѓСЋС‰РёРµ 2 С†РёРєР»Р° РІ РѕРґРёРЅ?
                 foreach (MemberInfo mi2 in mis)
                 {
                     //Console.WriteLine(mi2.Name.ToLower());
@@ -1154,20 +1174,36 @@ namespace PascalABCCompiler.NetHelper
 				{
                     ht[mi.Name].Add(mi);
 				}
-                if (ExtensionAttributeType != null /*&& t != StringType*/ && cur_used_assemblies.ContainsKey(SystemCoreAssembly))
+                if (ExtensionAttributeType != null)
                 {
                     List<MethodInfo> meths = null;
                     Type tmp_t = t;
                     if (tmp_t.IsArray)
                         arrays_with_extension_methods[tmp_t] = tmp_t;
+                    if (tmp_t.IsGenericTypeDefinition)
+                        generics_with_extension_methods[tmp_t] = tmp_t;
                     cached_type_extensions[t] = t;
                     while (tmp_t != null)
                     {
-                        if (type_extensions.TryGetValue(tmp_t, out meths) 
-                            || tmp_t.IsGenericType && type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths)
-                            || tmp_t.IsArray && generic_array_type_extensions.TryGetValue(tmp_t.GetArrayRank(), out meths))
+                        List<MethodInfo> meths1 = null;
+                        List<MethodInfo> meths2 = null;
+                        List<MethodInfo> meths3 = generic_parameter_type_extensions;
+                        if (tmp_t.IsGenericType && !tmp_t.IsGenericTypeDefinition)
+                            type_extensions.TryGetValue(tmp_t.GetGenericTypeDefinition(), out meths1);
+                        if (tmp_t.IsArray)
+                            generic_array_type_extensions.TryGetValue(tmp_t.GetArrayRank(), out meths2);
+                        if (type_extensions.TryGetValue(tmp_t, out meths) || meths1 != null || meths2 != null || meths3 != null)
                         {
-                            foreach (MethodInfo mi in meths)
+                            List<MethodInfo> all_meths = new List<MethodInfo>();
+                            if (meths != null)
+                                all_meths.AddRange(meths);
+                            if (meths1 != null)
+                                all_meths.AddRange(meths1);
+                            if (meths2 != null)
+                                all_meths.AddRange(meths2);
+                            if (meths3 != null)
+                                all_meths.AddRange(meths3);
+                            foreach (MethodInfo mi in all_meths)
                             {
                                 if (cur_used_assemblies.ContainsKey(mi.DeclaringType.Assembly))
                                 {
@@ -1222,7 +1258,7 @@ namespace PascalABCCompiler.NetHelper
 
         private static List<MemberInfo> EmptyMemberInfoList = new List<MemberInfo>();
 
-        //(ssyy) Является ли член класса видимым.
+        //(ssyy) РЇРІР»СЏРµС‚СЃСЏ Р»Рё С‡Р»РµРЅ РєР»Р°СЃСЃР° РІРёРґРёРјС‹Рј.
         public static field_access_level get_access_level(MemberInfo mi)
         {
             field_access_level amod = field_access_level.fal_public;
@@ -1429,13 +1465,13 @@ namespace PascalABCCompiler.NetHelper
 			SymbolInfo si=null;
 			
 			List<MemberInfo> mis = GetMembers(t,name);
-            //(ssyy) Изменил алгоритм.
-            //У нас некоторые алгоритмы базируются на том, что возвращённые
-            //сущности будут одной природы (например, все - методы). Это неверно,
-            //так как в случае наличия функции Ident и поля ident оба должны попасть
-            //в список.
+            //(ssyy) РР·РјРµРЅРёР» Р°Р»РіРѕСЂРёС‚Рј.
+            //РЈ РЅР°СЃ РЅРµРєРѕС‚РѕСЂС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ Р±Р°Р·РёСЂСѓСЋС‚СЃСЏ РЅР° С‚РѕРј, С‡С‚Рѕ РІРѕР·РІСЂР°С‰С‘РЅРЅС‹Рµ
+            //СЃСѓС‰РЅРѕСЃС‚Рё Р±СѓРґСѓС‚ РѕРґРЅРѕР№ РїСЂРёСЂРѕРґС‹ (РЅР°РїСЂРёРјРµСЂ, РІСЃРµ - РјРµС‚РѕРґС‹). Р­С‚Рѕ РЅРµРІРµСЂРЅРѕ,
+            //С‚Р°Рє РєР°Рє РІ СЃР»СѓС‡Р°Рµ РЅР°Р»РёС‡РёСЏ С„СѓРЅРєС†РёРё Ident Рё РїРѕР»СЏ ident РѕР±Р° РґРѕР»Р¶РЅС‹ РїРѕРїР°СЃС‚СЊ
+            //РІ СЃРїРёСЃРѕРє.
             
-            //TODO: проанализировать и изменить алгоритмы, использующие поиск.
+            //TODO: РїСЂРѕР°РЅР°Р»РёР·РёСЂРѕРІР°С‚СЊ Рё РёР·РјРµРЅРёС‚СЊ Р°Р»РіРѕСЂРёС‚РјС‹, РёСЃРїРѕР»СЊР·СѓСЋС‰РёРµ РїРѕРёСЃРє.
 
             foreach (MemberInfo mi in mis)
             {
@@ -1712,7 +1748,7 @@ namespace PascalABCCompiler.NetHelper
             return cfn;
         }
 
-        //Возвращает акцессор get, если есть. Иначе возвращает акцессор set, если есть. Иначе возвращает null.
+        //Р’РѕР·РІСЂР°С‰Р°РµС‚ Р°РєС†РµСЃСЃРѕСЂ get, РµСЃР»Рё РµСЃС‚СЊ. РРЅР°С‡Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ Р°РєС†РµСЃСЃРѕСЂ set, РµСЃР»Рё РµСЃС‚СЊ. РРЅР°С‡Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ null.
         public static System.Reflection.MethodInfo GetAnyAccessor(PropertyInfo pi)
         {
             MethodInfo get = pi.GetGetMethod(true);

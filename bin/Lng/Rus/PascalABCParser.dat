@@ -24,6 +24,7 @@ INCLUDE_EMPTY_FILE=Директива компилятора $include: не ук
 UNNECESSARY $endif=Лишний $endif
 ENDIF_ABSENT=Незакрытая директива $ifdef или $ifndef - отсутствует $endif
 UNNECESSARY $else=Лишний $else
+TYPE_NAME_EXPECTED=Ожидался тип
 
 EOF1=конец файла
 EOF=(конец файла)
@@ -47,6 +48,8 @@ ONE_EOF=Ожидался конец файла
 ONE_TKIDENTIFIER=Ожидался идентификатор
 ONE_OPERATOR=Ожидался оператор
 ONE_STMT=Ожидался оператор
+BAD_TUPLE=Неправильно сформированный кортеж
+TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Количество элементов кортежа не должно быть больше 7 
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Анонимный тип не может содержать поля с одинаковыми именами
 BAD_ANON_TYPE=Неверное определение имени поля анонимного типа

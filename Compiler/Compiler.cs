@@ -238,7 +238,16 @@ namespace PascalABCCompiler
             this.source_context = sc;
         }
     }
-    
+
+    public class InvalidAssemblyPathError : CompilerCompilationError
+    {
+        public InvalidAssemblyPathError(string FileName,SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_INVALID_ASSEMBLY_PATH")), FileName)
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class ResourceFileNotFound : CompilerCompilationError
     {
         public ResourceFileNotFound(string ResFileName, TreeRealization.location sl)
@@ -2532,7 +2541,19 @@ namespace PascalABCCompiler
             SyntaxTree.SourceContext sc = null;
             if (loc!=null)
                 sc = new SyntaxTree.SourceContext(loc.begin_line_num,loc.begin_column_num,loc.end_line_num,loc.end_column_num,0,0);
-            string UnitName = GetReferenceFileName(cd.directive,sc);
+            string UnitName = null;
+            try
+            {
+                UnitName = GetReferenceFileName(cd.directive, sc);
+            }
+            catch (AssemblyNotFound ex)
+            {
+                throw;
+            }
+            catch(Exception ex)
+            {
+                throw new InvalidAssemblyPathError(CurrentCompilationUnit.SyntaxTree.file_name, sc);
+            }
             CompilationUnit CurrentUnit = null;
             if (UnitTable.Count == 0) throw new ProgramModuleExpected(UnitName, null);
             if ((CurrentUnit = ReadDLL(UnitName)) != null)
@@ -3234,6 +3255,7 @@ namespace PascalABCCompiler
         static string standartAssemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(string)).ManifestModule.FullyQualifiedName);
         public static string get_assembly_path(string name, bool search_for_intellisense)
         {
+            
             //если явно задан каталог то ищем только там
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
             {

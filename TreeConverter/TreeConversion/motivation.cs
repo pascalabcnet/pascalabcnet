@@ -1,17 +1,17 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Причина обхода узла синтаксического дерева - получение выражения, адреса, типа узла.
+//РџСЂРёС‡РёРЅР° РѕР±С…РѕРґР° СѓР·Р»Р° СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° - РїРѕР»СѓС‡РµРЅРёРµ РІС‹СЂР°Р¶РµРЅРёСЏ, Р°РґСЂРµСЃР°, С‚РёРїР° СѓР·Р»Р°.
 using System;
 
 namespace PascalABCCompiler.TreeConverter
 {
-    //TODO: Переименовать в request.
+    //TODO: РџРµСЂРµРёРјРµРЅРѕРІР°С‚СЊ РІ request.
     /// <summary>
-    /// Будущее название класса - request.
+    /// Р‘СѓРґСѓС‰РµРµ РЅР°Р·РІР°РЅРёРµ РєР»Р°СЃСЃР° - request.
     /// </summary>
 	public enum motivation {none,expression_evaluation,address_reciving,semantic_node_reciving};
 
-    //TODO: Избавиться от этого.
+    //TODO: РР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ СЌС‚РѕРіРѕ.
 	public class motivation_keeper
 	{
 
@@ -35,7 +35,7 @@ namespace PascalABCCompiler.TreeConverter
 
 		public motivation motivation
 		{
-            //(ssyy) Darkstar!!! Данный код провоцирует ложные переходы в режиме трассировки!
+            //(ssyy) Darkstar!!! Р”Р°РЅРЅС‹Р№ РєРѕРґ РїСЂРѕРІРѕС†РёСЂСѓРµС‚ Р»РѕР¶РЅС‹Рµ РїРµСЂРµС…РѕРґС‹ РІ СЂРµР¶РёРјРµ С‚СЂР°СЃСЃРёСЂРѕРІРєРё!
 			get
 			{
 				motivation temp=_mot;

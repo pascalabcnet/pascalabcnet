@@ -59,7 +59,7 @@ public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
 public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 {
   // Verbatim content from oberon00.y
-    public syntax_tree_node root; // Корневой узел синтаксического дерева 
+    public syntax_tree_node root; // РљРѕСЂРЅРµРІРѕР№ СѓР·РµР» СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° 
     public GPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
   // End verbatim content from oberon00.y
 
@@ -257,16 +257,16 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
               //           END, ident, COMMA
 {
 		if (ValueStack[ValueStack.Depth-8].id.name != ValueStack[ValueStack.Depth-2].id.name)
-			PT.AddError("Имя "+ValueStack[ValueStack.Depth-2].id.name+" должно совпадать с именем модуля "+ValueStack[ValueStack.Depth-8].id.name,LocationStack[LocationStack.Depth-2]);
+			PT.AddError("РРјСЏ "+ValueStack[ValueStack.Depth-2].id.name+" РґРѕР»Р¶РЅРѕ СЃРѕРІРїР°РґР°С‚СЊ СЃ РёРјРµРЅРµРј РјРѕРґСѓР»СЏ "+ValueStack[ValueStack.Depth-8].id.name,LocationStack[LocationStack.Depth-2]);
 		
-		// Подключение стандартной библиотеки
+		// РџРѕРґРєР»СЋС‡РµРЅРёРµ СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ Р±РёР±Р»РёРѕС‚РµРєРё
 		ident_list il = new ident_list();
 		il.Add(new ident("Oberon00System"));
 		unit_or_namespace un = new unit_or_namespace(il);
 		uses_list ul = new uses_list();
 		ul.units.Insert(0, un);
 		
-		// Формирование главного модуля
+		// Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РіР»Р°РІРЅРѕРіРѕ РјРѕРґСѓР»СЏ
 		var b = new block(ValueStack[ValueStack.Depth-6].decl, ValueStack[ValueStack.Depth-4].sl, LocationStack[LocationStack.Depth-6].Merge(LocationStack[LocationStack.Depth-2]));
 		var r = new program_module(null, ul, b, null,CurrentLocationSpan);
 		r.Language = LanguageId.Oberon00;
@@ -274,7 +274,7 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
     }
         break;
       case 3: // module -> INVISIBLE, expr
-{ // Для Intellisense
+{ // Р”Р»СЏ Intellisense
 		root = ValueStack[ValueStack.Depth-1].ex;
 	}
         break;

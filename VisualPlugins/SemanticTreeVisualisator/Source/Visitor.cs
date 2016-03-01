@@ -172,24 +172,24 @@ namespace VisualPascalABCPlugins
                                 else
                                 {
                                     myTreeNode sel_node = treeView.SelectedNode as myTreeNode;
-                                    // список неймспейсов
+                                    // СЃРїРёСЃРѕРє РЅРµР№РјСЃРїРµР№СЃРѕРІ
                                         treeView.SelectedNode = treeView.Nodes[2];
-                                    // ищем нужный неймспейс
+                                    // РёС‰РµРј РЅСѓР¶РЅС‹Р№ РЅРµР№РјСЃРїРµР№СЃ
                                         int i = 0;
                                         while (i < treeView.SelectedNode.Nodes.Count && treeView.SelectedNode.Nodes[i].Tag as ICommonNamespaceNode != (sel_node.Tag as ICommonNamespaceVariableNode).comprehensive_namespace)
                                         {
                                             i++;
                                         }
                                         treeView.SelectedNode = treeView.SelectedNode.Nodes[i];
-                                    // переходим к списку переменных неймспейса
+                                    // РїРµСЂРµС…РѕРґРёРј Рє СЃРїРёСЃРєСѓ РїРµСЂРµРјРµРЅРЅС‹С… РЅРµР№РјСЃРїРµР№СЃР°
                                         treeView.SelectedNode = treeView.SelectedNode.Nodes[5];
-                                    // ищем нужную переменную
+                                    // РёС‰РµРј РЅСѓР¶РЅСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ
                                         i = 0;
                                         while (i < treeView.SelectedNode.Nodes.Count && (treeView.SelectedNode.Nodes[i].Tag as ICommonNamespaceVariableNode) != sel_node.Tag as ICommonNamespaceVariableNode)
                                         {
                                             i++;
                                         }
-                                    // и переходим к ней
+                                    // Рё РїРµСЂРµС…РѕРґРёРј Рє РЅРµР№
                                         treeView.SelectedNode = treeView.SelectedNode.Nodes[i];
                                 }
                             }                            
@@ -231,7 +231,7 @@ namespace VisualPascalABCPlugins
 
                             if (treeView.SelectedNode.Tag.GetType().ToString() == "PascalABCCompiler.TreeRealization.common_type_node")
                             {
-                                // тип у вара в вариэвблс неймспейса                            
+                                // С‚РёРї Сѓ РІР°СЂР° РІ РІР°СЂРёСЌРІР±Р»СЃ РЅРµР№РјСЃРїРµР№СЃР°                            
                                 if (treeView.SelectedNode.Parent.Tag is ICommonNamespaceVariableNode)
                                 {
                                     if (treeView.SelectedNode.Parent.Parent.Tag is ICommonNamespaceVariableNode[])
@@ -256,7 +256,7 @@ namespace VisualPascalABCPlugins
                                     }
                                 }
                                 else
-                                    // тип из списка типов неймспейса
+                                    // С‚РёРї РёР· СЃРїРёСЃРєР° С‚РёРїРѕРІ РЅРµР№РјСЃРїРµР№СЃР°
                                     if (treeView.SelectedNode.Parent.Tag is ICommonTypeNode[])
                                     {
                                         if (treeView.SelectedNode.Parent.Parent.Tag is ICommonNamespaceNode)
@@ -324,18 +324,18 @@ namespace VisualPascalABCPlugins
 
                             }
                             else
-                                // для implementingionterfaces
+                                // РґР»СЏ implementingionterfaces
                                 if (treeView.SelectedNode.Tag is System.Collections.Generic.List<PascalABCCompiler.SemanticTree.ITypeNode>)
                                     prepare_collection_up_links_list(treeView.SelectedNode.Tag as List<ITypeNode>, "my_collection", "my_coll_element", (treeView.SelectedNode.Tag as System.Collections.Generic.List<PascalABCCompiler.SemanticTree.ITypeNode>).Count);
 
                     }
                     else
-                        // не build'нутый лист
+                        // РЅРµ build'РЅСѓС‚С‹Р№ Р»РёСЃС‚
                         if (!(treeView.SelectedNode as myTreeNode).is_built && (treeView.SelectedNode as myTreeNode).is_leaf)
                         {
                             if (treeView.SelectedNode.Tag.GetType().ToString() == "PascalABCCompiler.TreeRealization.compiled_type_node")
                             {
-                                // если тип ещё не содержится в списке компайлед типов
+                                // РµСЃР»Рё С‚РёРї РµС‰С‘ РЅРµ СЃРѕРґРµСЂР¶РёС‚СЃСЏ РІ СЃРїРёСЃРєРµ РєРѕРјРїР°Р№Р»РµРґ С‚РёРїРѕРІ
                                     if (!compiled_types.Contains(treeView.SelectedNode.Tag as ICompiledTypeNode))
                                     {
                                         ICompiledTypeNode ct = treeView.SelectedNode.Tag as ICompiledTypeNode;
@@ -345,7 +345,7 @@ namespace VisualPascalABCPlugins
                                         compiled_types_dictionary.Add(ct, treeView.SelectedNode as myTreeNode);
                                     }
                                     else
-                                        // тип уже содержится в этом списке
+                                        // С‚РёРї СѓР¶Рµ СЃРѕРґРµСЂР¶РёС‚СЃСЏ РІ СЌС‚РѕРј СЃРїРёСЃРєРµ
                                     {
                                         treeView.SelectedNode = compiled_types_dictionary[treeView.SelectedNode.Tag as ICompiledTypeNode];
                                     }
@@ -407,18 +407,18 @@ namespace VisualPascalABCPlugins
         
 
 
-        // конструктор без параметров - на всякий случай
+        // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ Р±РµР· РїР°СЂР°РјРµС‚СЂРѕРІ - РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
         public SematicTreeVisitor()
         {            
         }
 
-        // конструктор с параметром nodes
+        // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РїР°СЂР°РјРµС‚СЂРѕРј nodes
         public SematicTreeVisitor(System.Windows.Forms.TreeNodeCollection nodes)
         {            
             this.nodes = nodes;
         }
 
-        // доп. метод
+        // РґРѕРї. РјРµС‚РѕРґ
         public void setNodes(System.Windows.Forms.TreeNodeCollection nodes)
         {
             this.nodes = nodes;
@@ -429,7 +429,7 @@ namespace VisualPascalABCPlugins
             treeView = _treeView;
         }
 
-        //  установить обратные связи
+        //  СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РѕР±СЂР°С‚РЅС‹Рµ СЃРІСЏР·Рё
         public void makeUpRows(TreeView treeView)
         {
             foreach (TreeNode tn in table_up_rows.Keys)
@@ -456,7 +456,7 @@ namespace VisualPascalABCPlugins
         //--------------------------------------------------------------------------------------------
 
 
-        // для обычного node - потомка ISemanticNode
+        // РґР»СЏ РѕР±С‹С‡РЅРѕРіРѕ node - РїРѕС‚РѕРјРєР° ISemanticNode
         public void prepare_node(ISemanticNode subnode, string node_name)
         {
             myTreeNode t;
@@ -495,7 +495,7 @@ namespace VisualPascalABCPlugins
         }
 
 
-        // для одного node из ICollection
+        // РґР»СЏ РѕРґРЅРѕРіРѕ node РёР· ICollection
         public void prepare_node_in_collection(ISemanticNode subnode, string node_name, myTreeNode tn_parent)
         {
             myTreeNode t;
@@ -531,7 +531,7 @@ namespace VisualPascalABCPlugins
             }
         }
 
-        // для одного node из ICollection
+        // РґР»СЏ РѕРґРЅРѕРіРѕ node РёР· ICollection
         public void prepare_node_in_collection(ISemanticNode subnode, string node_name, myTreeNode tn_parent, bool is_leaf)
         {
             myTreeNode t;
@@ -569,7 +569,7 @@ namespace VisualPascalABCPlugins
         }
 
 
-        // для ICollection
+        // РґР»СЏ ICollection
         public void prepare_collection(ICollection icol, string collection_name, string item_name, int num)
         {
             myTreeNode t;
@@ -692,7 +692,7 @@ namespace VisualPascalABCPlugins
 
 
 
-        // для ICollection
+        // РґР»СЏ ICollection
         public void prepare_collection_list(ICollection icol, string collection_name, string item_name, int num)
         {
             myTreeNode t;
@@ -755,8 +755,8 @@ namespace VisualPascalABCPlugins
 
 
 
-        // для ICollection
-        // если коллекция - список
+        // РґР»СЏ ICollection
+        // РµСЃР»Рё РєРѕР»Р»РµРєС†РёСЏ - СЃРїРёСЃРѕРє
         public void prepare_collection_list(ICollection icol, string collection_name, string item_name, int num, bool is_leaf)
         {
             myTreeNode t;
@@ -870,7 +870,7 @@ namespace VisualPascalABCPlugins
 
 
 
-        // для ICollection
+        // РґР»СЏ ICollection
         public void prepare_collection_up_links(ICollection icol, string collection_name, string item_name, int num)
         {
             myTreeNode t;
@@ -917,7 +917,7 @@ namespace VisualPascalABCPlugins
 
 
 
-        // только для имплементинг интерфейсес
+        // С‚РѕР»СЊРєРѕ РґР»СЏ РёРјРїР»РµРјРµРЅС‚РёРЅРі РёРЅС‚РµСЂС„РµР№СЃРµСЃ
 
         public void prepare_collection_up_links_list(ICollection icol, string collection_name, string item_name, int num)
         {
@@ -1024,7 +1024,7 @@ namespace VisualPascalABCPlugins
 
 
 
-        // для строкового поля
+        // РґР»СЏ СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїРѕР»СЏ
         public void prepare_string_node(string str, string text)
         {
             myTreeNode t;
@@ -1047,7 +1047,7 @@ namespace VisualPascalABCPlugins
         }
 
 
-        // для строкового поля
+        // РґР»СЏ СЃС‚СЂРѕРєРѕРІРѕРіРѕ РїРѕР»СЏ
         public void prepare_string_node_with_tag(string str, string text, ISemanticNode sem)
         {
             myTreeNode t;
@@ -1258,7 +1258,7 @@ namespace VisualPascalABCPlugins
             string s = value.GetType().Name + ".";
             prepare_string_node(value.name, s + "name");
             prepare_node(value.base_type, s + "base_type");
-            prepare_string_node(value.compiled_type.ToString(), s + "compiled_type"); // ??????? Как это надо отображать?            
+            prepare_string_node(value.compiled_type.ToString(), s + "compiled_type"); // ??????? РљР°Рє СЌС‚Рѕ РЅР°РґРѕ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊ?            
             prepare_node(value.element_type, s + "element_type");
             //prepare_node(value.generic_container, s + "generic_container");
             prepare_base_node_collection_up_links(value.ImplementingInterfaces, s + "ImplementingInterfaces", "ImplementingInterfaces", value.ImplementingInterfaces.Count);
@@ -1284,7 +1284,7 @@ namespace VisualPascalABCPlugins
         public void visit(IFunctionCallNode value)
         {
             string s = value.GetType().Name + ".";
-            prepare_node(value.function, s + "function");// или ссылка?
+            prepare_node(value.function, s + "function");// РёР»Рё СЃСЃС‹Р»РєР°?
             prepare_string_node(value.last_result_function_call.ToString(), s + "last-result_function_call");
             prepare_collection(value.real_parameters, s + "real_parametrs", "real_parametrs", value.real_parameters.Length);
             prepare_node(value.type, s + "type");                        
@@ -1293,8 +1293,8 @@ namespace VisualPascalABCPlugins
         public void visit(IBasicFunctionCallNode value)
         {
             string s = value.GetType().Name + ".";
-            //prepare_node(value.basic_function, "IBasicFunctionCallNode.basic_function");    // или ссылка?             
-            //prepare_node(value.function, s + "function");     // или ссылка?         
+            //prepare_node(value.basic_function, "IBasicFunctionCallNode.basic_function");    // РёР»Рё СЃСЃС‹Р»РєР°?             
+            //prepare_node(value.function, s + "function");     // РёР»Рё СЃСЃС‹Р»РєР°?         
 
             prepare_string_node(value.last_result_function_call.ToString(), s + "last_result_function_call");
             prepare_base_node_collection(value.real_parameters, s + "real_parametrs", "real_parametrs", value.real_parameters.Length);

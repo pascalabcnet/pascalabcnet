@@ -12,9 +12,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("HelpBuilder")]
 [assembly: AssemblyDescription("Help Builder Plugin")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("IBS")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("HelpBuilder")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

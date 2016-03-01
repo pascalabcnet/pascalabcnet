@@ -37,26 +37,26 @@ public struct ValueType
 		public bool bVal;  
 		public string sVal; 
 		public int iVal; 
-		public long lVal;								// Длинное целое
+		public long lVal;								// Р”Р»РёРЅРЅРѕРµ С†РµР»РѕРµ
 		public char cVal;
 		public double rVal;
-		public pascal_set_constant sc;					// Константа - множество
-		public named_type_reference ntr;				// Именованное определение типа
-		public ident_list il;							// Список идентификаторов
-		public ident id;								// Идентификатор
-		public var_def_statement vds;					// Описание переменных
-		public variable_definitions vdss;				// Секция описания переменных
-		public expression ex;							// Выражение
-		public expression_list el;						// Список выражений
-		public block bl;								// Программный блок
-		public statement st;							// Оператор
-		public statement_list sl;						// Список операторов
-		public declaration decsec;						// Описание
-		public declarations decl;						// Список описаний
+		public pascal_set_constant sc;					// РљРѕРЅСЃС‚Р°РЅС‚Р° - РјРЅРѕР¶РµСЃС‚РІРѕ
+		public named_type_reference ntr;				// РРјРµРЅРѕРІР°РЅРЅРѕРµ РѕРїСЂРµРґРµР»РµРЅРёРµ С‚РёРїР°
+		public ident_list il;							// РЎРїРёСЃРѕРє РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРІ
+		public ident id;								// РРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
+		public var_def_statement vds;					// РћРїРёСЃР°РЅРёРµ РїРµСЂРµРјРµРЅРЅС‹С…
+		public variable_definitions vdss;				// РЎРµРєС†РёСЏ РѕРїРёСЃР°РЅРёСЏ РїРµСЂРµРјРµРЅРЅС‹С…
+		public expression ex;							// Р’С‹СЂР°Р¶РµРЅРёРµ
+		public expression_list el;						// РЎРїРёСЃРѕРє РІС‹СЂР°Р¶РµРЅРёР№
+		public block bl;								// РџСЂРѕРіСЂР°РјРјРЅС‹Р№ Р±Р»РѕРє
+		public statement st;							// РћРїРµСЂР°С‚РѕСЂ
+		public statement_list sl;						// РЎРїРёСЃРѕРє РѕРїРµСЂР°С‚РѕСЂРѕРІ
+		public declaration decsec;						// РћРїРёСЃР°РЅРёРµ
+		public declarations decl;						// РЎРїРёСЃРѕРє РѕРїРёСЃР°РЅРёР№
 		public Operators op;							
-		public simple_const_definition scd;				// Определение константы
-		public consts_definitions_list cdl;				// Список описаний констант		
-		public procedure_definition pd;					// Описание процедуры
+		public simple_const_definition scd;				// РћРїСЂРµРґРµР»РµРЅРёРµ РєРѕРЅСЃС‚Р°РЅС‚С‹
+		public consts_definitions_list cdl;				// РЎРїРёСЃРѕРє РѕРїРёСЃР°РЅРёР№ РєРѕРЅСЃС‚Р°РЅС‚		
+		public procedure_definition pd;					// РћРїРёСЃР°РЅРёРµ РїСЂРѕС†РµРґСѓСЂС‹
 	}
 // Abstract base class for GPLEX scanners
 public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
@@ -68,8 +68,8 @@ public abstract class ScanBase : AbstractScanner<ValueType,LexLocation> {
 public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 {
   // Verbatim content from oberon00.y
-// Эти объявления добавляются в класс GPPGParser, представляющий собой парсер, генерируемый системой gppg
-    public syntax_tree_node root; // Корневой узел синтаксического дерева 
+// Р­С‚Рё РѕР±СЉСЏРІР»РµРЅРёСЏ РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ РІ РєР»Р°СЃСЃ GPPGParser, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёР№ СЃРѕР±РѕР№ РїР°СЂСЃРµСЂ, РіРµРЅРµСЂРёСЂСѓРµРјС‹Р№ СЃРёСЃС‚РµРјРѕР№ gppg
+    public syntax_tree_node root; // РљРѕСЂРЅРµРІРѕР№ СѓР·РµР» СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР° 
     public GPPGParser(AbstractScanner<ValueType, LexLocation> scanner) : base(scanner) { }
   // End verbatim content from oberon00.y
 
@@ -337,17 +337,17 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
       case 2: // module -> MODULE, ident, SEMICOLUMN, mainblock, ident, COMMA
 {
 		if (ValueStack[ValueStack.Depth-5].id.name != ValueStack[ValueStack.Depth-2].id.name)
-			PT.AddError("Имя " + ValueStack[ValueStack.Depth-2].id.name + " должно совпадать с именем модуля " + ValueStack[ValueStack.Depth-5].id.name, LocationStack[LocationStack.Depth-2]);
+			PT.AddError("РРјСЏ " + ValueStack[ValueStack.Depth-2].id.name + " РґРѕР»Р¶РЅРѕ СЃРѕРІРїР°РґР°С‚СЊ СЃ РёРјРµРЅРµРј РјРѕРґСѓР»СЏ " + ValueStack[ValueStack.Depth-5].id.name, LocationStack[LocationStack.Depth-2]);
 		
-		// Подключение стандартного модуля Oberon00System, написанного на PascalABC.NET
+		// РџРѕРґРєР»СЋС‡РµРЅРёРµ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РјРѕРґСѓР»СЏ Oberon00System, РЅР°РїРёСЃР°РЅРЅРѕРіРѕ РЅР° PascalABC.NET
 		var ul = new uses_list("Oberon00System");
 		
-		// Формирование модуля основной программы (используется фабричный метод вместо конструктора)
+		// Р¤РѕСЂРјРёСЂРѕРІР°РЅРёРµ РјРѕРґСѓР»СЏ РѕСЃРЅРѕРІРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹ (РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С„Р°Р±СЂРёС‡РЅС‹Р№ РјРµС‚РѕРґ РІРјРµСЃС‚Рѕ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР°)
 		root = program_module.create(ValueStack[ValueStack.Depth-5].id, ul, ValueStack[ValueStack.Depth-3].bl, CurrentLocationSpan);
     }
         break;
       case 3: // module -> INVISIBLE, expr
-{ // Для Intellisense
+{ // Р”Р»СЏ Intellisense
 		root = ValueStack[ValueStack.Depth-1].ex;
 	}
         break;
@@ -662,8 +662,8 @@ public class GPPGParser: ShiftReduceParser<ValueType, LexLocation>
 		if (ValueStack[ValueStack.Depth-1].decsec != null)
 			ValueStack[ValueStack.Depth-2].decl.Add(ValueStack[ValueStack.Depth-1].decsec);
 		CurrentSemanticValue.decl = ValueStack[ValueStack.Depth-2].decl;
-		CurrentSemanticValue.decl.source_context = CurrentLocationSpan;			// Необходимо показать место в программе, т.к. невно это не сделано
-										// (например, в конструкторе)
+		CurrentSemanticValue.decl.source_context = CurrentLocationSpan;			// РќРµРѕР±С…РѕРґРёРјРѕ РїРѕРєР°Р·Р°С‚СЊ РјРµСЃС‚Рѕ РІ РїСЂРѕРіСЂР°РјРјРµ, С‚.Рє. РЅРµРІРЅРѕ СЌС‚Рѕ РЅРµ СЃРґРµР»Р°РЅРѕ
+										// (РЅР°РїСЂРёРјРµСЂ, РІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ)
 	}
         break;
       case 73: // ProcedureDeclarationSect -> PROCEDURE, ident, maybeformalparams, maybereturn, 

@@ -346,7 +346,6 @@ namespace VisualPascalABC
                         mis = dconv.GetNameByPattern(null, line, col, true, VisualPABCSingleton.MainForm.UserOptions.CodeCompletionNamespaceVisibleRange);
                 }
                 Hashtable cache = new Hashtable();
-                int num = 0;
                 if (mis != null)
                 {
                     bool stop = false;

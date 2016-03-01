@@ -1,4 +1,4 @@
-// Индексные свойства. Массив цветных квадратов 
+// РРЅРґРµРєСЃРЅС‹Рµ СЃРІРѕР№СЃС‚РІР°. РњР°СЃСЃРёРІ С†РІРµС‚РЅС‹С… РєРІР°РґСЂР°С‚РѕРІ 
 uses GraphABC;
 
 const 
@@ -11,17 +11,17 @@ type
   VisualArray = class
   private
     a: array of Color;
-    procedure SetItem(i: integer; x: Color); // Процедура, устанавливающая цвет i-того квадрата
+    procedure SetItem(i: integer; x: Color); // РџСЂРѕС†РµРґСѓСЂР°, СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‰Р°СЏ С†РІРµС‚ i-С‚РѕРіРѕ РєРІР°РґСЂР°С‚Р°
     begin
       if (i<0) or (i>=a.Length) then
-        raise new System.ArgumentException('Выход за границы изменения индекса: '+IntToStr(i));
+        raise new System.ArgumentException('Р’С‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РёР·РјРµРЅРµРЅРёСЏ РёРЅРґРµРєСЃР°: '+IntToStr(i));
       a[i] := x;
       Draw(i);
     end;
-    function GetItem(i: integer): Color; // Функция, возвращающая цвет i-того квадрата
+    function GetItem(i: integer): Color; // Р¤СѓРЅРєС†РёСЏ, РІРѕР·РІСЂР°С‰Р°СЋС‰Р°СЏ С†РІРµС‚ i-С‚РѕРіРѕ РєРІР°РґСЂР°С‚Р°
     begin
       if (i<0) or (i>=a.Length) then
-        raise new System.ArgumentException('Выход за границы изменения индекса: '+IntToStr(i));
+        raise new System.ArgumentException('Р’С‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РёР·РјРµРЅРµРЅРёСЏ РёРЅРґРµРєСЃР°: '+IntToStr(i));
       Result := a[i];
     end;
   public
@@ -32,29 +32,29 @@ type
         a[i] := clWhite;
       Draw;
     end;
-    /// Рисует i-тый квадрат
+    /// Р РёСЃСѓРµС‚ i-С‚С‹Р№ РєРІР°РґСЂР°С‚
     procedure Draw(i: integer);
     begin
       Brush.Color := a[i];
       Rectangle(sz+sz*i,sz,sz+sz*(i+1)+1,sz+sz);
     end;
-    /// Рисует массив цветных квадратов
+    /// Р РёСЃСѓРµС‚ РјР°СЃСЃРёРІ С†РІРµС‚РЅС‹С… РєРІР°РґСЂР°С‚РѕРІ
     procedure Draw;
     begin
       for var i:=0 to a.Length-1 do
         Draw(i);
     end;
-    /// Индексное свойство по умолчанию
+    /// РРЅРґРµРєСЃРЅРѕРµ СЃРІРѕР№СЃС‚РІРѕ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
     property Item[i: integer]: Color read GetItem write SetItem; default;
   end;
 
 var arr: VisualArray;
 
 begin
-  Window.Title := 'Иллюстрация индексных свойств';
+  Window.Title := 'РР»Р»СЋСЃС‚СЂР°С†РёСЏ РёРЅРґРµРєСЃРЅС‹С… СЃРІРѕР№СЃС‚РІ';
   arr := new VisualArray(dim);
   SetWindowSize(sz*(dim+2),3*sz);
-  arr[0] := clGreen; // arr.Items[0] = arr[0] поскольку свойство Items является свойством по умолчанию
+  arr[0] := clGreen; // arr.Items[0] = arr[0] РїРѕСЃРєРѕР»СЊРєСѓ СЃРІРѕР№СЃС‚РІРѕ Items СЏРІР»СЏРµС‚СЃСЏ СЃРІРѕР№СЃС‚РІРѕРј РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
   Sleep(delay);
   arr[1] := clBlack;
   Sleep(delay);

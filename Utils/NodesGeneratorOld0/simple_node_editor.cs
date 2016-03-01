@@ -153,7 +153,7 @@ namespace NodesGenerator
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(120, 19);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Имя поля";
+            this.label1.Text = "РРјСЏ РїРѕР»СЏ";
             // 
             // label2
             // 
@@ -161,7 +161,7 @@ namespace NodesGenerator
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(120, 18);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Тип поля";
+            this.label2.Text = "РўРёРї РїРѕР»СЏ";
             // 
             // field_type
             // 
@@ -243,7 +243,7 @@ namespace NodesGenerator
             this.Name = "simple_node_editor";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Редактор узлов";
+            this.Text = "Р РµРґР°РєС‚РѕСЂ СѓР·Р»РѕРІ";
             this.ResumeLayout(false);
             this.PerformLayout();
 

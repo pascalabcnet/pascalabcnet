@@ -12,7 +12,7 @@ begin
   if code<>1 then
   begin
     writeln;
-    writeln(s+' : Должно было произойти исключение')
+    writeln(s+' : Р”РѕР»Р¶РЅРѕ Р±С‹Р»Рѕ РїСЂРѕРёР·РѕР№С‚Рё РёСЃРєР»СЋС‡РµРЅРёРµ')
   end  
   else write('OK  ');  
 end;  
@@ -31,12 +31,12 @@ begin
   if code=1 then
   begin
     writeln;
-    writeln(s+' : Ошибка при переводе строки в целое')
+    writeln(s+' : РћС€РёР±РєР° РїСЂРё РїРµСЂРµРІРѕРґРµ СЃС‚СЂРѕРєРё РІ С†РµР»РѕРµ')
   end  
   else if code=2 then
   begin
     writeln;
-    writeln(s+' : Ошибка - неправильно работает')
+    writeln(s+' : РћС€РёР±РєР° - РЅРµРїСЂР°РІРёР»СЊРЅРѕ СЂР°Р±РѕС‚Р°РµС‚')
   end
   else write('OK  ');  
 end;

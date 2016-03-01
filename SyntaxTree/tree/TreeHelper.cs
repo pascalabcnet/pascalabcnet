@@ -270,6 +270,11 @@ namespace PascalABCCompiler.SyntaxTree
                 sb.Append("." + names[i].ToString());
             return sb.ToString();
         }
+
+        public ident FirstIdent
+        {
+            get { return names[0]; }
+        }
     }
 
     public partial class template_type_reference
@@ -911,6 +916,14 @@ namespace PascalABCCompiler.SyntaxTree
                 source_context = sc;
             return this;
         }
+        public uses_list AddUsesList(uses_list ul, SourceContext sc = null)
+        {
+            foreach (var un in ul.units)
+                units.Add(un);
+            if (sc != null)
+                source_context = sc;
+            return this;
+        }
     }
 
     public partial class unit_module
@@ -962,10 +975,16 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class dot_node
     {
-        public dot_node (ident left, ident right)
+        public dot_node(ident left, ident right)
         {
             this.left = left;
             this.right = right;
+        }
+        public dot_node(ident left, ident right, SourceContext sc)
+        {
+            this.left = left;
+            this.right = right;
+            this.source_context = sc;
         }
         public override string ToString()
         {
@@ -1535,7 +1554,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class function_lambda_definition
     {
-        public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучщего выбора среди перегруженных методов с параметрами-лямбдами
+        public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучшего выбора среди перегруженных методов с параметрами-лямбдами
         public object RealSemTypeOfResult = null;
 
         public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)
@@ -1657,6 +1676,22 @@ namespace PascalABCCompiler.SyntaxTree
             this._to_statement = empty_statement.New;
         }
     }
+
+    public partial class uses_closure
+    {
+        public uses_closure(uses_list st, SourceContext sc)
+        {
+            Add(st, sc);
+        }
+        public uses_closure Add(uses_list ul, SourceContext sc = null)
+        {
+            listunitsections.Add(ul);
+            if (sc != null)
+                source_context = sc;
+            return this;
+        }
+    }
+
 
 }
 

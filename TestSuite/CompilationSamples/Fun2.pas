@@ -1,4 +1,4 @@
-// Функция Power
+// Р¤СѓРЅРєС†РёСЏ Power
 
 function Power(x: real; n: integer): real;
 begin
@@ -13,5 +13,5 @@ var
 
 begin
   x := 2; n := 5;  
-  writelnFormat('{0} в степени {1} = {2}',x,n,Power(x,n));
+  writelnFormat('{0} РІ СЃС‚РµРїРµРЅРё {1} = {2}',x,n,Power(x,n));
 end.  

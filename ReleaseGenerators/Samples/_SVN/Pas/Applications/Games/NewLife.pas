@@ -1,5 +1,5 @@
-// Игра Жизнь на торе
-// Оптимизация хешированием по равномерной сетке
+// РРіСЂР° Р–РёР·РЅСЊ РЅР° С‚РѕСЂРµ
+// РћРїС‚РёРјРёР·Р°С†РёСЏ С…РµС€РёСЂРѕРІР°РЅРёРµРј РїРѕ СЂР°РІРЅРѕРјРµСЂРЅРѕР№ СЃРµС‚РєРµ
 
 
 uses Utils,GraphABC;
@@ -302,10 +302,10 @@ begin
   AssignArray(b,nn+1,mm+1);
   AssignArray(sosedia,nn+1,mm+1);
   AssignArray(sosedib,nn+1,mm+1);
-  SetWindowCaption('Игра "Жизнь"');
+  SetWindowCaption('РРіСЂР° "Р–РёР·РЅСЊ"');
   if (m mod mk<>0) or (n mod nk<>0) then
   begin
-    writeln('Размер кластера не согласован с размером поля. Программа завершена');
+    writeln('Р Р°Р·РјРµСЂ РєР»Р°СЃС‚РµСЂР° РЅРµ СЃРѕРіР»Р°СЃРѕРІР°РЅ СЃ СЂР°Р·РјРµСЂРѕРј РїРѕР»СЏ. РџСЂРѕРіСЂР°РјРјР° Р·Р°РІРµСЂС€РµРЅР°');
     exit
   end;
   hm:=m div mk;
@@ -334,8 +334,8 @@ begin
       DrawInBuffer := True;
       SetBrushColor(ClearColor);
       SetFontColor(FillColor);
-      TextOut(25, 0,'Поколение: '+IntToStr(gen));
-      TextOut(765,0,'Жителей: '+IntToStr(count)+'    ');
+      TextOut(25, 0,'РџРѕРєРѕР»РµРЅРёРµ: '+IntToStr(gen));
+      TextOut(765,0,'Р–РёС‚РµР»РµР№: '+IntToStr(count)+'    ');
       if gen mod 1000 = 0 then begin
         mil1:=Milliseconds;
         writeln(gen,'  ',(mil1-mil)/1000);

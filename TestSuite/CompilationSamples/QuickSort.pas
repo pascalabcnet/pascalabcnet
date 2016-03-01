@@ -1,10 +1,10 @@
-// Быстрая сортировка Ч. Хоара
+// Р‘С‹СЃС‚СЂР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° Р§. РҐРѕР°СЂР°
 uses ArrayLib;
 
-/// Быстрая сортировка 
+/// Р‘С‹СЃС‚СЂР°СЏ СЃРѕСЂС‚РёСЂРѕРІРєР° 
 procedure QuickSort(a: array of integer);
   
-/// Разделение a[l]..a[r] на части a[l]..a[q] <= a[q+1]..a[r] 
+/// Р Р°Р·РґРµР»РµРЅРёРµ a[l]..a[r] РЅР° С‡Р°СЃС‚Рё a[l]..a[q] <= a[q+1]..a[r] 
   function Partition(l,r: integer): integer;
   begin
     var i := l - 1;
@@ -28,7 +28,7 @@ procedure QuickSort(a: array of integer);
     end;
   end;
   
-/// Сортировка частей
+/// РЎРѕСЂС‚РёСЂРѕРІРєР° С‡Р°СЃС‚РµР№
   procedure sort(l,r: integer);
   begin
     if l>=r then exit;
@@ -47,9 +47,9 @@ var a: array of integer;
 
 begin
   CreateRandom(a,n);
-  writeln('До сортировки: ');
+  writeln('Р”Рѕ СЃРѕСЂС‚РёСЂРѕРІРєРё: ');
   WriteArray(a);
   QuickSort(a);
-  writeln('После сортировки: ');
+  writeln('РџРѕСЃР»Рµ СЃРѕСЂС‚РёСЂРѕРІРєРё: ');
   WriteArray(a);
 end.

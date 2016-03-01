@@ -1,9 +1,9 @@
-// Пример иллюстрирует реализацию классом интерфейса IEnumerable 
-// для использования его в операторе foreach
+// РџСЂРёРјРµСЂ РёР»Р»СЋСЃС‚СЂРёСЂСѓРµС‚ СЂРµР°Р»РёР·Р°С†РёСЋ РєР»Р°СЃСЃРѕРј РёРЅС‚РµСЂС„РµР№СЃР° IEnumerable 
+// РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РµРіРѕ РІ РѕРїРµСЂР°С‚РѕСЂРµ foreach
 uses System.Collections;
 
 type
-  // Генератор чисел Фибоначчи
+  // Р“РµРЅРµСЂР°С‚РѕСЂ С‡РёСЃРµР» Р¤РёР±РѕРЅР°С‡С‡Рё
   FibGen = class(IEnumerable, IEnumerator)
   private
     a,b,n,i: integer;
@@ -44,7 +44,7 @@ type
 var f: FibGen;
 
 begin
-  writeln('Числа Фибоначчи');
+  writeln('Р§РёСЃР»Р° Р¤РёР±РѕРЅР°С‡С‡Рё');
   f := new FibGen(25);
   foreach x: integer in f do
     write(x,' ');

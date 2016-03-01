@@ -8,7 +8,7 @@ end;
 var s: set of integer := [1,3,7];
 
 begin
-  p.name := 'Иванов'; p.age := 20;
+  p.name := 'РРІР°РЅРѕРІ'; p.age := 20;
   writeln(a); 
   writeln(p);
   writeln(s);

@@ -789,6 +789,20 @@ namespace PascalABCCompiler.TreeRealization
                         return null;
                     }
                 }
+                else if (last_is_params)
+                {
+                    for (int i = formal_count - 1; i < fact_count; ++i)
+                    {
+                        //Проверяем фактические, попадающие под params...
+                        if (!DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils))
+                        {
+                            if (alone)
+                                throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
+                            return null;
+                        }
+                    }
+                    count_params_to_see = formal_count - 1;
+                }
             }
             bool need_params_work = (count_params_to_see > 0 && formal[count_params_to_see - 1].is_params);
             if (need_params_work)
@@ -811,6 +825,11 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     if (!DeduceInstanceTypes(formal[i].type, fact[i].type, deduced, nils))
                     {
+                        if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null)
+                        {
+                            if (DeduceInstanceTypes(formal[i].type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils))
+                                continue;
+                        }
                         if (alone)
                             throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
                         RestoreLambdasStates(lambda_syntax_nodes.Values.ToList(), saved_lambdas_states);

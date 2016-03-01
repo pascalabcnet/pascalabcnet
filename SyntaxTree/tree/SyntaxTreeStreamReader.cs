@@ -426,6 +426,20 @@ namespace PascalABCCompiler.SyntaxTree
 					return new yield_node();
 				case 202:
 					return new template_operator_name();
+				case 203:
+					return new semantic_addr_value();
+				case 204:
+					return new pair_type_stlist();
+				case 205:
+					return new assign_tuple();
+				case 206:
+					return new addressed_value_list();
+				case 207:
+					return new tuple_node_for_formatter();
+				case 208:
+					return new uses_closure();
+				case 209:
+					return new dot_question_node();
 			}
 			return null;
 		}
@@ -2928,7 +2942,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_enumerator(enumerator _enumerator)
 		{
 			read_syntax_tree_node(_enumerator);
-			_enumerator.name = _read_node() as ident;
+			_enumerator.name = _read_node() as type_definition;
 			_enumerator.value = _read_node() as expression;
 		}
 
@@ -3606,6 +3620,117 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_template_type_name(_template_operator_name);
 			_template_operator_name.opname = _read_node() as operator_name_ident;
+		}
+
+
+		public void visit(semantic_addr_value _semantic_addr_value)
+		{
+			read_semantic_addr_value(_semantic_addr_value);
+		}
+
+		public void read_semantic_addr_value(semantic_addr_value _semantic_addr_value)
+		{
+			read_addressed_value(_semantic_addr_value);
+			_semantic_addr_value.expr = (Object)br.ReadByte();
+		}
+
+
+		public void visit(pair_type_stlist _pair_type_stlist)
+		{
+			read_pair_type_stlist(_pair_type_stlist);
+		}
+
+		public void read_pair_type_stlist(pair_type_stlist _pair_type_stlist)
+		{
+			read_syntax_tree_node(_pair_type_stlist);
+			_pair_type_stlist.tn = _read_node() as type_definition;
+			_pair_type_stlist.exprs = _read_node() as statement_list;
+		}
+
+
+		public void visit(assign_tuple _assign_tuple)
+		{
+			read_assign_tuple(_assign_tuple);
+		}
+
+		public void read_assign_tuple(assign_tuple _assign_tuple)
+		{
+			read_statement(_assign_tuple);
+			_assign_tuple.vars = _read_node() as addressed_value_list;
+			_assign_tuple.expr = _read_node() as expression;
+		}
+
+
+		public void visit(addressed_value_list _addressed_value_list)
+		{
+			read_addressed_value_list(_addressed_value_list);
+		}
+
+		public void read_addressed_value_list(addressed_value_list _addressed_value_list)
+		{
+			read_syntax_tree_node(_addressed_value_list);
+			if (br.ReadByte() == 0)
+			{
+				_addressed_value_list.variables = null;
+			}
+			else
+			{
+				_addressed_value_list.variables = new List<addressed_value>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_addressed_value_list.variables.Add(_read_node() as addressed_value);
+				}
+			}
+		}
+
+
+		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			read_tuple_node_for_formatter(_tuple_node_for_formatter);
+		}
+
+		public void read_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			read_expression(_tuple_node_for_formatter);
+			_tuple_node_for_formatter.el = _read_node() as expression_list;
+		}
+
+
+		public void visit(uses_closure _uses_closure)
+		{
+			read_uses_closure(_uses_closure);
+		}
+
+		public void read_uses_closure(uses_closure _uses_closure)
+		{
+			read_uses_list(_uses_closure);
+			if (br.ReadByte() == 0)
+			{
+				_uses_closure.listunitsections = null;
+			}
+			else
+			{
+				_uses_closure.listunitsections = new List<uses_list>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_uses_closure.listunitsections.Add(_read_node() as uses_list);
+				}
+			}
+		}
+
+
+		public void visit(dot_question_node _dot_question_node)
+		{
+			read_dot_question_node(_dot_question_node);
+		}
+
+		public void read_dot_question_node(dot_question_node _dot_question_node)
+		{
+			read_addressed_value_funcname(_dot_question_node);
+			_dot_question_node.left = _read_node() as addressed_value;
+			_dot_question_node.right = _read_node() as addressed_value;
 		}
 
 	}

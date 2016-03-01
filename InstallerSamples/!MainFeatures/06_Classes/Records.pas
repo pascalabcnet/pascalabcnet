@@ -1,5 +1,5 @@
-// Иллюстрация конструкторов и методов в записях
-// Если переопределен метод ToString, то он вызывается при выводе объекта этого типа процедурой writeln 
+// РР»Р»СЋСЃС‚СЂР°С†РёСЏ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРІ Рё РјРµС‚РѕРґРѕРІ РІ Р·Р°РїРёСЃСЏС…
+// Р•СЃР»Рё РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅ РјРµС‚РѕРґ ToString, С‚Рѕ РѕРЅ РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РІС‹РІРѕРґРµ РѕР±СЉРµРєС‚Р° СЌС‚РѕРіРѕ С‚РёРїР° РїСЂРѕС†РµРґСѓСЂРѕР№ writeln 
 type
   SexType = (Male, Female);
   Person = record
@@ -15,11 +15,11 @@ type
     end;
     function ToString: string; override;
     begin
-      Result := Format('Имя: {0}   Пол: {1}   Возраст: {2}   Вес: {3}', Name, Sex, Age, Weight);
+      Result := Format('РРјСЏ: {0}   РџРѕР»: {1}   Р’РѕР·СЂР°СЃС‚: {2}   Р’РµСЃ: {3}', Name, Sex, Age, Weight);
     end;
   end;
   
-var p: Person := new Person('Иванов',20,70,SexType.Male);
+var p: Person := new Person('РРІР°РЅРѕРІ',20,70,SexType.Male);
 
 begin
   writeln(p);

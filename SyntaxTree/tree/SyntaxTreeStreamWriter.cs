@@ -5670,6 +5670,196 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(semantic_addr_value _semantic_addr_value)
+		{
+			bw.Write((Int16)203);
+			write_semantic_addr_value(_semantic_addr_value);
+		}
+
+		public void write_semantic_addr_value(semantic_addr_value _semantic_addr_value)
+		{
+			write_addressed_value(_semantic_addr_value);
+			bw.Write((byte)_semantic_addr_value.expr);
+		}
+
+
+		public void visit(pair_type_stlist _pair_type_stlist)
+		{
+			bw.Write((Int16)204);
+			write_pair_type_stlist(_pair_type_stlist);
+		}
+
+		public void write_pair_type_stlist(pair_type_stlist _pair_type_stlist)
+		{
+			write_syntax_tree_node(_pair_type_stlist);
+			if (_pair_type_stlist.tn == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pair_type_stlist.tn.visit(this);
+			}
+			if (_pair_type_stlist.exprs == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pair_type_stlist.exprs.visit(this);
+			}
+		}
+
+
+		public void visit(assign_tuple _assign_tuple)
+		{
+			bw.Write((Int16)205);
+			write_assign_tuple(_assign_tuple);
+		}
+
+		public void write_assign_tuple(assign_tuple _assign_tuple)
+		{
+			write_statement(_assign_tuple);
+			if (_assign_tuple.vars == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_tuple.vars.visit(this);
+			}
+			if (_assign_tuple.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_tuple.expr.visit(this);
+			}
+		}
+
+
+		public void visit(addressed_value_list _addressed_value_list)
+		{
+			bw.Write((Int16)206);
+			write_addressed_value_list(_addressed_value_list);
+		}
+
+		public void write_addressed_value_list(addressed_value_list _addressed_value_list)
+		{
+			write_syntax_tree_node(_addressed_value_list);
+			if (_addressed_value_list.variables == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_addressed_value_list.variables.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _addressed_value_list.variables.Count; ssyy_i++)
+				{
+					if (_addressed_value_list.variables[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_addressed_value_list.variables[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
+
+		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			bw.Write((Int16)207);
+			write_tuple_node_for_formatter(_tuple_node_for_formatter);
+		}
+
+		public void write_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			write_expression(_tuple_node_for_formatter);
+			if (_tuple_node_for_formatter.el == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_tuple_node_for_formatter.el.visit(this);
+			}
+		}
+
+
+		public void visit(uses_closure _uses_closure)
+		{
+			bw.Write((Int16)208);
+			write_uses_closure(_uses_closure);
+		}
+
+		public void write_uses_closure(uses_closure _uses_closure)
+		{
+			write_uses_list(_uses_closure);
+			if (_uses_closure.listunitsections == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_uses_closure.listunitsections.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _uses_closure.listunitsections.Count; ssyy_i++)
+				{
+					if (_uses_closure.listunitsections[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_uses_closure.listunitsections[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
+
+		public void visit(dot_question_node _dot_question_node)
+		{
+			bw.Write((Int16)209);
+			write_dot_question_node(_dot_question_node);
+		}
+
+		public void write_dot_question_node(dot_question_node _dot_question_node)
+		{
+			write_addressed_value_funcname(_dot_question_node);
+			if (_dot_question_node.left == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_dot_question_node.left.visit(this);
+			}
+			if (_dot_question_node.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_dot_question_node.right.visit(this);
+			}
+		}
+
 	}
 
 

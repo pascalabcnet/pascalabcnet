@@ -1,4 +1,4 @@
-// Пример решения задачи File48 из электронного задачника Programming Taskbook
+// РџСЂРёРјРµСЂ СЂРµС€РµРЅРёСЏ Р·Р°РґР°С‡Рё File48 РёР· СЌР»РµРєС‚СЂРѕРЅРЅРѕРіРѕ Р·Р°РґР°С‡РЅРёРєР° Programming Taskbook
 uses PT4;
 var
   f: array [1..4] of file of integer;

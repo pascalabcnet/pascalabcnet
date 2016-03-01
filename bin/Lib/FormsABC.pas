@@ -22,7 +22,7 @@ type
   Color = System.Drawing.Color;
   
   
-  /// Поле ввода
+  /// РџРѕР»Рµ РІРІРѕРґР°
   Field = class
   private 
     l: &Label;
@@ -42,7 +42,7 @@ type
     property FieldWidth: integer read GetFieldWidth write SetFieldWidth;
   end;
   
-  /// Поле ввода целых значений
+  /// РџРѕР»Рµ РІРІРѕРґР° С†РµР»С‹С… Р·РЅР°С‡РµРЅРёР№
   IntegerField = class(Field)
   private 
     nonNumberEntered: boolean;
@@ -55,7 +55,7 @@ type
     property Text: string read GetText;
   end;
   
-  /// Поле ввода вещественных значений
+  /// РџРѕР»Рµ РІРІРѕРґР° РІРµС‰РµСЃС‚РІРµРЅРЅС‹С… Р·РЅР°С‡РµРЅРёР№
   RealField = class(Field)
   private 
     nonNumberEntered: boolean;
@@ -68,7 +68,7 @@ type
     property Text: string read GetText;
   end;
   
-  /// Кнопка
+  /// РљРЅРѕРїРєР°
   Button = class
   private 
     b := new System.Windows.Forms.Button;
@@ -78,7 +78,7 @@ type
     constructor Create(text: string);
   end;
   
-  /// Текстовая метка
+  /// РўРµРєСЃС‚РѕРІР°СЏ РјРµС‚РєР°
   TextLabel = class
   private 
     l := new System.Windows.Forms.Label;
@@ -86,7 +86,7 @@ type
     constructor(text: string);
   end;
   
-  /// Флажок
+  /// Р¤Р»Р°Р¶РѕРє
   CheckBox = class
   private 
     cb := new System.Windows.Forms.CheckBox;
@@ -97,7 +97,7 @@ type
     property Checked: boolean read GetValue write SetValue;
   end;
   
-  /// Радиокнопка
+  /// Р Р°РґРёРѕРєРЅРѕРїРєР°
   RadioButton = class
   private 
     rb := new System.Windows.Forms.RadioButton;
@@ -108,7 +108,7 @@ type
     property Checked: boolean read GetValue write SetValue;
   end;
   
-  /// Список
+  /// РЎРїРёСЃРѕРє
   ListBox = class
   private 
     lb := new System.Windows.Forms.ListBox;
@@ -130,7 +130,7 @@ type
     property Count: integer read GetCount;
   end;
   
-  /// Выпадающий список
+  /// Р’С‹РїР°РґР°СЋС‰РёР№ СЃРїРёСЃРѕРє
   ComboBox = class
   private 
     cb := new System.Windows.Forms.ComboBox;
@@ -155,7 +155,7 @@ type
     property Width: integer read GetWidth write SetWidth;
   end;
   
-  /// Ползунок
+  /// РџРѕР»Р·СѓРЅРѕРє
   TrackBar = class
   private 
     tb: System.Windows.Forms.TrackBar;
@@ -177,7 +177,7 @@ type
     property Frequency: integer read GetFrequency write SetFrequency; 
   end;
   
-  /// Ползунок
+  /// РџРѕР»Р·СѓРЅРѕРє
   IntegerUpDown = class
   private 
     n: System.Windows.Forms.NumericUpDown;
@@ -214,7 +214,7 @@ type
     property Dock: DockStyle read GetDock write SetDock;
   end;
   
-  /// Текстовый редактор
+  /// РўРµРєСЃС‚РѕРІС‹Р№ СЂРµРґР°РєС‚РѕСЂ
   TextBox = class(BaseDockControl)
   private 
     function GetText: string;
@@ -235,7 +235,7 @@ type
     procedure Paste;
   end;
   
-  /// Веб-браузер
+  /// Р’РµР±-Р±СЂР°СѓР·РµСЂ
   WebBrowser = class(BaseDockControl)
   private 
     function GetText: string;
@@ -253,7 +253,7 @@ type
     property Address: string read GetAddress;
   end;
   
-  /// Окно для рисования
+  /// РћРєРЅРѕ РґР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ
   PaintBox = class(BaseDockControl)
   private 
     procedure PResize(sender: Object;	e: EventArgs);
@@ -273,7 +273,7 @@ type
     //function pb: PictureBox;
   end;
 
-  /// Пункт меню
+  /// РџСѓРЅРєС‚ РјРµРЅСЋ
   MenuItem = class;
   ItemProc = procedure(item: MenuItem);
   MenuItem = class
@@ -294,7 +294,7 @@ type
     property Item[i: integer]: MenuItem read GetItem; default;
   end;
   
-  /// Главное меню
+  /// Р“Р»Р°РІРЅРѕРµ РјРµРЅСЋ
   MainMenu = class
   private 
     m: MenuStrip;  
@@ -316,7 +316,7 @@ type
   public
   end;
   
-  /// Тип главной формы
+  /// РўРёРї РіР»Р°РІРЅРѕР№ С„РѕСЂРјС‹
   MainFormType = class(ContainerControl)
   private 
     m: Form;
@@ -336,33 +336,33 @@ type
     constructor Create;
   public 
     event Resize: procedure;
-    /// Отступ главного окна от левого края экрана в пикселах
+    /// РћС‚СЃС‚СѓРї РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° РѕС‚ Р»РµРІРѕРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
     property Left: integer read GetLeft write SetLeft;
-    /// Отступ главного окна от верхнего края экрана в пикселах
+    /// РћС‚СЃС‚СѓРї РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° РѕС‚ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
     property Top: integer read GetTop write SetTop;
-    /// Ширина главного окна в пикселах
+    /// РЁРёСЂРёРЅР° РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
     property Width: integer read GetWidth write SetWidth;
-    /// Высота главного окна в пикселах
+    /// Р’С‹СЃРѕС‚Р° РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
     property Height: integer read GetHeight write SetHeight;
-    /// Заголовок главного окна
+    /// Р—Р°РіРѕР»РѕРІРѕРє РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР°
     property Title: string read GetTitle write SetTitle;
-    /// Имеет ли графическое окно фиксированный размер
+    /// РРјРµРµС‚ Р»Рё РіСЂР°С„РёС‡РµСЃРєРѕРµ РѕРєРЅРѕ С„РёРєСЃРёСЂРѕРІР°РЅРЅС‹Р№ СЂР°Р·РјРµСЂ
     property IsFixedSize: boolean read GetIsFixedSize write SetIsFixedSize;
-    /// Устанавливает размеры главного окна в пикселах
+    /// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЂР°Р·РјРµСЂС‹ РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° РІ РїРёРєСЃРµР»Р°С…
     procedure SetSize(w, h: integer);
-    /// Устанавливает отступ главного окна от левого верхнего края экрана в пикселах
+    /// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РѕС‚СЃС‚СѓРї РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° РѕС‚ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ РєСЂР°СЏ СЌРєСЂР°РЅР° РІ РїРёРєСЃРµР»Р°С…
     procedure SetPos(l, t: integer);
-    /// Закрывает главное окно и завершает приложение
+    /// Р—Р°РєСЂС‹РІР°РµС‚ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ Рё Р·Р°РІРµСЂС€Р°РµС‚ РїСЂРёР»РѕР¶РµРЅРёРµ
     procedure Close;
-    /// Сворачивает главное окно
+    /// РЎРІРѕСЂР°С‡РёРІР°РµС‚ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ
     procedure Minimize;
-    /// Максимизирует главное окно
+    /// РњР°РєСЃРёРјРёР·РёСЂСѓРµС‚ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ
     procedure Maximize;
-    /// Возвращает главное окно к нормальному размеру
+    /// Р’РѕР·РІСЂР°С‰Р°РµС‚ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ Рє РЅРѕСЂРјР°Р»СЊРЅРѕРјСѓ СЂР°Р·РјРµСЂСѓ
     procedure Normalize;
-    /// Центрирует главное окно по центру экрана
+    /// Р¦РµРЅС‚СЂРёСЂСѓРµС‚ РіР»Р°РІРЅРѕРµ РѕРєРЅРѕ РїРѕ С†РµРЅС‚СЂСѓ СЌРєСЂР°РЅР°
     procedure CenterOnScreen;
-    /// Возвращает главную .NET-форму
+    /// Р’РѕР·РІСЂР°С‰Р°РµС‚ РіР»Р°РІРЅСѓСЋ .NET-С„РѕСЂРјСѓ
     function NetForm: Form;
   end;
 
@@ -382,9 +382,9 @@ type
     constructor Create(f: System.Windows.Forms.Panel);
   public 
     constructor Create;
-    /// Ширина панели в пикселах
+    /// РЁРёСЂРёРЅР° РїР°РЅРµР»Рё РІ РїРёРєСЃРµР»Р°С…
     property Width: integer read GetWidth write SetWidth;
-    /// Высота панели в пикселах
+    /// Р’С‹СЃРѕС‚Р° РїР°РЅРµР»Рё РІ РїРёРєСЃРµР»Р°С…
     property Height: integer read GetHeight write SetHeight;
     property Dock: DockStyle read GetDock write SetDock;
     property Border: BorderStyle read GetBorderStyle write SetBorderStyle;
@@ -408,7 +408,7 @@ type
     function ShowDialog: DialogResult;
   end;
   
-  /// Диалог работы с файлами
+  /// Р”РёР°Р»РѕРі СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»Р°РјРё
   FileDialog = class(CommonDialog)
   private 
     procedure SetFilter(f: string);
@@ -423,24 +423,24 @@ type
     property InitialDirectory: string read GetInitialDirectory write SetInitialDirectory;
   end;
   
-  /// Диалог открытия файла
+  /// Р”РёР°Р»РѕРі РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°
   OpenFileDialog = class(FileDialog)
   public 
     constructor Create;
   end;
   
-  /// Диалог сохранения файла
+  /// Р”РёР°Р»РѕРі СЃРѕС…СЂР°РЅРµРЅРёСЏ С„Р°Р№Р»Р°
   SaveFileDialog = class(FileDialog)
   public 
     constructor Create;
   end;
-//------------- Процедуры ---------------
+//------------- РџСЂРѕС†РµРґСѓСЂС‹ ---------------
 
-/// Перейти на новую строку
+/// РџРµСЂРµР№С‚Рё РЅР° РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ
 procedure LineBreak;
-/// Добавить пустую строку
+/// Р”РѕР±Р°РІРёС‚СЊ РїСѓСЃС‚СѓСЋ СЃС‚СЂРѕРєСѓ
 procedure EmptyLine(h: integer := 20);
-/// Добавить пустое пространство
+/// Р”РѕР±Р°РІРёС‚СЊ РїСѓСЃС‚РѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
 procedure EmptySpace(w: integer := 20);
 
 type 
@@ -459,12 +459,12 @@ type
     end;
   end;
 
-//------------- Переменные ---------------
+//------------- РџРµСЂРµРјРµРЅРЅС‹Рµ ---------------
 
 var
   MainForm: MainFormType;
   MainPanel: FlowPanel;
-  // Эксперимент: 20.11.10
+  // Р­РєСЃРїРµСЂРёРјРµРЅС‚: 20.11.10
   ParentControl: ContainerControl;
 
 ///--
@@ -482,7 +482,7 @@ var
   nfi: System.Globalization.NumberFormatInfo;
   
   
-//------------- Компоненты ---------------
+//------------- РљРѕРјРїРѕРЅРµРЅС‚С‹ ---------------
 
 //------------- Field ---------------
 
@@ -1471,7 +1471,7 @@ begin
   Result := FlowLayoutPanel(p).FlowDirection;
 end;
 
-//------------- Процедуры ---------------
+//------------- РџСЂРѕС†РµРґСѓСЂС‹ ---------------
 
 procedure LineBreak;
 begin

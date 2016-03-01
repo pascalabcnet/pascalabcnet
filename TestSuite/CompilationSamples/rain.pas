@@ -1,4 +1,4 @@
-// Имитация кругов на воде от капель дождя
+// РРјРёС‚Р°С†РёСЏ РєСЂСѓРіРѕРІ РЅР° РІРѕРґРµ РѕС‚ РєР°РїРµР»СЊ РґРѕР¶РґСЏ
 uses GraphABC;
 
 const speed = 2;
@@ -20,7 +20,7 @@ end;
 const z=50;
 
 begin
-  Window.Title := 'Капли дождя';
+  Window.Title := 'РљР°РїР»Рё РґРѕР¶РґСЏ';
   SetWindowSize(800,600);
   while True do
     Kaplia(Random(z,WindowWidth-z),Random(z,WindowHeight-z));

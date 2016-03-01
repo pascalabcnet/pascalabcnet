@@ -1,4 +1,4 @@
-// Процедура exit выхода из подпрограммы
+// РџСЂРѕС†РµРґСѓСЂР° exit РІС‹С…РѕРґР° РёР· РїРѕРґРїСЂРѕРіСЂР°РјРјС‹
 const n=10;
 
 type IntArr = array [1..n] of integer;
@@ -23,7 +23,7 @@ begin
     if a[i]=k then
     begin
       Result := i;
-      exit; // выход из процедуры
+      exit; // РІС‹С…РѕРґ РёР· РїСЂРѕС†РµРґСѓСЂС‹
     end;  
 end;
 
@@ -31,11 +31,11 @@ var a: IntArr;
 
 begin
   FillArrByRandom(a,n);
-  writeln('Случайный массив целых: ');
+  writeln('РЎР»СѓС‡Р°Р№РЅС‹Р№ РјР°СЃСЃРёРІ С†РµР»С‹С…: ');
   PrintArr(a,n);
   
   var ind := IndexOf(a,n,7);
   if ind>0 then
-    writeln('Индекс первого элемента 7 равен ', ind)
-  else writeln('Элемент 7 отсутствует');
+    writeln('РРЅРґРµРєСЃ РїРµСЂРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р° 7 СЂР°РІРµРЅ ', ind)
+  else writeln('Р­Р»РµРјРµРЅС‚ 7 РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚');
 end.

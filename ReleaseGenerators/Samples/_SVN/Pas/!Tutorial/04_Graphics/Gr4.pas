@@ -1,8 +1,8 @@
-// Графика. Draw и Fill - процедуры
+// Р“СЂР°С„РёРєР°. Draw Рё Fill - РїСЂРѕС†РµРґСѓСЂС‹
 uses GraphABC;
 
 begin
-  Window.Title := 'Draw и Fill - процедуры';
+  Window.Title := 'Draw Рё Fill - РїСЂРѕС†РµРґСѓСЂС‹';
   for var i := 1 to 100 do
   begin
     Pen.Color := clRandom;

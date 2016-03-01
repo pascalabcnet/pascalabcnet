@@ -1,4 +1,4 @@
-// Использование Ping
+// РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ Ping
 uses System.Net.NetworkInformation;
 
 const address = 'www.yandex.ru';
@@ -7,8 +7,8 @@ begin
   var p := new Ping();
   try
     var res := p.Send(address);
-    writeln('IP адрес сервера: ',res.Address);
-    writeln('Время отклика: ',res.RoundtripTime,' мс');
+    writeln('IP Р°РґСЂРµСЃ СЃРµСЂРІРµСЂР°: ',res.Address);
+    writeln('Р’СЂРµРјСЏ РѕС‚РєР»РёРєР°: ',res.RoundtripTime,' РјСЃ');
   except
     on e: Exception do
       write(e.Message);

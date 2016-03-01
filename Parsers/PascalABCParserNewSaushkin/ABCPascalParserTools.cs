@@ -42,7 +42,7 @@ namespace PascalABCSavParser
         // SSM: Errors инициализируется в другом месте - сюда только передается!
         public List<Error> errors;
         public System.Collections.Stack NodesStack; // SSM: для каких-то вспомогательных целей в двух правилах
-        public bool build_tree_for_brackets = false; 
+        public bool build_tree_for_formatter = false; 
 
         public string CurrentFileName;
 
@@ -778,6 +778,40 @@ namespace PascalABCSavParser
             stlist.Add(vstat);
             stlist.Add(wh);
             return stlist;
+        }
+        public expression ConvertNamedTypeReferenceToDotNodeOrIdent(named_type_reference ntr) // либо ident либо dot_node
+        {
+            if (ntr.names.Count == 1)
+                return ntr.names[0];
+            else
+            {
+                var dn = new dot_node(ntr.names[0], ntr.names[1]);
+                for (var i = 2; i < ntr.names.Count; i++)
+                    dn = new dot_node(dn, ntr.names[i]);
+                dn.source_context = ntr.source_context;
+                return dn;
+            }
+        }
+        public named_type_reference ConvertDotNodeOrIdentToNamedTypeReference(expression en)
+        {
+            if (en is ident)
+                return new named_type_reference(en as ident, en.source_context);
+            if (en is dot_node)
+            {
+                var dn = en as dot_node;
+                var ids = new List<ident>();
+                ids.Add(dn.right as ident);
+                while (dn.left is dot_node)
+                {
+                    dn = dn.left as dot_node;
+                    ids.Add(dn.right as ident);
+                }
+                ids.Add(dn.left as ident);
+                ids.Reverse();
+                return new named_type_reference(ids, dn.source_context);
+            }
+            this.AddErrorFromResource("TYPE_NAME_EXPECTED",  en.source_context);
+            return null;
         }
     }
 }

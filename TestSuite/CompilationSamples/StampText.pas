@@ -1,4 +1,4 @@
-// Класс штампа текста
+// РљР»Р°СЃСЃ С€С‚Р°РјРїР° С‚РµРєСЃС‚Р°
 uses GraphABC;
 
 type 
@@ -23,9 +23,9 @@ type
   end;
   
 begin
-  var txt := new TextStamp(200,200,14,'Привет!');
+  var txt := new TextStamp(200,200,14,'РџСЂРёРІРµС‚!');
   txt.Stamp;
   txt.MoveOn(0,40);
-  txt.Text := 'До свидания!';
+  txt.Text := 'Р”Рѕ СЃРІРёРґР°РЅРёСЏ!';
   txt.Stamp;
 end. 

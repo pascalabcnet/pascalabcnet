@@ -1,4 +1,4 @@
-// Иллюстрация использования компонента WebBrowser
+// РР»Р»СЋСЃС‚СЂР°С†РёСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ РєРѕРјРїРѕРЅРµРЅС‚Р° WebBrowser
 {$apptype windows}
 {$reference 'System.Windows.Forms.dll'}
 

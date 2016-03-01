@@ -303,10 +303,10 @@ namespace PascalABCCompiler.NETGenerator
                     else if (elem_type.IsGenericParameter)
                         il.Emit(OpCodes.Ldelem, elem_type);
                     else
-                        if (elem_type.IsValueType)//если это структура
+                        if (elem_type.IsValueType)//РµСЃР»Рё СЌС‚Рѕ СЃС‚СЂСѓРєС‚СѓСЂР°
                         {
-                            il.Emit(OpCodes.Ldelema, elem_type);//почему a?
-                            // проверки нужно ли заменять тип возвр. знач. метода get_val массива на указатель
+                            il.Emit(OpCodes.Ldelema, elem_type);//РїРѕС‡РµРјСѓ a?
+                            // РїСЂРѕРІРµСЂРєРё РЅСѓР¶РЅРѕ Р»Рё Р·Р°РјРµРЅСЏС‚СЊ С‚РёРї РІРѕР·РІСЂ. Р·РЅР°С‡. РјРµС‚РѕРґР° get_val РјР°СЃСЃРёРІР° РЅР° СѓРєР°Р·Р°С‚РµР»СЊ
                             if (ldobj || !(elem_type != TypeFactory.VoidType && elem_type.IsValueType && !TypeFactory.IsStandType(elem_type)))
                                 il.Emit(OpCodes.Ldobj, elem_type);
                         }
@@ -380,8 +380,8 @@ namespace PascalABCCompiler.NETGenerator
                     UInt64 UInt64 = Convert.ToUInt64(value);
                     if (UInt64 > Int64.MaxValue)
                     {
-                        //Это будет медленно работать. Надо переделать.
-                        //Надо разобраться как сссделано в C#, там все нормально
+                        //Р­С‚Рѕ Р±СѓРґРµС‚ РјРµРґР»РµРЅРЅРѕ СЂР°Р±РѕС‚Р°С‚СЊ. РќР°РґРѕ РїРµСЂРµРґРµР»Р°С‚СЊ.
+                        //РќР°РґРѕ СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ РєР°Рє СЃСЃСЃРґРµР»Р°РЅРѕ РІ C#, С‚Р°Рј РІСЃРµ РЅРѕСЂРјР°Р»СЊРЅРѕ
                         Int64 tmp = (Int64)(UInt64 - Int64.MaxValue - 1);
                         il.Emit(OpCodes.Ldc_I8, tmp);
                         il.Emit(OpCodes.Conv_U8);
@@ -408,16 +408,16 @@ namespace PascalABCCompiler.NETGenerator
                         //il.Emit(OpCodes.Ldc_I4, (Int32)value);
                         LdcIntConst(il, (Int32)value);
                     else
-                        throw new Exception("Немогу положить PushLdc для " + value.GetType().ToString());
+                        throw new Exception("РќРµРјРѕРіСѓ РїРѕР»РѕР¶РёС‚СЊ PushLdc РґР»СЏ " + value.GetType().ToString());
                     break;
             }
         }
 
         public static void PushCast(ILGenerator il, Type tp, Type from_value_type)
         {
-            if (IsPointer(tp))  //INTPTR TODO Здесть проблема с Unbox_Any
+            if (IsPointer(tp))  //INTPTR TODO Р—РґРµСЃС‚СЊ РїСЂРѕР±Р»РµРјР° СЃ Unbox_Any
                 return;
-            //(ssyy) Вставил 15.05.08
+            //(ssyy) Р’СЃС‚Р°РІРёР» 15.05.08
             if (from_value_type != null)
             {
                 il.Emit(OpCodes.Box, from_value_type);
@@ -557,7 +557,7 @@ namespace PascalABCCompiler.NETGenerator
         public static void PushTypeOf(ILGenerator il, Type tp)
         {
             il.Emit(OpCodes.Ldtoken, tp);
-            //TODO это надо ускорить хештаблицей!
+            //TODO СЌС‚Рѕ РЅР°РґРѕ СѓСЃРєРѕСЂРёС‚СЊ С…РµС€С‚Р°Р±Р»РёС†РµР№!
             il.EmitCall(OpCodes.Call, typeof(Type).GetMethod("GetTypeFromHandle"), null);
         }
         

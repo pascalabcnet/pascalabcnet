@@ -2769,6 +2769,24 @@ namespace CodeFormatters
             }
         }
 
+        public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+        {
+            sb.Append("(");
+            visit_node(_tuple_node_for_formatter.el);
+        }
+
+        public override void visit(uses_closure uc)
+        {
+            var i = 0;
+            foreach (var ul in uc.listunitsections)
+            {
+                if (i>0)
+                    visit_node(ul);
+                i++;
+            }
+        }
+
+
         #endregion
     }
 }

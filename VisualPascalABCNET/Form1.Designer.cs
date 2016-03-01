@@ -370,7 +370,7 @@ namespace VisualPascalABC
             this.tsCopy.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.tsCopy.Name = "tsCopy";
             this.tsCopy.Size = new System.Drawing.Size(23, 22);
-            this.tsCopy.Text = "Копировать(Ctrl+C)";
+            this.tsCopy.Text = "РљРѕРїРёСЂРѕРІР°С‚СЊ(Ctrl+C)";
             this.tsCopy.ToolTipText = "M_COPY";
             this.tsCopy.Click += new System.EventHandler(this.miCopy_Click);
             // 
@@ -381,7 +381,7 @@ namespace VisualPascalABC
             this.tsPaste.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.tsPaste.Name = "tsPaste";
             this.tsPaste.Size = new System.Drawing.Size(23, 22);
-            this.tsPaste.Text = "Вставить(Ctrl+V)";
+            this.tsPaste.Text = "Р’СЃС‚Р°РІРёС‚СЊ(Ctrl+V)";
             this.tsPaste.ToolTipText = "M_PASTE";
             this.tsPaste.Click += new System.EventHandler(this.miPaste_Click);
             // 
@@ -397,7 +397,7 @@ namespace VisualPascalABC
             this.tsUndo.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.tsUndo.Name = "tsUndo";
             this.tsUndo.Size = new System.Drawing.Size(23, 22);
-            this.tsUndo.Text = "Отменить(Ctrl+Z)";
+            this.tsUndo.Text = "РћС‚РјРµРЅРёС‚СЊ(Ctrl+Z)";
             this.tsUndo.ToolTipText = "M_UNDO";
             this.tsUndo.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
             // 
@@ -408,7 +408,7 @@ namespace VisualPascalABC
             this.tsRedo.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.tsRedo.Name = "tsRedo";
             this.tsRedo.Size = new System.Drawing.Size(23, 22);
-            this.tsRedo.Text = "Восстановить(Shift+Ctrl+Z)";
+            this.tsRedo.Text = "Р’РѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ(Shift+Ctrl+Z)";
             this.tsRedo.ToolTipText = "M_REDO";
             this.tsRedo.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
@@ -447,7 +447,7 @@ namespace VisualPascalABC
             this.StartButton.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.StartButton.Name = "StartButton";
             this.StartButton.Size = new System.Drawing.Size(23, 22);
-            this.StartButton.Text = "Выполнить программу(F9)";
+            this.StartButton.Text = "Р’С‹РїРѕР»РЅРёС‚СЊ РїСЂРѕРіСЂР°РјРјСѓ(F9)";
             this.StartButton.ToolTipText = "M_RUN_DEBUG";
             this.StartButton.Click += new System.EventHandler(this.StartMenuItem_Click);
             this.StartButton.EnabledChanged += new System.EventHandler(this.StartButton_EnabledChanged);
@@ -483,7 +483,7 @@ namespace VisualPascalABC
             this.CompileButton.ImageTransparentColor = System.Drawing.Color.Red;
             this.CompileButton.Name = "CompileButton";
             this.CompileButton.Size = new System.Drawing.Size(23, 22);
-            this.CompileButton.Text = "Компилировать";
+            this.CompileButton.Text = "РљРѕРјРїРёР»РёСЂРѕРІР°С‚СЊ";
             this.CompileButton.ToolTipText = "M_BUILD";
             this.CompileButton.Click += new System.EventHandler(this.toolStripButton10_Click);
             this.CompileButton.EnabledChanged += new System.EventHandler(this.CompileButton_EnabledChanged);
@@ -496,7 +496,7 @@ namespace VisualPascalABC
             this.ReCompileButton.ImageTransparentColor = System.Drawing.Color.Red;
             this.ReCompileButton.Name = "ReCompileButton";
             this.ReCompileButton.Size = new System.Drawing.Size(23, 22);
-            this.ReCompileButton.Text = "Перекомпилировать";
+            this.ReCompileButton.Text = "РџРµСЂРµРєРѕРјРїРёР»РёСЂРѕРІР°С‚СЊ";
             this.ReCompileButton.ToolTipText = "M_REBUILD";
             this.ReCompileButton.Visible = false;
             this.ReCompileButton.Click += new System.EventHandler(this.toolStripButton12_Click);
@@ -586,7 +586,7 @@ namespace VisualPascalABC
             this.toolStripButton16.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.toolStripButton16.Name = "toolStripButton16";
             this.toolStripButton16.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton16.Text = "Окно вывода(F5)";
+            this.toolStripButton16.Text = "РћРєРЅРѕ РІС‹РІРѕРґР°(F5)";
             this.toolStripButton16.Visible = false;
             // 
             // toolStripButton17
@@ -596,7 +596,7 @@ namespace VisualPascalABC
             this.toolStripButton17.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton17.Name = "toolStripButton17";
             this.toolStripButton17.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton17.Text = "Окно выполненной программы(F6)";
+            this.toolStripButton17.Text = "РћРєРЅРѕ РІС‹РїРѕР»РЅРµРЅРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹(F6)";
             this.toolStripButton17.Visible = false;
             // 
             // toolStripButton19
@@ -606,7 +606,7 @@ namespace VisualPascalABC
             this.toolStripButton19.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.toolStripButton19.Name = "toolStripButton19";
             this.toolStripButton19.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButton19.Text = "Очистить вывод(Ctrl+Del)";
+            this.toolStripButton19.Text = "РћС‡РёСЃС‚РёС‚СЊ РІС‹РІРѕРґ(Ctrl+Del)";
             this.toolStripButton19.Visible = false;
             this.toolStripButton19.Click += new System.EventHandler(this.toolStripButton19_Click);
             // 
@@ -1968,22 +1968,22 @@ namespace VisualPascalABC
             // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "Строка";
+            this.columnHeader2.Text = "РЎС‚СЂРѕРєР°";
             this.columnHeader2.Width = 16;
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "Ошибка";
+            this.columnHeader3.Text = "РћС€РёР±РєР°";
             this.columnHeader3.Width = 269;
             // 
             // columnHeader4
             // 
-            this.columnHeader4.Text = "Файл";
+            this.columnHeader4.Text = "Р¤Р°Р№Р»";
             this.columnHeader4.Width = 95;
             // 
             // columnHeader5
             // 
-            this.columnHeader5.Text = "Путь к файлу";
+            this.columnHeader5.Text = "РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ";
             // 
             // MainDockPanel
             // 

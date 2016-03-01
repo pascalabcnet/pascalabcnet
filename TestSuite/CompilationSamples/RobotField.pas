@@ -43,9 +43,9 @@ type
     CellSize,DimX,DimY,X0,Y0: integer;
     procedure Draw0;
     procedure DrawFieldOnly;
-    procedure DrawCell(x,y: integer); { нарисовать одну ячейку }
+    procedure DrawCell(x,y: integer); { РЅР°СЂРёСЃРѕРІР°С‚СЊ РѕРґРЅСѓ СЏС‡РµР№РєСѓ }
   public
-    // Добавил - МА
+    // Р”РѕР±Р°РІРёР» - РњРђ
     TaskName: string;  
     //
     constructor Create(sizex,sizey,cellsize: integer);
@@ -58,12 +58,12 @@ type
     property SizeY: integer read DimY;
     function IsSolution: boolean;
     procedure CheckTaskCall;
-    // примитивы для постановщика
+    // РїСЂРёРјРёС‚РёРІС‹ РґР»СЏ РїРѕСЃС‚Р°РЅРѕРІС‰РёРєР°
     procedure DrawLastRobotPos;
     procedure DrawTag(x,y: integer);
     procedure SetDim(DX,DY,CellSz: integer);
-    procedure SetPaintMaker(x,y: integer); { пометить ячейку как нарисованную - постановщик}
-    procedure SetTag(x,y: integer); { пометить ячейку как помеченную }
+    procedure SetPaintMaker(x,y: integer); { РїРѕРјРµС‚РёС‚СЊ СЏС‡РµР№РєСѓ РєР°Рє РЅР°СЂРёСЃРѕРІР°РЅРЅСѓСЋ - РїРѕСЃС‚Р°РЅРѕРІС‰РёРє}
+    procedure SetTag(x,y: integer); { РїРѕРјРµС‚РёС‚СЊ СЏС‡РµР№РєСѓ РєР°Рє РїРѕРјРµС‡РµРЅРЅСѓСЋ }
     procedure SetTagRect(x1,y1,x2,y2: integer);
     procedure SetFirstRobotPos(x,y: integer);
     procedure MoveRobotToFirstPos;
@@ -72,11 +72,11 @@ type
     procedure HorizWall(x,y,len: integer);
     procedure VertWall(x,y,len: integer);
     procedure TaskText(s: string);
-    // примитивы для выполнителя
+    // РїСЂРёРјРёС‚РёРІС‹ РґР»СЏ РІС‹РїРѕР»РЅРёС‚РµР»СЏ
     procedure DrawRobot;
     procedure MoveRobot(x,y: integer);
-    procedure SetPaintUser(x,y: integer); { пометить ячейку как нарисованную - выполнитель}
-    procedure SetRobotPos(x,y: integer); // синоним MoveRobot
+    procedure SetPaintUser(x,y: integer); { РїРѕРјРµС‚РёС‚СЊ СЏС‡РµР№РєСѓ РєР°Рє РЅР°СЂРёСЃРѕРІР°РЅРЅСѓСЋ - РІС‹РїРѕР»РЅРёС‚РµР»СЊ}
+    procedure SetRobotPos(x,y: integer); // СЃРёРЅРѕРЅРёРј MoveRobot
     function WallFromLeft(x,y: integer): boolean;
     function WallFromRight(x,y: integer): boolean;
     function WallFromUp(x,y: integer): boolean;
@@ -157,7 +157,7 @@ var
 
   t: System.Threading.Thread;
   
-//------------ Вспомогательные -------------
+//------------ Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ -------------
 procedure SetLabelStepText(s: string);
 begin
   labelStep.Text := s;
@@ -406,8 +406,8 @@ begin
   DrawCell(vx,vy);
   DrawCell(x,y);
   Inc(movenum);
-  SetSafeLabelStepText('Шаг: ' + IntToStr(movenum));
-//  labelStep.Invoke(SetLabelStepText,'Шаг: ' + IntToStr(movenum));
+  SetSafeLabelStepText('РЁР°Рі: ' + IntToStr(movenum));
+//  labelStep.Invoke(SetLabelStepText,'РЁР°Рі: ' + IntToStr(movenum));
 end;
 
 procedure TRobotField.SetRobotPos(x,y: integer);
@@ -484,7 +484,7 @@ end;
 procedure TRobotField.CheckTaskCall;
 begin
   if not TaskIsCalled then
-    RobotError('Процедура Task вызова задания должна быть первой','Выполнение программы прервано');
+    RobotError('РџСЂРѕС†РµРґСѓСЂР° Task РІС‹Р·РѕРІР° Р·Р°РґР°РЅРёСЏ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РїРµСЂРІРѕР№','Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ РїСЂРµСЂРІР°РЅРѕ');
 end;
 
 procedure TRobotField.Right;
@@ -492,7 +492,7 @@ begin
   CheckTaskCall;
   if not WallFromRight then 
     MoveRobot(RobotX+1,RobotY)
-  else RobotError('Робот: врезался в правую стену');
+  else RobotError('Р РѕР±РѕС‚: РІСЂРµР·Р°Р»СЃСЏ РІ РїСЂР°РІСѓСЋ СЃС‚РµРЅСѓ');
 end;
 
 procedure TRobotField.Left;
@@ -500,7 +500,7 @@ begin
   CheckTaskCall;
   if not WallFromLeft then 
     MoveRobot(RobotX-1,RobotY)
-  else RobotError('Робот: врезался в левую стену');
+  else RobotError('Р РѕР±РѕС‚: РІСЂРµР·Р°Р»СЃСЏ РІ Р»РµРІСѓСЋ СЃС‚РµРЅСѓ');
 end;
 
 procedure TRobotField.Up;
@@ -508,7 +508,7 @@ begin
   CheckTaskCall;
   if not WallFromUp then 
     MoveRobot(RobotX,RobotY-1)
-  else RobotError('Робот: врезался в верхнюю стену');
+  else RobotError('Р РѕР±РѕС‚: РІСЂРµР·Р°Р»СЃСЏ РІ РІРµСЂС…РЅСЋСЋ СЃС‚РµРЅСѓ');
 end;
 
 procedure TRobotField.Down;
@@ -516,15 +516,15 @@ begin
   CheckTaskCall;
   if not WallFromDown then 
     MoveRobot(RobotX,RobotY+1)
-  else RobotError('Робот: врезался в нижнюю стену');
+  else RobotError('Р РѕР±РѕС‚: РІСЂРµР·Р°Р»СЃСЏ РІ РЅРёР¶РЅСЋСЋ СЃС‚РµРЅСѓ');
 end;
 
 procedure TRobotField.Paint;
 begin
   CheckTaskCall;
   Inc(movenum);
-  SetSafeLabelStepText('Шаг: ' + IntToStr(movenum));
-//  labelStep.Text := 'Шаг: ' + IntToStr(movenum);
+  SetSafeLabelStepText('РЁР°Рі: ' + IntToStr(movenum));
+//  labelStep.Text := 'РЁР°Рі: ' + IntToStr(movenum);
   SetPaintUser(RobotX,RobotY);
   DrawCell(RobotX,RobotY);
 end;
@@ -591,14 +591,14 @@ end;
 
 procedure TRobotField.Stop;
 begin
-  buttonStart.Text := 'Пуск (Enter)';
+  buttonStart.Text := 'РџСѓСЃРє (Enter)';
   buttonStep.Enabled := True;
   t.Suspend;
 end;
  
 procedure TRobotField.Start;
 begin
-  buttonStart.Text := 'Стоп (Enter)';
+  buttonStart.Text := 'РЎС‚РѕРї (Enter)';
   buttonStep.Enabled := False;
   t.Resume;
 end;
@@ -644,7 +644,7 @@ begin
   Result := ID;
 end;
 
-//--------- Интерфейс и обработчики 
+//--------- РРЅС‚РµСЂС„РµР№СЃ Рё РѕР±СЂР°Р±РѕС‚С‡РёРєРё 
 procedure LoadIni(var settings: IniSettings);
 var Ini: TIniFile;
 begin
@@ -712,13 +712,13 @@ begin
   if t.ThreadState = System.Threading.ThreadState.Suspended then
   begin
     robField.StepFlag := False;
-    labelExState.Text := 'Робот: Выполняю задание';
+    labelExState.Text := 'Р РѕР±РѕС‚: Р’С‹РїРѕР»РЅСЏСЋ Р·Р°РґР°РЅРёРµ';
     robField.Start;
   end  
   else 
   begin
     robField.StepFlag := True;
-    labelExState.Text := 'Робот: Остановился';
+    labelExState.Text := 'Р РѕР±РѕС‚: РћСЃС‚Р°РЅРѕРІРёР»СЃСЏ';
     robField.Stop;
   end;  
   (GraphABCControl as Control).Focus;
@@ -729,33 +729,33 @@ begin
   robField.StepFlag := True;
   t.Resume;
   (GraphABCControl as Control).Focus;
-  labelExState.Text := 'Робот: Команда выполнена';
+  labelExState.Text := 'Р РѕР±РѕС‚: РљРѕРјР°РЅРґР° РІС‹РїРѕР»РЅРµРЅР°';
 end;
 
 procedure buttonHelpClick(o: Object; e: EventArgs);
 begin
-  MessageBox.Show('Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-07  '#10#13#10#13+
-    'Команды  исполнителя  Робот:'#10#13+
-    '    Right - вправо'#10#13+
-    '    Left - влево'#10#13
-    '    Up - вверх'#10#13+
-    '    Down - вниз'#10#13
-    '    Paint - закрасить текущую клетку'#10#13
-    '    Speed(n) - установить скорость n (n=0..10)'#10#13
-    '    Stop - остановить Робота'#10#13
-    '    Start - запустить Робота'#10#13#10#13
-    'Условия, проверяемые  исполнителем  Робот:'#10#13
-    '    WallFromRight - справа стена'#10#13
-    '    WallFromLeft -  слева стена;'#10#13
-    '    WallFromUp - сверху стена;'#10#13
-    '    WallFromDown - снизу стена;'#10#13
-    '    FreeFromRight - справа свободно;'#10#13
-    '    FreeFromLeft - слева свободно;'#10#13
-    '    FreeFromUp - сверху свободно;'#10#13
-    '    FreeFromDown - снизу свободно;'#10#13
-    '    CellIsPainted - клетка закрашена;'#10#13
-    '    CellIsFree - клетка не закрашена.'#10#13,
-    'Исполнитель Робот - Справка');
+  MessageBox.Show('Р Р°Р·СЂР°Р±РѕС‚С‡РёРє  РёСЃРїРѕР»РЅРёС‚РµР»СЏ  Р РѕР±РѕС‚:  РњРёС…Р°Р»РєРѕРІРёС‡ РЎ.РЎ., 2002-07  '#10#13#10#13+
+    'РљРѕРјР°РЅРґС‹  РёСЃРїРѕР»РЅРёС‚РµР»СЏ  Р РѕР±РѕС‚:'#10#13+
+    '    Right - РІРїСЂР°РІРѕ'#10#13+
+    '    Left - РІР»РµРІРѕ'#10#13
+    '    Up - РІРІРµСЂС…'#10#13+
+    '    Down - РІРЅРёР·'#10#13
+    '    Paint - Р·Р°РєСЂР°СЃРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РєР»РµС‚РєСѓ'#10#13
+    '    Speed(n) - СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ n (n=0..10)'#10#13
+    '    Stop - РѕСЃС‚Р°РЅРѕРІРёС‚СЊ Р РѕР±РѕС‚Р°'#10#13
+    '    Start - Р·Р°РїСѓСЃС‚РёС‚СЊ Р РѕР±РѕС‚Р°'#10#13#10#13
+    'РЈСЃР»РѕРІРёСЏ, РїСЂРѕРІРµСЂСЏРµРјС‹Рµ  РёСЃРїРѕР»РЅРёС‚РµР»РµРј  Р РѕР±РѕС‚:'#10#13
+    '    WallFromRight - СЃРїСЂР°РІР° СЃС‚РµРЅР°'#10#13
+    '    WallFromLeft -  СЃР»РµРІР° СЃС‚РµРЅР°;'#10#13
+    '    WallFromUp - СЃРІРµСЂС…Сѓ СЃС‚РµРЅР°;'#10#13
+    '    WallFromDown - СЃРЅРёР·Сѓ СЃС‚РµРЅР°;'#10#13
+    '    FreeFromRight - СЃРїСЂР°РІР° СЃРІРѕР±РѕРґРЅРѕ;'#10#13
+    '    FreeFromLeft - СЃР»РµРІР° СЃРІРѕР±РѕРґРЅРѕ;'#10#13
+    '    FreeFromUp - СЃРІРµСЂС…Сѓ СЃРІРѕР±РѕРґРЅРѕ;'#10#13
+    '    FreeFromDown - СЃРЅРёР·Сѓ СЃРІРѕР±РѕРґРЅРѕ;'#10#13
+    '    CellIsPainted - РєР»РµС‚РєР° Р·Р°РєСЂР°С€РµРЅР°;'#10#13
+    '    CellIsFree - РєР»РµС‚РєР° РЅРµ Р·Р°РєСЂР°С€РµРЅР°.'#10#13,
+    'РСЃРїРѕР»РЅРёС‚РµР»СЊ Р РѕР±РѕС‚ - РЎРїСЂР°РІРєР°');
 
   (GraphABCControl as Control).Focus;
 end;
@@ -851,7 +851,7 @@ begin
   buttonHelp.Location := new Point(359, 18);
   buttonHelp.Size := new Size(107, 24);
   buttonHelp.TabStop := false;
-  buttonHelp.Text := 'Справка (F1)';
+  buttonHelp.Text := 'РЎРїСЂР°РІРєР° (F1)';
 //  buttonHelp.UseVisualStyleBackColor := true;
   // 
   // buttonExit
@@ -860,7 +860,7 @@ begin
   buttonExit.Location := new System.Drawing.Point(241, 18);
   buttonExit.Size := new System.Drawing.Size(107, 24);
   buttonExit.TabStop := false;
-  buttonExit.Text := 'Выход (Esc)';
+  buttonExit.Text := 'Р’С‹С…РѕРґ (Esc)';
 //  buttonExit.UseVisualStyleBackColor := true;
   // 
   // buttonStep
@@ -869,7 +869,7 @@ begin
   buttonStep.Location := new Point(123, 18);
   buttonStep.Size := new Size(107, 24);
   buttonStep.TabStop := false;
-  buttonStep.Text := 'Шаг (Space)';
+  buttonStep.Text := 'РЁР°Рі (Space)';
 //  buttonStep.UseVisualStyleBackColor := true;
   // 
   // buttonStart
@@ -878,7 +878,7 @@ begin
   buttonStart.Location := new Point(5, 18);
   buttonStart.Size := new Size(107, 24);
   buttonStart.TabStop := false;
-  buttonStart.Text := 'Пуск (Enter)';
+  buttonStart.Text := 'РџСѓСЃРє (Enter)';
 //  buttonStart.UseVisualStyleBackColor := true;
   // 
   // tableLayoutPanelBottom
@@ -904,7 +904,7 @@ begin
   labelExState.Location := new Point(5, 2);
   labelExState.Margin := new Padding(3, 0, 3, 3);
   labelExState.Size := new Size(453, 15);
-  labelExState.Text := 'Робот: Готов';
+  labelExState.Text := 'Р РѕР±РѕС‚: Р“РѕС‚РѕРІ';
   labelExState.TextAlign := ContentAlignment.MiddleCenter;
   // 
   // groupBoxExState
@@ -936,7 +936,7 @@ begin
   labelState.Location := new Point(6, 54);
   labelState.Margin := new Padding(0);
   labelState.Size := new Size(83, 17);
-  labelState.Text := 'Состояние:';
+  labelState.Text := 'РЎРѕСЃС‚РѕСЏРЅРёРµ:';
   // 
   // labelStep
   // 
@@ -945,7 +945,7 @@ begin
   labelStep.ForeColor := System.Drawing.Color.Black;
   labelStep.Location := new Point(130, 54);
   labelStep.Size := new Size(66, 18);
-  labelStep.Text := 'Шаг: 0';
+  labelStep.Text := 'РЁР°Рі: 0';
   labelStep.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // trackBarSpeed
@@ -962,7 +962,7 @@ begin
   labelSpeed.Location := new Point(6, 16);
   labelSpeed.Margin := new Padding(0);
   labelSpeed.Size := new Size(73, 17);
-  labelSpeed.Text := 'Скорость:';
+  labelSpeed.Text := 'РЎРєРѕСЂРѕСЃС‚СЊ:';
   // 
   // tableLayoutPanelTop
   // 
@@ -988,7 +988,7 @@ begin
   labelZad.Location := new Point(6, 3);
   labelZad.Margin := new Padding(4, 1, 3, 0);
   labelZad.Size := new Size(668, 14);
-  labelZad.Text := 'Задание';
+  labelZad.Text := 'Р—Р°РґР°РЅРёРµ';
   labelZad.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // ExecutorForm
@@ -998,7 +998,7 @@ begin
   MainForm.Controls.Add(tableLayoutPanelTop);
   MainForm.Controls.Add(BottomPanel);
   MainForm.MinimumSize := new Size(687, 240);
-  MainForm.Text := 'Исполнитель Робот';
+  MainForm.Text := 'РСЃРїРѕР»РЅРёС‚РµР»СЊ Р РѕР±РѕС‚';
   BottomPanel.ResumeLayout(false);
   panelBottomLeft.ResumeLayout(false);
   tableLayoutPanelBottom.ResumeLayout(false);
@@ -1049,7 +1049,7 @@ begin
   MainForm.Bounds := rec;
 end;
 
-// Добавил - МА
+// Р”РѕР±Р°РІРёР» - РњРђ
 procedure ResRB(TaskName: string); 
   external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'resrb';
 //  
@@ -1059,21 +1059,21 @@ begin
   buttonStart.Enabled := False;  
   buttonStep.Enabled := False;
   if (robField.DimX*robField.DimY=0) then
-    RobotError('Робот: Не вызвана процедура Task','Задание отсутствует')
+    RobotError('Р РѕР±РѕС‚: РќРµ РІС‹Р·РІР°РЅР° РїСЂРѕС†РµРґСѓСЂР° Task','Р—Р°РґР°РЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚')
   else if robField.IsSolution then
   begin
     tableLayoutPanel1.BackColor := LabelGoodEndColor;
     labelExState.BackColor := LabelGoodEndColor;
     tableLayoutPanelBottom.BackColor := LabelGoodEndColor;
-    labelExState.Text := 'Робот: Задание выполнено';
-    // Добавил - МА
+    labelExState.Text := 'Р РѕР±РѕС‚: Р—Р°РґР°РЅРёРµ РІС‹РїРѕР»РЅРµРЅРѕ';
+    // Р”РѕР±Р°РІРёР» - РњРђ
     try
       ResRB(robField.TaskName);
     except
     end;    
     //
   end
-  else labelExState.Text := 'Робот: Работа окончена, задание не выполнено';
+  else labelExState.Text := 'Р РѕР±РѕС‚: Р Р°Р±РѕС‚Р° РѕРєРѕРЅС‡РµРЅР°, Р·Р°РґР°РЅРёРµ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ';
 end;
 
 var 
@@ -1150,14 +1150,14 @@ finalization
   {buttonStart.Enabled := False;  
   buttonStep.Enabled := False;
   if (robField.DimX*robField.DimY=0) then
-    RobotError('Робот: Не вызвана процедура Task','Задание отсутствует')
+    RobotError('Р РѕР±РѕС‚: РќРµ РІС‹Р·РІР°РЅР° РїСЂРѕС†РµРґСѓСЂР° Task','Р—Р°РґР°РЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚')
   else if robField.IsSolution then
   begin
     tableLayoutPanel1.BackColor := LabelGoodEndColor;
     labelExState.BackColor := LabelGoodEndColor;
     tableLayoutPanelBottom.BackColor := LabelGoodEndColor;
-    labelExState.Text := 'Робот: Задание выполнено';
+    labelExState.Text := 'Р РѕР±РѕС‚: Р—Р°РґР°РЅРёРµ РІС‹РїРѕР»РЅРµРЅРѕ';
   end
-  else labelExState.Text := 'Робот: Работа окончена, задание не выполнено';}
+  else labelExState.Text := 'Р РѕР±РѕС‚: Р Р°Р±РѕС‚Р° РѕРєРѕРЅС‡РµРЅР°, Р·Р°РґР°РЅРёРµ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ';}
   __FinalizeModule;
 end.

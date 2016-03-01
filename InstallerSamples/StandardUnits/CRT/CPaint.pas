@@ -1,6 +1,6 @@
-// Рисование курсором в консольном окне
-// Иллюстрация GotoXY, TextBackGround
-// Для запуска программы используйте Shift+F9 !!!
+// Р РёСЃРѕРІР°РЅРёРµ РєСѓСЂСЃРѕСЂРѕРј РІ РєРѕРЅСЃРѕР»СЊРЅРѕРј РѕРєРЅРµ
+// РР»Р»СЋСЃС‚СЂР°С†РёСЏ GotoXY, TextBackGround
+// Р”Р»СЏ Р·Р°РїСѓСЃРєР° РїСЂРѕРіСЂР°РјРјС‹ РёСЃРїРѕР»СЊР·СѓР№С‚Рµ Shift+F9 !!!
 uses Crt;
 
 var
@@ -32,7 +32,7 @@ begin
   draw := True;
   color := Green;
   ClrScr;
-  SetWindowTitle('Рисование курсором (Esc-выход, Num 5 - изменение цвета)');
+  SetWindowTitle('Р РёСЃРѕРІР°РЅРёРµ РєСѓСЂСЃРѕСЂРѕРј (Esc-РІС‹С…РѕРґ, Num 5 - РёР·РјРµРЅРµРЅРёРµ С†РІРµС‚Р°)');
   TextBackGround(color);
   GotoXY(WindowWidth div 2,WindowHeight div 2);
   var c: char;
@@ -44,7 +44,7 @@ begin
     begin
       c := ReadKey;
       case c of                           
-  // Изменение цвета по клавише Num 5
+  // РР·РјРµРЅРµРЅРёРµ С†РІРµС‚Р° РїРѕ РєР»Р°РІРёС€Рµ Num 5
     {5} #12: begin
               color := color + 1;
               if color=16 then 

@@ -1,18 +1,16 @@
-<?xml version="1.0"?>
-<AspectFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <TreeRoot>
+<?xml version="1.0" encoding="utf-16"?>
+<AspectFile Version="2">
+  <PointOfInterest>
     <Items>
       <PointOfInterest>
         <Name>Рисование графиков Draw</Name>
         <Items>
           <PointOfInterest>
+            <Name>Интерфейс процедур Draw</Name>
             <FileName>\GraphABC.pas</FileName>
             <Text>procedure Draw(f: Func&lt;real,real&gt;; a,b: real; x1,y1,x2,y2: integer);</Text>
-            <Name>Интерфейс процедур Draw</Name>
-            <Items />
-            <Note />
-            <Context>
-              <ArrayOfString>
+            <OuterContext>
+              <OuterContextItem Type="MethodHeader">
                 <string>procedure</string>
                 <string>Draw</string>
                 <string>(</string>
@@ -41,19 +39,17 @@
                 <string>:</string>
                 <string>integer</string>
                 <string>)</string>
-              </ArrayOfString>
-              <ArrayOfString />
-            </Context>
-            <ParserClassName>MethodHeader</ParserClassName>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
           </PointOfInterest>
           <PointOfInterest>
+            <Name>Реализация процедур Draw</Name>
             <FileName>\GraphABC.pas</FileName>
             <Text>procedure Draw(f: Func&lt;real,real&gt;; a,b: real; x1,y1,x2,y2: integer);</Text>
-            <Name>Реализация процедур Draw</Name>
-            <Items />
-            <Note />
-            <Context>
-              <ArrayOfString>
+            <OuterContext>
+              <OuterContextItem Type="Method">
                 <string>procedure</string>
                 <string>Draw</string>
                 <string>(</string>
@@ -82,46 +78,44 @@
                 <string>:</string>
                 <string>integer</string>
                 <string>)</string>
-              </ArrayOfString>
-              <ArrayOfString />
-            </Context>
-            <ParserClassName>Method</ParserClassName>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
           </PointOfInterest>
         </Items>
-        <Context />
       </PointOfInterest>
       <PointOfInterest>
+        <Name>implementation модуля</Name>
         <FileName>\GraphABC.pas</FileName>
         <Text>implementation</Text>
-        <Name>implementation модуля</Name>
+        <OuterContext>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
         <Items>
           <PointOfInterest>
+            <Name>IOGraphABCSystem</Name>
             <FileName>\GraphABC.pas</FileName>
             <Text>IOGraphABCSystem = class(IOStandardSystem)</Text>
-            <Name>IOGraphABCSystem</Name>
-            <Items />
-            <Note />
-            <Context>
-              <ArrayOfString>
+            <OuterContext>
+              <OuterContextItem Type="Class">
                 <string>IOGraphABCSystem</string>
                 <string>=</string>
                 <string>class</string>
                 <string>(</string>
                 <string>IOStandardSystem</string>
                 <string>)</string>
-              </ArrayOfString>
-              <ArrayOfString />
-            </Context>
-            <ParserClassName>Class</ParserClassName>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
           </PointOfInterest>
           <PointOfInterest>
+            <Name>procedure LoadWindow с исправлениями Абрамяна</Name>
             <FileName>\GraphABC.pas</FileName>
             <Text>procedure LoadWindow(fname: string);</Text>
-            <Name>procedure LoadWindow с исправлениями Абрамяна</Name>
-            <Items />
-            <Note />
-            <Context>
-              <ArrayOfString>
+            <OuterContext>
+              <OuterContextItem Type="Method">
                 <string>procedure</string>
                 <string>LoadWindow</string>
                 <string>(</string>
@@ -129,69 +123,33 @@
                 <string>:</string>
                 <string>string</string>
                 <string>)</string>
-              </ArrayOfString>
-              <ArrayOfString />
-            </Context>
-            <ParserClassName>Method</ParserClassName>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
           </PointOfInterest>
           <PointOfInterest>
+            <Name>Раздел переменных</Name>
             <FileName>\GraphABC.pas</FileName>
             <Text>MainThread: Thread;</Text>
-            <Name>Раздел переменных</Name>
-            <Items />
-            <Note />
-            <Context>
-              <ArrayOfString>
+            <OuterContext>
+              <OuterContextItem Type="Field">
                 <string>MainThread</string>
                 <string>:</string>
                 <string>Thread</string>
-              </ArrayOfString>
-              <ArrayOfString />
-            </Context>
-            <ParserClassName>Field</ParserClassName>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
           </PointOfInterest>
         </Items>
-        <Note />
-        <Context>
-          <ArrayOfString />
-        </Context>
-        <ParserClassName>PAS_TreeNode</ParserClassName>
       </PointOfInterest>
       <PointOfInterest>
+        <Name>Draw для рисунка</Name>
         <FileName>\GraphABC.pas</FileName>
         <Text>procedure Draw(fname: string; x,y: integer);</Text>
-        <Name>Draw для рисунка</Name>
-        <Items>
-          <PointOfInterest>
-            <FileName>\GraphABC.pas</FileName>
-            <Text>procedure Draw(fname: string; x,y: integer);</Text>
-            <Name>Draw для рисунка - реаплизация</Name>
-            <Items />
-            <Note />
-            <Context>
-              <ArrayOfString>
-                <string>procedure</string>
-                <string>Draw</string>
-                <string>(</string>
-                <string>fname</string>
-                <string>:</string>
-                <string>string</string>
-                <string>;</string>
-                <string>x</string>
-                <string>,</string>
-                <string>y</string>
-                <string>:</string>
-                <string>integer</string>
-                <string>)</string>
-              </ArrayOfString>
-              <ArrayOfString />
-            </Context>
-            <ParserClassName>Method</ParserClassName>
-          </PointOfInterest>
-        </Items>
-        <Note />
-        <Context>
-          <ArrayOfString>
+        <OuterContext>
+          <OuterContextItem Type="Method">
             <string>procedure</string>
             <string>Draw</string>
             <string>(</string>
@@ -205,19 +163,42 @@
             <string>:</string>
             <string>integer</string>
             <string>)</string>
-          </ArrayOfString>
-          <ArrayOfString />
-        </Context>
-        <ParserClassName>Method</ParserClassName>
+          </OuterContextItem>
+          <OuterContextItem Type="" />
+        </OuterContext>
+        <Items>
+          <PointOfInterest>
+            <Name>Draw для рисунка - реаплизация</Name>
+            <FileName>\GraphABC.pas</FileName>
+            <Text>procedure Draw(fname: string; x,y: integer);</Text>
+            <OuterContext>
+              <OuterContextItem Type="Method">
+                <string>procedure</string>
+                <string>Draw</string>
+                <string>(</string>
+                <string>fname</string>
+                <string>:</string>
+                <string>string</string>
+                <string>;</string>
+                <string>x</string>
+                <string>,</string>
+                <string>y</string>
+                <string>:</string>
+                <string>integer</string>
+                <string>)</string>
+              </OuterContextItem>
+              <OuterContextItem Type="" />
+            </OuterContext>
+            <Items />
+          </PointOfInterest>
+        </Items>
       </PointOfInterest>
       <PointOfInterest>
+        <Name>Реализация графических примитивов</Name>
         <FileName>\GraphABC.pas</FileName>
         <Text>procedure SetPixel(x,y: integer; c: Color);</Text>
-        <Name>Реализация графических примитивов</Name>
-        <Items />
-        <Note />
-        <Context>
-          <ArrayOfString>
+        <OuterContext>
+          <OuterContextItem Type="Method">
             <string>procedure</string>
             <string>SetPixel</string>
             <string>(</string>
@@ -231,19 +212,17 @@
             <string>:</string>
             <string>Color</string>
             <string>)</string>
-          </ArrayOfString>
-          <ArrayOfString />
-        </Context>
-        <ParserClassName>Method</ParserClassName>
+          </OuterContextItem>
+          <OuterContextItem Type="" />
+        </OuterContext>
+        <Items />
       </PointOfInterest>
       <PointOfInterest>
+        <Name>MoveTo - extension method for Rectangle</Name>
         <FileName>\GraphABC.pas</FileName>
         <Text>procedure System.Drawing.Rectangle.MoveTo(x,y: integer);</Text>
-        <Name>MoveTo - extension method for Rectangle</Name>
-        <Items />
-        <Note />
-        <Context>
-          <ArrayOfString>
+        <OuterContext>
+          <OuterContextItem Type="Method">
             <string>procedure</string>
             <string>System</string>
             <string>.</string>
@@ -259,12 +238,66 @@
             <string>:</string>
             <string>integer</string>
             <string>)</string>
-          </ArrayOfString>
-          <ArrayOfString />
-        </Context>
-        <ParserClassName>Method</ParserClassName>
+          </OuterContextItem>
+          <OuterContextItem Type="" />
+        </OuterContext>
+        <Items />
+      </PointOfInterest>
+      <PointOfInterest>
+        <Name>IOGraphABCSystem</Name>
+        <FileName>\GraphABC.pas</FileName>
+        <Text>IOGraphABCSystem = class(IOStandardSystem)</Text>
+        <OuterContext>
+          <OuterContextItem Type="Class">
+            <string>IOGraphABCSystem</string>
+            <string>=</string>
+            <string>class</string>
+            <string>(</string>
+            <string>IOStandardSystem</string>
+            <string>)</string>
+          </OuterContextItem>
+          <OuterContextItem Type="Defs">
+            <string>type</string>
+          </OuterContextItem>
+          <OuterContextItem Type="PAS_TreeNode" />
+        </OuterContext>
+        <InnerContext>
+          <InnerContextItem Type="ClassMethod">
+            <string>constructor</string>
+            <string>Create</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>procedure</string>
+            <string>write</string>
+            <string>(</string>
+            <string>obj</string>
+            <string>:</string>
+            <string>object</string>
+            <string>)</string>
+            <string>override</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>procedure</string>
+            <string>writeln</string>
+            <string>override</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>read_symbol</string>
+            <string>:</string>
+            <string>char</string>
+            <string>override</string>
+          </InnerContextItem>
+          <InnerContextItem Type="ClassMethod">
+            <string>function</string>
+            <string>peek</string>
+            <string>:</string>
+            <string>integer</string>
+            <string>override</string>
+          </InnerContextItem>
+        </InnerContext>
+        <Items />
       </PointOfInterest>
     </Items>
-    <Context />
-  </TreeRoot>
+  </PointOfInterest>
 </AspectFile>

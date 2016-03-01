@@ -24,10 +24,12 @@ namespace TreeConverter.LambdaExpressions
             resultExpressionsTypes = new List<Tuple<type_node, expression, expression_node>>();
         }
 
-        private type_node GetMostCommonType()
+        private type_node GetMostCommonType(int kind = 0)
         {
             if (resultExpressionsTypes.Count == 0)
-                syntaxTreeVisitor.AddError(syntaxTreeVisitor.get_location(lambdaHeader), "IMPOSSIBLE_TO_INFER_RESULT_TYPE_IN_LAMBDA");
+                if (kind==0)
+                    syntaxTreeVisitor.AddError(syntaxTreeVisitor.get_location(lambdaHeader), "IMPOSSIBLE_TO_INFER_RESULT_TYPE_IN_LAMBDA");
+                else syntaxTreeVisitor.AddError(syntaxTreeVisitor.get_location(lambdaHeader), "IMPOSSIBLE_TO_INFER_RESULT_TYPE");
 
             var mostCommonType = resultExpressionsTypes[0].Item1;
             for (var i = 1; i < resultExpressionsTypes.Count; i++)
@@ -44,10 +46,10 @@ namespace TreeConverter.LambdaExpressions
             return mostCommonType;
         }
 
-        public type_node InferResultType()
+        public type_node InferResultType(int kind = 0)
         {
             ProcessNode(lambdaBody);
-            return GetMostCommonType();
+            return GetMostCommonType(kind);
         }
 
         public override void visit(statement_list stmtList)

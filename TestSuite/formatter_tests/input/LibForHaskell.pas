@@ -824,7 +824,7 @@ end;
         if ((types.Count=2) and not(types.Contains('integer') and types.Contains('real'))) or 
            (types.Count>2) then
            begin
-              writeln('элементы списка имеют разный тип');
+              writeln('СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° РёРјРµСЋС‚ СЂР°Р·РЅС‹Р№ С‚РёРї');
               exit;
            end;
     end;   
@@ -893,7 +893,7 @@ end;
     if ((types.Count=2) and not(types.Contains('integer') and types.Contains('real'))) or 
        (types.Count>2) then
        begin
-          writeln('элементы списка имеют разный тип');
+          writeln('СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° РёРјРµСЋС‚ СЂР°Р·РЅС‹Р№ С‚РёРї');
           exit;
        end;
     ///////////////////////////////////
@@ -979,7 +979,7 @@ end;
        types.Add(last.type_name);
     if ((types.Count=2) and not(types.Contains('integer') and types.Contains('real'))) then
        begin
-          writeln('элементы списка имеют разный тип');
+          writeln('СЌР»РµРјРµРЅС‚С‹ СЃРїРёСЃРєР° РёРјРµСЋС‚ СЂР°Р·РЅС‹Р№ С‚РёРї');
           exit;
        end;
     ///////////////////////////////////

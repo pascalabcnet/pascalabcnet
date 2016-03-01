@@ -177,7 +177,7 @@ namespace PascalABCCompiler.VBNETParser
 					ICSharpCode.NRefactory.Ast.FieldDeclaration fld = node as ICSharpCode.NRefactory.Ast.FieldDeclaration;
 					foreach (ICSharpCode.NRefactory.Ast.VariableDeclaration vd in fld.Fields)
 					{
-						enumerator en = new enumerator(new ident(vd.Name),null);
+						enumerator en = new enumerator(new named_type_reference(vd.Name),null); // SSM здесь исправил 15.1.16
 						en.source_context = get_source_context(fld);
 						enum_td.enumerators.enumerators.Add(en);
 					}

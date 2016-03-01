@@ -1022,6 +1022,41 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_template_operator_name);
 		}
+
+		public virtual void visit(semantic_addr_value _semantic_addr_value)
+		{
+			DefaultVisit(_semantic_addr_value);
+		}
+
+		public virtual void visit(pair_type_stlist _pair_type_stlist)
+		{
+			DefaultVisit(_pair_type_stlist);
+		}
+
+		public virtual void visit(assign_tuple _assign_tuple)
+		{
+			DefaultVisit(_assign_tuple);
+		}
+
+		public virtual void visit(addressed_value_list _addressed_value_list)
+		{
+			DefaultVisit(_addressed_value_list);
+		}
+
+		public virtual void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		{
+			DefaultVisit(_tuple_node_for_formatter);
+		}
+
+		public virtual void visit(uses_closure _uses_closure)
+		{
+			DefaultVisit(_uses_closure);
+		}
+
+		public virtual void visit(dot_question_node _dot_question_node)
+		{
+			DefaultVisit(_dot_question_node);
+		}
 	}
 
 

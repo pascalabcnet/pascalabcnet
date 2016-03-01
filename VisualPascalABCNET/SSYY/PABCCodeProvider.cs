@@ -217,7 +217,7 @@ namespace SampleDesignerHost
 
         protected override void GenerateEntryPointMethod(System.CodeDom.CodeEntryPointMethod e, System.CodeDom.CodeTypeDeclaration c)
         {
-            //ничего не делаем
+            //РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
         }
 
         protected override void GenerateEvent(System.CodeDom.CodeMemberEvent e, System.CodeDom.CodeTypeDeclaration c)

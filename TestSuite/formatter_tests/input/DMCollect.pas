@@ -32,7 +32,7 @@ type
     end;
     function GetItem(i: integer): Cell;
     begin
-      Result := Cell(a[i]); //!! Не будет работать для Item[i].a.x := 1; !!!!!!!
+      Result := Cell(a[i]); //!! РќРµ Р±СѓРґРµС‚ СЂР°Р±РѕС‚Р°С‚СЊ РґР»СЏ Item[i].a.x := 1; !!!!!!!
     end;
     procedure SetItem(i: integer; c: Cell);
     begin
@@ -143,20 +143,20 @@ function LessThenCC (C1,C2: Cell): boolean;
 var
   vv: vector;
   ip: boolean;
-{Самое сложное условие}
+{РЎР°РјРѕРµ СЃР»РѕР¶РЅРѕРµ СѓСЃР»РѕРІРёРµ}
 begin
   vv := initVector(C1.p,C2.p);
   ip := IsParallel(C1.v,C2.v);
-  {C1<C2 если вектор1<вектора2                             или
-              вектор1 параллелен вектору2 и вектор1<P1P2   или
-              вектор1 параллелен вектору2
-                и вектор1 параллелен P1P2 и НЕПОНЯТНОЕ УСЛОВИЕ!!!!!!???????!!
+  {C1<C2 РµСЃР»Рё РІРµРєС‚РѕСЂ1<РІРµРєС‚РѕСЂР°2                             РёР»Рё
+              РІРµРєС‚РѕСЂ1 РїР°СЂР°Р»Р»РµР»РµРЅ РІРµРєС‚РѕСЂСѓ2 Рё РІРµРєС‚РѕСЂ1<P1P2   РёР»Рё
+              РІРµРєС‚РѕСЂ1 РїР°СЂР°Р»Р»РµР»РµРЅ РІРµРєС‚РѕСЂСѓ2
+                Рё РІРµРєС‚РѕСЂ1 РїР°СЂР°Р»Р»РµР»РµРЅ P1P2 Рё РќР•РџРћРќРЇРўРќРћР• РЈРЎР›РћР’РР•!!!!!!???????!!
 
   }
   LessThenCC := LessThenVV(C1.v,C2.v) or
                 (ip and LessThenVV(C1.v,vv)) or
                 (ip and IsParallel(C1.v,vv) and
-{                  LessThenPP(C1.v,C2.v)); НЕПОНЯТНОЕ УСЛОВИЕ! - vector lengths are comparing?}
+{                  LessThenPP(C1.v,C2.v)); РќР•РџРћРќРЇРўРќРћР• РЈРЎР›РћР’РР•! - vector lengths are comparing?}
                    LessThenPP(C1.p,C2.p)); {change on this 27.5.99 - i dont know am i right.}
                    { The idea - to compare origins of vectors}
 end;
@@ -225,16 +225,16 @@ var
   CC: Cell;
   i: integer;
 begin
-  if (x1=x2) and (y1=y2) then Exit; {Не вставлять точку}
+  if (x1=x2) and (y1=y2) then Exit; {РќРµ РІСЃС‚Р°РІР»СЏС‚СЊ С‚РѕС‡РєСѓ}
   CC.Init(x1,y1,x2,y2);
   for i:=0 to Count-1 do
     if LessEqualCC(CC,Self[i]) then
     begin
-      if not IsEqualCC(CC,Self[i]) then // Не дублировать
+      if not IsEqualCC(CC,Self[i]) then // РќРµ РґСѓР±Р»РёСЂРѕРІР°С‚СЊ
         a.Insert(i,CC);
       Exit;
     end;
-  a.Add(CC); // Если больше всех, то добавить в конец
+  a.Add(CC); // Р•СЃР»Рё Р±РѕР»СЊС€Рµ РІСЃРµС…, С‚Рѕ РґРѕР±Р°РІРёС‚СЊ РІ РєРѕРЅРµС†
 end;
 
 procedure SortedCollection.InsertAB(A,B: Point);
@@ -250,7 +250,7 @@ begin
 end;
 
 procedure SortedCollection.Normalize;
-// Cливать соседние пары 
+// CР»РёРІР°С‚СЊ СЃРѕСЃРµРґРЅРёРµ РїР°СЂС‹ 
 var
   pend,p1end,pnew,pnewend: Point;
   CC: Cell;
@@ -261,8 +261,8 @@ begin
     begin
       pend := new Point(Items[i].p.x+Items[i].v.x,Items[i].p.y+Items[i].v.y);
       p1end := new Point(Items[i+1].p.x+Items[i+1].v.x,Items[i+1].p.y+Items[i+1].v.y);
-      if IsBetweenPP(Items[i+1].p,Items[i].p,pend)  {если P1 между P и P+v}  or
-         IsBetweenPP(Items[i].p,Items[i+1].p,p1end) {если P между P1 и P1+v} then
+      if IsBetweenPP(Items[i+1].p,Items[i].p,pend)  {РµСЃР»Рё P1 РјРµР¶РґСѓ P Рё P+v}  or
+         IsBetweenPP(Items[i].p,Items[i+1].p,p1end) {РµСЃР»Рё P РјРµР¶РґСѓ P1 Рё P1+v} then
       begin
         if LessThenPP(Items[i].p,Items[i+1].p) then 
           pnew:=Items[i].p
@@ -270,8 +270,8 @@ begin
         if LessThenPP(pend,p1end) then 
           pnewend:=p1end
         else pnewend:=pend;
-        // Слить
-//        Items[i].p := pnew; Это не работает из-за упаковки!!!
+        // РЎР»РёС‚СЊ
+//        Items[i].p := pnew; Р­С‚Рѕ РЅРµ СЂР°Р±РѕС‚Р°РµС‚ РёР·-Р·Р° СѓРїР°РєРѕРІРєРё!!!
 //        Items[i].v := vv;
         CC.InitAB(pnew,pnewend);
         Items[i] := CC;
@@ -290,30 +290,30 @@ begin
     begin
       pend.init(H^.p.x+H^.v.x,H^.p.y+H^.v.y);
       p1end.init(H1^.p.x+H1^.v.x,H1^.p.y+H1^.v.y);
-      if IsBetweenPP(H1^.p,H^.p,Pend)  {если P1 между P и P+v}  or
-         IsBetweenPP(H^.p,H1^.p,P1end) {если P между P1 и P1+v}
+      if IsBetweenPP(H1^.p,H^.p,Pend)  {РµСЃР»Рё P1 РјРµР¶РґСѓ P Рё P+v}  or
+         IsBetweenPP(H^.p,H1^.p,P1end) {РµСЃР»Рё P РјРµР¶РґСѓ P1 Рё P1+v}
       then
         begin
-          {найти начало и конец нового вектора}
+          {РЅР°Р№С‚Рё РЅР°С‡Р°Р»Рѕ Рё РєРѕРЅРµС† РЅРѕРІРѕРіРѕ РІРµРєС‚РѕСЂР°}
           if LessThenPP(H^.p,H1^.p) then pnew:=H^.p
             else pnew:=H1^.p;
           if LessThenPP(pend,p1end) then pnewend:=p1end
             else pnewend:=pend;
-          { Слить }
+          { РЎР»РёС‚СЊ }
           H^.p.init(pnew.x,pnew.y);
           H^.v.InitVector(pnew,pnewend);
           H^.next := H1^.next;
           dispose(H1);
           b:=True;
           k := 1;
-          {А если v1 целиком внутри v ???}
-          {По моему, тогда на следующем проходе и для этого k}
+          {Рђ РµСЃР»Рё v1 С†РµР»РёРєРѕРј РІРЅСѓС‚СЂРё v ???}
+          {РџРѕ РјРѕРµРјСѓ, С‚РѕРіРґР° РЅР° СЃР»РµРґСѓСЋС‰РµРј РїСЂРѕС…РѕРґРµ Рё РґР»СЏ СЌС‚РѕРіРѕ k}
         end;
     end;
     if k=0 then H := H^.next;
   end;
-  if b then goto 1; {поскольку не все могли слиться}
-  {не лучший алгоритм, но...}*)
+  if b then goto 1; {РїРѕСЃРєРѕР»СЊРєСѓ РЅРµ РІСЃРµ РјРѕРіР»Рё СЃР»РёС‚СЊСЃСЏ}
+  {РЅРµ Р»СѓС‡С€РёР№ Р°Р»РіРѕСЂРёС‚Рј, РЅРѕ...}*)
 end;
 
 procedure SortedCollection.Clear;

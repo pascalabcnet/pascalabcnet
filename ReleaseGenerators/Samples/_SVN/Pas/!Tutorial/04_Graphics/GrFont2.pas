@@ -1,10 +1,10 @@
-// Демонстрация использования TextWidth и TextHeight
+// Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ TextWidth Рё TextHeight
 uses GraphABC;
 
 const s = 'Width & Height';
   
 begin
-  Window.Title := 'Текст по центру';
+  Window.Title := 'РўРµРєСЃС‚ РїРѕ С†РµРЅС‚СЂСѓ';
   Window.IsFixedSize := True;
   SetWindowSize(700,300);
   Window.Center;

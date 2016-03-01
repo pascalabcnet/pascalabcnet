@@ -1,3 +1,4 @@
+//winonly
 unit u_arithm3;
 procedure Test;
 var 

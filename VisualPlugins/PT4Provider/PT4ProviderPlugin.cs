@@ -35,7 +35,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "(c) Ткачук А.В. 2007";
+                return "Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich";
             }
         }
 
@@ -68,7 +68,11 @@ namespace VisualPascalABCPlugins
 
         public int Demo(StringBuilder topic, ref int number)
         {
-            tools.Demo(PABCWorkDirectory);
+//MABR 26.12.2015>
+            string CurrentSourceFileName = VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, "") as string;
+            tools.Demo(Path.GetDirectoryName(CurrentSourceFileName));
+//            tools.Demo(PABCWorkDirectory);
+//MABR 26.12.2015<
             return 0;
 //            return pt4demo(PABCWorkDirectory, PT4Directory, "pt4", 0, 1, 2, "", "", topic, ref number);
         }
@@ -82,7 +86,11 @@ namespace VisualPascalABCPlugins
 
         public void Results()
         {
-            tools.Res(PABCWorkDirectory);
+//MABR 26.12.2015>
+            string CurrentSourceFileName = VisualEnvironmentCompiler.ExecuteAction(VisualEnvironmentCompilerAction.GetCurrentSourceFileName, "") as string;
+            tools.Res(Path.GetDirectoryName(CurrentSourceFileName));
+//            tools.Res(PABCWorkDirectory);
+//MABR 26.12.2015<
             /*StringBuilder
               s1 = new StringBuilder(50),
               s2 = new StringBuilder(20),

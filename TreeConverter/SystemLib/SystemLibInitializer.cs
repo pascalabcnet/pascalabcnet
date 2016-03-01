@@ -1,6 +1,6 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-//Инициализация системной библиотеки
+//РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРёСЃС‚РµРјРЅРѕР№ Р±РёР±Р»РёРѕС‚РµРєРё
 using System;
 using System.Collections.Generic;
 using PascalABCCompiler.TreeRealization;
@@ -420,13 +420,13 @@ namespace PascalABCCompiler.SystemLibrary
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.false_const_name, new PascalABCCompiler.TreeConverter.SymbolInfo(_false_constant_definition));
             
 
-            //TODO: Сделано по быстрому. Переделать. Можно просто один раз сериализовать модуль system и не инициализировать его всякий раз подобным образом. Неплохо-бы использовать NetHelper.GetMethod.
+            //TODO: РЎРґРµР»Р°РЅРѕ РїРѕ Р±С‹СЃС‚СЂРѕРјСѓ. РџРµСЂРµРґРµР»Р°С‚СЊ. РњРѕР¶РЅРѕ РїСЂРѕСЃС‚Рѕ РѕРґРёРЅ СЂР°Р· СЃРµСЂРёР°Р»РёР·РѕРІР°С‚СЊ РјРѕРґСѓР»СЊ system Рё РЅРµ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ РµРіРѕ РІСЃСЏРєРёР№ СЂР°Р· РїРѕРґРѕР±РЅС‹Рј РѕР±СЂР°Р·РѕРј. РќРµРїР»РѕС…Рѕ-Р±С‹ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ NetHelper.GetMethod.
             Type tp = typeof(Console);
             compiled_function_node cfn;
             System.Type[] arr = new System.Type[1];
             System.Reflection.MethodInfo mi;
 
-            //TODO: Сделать узел или базовый метод создания и удаления объекта.
+            //TODO: РЎРґРµР»Р°С‚СЊ СѓР·РµР» РёР»Рё Р±Р°Р·РѕРІС‹Р№ РјРµС‚РѕРґ СЃРѕР·РґР°РЅРёСЏ Рё СѓРґР°Р»РµРЅРёСЏ РѕР±СЉРµРєС‚Р°.
             common_namespace_function_node cnfn = new common_namespace_function_node(TreeConverter.compiler_string_consts.new_procedure_name, null, null, system_namespace, null);
             cnfn.parameters.AddElement(new common_parameter("ptr", SystemLibrary.pointer_type, SemanticTree.parameter_type.value, cnfn,
                 concrete_parameter_type.cpt_var, null, null));
@@ -479,7 +479,7 @@ namespace PascalABCCompiler.SystemLibrary
         public static common_unit_node make_system_unit(SymbolTable.TreeConverterSymbolTable symbol_table,
             initialization_properties initialization_properties)
         {
-            //TODO: В качестве location везде в этом методе следует указывать location system_unit-а. Имя файла мы знаем, а место - там где написано, что integer и прочие типы описаны как бы в модуле system.
+            //TODO: Р’ РєР°С‡РµСЃС‚РІРµ location РІРµР·РґРµ РІ СЌС‚РѕРј РјРµС‚РѕРґРµ СЃР»РµРґСѓРµС‚ СѓРєР°Р·С‹РІР°С‚СЊ location system_unit-Р°. РРјСЏ С„Р°Р№Р»Р° РјС‹ Р·РЅР°РµРј, Р° РјРµСЃС‚Рѕ - С‚Р°Рј РіРґРµ РЅР°РїРёСЃР°РЅРѕ, С‡С‚Рѕ integer Рё РїСЂРѕС‡РёРµ С‚РёРїС‹ РѕРїРёСЃР°РЅС‹ РєР°Рє Р±С‹ РІ РјРѕРґСѓР»Рµ system.
             location system_unit_location = null;
             SymbolTable.UnitInterfaceScope main_scope = symbol_table.CreateUnitInterfaceScope(new SymbolTable.Scope[0]);
             SymbolTable.UnitImplementationScope impl_scope = symbol_table.CreateUnitImplementationScope(main_scope,
@@ -494,7 +494,7 @@ namespace PascalABCCompiler.SystemLibrary
             //SymbolTable.Scope sc = cnn.scope;
             SymbolTable.Scope sc = main_scope;
 
-            //Добавляем типы.
+            //Р”РѕР±Р°РІР»СЏРµРј С‚РёРїС‹.
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.byte_type));
             //sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.decimal_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.decimal_type));
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.sbyte_type));
@@ -515,7 +515,7 @@ namespace PascalABCCompiler.SystemLibrary
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.base_array_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.array_base_type));
             sc.AddSymbol(PascalABCCompiler.TreeConverter.compiler_string_consts.base_delegate_type_name, new PascalABCCompiler.TreeConverter.SymbolInfo(SystemLibrary.delegate_base_type));
 
-            //TODO: Переделать. Пусть таблица символов создается одна. Как статическая.
+            //TODO: РџРµСЂРµРґРµР»Р°С‚СЊ. РџСѓСЃС‚СЊ С‚Р°Р±Р»РёС†Р° СЃРёРјРІРѕР»РѕРІ СЃРѕР·РґР°РµС‚СЃСЏ РѕРґРЅР°. РљР°Рє СЃС‚Р°С‚РёС‡РµСЃРєР°СЏ.
             compiled_type_node comp_byte_type = ((compiled_type_node)SystemLibrary.byte_type);
             compiled_type_node comp_sbyte_type = ((compiled_type_node)SystemLibrary.sbyte_type);
             compiled_type_node comp_short_type = ((compiled_type_node)SystemLibrary.short_type);

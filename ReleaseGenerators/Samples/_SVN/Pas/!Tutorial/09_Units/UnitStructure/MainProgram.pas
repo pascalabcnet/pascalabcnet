@@ -1,13 +1,13 @@
-uses MyUnit; // подключили модуль
+uses MyUnit; // РїРѕРґРєР»СЋС‡РёР»Рё РјРѕРґСѓР»СЊ
 
 const Sz = 10;
 
 var a: IntArr;
 
 begin
-  Assert(sz<=Size,'Размер массива должен быть <='+Size.ToString);
+  Assert(sz<=Size,'Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ <='+Size.ToString);
   FillArr(a,Sz);
-  writeln('Содержимое массива: ');
+  writeln('РЎРѕРґРµСЂР¶РёРјРѕРµ РјР°СЃСЃРёРІР°: ');
   WriteArr(a,Sz);
-  writeln('Минимальный элемент: ',Min(a,Sz));
+  writeln('РњРёРЅРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚: ',Min(a,Sz));
 end.

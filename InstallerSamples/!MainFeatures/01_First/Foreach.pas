@@ -1,24 +1,24 @@
-// Пример иллюстрирует возможности оператора foreach
+// РџСЂРёРјРµСЂ РёР»Р»СЋСЃС‚СЂРёСЂСѓРµС‚ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РѕРїРµСЂР°С‚РѕСЂР° foreach
 var 
   a: array [1..5] of integer := (1,3,5,7,9);
   s: set of integer;
   l: List<integer>;
 
 begin
-  write('foreach по обычному массиву: ':35);
+  write('foreach РїРѕ РѕР±С‹С‡РЅРѕРјСѓ РјР°СЃСЃРёРІСѓ: ':35);
   foreach x: integer in a do
     Print(x);
   writeln;  
   
   s := [2..5,10..14];
-  write('foreach по множеству: ':35);
+  write('foreach РїРѕ РјРЅРѕР¶РµСЃС‚РІСѓ: ':35);
   foreach var x in s do
     Print(x);
   writeln;  
   
   l := new List<integer>;
   l.Add(7); l.Add(2); l.Add(5);
-  write('foreach по динамическому массиву: ':35);
+  write('foreach РїРѕ РґРёРЅР°РјРёС‡РµСЃРєРѕРјСѓ РјР°СЃСЃРёРІСѓ: ':35);
   foreach var x in l do
     Print(x);
 end.

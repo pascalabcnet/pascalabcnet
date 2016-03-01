@@ -44,7 +44,7 @@ type
     procedure DrawFieldOnly;
     procedure DrawXY;
   public
-    // Добавил - МА
+    // Р”РѕР±Р°РІРёР» - РњРђ
     TaskName: string;  
     //
     constructor Create(sizex,sizey,cellsize: integer);
@@ -60,7 +60,7 @@ type
     property SizeY: integer read DimY;
     function IsSolution: boolean;
     procedure CheckTaskCall;
-    // примитивы для постановщика (Maker)
+    // РїСЂРёРјРёС‚РёРІС‹ РґР»СЏ РїРѕСЃС‚Р°РЅРѕРІС‰РёРєР° (Maker)
     procedure SetOrigin(x0,y0: integer);
     procedure SetDim(DX,DY,CellSz: integer);
     procedure TaskText(s: string);
@@ -71,7 +71,7 @@ type
     procedure MakerToPoint(x,y: integer);
     procedure MakerOnVector(x,y: integer);
 
-    // примитивы для выполнителя
+    // РїСЂРёРјРёС‚РёРІС‹ РґР»СЏ РІС‹РїРѕР»РЅРёС‚РµР»СЏ
     procedure DrawDM;
     procedure ClearDM;
     
@@ -141,7 +141,7 @@ var
 
   t: System.Threading.Thread;
  
-//------------ Вспомогательные -------------
+//------------ Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ -------------
 procedure SetLabelStepText(s: string);
 begin
   labelStep.Text := s;
@@ -391,7 +391,7 @@ begin
   PenIsUp := True;
   DrawDM;
   Inc(movenum);
-  SetSafeLabelStepText('Шаг: ' + IntToStr(movenum));
+  SetSafeLabelStepText('РЁР°Рі: ' + IntToStr(movenum));
 end;
 
 procedure TDMField.PenDown;
@@ -401,7 +401,7 @@ begin
   PenIsUp := False;
   DrawDM;
   Inc(movenum);
-  SetSafeLabelStepText('Шаг: ' + IntToStr(movenum));
+  SetSafeLabelStepText('РЁР°Рі: ' + IntToStr(movenum));
 end;
 
 procedure TDMField.ToPoint(x,y: integer);
@@ -409,7 +409,7 @@ begin
   CheckTaskCall;
   ClearDM;
   if (x<orx) or (x>DimX+orx) or (y<ory) or (y>DimY+ory) then
-    DrawmanError('Чертежник: вышел за границы поля рисования','Задание прервано');
+    DrawmanError('Р§РµСЂС‚РµР¶РЅРёРє: РІС‹С€РµР» Р·Р° РіСЂР°РЅРёС†С‹ РїРѕР»СЏ СЂРёСЃРѕРІР°РЅРёСЏ','Р—Р°РґР°РЅРёРµ РїСЂРµСЂРІР°РЅРѕ');
   if not PenIsUp then
   begin
     DMLine(DMX,DMY,x,y,colorSolve);
@@ -419,7 +419,7 @@ begin
   DMY := y;
   DrawDM;
   Inc(movenum);
-  SetSafeLabelStepText('Шаг: ' + IntToStr(movenum));
+  SetSafeLabelStepText('РЁР°Рі: ' + IntToStr(movenum));
 end;
 
 procedure TDMField.OnVector(x,y: integer);
@@ -455,14 +455,14 @@ end;
 
 procedure TDMField.Stop;
 begin
-  buttonStart.Text := 'Пуск (Enter)';
+  buttonStart.Text := 'РџСѓСЃРє (Enter)';
   buttonStep.Enabled := True;
   t.Suspend;
 end;
  
 procedure TDMField.Start;
 begin
-  buttonStart.Text := 'Стоп (Enter)';
+  buttonStart.Text := 'РЎС‚РѕРї (Enter)';
   buttonStep.Enabled := False;
   t.Resume;
 end;
@@ -501,10 +501,10 @@ end;
 procedure TDMField.CheckTaskCall;
 begin
   if not TaskIsCalled then
-    DrawManError('Процедура Task вызова задания должна быть первой','Выполнение программы прервано');
+    DrawManError('РџСЂРѕС†РµРґСѓСЂР° Task РІС‹Р·РѕРІР° Р·Р°РґР°РЅРёСЏ РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РїРµСЂРІРѕР№','Р’С‹РїРѕР»РЅРµРЅРёРµ РїСЂРѕРіСЂР°РјРјС‹ РїСЂРµСЂРІР°РЅРѕ');
 end;
 
-//--------- Интерфейс и обработчики 
+//--------- РРЅС‚РµСЂС„РµР№СЃ Рё РѕР±СЂР°Р±РѕС‚С‡РёРєРё 
 procedure LoadIni(var settings: IniSettings);
 var Ini: TIniFile;
 begin
@@ -572,13 +572,13 @@ begin
   if t.ThreadState = System.Threading.ThreadState.Suspended then
   begin
     DMField.StepFlag := False;
-    labelExState.Text := 'Чертежник: Выполняю задание';
+    labelExState.Text := 'Р§РµСЂС‚РµР¶РЅРёРє: Р’С‹РїРѕР»РЅСЏСЋ Р·Р°РґР°РЅРёРµ';
     DMField.Start;
   end  
   else 
   begin
     DMField.StepFlag := True;
-    labelExState.Text := 'Чертежник: Остановился';
+    labelExState.Text := 'Р§РµСЂС‚РµР¶РЅРёРє: РћСЃС‚Р°РЅРѕРІРёР»СЃСЏ';
     DMField.Stop;
   end;  
   (GraphABCControl as Control).Focus;
@@ -589,22 +589,22 @@ begin
   DMField.StepFlag := True;
   t.Resume;
   (GraphABCControl as Control).Focus;
-  labelExState.Text := 'Чертежник: Команда выполнена';
+  labelExState.Text := 'Р§РµСЂС‚РµР¶РЅРёРє: РљРѕРјР°РЅРґР° РІС‹РїРѕР»РЅРµРЅР°';
 end;
 
 procedure buttonHelpClick(o: Object; e: EventArgs);
 begin
-  MessageBox.Show('Разработчик  исполнителя  Чертежник:  Михалкович С.С., 2002-07  '#10#13#10#13+
-    'Команды  исполнителя  Чертежник:'#10#13+
-    '    PenDown - опустить перо'#10#13+
-    '    PenUp - поднять перо'#10#13
-    '    ToPoint(x,y) - переместиться в точку с координатами (x,y)'#10#13+
-    '    OnVector(a,b) - переместиться из текущей точки на вектор (a,b)'#10#13
-    '       a>0 - вправо, a<0 - влево, b>0 - вверх, b<0 - вниз'#10#13
-    '    Speed(n) - установить скорость n (n=0..10)'#10#13
-    '    Stop - остановить Чертежника'#10#13
-    '    Start - запустить Чертежника'#10#13,
-    'Исполнитель Чертежник - Справка');
+  MessageBox.Show('Р Р°Р·СЂР°Р±РѕС‚С‡РёРє  РёСЃРїРѕР»РЅРёС‚РµР»СЏ  Р§РµСЂС‚РµР¶РЅРёРє:  РњРёС…Р°Р»РєРѕРІРёС‡ РЎ.РЎ., 2002-07  '#10#13#10#13+
+    'РљРѕРјР°РЅРґС‹  РёСЃРїРѕР»РЅРёС‚РµР»СЏ  Р§РµСЂС‚РµР¶РЅРёРє:'#10#13+
+    '    PenDown - РѕРїСѓСЃС‚РёС‚СЊ РїРµСЂРѕ'#10#13+
+    '    PenUp - РїРѕРґРЅСЏС‚СЊ РїРµСЂРѕ'#10#13
+    '    ToPoint(x,y) - РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ РІ С‚РѕС‡РєСѓ СЃ РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё (x,y)'#10#13+
+    '    OnVector(a,b) - РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ РёР· С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё РЅР° РІРµРєС‚РѕСЂ (a,b)'#10#13
+    '       a>0 - РІРїСЂР°РІРѕ, a<0 - РІР»РµРІРѕ, b>0 - РІРІРµСЂС…, b<0 - РІРЅРёР·'#10#13
+    '    Speed(n) - СѓСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРєРѕСЂРѕСЃС‚СЊ n (n=0..10)'#10#13
+    '    Stop - РѕСЃС‚Р°РЅРѕРІРёС‚СЊ Р§РµСЂС‚РµР¶РЅРёРєР°'#10#13
+    '    Start - Р·Р°РїСѓСЃС‚РёС‚СЊ Р§РµСЂС‚РµР¶РЅРёРєР°'#10#13,
+    'РСЃРїРѕР»РЅРёС‚РµР»СЊ Р§РµСЂС‚РµР¶РЅРёРє - РЎРїСЂР°РІРєР°');
 
   (GraphABCControl as Control).Focus;
 end;
@@ -700,7 +700,7 @@ begin
   buttonHelp.Location := new Point(359, 18);
   buttonHelp.Size := new Size(107, 24);
   buttonHelp.TabStop := false;
-  buttonHelp.Text := 'Справка (F1)';
+  buttonHelp.Text := 'РЎРїСЂР°РІРєР° (F1)';
 //  buttonHelp.UseVisualStyleBackColor := true;
   // 
   // buttonExit
@@ -709,7 +709,7 @@ begin
   buttonExit.Location := new System.Drawing.Point(241, 18);
   buttonExit.Size := new System.Drawing.Size(107, 24);
   buttonExit.TabStop := false;
-  buttonExit.Text := 'Выход (Esc)';
+  buttonExit.Text := 'Р’С‹С…РѕРґ (Esc)';
 //  buttonExit.UseVisualStyleBackColor := true;
   // 
   // buttonStep
@@ -718,7 +718,7 @@ begin
   buttonStep.Location := new Point(123, 18);
   buttonStep.Size := new Size(107, 24);
   buttonStep.TabStop := false;
-  buttonStep.Text := 'Шаг (Space)';
+  buttonStep.Text := 'РЁР°Рі (Space)';
 //  buttonStep.UseVisualStyleBackColor := true;
   // 
   // buttonStart
@@ -727,7 +727,7 @@ begin
   buttonStart.Location := new Point(5, 18);
   buttonStart.Size := new Size(107, 24);
   buttonStart.TabStop := false;
-  buttonStart.Text := 'Пуск (Enter)';
+  buttonStart.Text := 'РџСѓСЃРє (Enter)';
 //  buttonStart.UseVisualStyleBackColor := true;
   // 
   // tableLayoutPanelBottom
@@ -753,7 +753,7 @@ begin
   labelExState.Location := new Point(5, 2);
   labelExState.Margin := new Padding(3, 0, 3, 3);
   labelExState.Size := new Size(453, 15);
-  labelExState.Text := 'Чертежник: Готов';
+  labelExState.Text := 'Р§РµСЂС‚РµР¶РЅРёРє: Р“РѕС‚РѕРІ';
   labelExState.TextAlign := ContentAlignment.MiddleCenter;
   // 
   // groupBoxExState
@@ -785,7 +785,7 @@ begin
   labelState.Location := new Point(6, 54);
   labelState.Margin := new Padding(0);
   labelState.Size := new Size(83, 17);
-  labelState.Text := 'Состояние:';
+  labelState.Text := 'РЎРѕСЃС‚РѕСЏРЅРёРµ:';
   // 
   // labelStep
   // 
@@ -794,7 +794,7 @@ begin
   labelStep.ForeColor := System.Drawing.Color.Black;
   labelStep.Location := new Point(130, 54);
   labelStep.Size := new Size(66, 18);
-  labelStep.Text := 'Шаг: 0';
+  labelStep.Text := 'РЁР°Рі: 0';
   labelStep.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // trackBarSpeed
@@ -811,7 +811,7 @@ begin
   labelSpeed.Location := new Point(6, 16);
   labelSpeed.Margin := new Padding(0);
   labelSpeed.Size := new Size(73, 17);
-  labelSpeed.Text := 'Скорость:';
+  labelSpeed.Text := 'РЎРєРѕСЂРѕСЃС‚СЊ:';
   // 
   // tableLayoutPanelTop
   // 
@@ -837,7 +837,7 @@ begin
   labelZad.Location := new Point(6, 3);
   labelZad.Margin := new Padding(4, 1, 3, 0);
   labelZad.Size := new Size(668, 14);
-  labelZad.Text := 'Задание';
+  labelZad.Text := 'Р—Р°РґР°РЅРёРµ';
   labelZad.TextAlign := ContentAlignment.MiddleLeft;
   // 
   // ExecutorForm
@@ -847,7 +847,7 @@ begin
   MainForm.Controls.Add(tableLayoutPanelTop);
   MainForm.Controls.Add(BottomPanel);
   MainForm.MinimumSize := new Size(687, 240);
-  MainForm.Text := 'Исполнитель Чертежник';
+  MainForm.Text := 'РСЃРїРѕР»РЅРёС‚РµР»СЊ Р§РµСЂС‚РµР¶РЅРёРє';
   BottomPanel.ResumeLayout(false);
   panelBottomLeft.ResumeLayout(false);
   tableLayoutPanelBottom.ResumeLayout(false);
@@ -931,7 +931,7 @@ begin
  labelExState.Text := s;
 end;
 
-// Добавил - МА
+// Р”РѕР±Р°РІРёР» - РњРђ
 procedure ResDM(TaskName: string); 
   external '%PABCSYSTEM%\PT4\PT4PABC.dll' name 'resdm';
 //  
@@ -991,15 +991,15 @@ begin
   //buttonStart.Enabled := False;
   //buttonStep.Enabled := False;
   if DMField.DimX*DMField.DimY=0 then
-    DrawmanError('Чертежник: Не вызвана процедура Task','Задание отсутствует')
+    DrawmanError('Р§РµСЂС‚РµР¶РЅРёРє: РќРµ РІС‹Р·РІР°РЅР° РїСЂРѕС†РµРґСѓСЂР° Task','Р—Р°РґР°РЅРёРµ РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚')
   else if DMField.IsSolution then
   begin
     tableLayoutPanel1.BackColor := LabelGoodEndColor;
     labelExState.BackColor := LabelGoodEndColor;
     tableLayoutPanelBottom.BackColor := LabelGoodEndColor;
-    labelExState.Invoke(SetSafeTextLabelExState,'Чертежник: Задание выполнено');
-    //labelExState.Text := 'Чертежник: Задание выполнено';
-    // Добавил - МА
+    labelExState.Invoke(SetSafeTextLabelExState,'Р§РµСЂС‚РµР¶РЅРёРє: Р—Р°РґР°РЅРёРµ РІС‹РїРѕР»РЅРµРЅРѕ');
+    //labelExState.Text := 'Р§РµСЂС‚РµР¶РЅРёРє: Р—Р°РґР°РЅРёРµ РІС‹РїРѕР»РЅРµРЅРѕ';
+    // Р”РѕР±Р°РІРёР» - РњРђ
     try
       ResDM(DMField.TaskName);
     except
@@ -1008,8 +1008,8 @@ begin
   end
   else
   begin
-    labelExState.Invoke(SetSafeTextLabelExState,'Чертежник: Работа окончена, задание не выполнено');
-    //labelExState.Text := 'Чертежник: Работа окончена, задание не выполнено';
+    labelExState.Invoke(SetSafeTextLabelExState,'Р§РµСЂС‚РµР¶РЅРёРє: Р Р°Р±РѕС‚Р° РѕРєРѕРЅС‡РµРЅР°, Р·Р°РґР°РЅРёРµ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ');
+    //labelExState.Text := 'Р§РµСЂС‚РµР¶РЅРёРє: Р Р°Р±РѕС‚Р° РѕРєРѕРЅС‡РµРЅР°, Р·Р°РґР°РЅРёРµ РЅРµ РІС‹РїРѕР»РЅРµРЅРѕ';
   end;
 end;
 

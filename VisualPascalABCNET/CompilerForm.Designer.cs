@@ -37,7 +37,7 @@ namespace VisualPascalABC
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(304, 23);
             this.button1.TabIndex = 0;
-            this.button1.Text = "Перезапустить компилятор";
+            this.button1.Text = "РџРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ РєРѕРјРїРёР»СЏС‚РѕСЂ";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
@@ -48,7 +48,7 @@ namespace VisualPascalABC
             this.ClientSize = new System.Drawing.Size(328, 149);
             this.Controls.Add(this.button1);
             this.Name = "CompilerForm";
-            this.Text = "Компилятор";
+            this.Text = "РљРѕРјРїРёР»СЏС‚РѕСЂ";
             this.ResumeLayout(false);
 
         }

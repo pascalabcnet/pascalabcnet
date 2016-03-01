@@ -5,14 +5,14 @@ using System;
 namespace PascalABCCompiler.Collections
 {
     /// <summary>
-    /// Расширяемая коллекция. Элементы из нее нельзя удалять.
+    /// Р Р°СЃС€РёСЂСЏРµРјР°СЏ РєРѕР»Р»РµРєС†РёСЏ. Р­Р»РµРјРµРЅС‚С‹ РёР· РЅРµРµ РЅРµР»СЊР·СЏ СѓРґР°Р»СЏС‚СЊ.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [Serializable]
     public class extendable_collection<T> : System.Collections.Generic.IEnumerable<T>
     {
         /// <summary>
-        /// Enumerator для списка элементов.
+        /// Enumerator РґР»СЏ СЃРїРёСЃРєР° СЌР»РµРјРµРЅС‚РѕРІ.
         /// </summary>
         public class enumerator : System.Collections.Generic.IEnumerator<T>
         {
@@ -66,9 +66,9 @@ namespace PascalABCCompiler.Collections
         protected T[] _elements_as_arr = null;
 
         /// <summary>
-        /// Добавить элемент к списку.
+        /// Р”РѕР±Р°РІРёС‚СЊ СЌР»РµРјРµРЅС‚ Рє СЃРїРёСЃРєСѓ.
         /// </summary>
-        /// <param name="expression">Добавляемый элемент.</param>
+        /// <param name="expression">Р”РѕР±Р°РІР»СЏРµРјС‹Р№ СЌР»РµРјРµРЅС‚.</param>
         public void AddElement(T element)
         {
             _elements.Add(element);
@@ -76,9 +76,9 @@ namespace PascalABCCompiler.Collections
         }
 
         /// <summary>
-        /// Добавляет список элементов к списку.
+        /// Р”РѕР±Р°РІР»СЏРµС‚ СЃРїРёСЃРѕРє СЌР»РµРјРµРЅС‚РѕРІ Рє СЃРїРёСЃРєСѓ.
         /// </summary>
-        /// <param name="elements">Список добавляемых элементов.</param>
+        /// <param name="elements">РЎРїРёСЃРѕРє РґРѕР±Р°РІР»СЏРµРјС‹С… СЌР»РµРјРµРЅС‚РѕРІ.</param>
         public void AddRange(extendable_collection<T> elements)
         {
             _elements.AddRange(elements._elements);
@@ -117,9 +117,9 @@ namespace PascalABCCompiler.Collections
         }
 
         /// <summary>
-        /// Возвращает массив элементов, хранящихся в коллкции.
+        /// Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ СЌР»РµРјРµРЅС‚РѕРІ, С…СЂР°РЅСЏС‰РёС…СЃСЏ РІ РєРѕР»Р»РєС†РёРё.
         /// </summary>
-        /// <returns>Массив элементов</returns>
+        /// <returns>РњР°СЃСЃРёРІ СЌР»РµРјРµРЅС‚РѕРІ</returns>
         public T[] ToArray()
         {
             if (_elements_as_arr == null)
@@ -129,10 +129,10 @@ namespace PascalABCCompiler.Collections
         }
 
         /// <summary>
-        /// Индексирует элементы коллекции.
+        /// РРЅРґРµРєСЃРёСЂСѓРµС‚ СЌР»РµРјРµРЅС‚С‹ РєРѕР»Р»РµРєС†РёРё.
         /// </summary>
-        /// <param name="num">Номер элемента.</param>
-        /// <returns>Элемент с указанным номером.</returns>
+        /// <param name="num">РќРѕРјРµСЂ СЌР»РµРјРµРЅС‚Р°.</param>
+        /// <returns>Р­Р»РµРјРµРЅС‚ СЃ СѓРєР°Р·Р°РЅРЅС‹Рј РЅРѕРјРµСЂРѕРј.</returns>
         public T this[int num]
         {
             get
@@ -142,7 +142,7 @@ namespace PascalABCCompiler.Collections
         }
 
         /// <summary>
-        /// Число элементов в коллекции.
+        /// Р§РёСЃР»Рѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РєРѕР»Р»РµРєС†РёРё.
         /// </summary>
         public int Count
         {

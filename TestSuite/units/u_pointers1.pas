@@ -91,7 +91,7 @@ var p1 : ^integer;
     
 begin
 i1 := 333; p1 := @i1; assert(p1^=333);
-i2 := 3.14; p2 := @i2; assert(p2^=3.14);
+i2 := 3.14; p2 := @i2; assert(abs(p2^-3.14) < 0.000001);
 i3 := 'b'; p3 := @i3; assert(p3^='b');
 i4 := 23; p4 := @i4; assert(p4^=23);
 i5 := 23; p5 := @i5; assert(p5^=23);
@@ -101,7 +101,7 @@ i8 := 23; p8 := @i8; assert(p8^=23);
 i9 := 23; p9 := @i9; assert(p9^=23);
 i10 := true; p10 := @i10; assert(p10^=true);
 p1^ := 77; assert(i1=77);
-p2^ := 2.71; assert(i2=2.71);
+p2^ := 2.71; assert(abs(i2-2.71) < 0.000001);
 p3^ := 'k'; assert(i3='k');
 p4^ := 77; assert(i4=77);
 p5^ := 77; assert(i5=77);
@@ -143,7 +143,7 @@ var p1 : ^integer;
 procedure Nested;
 begin
  assert(p1^=333);
- assert(p2^=3.14);
+ assert(abs(p2^-3.14) < 0.000001);
 assert(p3^='b');
  assert(p4^=23);
  assert(p5^=23);
@@ -158,7 +158,7 @@ procedure Nested2;
 procedure Nested3;
 begin
 i1 := 333; p1 := @i1; assert(p1^=333);
-i2 := 3.14; p2 := @i2; assert(p2^=3.14);
+i2 := 3.14; p2 := @i2; assert(abs(p2^-3.14) < 0.000001);
 i3 := 'b'; p3 := @i3; assert(p3^='b');
 i4 := 23; p4 := @i4; assert(p4^=23);
 i5 := 23; p5 := @i5; assert(p5^=23);
@@ -169,7 +169,7 @@ i9 := 23; p9 := @i9; assert(p9^=23);
 i10 := true; p10 := @i10; assert(p10^=true);
 Nested;
 p1^ := 77; assert(i1=77);
-p2^ := 2.71; assert(i2=2.71);
+p2^ := 2.71; assert(abs(i2-2.71) < 0.000001);
 p3^ := 'k'; assert(i3='k');
 p4^ := 77; assert(i4=77);
 p5^ := 77; assert(i5=77);
@@ -191,7 +191,7 @@ end;
 
 begin
 i1 := 333; p1 := @i1; assert(p1^=333);
-i2 := 3.14; p2 := @i2; assert(p2^=3.14);
+i2 := 3.14; p2 := @i2; assert(abs(p2^-3.14) < 0.00001);
 i3 := 'b'; p3 := @i3; assert(p3^='b');
 i4 := 23; p4 := @i4; assert(p4^=23);
 i5 := 23; p5 := @i5; assert(p5^=23);
@@ -202,7 +202,7 @@ i9 := 23; p9 := @i9; assert(p9^=23);
 i10 := true; p10 := @i10; assert(p10^=true);
 Nested;
 p1^ := 77; assert(i1=77);
-p2^ := 2.71; assert(i2=2.71);
+p2^ := 2.71; assert(abs(i2-2.71) < 0.000001);
 p3^ := 'k'; assert(i3='k');
 p4^ := 77; assert(i4=77);
 p5^ := 77; assert(i5=77);
@@ -243,7 +243,7 @@ var p1 : ^integer;
     
 begin
 i1 := 333; p1 := @i1; assert(p1^=333);
-i2 := 3.14; p2 := @i2; assert(p2^=3.14);
+i2 := 3.14; p2 := @i2; assert(abs(p2^-3.14) < 0.00001);
 i3 := 'b'; p3 := @i3; assert(p3^='b');
 i4 := 23; p4 := @i4; assert(p4^=23);
 i5 := 23; p5 := @i5; assert(p5^=23);
@@ -253,7 +253,7 @@ i8 := 23; p8 := @i8; assert(p8^=23);
 i9 := 23; p9 := @i9; assert(p9^=23);
 i10 := true; p10 := @i10; assert(p10^=true);
 p1^ := 77; assert(i1=77);
-p2^ := 2.71; assert(i2=2.71);
+p2^ := 2.71; assert(abs(i2-2.71) < 0.00001);
 p3^ := 'k'; assert(i3='k');
 p4^ := 77; assert(i4=77);
 p5^ := 77; assert(i5=77);

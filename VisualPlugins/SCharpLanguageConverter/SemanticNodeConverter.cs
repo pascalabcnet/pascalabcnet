@@ -37,8 +37,8 @@ namespace Converter
 
         public virtual string ConvertPABCNETNodeProgram(string _nodeName, object _node)
         {
-            // IProgramNode - основной узел, содержит весь текст программы, 
-            // обрабатывается визитором последним.
+            // IProgramNode - РѕСЃРЅРѕРІРЅРѕР№ СѓР·РµР», СЃРѕРґРµСЂР¶РёС‚ РІРµСЃСЊ С‚РµРєСЃС‚ РїСЂРѕРіСЂР°РјРјС‹, 
+            // РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ РІРёР·РёС‚РѕСЂРѕРј РїРѕСЃР»РµРґРЅРёРј.
             return SourceTextBuilder.GetNodeFromStack();
         }
 
@@ -64,7 +64,7 @@ namespace Converter
         {
             if ((_node as ICommonTypeNode).is_value_type)
                 return SourceTextBuilder.ConvertNode("struct", _node);
-            else // сделать для шаблонов, параметризованных щаблонов, классов.
+            else // СЃРґРµР»Р°С‚СЊ РґР»СЏ С€Р°Р±Р»РѕРЅРѕРІ, РїР°СЂР°РјРµС‚СЂРёР·РѕРІР°РЅРЅС‹С… С‰Р°Р±Р»РѕРЅРѕРІ, РєР»Р°СЃСЃРѕРІ.
                 return SourceTextBuilder.ConvertNode("class", _node);
 
         }
@@ -96,32 +96,32 @@ namespace Converter
 
         public virtual string ConvertPABCNETNodeVariableReference(string _nodeName, object _node)
         {
-            //  возвращаем имя переменной
+            //  РІРѕР·РІСЂР°С‰Р°РµРј РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№
             return SourceTextBuilder.ConvertNode(_nodeName, _node);
         }
 
         public virtual string ConvertPABCNETNodeParameterReference(string _nodeName, object _node)
         {
-            //  возвращаем имя переменной
+            //  РІРѕР·РІСЂР°С‰Р°РµРј РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№
             return (_node as ICommonParameterReferenceNode).parameter.name;
         }
 
         public virtual string ConvertPABCNETNodeBoolConstant(string _nodeName, object _node)
         {
-            //  возвращаем имя переменной
+            //  РІРѕР·РІСЂР°С‰Р°РµРј РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№
             return (_node as IBoolConstantNode).constant_value.ToString();
         }
 
         public virtual string ConvertPABCNETNodeFunctionCall(string _nodeName, object _node)
         {
-            //  возвращаем имя переменной
+            //  РІРѕР·РІСЂР°С‰Р°РµРј РёРјСЏ РїРµСЂРµРјРµРЅРЅРѕР№
             return SourceTextBuilder.ConvertNode(_nodeName, _node);
         }
 
         public virtual string ConvertPABCNETNodeParameter(string _nodeName, object _node)
         {
             string type = "";
-            //  возвращаем имя  и тип переменной
+            //  РІРѕР·РІСЂР°С‰Р°РµРј РёРјСЏ  Рё С‚РёРї РїРµСЂРµРјРµРЅРЅРѕР№
             if ((_node as ICommonParameterNode).type is ICompiledTypeNode)
                 type = ((_node as ICommonParameterNode).type as ICompiledTypeNode).compiled_type.ToString();
             if ((_node as ICommonParameterNode).type is ICommonTypeNode)
@@ -161,68 +161,68 @@ namespace Converter
 
         public virtual string ConvertPABCNETNodeIntConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IIntConstantNode).constant_value.ToString();
         }
 
         public virtual string ConvertPABCNETNodeByteConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IByteConstantNode).constant_value.ToString();
         }
         public virtual string ConvertPABCNETNodeSByteConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as ISByteConstantNode).constant_value.ToString();
         }
         public virtual string ConvertPABCNETNodeShortConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IShortConstantNode).constant_value.ToString();
         }
         public virtual string ConvertPABCNETNodeUShortConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IUShortConstantNode).constant_value.ToString();
         }
         public virtual string ConvertPABCNETNodeUIntConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IUIntConstantNode).constant_value.ToString();
         }
         public virtual string ConvertPABCNETNodeULongConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IULongConstantNode).constant_value.ToString();
         }
 
         public virtual string ConvertPABCNETNodeLongConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as ILongConstantNode).constant_value.ToString();
         }
 
         public virtual string ConvertPABCNETNodeDoubleConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IDoubleConstantNode).constant_value.ToString();
         }
 
         public virtual string ConvertPABCNETNodeFloatConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return (_node as IFloatConstantNode).constant_value.ToString();
         }
 
         public virtual string ConvertPABCNETNodeCharConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return "'" + (_node as ICharConstantNode).constant_value.ToString() + "'";
         }
 
         public virtual string ConvertPABCNETNodeStringConstant(string _nodeName, object _node)
         {
-            //  возвращаем число integer
+            //  РІРѕР·РІСЂР°С‰Р°РµРј С‡РёСЃР»Рѕ integer
             return "\"" + (_node as IStringConstantNode).constant_value.ToString() + "\"";
         }
 

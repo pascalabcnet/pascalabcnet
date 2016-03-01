@@ -625,35 +625,41 @@ namespace TreeConverter.LambdaExpressions.Closure
 
         private List<procedure_definition> VisitClassDefinitions()
         {
-            _visitor.context.SaveContextAndUpToGlobalLevel();
-            _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase;
-
             var procedures = new List<procedure_definition>();
-            var lambdaGroups =
-                _lambdasToBeAddedAsMethods.GroupBy(l => l.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod)
-                                          .ToDictionary(x => x.Key, x => x.ToList());
-            foreach (var clDecl in _generatedScopeClassesInfo.Where(cd => !(cd.Value.CorrespondingTreeNode is CapturedVariablesTreeNodeClassScope)).OrderBy(cd => cd.Key))
+            _visitor.context.SaveContextAndUpToGlobalLevel();
+            try
             {
-                var lambdas = clDecl.Value.NestedLambdas;
-                List<CapturedVariablesTreeNodeLambdaScope> ls;
-                if (lambdaGroups.TryGetValue(clDecl.Key, out ls))
-                {
-                    lambdas = lambdas.Concat(ls).ToList();
-                }
-                var classDecl = (class_definition)clDecl.Value.ClassDeclaration.type_def;
-                foreach (var lambdaDef in lambdas)
-                {
-                    var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDef.LambdaDefinition);
-                    classDecl.body.Add(SyntaxTreeBuilder.BuildOneMemberSection(procDecl));
-                }
+                _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase;
 
-                var cl = CreateTypeDeclarationWithForwardDeclaration(clDecl.Value.ClassDeclaration);
-                procedures.AddRange(cl.Item2);
-                _visitor.visit(cl.Item1);
+                var lambdaGroups =
+                    _lambdasToBeAddedAsMethods.GroupBy(l => l.ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod)
+                                              .ToDictionary(x => x.Key, x => x.ToList());
+                foreach (var clDecl in _generatedScopeClassesInfo.Where(cd => !(cd.Value.CorrespondingTreeNode is CapturedVariablesTreeNodeClassScope)).OrderBy(cd => cd.Key))
+                {
+                    var lambdas = clDecl.Value.NestedLambdas;
+                    List<CapturedVariablesTreeNodeLambdaScope> ls;
+                    if (lambdaGroups.TryGetValue(clDecl.Key, out ls))
+                    {
+                        lambdas = lambdas.Concat(ls).ToList();
+                    }
+                    var classDecl = (class_definition)clDecl.Value.ClassDeclaration.type_def;
+                    foreach (var lambdaDef in lambdas)
+                    {
+                        var procDecl = LambdaHelper.ConvertLambdaNodeToProcDefNode(lambdaDef.LambdaDefinition);
+                        classDecl.body.Add(SyntaxTreeBuilder.BuildOneMemberSection(procDecl));
+                    }
+
+                    var cl = CreateTypeDeclarationWithForwardDeclaration(clDecl.Value.ClassDeclaration);
+                    procedures.AddRange(cl.Item2);
+                    _visitor.visit(cl.Item1);
+                }
+            }
+            finally
+            {
+                _visitor.context.RestoreCurrentContext();
+                _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
             }
             
-            _visitor.context.RestoreCurrentContext();
-            _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
 
             return procedures;
         }
@@ -662,9 +668,15 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             _visitor.context.SaveContextAndUpToGlobalLevel();
             _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingVisitGeneratedClassesPhase;
-            procedures.ForEach(p => _visitor.visit(p));
-            _visitor.context.RestoreCurrentContext();
-            _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
+            try
+            { 
+                procedures.ForEach(p => _visitor.visit(p));
+            }
+            finally
+            {
+                _visitor.context.RestoreCurrentContext();
+                _visitor.lambdaProcessingState = LambdaProcessingState.ClosuresProcessingPhase;
+            }
         }
 
         private void SubstituteVarDefInProcedure(statement_list statementList) //TODO: сейчас обрабатывается так, как будто блока объявлений declarations в функции нет. Нужно будет предусмотреть, но не только для функций, а еще для всех узлов где есть block, который содержит declarations

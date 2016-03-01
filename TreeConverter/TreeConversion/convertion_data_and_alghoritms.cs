@@ -400,10 +400,10 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="top_function">Функция в которой мы находимся.</param>
         /// <param name="allow_procedure">Может ли это быть вызов процедуры. false если вызов стоит в выражении или правой части опреатора присваивания.</param>
         /// <returns>Возвращает узел вызова метода.</returns>
-		public expression_node create_full_function_call(expressions_list exprs,SymbolInfo si,location loc,
-			common_type_node converted_type,common_function_node top_function,bool allow_procedure)
-		{
-			function_node fn=select_function(exprs,si,loc);
+		public expression_node create_full_function_call(expressions_list exprs, SymbolInfo si, location loc,
+            common_type_node converted_type, common_function_node top_function, bool allow_procedure)
+        {
+            function_node fn = select_function(exprs, si, loc);
 
             /*
             if (fn.compile_time_executor != null)
@@ -416,108 +416,114 @@ namespace PascalABCCompiler.TreeConverter
             }
             */
             //allow_procedure = true;
-			if ((!allow_procedure)&&(fn.return_value_type==null))
-			{
+            if ((!allow_procedure) && (fn.return_value_type == null))
+            {
                 throw new SimpleSemanticError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
-			}
+            }
 
-			expression_node expr_node=null;
-			switch (fn.semantic_node_type)
-			{
-				case semantic_node_type.basic_function_node:
-				case semantic_node_type.common_namespace_function_node:
-				{
-					expr_node=create_simple_function_call(fn,loc,exprs.ToArray());
-					break;
-				}
-				case semantic_node_type.common_method_node:
-				case semantic_node_type.compiled_function_node:
-				{
-					SemanticTree.IClassMemberNode icmn=(SemanticTree.IClassMemberNode)fn;
-					if (icmn.polymorphic_state==SemanticTree.polymorphic_state.ps_static)
-					{
-						expr_node=create_simple_function_call(fn,loc,exprs.ToArray());
-						break;
-					}
-                    //expression_node tn = new this_node(converted_type,loc);
-					base_function_call cmc=null;
-					switch (fn.semantic_node_type)
-					{
-						case semantic_node_type.common_method_node:
-						{
-                            //ssyy добавил
-                            if (((common_method_node)fn).is_constructor)
-                            {
-                                common_constructor_call ccc = new common_constructor_call((common_method_node)fn, loc);
-                                //(ssyy) По-видимому, здесь всегда можно присваивать false, так как при создании нового объекта мы сюда не заходим...
-                                ccc._new_obj_awaited = false;
-                                if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+            expression_node expr_node = null;
+            switch (fn.semantic_node_type)
+            {
+                case semantic_node_type.basic_function_node:
+                case semantic_node_type.common_namespace_function_node:
+                    {
+                        expr_node = create_simple_function_call(fn, loc, exprs.ToArray());
+                        break;
+                    }
+                case semantic_node_type.common_method_node:
+                case semantic_node_type.compiled_function_node:
+                    {
+                        SemanticTree.IClassMemberNode icmn = (SemanticTree.IClassMemberNode)fn;
+                        if (icmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                        {
+                            expr_node = create_simple_function_call(fn, loc, exprs.ToArray());
+                            break;
+                        }
+                        //expression_node tn = new this_node(converted_type,loc);
+                        base_function_call cmc = null;
+                        switch (fn.semantic_node_type)
+                        {
+                            case semantic_node_type.common_method_node:
                                 {
-                                    throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                                    //ssyy добавил
+                                    if (((common_method_node)fn).is_constructor)
+                                    {
+                                        common_constructor_call ccc = new common_constructor_call((common_method_node)fn, loc);
+                                        //(ssyy) По-видимому, здесь всегда можно присваивать false, так как при создании нового объекта мы сюда не заходим...
+                                        ccc._new_obj_awaited = false;
+                                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                                        {
+                                            throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                                        }
+                                        cmc = ccc;
+                                    }
+                                    else
+                                    //\ssyy
+                                    {
+                                        if (fn is generic_method_instance_node)
+                                        {
+                                            common_method_node cmn = (fn as generic_method_instance_node).original_function as common_method_node;
+                                            cmc = new common_method_call((common_method_node)fn, syntax_tree_visitor.GetCurrentObjectReference(cmn.cont_type.Scope, fn, loc), loc);
+                                        }
+                                        else
+                                            cmc = new common_method_call((common_method_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((common_method_node)fn).cont_type.Scope, fn, loc), loc);
+                                        (cmc as common_method_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
+                                    }
+                                    break;
                                 }
-                                cmc = ccc;
-                            }
-                            else
-                            //\ssyy
-                            {
-                                cmc = new common_method_call((common_method_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((common_method_node)fn).cont_type.Scope, fn, loc), loc);
-                                (cmc as common_method_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
-                            }
-							break;
-						}
-						case semantic_node_type.compiled_function_node:
-						{
-                            cmc = new compiled_function_call((compiled_function_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((compiled_function_node)fn).cont_type.Scope, fn, loc), loc);
-                            (cmc as compiled_function_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
-							break;
-						}
-					}
-					cmc.parameters.AddRange(exprs);
-					expr_node=cmc;
-					break;
-				}
-				case semantic_node_type.common_in_function_function_node:
-				{
-					common_in_function_function_node cffn=(common_in_function_function_node)fn;
-					common_in_function_function_call cffc=new common_in_function_function_call(cffn,
-						symtab.GetRelativeScopeDepth(cffn.function.scope,top_function.scope),loc);
-					cffc.parameters.AddRange(exprs);
-					expr_node=cffc;
-					break;
-				}
+                            case semantic_node_type.compiled_function_node:
+                                {
+                                    cmc = new compiled_function_call((compiled_function_node)fn, syntax_tree_visitor.GetCurrentObjectReference(((compiled_function_node)fn).cont_type.Scope, fn, loc), loc);
+                                    (cmc as compiled_function_call).virtual_call = !syntax_tree_visitor.inherited_ident_processing;
+                                    break;
+                                }
+                        }
+                        cmc.parameters.AddRange(exprs);
+                        expr_node = cmc;
+                        break;
+                    }
+                case semantic_node_type.common_in_function_function_node:
+                    {
+                        common_in_function_function_node cffn = (common_in_function_function_node)fn;
+                        common_in_function_function_call cffc = new common_in_function_function_call(cffn,
+                            symtab.GetRelativeScopeDepth(cffn.function.scope, top_function.scope), loc);
+                        cffc.parameters.AddRange(exprs);
+                        expr_node = cffc;
+                        break;
+                    }
                 //ssyy добавил
                 case semantic_node_type.compiled_constructor_node:
-                {
-                    compiled_constructor_node ccn = fn as compiled_constructor_node;
-                    if (ccn == null)
                     {
-                        throw new CompilerInternalError("compiled_constructor_node expected");
+                        compiled_constructor_node ccn = fn as compiled_constructor_node;
+                        if (ccn == null)
+                        {
+                            throw new CompilerInternalError("compiled_constructor_node expected");
+                        }
+                        compiled_constructor_call ccc = new compiled_constructor_call(ccn, loc);
+                        ccc.parameters.AddRange(exprs);
+                        ccc._new_obj_awaited = false;
+                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                        {
+                            throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                        }
+                        expr_node = ccc;
+                        break;
                     }
-                    compiled_constructor_call ccc = new compiled_constructor_call(ccn, loc);
-                    ccc.parameters.AddRange(exprs);
-                    ccc._new_obj_awaited = false;
-                    if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
-                    {
-                        throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
-                    }
-                    expr_node = ccc;
-                    break;
-                }
                 case semantic_node_type.indefinite_definition_node:
-                {
-                    indefinite_function_call ifc = new indefinite_function_call(fn, loc);
-                    ifc.parameters.AddRange(exprs);
-                    expr_node = ifc;
-                    break;
-                }
+                    {
+                        indefinite_function_call ifc = new indefinite_function_call(fn, loc);
+                        ifc.parameters.AddRange(exprs);
+                        expr_node = ifc;
+                        break;
+                    }
                 //\ssyy
-				default:
-				{
-                    throw new NotSupportedError(loc);
-				}
-			}
-			return expr_node;
-		}
+                default:
+                    {
+                        throw new NotSupportedError(loc);
+                    }
+            }
+            return expr_node;
+        }
 
         /// <summary>
         /// Проверяет, что оператор статический метод класса.
@@ -1397,13 +1403,29 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     return false;
                 }
-                common_type_node ctdef = tdef as common_type_node;
-                int count = ctdef.generic_params.Count;
-                for (int i = 0; i < count; ++i)
+                
+                if (tdef is common_type_node)
                 {
-                    if (ctdef.generic_params[i] != tinst.instance_params[i])
+                    common_type_node ctdef = tdef as common_type_node;
+                    int count = ctdef.generic_params.Count;
+                    for (int i = 0; i < count; ++i)
                     {
-                        return false;
+                        if (ctdef.generic_params[i] != tinst.instance_params[i])
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (tdef is compiled_type_node)
+                {
+                    compiled_type_node ctdef = tdef as compiled_type_node;
+                    int count = ctdef.generic_params.Count;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        if (ctdef.generic_params[i] != tinst.instance_params[i])
+                        {
+                            return false;
+                        }
                     }
                 }
                 return true;
@@ -1625,7 +1647,9 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if ((exprs.Count < fn.parameters.Count) && (fn.node_kind == SemanticTree.node_kind.compiled))
             {
-                if (exprs.Count == 0 && fn.parameters != null && fn.parameters.Count == 1 && fn.parameters[0].is_params)
+                if (exprs.Count == 0 && fn.parameters != null && fn.parameters.Count == 1 && fn.parameters[0].is_params ||
+                    exprs.Count == 1 && fn.parameters != null && fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null &&
+                    fn.parameters.Count == 2 && fn.parameters[1].is_params)
                 {
                     statements_expression_node sre = new statements_expression_node(ptcal.snl, ptcal.var_ref, ptcal.var_ref.location);
                     exprs.AddElement(sre);
@@ -1820,7 +1844,10 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else if (parameters.Count == 1 && fn is common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null && fn.parameters.Count == 2 && fn.parameters[1].is_params)
                     set_of_possible_functions.AddElement(fn);
-                functions=functions.Next;
+                else if (parameters.Count == 1 && fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null && fn.parameters.Count == 2 && fn.parameters[1].is_params)
+                    if (!set_of_possible_functions.Contains(fn))
+                        set_of_possible_functions.AddElement(fn);
+                functions =functions.Next;
 			}
 
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
@@ -1878,12 +1905,30 @@ namespace PascalABCCompiler.TreeConverter
 
             possible_type_convertions_list_list tcll = new possible_type_convertions_list_list();
 
-			for(int i=0;i<set_of_possible_functions.Count;i++)
-			{
-				possible_type_convertions_list tc=get_conversions(parameters,set_of_possible_functions[i].parameters,
-					is_alone_method_defined,loc);
-				tcll.AddElement(tc);
-			}
+            for (int i = 0; i < set_of_possible_functions.Count; i++)
+            {
+                possible_type_convertions_list tc = get_conversions(parameters, set_of_possible_functions[i].parameters,
+                    is_alone_method_defined, loc);
+                //fix dlja lambd i extension metodov (c->c.IsDigit)
+                if (tc == null)
+                {
+                    expressions_list el = new expressions_list();
+                    el.AddRange(parameters);
+                    bool has_lambda_var = false;
+                    for (int k = 0; k < el.Count; k++)
+                    {
+                        if (el[k] is local_variable_reference && el[k].type is delegated_methods && (el[k].type as delegated_methods).empty_param_method != null)
+                        {
+                            el[k].type = (el[k].type as delegated_methods).empty_param_method.ret_type;
+                            has_lambda_var = true;
+                        }
+                    }
+                    if (has_lambda_var)
+                        tc = get_conversions(el, set_of_possible_functions[i].parameters,
+                            is_alone_method_defined, loc);
+                }
+                tcll.AddElement(tc);
+            }
 
 			int j=0;
 			while(j<set_of_possible_functions.Count)
@@ -1952,61 +1997,6 @@ namespace PascalABCCompiler.TreeConverter
 
             }
 
-            // TODO: Исправить этот алгоритм, сделав каждый с каждым - вроде исправил - см. выше
-            /*j = 1;
-				while(j<set_of_possible_functions.Count)
-				{
-                    method_compare mc = compare_methods(set_of_possible_functions[0],
-                        set_of_possible_functions[j], tcll[0], tcll[j]);
-					if (mc==method_compare.greater_method)
-					{
-						tcll.remove_at(j);
-						set_of_possible_functions.remove_at(j);
-						remove=true;
-					}
-					else if (mc==method_compare.less_method)
-					{
-						tcll[0]=tcll[j];
-						set_of_possible_functions[0]=set_of_possible_functions[j];
-						tcll.remove_at(j);
-						set_of_possible_functions.remove_at(j);
-						remove=true;
-					}
-					else
-					{
-						j++;
-					}
-				}
-			}*/
-
-            /*remove=true;
-            while (remove)
-            {
-                if (set_of_possible_functions.Count == 1)
-                {
-                    check_single_possible_convertion(loc, tcll[0]);
-                    convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
-                    return set_of_possible_functions[0];
-                }
-                remove = false;
-                j = 1;
-                while (j < set_of_possible_functions.Count)
-                {
-
-                }
-            }*/
-			//Тут некоторое дублирование кода, но сюда программа не должна никогда зайти.
-			//Должен быть выполнен if выше.
-			//Но пусть пока повисит. Потом нужно разобраться и убрать.
-			/*if (set_of_possible_functions.Count==1)
-			{
-				check_single_possible_conversion(func_call,tcll[0]);
-				func_call.function=set_of_possible_functions[0];
-				convert_function_call_expressions(func_call,tcll[0]);
-				func_call.type=func_call.function.return_value_type;
-				return func_call;
-			}*/
-
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
             if (set_of_possible_functions.Count == 2 && indefinits.Count == 0)
@@ -2038,8 +2028,58 @@ namespace PascalABCCompiler.TreeConverter
                 return new indefinite_functions_set(indefinits);
             }
 
+            SortedDictionary<int, List<function_node>> distances = new SortedDictionary<int, List<function_node>>();
+            foreach (function_node fn in set_of_possible_functions)
+            {
+                int distance = 0;
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    type_node from = parameters[i].type;
+                    type_node to = fn.parameters[Math.Min(i,fn.parameters.Count-1)].type;
+                    if (fn.parameters[Math.Min(i, fn.parameters.Count - 1)].is_params)
+                        to = to.element_type;
+                    distance += get_type_distance(from, to);
+                }
+                List<function_node> lst;
+                if (distances.TryGetValue(distance,out lst))
+                {
+                    lst.Add(fn);
+                }
+                else
+                {
+                    lst = new List<function_node>();
+                    lst.Add(fn);
+                    distances[distance] = lst;
+                }
+            }
+            foreach (int dist in distances.Keys)
+            {
+                List<function_node> funcs = distances[dist];
+                if (funcs.Count == 1)
+                {
+                    possible_type_convertions_list tcl = get_conversions(parameters, funcs[0].parameters, true, loc);
+                    convert_function_call_expressions(funcs[0], parameters, tcl);
+                    return funcs[0];
+                }
+            }
             return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));
 		}
+
+        private int get_type_distance(type_node from, type_node to)
+        {
+            if (from == to)
+                return 0;
+            type_compare tc = type_table.compare_types(from, to);
+            if (tc == type_compare.non_comparable_type)
+                return 1000;
+            if (!from.IsInterface && to.IsInterface)
+                return 2;
+            if (tc == type_compare.less_type)
+                return 1;
+            if (tc == type_compare.greater_type)
+                return 3;
+            return 1000;
+        }
 
         private function_node is_exist_eq_return_value_method(function_node fn, function_node_list funcs)
         {

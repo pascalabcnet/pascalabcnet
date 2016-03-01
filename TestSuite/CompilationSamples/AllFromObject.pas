@@ -1,4 +1,4 @@
-// Все типы - производные от Object
+// Р’СЃРµ С‚РёРїС‹ - РїСЂРѕРёР·РІРѕРґРЅС‹Рµ РѕС‚ Object
 var 
   i: integer;
   r: real;
@@ -10,5 +10,5 @@ begin
   o := r;
   writeln(o.GetType);
   if o.GetType=typeof(real) then
-    writeln('В переменной o - вещественный тип');
+    writeln('Р’ РїРµСЂРµРјРµРЅРЅРѕР№ o - РІРµС‰РµСЃС‚РІРµРЅРЅС‹Р№ С‚РёРї');
 end.

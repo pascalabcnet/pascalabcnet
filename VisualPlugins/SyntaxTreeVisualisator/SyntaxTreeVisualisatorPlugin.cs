@@ -27,7 +27,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "(c) Ткачук А.В. 2006,2008";
+                return "Copyright В© 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich";
             }
         }
 

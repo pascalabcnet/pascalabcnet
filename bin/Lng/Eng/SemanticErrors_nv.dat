@@ -88,6 +88,9 @@ REAL_TYPE_IN_DOUBLE_COLON_EXPRESSION_EXPECTED=Expression in this format expressi
 ONLY_ONE_PARAMS_PARAMETER_ALLOWED=A params parameter must be the last parameter in a formal parameter list
 ONLY_UNSIZED_ARRAY_PARAMS_PARAMETER_ALLOWED=The params parameter must be a single dimensional array
 {0}_DIMENSIONAL_ARRAY_CAN_NOT_HAVE_{1}_AND_MORE_INDEXING=Wrong number of indices. '{0}' expected
+TUPLE_CAN_HAVE_ONLY_ONE_INDEX=Tuple can have only one index
+TUPLE_INDEX_OUT_OF_RANGE_{0}=Tuple index must be >=0 and <={0}
+TUPLE_INDEX_MUST_BE_INTEGER_CONSTANT=Tuple index must be integer constant
 INHERITED_EXPECTED_IN_CLASS='inherited' can be used only in methods
 NO_BASE_CLASS_DEFINED_BUT_INHERITED_MEET='inherited' is not allowed, because the class has no ancestor.
 NO_METHOD_{0}_IN_CLASS_{1}=No method '{0}' in class '{1}'

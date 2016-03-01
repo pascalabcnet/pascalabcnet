@@ -9,6 +9,12 @@
 uses PascalABCCompiler, System.IO, System.Diagnostics;
 
 var TestSuiteDir: string;
+var PathSeparator: string := Path.DirectorySeparatorChar;
+
+function IsUnix: boolean;
+begin
+  Result := (System.Environment.OSVersion.Platform = System.PlatformID.Unix) or (System.Environment.OSVersion.Platform = System.PlatformID.MacOSX);  
+end;
 
 function GetTestSuiteDir: string;
 begin
@@ -20,7 +26,7 @@ end;
 function GetLibDir: string;
 begin
   var dir := Path.GetDirectoryName(GetEXEFileName());
-  Result := dir+'\Lib';
+  Result := dir+PathSeparator+'Lib';
 end;
 
 procedure CompileErrorTests(withide: boolean);
@@ -28,12 +34,15 @@ begin
   
   var comp := new Compiler();
   
-  var files := Directory.GetFiles(TestSuiteDir+'\errors','*.pas');
+  var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'errors','*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
-    co.OutputDirectory := TestSuiteDir+'\errors';
+    co.OutputDirectory := TestSuiteDir+PathSeparator+'errors';
     co.UseDllForSystemUnits := false;
     co.RunWithEnvironment := withide;
     comp.ErrorsList.Clear();
@@ -62,9 +71,12 @@ begin
   var files := Directory.GetFiles(TestSuiteDir,'*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
-    co.OutputDirectory := TestSuiteDir+'\exe';
+    co.OutputDirectory := TestSuiteDir+PathSeparator+'exe';
     co.UseDllForSystemUnits := withdll;
     co.RunWithEnvironment := false;
     co.IgnoreRtlErrors := false;
@@ -87,12 +99,15 @@ begin
   
   var comp := new Compiler();
   
-  var files := Directory.GetFiles(TestSuiteDir+'\'+dir,'*.pas');
+  var files := Directory.GetFiles(TestSuiteDir+PathSeparator+dir,'*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
-    co.OutputDirectory := TestSuiteDir+'\'+dir;
+    co.OutputDirectory := TestSuiteDir+PathSeparator+dir;
     co.UseDllForSystemUnits := withdll;
     co.RunWithEnvironment := false;
     co.IgnoreRtlErrors := false;
@@ -112,10 +127,13 @@ end;
 procedure CompileAllUnits;
 begin
   var comp := new Compiler();
-  var files := Directory.GetFiles(TestSuiteDir+'\units','*.pas');
-  var dir := TestSuiteDir+'\units\';
+  var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'units','*.pas');
+  var dir := TestSuiteDir+PathSeparator+'units'+PathSeparator;
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
     co.OutputDirectory := dir;
@@ -138,12 +156,15 @@ begin
   System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
   var comp := new Compiler();
   
-  var files := Directory.GetFiles(TestSuiteDir+'\usesunits','*.pas');
+  var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'usesunits','*.pas');
   for var i := 0 to files.Length - 1 do
   begin
+    var content := &File.ReadAllText(files[i]);
+    if content.StartsWith('//winonly') and IsUnix then
+      continue;
     var co: CompilerOptions := new CompilerOptions(files[i],CompilerOptions.OutputType.ConsoleApplicaton);
     co.Debug := true;
-    co.OutputDirectory := TestSuiteDir+'\exe';
+    co.OutputDirectory := TestSuiteDir+PathSeparator+'exe';
     co.UseDllForSystemUnits := false;
     comp.ErrorsList.Clear();
     comp.Warnings.Clear();
@@ -160,24 +181,24 @@ end;
 procedure CopyPCUFiles;
 begin
   System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
-  var files := Directory.GetFiles(TestSuiteDir+'\units','*.pcu');
+  var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'units','*.pcu');
   
   foreach fname: string in files do
   begin
-    &File.Move(fname,TestSuiteDir+'\usesunits\'+Path.GetFileName(fname));
+    &File.Move(fname,TestSuiteDir+PathSeparator+'usesunits'+PathSeparator+Path.GetFileName(fname));
   end;
 end;
 
 procedure RunAllTests(redirectIO: boolean);
 begin
-  var files := Directory.GetFiles(TestSuiteDir+'\exe','*.exe');
+  var files := Directory.GetFiles(TestSuiteDir+PathSeparator+'exe','*.exe');
   for var i := 0 to files.Length - 1 do
   begin
       var psi := new System.Diagnostics.ProcessStartInfo(files[i]);
       psi.CreateNoWindow := true;
 		  psi.UseShellExecute := false;
 		  
-		  psi.WorkingDirectory := TestSuiteDir+'\exe';
+		  psi.WorkingDirectory := TestSuiteDir+PathSeparator+'exe';
 		  {psi.RedirectStandardInput := true;
 		  psi.RedirectStandardOutput := true;
 		  psi.RedirectStandardError := true;}
@@ -207,10 +228,10 @@ end;
 procedure RunFormatterTests;
 begin
   CodeCompletion.FormatterTester.Test();
-  var errors := &File.ReadAllText(TestSuiteDir+'\formatter_tests\output\log.txt');
+  var errors := &File.ReadAllText(TestSuiteDir+PathSeparator+'formatter_tests'+PathSeparator+'output'+PathSeparator+'log.txt');
   if not string.IsNullOrEmpty(errors) then
   begin
-    System.Windows.Forms.MessageBox.Show(errors+System.Environment.NewLine+'more info at TestSuite\formatter_tests\output\log.txt');
+    System.Windows.Forms.MessageBox.Show(errors+System.Environment.NewLine+'more info at TestSuite/formatter_tests/output/log.txt');
     Halt;
   end;
 end;
@@ -230,18 +251,20 @@ end;
 
 procedure ClearExeDir;
 begin
-  ClearDirByPattern(TestSuiteDir+'\exe','*.*');
-  ClearDirByPattern(TestSuiteDir+'\CompilationSamples','*.exe');
-  ClearDirByPattern(TestSuiteDir+'\CompilationSamples','*.pdb');
-  ClearDirByPattern(TestSuiteDir+'\CompilationSamples','*.pcu');
-  ClearDirByPattern(TestSuiteDir+'\pabcrtl_tests','*.exe');
-  ClearDirByPattern(TestSuiteDir+'\pabcrtl_tests','*.pdb');
-  ClearDirByPattern(TestSuiteDir+'\pabcrtl_tests','*.pcu');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'exe','*.*');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.exe');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.mdb');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.pdb');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'CompilationSamples','*.pcu');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.exe');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.pdb');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.mdb');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'pabcrtl_tests','*.pcu');
 end;
 
 procedure DeletePCUFiles;
 begin
-  ClearDirByPattern(TestSuiteDir+'\usesunits','*.pcu');
+  ClearDirByPattern(TestSuiteDir+PathSeparator+'usesunits','*.pcu');
 end;
 
 procedure DeletePABCSystemPCU;
@@ -255,7 +278,7 @@ begin
   var files := Directory.GetFiles(GetLibDir(),'*.pas');
   foreach f: string in files do
   begin
-    &File.Copy(f, TestSuiteDir+'\CompilationSamples\'+Path.GetFileName(f), true);
+    &File.Copy(f, TestSuiteDir+PathSeparator+'CompilationSamples'+PathSeparator+Path.GetFileName(f), true);
   end;
 end;
 
@@ -295,6 +318,6 @@ begin
     writeln('Formatter tests run successfully');
   except
     on e: Exception do
-      WriteAllText('d:\err.txt',e.ToString());
+      assert(false,e.ToString());
   end;
 end.

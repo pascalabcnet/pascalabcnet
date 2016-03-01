@@ -24,6 +24,7 @@ INCLUDE_EMPTY_FILE=Compiler directive $include: file name is absent
 UNNECESSARY $endif=Extra $endif
 ENDIF_ABSENT=Not closed directive $ifdef or $ifndef - $endif is absent
 UNNECESSARY $else=Extra $else
+TYPE_NAME_EXPECTED=Type expected
 
 EOF1=end of file
 EOF=(end of file)
@@ -47,6 +48,8 @@ ONE_EOF=Expected end of file
 ONE_TKIDENTIFIER=Expected identefier
 ONE_OPERATOR=Expected operator
 ONE_STMT=Expected statement
+BAD_TUPLE=Badly formed Tuple
+TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Count of Tuple elements must be <=7
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Duplicate field names in anonymous type
 BAD_ANON_TYPE=Bad field name in anonymous type

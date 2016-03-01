@@ -1231,6 +1231,8 @@ namespace CodeCompletion
                         }
                         this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
                         topScope.AddExtensionMethod(meth_name, ps, ts);
+                        /*if (topScope is TemplateParameterScope || topScope is UnknownScope)
+                            TypeTable.obj_type.AddExtensionMethod(meth_name, ps, ts);*/
                         pr = new ProcRealization(ps, cur_scope);
                         pr.already_defined = true;
                         ps.proc_realization = pr;
@@ -2184,9 +2186,15 @@ namespace CodeCompletion
 				{
 					if (!search_all)
 					{
+                        if (returned_scope is NamespaceScope)
+                        {
+                            returned_scope = returned_scope.FindNameOnlyInType((_dot_node.right as ident).name);
+                            return;
+                        }
                         TypeScope ts = returned_scope as TypeScope;
                         if (returned_scope is ProcScope)
                             ts = (returned_scope as ProcScope).return_type;
+
 						returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
                         if (returned_scope == null)
                         {
@@ -2446,11 +2454,29 @@ namespace CodeCompletion
         	SymScope[] names = returned_scopes.ToArray();
         	ProcScope ps = select_method(names,null,null,_method_call.parameters != null?_method_call.parameters.expressions.ToArray():null);
         	returned_scopes.Clear();
+
         	if (ps != null)
         	{
         		if (ps.return_type != null)
                 {
-					returned_scope = ps.return_type;
+                    /*if (ps.IsGeneric())
+                    {
+                        List<TypeScope> gen_args = new List<TypeScope>();
+                        if (_method_call.parameters != null)
+                            foreach (expression expr in _method_call.parameters.expressions)
+                            {
+                                expr.visit(this);
+                                if (returned_scope == null || !(returned_scope is TypeScope))
+                                {
+                                    gen_args.Clear();
+                                    break;
+                                }
+                                gen_args.Add(returned_scope as TypeScope);
+                            }
+                        if (gen_args.Count > 0)
+                            ps = ps.GetInstance(gen_args);
+                    }*/
+                    returned_scope = ps.return_type;
                 }
 				else 
 					returned_scope = null;
@@ -2749,27 +2775,64 @@ namespace CodeCompletion
 
         public override void visit(enum_type_definition _enum_type_definition)
         {
+            bool is_tuple = false;
+            template_type_reference tuple = new template_type_reference();
+            tuple.name = new named_type_reference(new ident_list(new ident("System"), new ident("Tuple")).idents);
+            template_param_list tpl = new template_param_list();
+            tuple.params_list = tpl;
+            if (_enum_type_definition.enumerators != null)
+                foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
+                {
+                    if (!(en.name is named_type_reference))
+                    {
+                        is_tuple = true;
+                    }
+                    else
+                    {
+                        named_type_reference ntr = en.name as named_type_reference;
+                        if (ntr.names.Count > 1 || ntr.names.Count == 0)
+                        {
+                            is_tuple = true;
+                        }
+                        else
+                        {
+                            SymScope ss = cur_scope.FindName(ntr.FirstIdent.name);
+                            if (ss != null && ss is TypeScope)
+                            {
+                                is_tuple = true;
+                            }
+                        }
+                    }
+                    tpl.Add(en.name);
+                }
+            if (is_tuple)
+            {
+                tuple.visit(this);
+                return;
+            }
             //throw new Exception("The method or operation is not implemented.");
-            EnumScope enum_scope = new EnumScope(SymbolKind.Enum,cur_scope,
-                                                 TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum,typeof(Enum).FullName),typeof(Enum)));
+            EnumScope enum_scope = new EnumScope(SymbolKind.Enum, cur_scope,
+                                         TypeTable.get_compiled_type(new SymInfo(typeof(Enum).Name, SymbolKind.Enum, typeof(Enum).FullName), typeof(Enum)));
             enum_scope.loc = get_location(_enum_type_definition);
             enum_scope.topScope = cur_scope;
             List<ElementScope> elems = new List<ElementScope>();
             if (_enum_type_definition.enumerators != null)
                 foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
                 {
-                    ElementScope ss = new ElementScope(new SymInfo(en.name.name, SymbolKind.Constant, en.name.name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope, cur_scope);
+                    var name = (en.name as named_type_reference).FirstIdent.name;
+                    ElementScope ss = new ElementScope(new SymInfo(name, SymbolKind.Constant, name),/*cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name)*/enum_scope, cur_scope);
                     ss.is_static = true;
-                    ss.cnst_val = en.name.name;
+                    ss.cnst_val = name;
                     elems.Add(ss);
                     ss.loc = get_location(en);
-                    cur_scope.AddName(en.name.name, ss);
-                    enum_scope.AddName(en.name.name, ss);
-                    enum_scope.AddEnumConstant(en.name.name);
-                    ss.AddDocumentation(this.converter.controller.docs[en]);
+                    cur_scope.AddName(name, ss);
+                    enum_scope.AddName(name, ss);
+                    enum_scope.AddEnumConstant(name);
+                    if (this.converter.controller.docs.ContainsKey(en))
+                        ss.AddDocumentation(this.converter.controller.docs[en]);
                 }
-            for (int i=0; i<elems.Count; i++)
-            	elems[i].MakeDescription();
+            for (int i = 0; i < elems.Count; i++)
+                elems[i].MakeDescription();
             returned_scope = enum_scope;
         }
 
@@ -3760,7 +3823,8 @@ namespace CodeCompletion
         		case Operators.Plus : return PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name;
         		case Operators.Minus : return PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name;
         		case Operators.Division : return PascalABCCompiler.TreeConverter.compiler_string_consts.div_name;
-        		case Operators.Multiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name;
+                case Operators.IntegerDivision: return PascalABCCompiler.TreeConverter.compiler_string_consts.div_name;
+                case Operators.Multiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name;
         		case Operators.ModulusRemainder : return PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name;
         		case Operators.Less : return PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name;
         		case Operators.LessEqual : return PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name;
@@ -3772,16 +3836,20 @@ namespace CodeCompletion
         		case Operators.AssignmentMultiplication : return PascalABCCompiler.TreeConverter.compiler_string_consts.multassign_name;
         		case Operators.AssignmentSubtraction : return PascalABCCompiler.TreeConverter.compiler_string_consts.minusassign_name;
         		case Operators.AssignmentDivision : return PascalABCCompiler.TreeConverter.compiler_string_consts.divassign_name;
-        		case Operators.Implicit : return " implicit";
-        		case Operators.Explicit : return " explicit";
-        	}
+        		case Operators.Implicit : return "implicit";
+        		case Operators.Explicit : return "explicit";
+                case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
+            }
         	return "";
         }
         
         public override void visit(operator_name_ident _operator_name_ident)
         {
             //throw new Exception("The method or operation is not implemented.");
-            meth_name = "operator"+get_operator_sign(_operator_name_ident.operator_type);
+            string sign = get_operator_sign(_operator_name_ident.operator_type);
+            if (sign.Length > 0 && char.IsLetter(sign[0]))
+                sign = " " + sign;
+            meth_name = "operator"+sign;
         }
 
         public override void visit(var_statement _var_statement)
@@ -4078,8 +4146,16 @@ namespace CodeCompletion
         {
             template_type_reference ttr = new template_type_reference();
             List<ident> names = new List<ident>();
-            names.Add(new ident("System"));
-            names.Add(new ident("Func"));
+            if (_modern_proc_type.res != null)
+            {
+                names.Add(new ident("System"));
+                names.Add(new ident("Func"));
+            }
+            else
+            {
+                names.Add(new ident("System"));
+                names.Add(new ident("Action"));
+            }
             ttr.name = new named_type_reference(names);
             ttr.source_context = _modern_proc_type.source_context;
             ttr.params_list = new template_param_list();
@@ -4091,9 +4167,10 @@ namespace CodeCompletion
             }
             else
             {
+                if (_modern_proc_type.el != null)
                 foreach (enumerator en in _modern_proc_type.el.enumerators)
                 {
-                    ttr.params_list.params_list.Add(new named_type_reference(en.name.name));
+                    ttr.params_list.params_list.Add(en.name); // Здесь исправил SSM 15.1.16
                 }
                 if (_modern_proc_type.res != null)
                     ttr.params_list.params_list.Add(_modern_proc_type.res);

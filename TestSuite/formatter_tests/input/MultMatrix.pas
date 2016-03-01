@@ -30,8 +30,8 @@ begin
   var b := Arrays.CreateRandomRealMatrix(n,n);
   var c := new real[n,n];
   ParallelMult(a,b,c,n);
-  writeln('Параллельное перемножение матриц: ',Milliseconds,' миллисекунд');
+  writeln('РџР°СЂР°Р»Р»РµР»СЊРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ РјР°С‚СЂРёС†: ',Milliseconds,' РјРёР»Р»РёСЃРµРєСѓРЅРґ');
   var d := Milliseconds;
   Mult(a,b,c,n);
-  writeln('Последовательное перемножение матриц: ',Milliseconds-d,' миллисекунд');
+  writeln('РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕРµ РїРµСЂРµРјРЅРѕР¶РµРЅРёРµ РјР°С‚СЂРёС†: ',Milliseconds-d,' РјРёР»Р»РёСЃРµРєСѓРЅРґ');
 end.

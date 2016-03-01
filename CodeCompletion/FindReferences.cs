@@ -1544,7 +1544,7 @@ namespace CodeCompletion
             {
                 foreach (enumerator en in _modern_proc_type.el.enumerators)
                 {
-                    new named_type_reference(en.name.name, en.source_context).visit(this);
+                    en.name.visit(this); // Это исправил - SSM 15.1.16
                 }
                 if (_modern_proc_type.res != null)
                     _modern_proc_type.res.visit(this);

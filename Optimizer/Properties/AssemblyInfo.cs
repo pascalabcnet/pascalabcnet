@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Optimizer")]
-[assembly: AssemblyCopyright("Copyright © 2005-2015 by Ivan Bondarev, Stanislav Mihalkovich")]
+[assembly: AssemblyCopyright("Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,4 +1,4 @@
-//События, +=, -=, демонстрация работы таймера System.Timers.Timer
+//РЎРѕР±С‹С‚РёСЏ, +=, -=, РґРµРјРѕРЅСЃС‚СЂР°С†РёСЏ СЂР°Р±РѕС‚С‹ С‚Р°Р№РјРµСЂР° System.Timers.Timer
 uses System;
 
 var Timer:System.Timers.Timer;

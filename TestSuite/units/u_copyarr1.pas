@@ -1,3 +1,4 @@
+//winonly
 unit u_copyarr1;
 var arr : array of integer := (1,2,3);
     arr2 : array of integer;

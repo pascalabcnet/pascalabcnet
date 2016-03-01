@@ -356,7 +356,7 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray))
+                            if (t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray) || (t is TemplateParameterScope || t is UnknownScope))
                             {
                                 lst.AddRange(extension_methods[t]);
                             }
@@ -736,6 +736,8 @@ namespace CodeCompletion
         //eto nuzhno tak kak u nas tablicy vse zapolneny
         protected SymScope internal_find(string name, bool check_for_def)
         {
+            if (name.Length > 0 && name[0] == '?')
+                name = name.Substring(1);
             if (symbol_table != null)
             {
                 object o = symbol_table[name];
@@ -822,7 +824,7 @@ namespace CodeCompletion
                     }
                     else names.Add(ss);
             }
-            else
+            else if (members != null)
                 foreach (SymScope ss in members)
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
@@ -6340,6 +6342,10 @@ namespace CodeCompletion
             {
                 generic_args = new List<string>();
                 generic_args.AddRange(args);
+            }
+            if (mi.GetGenericArguments().Length > 0)
+            {
+                
             }
             if (mi.ReturnType != typeof(void))
             {

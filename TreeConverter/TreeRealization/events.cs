@@ -135,7 +135,7 @@ namespace PascalABCCompiler.TreeRealization
 		}
     	
     	/// <summary>
-        /// Тип, который содержит этот метод.
+        /// РўРёРї, РєРѕС‚РѕСЂС‹Р№ СЃРѕРґРµСЂР¶РёС‚ СЌС‚РѕС‚ РјРµС‚РѕРґ.
         /// </summary>
 		public common_type_node cont_type
 		{

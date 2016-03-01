@@ -1,6 +1,6 @@
 unit ArrayLib;
 
-/// Вывод массива 
+/// Р’С‹РІРѕРґ РјР°СЃСЃРёРІР° 
 procedure WriteArray<T>(a: array of T); 
 begin
   for var i:=0 to a.Length-1 do
@@ -15,7 +15,7 @@ begin
   writeln;
 end;
 
-/// Создание массива и заполнение его случайными числами
+/// РЎРѕР·РґР°РЅРёРµ РјР°СЃСЃРёРІР° Рё Р·Р°РїРѕР»РЅРµРЅРёРµ РµРіРѕ СЃР»СѓС‡Р°Р№РЅС‹РјРё С‡РёСЃР»Р°РјРё
 procedure CreateRandom(var a: array of integer; n: integer);
 begin
   a := new integer[n];

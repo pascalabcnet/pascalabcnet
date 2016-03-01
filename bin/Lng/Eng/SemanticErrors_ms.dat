@@ -1,0 +1,6 @@
+%PREFIX%=SEMANTICERROR_
+CAN_NOT_READ=Can not read data of this type
+TUPLE_EXPECTED=Tuple expected
+TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT=Too many elements on the left side of tuple assignment
+ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Tuple allows only base assignment :=
+TUPLE_TYPE_ERROR=Bad element in Tuple type 

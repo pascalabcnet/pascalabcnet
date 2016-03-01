@@ -96,7 +96,6 @@ namespace VisualPascalABC
 		{
 			bool closeDataProvider = textArea.Caret.Offset <= initialOffset;
 			int brackets = 0;
-			int curlyBrackets = 0;
 			if (!closeDataProvider) {
 				bool insideChar   = false;
 				bool insideString = false;

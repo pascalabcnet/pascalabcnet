@@ -96,6 +96,7 @@
     File ..\bin\Lib\Collections.pcu
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
+    File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
@@ -139,6 +140,7 @@
     ${AddFile} "Collections.pcu"
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
+    ${AddFile} "ClientServer.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -185,6 +187,7 @@
     File ..\bin\Lib\Collections.pas
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
+    File ..\bin\Lib\ClientServer.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -229,6 +232,7 @@
     ${AddFile} "Collections.pas"
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
+    ${AddFile} "ClientServer.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

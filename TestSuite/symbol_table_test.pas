@@ -1,3 +1,4 @@
+//winonly
 uses System, System.Windows, System.Collections, System.Collections.Generic;
 
 begin

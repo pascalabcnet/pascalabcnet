@@ -1,8 +1,8 @@
 uses GraphABC,ABCObjects,ABCButtons,Events;
 
 const 
-/// Примерная частота повторяемости букв
-  freqcharstr='аааааааааааааааааааааааааабббббввввввввггггдддддддееееееееееееееееееееежжззззииииииииииииииииииийккккккккккккккклллллллллллммммммнннннннннннннннннооооооооооооооооооооооооппппппппрррррррррррррррррссссссссссссстттттттттттттттууууууффххцццчччшшщыыьььььэюяяяя';
+/// РџСЂРёРјРµСЂРЅР°СЏ С‡Р°СЃС‚РѕС‚Р° РїРѕРІС‚РѕСЂСЏРµРјРѕСЃС‚Рё Р±СѓРєРІ
+  freqcharstr='Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р°Р±Р±Р±Р±Р±РІРІРІРІРІРІРІРІРіРіРіРіРґРґРґРґРґРґРґРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµРµР¶Р¶Р·Р·Р·Р·РёРёРёРёРёРёРёРёРёРёРёРёРёРёРёРёРёРёРёР№РєРєРєРєРєРєРєРєРєРєРєРєРєРєРєР»Р»Р»Р»Р»Р»Р»Р»Р»Р»Р»РјРјРјРјРјРјРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРЅРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРѕРїРїРїРїРїРїРїРїСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЂСЃСЃСЃСЃСЃСЃСЃСЃСЃСЃСЃСЃСЃС‚С‚С‚С‚С‚С‚С‚С‚С‚С‚С‚С‚С‚С‚С‚СѓСѓСѓСѓСѓСѓС„С„С…С…С†С†С†С‡С‡С‡С€С€С‰С‹С‹СЊСЊСЊСЊСЊСЌСЋСЏСЏСЏСЏ';
 
 const
   MaxWordLen = 12;
@@ -12,20 +12,20 @@ type
   MySquareABC = class(SquareABC) end;
 
 var
-/// Доска с буквами
+/// Р”РѕСЃРєР° СЃ Р±СѓРєРІР°РјРё
   MainBoard: ObjectBoardABC;
-/// Доска высоты 1 для размещения слова
+/// Р”РѕСЃРєР° РІС‹СЃРѕС‚С‹ 1 РґР»СЏ СЂР°Р·РјРµС‰РµРЅРёСЏ СЃР»РѕРІР°
   WordBoard: ObjectBoardABC;
-/// Номер первого незанятого символа на доске WordBoard
+/// РќРѕРјРµСЂ РїРµСЂРІРѕРіРѕ РЅРµР·Р°РЅСЏС‚РѕРіРѕ СЃРёРјРІРѕР»Р° РЅР° РґРѕСЃРєРµ WordBoard
   cur: integer;
-/// Количество ходов
+/// РљРѕР»РёС‡РµСЃС‚РІРѕ С…РѕРґРѕРІ
   moves: integer;
-/// Очки
+/// РћС‡РєРё
   score: integer;
-/// Прямоугольник для отображения информации
+/// РџСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё
   Status: RectangleABC;
 
-/// Существует ли такое слово (все слова хранятся в файле words.txt)
+/// РЎСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С‚Р°РєРѕРµ СЃР»РѕРІРѕ (РІСЃРµ СЃР»РѕРІР° С…СЂР°РЅСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ words.txt)
 function WordExists(s: string): boolean;
 var
   f: text;
@@ -49,7 +49,7 @@ end;
 
 procedure MyMouseDown(x,y,mb: integer);
 begin
-// Нажата левая мышь
+// РќР°Р¶Р°С‚Р° Р»РµРІР°СЏ РјС‹С€СЊ
   if mb=1 then
   begin
     if cur>WordBoard.DimX then
@@ -71,7 +71,7 @@ begin
     end;
   end
   else
-// Нажата правая мышь
+// РќР°Р¶Р°С‚Р° РїСЂР°РІР°СЏ РјС‹С€СЊ
   begin
     for var xx:=1 to cur-1 do
       WordBoard[xx,1].Visible := False;
@@ -83,19 +83,19 @@ begin
   end;
 end;
 
-/// Обработчик кнопки "Новая игра"
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РєРЅРѕРїРєРё "РќРѕРІР°СЏ РёРіСЂР°"
 procedure BtNewClick;
 begin
   score := 0;
   moves := 0;
-  Status.Text := 'Ходов: '+IntToStr(moves)+'   Очков: '+IntToStr(score);
+  Status.Text := 'РҐРѕРґРѕРІ: '+IntToStr(moves)+'   РћС‡РєРѕРІ: '+IntToStr(score);
   MyMouseDown(1,1,2);
   for var xx:=1 to MainBoard.DimX do
   for var yy:=1 to MainBoard.DimY do
     MainBoard[xx,yy].Text := UpCase(freqcharstr[Random(255)+1]);
 end;
 
-/// Обработчик кнопки "Сказать слово"
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РєРЅРѕРїРєРё "РЎРєР°Р·Р°С‚СЊ СЃР»РѕРІРѕ"
 procedure BtWordClick;
 begin
   if WordBoard.Color<>clYellow then
@@ -113,15 +113,15 @@ begin
     end;
   cur := 1;
   WordBoard.Color := clSkyBlue;
-  Status.Text := 'Ходов: '+IntToStr(moves)+'   Очков: '+IntToStr(score);
+  Status.Text := 'РҐРѕРґРѕРІ: '+IntToStr(moves)+'   РћС‡РєРѕРІ: '+IntToStr(score);
 end;
 
-/// Обработчик кнопки "Подсказка"
+/// РћР±СЂР°Р±РѕС‚С‡РёРє РєРЅРѕРїРєРё "РџРѕРґСЃРєР°Р·РєР°"
 procedure BtPleaseClick;
 var
   f: text;
   str,maxstr: string;
-  arr,work: array ['а'..'я'] of integer;
+  arr,work: array ['Р°'..'СЏ'] of integer;
   maxlen: integer;
 
   function CanConstructWord(s: string): boolean;
@@ -142,7 +142,7 @@ var
 begin // BtPleaseClick
   maxlen := 0;
   maxstr := '';
-  for var c:='а' to 'я' do
+  for var c:='Р°' to 'СЏ' do
     arr[c]:=0;
 
   for var xx:=1 to MainBoard.DimX do
@@ -169,7 +169,7 @@ procedure InitWindow;
 begin
   SetWindowSize(640,480);
   Window.IsFixedSize := True;
-  Window.Title := 'Знай русские слова!';
+  Window.Title := 'Р—РЅР°Р№ СЂСѓСЃСЃРєРёРµ СЃР»РѕРІР°!';
   Brush.Color := clMoneyGreen;
   FillRect(0,0,WindowWidth,WindowHeight);
 end;
@@ -183,11 +183,11 @@ end;
 
 procedure InitButtons;
 begin
-  var btword := new ButtonABC(70,410,180,30,'Сказать слово',clGray);
-  var btnew := new ButtonABC(280,410,100,30,'Заново',clLightGray);
-  var btplease := new ButtonABC(410,410,160,30,'Подсказка',clGray);
+  var btword := new ButtonABC(70,410,180,30,'РЎРєР°Р·Р°С‚СЊ СЃР»РѕРІРѕ',clGray);
+  var btnew := new ButtonABC(280,410,100,30,'Р—Р°РЅРѕРІРѕ',clLightGray);
+  var btplease := new ButtonABC(410,410,160,30,'РџРѕРґСЃРєР°Р·РєР°',clGray);
   
-// Привязка обработчиков к кнопкам
+// РџСЂРёРІСЏР·РєР° РѕР±СЂР°Р±РѕС‚С‡РёРєРѕРІ Рє РєРЅРѕРїРєР°Рј
   btword.OnClick := BtWordClick;
   btnew.OnClick := BtNewClick;
   btplease.OnClick := BtPleaseClick;
@@ -197,7 +197,7 @@ end;
 procedure InitInterface;
 begin
   Status := new RectangleABC(70,350,500,30,clSkyBlue);
-  Status.Text := 'Ходов: 0   Очков: 0';
+  Status.Text := 'РҐРѕРґРѕРІ: 0   РћС‡РєРѕРІ: 0';
   WordBoard := new ObjectBoardABC(20,40,MaxWordLen,1,50,50,clSkyBlue);
   MainBoard := new ObjectBoardABC(220,120,4,4,50,50,clMoneyGreen);
   MainBoard.BorderColor := clGreen;

@@ -134,7 +134,7 @@ namespace NodesGenerator
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(182, 27);
             this.save.TabIndex = 1;
-            this.save.Text = "Сохранить";
+            this.save.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ";
             this.save.Click += new System.EventHandler(this.save_Click);
             // 
             // close
@@ -143,7 +143,7 @@ namespace NodesGenerator
             this.close.Name = "close";
             this.close.Size = new System.Drawing.Size(135, 37);
             this.close.TabIndex = 2;
-            this.close.Text = "Выход";
+            this.close.Text = "Р’С‹С…РѕРґ";
             this.close.Click += new System.EventHandler(this.close_Click);
             // 
             // nodes_list
@@ -161,7 +161,7 @@ namespace NodesGenerator
             this.save_as.Name = "save_as";
             this.save_as.Size = new System.Drawing.Size(182, 27);
             this.save_as.TabIndex = 4;
-            this.save_as.Text = "Сохранить как";
+            this.save_as.Text = "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє";
             this.save_as.Click += new System.EventHandler(this.save_as_Click);
             // 
             // open
@@ -170,7 +170,7 @@ namespace NodesGenerator
             this.open.Name = "open";
             this.open.Size = new System.Drawing.Size(182, 27);
             this.open.TabIndex = 5;
-            this.open.Text = "Открыть";
+            this.open.Text = "РћС‚РєСЂС‹С‚СЊ";
             this.open.Click += new System.EventHandler(this.open_Click);
             // 
             // add
@@ -197,7 +197,7 @@ namespace NodesGenerator
             this.generate_code.Name = "generate_code";
             this.generate_code.Size = new System.Drawing.Size(182, 28);
             this.generate_code.TabIndex = 8;
-            this.generate_code.Text = "Сгенерировать код";
+            this.generate_code.Text = "РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РєРѕРґ";
             this.generate_code.Click += new System.EventHandler(this.generate_code_Click);
             // 
             // generate_visitor_template
@@ -206,7 +206,7 @@ namespace NodesGenerator
             this.generate_visitor_template.Name = "generate_visitor_template";
             this.generate_visitor_template.Size = new System.Drawing.Size(182, 40);
             this.generate_visitor_template.TabIndex = 9;
-            this.generate_visitor_template.Text = "Генерировать шаблон визитора";
+            this.generate_visitor_template.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ С€Р°Р±Р»РѕРЅ РІРёР·РёС‚РѕСЂР°";
             this.generate_visitor_template.Click += new System.EventHandler(this.generate_visitor_template_Click);
             // 
             // panel1
@@ -243,7 +243,7 @@ namespace NodesGenerator
             this.generate_visualizator_cpp.Name = "generate_visualizator_cpp";
             this.generate_visualizator_cpp.Size = new System.Drawing.Size(167, 40);
             this.generate_visualizator_cpp.TabIndex = 16;
-            this.generate_visualizator_cpp.Text = "Генерировать cpp-визуализатор";
+            this.generate_visualizator_cpp.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ cpp-РІРёР·СѓР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_visualizator_cpp.UseVisualStyleBackColor = true;
             this.generate_visualizator_cpp.Click += new System.EventHandler(this.generate_visualizator_cpp_Click);
             // 
@@ -253,7 +253,7 @@ namespace NodesGenerator
             this.generate_cross_platform_reader_cpp.Name = "generate_cross_platform_reader_cpp";
             this.generate_cross_platform_reader_cpp.Size = new System.Drawing.Size(167, 40);
             this.generate_cross_platform_reader_cpp.TabIndex = 15;
-            this.generate_cross_platform_reader_cpp.Text = "Генерировать C++ десериализатор";
+            this.generate_cross_platform_reader_cpp.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ C++ РґРµСЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_cross_platform_reader_cpp.UseVisualStyleBackColor = true;
             this.generate_cross_platform_reader_cpp.Click += new System.EventHandler(this.generate_cross_platform_reader_cpp_Click);
             // 
@@ -263,7 +263,7 @@ namespace NodesGenerator
             this.generate_cross_platform_writer.Name = "generate_cross_platform_writer";
             this.generate_cross_platform_writer.Size = new System.Drawing.Size(167, 40);
             this.generate_cross_platform_writer.TabIndex = 14;
-            this.generate_cross_platform_writer.Text = "Генерировать cross - platform сериализатор";
+            this.generate_cross_platform_writer.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ cross - platform СЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_cross_platform_writer.UseVisualStyleBackColor = true;
             this.generate_cross_platform_writer.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -273,7 +273,7 @@ namespace NodesGenerator
             this.generate_cpp_code.Name = "generate_cpp_code";
             this.generate_cpp_code.Size = new System.Drawing.Size(167, 26);
             this.generate_cpp_code.TabIndex = 13;
-            this.generate_cpp_code.Text = "Генерировать C++ код";
+            this.generate_cpp_code.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ C++ РєРѕРґ";
             this.generate_cpp_code.UseVisualStyleBackColor = true;
             this.generate_cpp_code.Click += new System.EventHandler(this.generate_cpp_code_Click);
             // 
@@ -284,7 +284,7 @@ namespace NodesGenerator
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(182, 36);
             this.button1.TabIndex = 12;
-            this.button1.Text = "Сгенерировать все";
+            this.button1.Text = "РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РІСЃРµ";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
@@ -294,7 +294,7 @@ namespace NodesGenerator
             this.generate_pcu_read_visitor.Name = "generate_pcu_read_visitor";
             this.generate_pcu_read_visitor.Size = new System.Drawing.Size(182, 40);
             this.generate_pcu_read_visitor.TabIndex = 11;
-            this.generate_pcu_read_visitor.Text = "Генерировать pcu-десериализатор";
+            this.generate_pcu_read_visitor.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ pcu-РґРµСЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_pcu_read_visitor.UseVisualStyleBackColor = true;
             this.generate_pcu_read_visitor.Click += new System.EventHandler(this.generate_pcu_read_visitor_Click);
             // 
@@ -304,7 +304,7 @@ namespace NodesGenerator
             this.generate_pcu_write_visitor.Name = "generate_pcu_write_visitor";
             this.generate_pcu_write_visitor.Size = new System.Drawing.Size(182, 41);
             this.generate_pcu_write_visitor.TabIndex = 10;
-            this.generate_pcu_write_visitor.Text = "Генерировать pcu-сериализатор";
+            this.generate_pcu_write_visitor.Text = "Р“РµРЅРµСЂРёСЂРѕРІР°С‚СЊ pcu-СЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂ";
             this.generate_pcu_write_visitor.UseVisualStyleBackColor = true;
             this.generate_pcu_write_visitor.Click += new System.EventHandler(this.generate_pcu_write_visitor_Click);
             // 
@@ -339,7 +339,7 @@ namespace NodesGenerator
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(120, 19);
             this.label1.TabIndex = 15;
-            this.label1.Text = "Имя файла";
+            this.label1.Text = "РРјСЏ С„Р°Р№Р»Р°";
             // 
             // label2
             // 
@@ -347,7 +347,7 @@ namespace NodesGenerator
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(192, 18);
             this.label2.TabIndex = 16;
-            this.label2.Text = "Пространство имен";
+            this.label2.Text = "РџСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёРјРµРЅ";
             // 
             // panel4
             // 
@@ -384,7 +384,7 @@ namespace NodesGenerator
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(192, 17);
             this.label6.TabIndex = 24;
-            this.label6.Text = "Имя pcu - десериализатора";
+            this.label6.Text = "РРјСЏ pcu - РґРµСЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂР°";
             // 
             // tb_pcu_writer
             // 
@@ -400,7 +400,7 @@ namespace NodesGenerator
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(192, 18);
             this.label5.TabIndex = 22;
-            this.label5.Text = "Имя pcu - сериализатора";
+            this.label5.Text = "РРјСЏ pcu - СЃРµСЂРёР°Р»РёР·Р°С‚РѕСЂР°";
             // 
             // label4
             // 
@@ -408,7 +408,7 @@ namespace NodesGenerator
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(192, 18);
             this.label4.TabIndex = 20;
-            this.label4.Text = "Имя файла интеф. визитора";
+            this.label4.Text = "РРјСЏ С„Р°Р№Р»Р° РёРЅС‚РµС„. РІРёР·РёС‚РѕСЂР°";
             // 
             // visitor_interface_file_name
             // 
@@ -445,8 +445,8 @@ namespace NodesGenerator
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "PascalABC.NET: syntax tree generator  v1.5(с) Водолазов Н., Ткачук А.В., Иванов С" +
-                ".О., 2007 ";
+            this.Text = "PascalABC.NET: syntax tree generator  v1.5(СЃ) Р’РѕРґРѕР»Р°Р·РѕРІ Рќ., РўРєР°С‡СѓРє Рђ.Р’., РРІР°РЅРѕРІ РЎ" +
+                ".Рћ., 2007 ";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);

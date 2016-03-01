@@ -1,3 +1,4 @@
+//winonly
 var s : string[10];
     arr : array of pinteger;
     i : integer;

@@ -11,8 +11,8 @@ end;
 var p: Pupil;
 
 begin
-  p.Init('Петрова',18);
+  p.Init('РџРµС‚СЂРѕРІР°',18);
   writeln(p);
-  var r := Rec('Иванов',13);
+  var r := Rec('РРІР°РЅРѕРІ',13);
   Println(r, r.Item1, r.Item2);
 end.

@@ -21,7 +21,6 @@
     <name value="allowable_expr_as_stmt" />
     <name value="expr" />
     <name value="expr_l1" />
-    <name value="sizeof_expr" />
     <name value="typeof_expr" />
     <name value="question_expr" />
     <name value="new_expr" />
@@ -33,12 +32,10 @@
     <name value="default_expr" />
     <name value="factor" />
     <name value="literal_or_number" />
-    <name value="variable" />
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
     <name value="lambda_function_body" />
-    <name value="var_reference" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
@@ -196,7 +193,6 @@
     <name value="inclass_proc_func_decl_noclass" />
     <name value="simple_fp_sect" />
     <name value="func_decl_lambda" />
-    <name value="expl_func_decl_lambda" />
   </tag>
   <tag value="Операторы">
     <name value="stmt_or_expression" />
@@ -204,7 +200,6 @@
     <name value="unlabelled_stmt" />
     <name value="var_stmt" />
     <name value="assignment" />
-    <name value="proc_call" />
     <name value="goto_stmt" />
     <name value="compound_stmt" />
     <name value="if_stmt" />
@@ -242,8 +237,6 @@
     <name value="exception_class_type_identifier" />
     <name value="exception_variable" />
     <name value="array_name_for_new_expr" />
-    <name value="dotted_identifier" />
-    <name value="variable_as_type" />
     <name value="identifier" />
     <name value="identifier_or_keyword" />
     <name value="identifier_keyword_operatorname" />
@@ -298,7 +291,6 @@
     <name value="object_type" />
     <name value="record_type" />
     <name value="proc_type_decl" />
-    <name value="simple_type" />
     <name value="sequence_type" />
     <name value="enumeration_id" />
     <name value="template_param" />
@@ -342,7 +334,6 @@
   </tag>
   <tag value="Лямбда-выражения">
     <name value="func_decl_lambda" />
-    <name value="expl_func_decl_lambda" />
     <name value="full_lambda_fp_list" />
     <name value="expr" />
     <name value="var_decl_part" />

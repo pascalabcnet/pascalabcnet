@@ -1,0 +1,7 @@
+[=PascalABC]
+[0]
+[1-999]
+
+begin
+
+end.

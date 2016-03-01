@@ -1222,6 +1222,48 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_template_operator_name">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(template_operator_name _template_operator_name);
+		///<summary>
+		///Method to visit semantic_addr_value.
+		///</summary>
+		///<param name="_semantic_addr_value">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(semantic_addr_value _semantic_addr_value);
+		///<summary>
+		///Method to visit pair_type_stlist.
+		///</summary>
+		///<param name="_pair_type_stlist">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pair_type_stlist _pair_type_stlist);
+		///<summary>
+		///Method to visit assign_tuple.
+		///</summary>
+		///<param name="_assign_tuple">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(assign_tuple _assign_tuple);
+		///<summary>
+		///Method to visit addressed_value_list.
+		///</summary>
+		///<param name="_addressed_value_list">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(addressed_value_list _addressed_value_list);
+		///<summary>
+		///Method to visit tuple_node_for_formatter.
+		///</summary>
+		///<param name="_tuple_node_for_formatter">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(tuple_node_for_formatter _tuple_node_for_formatter);
+		///<summary>
+		///Method to visit uses_closure.
+		///</summary>
+		///<param name="_uses_closure">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(uses_closure _uses_closure);
+		///<summary>
+		///Method to visit dot_question_node.
+		///</summary>
+		///<param name="_dot_question_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(dot_question_node _dot_question_node);
 	}
 
 

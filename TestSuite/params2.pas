@@ -1,3 +1,4 @@
+//winonly
 procedure Test(params a : array of ^integer);
 begin
 assert(a[0]^=1);
