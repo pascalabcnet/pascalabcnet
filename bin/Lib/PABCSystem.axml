@@ -731,9 +731,9 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Процедуры и функции ввода Read</Name>
+            <Name>Подпрограммы ввода</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Процедуры и функции ввода Read</Text>
+            <Text>//&gt;&gt;     Подпрограммы ввода # Read subroutines</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -845,9 +845,9 @@
             </Items>
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Процедуры вывода Write</Name>
+            <Name>Подпрограммы вывода</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Процедуры вывода Write - Writeln</Text>
+            <Text>//&gt;&gt;     Подпрограммы вывода # Write subroutines</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -940,9 +940,9 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Процедуры вывода Print</Name>
+            <Name>Общие подпрограммы для работы с файлами</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//                  Print</Text>
+            <Text>//&gt;&gt;     Общие подпрограммы для работы с файлами # Common subroutines for files</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -1132,63 +1132,96 @@
           <PointOfInterest>
             <Name>Подпрограммы для работы с двоичными файлами</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>procedure Assign(f: AbstractBinaryFile; name: string);</Text>
+            <Text>//&gt;&gt;     Подпрограммы для работы с двоичными файлами # Subroutines for binary files</Text>
             <OuterContext>
-              <OuterContextItem Type="MethodHeader">
-                <string>procedure</string>
-                <string>Assign</string>
-                <string>(</string>
-                <string>f</string>
-                <string>:</string>
-                <string>AbstractBinaryFile</string>
-                <string>;</string>
-                <string>name</string>
-                <string>:</string>
-                <string>string</string>
-                <string>)</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
+              <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
-            <Items />
-          </PointOfInterest>
-          <PointOfInterest>
-            <Name>Подпрограммы для работы с типизированными файлами</Name>
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function FilePos(f: TypedFile): int64;</Text>
-            <OuterContext>
-              <OuterContextItem Type="MethodHeader">
-                <string>function</string>
-                <string>FilePos</string>
-                <string>(</string>
-                <string>f</string>
-                <string>:</string>
-                <string>TypedFile</string>
-                <string>)</string>
-                <string>:</string>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
                 <string>int64</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
-            </OuterContext>
-            <Items />
-          </PointOfInterest>
-          <PointOfInterest>
-            <Name>Подпрограммы для работы с бестиповыми файлами</Name>
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function FilePos(f: BinaryFile): int64;</Text>
-            <OuterContext>
-              <OuterContextItem Type="MethodHeader">
-                <string>function</string>
-                <string>FilePos</string>
-                <string>(</string>
-                <string>f</string>
-                <string>:</string>
-                <string>BinaryFile</string>
-                <string>)</string>
-                <string>:</string>
-                <string>int64</string>
-              </OuterContextItem>
-              <OuterContextItem Type="" />
-            </OuterContext>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
             <Items />
           </PointOfInterest>
           <PointOfInterest>
@@ -1270,9 +1303,104 @@
             <Items />
           </PointOfInterest>
           <PointOfInterest>
-            <Name>Подпрограммы для работы с символами и строками</Name>
+            <Name>Подпрограммы для работы с символами</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//                Char and String manipulation</Text>
+            <Text>//&gt;&gt;     Подпрограммы для работы с символами</Text>
+            <OuterContext>
+              <OuterContextItem Type="PAS_TreeNode" />
+            </OuterContext>
+            <InnerContext>
+              <InnerContextItem Type="Field">
+                <string>unit</string>
+                <string>PABCSystem</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>uses</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Runtime</string>
+                <string>.</string>
+                <string>InteropServices</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>IO</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>,</string>
+                <string>System</string>
+                <string>.</string>
+                <string>Collections</string>
+                <string>.</string>
+                <string>Generic</string>
+                <string>,</string>
+                <string>System</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxShortInt</string>
+                <string>=</string>
+                <string>shortint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxByte</string>
+                <string>=</string>
+                <string>byte</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxSmallInt</string>
+                <string>=</string>
+                <string>smallint</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxWord</string>
+                <string>=</string>
+                <string>word</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxLongWord</string>
+                <string>=</string>
+                <string>longword</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxInt64</string>
+                <string>=</string>
+                <string>int64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxUInt64</string>
+                <string>=</string>
+                <string>uint64</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+              <InnerContextItem Type="Field">
+                <string>MaxDouble</string>
+                <string>=</string>
+                <string>real</string>
+                <string>.</string>
+                <string>MaxValue</string>
+              </InnerContextItem>
+            </InnerContext>
+            <Items />
+          </PointOfInterest>
+          <PointOfInterest>
+            <Name>Подпрограммы для работы со строками</Name>
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//&gt;&gt;     Подпрограммы для работы со строками</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -1408,7 +1536,7 @@
           <PointOfInterest>
             <Name>Подпрограммы для генерации последовательностей</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Подпрограммы для генерации последовательностей</Text>
+            <Text>//&gt;&gt;     Подпрограммы для генерации последовательностей # Subroutines for sequence generation</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -1503,7 +1631,7 @@
           <PointOfInterest>
             <Name>Подпрограммы для генерации динамических массивов</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Подпрограммы для генерации динамических массивов</Text>
+            <Text>//&gt;&gt;     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -1693,7 +1821,7 @@
           <PointOfInterest>
             <Name>Подпрограммы для создания кортежей</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Подпрограммы для создания кортежей</Text>
+            <Text>//&gt;&gt;     Подпрограммы для создания кортежей # Subroutines for tuple generation</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>
@@ -1788,7 +1916,7 @@
           <PointOfInterest>
             <Name>Короткие функции Lst, HSet, SSet, Dict, KV</Name>
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Короткие функции Lst, HSet, SSet, Dict, KV</Text>
+            <Text>//&gt;&gt;     Короткие функции Lst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV</Text>
             <OuterContext>
               <OuterContextItem Type="PAS_TreeNode" />
             </OuterContext>

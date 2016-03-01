@@ -29,7 +29,7 @@ uses
 //{{{doc: Начало секции стандартных констант для документации }}} 
 
 // -----------------------------------------------------
-//>>     Стандартные константы
+//>>     Стандартные константы # Standard constants
 // -----------------------------------------------------
 const
   /// Максимальное значение типа shortint
@@ -80,7 +80,7 @@ const
 
 //{{{doc: Начало секции стандартных типов для документации }}} 
 // -----------------------------------------------------
-//>>     Стандартные типы
+//>>     Стандартные типы # Standard types
 // -----------------------------------------------------
 type
   /// Базовый тип объектов
@@ -505,7 +505,7 @@ type
 //{{{doc: Начало секции интерфейса для документации }}} 
 
 // -----------------------------------------------------
-//>>     Процедуры и функции ввода Read
+//>>     Подпрограммы ввода # Read subroutines
 // -----------------------------------------------------
 ///- procedure Read(a,b,...);
 /// Вводит значения a,b,... с клавиатуры
@@ -596,7 +596,7 @@ procedure ReadShortString(var s: string; n: integer);
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
 
 ///- procedure Read(f,a,b,...);
-/// Вводит значения a,b,... из текстового файла f
+/// Вводит значения a,b,... из файла f
 procedure Read(f: Text);
 ///--
 procedure Read(f: Text; var x: integer);
@@ -659,7 +659,7 @@ function ReadlnString(f: Text): string;
 function ReadlnBoolean(f: Text): boolean;
 
 // -----------------------------------------------------
-//>>     Процедуры вывода Write
+//>>     Подпрограммы вывода # Write subroutines
 // -----------------------------------------------------
 ///- procedure Write(a,b,...);
 /// Выводит значения a,b,... на экран
@@ -685,8 +685,8 @@ procedure Writeln(obj1, obj2: object);
 ///--
 procedure Writeln(params args: array of object);
 
-///- procedure Write(f: Text; a,b,...);
-/// Выводит значения a,b,... в текстовый файл f
+///- procedure Write(f: файл; a,b,...);
+/// Выводит значения a,b,... в файл f
 procedure Write(f: Text);
 ///--
 procedure Write(f: Text; val: object);
@@ -711,34 +711,56 @@ procedure WriteFormat(f: Text; formatstr: string; params args: array of object);
 ///и осуществляет переход на новую строку
 procedure WritelnFormat(f: Text; formatstr: string; params args: array of object);
 
-// -----------------------------------------------------
-//>>                  Print
-// -----------------------------------------------------
 ///- procedure Print(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел
 procedure Print(s: string);
 ///--
 procedure Print(params args: array of object);
-///- procedure Print(f,a,b,...);
+///- procedure Print(f: Text; a,b,...);
 /// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел
 procedure Print(f: Text; params args: array of object);
 ///- procedure Println(a,b,...);
 /// Выводит значения a,b,... на экран, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(params args: array of object);
-///- procedure Println(f,a,b,...);
+///- procedure Println(f: Text; a,b,...);
 /// Выводит значения a,b,... в текстовый файл f, после каждого значения выводит пробел и переходит на новую строку
 procedure Println(f: Text; params args: array of object);
 
 // -----------------------------------------------------
-//>>     Подпрограммы для работы с текстовыми файлами 
+//>>     Общие подпрограммы для работы с файлами # Common subroutines for files
 // -----------------------------------------------------
-/// Связывает файловую переменную f с именем файла name
+///- procedure Assign(f: файл; name: string);
+/// Связывает файловую переменную с файлом на диске
+procedure Assign(f: AbstractBinaryFile; name: string);
+///- procedure AssignFile(f: файл; name: string);
+/// Связывает файловую переменную с файлом на диске
+procedure AssignFile(f: AbstractBinaryFile; name: string);
+///- procedure Close(f: файл);
+/// Закрывает файл
+procedure Close(f: AbstractBinaryFile);
+///- procedure CloseFile(f: файл);
+/// Закрывает файл
+procedure CloseFile(f: AbstractBinaryFile);
+///- function Eof(f: файл): boolean;
+/// Возвращает True, если достигнут конец файла 
+function Eof(f: AbstractBinaryFile): boolean;
+///- procedure Erase(f: файл);
+/// Удаляет файл, связанный с файловой переменной 
+procedure Erase(f: AbstractBinaryFile);
+///- procedure Rename(f: файл; newname: string);
+/// Переименовывает файл, связаный с файловой переменной, давая ему имя newname. 
+procedure Rename(f: AbstractBinaryFile; newname: string);
+
+// -----------------------------------------------------
+//>>     Подпрограммы для работы с текстовыми файлами # Subroutines for text files
+// -----------------------------------------------------
+///--
 procedure Assign(f: Text; name: string);
-/// Связывает файловую переменную f с именем файла name
+///--
 procedure AssignFile(f: Text; name: string);
-/// Закрывает файл f
+///--
 procedure Close(f: Text);
-/// Закрывает файл f
+///--
 procedure CloseFile(f: Text);
 /// Открывает текстовый файл f на чтение в кодировке Windows
 procedure Reset(f: Text);
@@ -781,8 +803,7 @@ function OpenAppend(fname: string): Text;
 /// Возвращает текстовый файл с именем fname, открытый на дополнение в указанной кодировке 
 function OpenAppend(fname: string; en: Encoding): Text;
 
-/// Возвращает True, если достигнут конец файла f
-/// !! Returns True if the file-pointer has reached the end of the file
+///--
 function Eof(f: Text): boolean;
 /// Возвращает True, если достигнут конец строки в файле f
 function Eoln(f: Text): boolean;
@@ -792,9 +813,9 @@ function SeekEof(f: Text): boolean;
 function SeekEoln(f: Text): boolean;
 /// Записывает содержимое буфера файла на диск
 procedure Flush(f: Text);
-/// Удаляет файл, связанный с файловой переменной f
+///--
 procedure Erase(f: Text);
-/// Переименовывает файл, связаный с файловой переменной f, давая ему имя newname. 
+///--
 procedure Rename(f: Text; newname: string);
 ///--
 procedure TextFileInit(var f: Text);
@@ -825,47 +846,30 @@ procedure WriteAllText(path: string; s: string);
 procedure WriteAllText(path: string; s: string; en: Encoding);
 
 // -----------------------------------------------------
-//>>     Подпрограммы для работы с двоичными файлами
+//>>     Подпрограммы для работы с двоичными файлами # Subroutines for binary files
 // -----------------------------------------------------
-///- procedure Assign(f: file of T; name: string);
-/// Связывает файловую переменную f с именем файла name
-procedure Assign(f: AbstractBinaryFile; name: string);
-///- procedure AssignFile(f: file of T; name: string);
-/// Связывает файловую переменную f с именем файла name
-procedure AssignFile(f: AbstractBinaryFile; name: string);
-///- procedure Close(f: file of T);
-/// Закрывает файл f
-procedure Close(f: AbstractBinaryFile);
-///- procedure CloseFile(f: file of T);
-/// Закрывает файл f
-procedure CloseFile(f: AbstractBinaryFile);
-///- procedure Reset(f: file of T);
-/// Открывает двоичный файл f на чтение и запись
+///- procedure Reset(f: двоичный файл);
+/// Открывает двоичный файл на чтение и запись
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Reset(f: AbstractBinaryFile);
-///- procedure Reset(f: file of T; name: string);
-/// Связывает файловую переменную f с именем файла name и открывает двоичный файл f на чтение и запись
+///- procedure Reset(f: двоичный файл; name: string);
+/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Reset(f: AbstractBinaryFile; name: string);
-///- procedure Rewrite(f: file of T);
-/// Открывает двоичный файл f на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+///- procedure Rewrite(f: двоичный файл);
+/// Открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile);
-///- procedure Rewrite(f: file of T);
-/// Связывает файловую переменную f с именем файла name и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое
+///- procedure Rewrite(f: двоичный файл; name: string);
+/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile; name: string);
-///- procedure Truncate(f: file of T);
-/// Усекает двоичный файл f, отбрасывая все элементы с позиции файлового указателя
+///- procedure Truncate(f: двоичный файл);
+/// Усекает двоичный файл, отбрасывая все элементы с позиции файлового указателя
+///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Truncate(f: AbstractBinaryFile);
-///- function Eof(f: file of T): boolean;
-/// Возвращает True, если достигнут конец файла f
-function Eof(f: AbstractBinaryFile): boolean;
-///- procedure Erase(f: file of T);
-/// Удаляет файл, связанный с файловой переменной f
-procedure Erase(f: AbstractBinaryFile);
-///- procedure Rename(f: file of T; newname: string);
-/// Переименовывает файл, связаный с файловой переменной f, давая ему имя newname. 
-procedure Rename(f: AbstractBinaryFile; newname: string);
 
-///- procedure Write(f: file; a,b,...);
-/// Выводит значения a,b,... в нетипизированный файл f
+///--
 procedure Write(f: AbstractBinaryFile; params vals: array of object);
 ///--
 procedure Writeln(f: AbstractBinaryFile);
@@ -874,17 +878,14 @@ procedure Writeln(f: AbstractBinaryFile; val: object);
 ///--
 procedure Writeln(f: AbstractBinaryFile; params vals: array of object);
 
-// -----------------------------------------------------
-//>>    Подпрограммы для работы с типизированными файлами
-// -----------------------------------------------------
-///- function FilePos(f: file of T): int64;
-/// Возвращает текущую позицию файлового указателя в типизированном файле f 
+///- function FilePos(f: двоичный файл): int64;
+/// Возвращает текущую позицию файлового указателя в двоичном файле 
 function FilePos(f: TypedFile): int64;
-///- function FileSize(f: file of T): int64;
-/// Возвращает количество элементов в типизированном файле f 
+///- function FileSize(f: двоичный файл): int64;
+/// Возвращает количество элементов в двоичном файле
 function FileSize(f: TypedFile): int64;
-///- procedure Seek(f: file of T; n: int64);
-/// Устанавливает текущую позицию файлового указателя в типизированном файле f на элемент с номером n  
+///- procedure Seek(f: двоичный файл; n: int64);
+/// Устанавливает текущую позицию файлового указателя в двоичном файле на элемент с данным номером  
 procedure Seek(f: TypedFile; n: int64);
 ///--
 procedure TypedFileInit(var f: TypedFile; ElementType: System.Type);
@@ -895,17 +896,11 @@ procedure TypedFileInitWithShortString(var f: TypedFile; ElementType: System.Typ
 ///--
 function TypedFileRead(f: TypedFile): object;
 
-// -----------------------------------------------------
-//>>     Подпрограммы для работы с бестиповыми файлами
-// -----------------------------------------------------
-///- function FilePos(f: file): int64;
-/// Возвращает текущую позицию файлового указателя в нетипизированном файле f 
+///--
 function FilePos(f: BinaryFile): int64;
-///- function FileSize(f: file): int64;
-/// Возвращает количество байт в нетипизированном файле f 
+///--
 function FileSize(f: BinaryFile): int64;
-///- procedure Seek(f: file; n: int64);
-/// Устанавливает текущую позицию файлового указателя в нетипизированном файле f на байт с номером n  
+///--
 procedure Seek(f: BinaryFile; n: int64);
 ///--
 procedure BinaryFileInit(var f: BinaryFile);
@@ -913,7 +908,7 @@ procedure BinaryFileInit(var f: BinaryFile);
 function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 
 // -----------------------------------------------------
-//>>     Cистемные подпрограммы
+//>>     Cистемные подпрограммы # System subroutines
 // -----------------------------------------------------
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
@@ -948,8 +943,8 @@ function FileExists(name: string): boolean;
 
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
 procedure Assert(cond: boolean);
-/// Выводит в специальном окне диагностическое сообщение mes и стек вызовов подпрограмм если условие не выполняется
-procedure Assert(cond: boolean; mes: string);
+/// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
+procedure Assert(cond: boolean; message: string);
 
 /// Возвращает свободное место в байтах на диске с именем diskname
 function DiskFree(diskname: string): int64;
@@ -994,8 +989,17 @@ function EnumerateDirectories(path: string): sequence of string;
 /// Возвращает последовательность имен каталогов по заданному пути, включая подкаталоги
 function EnumerateAllDirectories(path: string): sequence of string;
 
+///-procedure New<T>(var p: ^T); 
+/// Выделяет динамическую память размера sizeof(T) и возвращает в переменной p указатель на нее. Тип T должен быть размерным 
+//procedure New<T>(var p: ^T); 
+
+///-procedure Dispose<T>(var p: ^T); 
+/// Освобождает динамическую память, на которую указывает p 
+//procedure Dispose<T>(var p: ^T); 
+
+
 // -----------------------------------------------------
-//>>     Функции для работы с именами файлов
+//>>     Функции для работы с именами файлов # Functions for file names
 // -----------------------------------------------------
 /// Выделяет имя файла из полного имени файла fname
 function ExtractFileName(fname: string): string;
@@ -1011,7 +1015,7 @@ function ExtractFileDrive(fname: string): string;
 function ExpandFileName(fname: string): string;
 
 // -----------------------------------------------------
-//>>     Математические подпрограммы
+//>>     Математические подпрограммы # Math subroutines
 // -----------------------------------------------------
 ///-function Sign(x: число): число;
 /// Возвращает знак числа x
@@ -1190,7 +1194,7 @@ function Odd(i: uint64): boolean;
 function Cplx(re,im: real): Complex;
 
 // -----------------------------------------------------
-//>>     Процедуры для работы со стандартными множествами
+//>>     Процедуры для работы со стандартными множествами # Subroutines for set of T
 // -----------------------------------------------------
 ///- procedure Include(var s: set of T; element: T);
 ///Добавляет елемент el во множество s
@@ -1200,7 +1204,7 @@ procedure Include(var s: TypedSet; el: object);
 procedure Exclude(var s: TypedSet; el: object);
 
 // -----------------------------------------------------
-//>>     Подпрограммы для работы с символами и строками
+//>>     Подпрограммы для работы с символами # Subroutines for char
 // -----------------------------------------------------
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
@@ -1223,6 +1227,9 @@ function UpCase(ch: char): char;
 /// Преобразует символ в нижний регистр
 function LowCase(ch: char): char;
 
+// -----------------------------------------------------
+//>>     Подпрограммы для работы со строками # Subroutines for string
+// -----------------------------------------------------
 ///-procedure Str(i: целое; var s: string);
 /// Преобразует целое значение i к строковому представлению и записывает результат в s
 procedure Str(i: integer; var s: string);
@@ -1350,7 +1357,7 @@ function FloatToStr(a: real): string;
 function Format(formatstring: string; params pars: array of object): string;
 
 // -----------------------------------------------------
-//>>     Общие подпрограммы
+//>>     Общие подпрограммы # Common subroutines
 // -----------------------------------------------------
 /// Увеличивает значение переменной i на 1
 procedure Inc(var i: integer);
@@ -1446,7 +1453,7 @@ function Eoln: boolean;
 function Eof: boolean;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для работы с динамическими массивами
+//>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
 // -----------------------------------------------------
 ///- function Low(i: array): integer;
 function Low(i: System.Array): integer;
@@ -1468,7 +1475,7 @@ procedure Reverse<T>(a: array of T);
 procedure Reverse<T>(a: array of T; index,length: integer);
 
 // -----------------------------------------------------
-//>>     Подпрограммы для генерации последовательностей
+//>>     Подпрограммы для генерации последовательностей # Subroutines for sequence generation
 // -----------------------------------------------------
 /// Возвращает последовательность целых от a до b
 function Range(a,b: integer): sequence of integer;
@@ -1520,7 +1527,7 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 
 
 // -----------------------------------------------------
-//>>     Подпрограммы для генерации динамических массивов
+//>>     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation
 // -----------------------------------------------------
 /// Возвращает массив, заполненный указанными значениями
 function Arr<T>(params a: array of T): array of T;
@@ -1558,7 +1565,7 @@ function ReadArrReal(const prompt: string; n: integer): array of real;
 function ReadArrString(const prompt: string; n: integer): array of string;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для генерации случайных матриц
+//>>     Подпрограммы для генерации случайных матриц # Subroutines for matrix generation
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
@@ -1566,7 +1573,7 @@ function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: inte
 function MatrixRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для создания кортежей
+//>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
 // -----------------------------------------------------
 ///- function Rec(x1: T1, x2: T2,...): (T1,T2,...);
 /// Возвращает кортеж из элементов разных типов
@@ -1583,7 +1590,7 @@ function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6):
 function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
 
 // -----------------------------------------------------
-//>>     Короткие функции Lst, HSet, SSet, Dict, KV
+//>>     Короткие функции Lst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
 function Lst<T>(params a: array of T): List<T>;
@@ -1988,29 +1995,29 @@ end;
 constructor TypedSet.Create(len: integer);
 begin
   ht := new Hashtable({new TypedSetComparer()});
-  self.len := len;
+  Self.len := len;
 end;
 
 constructor TypedSet.Create(low_bound, upper_bound: object);
 begin
   ht := new Hashtable({new TypedSetComparer()});
-  self.low_bound := low_bound;
-  self.upper_bound := upper_bound;
+  Self.low_bound := low_bound;
+  Self.upper_bound := upper_bound;
 end;
 
 constructor TypedSet.Create(initValue: TypedSet);
 begin
   ht := new Hashtable({new TypedSetComparer()});
-  self.AssignSetFrom(initValue);
-  self.len := initValue.len;
+  Self.AssignSetFrom(initValue);
+  Self.len := initValue.len;
 end;
 
 constructor TypedSet.Create(low_bound, upper_bound: object; initValue: TypedSet);
 begin
   ht := new Hashtable({new TypedSetComparer()});
-  self.low_bound := low_bound;
-  self.upper_bound := upper_bound;
-  self.AssignSetFrom(initValue);
+  Self.low_bound := low_bound;
+  Self.upper_bound := upper_bound;
+  Self.AssignSetFrom(initValue);
 end;
 
 constructor TypedSet.Create(vals: array of byte);
@@ -2084,17 +2091,17 @@ end;
 
 function TypedSet.UnionSet(s: TypedSet): TypedSet;
 begin
-  Result := Union(self, s);
+  Result := Union(Self, s);
 end;
 
 function TypedSet.SubtractSet(s: TypedSet): TypedSet;
 begin
-  Result := Subtract(self, s);
+  Result := Subtract(Self, s);
 end;
 
 function TypedSet.IntersectSet(s: TypedSet): TypedSet;
 begin
-  Result := Intersect(self, s);
+  Result := Intersect(Self, s);
 end;
 
 function TypedSet.IsInDiapason(elem: object): boolean;
@@ -2230,9 +2237,9 @@ end;
 
 procedure TypedSet.Clip;
 begin
-  if self.len > 0 then
+  if Self.len > 0 then
   begin
-    Clip(self.len);
+    Clip(Self.len);
     exit;
   end;
   var tmp_ht := new Hashtable();
@@ -2240,7 +2247,7 @@ begin
   begin
     if IsInDiapason(el) then 
     begin
-      if (self.low_bound <> nil) then
+      if (Self.low_bound <> nil) then
       begin
         var tmp := convert_elem(el);
         tmp_ht.Add(tmp, tmp)
@@ -2434,32 +2441,32 @@ end;
 
 function TypedSet.CompareEquals(s: TypedSet): boolean;
 begin
-  Result := CompareSetEquals(self, s);
+  Result := CompareSetEquals(Self, s);
 end;
 
 function TypedSet.CompareInEquals(s: TypedSet): boolean;
 begin
-  Result := CompareSetInEquals(self, s);
+  Result := CompareSetInEquals(Self, s);
 end;
 
 function TypedSet.CompareLess(s: TypedSet): boolean;
 begin
-  Result := CompareSetLess(self, s);
+  Result := CompareSetLess(Self, s);
 end;
 
 function TypedSet.CompareLessEqual(s: TypedSet): boolean;
 begin
-  Result := CompareSetLessEqual(self, s);
+  Result := CompareSetLessEqual(Self, s);
 end;
 
 function TypedSet.CompareGreater(s: TypedSet): boolean;
 begin
-  Result := CompareSetGreater(self, s);
+  Result := CompareSetGreater(Self, s);
 end;
 
 function TypedSet.CompareGreaterEqual(s: TypedSet): boolean;
 begin
-  Result := CompareSetGreaterEqual(self, s);
+  Result := CompareSetGreaterEqual(Self, s);
 end;
 
 // -----------------------------------------------------
@@ -2738,15 +2745,15 @@ end;
 // -----------------------------------------------------
 constructor TypedFile.Create(ElementType: System.Type);
 begin
-  self.ElementType := ElementType;
+  Self.ElementType := ElementType;
   ElementSize := RuntimeSizeOf(ElementType);
 end;
 
 constructor TypedFile.Create(ElementType: System.Type; offs: integer; params offsets: array of integer);
 begin
-  self.ElementType := ElementType;
+  Self.ElementType := ElementType;
   ElementSize := RuntimeSizeOf(ElementType);
-  self.offsets := offsets;
+  Self.offsets := offsets;
   if offs <> 0 then
   begin
     ElementSize := ElementSize + offs{*2};
@@ -3068,6 +3075,11 @@ begin
   for var i:=1 to n do
     sb.Append(left);
   left := sb.ToString;
+end;
+
+function string.operator in(substr: string; str: string): boolean;
+begin
+  Result := str.Contains(substr);
 end;
 
 //------------------------------------------------------------------------------
@@ -5020,7 +5032,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//                  write - writeln
+//                  Write - Writeln # Write subroutines
 // -----------------------------------------------------
 function PointerOutput.ToString: string;
 begin
@@ -6139,7 +6151,7 @@ begin
     System.Diagnostics.Debug.Assert(cond);
 end;
 
-procedure Assert(cond: boolean; mes: string);
+procedure Assert(cond: boolean; message: string);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
@@ -6150,17 +6162,17 @@ begin
     var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
     var currentFile := stackTrace.GetFrame(ind).GetFileName();
     if not IsWDE then
-      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString()+': '+mes)
+      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString()+': '+message)
     else if not cond then
     begin
-      var err := 'Сбой подтверждения: '+mes+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      var err := 'Сбой подтверждения: '+message+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
       writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
     end;
   end
   else
-    System.Diagnostics.Debug.Assert(cond, mes);
+    System.Diagnostics.Debug.Assert(cond, message);
 end;
 
 function DiskFree(diskname: string): int64;
@@ -7661,7 +7673,7 @@ end;
 //{{{doc: Начало методов расширения }}}
 
 // -----------------------------------------------------
-//>>     Генерация бесконечных последовательностей
+//>>     Генерация бесконечных последовательностей # Infinite sequences
 // -----------------------------------------------------
 // Дополнения февраль 2016: Iterate, Step, &Repeat, Cycle
 
@@ -7710,10 +7722,10 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//>>     Методы расширения для sequence of T
+//>>     Методы расширения для sequence of T # Extension methods for sequence of T
 //------------------------------------------------------------------------------
 /// Выводит последовательность на экран, используя delim в качестве разделителя
-function Print<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
+function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionmethod;
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
@@ -7726,13 +7738,13 @@ begin
 end;
 
 /// Выводит последовательность на экран, используя пробел в качестве разделителя
-function Print<T>(self: sequence of T): sequence of T; extensionmethod;
+function Print<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.Print(' ');  
 end;
 
 /// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
-function Println<T>(self: sequence of T; delim: string): sequence of T; extensionmethod;
+function Println<T>(Self: sequence of T; delim: string): sequence of T; extensionmethod;
 begin
   Self.Print(delim);
   Writeln;
@@ -7753,7 +7765,7 @@ begin
 end;
 
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя delim в качестве разделителя
-function System.Collections.Generic.IEnumerable<T>.JoinIntoString(delim: string): string;
+function JoinIntoString<T>(Self: sequence of T; delim: string): string; extensionmethod;
 begin
   var g := Self.GetEnumerator();
   var sb := new System.Text.StringBuilder('');
@@ -7771,14 +7783,14 @@ begin
 end;
 
 /// Применяет действие к каждому элементу последовательности
-procedure &ForEach<T>(self: sequence of T; action: T -> ()); extensionmethod;
+procedure &ForEach<T>(Self: sequence of T; action: T -> ()); extensionmethod;
 begin
   foreach x: T in Self do
     action(x);
 end;
 
 /// Применяет действие к каждому элементу последовательности, зависящее от номера элемента
-procedure &ForEach<T>(self: sequence of T; action: (T,integer) -> ()); extensionmethod;
+procedure &ForEach<T>(Self: sequence of T; action: (T,integer) -> ()); extensionmethod;
 begin
   var i := 0;
   foreach x: T in Self do
@@ -7789,27 +7801,27 @@ begin
 end;
 
 /// Возвращает отсортированную по возрастанию последовательность
-function Sorted<T>(self: sequence of T): sequence of T; extensionmethod;
+function Sorted<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.OrderBy(x -> x);
 end;
 
 /// Возвращает отсортированную по убыванию последовательность
-function SortedDescending<T>(self: sequence of T): sequence of T; extensionmethod;
+function SortedDescending<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
   Result := Self.OrderByDescending(x -> x);
 end;
 
 /// Возвращает множество HashSet по данной последовательности
-function ToHashSet<T>(self: sequence of T): HashSet<T>; extensionmethod;
+function ToHashSet<T>(Self: sequence of T): HashSet<T>; extensionmethod;
 begin
-  Result := new HashSet<T>(self);
+  Result := new HashSet<T>(Self);
 end;
 
 /// Возвращает множество SortedSet по данной последовательности
-function ToSortedSet<T>(self: sequence of T): SortedSet<T>; extensionmethod;
+function ToSortedSet<T>(Self: sequence of T): SortedSet<T>; extensionmethod;
 begin
-  Result := new SortedSet<T>(self);
+  Result := new SortedSet<T>(Self);
 end;
 
 // Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
@@ -8015,19 +8027,19 @@ begin
 end;
 
 /// Разбивает последовательность на серии длины size
-function Batch<T>(self: sequence of T; size: integer): sequence of sequence of T; extensionmethod;
+function Batch<T>(Self: sequence of T; size: integer): sequence of sequence of T; extensionmethod;
 begin
-  Result := SeqWhile(self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size))
+  Result := SeqWhile(Self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size))
 end;
 
 /// Разбивает последовательность на серии длины size и применяет проекцию к каждой серии
-function Batch<T,Res>(self: sequence of T; size: integer; proj: Func<IEnumerable<T>,Res>): sequence of Res; extensionmethod;
+function Batch<T,Res>(Self: sequence of T; size: integer; proj: Func<IEnumerable<T>,Res>): sequence of Res; extensionmethod;
 begin
-  Result := SeqWhile(self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
+  Result := SeqWhile(Self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
 end;
 
 // -----------------------------------------------------
-//>>     Методы расширения типа integer
+//>>     Методы расширения типа integer # Extension methods for integer
 // -----------------------------------------------------
 /// Возвращает квадратный корень числа
 function Sqrt(Self: integer): real; extensionmethod;
@@ -8044,21 +8056,21 @@ end;
 // Дополнения февраль 2016: IsEven, IsOdd
 
 /// Возвращает, является ли целое четным
-function IsEven(self: integer): boolean; extensionmethod;
+function IsEven(Self: integer): boolean; extensionmethod;
 begin
-	Result := self mod 2 = 0;
+	Result := Self mod 2 = 0;
 end;
 
 /// Возвращает, является ли целое нечетным
-function IsOdd(self: integer): boolean; extensionmethod;
+function IsOdd(Self: integer): boolean; extensionmethod;
 begin
-	Result := self mod 2 <> 0;
+	Result := Self mod 2 <> 0;
 end;
 
 /// Возвращает последовательность чисел от 1 до данного
-function Range(self: integer): sequence of integer; extensionmethod;
+function Range(Self: integer): sequence of integer; extensionmethod;
 begin
-  Result := Range(1,self);  
+  Result := Range(1,Self);  
 end;
 
 // Дополнения февраль 2016: &To, &Downto, Times
@@ -8082,7 +8094,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//>>     Методы расширения типа BigInteger
+//>>     Методы расширения типа BigInteger # Extension methods for BigInteger
 // -----------------------------------------------------
 /// Возвращает квадратный корень числа
 function Sqrt(Self: BigInteger): real; extensionmethod;
@@ -8091,7 +8103,7 @@ begin
 end;
 
 // -----------------------------------------------------
-//>>     Методы расширения типа real
+//>>     Методы расширения типа real # Extension methods for real
 // -----------------------------------------------------
 /// Возвращает квадратный корень числа
 function Sqrt(Self: real): real; extensionmethod;
@@ -8130,72 +8142,72 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//>>     Методы расширения типа char
+//>>     Методы расширения типа char # Extension methods for char
 //------------------------------------------------------------------------------
 /// Преобразует символ в цифру
-function ToDigit(self: char): integer; extensionmethod;
+function ToDigit(Self: char): integer; extensionmethod;
 begin
-  Result := OrdUnicode(self) - OrdUnicode('0');
+  Result := OrdUnicode(Self) - OrdUnicode('0');
   if (Result<0) or (Result>=10) then
     raise new System.FormatException('not a Digit');
 end;
 
 /// Следующий символ
-function Succ(self: char): char; extensionmethod;
+function Succ(Self: char): char; extensionmethod;
 begin
-  Result := PABCSystem.succ(self);
+  Result := PABCSystem.succ(Self);
 end;
 
 /// Код символа
-function Code(self: char): integer; extensionmethod;
+function Code(Self: char): integer; extensionmethod;
 begin
-  Result := word(self);
+  Result := word(Self);
 end;
 
 /// Предыдущий символ
-function Pred(self: char): char; extensionmethod;
+function Pred(Self: char): char; extensionmethod;
 begin
-  Result := PABCSystem.pred(self);
+  Result := PABCSystem.pred(Self);
 end;
 
 /// Является ли символ цифрой
-function IsDigit(self: char): boolean; extensionmethod;
+function IsDigit(Self: char): boolean; extensionmethod;
 begin
-  Result := char.IsDigit(self);
+  Result := char.IsDigit(Self);
 end;
 
 /// Является ли символ буквой
-function IsLetter(self: char): boolean; extensionmethod;
+function IsLetter(Self: char): boolean; extensionmethod;
 begin
-  Result := char.IsLetter(self);
+  Result := char.IsLetter(Self);
 end;
 
 /// Принадлежит ли символ к категории букв нижнего регистра
-function IsLower(self: char): boolean; extensionmethod;
+function IsLower(Self: char): boolean; extensionmethod;
 begin
-  Result := char.IsLower(self);
+  Result := char.IsLower(Self);
 end;
 
 /// Принадлежит ли символ к категории букв верхнего регистра
-function IsUpper(self: char): boolean; extensionmethod;
+function IsUpper(Self: char): boolean; extensionmethod;
 begin
-  Result := char.IsUpper(self);
+  Result := char.IsUpper(Self);
 end;
 
 /// Преобразует символ в верхний регистр
-function ToUpper(self: char): char; extensionmethod;
+function ToUpper(Self: char): char; extensionmethod;
 begin
-  Result := char.ToUpper(self);
+  Result := char.ToUpper(Self);
 end;
 
 /// Преобразует символ в нижний регистр
-function ToLower(self: char): char; extensionmethod;
+function ToLower(Self: char): char; extensionmethod;
 begin
-  Result := char.ToLower(self);
+  Result := char.ToLower(Self);
 end;
 
 //------------------------------------------------------------------------------
-//>>     Методы расширения типа string
+//>>     Методы расширения типа string # Extension methods for string
 //------------------------------------------------------------------------------
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
@@ -8216,43 +8228,43 @@ begin
 end;
 
 /// Преобразует строку в целое
-function string.ToInteger: integer;
+function ToInteger(Self: string): integer; extensionmethod;
 begin
   Result := integer.Parse(Self);
 end;
 
 /// Преобразует строку в BigInteger
-function string.ToBigInteger: BigInteger;
+function ToBigInteger(Self: string): BigInteger; extensionmethod;
 begin
   Result := BigInteger.Parse(Self);
 end;
 
 /// Преобразует строку в вещественное
-function string.ToReal: real;
+function ToReal(Self: string): real; extensionmethod;
 begin
   Result := real.Parse(Self, nfi);
 end;
 
 /// Преобразует строку в массив слов
-function string.ToWords(params delim: array of char): array of string;
+function ToWords(Self: string; params delim: array of char): array of string; extensionmethod;
 begin
   Result := Self.Split(delim, System.StringSplitOptions.RemoveEmptyEntries);
 end;
 
 /// Преобразует строку в массив целых
-function string.ToIntegers(): array of integer;
+function ToIntegers(Self: string): array of integer; extensionmethod;
 begin
   Result := Self.ToWords().Select(s -> StrToInt(s)).ToArray();
 end;
 
 /// Преобразует строку в массив вещественных
-function string.ToReals(): array of real;
+function ToReals(Self: string): array of real; extensionmethod;
 begin
   Result := Self.ToWords().Select(s -> StrToFloat(s)).ToArray();
 end;
 
 /// Возвращает инверсию строки
-function string.Inverse(): string;
+function Inverse(Self: string): string; extensionmethod;
 begin
   var sb := new System.Text.StringBuilder(Self.Length);
   for var i:= Self.Length downto 1 do
@@ -8260,24 +8272,36 @@ begin
   Result := sb.ToString;
 end;
 
-// Дополнения февраль 2016: Matches, MatchValues, Remove, Right, Left
+// Дополнения февраль 2016: Match, Matches, MatchValues, Remove, Right, Left
+
+// Ищет в указанной строке первое вхождение регулярного выражения
+//function Match(Self: string; reg: string; options: RegexOptions := RegexOptions.None): Match; extensionmethod;
+//begin
+//	Result := (new Regex (reg, options)).Match(Self);
+//end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
-function Matches(self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
+function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
 begin
-	Result := (new Regex (reg, options)).Matches (self).Cast&<Match>();
+	Result := (new Regex (reg, options)).Matches(Self).Cast&<Match>();
+end;
+
+/// Ищет в указанной строке первое вхождение регулярного выражения и возвращает его в виде строки
+function MatchValue(Self: string; reg: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+begin
+	Result := (new Regex (reg, options)).Match(Self).Value;
 end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности строк
-function MatchValues(self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of string; extensionmethod;
+function MatchValues(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of string; extensionmethod;
 begin
-	Result := self.Matches(reg,options).Select(m->m.Value);
+	Result := Self.Matches(reg,options).Select(m->m.Value);
 end;
 
 /// Удаляет в строке все вхождения указанных строк
-function Remove(self: string; params targets: array of string): string; extensionmethod;
+function Remove(Self: string; params targets: array of string): string; extensionmethod;
 begin
-	var builder := new StringBuilder (self);
+	var builder := new StringBuilder (Self);
 
 	for var i := 0 to targets.Length-1 do
 		builder.Replace (targets[i], String.Empty);
@@ -8286,27 +8310,27 @@ begin
 end;
 
 /// Возвращает подстроку, полученную вырезанием из строки length самых правых символов
-function Right(self: string; length: integer): string; extensionmethod;
+function Right(Self: string; length: integer): string; extensionmethod;
 begin
   length := Max(length, 0);
 
-  if self.Length > length then
-      Result := self.Substring(self.Length - length, length)
-  else Result := self;
+  if Self.Length > length then
+      Result := Self.Substring(Self.Length - length, length)
+  else Result := Self;
 end;
 
 /// Возвращает подстроку, полученную вырезанием из строки length самых левых символов
-function Left(self: string; length: integer): string; extensionmethod;
+function Left(Self: string; length: integer): string; extensionmethod;
 begin
   length := Max(length, 0);
 
-  if self.Length > length then
-      Result := self.Substring(0, length)
-  else Result := self;
+  if Self.Length > length then
+      Result := Self.Substring(0, length)
+  else Result := Self;
 end;
 
 //--------------------------------------------
-//>>     Методы расширения типа Func
+//>>     Методы расширения типа Func # Extension methods for Func
 //--------------------------------------------
 /// Суперпозиция функций
 function Compose<T1, T2, TResult> (Self: T2 -> TResult; composer: T1 -> T2): T1 -> TResult; extensionmethod;
@@ -8326,7 +8350,7 @@ begin
 end;
 
 //--------------------------------------------
-//>>     Методы расширения типа Tuple
+//>>     Методы расширения типа Tuple # Extension methods for Tuple
 //--------------------------------------------
 // Дополнения февраль 2016
 
@@ -8391,17 +8415,19 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//>>     Методы расширения типа Complex
+//>>     Методы расширения типа Complex # Extension methods for Complex
 //------------------------------------------------------------------------------
-function Conjugate(self: Complex): Complex; extensionmethod;
+/// Возвращает комплексно сопряженное значение
+function Conjugate(Self: Complex): Complex; extensionmethod;
 begin
   Result := Complex.Conjugate(Self);
 end;
 
 // -----------------------------------------------------------------------------
-//>>     Методы расширения IDictionary 
+//>>     Методы расширения IDictionary # Extension methods for IDictionary
 // -----------------------------------------------------------------------------
-function System.Collections.Generic.IDictionary<Key,Value>.Get(K: Key): Value;
+/// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
+function Get<Key,Value>(Self: IDictionary<Key,Value>; K: Key): Value; extensionmethod;
 begin
   var b := Self.TryGetValue(K,Result);
   if not b then 
