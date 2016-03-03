@@ -595,7 +595,7 @@ procedure ReadShortString(var s: string; n: integer);
 ///--
 procedure ReadShortStringFromFile(f: Text; var s: string; n: integer);
 
-///- procedure Read(f,a,b,...);
+///- procedure Read(f: файл; a,b,...);
 /// Вводит значения a,b,... из файла f
 procedure Read(f: Text);
 ///--
@@ -762,29 +762,29 @@ procedure AssignFile(f: Text; name: string);
 procedure Close(f: Text);
 ///--
 procedure CloseFile(f: Text);
-/// Открывает текстовый файл f на чтение в кодировке Windows
+/// Открывает текстовый файл на чтение в кодировке Windows
 procedure Reset(f: Text);
-/// Открывает текстовый файл f на чтение в указанной кодировке
+/// Открывает текстовый файл на чтение в указанной кодировке
 procedure Reset(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в кодировке Windows
 procedure Reset(f: Text; name: string);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на чтение в указанной кодировке
 procedure Reset(f: Text; name: string; en: Encoding);
-/// Открывает текстовый файл f на запись в кодировке Windows. 
+/// Открывает текстовый файл на запись в кодировке Windows. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text);
-/// Открывает текстовый файл f на запись в указанной кодировке. 
+/// Открывает текстовый файл на запись в указанной кодировке. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; en: Encoding);
-/// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись в кодировке Windows. 
+/// Связывает файловую переменную с именем файла name и открывает текстовый файл f на запись в кодировке Windows. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; name: string);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл f на запись в указанной кодировке. 
 ///Если файл существовал - он обнуляется, если нет - создается пустой
 procedure Rewrite(f: Text; name: string; en: Encoding);
-/// Открывает текстовый f файл на дополнение в кодировке Windows
+/// Открывает текстовый файл на дополнение в кодировке Windows
 procedure Append(f: Text);
-/// Открывает текстовый f файл на дополнение в указанной кодировке
+/// Открывает текстовый файл на дополнение в указанной кодировке
 procedure Append(f: Text; en: Encoding);
 /// Связывает файловую переменную f с именем файла name и открывает текстовый файл на дополнение в кодировке Windows
 procedure Append(f: Text; name: string);
@@ -805,11 +805,11 @@ function OpenAppend(fname: string; en: Encoding): Text;
 
 ///--
 function Eof(f: Text): boolean;
-/// Возвращает True, если достигнут конец строки в файле f
+/// Возвращает True, если в файле достигнут конец строки 
 function Eoln(f: Text): boolean;
-/// Пропускает пробельные символы, после чего возвращает True, если достигнут конец файла f
+/// Пропускает пробельные символы, после чего возвращает True, если достигнут конец файла
 function SeekEof(f: Text): boolean;
-/// Пропускает пробельные символы, после чего возвращает True, если достигнут конец строки в файле f
+/// Пропускает пробельные символы, после чего возвращает True, если в файле достигнут конец строки
 function SeekEoln(f: Text): boolean;
 /// Записывает содержимое буфера файла на диск
 procedure Flush(f: Text);
@@ -849,23 +849,23 @@ procedure WriteAllText(path: string; s: string; en: Encoding);
 //>>     Подпрограммы для работы с двоичными файлами # Subroutines for binary files
 // -----------------------------------------------------
 ///- procedure Reset(f: двоичный файл);
-/// Открывает двоичный файл на чтение и запись
+/// Открывает двоичный файл на чтение и запись.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Reset(f: AbstractBinaryFile);
 ///- procedure Reset(f: двоичный файл; name: string);
-/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись
+/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Reset(f: AbstractBinaryFile; name: string);
 ///- procedure Rewrite(f: двоичный файл);
-/// Открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется
+/// Открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое. Если файл существовал, он обнуляется.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile);
 ///- procedure Rewrite(f: двоичный файл; name: string);
-/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое
+/// Связывает файловую переменную f с файлом name на диске и открывает двоичный файл на чтение и запись, при этом обнуляя его содержимое.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Rewrite(f: AbstractBinaryFile; name: string);
 ///- procedure Truncate(f: двоичный файл);
-/// Усекает двоичный файл, отбрасывая все элементы с позиции файлового указателя
+/// Усекает двоичный файл, отбрасывая все элементы с позиции файлового указателя.
 ///Двоичный файл - это либо типизированный файл file of T, либо бестиповой файл file
 procedure Truncate(f: AbstractBinaryFile);
 
@@ -1172,7 +1172,7 @@ function Min(a, b: uint64): uint64;
 ///--
 function Min(a, b: real): real;
 ///-function Odd(i: целое): boolean;
-/// Возвращает True, если i нечетно
+/// Возвращает True, если i нечетно, и False в противном случае
 function Odd(i: byte): boolean;
 ///--
 function Odd(i: shortint): boolean;
@@ -1197,10 +1197,10 @@ function Cplx(re,im: real): Complex;
 //>>     Процедуры для работы со стандартными множествами # Subroutines for set of T
 // -----------------------------------------------------
 ///- procedure Include(var s: set of T; element: T);
-///Добавляет елемент el во множество s
+///Добавляет элемент element во множество s
 procedure Include(var s: TypedSet; el: object);
 ///- procedure Exclude(var s: set of T; element: T);
-///Удаляет элемент el из множества s
+///Удаляет элемент element из множества s
 procedure Exclude(var s: TypedSet; el: object);
 
 // -----------------------------------------------------
@@ -7958,7 +7958,7 @@ begin
   Result := (Self.Select(x->x[0]),Self.Select(x->x[1]),Self.Select(x->x[2]))
 end;
 
-/// Разъединяет последовательность четырехэлементных кортежей на три последовательности
+/// Разъединяет последовательность четырехэлементных кортежей на четыре последовательности
 function UnZipTuple<T,T1,T2,T3>(Self: sequence of (T,T1,T2,T3)): (sequence of T,sequence of T1,sequence of T2,sequence of T3); extensionmethod;
 begin
   Result := (Self.Select(x->x[0]),Self.Select(x->x[1]),Self.Select(x->x[2]),Self.Select(x->x[3]))
@@ -8272,13 +8272,7 @@ begin
   Result := sb.ToString;
 end;
 
-// Дополнения февраль 2016: Match, Matches, MatchValues, Remove, Right, Left
-
-// Ищет в указанной строке первое вхождение регулярного выражения
-//function Match(Self: string; reg: string; options: RegexOptions := RegexOptions.None): Match; extensionmethod;
-//begin
-//	Result := (new Regex (reg, options)).Match(Self);
-//end;
+// Дополнения февраль 2016: Matches, MatchValues, Remove, Right, Left
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
 function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
@@ -8341,6 +8335,32 @@ begin
   Result := x -> Slf(composer(x));
 end;
 
+//------------------------------------------------------------------------------
+//>>     Методы расширения типа Complex # Extension methods for Complex
+//------------------------------------------------------------------------------
+/// Возвращает комплексно сопряженное значение
+function Conjugate(Self: Complex): Complex; extensionmethod;
+begin
+  Result := Complex.Conjugate(Self);
+end;
+
+// -----------------------------------------------------------------------------
+//>>     Методы расширения IDictionary # Extension methods for IDictionary
+// -----------------------------------------------------------------------------
+/// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
+function Get<Key,Value>(Self: IDictionary<Key,Value>; K: Key): Value; extensionmethod;
+begin
+  var b := Self.TryGetValue(K,Result);
+  if not b then 
+    Result := default(Value);
+end;
+
+
+//{{{--doc: Конец методов расширения }}}
+
+//------------------------------------------------------------------------------
+//          Операции для Func
+//------------------------------------------------------------------------------
 ///--
 function operator*<T1, T2, TResult> (Self: T2 -> TResult; composer: T1 -> T2): T1 -> TResult; extensionmethod;
 begin
@@ -8349,41 +8369,9 @@ begin
   Result := Self.Compose(composer);
 end;
 
-//--------------------------------------------
-//>>     Методы расширения типа Tuple # Extension methods for Tuple
-//--------------------------------------------
-// Дополнения февраль 2016
-
-/// Добавляет поле к кортежу
-{function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
-begin
-  Result := (Self[0],Self[1],v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
-begin
-  Result := (Self[0],Self[1],Self[2],v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
-begin
-  Result := (Self[0],Self[1],Self[2],Self[3],v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
-begin
-  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
-end;
-
-/// Добавляет поле к кортежу
-function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
-begin
-  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
-end;}
-
+//------------------------------------------------------------------------------
+//          Операции для Tuple
+//------------------------------------------------------------------------------
 ///--
 function operator+<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
 begin
@@ -8414,28 +8402,41 @@ begin
   Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
 end;
 
-//------------------------------------------------------------------------------
-//>>     Методы расширения типа Complex # Extension methods for Complex
-//------------------------------------------------------------------------------
-/// Возвращает комплексно сопряженное значение
-function Conjugate(Self: Complex): Complex; extensionmethod;
-begin
-  Result := Complex.Conjugate(Self);
-end;
+// --------------------------------------------
+//      Методы расширения типа Tuple # Extension methods for Tuple
+// -------------------------------------------
+// Дополнения февраль 2016
 
-// -----------------------------------------------------------------------------
-//>>     Методы расширения IDictionary # Extension methods for IDictionary
-// -----------------------------------------------------------------------------
-/// Возвращает в словаре значение, связанное с указанным ключом, а если такого ключа нет, то значение по умолчанию
-function Get<Key,Value>(Self: IDictionary<Key,Value>; K: Key): Value; extensionmethod;
-begin
-  var b := Self.TryGetValue(K,Result);
-  if not b then 
-    Result := default(Value);
-end;
+// Добавляет поле к кортежу
+// function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
+// begin
+//  Result := (Self[0],Self[1],v);
+// end;
 
+// Добавляет поле к кортежу
+// function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
+// begin
+//  Result := (Self[0],Self[1],Self[2],v);
+// end;
 
-//{{{--doc: Конец методов расширения }}}
+// Добавляет поле к кортежу
+// function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
+// begin
+//  Result := (Self[0],Self[1],Self[2],Self[3],v);
+// end;
+
+// Добавляет поле к кортежу
+// function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
+// begin
+//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
+//end;
+
+// Добавляет поле к кортежу
+// function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
+// begin
+//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
+// end;
+
 
 //{{{ Конец секции реализации прикладных методов }}}
 
