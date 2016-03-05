@@ -343,7 +343,7 @@ type
     function ReadReal: real;
     /// Возвращает значение типа char, введенное из текстового файла
     function ReadChar: char;
-    /// Возвращает значение типа string, введенное из текстового файла
+    /// Возвращает значение типа string, введенное из текстового файла, без перехода на следующую строку
     function ReadString: string;
     /// Возвращает значение типа boolean, введенное из текстового файла
     function ReadBoolean: boolean;
@@ -361,9 +361,9 @@ type
     procedure Write(params o: array of Object);
     /// Записывает в текстовый файл значения и переходит на следующую строку
     procedure Writeln(params o: array of Object);
-    /// Возвращает True, если достигнут конец файла
+    /// Возвращает True, если достигнут конец файла, и False в противном случае
     function Eof: boolean;
-    /// Возвращает True, если достигнут конец строки
+    /// Возвращает True, если достигнут конец строки, и False в противном случае
     function Eoln: boolean;
     /// Закрывает файл
     procedure Close;
@@ -375,7 +375,7 @@ type
     procedure Flush;
     /// Удаляет файл
     procedure Erase;
-    /// Переименовывает файл, давая ему имя newname. 
+    /// Переименовывает файл, давая ему имя newname
     procedure Rename(newname: string);
     /// Возвращает имя файла
     function Name: string;
@@ -462,9 +462,9 @@ type
     function Eof: boolean;
     /// Удаляет файл
     procedure Erase;
-    /// Переименовывает файл, давая ему имя newname. 
+    /// Переименовывает файл, давая ему имя newname 
     procedure Rename(newname: string);
-    ///- write(f: file; a,b,...)
+    ///- Write(f: file; a,b,...)
     /// Выводит значения a,b,... в двоичный файл
     procedure Write(params vals: array of object);
   end;
@@ -8039,6 +8039,162 @@ begin
 end;
 
 // -----------------------------------------------------
+//>>     Методы расширения типа array of T # Extension methods for array of T
+// -----------------------------------------------------
+
+// Дополнения февраль 2016: Shuffle, AdjacentFind, IndexMin, IndexMax, Replace, Transform
+//   Статические методы - в методы расширения: BinarySearch, ConvertAll, Find, FindIndex, FindAll,  
+//   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Resize, Sort
+
+/// Перемешивает элементы массива случайным образом
+function Shuffle<T>(Self: array of T): array of T; extensionmethod;
+begin
+  var n := Self.Length;
+	for var i:=0 to n-1 do
+	  Swap(Self[i],Self[PABCSystem.Random(n)]);
+	Result := Self;  
+end;
+
+/// Перемешивает элементы списка случайным образом
+function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
+begin
+  var n := Self.Count;
+	for var i:=0 to n-1 do
+	begin
+	  var r := PABCSystem.Random(n);
+    var v := Self[i];
+    Self[i] := Self[r];
+    Self[r] := v;
+  end;
+	Result := Self;  
+end;
+
+/// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
+function AdjacentFind<T>(Self: array of T): integer; extensionmethod;
+begin
+  Result := -1;
+  for var i:=0 to Self.Length-2 do
+    if Self[i]=Self[i+1] then 
+    begin
+      Result := i;
+      exit;
+    end;
+end;
+
+/// Возвращает индекс первого минимального элемента
+function IndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[0];
+  Result := 0;
+  for var i:=1 to Self.Length-1 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс первого максимального элемента
+function IndexMax<T>(self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[0];
+  Result := 0;
+  for var i:=1 to Self.Length-1 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Заменяет в массиве все вхождения одного значения на другое
+procedure Replace<T>(Self: array of T; oldValue,newValue: T); extensionmethod;
+begin
+  for var i:=0 to Self.Length-1 do
+    if Self[i] = oldValue then
+      Self[i] := newValue;
+end;
+
+/// Преобразует элементы массива по заданному правилу
+procedure Transform<T>(self: array of T; f: T -> T); extensionmethod;
+begin
+  for var i:=0 to self.Length-1 do
+    self[i] := f(self[i]);
+end;
+
+/// Выполняет бинарный поиск в отсортированном массиве
+function BinarySearch<T>(self: array of T; x: T): integer; extensionmethod;
+begin
+  Result := System.Array.BinarySearch(self,x);  
+end;
+
+/// Преобразует массив одного типа в массив другого типа
+function ConvertAll<T,T1>(self: array of T; converter: System.Converter<T,T1>): array of T1; extensionmethod;
+begin
+  Result := System.Array.ConvertAll(self,converter);  
+end;
+
+/// Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
+function Find<T>(self: array of T; p: T->boolean): T; extensionmethod;
+begin
+  Result := System.Array.Find(self,p);  
+end;
+
+/// Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается -1
+function FindIndex<T>(self: array of T; p: T->boolean): integer; extensionmethod;
+begin
+  Result := System.Array.FindIndex(self,p);  
+end;
+
+/// Возвращает в виде мессива все элементы, удовлетворяющие предикатуы
+function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
+begin
+  Result := System.Array.FindAll(self,p);  
+end;
+
+/// Выполняет поиск последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
+function FindLast<T>(self: array of T; p: T->boolean): T; extensionmethod;
+begin
+  Result := System.Array.FindLast(self,p);  
+end;
+
+/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
+function FindLastIndex<T>(self: array of T; p: T->boolean): integer; extensionmethod;
+begin
+  Result := System.Array.FindLastIndex(self,p);  
+end;
+
+/// Возвращает индекс первого вхождения элемента или -1 если элемент не найден
+function IndexOf<T>(self: array of T; x: T): integer; extensionmethod;
+begin
+  Result := System.Array.IndexOf(self,x);  
+end;
+
+/// Возвращает индекс последнего вхождения элемента или -1 если элемент не найден
+function LastIndexOf<T>(self: array of T; x: T): integer; extensionmethod;
+begin
+  Result := System.Array.LastIndexOf(self,x);  
+end;
+
+/// Меняет размер массива
+procedure Resize<T>(self: array of T; x: integer); extensionmethod;
+begin
+  System.Array.Resize(self,x);  
+end;
+
+/// Сортирует массив по возрастанию
+procedure Sort<T>(self: array of T); extensionmethod;
+begin
+  System.Array.Sort(self);  
+end;
+
+/// Сортирует массив по возрастанию, используя cmp в качестве функции сравнения элементов
+procedure Sort<T>(self: array of T; cmp: (T,T) -> integer); extensionmethod;
+begin
+  System.Array.Sort(self,cmp);  
+end;
+
+// -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
 // -----------------------------------------------------
 /// Возвращает квадратный корень числа
@@ -8436,6 +8592,24 @@ end;
 // begin
 //  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
 // end;
+
+{// Определяет, есть ли указанный элемент в массиве
+ function Contains<T>(self: array of T; x: T): boolean; extensionmethod;
+ begin
+   Result := System.Array.IndexOf(self,x)<>-1;  
+ end;}
+
+{// Изменяет порядок элементов в массиве на обратный
+ procedure Reverse<T>(self: array of T); extensionmethod;
+ begin
+   System.Array.Reverse(self);  
+ end;
+
+// Изменяет порядок элементов на обратный в диапазоне массива, заданном началом и длиной 
+ procedure Reverse<T>(self: array of T; index,len: integer); extensionmethod;
+ begin
+   System.Array.Reverse(self,index,len);  
+ end;}
 
 
 //{{{ Конец секции реализации прикладных методов }}}
