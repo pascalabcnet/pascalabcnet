@@ -1455,14 +1455,25 @@ function Eof: boolean;
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с динамическими массивами # Subroutines for array of T
 // -----------------------------------------------------
-///- function Low(i: array): integer;
+///- function Low(a: array of T): integer;
+/// Возвращает 0
 function Low(i: System.Array): integer;
-///- function High(i: array): integer;
+///- function High(a: array of T): integer;
+/// Возвращает верхнюю границу динамического массива
 function High(i: System.Array): integer;
+///- function Length(a: array of T): integer;
 /// Возвращает длину динамического массива
 function Length(a: System.Array): integer;
+///- function Length(a: array of T; dim: integer): integer;
 /// Возвращает длину динамического массива по размерности dim
 function Length(a: System.Array; dim: integer): integer;
+///- procedure SetLength(var a: array of T);
+/// Устанавливает длину одномерного динамического массива. Старое содержимое сохраняется
+//procedure SetLength(var a: System.Array);
+///- procedure SetLength(var a: array of T; n1,n2,...: integer);
+/// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
+//procedure SetLength(var a: System.Array);
+///- procedure Copy(var a: array of T);
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию
@@ -7866,18 +7877,6 @@ end;
 
 // ToDo: SkipLast
 
-/// Возвращает срез последовательности от номера from с шагом step
-function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
-begin
-  Result := Self.Skip(from).Where((x,i)->i mod step = 0);
-end;
-
-/// Возвращает срез последовательности от номера from с шагом step длины не более count
-function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
-begin
-  Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
-end;
-
 /// Декартово произведение последовательностей
 function Cartesian<T,T1>(Self: sequence of T; b: sequence of T1): sequence of (T,T1); extensionmethod;
 begin
@@ -8038,6 +8037,50 @@ begin
   Result := SeqWhile(Self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
 end;
 
+
+/// Возвращает срез последовательности от номера from с шагом step
+function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0);
+end;
+
+/// Возвращает срез последовательности от номера from с шагом step длины не более count
+function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
+end;
+
+// -----------------------------------------------------
+//>>     Методы расширения типа List<T> # Extension methods for List T
+// -----------------------------------------------------
+
+/// Перемешивает элементы списка случайным образом
+function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
+begin
+  var n := Self.Count;
+	for var i:=0 to n-1 do
+	begin
+	  var r := PABCSystem.Random(n);
+    var v := Self[i];
+    Self[i] := Self[r];
+    Self[r] := v;
+  end;
+	Result := Self;  
+end;
+
+/// Возвращает срез списка от индекса from с шагом step
+function Slice<T>(Self: List<T>; from,step: integer): List<T>; extensionmethod;
+begin
+  Result := Self.AsEnumerable.Slice(from,step).ToList;
+end;
+
+/// Возвращает срез списка от индекса from с шагом step длины не более count
+function Slice<T>(Self: List<T>; from,step,count: integer): List<T>; extensionmethod;
+begin
+  Result := Self.AsEnumerable.Slice(from,step,count).ToList;
+end;
+
+
 // -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
 // -----------------------------------------------------
@@ -8052,20 +8095,6 @@ begin
   var n := Self.Length;
 	for var i:=0 to n-1 do
 	  Swap(Self[i],Self[PABCSystem.Random(n)]);
-	Result := Self;  
-end;
-
-/// Перемешивает элементы списка случайным образом
-function Shuffle<T>(Self: List<T>): List<T>; extensionmethod;
-begin
-  var n := Self.Count;
-	for var i:=0 to n-1 do
-	begin
-	  var r := PABCSystem.Random(n);
-    var v := Self[i];
-    Self[i] := Self[r];
-    Self[r] := v;
-  end;
 	Result := Self;  
 end;
 
@@ -8194,6 +8223,19 @@ begin
   System.Array.Sort(self,cmp);  
 end;
 
+/// Возвращает срез массива от индекса from с шагом step
+function Slice<T>(Self: array of T; from,step: integer): array of T; extensionmethod;
+begin
+  Result := Self.AsEnumerable.Slice(from,step).ToArray;
+end;
+
+/// Возвращает срез массива от индекса from с шагом step длины не более count
+function Slice<T>(Self: array of T; from,step,count: integer): array of T; extensionmethod;
+begin
+  Result := Self.AsEnumerable.Slice(from,step,count).ToArray;
+end;
+
+
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
 // -----------------------------------------------------
@@ -8300,12 +8342,10 @@ end;
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
 //------------------------------------------------------------------------------
-/// Преобразует символ в цифру
-function ToDigit(Self: char): integer; extensionmethod;
+/// Предыдущий символ
+function Pred(Self: char): char; extensionmethod;
 begin
-  Result := OrdUnicode(Self) - OrdUnicode('0');
-  if (Result<0) or (Result>=10) then
-    raise new System.FormatException('not a Digit');
+  Result := PABCSystem.pred(Self);
 end;
 
 /// Следующий символ
@@ -8318,12 +8358,6 @@ end;
 function Code(Self: char): integer; extensionmethod;
 begin
   Result := word(Self);
-end;
-
-/// Предыдущий символ
-function Pred(Self: char): char; extensionmethod;
-begin
-  Result := PABCSystem.pred(Self);
 end;
 
 /// Является ли символ цифрой
@@ -8350,16 +8384,24 @@ begin
   Result := char.IsUpper(Self);
 end;
 
-/// Преобразует символ в верхний регистр
-function ToUpper(Self: char): char; extensionmethod;
+/// Преобразует символ в цифру
+function ToDigit(Self: char): integer; extensionmethod;
 begin
-  Result := char.ToUpper(Self);
+  Result := OrdUnicode(Self) - OrdUnicode('0');
+  if (Result<0) or (Result>=10) then
+    raise new System.FormatException('not a Digit');
 end;
 
 /// Преобразует символ в нижний регистр
 function ToLower(Self: char): char; extensionmethod;
 begin
   Result := char.ToLower(Self);
+end;
+
+/// Преобразует символ в верхний регистр
+function ToUpper(Self: char): char; extensionmethod;
+begin
+  Result := char.ToUpper(Self);
 end;
 
 //------------------------------------------------------------------------------
@@ -8477,6 +8519,18 @@ begin
   if Self.Length > length then
       Result := Self.Substring(0, length)
   else Result := Self;
+end;
+
+/// Возвращает срез строки от индекса from с шагом step
+function Slice(Self: string; from,step: integer): string; extensionmethod;
+begin
+  Result := Self.AsEnumerable.Slice(from,step).JoinIntoString('');
+end;
+
+/// Возвращает срез строки от индекса from с шагом step длины не более count
+function Slice(Self: string; from,step,count: integer): string; extensionmethod;
+begin
+  Result := Self.AsEnumerable.Slice(from,step,count).JoinIntoString('');
 end;
 
 //--------------------------------------------
