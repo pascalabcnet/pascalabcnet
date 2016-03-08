@@ -1507,7 +1507,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (fn.is_extension_method)
                         {
-                            if (fn.parameters[0].type == obj.type || type_table.compare_types(fn.parameters[0].type, obj.type) == type_compare.greater_type)
+                            if (obj != null && (fn.parameters[0].type == obj.type || type_table.compare_types(fn.parameters[0].type, obj.type) == type_compare.greater_type))
                                 fnl.AddElementFirst(fn);
                             else
                                 fnl.AddElement(fn);
