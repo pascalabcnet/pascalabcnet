@@ -84,7 +84,7 @@ const
 // -----------------------------------------------------
 type
   /// Базовый тип объектов
-  object = System.Object;
+  Object = System.Object;
   
   /// Базовый тип исключений
   Exception = System.Exception;
@@ -1206,6 +1206,18 @@ procedure Exclude(var s: TypedSet; el: object);
 // -----------------------------------------------------
 //>>     Подпрограммы для работы с символами # Subroutines for char
 // -----------------------------------------------------
+/// Увеличивает код символа c на 1
+procedure Inc(var c: char);
+/// Увеличивает код символа c на n
+procedure Inc(var c: char; n: integer);
+/// Уменьшает код символа c на 1
+procedure Dec(var c: char);
+/// Уменьшает код символа c на n
+procedure Dec(var c: char; n: integer);
+/// Возвращает предшествующий x символ
+function Pred(x: char): char;
+/// Возвращает следующий за x символ
+function Succ(x: char): char;
 /// Преобразует код в символ в кодировке Windows
 function ChrAnsi(a: byte): char;
 /// Преобразует символ в код в кодировке Windows
@@ -1367,21 +1379,17 @@ procedure Inc(var i: integer; n: integer);
 procedure Dec(var i: integer);
 /// Уменьшает значение переменной i на n
 procedure Dec(var i: integer; n: integer);
-/// Увеличивает код символа c на 1
-procedure Inc(var c: char);
-/// Увеличивает код символа c на n
-procedure Inc(var c: char; n: integer);
-/// Уменьшает код символа c на 1
-procedure Dec(var c: char);
-/// Уменьшает код символа c на n
-procedure Dec(var c: char; n: integer);
-///--
+///-procedure Inc(var e: перечислимый тип);
+/// Увеличивает значение перечислимого типа на 1
 procedure Inc(var b: byte);
-///--
+///-procedure Inc(var e: перечислимый тип; n: integer);
+/// Увеличивает значение перечислимого типа на n
 procedure Inc(var b: byte; n: integer);
-///--
+///-procedure Dec(var e: перечислимый тип);
+/// Уменьшает значение перечислимого типа на 1
 procedure Dec(var b: byte);
-///--
+///-procedure Dec(var e: перечислимый тип; n: integer);
+/// Уменьшает значение перечислимого типа на n
 procedure Dec(var b: byte; n: integer);
 ///--
 procedure Inc(var f: boolean);
@@ -1390,7 +1398,8 @@ procedure Dec(var f: boolean);
 ///-function Ord(a: целое): целое;
 /// Возвращает порядковый номер значения a
 function Ord(a: integer): integer;
-///--
+///-function Ord(a: перечислимый тип): integer;
+/// Возвращает порядковый номер значения a
 function Ord(a: longword): longword;
 ///--
 function Ord(a: int64): int64;
@@ -1402,7 +1411,8 @@ function Ord(a: boolean): integer;
 ///-function Succ(x: целое): целое;
 /// Возвращает следующее за x значение
 function Succ(x: integer): integer;
-///--
+///-function Succ(x: перечислимый тип): перечислимый тип;
+/// Возвращает следующее за x значение
 function Succ(x: byte): byte;
 ///--
 function Succ(x: shortint): shortint;
@@ -1416,16 +1426,14 @@ function Succ(x: longword): longword;
 function Succ(x: int64): int64;
 ///--
 function Succ(x: uint64): uint64;
-///-function Succ(x: char): char;
-/// Возвращает следующий за x символ
-function Succ(x: char): char;
 ///--
 function Succ(x: boolean): boolean;
 
-///-function Pred(x);
+///-function Pred(x: целое): целое;
 /// Возвращает предшествующее x значение
 function Pred(x: integer): integer;
-///--
+///-function Pred(x: перечислимый тип): перечислимый тип;
+/// Возвращает предшествующее x значение
 function Pred(x: byte): byte;
 ///--
 function Pred(x: shortint): shortint;
@@ -1439,9 +1447,6 @@ function Pred(x: longword): longword;
 function Pred(x: int64): int64;
 ///--
 function Pred(x: uint64): uint64;
-///-function Pred(x: char): char;
-/// Возвращает предшествующий x символ
-function Pred(x: char): char;
 ///--
 function Pred(x: boolean): boolean;
 

@@ -6,7 +6,7 @@
         <Items>
           <Node Name="Стандартные константы">
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//     Стандартные константы</Text>
+            <Text>//&gt;&gt;     Стандартные константы # Standard constants</Text>
             <OCtx>
               <i Type="PAS_TreeNode">
               </i>
@@ -26,7 +26,7 @@
           </Node>
           <Node Name="Стандартные типы">
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//                  Стандартные типы</Text>
+            <Text>//&gt;&gt;     Стандартные типы # Standard types</Text>
             <OCtx>
               <i Type="PAS_TreeNode">
               </i>
@@ -1584,7 +1584,7 @@
           </Node>
           <Node Name="Методы расширения для sequence of T">
             <FileName>\PABCSystem.pas</FileName>
-            <Text>//          Методы расширения для sequence of T</Text>
+            <Text>//&gt;&gt;     Методы расширения для sequence of T # Extension methods for sequence of T</Text>
             <OCtx>
               <i Type="PAS_TreeNode">
               </i>

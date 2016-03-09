@@ -3442,7 +3442,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (type_table.original_types_equals(tn, context.converted_type))
                             AddError(new UndefinedNameReference(tn.name, get_location(_class_definition.class_parents.types[0])));
                         if (tn.IsSealed)
-                            AddError(get_location(_class_definition.class_parents.types[0]), "PARENT_TYPE_IS_SALED{0}", tn);
+                            AddError(get_location(_class_definition.class_parents.types[0]), "PARENT_TYPE_IS_SALED{0}", tn.name);
                         if (tn == SystemLibrary.SystemLibrary.value_type)
                         {
                             AddError(get_location(_class_definition.class_parents.types[0]), "CAN_NOT_INHERIT_FROM_VALUE_TYPE");
