@@ -11608,6 +11608,8 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (cnfn.parameters.Count != 1)
                             AddError(new SimpleSemanticError(cnfn.loc,"EXTENSION_METHODS_MUST_HAVE_LEAST_ONE_PARAMETER"));
+                        if (cnfn.ConnectedToType == null)
+                            AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cnfn.ConnectedToType) && !convertion_data_and_alghoritms.eq_type_nodes(cnfn.ConnectedToType as type_node, cnfn.parameters[0].type))
                         {
                             AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cnfn.ConnectedToType as type_node).PrintableName);
@@ -18924,7 +18926,7 @@ namespace PascalABCCompiler.TreeConverter
             var synto = new SyntaxTree.semantic_addr_value(semto);
 
             // count = (abs(to-from)-1) div abs(step) + 1 - нет
-            // count = (to-from+step-1) div step 
+            // count = (to-from+step-sign(step)) div step 
             SyntaxTree.expression ex = new bin_expr(synto, synfrom, Operators.Minus);
             //ex = new method_call(new ident("abs"), new expression_list(ex));
             //ex = new bin_expr(ex, absstep, Operators.IntegerDivision);
