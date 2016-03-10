@@ -15598,7 +15598,22 @@ namespace PascalABCCompiler.TreeConverter
             		AddError(new CanNotAssignToReadOnlyElement(to.location,node_type));
             }
 
-            expression_node from = convert_strong(_assign.from);
+            //expression_node from = convert_strong(_assign.from);
+            /// SSM исправление Саушкина 10.03.16
+            expression_node from;
+            var fromAsLambda = _assign.from as function_lambda_definition;
+            if (fromAsLambda != null)
+            {
+                var lambdaVisitMode = fromAsLambda.lambda_visit_mode;
+                fromAsLambda.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
+                from = convert_strong(_assign.from);
+                fromAsLambda.lambda_visit_mode = lambdaVisitMode;
+            }
+            else
+            {
+                from = convert_strong(_assign.from);
+            }
+            /// end
 
             if (stflambda.Count>0) // мы находимся внутри лямбды - возможно, вложенной
             {
@@ -18836,7 +18851,94 @@ namespace PascalABCCompiler.TreeConverter
             visit(st);
         }
 
-        /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
+        public override void visit(SyntaxTree.slice_expr sl)
+        {
+            var semvar = convert_strong(sl.v);
+            var semvartype = semvar.type;
+
+            var IsOrImplementsIEnumerableT = false; // проверим, является ли semvartype интерфейсом IEnumerable<T> или реализует его
+
+            var ct = semvartype as compiled_type_node;
+            if (ct != null && ct.compiled_type.IsGenericType && ct.compiled_type.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IEnumerable<>)) // это он и есть
+                IsOrImplementsIEnumerableT = true;
+
+            if (!IsOrImplementsIEnumerableT)
+                foreach (SemanticTree.ITypeNode itn in semvartype.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T>
+                {
+                    if (itn is compiled_generic_instance_type_node)
+                    {
+                        var itnc = (itn as compiled_generic_instance_type_node);
+                        var tt = (itnc.original_generic as compiled_type_node).compiled_type;
+
+                        if (tt == typeof(System.Collections.Generic.IEnumerable<>))
+                        {
+                            IsOrImplementsIEnumerableT = true;
+                            break;
+                        }
+                    }
+                    else if (itn is compiled_type_node)
+                    {
+                        var itnc = (itn as compiled_type_node);
+                        var tt = itnc.compiled_type;
+                        if (!tt.IsGenericType)
+                            continue;
+                        var tt1 = tt.GetGenericTypeDefinition();
+
+                        if (tt1 == typeof(System.Collections.Generic.IEnumerable<>))
+                        {
+                            IsOrImplementsIEnumerableT = true;
+                            break;
+                        }
+                    }
+                }
+
+            if (!IsOrImplementsIEnumerableT)
+                AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
+
+            var semfrom = convert_strong(sl.from);
+            convertion_data_and_alghoritms.check_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type, get_location(sl.from));
+            var synfrom = new SyntaxTree.semantic_addr_value(semfrom);
+
+            var int1 = new int32_const(1);
+            var el = new SyntaxTree.expression_list();
+
+            if (semvartype == SystemLibrary.SystemLibrary.string_type) // Сдвинуть from на 1
+                el.Add(new bin_expr(synfrom, int1, Operators.Minus));
+            else el.Add(synfrom);
+
+            SyntaxTree.expression synstep;
+            if (sl.step != null)
+            {
+                var semstep = convert_strong(sl.step);
+                convertion_data_and_alghoritms.check_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type, get_location(sl.step));
+                synstep = new SyntaxTree.semantic_addr_value(semstep);
+            }
+            else
+            {
+                synstep = int1;
+            }
+            el.Add(synstep);
+
+            var semto = convert_strong(sl.to);
+            convertion_data_and_alghoritms.check_convert_type(semto, SystemLibrary.SystemLibrary.integer_type, get_location(sl.to));
+            var synto = new SyntaxTree.semantic_addr_value(semto);
+
+            // count = (abs(to-from)-1) div abs(step) + 1 - нет
+            // count = (to-from+step-1) div step 
+            SyntaxTree.expression ex = new bin_expr(synto, synfrom, Operators.Minus);
+            //ex = new method_call(new ident("abs"), new expression_list(ex));
+            //ex = new bin_expr(ex, absstep, Operators.IntegerDivision);
+            SyntaxTree.expression signstep = new method_call(new ident("sign"), new expression_list(synstep));
+            ex = new bin_expr(ex, synstep, Operators.Plus);
+            ex = new bin_expr(ex, signstep, Operators.Minus);
+            ex = new bin_expr(ex, synstep, Operators.IntegerDivision);
+
+            el.Add(ex);
+            var mc = new method_call(new dot_node(sl.v, new ident("Slice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+            visit(mc);
+        }
+
+            /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
         {
             // Неверно работает. Пока не используется. Доделать
             addressed_value left = dqn.left;

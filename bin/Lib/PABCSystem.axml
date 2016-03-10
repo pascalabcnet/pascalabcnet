@@ -2497,6 +2497,15 @@
           <i Type="ClassMethod">procedure Reset ( )</i>
         </ICtx>
       </Node>
+      <Node Name="Slice&lt;T&gt;(Self: sequence of T">
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Slice&lt;T&gt;(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;</Text>
+        <OCtx>
+          <i Type="Method">function Slice &lt; T &gt; ( Self : sequence of T ; from , step : integer ) : sequence of T extensionmethod</i>
+          <i Type="PAS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>

@@ -3001,7 +3001,13 @@ variable
 		}
     | variable tkSquareOpen expr_list tkSquareClose                
         {
-			$$ = new indexer($1 as addressed_value,$3 as expression_list, @$);
+        	var el = $3 as expression_list; // SSM 10/03/16
+        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	{
+        		var fe = el.expressions[0] as format_expr;
+        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.source_context);
+			}   
+			else $$ = new indexer($1 as addressed_value,el, @$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {

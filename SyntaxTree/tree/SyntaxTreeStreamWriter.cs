@@ -3414,7 +3414,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_format_expr(format_expr _format_expr)
 		{
-			write_addressed_value(_format_expr);
+			write_expression(_format_expr);
 			if (_format_expr.expr == null)
 			{
 				bw.Write((byte)0);
@@ -5857,6 +5857,54 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_dot_question_node.right.visit(this);
+			}
+		}
+
+
+		public void visit(slice_expr _slice_expr)
+		{
+			bw.Write((Int16)210);
+			write_slice_expr(_slice_expr);
+		}
+
+		public void write_slice_expr(slice_expr _slice_expr)
+		{
+			write_dereference(_slice_expr);
+			if (_slice_expr.v == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.v.visit(this);
+			}
+			if (_slice_expr.from == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.from.visit(this);
+			}
+			if (_slice_expr.to == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.to.visit(this);
+			}
+			if (_slice_expr.step == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.step.visit(this);
 			}
 		}
 

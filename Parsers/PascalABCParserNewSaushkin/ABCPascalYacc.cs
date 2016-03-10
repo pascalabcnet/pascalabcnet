@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  SSM
-// DateTime: 09.03.2016 23:53:14
+// DateTime: 10.03.2016 0:57:38
 // UserName: ?????????
 // Input file <D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -4873,7 +4873,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 609: // variable -> variable, tkSquareOpen, expr_list, tkSquareClose
 {
-			CurrentSemanticValue.ex = new indexer(ValueStack[ValueStack.Depth-4].ex as addressed_value,ValueStack[ValueStack.Depth-2].stn as expression_list, CurrentLocationSpan);
+        	var el = ValueStack[ValueStack.Depth-2].stn as expression_list; // SSM 10/03/16
+        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	{
+        		var fe = el.expressions[0] as format_expr;
+        		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,fe.source_context);
+			}   
+			else CurrentSemanticValue.ex = new indexer(ValueStack[ValueStack.Depth-4].ex as addressed_value,el, CurrentLocationSpan);
         }
         break;
       case 610: // variable -> variable, tkRoundOpen, optional_expr_list, tkRoundClose

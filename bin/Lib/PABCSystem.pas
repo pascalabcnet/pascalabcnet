@@ -1868,6 +1868,7 @@ const
   BAD_TYPE_IN_RUNTIMESIZEOF = 'Bad Type in RunTimeSizeOf';
   PARAMETER_COUNT_MUST_BE_GREATER_0 = 'Параметр count должен быть > 0!!Parameter count must be > 0';
   PARAMETER_COUNT_MUST_BE_GREATER_1 = 'Параметр count должен быть > 1!!Parameter count must be > 1';
+  PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -8046,13 +8047,52 @@ end;
 /// Возвращает срез последовательности от номера from с шагом step
 function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
 begin
-  Result := Self.Skip(from).Where((x,i)->i mod step = 0);
+  if step=0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0));
+  if step<0 then
+  begin
+    if from<0 then
+      Result := Self.Take(0)
+    else 
+    begin
+      step := -step;
+      var bb := from mod step;
+      Result := Self.Skip(bb).Where((x,i)->(i mod step = 0) and (i<=from-bb)).Reverse;
+    end;
+  end  
+  else  
+    if from<=0 then
+      Result := Self.Where((x,i)->(i-from) mod step = 0)
+    else Result := Self.Skip(from).Where((x,i)->i mod step = 0);
 end;
 
 /// Возвращает срез последовательности от номера from с шагом step длины не более count
 function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
 begin
-  Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
+  if step=0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0));
+  if step<0 then
+  begin
+    if from<0 then
+      Result := Self.Take(0)
+    else 
+    begin
+      step := -step;
+      var bb := from - (count - 1)*step;
+      if bb<0 then
+        bb := bb mod step;
+      if bb < 0 then
+        bb += step;
+      Result := Self.Skip(bb).Where((x,i)->(i mod step = 0) and (i<=from-bb)).Reverse;
+    end;
+  end  
+  else  
+    if from<0 then
+    begin
+      count -= abs(from+1) div step + 1;
+      Result := Self.Where((x,i)->(i-from) mod step = 0).Take(count)
+    end
+    else Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
 end;
 
 // -----------------------------------------------------

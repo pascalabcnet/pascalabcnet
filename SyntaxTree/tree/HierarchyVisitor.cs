@@ -1685,6 +1685,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(slice_expr _slice_expr)
+		{
+		}
+
+		public virtual void post_do_visit(slice_expr _slice_expr)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3488,6 +3496,17 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(dot_question_node.left);
 			visit(dot_question_node.right);
 			post_do_visit(_dot_question_node);
+		}
+
+		public override void visit(slice_expr _slice_expr)
+		{
+			DefaultVisit(_slice_expr);
+			pre_do_visit(_slice_expr);
+			visit(slice_expr.v);
+			visit(slice_expr.from);
+			visit(slice_expr.to);
+			visit(slice_expr.step);
+			post_do_visit(_slice_expr);
 		}
 	}
 

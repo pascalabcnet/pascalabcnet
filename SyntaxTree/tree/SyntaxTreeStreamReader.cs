@@ -440,6 +440,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new uses_closure();
 				case 209:
 					return new dot_question_node();
+				case 210:
+					return new slice_expr();
 			}
 			return null;
 		}
@@ -2335,7 +2337,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_format_expr(format_expr _format_expr)
 		{
-			read_addressed_value(_format_expr);
+			read_expression(_format_expr);
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
@@ -3731,6 +3733,21 @@ namespace PascalABCCompiler.SyntaxTree
 			read_addressed_value_funcname(_dot_question_node);
 			_dot_question_node.left = _read_node() as addressed_value;
 			_dot_question_node.right = _read_node() as addressed_value;
+		}
+
+
+		public void visit(slice_expr _slice_expr)
+		{
+			read_slice_expr(_slice_expr);
+		}
+
+		public void read_slice_expr(slice_expr _slice_expr)
+		{
+			read_dereference(_slice_expr);
+			_slice_expr.v = _read_node() as addressed_value;
+			_slice_expr.from = _read_node() as expression;
+			_slice_expr.to = _read_node() as expression;
+			_slice_expr.step = _read_node() as expression;
 		}
 
 	}

@@ -1264,6 +1264,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_dot_question_node">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(dot_question_node _dot_question_node);
+		///<summary>
+		///Method to visit slice_expr.
+		///</summary>
+		///<param name="_slice_expr">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(slice_expr _slice_expr);
 	}
 
 

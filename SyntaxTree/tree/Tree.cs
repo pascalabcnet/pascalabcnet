@@ -16026,7 +16026,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///expr:1:2
 	///</summary>
 	[Serializable]
-	public partial class format_expr : addressed_value
+	public partial class format_expr : expression
 	{
 
 		///<summary>
@@ -27658,6 +27658,216 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 1:
 						right = (addressed_value)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class slice_expr : dereference
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public slice_expr()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public slice_expr(addressed_value _v,expression _from,expression _to,expression _step)
+		{
+			this._v=_v;
+			this._from=_from;
+			this._to=_to;
+			this._step=_step;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public slice_expr(addressed_value _v,expression _from,expression _to,expression _step,SourceContext sc)
+		{
+			this._v=_v;
+			this._from=_from;
+			this._to=_to;
+			this._step=_step;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public slice_expr(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step)
+		{
+			this._dereferencing_value=_dereferencing_value;
+			this._v=_v;
+			this._from=_from;
+			this._to=_to;
+			this._step=_step;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public slice_expr(addressed_value _dereferencing_value,addressed_value _v,expression _from,expression _to,expression _step,SourceContext sc)
+		{
+			this._dereferencing_value=_dereferencing_value;
+			this._v=_v;
+			this._from=_from;
+			this._to=_to;
+			this._step=_step;
+			source_context = sc;
+		}
+
+		protected addressed_value _v;
+		protected expression _from;
+		protected expression _to;
+		protected expression _step;
+
+		///<summary>
+		///
+		///</summary>
+		public addressed_value v
+		{
+			get
+			{
+				return _v;
+			}
+			set
+			{
+				_v=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression from
+		{
+			get
+			{
+				return _from;
+			}
+			set
+			{
+				_from=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression to
+		{
+			get
+			{
+				return _to;
+			}
+			set
+			{
+				_to=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression step
+		{
+			get
+			{
+				return _step;
+			}
+			set
+			{
+				_step=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 5;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 5;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return dereferencing_value;
+					case 1:
+						return v;
+					case 2:
+						return from;
+					case 3:
+						return to;
+					case 4:
+						return step;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						dereferencing_value = (addressed_value)value;
+						break;
+					case 1:
+						v = (addressed_value)value;
+						break;
+					case 2:
+						from = (expression)value;
+						break;
+					case 3:
+						to = (expression)value;
+						break;
+					case 4:
+						step = (expression)value;
 						break;
 				}
 			}
