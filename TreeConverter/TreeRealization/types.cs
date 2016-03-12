@@ -3398,6 +3398,17 @@ namespace PascalABCCompiler.TreeRealization
                 fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
                 if (fn is compiled_function_node)
                     _implicit_convertions_to.Add(cctn, fn);
+                /*else if (_compiled_type.IsGenericType && !_compiled_type.IsGenericTypeDefinition)
+                {
+                    compiled_type_node orig_generic = compiled_type_node.get_type_node(_compiled_type.GetGenericTypeDefinition());
+                    compiled_type_node orig_generic2 = compiled_type_node.get_type_node(cctn.compiled_type.GetGenericTypeDefinition());
+                    fn = NetHelper.NetHelper.get_implicit_conversion(orig_generic, orig_generic, orig_generic2, orig_generic.scope);
+                    if (fn != null)
+                    {
+                        //fn = fn.get_instance(this.ge)
+                        _implicit_convertions_to.Add(cctn, fn);
+                    } 
+                }*/
             }
             
             return fn;
@@ -4317,7 +4328,8 @@ namespace PascalABCCompiler.TreeRealization
                     }
                 }
             }
-            return null;
+            return compiled_type_node.get_type_node(typeof(Delegate)).find(name);
+            //return null;
         }
         public override SymbolInfo find_in_type(string name, SymbolTable.Scope CurrentScope)
         {
