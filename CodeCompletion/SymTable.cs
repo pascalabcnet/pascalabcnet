@@ -4887,6 +4887,8 @@ namespace CodeCompletion
                 {
                     if (ts is UnknownScope)
                         return true;
+                    else if (ts is TemplateParameterScope)
+                        return true;
                     else if (ts is ProcType)
                     {
                         ProcType pt = ts as ProcType;
