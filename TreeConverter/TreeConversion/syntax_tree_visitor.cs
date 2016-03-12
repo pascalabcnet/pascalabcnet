@@ -11524,9 +11524,9 @@ namespace PascalABCCompiler.TreeConverter
             {
             	check_parameter_on_complex_type(_function_header.return_type);
             	tn = convert_strong(_function_header.return_type);
-				//if (tn == SystemLibrary.SystemLibrary.void_type)
-            	//    AddError(new VoidNotValid(get_location(_function_header.return_type)));
             	check_for_type_allowed(tn,get_location(_function_header.return_type));
+                if (_function_header.return_type is function_header || _function_header.return_type is procedure_header)
+                    check_delegate_on_generic_parameters(tn as common_type_node, get_location(_function_header.return_type));
             }
             //(ssyy) moved up, так как при проверке аттрибута override надо знать тип возвращаемого значения
             context.top_function.return_value_type = tn;
@@ -12327,24 +12327,13 @@ namespace PascalABCCompiler.TreeConverter
             if (_typed_parametres.vars_type == null)
                 throw new NotSupportedError(get_location(_typed_parametres));
 
-            //SyntaxTree.array_type arr = _typed_parametres.vars_type as SyntaxTree.array_type;
-            //if (_typed_parametres.vars_type is SyntaxTree.class_definition || _typed_parametres.vars_type is SyntaxTree.enum_type_definition ||
-            //    (arr!=null && arr.indexers!=null))
-            //{
-            //    AddError(new StructTypeDefinitionInFormalParam(get_location(_typed_parametres.vars_type)));
-            //}
             check_parameter_on_complex_type(_typed_parametres.vars_type);
             type_node tn = convert_strong(_typed_parametres.vars_type);
-            //if (tn == SystemLibrary.SystemLibrary.void_type)
-            //    	AddError(new VoidNotValid(get_location(_typed_parametres.vars_type)));
-			check_for_type_allowed(tn,get_location(_typed_parametres.vars_type));
-            /*if (context.top_function is common_namespace_function_node && (context.top_function as common_namespace_function_node).ConnectedToType != null && first_param)
+            if (_typed_parametres.vars_type is function_header || _typed_parametres.vars_type is procedure_header)
             {
-               if (tn != (context.top_function as common_namespace_function_node).ConnectedToType || _typed_parametres.param_kind != SyntaxTree.parametr_kind.none)
-               {
-               		AddError(new FirstParameterOfExtensionsMethodMustBeConnectedType(get_location(_typed_parametres.idents.idents[0])));
-               } 	
-            }*/
+                check_delegate_on_generic_parameters(tn as common_type_node, get_location(_typed_parametres.vars_type));
+            }
+			check_for_type_allowed(tn,get_location(_typed_parametres.vars_type));
             if (is_params)
             {
                 internal_interface ii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface);
@@ -12376,6 +12365,38 @@ namespace PascalABCCompiler.TreeConverter
             }
             context.in_parameters_block = false;
             context.close_var_definition_list(tn, null);
+        }
+
+        private void check_delegate_on_generic_parameters(common_type_node ctn, location loc)
+        {
+            if (ctn == null)
+                return;
+            foreach (common_method_node cmn in ctn.methods)
+            {
+                if (cmn.name == "Invoke")
+                {
+                    foreach (common_parameter prm in cmn.parameters)
+                    {
+                        if (is_instance_of_generic_parameter(prm.type))
+                            AddError(loc, "ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                    }
+                    if (cmn.return_value_type != null && is_instance_of_generic_parameter(cmn.return_value_type))
+                        AddError(loc, "ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                }
+            }
+        }
+
+        private bool is_instance_of_generic_parameter(type_node tn)
+        {
+            if (tn.is_generic_parameter)
+                return true;
+            else if (tn.is_generic_type_instance)
+            {
+                foreach (type_node inst_tn in tn.instance_params)
+                    if (is_instance_of_generic_parameter(inst_tn))
+                        return true;
+            }
+            return false;
         }
 
         public override void visit(SyntaxTree.procedure_attribute _procedure_attribute)
@@ -14628,9 +14649,9 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 if (is_event && !tn.IsDelegate)
                     AddError(get_location(_var_def_statement.vars_type), "EVENT_TYPE_MUST_BE_DELEGATE");
-                //if (tn == SystemLibrary.SystemLibrary.void_type)
-                //	AddError(new VoidNotValid(get_location(_var_def_statement.vars_type)));
                 check_for_type_allowed(tn,get_location(_var_def_statement.vars_type));
+                if (_var_def_statement.vars_type is function_header || _var_def_statement.vars_type is procedure_header)
+                    check_delegate_on_generic_parameters(tn as common_type_node, get_location(_var_def_statement.vars_type));
                 if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type)
                     CheckForCircuralInRecord(tn, get_location(_var_def_statement.vars_type));
                 if (_var_def_statement.inital_value != null)

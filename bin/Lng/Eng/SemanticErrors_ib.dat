@@ -113,6 +113,7 @@ PARAMETER_REFERENCE_IN_DEFAULT_PARAMETER_NOT_ALLOWED=Parameter references in def
 CANNOT_EVALUATE_FUNCTION_TYPE=Cannot infer the return type of function
 TYPE_NAME_EXPECTED=Type name expected
 EXPLICIT_IMPLEMENTATION_EXPECTED=Method implementation expected
+ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS=Anonymous delegates can not use generic parameters
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

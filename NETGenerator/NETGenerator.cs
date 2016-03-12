@@ -6475,7 +6475,8 @@ namespace PascalABCCompiler.NETGenerator
                 ret_type = TypeFactory.VoidType;
             else
             {
-                ret_type = helper.GetTypeReference(value.return_value_type).tp;
+                TypeInfo ti = helper.GetTypeReference(value.return_value_type);
+                ret_type = ti.tp;
                 if (IsNeedCorrectGetType(cur_ti, ret_type))
                 {
                     ret_type = ret_type.MakePointerType();
