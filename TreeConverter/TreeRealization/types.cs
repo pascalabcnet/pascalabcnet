@@ -3218,6 +3218,10 @@ namespace PascalABCCompiler.TreeRealization
                     }
                 }
                 compiled_type_node bas_type = base_type as compiled_type_node;
+                if (bas_type == null)
+                {
+                    bas_type = compiled_type_node.get_type_node(typeof(object));
+                }
                 while (bas_type != null && bas_type.scope != null)
                 {
                     SymbolInfo tmp_si = bas_type.scope.SymbolTable.Find(bas_type.scope, name);

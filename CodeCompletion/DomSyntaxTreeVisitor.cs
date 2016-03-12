@@ -2219,8 +2219,19 @@ namespace CodeCompletion
 					}
 					else
 					{
+                        TypeScope ts = returned_scope as TypeScope;
+                        if (returned_scope is ProcScope)
+                            ts = (returned_scope as ProcScope).return_type;
                         returned_scopes = returned_scope.FindOverloadNamesOnlyInType((_dot_node.right as ident).name);
-						search_all = false;
+                        List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
+                        if (meths.Count > 0)
+                        {
+                            if (returned_scopes == null)
+                                returned_scopes = new List<SymScope>();
+                            foreach (ProcScope meth in meths)
+                                returned_scopes.Add(meth);
+                        }
+                        search_all = false;
 					}
 				}
 			}
