@@ -917,7 +917,7 @@ namespace PascalABCCompiler.TreeConverter
                 while (si != null)
                 {
                     compar = si.sym_info as function_node;
-                    if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar, false))
+                    if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar))
                         //if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
 
                         AddError(new FunctionDuplicateDefinition(compar, fn));
@@ -2760,7 +2760,7 @@ _cmn.types.AddElement(tctn);*/
                 {
                     fn = si.sym_info as function_node;
                     //Сверяем параметры и тип возвращаемого значения
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                    if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
                     {
                         //Нашли нужную функцию
                         common_method_node fn_common = fn as common_method_node;
