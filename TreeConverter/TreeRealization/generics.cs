@@ -1806,6 +1806,14 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public override string BaseFullName
+        {
+            get
+            {
+                return compiled_original_generic.BaseFullName;
+            }
+        }
+
         public compiled_generic_instance_type_node(compiled_type_node generic_definition,
             List<type_node> param_types,
             type_node base_type, string name,

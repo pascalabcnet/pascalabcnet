@@ -1956,7 +1956,7 @@ namespace PascalABCCompiler.TreeRealization
                     tmp = tmp.Next;
                 }
             }
-            if (this.base_generic_instance != null)
+            if (this.base_generic_instance != null && si != null)
             {
                 return base_generic_instance.ConvertSymbolInfo(si);
             }

@@ -3440,21 +3440,21 @@ end;
 
 type
 // Вспомогательный класс для генерации всех последовательностей. К сожалению, пока с object
-  SeqBase = class(IEnumerable<object>,IEnumerator<object>)
+  SeqBase<T> = class(IEnumerable<T>,IEnumerator<T>)
   public
     function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
     begin
       Result := Self;
     end;
 
-    function GetEnumerator(): IEnumerator<object>;
+    function GetEnumerator(): IEnumerator<T>;
     begin
       Result := Self;
     end;
 
-    function get_Current: object; virtual;
+    function get_Current: T; virtual;
     begin
-      Result := nil;
+      Result := default(T);
     end;
 
     function System.Collections.IEnumerator.get_Current(): object;
@@ -3646,7 +3646,7 @@ type
   end;
 
 // Вспомогательный класс для генерации рекуррентных последовательностей
-  IterateClass<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
+  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
   private
     first: T;
     cur: T;
@@ -3660,7 +3660,7 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; virtual;
+    function get_Current: T; virtual;
     begin
       Result := cur;
     end;
@@ -3681,7 +3681,7 @@ type
   end;
 
 // Вспомогательный класс для генерации рекуррентных последовательностей по двум предыдущим значениям
-  Iterate2Class<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
+  Iterate2Class<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
   private
     first,second: T;
     a,b: T;
@@ -3697,7 +3697,7 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; virtual;
+    function get_Current: T; virtual;
     begin
       Result := a;
     end;
