@@ -1956,7 +1956,7 @@ namespace PascalABCCompiler.TreeRealization
                     tmp = tmp.Next;
                 }
             }
-            if (this.base_generic_instance != null)
+            if (this.base_generic_instance != null && si != null)
             {
                 return base_generic_instance.ConvertSymbolInfo(si);
             }
@@ -3402,17 +3402,28 @@ namespace PascalABCCompiler.TreeRealization
                 fn = NetHelper.NetHelper.get_implicit_conversion(this, this, cctn, scope);
                 if (fn is compiled_function_node)
                     _implicit_convertions_to.Add(cctn, fn);
-                /*else if (_compiled_type.IsGenericType && !_compiled_type.IsGenericTypeDefinition)
+                else if (fn == null && (this.is_generic_type_instance || cctn.is_generic_type_instance))
                 {
-                    compiled_type_node orig_generic = compiled_type_node.get_type_node(_compiled_type.GetGenericTypeDefinition());
-                    compiled_type_node orig_generic2 = compiled_type_node.get_type_node(cctn.compiled_type.GetGenericTypeDefinition());
+                    List<type_node> instance_params1 = this.instance_params;
+                    List<type_node> instance_params2 = cctn.instance_params;
+                    compiled_type_node orig_generic = this;
+                    if (this.is_generic_type_instance)
+                        orig_generic = compiled_type_node.get_type_node(_compiled_type.GetGenericTypeDefinition());
+                    compiled_type_node orig_generic2 = cctn;
+                    if (cctn.is_generic_type_instance)
+                        orig_generic2 = compiled_type_node.get_type_node(cctn.compiled_type.GetGenericTypeDefinition());
                     fn = NetHelper.NetHelper.get_implicit_conversion(orig_generic, orig_generic, orig_generic2, orig_generic.scope);
                     if (fn != null)
                     {
-                        //fn = fn.get_instance(this.ge)
-                        _implicit_convertions_to.Add(cctn, fn);
+                        List<type_node> instance_params;
+                        if (instance_params1.Count > 0)
+                            instance_params = instance_params1;
+                        else
+                            instance_params = instance_params2;
+                        fn = fn.get_instance(instance_params, false, null);
+                        return fn;
                     } 
-                }*/
+                }
             }
             
             return fn;
@@ -3432,6 +3443,28 @@ namespace PascalABCCompiler.TreeRealization
                 fn = NetHelper.NetHelper.get_implicit_conversion(this, cctn, this, scope);
                 if (fn is compiled_function_node)
                     _implicit_convertions_from.Add(cctn, fn);
+                else if (fn == null && (cctn.is_generic_type_instance || this.is_generic_type_instance))
+                {
+                    List<type_node> instance_params1 = this.instance_params;
+                    List<type_node> instance_params2 = cctn.instance_params;
+                    compiled_type_node orig_generic = cctn;
+                    if (cctn.is_generic_type_instance)
+                        orig_generic = compiled_type_node.get_type_node(cctn.compiled_type.GetGenericTypeDefinition());
+                    compiled_type_node orig_generic2 = this;
+                    if (this.is_generic_type_instance)
+                        orig_generic2 = compiled_type_node.get_type_node(this.compiled_type.GetGenericTypeDefinition());
+                    fn = NetHelper.NetHelper.get_implicit_conversion(orig_generic2, orig_generic, orig_generic2, orig_generic2.scope);
+                    if (fn != null)
+                    {
+                        List<type_node> instance_params;
+                        if (instance_params1.Count > 0)
+                            instance_params = instance_params1;
+                        else
+                            instance_params = instance_params2;
+                        fn = fn.get_instance(instance_params, false, null);
+                        return fn;
+                    }
+                }
             }
             return fn;
         }

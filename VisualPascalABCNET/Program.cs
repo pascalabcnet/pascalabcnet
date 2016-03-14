@@ -67,9 +67,9 @@ namespace VisualPascalABC
                                     ShowWindow(handle, 3/*SW_MAXIMIZE*/);
                                 else
                                     if (IsIconic(handle) != 0)
-                                        ShowWindow(handle, 9/*SW_RESTORE*/);
-                                    else
-                                        ShowWindow(handle, 5/*SW_SHOW*/);
+                                    ShowWindow(handle, 9/*SW_RESTORE*/);
+                                else
+                                    ShowWindow(handle, 5/*SW_SHOW*/);
                                 if (args.Length > 0)
                                 {
                                     //for (int j = 0; j < args.Length; j++)
@@ -94,16 +94,16 @@ namespace VisualPascalABC
             catch
             {
 
-            } 
+            }
             try
             {
 
-            if (Environment.OSVersion.Version.Major >= 6) SetProcessDPIAware();
-            CommandLineArgs = args;
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            MainForm = new Form1();
-            Application.Run(MainForm);
+                if (Environment.OSVersion.Version.Major >= 6) SetProcessDPIAware();
+                CommandLineArgs = args;
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                MainForm = new Form1();
+                Application.Run(MainForm);
             }
             catch (Exception e)
             {

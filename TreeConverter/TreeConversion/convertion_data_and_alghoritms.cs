@@ -1467,9 +1467,9 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Этот метод сверяет не только параметры, но и возвращаемое значение
-        public static bool function_eq_params_and_result(function_node left, function_node right)
+        public static bool function_eq_params_and_result(function_node left, function_node right, bool weak=false)
         {
-            if (!function_eq_params(left, right))
+            if (!function_eq_params(left, right, weak))
             {
                 return false;
             }
@@ -1482,18 +1482,8 @@ namespace PascalABCCompiler.TreeConverter
         //Сравниваем типы-параметры generic-функций
         public static bool function_eq_generic_params(function_node left, function_node right)
         {
-            common_function_node cleft = left as common_function_node;
-            common_function_node cright = right as common_function_node;
-            List<ICommonTypeNode> left_type_params = null;
-            List<ICommonTypeNode> right_type_params = null;
-            if (cleft != null)
-            {
-                left_type_params = cleft.generic_params;
-            }
-            if (cright != null)
-            {
-                right_type_params = cright.generic_params;
-            }
+            List<type_node> left_type_params = left.get_generic_params_list();
+            List<type_node> right_type_params = right.get_generic_params_list();
             if (left_type_params == null && right_type_params == null)
             {
                 return true;

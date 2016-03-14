@@ -9102,12 +9102,6 @@ namespace PascalABCCompiler.TreeConverter
             common_type_node tp = null;
             definition_node def_temp = null;
             SyntaxTree.template_type_name ttn = null;
-            /*SyntaxTree.operator_name_ident on = _method_name as SyntaxTree.operator_name;
-            if (on != null)
-            {
-                _method_name.meth_name = new SyntaxTree.ident(name_reflector.get_name(on.operator_type.type));
-            }
-            */
             bool is_operator = _method_name.meth_name is SyntaxTree.operator_name_ident;
             SyntaxTree.Operators op = PascalABCCompiler.SyntaxTree.Operators.Undefined;
             if(is_operator)
@@ -9116,8 +9110,6 @@ namespace PascalABCCompiler.TreeConverter
             bool explicit_impl = false;
             if ((context.converting_block() != block_type.namespace_block) && (_method_name.class_name != null))
             {
-                /*AddError(new OnlyProcedureNameAllowedInClassFunctionDefinition(_method_name.class_name.name,
-                    get_location(_method_name.class_name)));*/
                 explicit_impl = true;
             }
             if (is_operator && op==SyntaxTree.Operators.AddressOf &&  SemanticRules.AddressOfOperatorNonOverloaded)
@@ -9247,12 +9239,6 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 else if (def_temp as compiled_type_node == SystemLibrary.SystemLibrary.void_type)
                     AddError(get_location(_method_name.class_name), "VOID_NOT_VALID");
-                //else if ((def_temp as compiled_type_node).IsInterface)
-                //	AddError(new ExtensionMethodForInterfaceNotAllowed(get_location(_method_name.class_name)));
-                //else
-                //{
-                //    throw new CanNotDefineMethodOfCompiledType(get_location(_method_name));
-                //}
             }
             else
             {
@@ -9294,7 +9280,38 @@ namespace PascalABCCompiler.TreeConverter
             context.top_function.IsOperator = is_operator;
             if (ttn != null && def_temp is compiled_type_node)
             {
-                visit_generic_params(context.top_function, ttn.template_args.idents);
+                if (!explicit_impl)
+                    visit_generic_params(context.top_function, ttn.template_args.idents);
+                else
+                {
+                    List<type_node> instance_params = new List<type_node>();
+                    foreach (ident id in ttn.template_args.idents)
+                    {
+                        SymbolInfo si = context.find(id.name);
+                        if (si == null)
+                            AddError(new UndefinedNameReference(id.name, get_location(id)));
+                        if (!(si.sym_info is type_node))
+                            AddError(new ExpectedType(get_location(id)));
+                        instance_params.Add(si.sym_info as type_node);
+                    }
+                    if (!context.converted_explicit_interface_type.IsInterface)
+                        AddError(get_location(ttn), "INTERFACE_EXPECTED");
+                    type_node inst_tn = context.converted_explicit_interface_type.get_instance(instance_params);
+                    bool found = false;
+                    if (context.converted_type.ImplementingInterfaces.Count > 0)
+                    {
+                        foreach (type_node interf in context.converted_type.ImplementingInterfaces)
+                        {
+                            if (interf == inst_tn)
+                            {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!found)
+                        AddError(get_location(ttn),"CLASS_NOT_IMPLEMENT_THIS_INTERFACE");
+                }
             }
             //context.top_function.IsOperator = _method_name.meth_name is SyntaxTree.operator_name_ident;
 
