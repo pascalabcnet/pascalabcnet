@@ -77,7 +77,7 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term typed_const typed_const_or_new expr const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference // var_question_colon
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -2775,14 +2775,33 @@ relop_expr
 		}
     ;
 
+simple_expr_or_nothing
+	: simple_expr 
+	{
+		$$ = $1;
+	}
+	|
+	{
+		$$ = null;
+	}
+	;
+
 format_expr 
-    : simple_expr tkColon simple_expr                        
+    : simple_expr tkColon simple_expr_or_nothing                        
         { 
 			$$ = new format_expr($1, $3, null, @$); 
 		}
-    | simple_expr tkColon simple_expr tkColon simple_expr   
+    | tkColon simple_expr                        
+        { 
+			$$ = new format_expr(null, $2, null, @$); 
+		}
+    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
 			$$ = new format_expr($1, $3, $5, @$); 
+		}
+    | tkColon simple_expr_or_nothing tkColon simple_expr   
+        { 
+			$$ = new format_expr(null, $2, $4, @$); 
 		}
     ;
 

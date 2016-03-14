@@ -1097,7 +1097,8 @@ function Power(x, y: real): real;
 function Power(x, y: integer): real;
 /// Возвращает x в степени y
 function Power(x: BigInteger; y: integer): BigInteger;
-/// Возвращает x, округленное до ближайшего целого
+/// Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми, 
+///то округление осуществляется к ближайшему четному (банковское округление): Round(2.5)=2, Round(3.5)=4
 function Round(x: real): integer;
 /// Возвращает x, округленное до ближайшего длинного целого
 function RoundBigInteger(x: real): BigInteger;
@@ -3428,6 +3429,11 @@ begin
   Result := a*n;
 end;
 
+///--
+function operator in<T>(x: T; Self: sequence of T): boolean; extensionmethod;
+begin
+  Result := Self.Contains(x);
+end;
 // -----------------------------------------------------------------------------
 //                Функции для последовательностей и динамических массивов
 // -----------------------------------------------------------------------------
@@ -3635,7 +3641,7 @@ type
     end;
     procedure Dispose(); override;
     begin
-      cur := first;
+      cur := first-1;
     end;
   end;
 
@@ -8520,13 +8526,13 @@ end;
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
 function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
 begin
-	Result := (new Regex (reg, options)).Matches(Self).Cast&<Match>();
+	Result := (new Regex(reg, options)).Matches(Self).Cast&<Match>();
 end;
 
 /// Ищет в указанной строке первое вхождение регулярного выражения и возвращает его в виде строки
 function MatchValue(Self: string; reg: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
-	Result := (new Regex (reg, options)).Match(Self).Value;
+	Result := (new Regex(reg, options)).Match(Self).Value;
 end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности строк

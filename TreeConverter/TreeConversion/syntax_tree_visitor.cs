@@ -2369,6 +2369,8 @@ namespace PascalABCCompiler.TreeConverter
        	
         public override void visit(SyntaxTree.format_expr _format_expr)
         {
+            if (_format_expr.expr == null || _format_expr.format1 == null)
+                AddError(get_location(_format_expr), "BAD_CONSTRUCTED_FORMAT_EXPRESSION");
             //TODO: Добавить проверки.
             if (!SemanticRules.AllowUseFormatExprAnywhere && !is_format_allowed)
                 AddError(get_location(_format_expr.expr), "FORMAT_EXPRESSION_CAN_USE_ONLY_IN_THESE_PROCEDURES");
@@ -18878,6 +18880,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr sl)
         {
+            // Преобразуется в вызов a.Slice
+            // from, step сохраняются, count вычисляется как count = (to-from+step-sign(step)) div step 
+            // Для a: нужно to присвоить очень большое целое 
+            // Для :b нужно from присвоить -1
+            // Для a::step нужно использовать a.Slice(from,step)
+            // Для :b:step нужно закодировать from - from := -MaxInt div 2 и в методе Slice это проверить и поправить from в зависимости от знака step
+
             var semvar = convert_strong(sl.v);
             var semvartype = semvar.type;
 
@@ -18920,9 +18929,23 @@ namespace PascalABCCompiler.TreeConverter
             if (!IsOrImplementsIEnumerableT)
                 AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
 
-            var semfrom = convert_strong(sl.from);
-            convertion_data_and_alghoritms.check_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type, get_location(sl.from));
-            var synfrom = new SyntaxTree.semantic_addr_value(semfrom);
+            // Ситуация from::step - вызвать Slice с двумя параметрами - пропустить вычисление и добавление count
+            bool SituationFromSpaceStep = (sl.from != null) && (sl.to == null) && (sl.step != null);
+            // Ситуация :to:step - закодировать from = -MaxInt div 2 и в Slice сделато коррекцию если step<0 !!!
+            bool SituationSpaceToStep = (sl.from == null) && (sl.to != null) && (sl.step != null);
+
+
+            SyntaxTree.expression synfrom;
+            if (sl.from != null)
+            {
+                var semfrom = convert_strong(sl.from);
+                convertion_data_and_alghoritms.check_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type, get_location(sl.from));
+                synfrom = new SyntaxTree.semantic_addr_value(semfrom);
+            }
+            else
+            {
+                synfrom = new int32_const(-1);
+            }
 
             var int1 = new int32_const(1);
             var el = new SyntaxTree.expression_list();
@@ -18944,21 +18967,30 @@ namespace PascalABCCompiler.TreeConverter
             }
             el.Add(synstep);
 
-            var semto = convert_strong(sl.to);
-            convertion_data_and_alghoritms.check_convert_type(semto, SystemLibrary.SystemLibrary.integer_type, get_location(sl.to));
-            var synto = new SyntaxTree.semantic_addr_value(semto);
+            SyntaxTree.expression synto;
+            if (sl.to != null)
+            {
+                var semto = convert_strong(sl.to);
+                convertion_data_and_alghoritms.check_convert_type(semto, SystemLibrary.SystemLibrary.integer_type, get_location(sl.to));
+                synto = new SyntaxTree.semantic_addr_value(semto);
+            }
+            else
+            {
+                synto = new int32_const(Int32.MaxValue/2);
+            }
 
-            // count = (abs(to-from)-1) div abs(step) + 1 - нет
-            // count = (to-from+step-sign(step)) div step 
-            SyntaxTree.expression ex = new bin_expr(synto, synfrom, Operators.Minus);
-            //ex = new method_call(new ident("abs"), new expression_list(ex));
-            //ex = new bin_expr(ex, absstep, Operators.IntegerDivision);
-            SyntaxTree.expression signstep = new method_call(new ident("sign"), new expression_list(synstep));
-            ex = new bin_expr(ex, synstep, Operators.Plus);
-            ex = new bin_expr(ex, signstep, Operators.Minus);
-            ex = new bin_expr(ex, synstep, Operators.IntegerDivision);
+            if (!SituationFromSpaceStep) // если не from::step то вычислить count и вызвать Slice с тремя параметрами
+            {
+                // count = (to-from+step-sign(step)) div step 
+                SyntaxTree.expression ex = new bin_expr(synto, synfrom, Operators.Minus);
+                SyntaxTree.expression signstep = new method_call(new ident("sign"), new expression_list(synstep));
+                ex = new bin_expr(ex, synstep, Operators.Plus);
+                ex = new bin_expr(ex, signstep, Operators.Minus);
+                ex = new bin_expr(ex, synstep, Operators.IntegerDivision);
 
-            el.Add(ex);
+                el.Add(ex); // Параметр count
+            }
+
             var mc = new method_call(new dot_node(sl.v, new ident("Slice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
             visit(mc);
         }
