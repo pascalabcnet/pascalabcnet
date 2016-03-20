@@ -2007,17 +2007,20 @@ end;
 // -----------------------------------------------------
 //                  TypedSet
 // -----------------------------------------------------
+///--
 constructor TypedSet.Create;
 begin
   ht := new Hashtable({new TypedSetComparer()});
 end;
 
+///--
 constructor TypedSet.Create(len: integer);
 begin
   ht := new Hashtable({new TypedSetComparer()});
   Self.len := len;
 end;
 
+///--
 constructor TypedSet.Create(low_bound, upper_bound: object);
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2025,6 +2028,7 @@ begin
   Self.upper_bound := upper_bound;
 end;
 
+///--
 constructor TypedSet.Create(initValue: TypedSet);
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2032,6 +2036,7 @@ begin
   Self.len := initValue.len;
 end;
 
+///--
 constructor TypedSet.Create(low_bound, upper_bound: object; initValue: TypedSet);
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2040,6 +2045,7 @@ begin
   Self.AssignSetFrom(initValue);
 end;
 
+///--
 constructor TypedSet.Create(vals: array of byte);
 var
   i: integer;
@@ -2060,6 +2066,7 @@ begin
   end;
 end;
 
+///--
 procedure TypedSet.CreateIfNeed;
 begin
   if ht = nil then ht := new Hashtable({new TypedSetComparer()});
@@ -2075,6 +2082,7 @@ begin
   Result.upper_bound := upper_bound;
 end;
 
+///--
 function TypedSet.GetBytes: array of byte;
 var
   ba: System.Collections.BitArray;
@@ -2109,21 +2117,25 @@ begin
   end;
 end;
 
+///--
 function TypedSet.UnionSet(s: TypedSet): TypedSet;
 begin
   Result := Union(Self, s);
 end;
 
+///--
 function TypedSet.SubtractSet(s: TypedSet): TypedSet;
 begin
   Result := Subtract(Self, s);
 end;
 
+///--
 function TypedSet.IntersectSet(s: TypedSet): TypedSet;
 begin
   Result := Intersect(Self, s);
 end;
 
+///--
 function TypedSet.IsInDiapason(elem: object): boolean;
 begin
   if (low_bound <> nil) and (upper_bound <> nil) and (elem is IComparable) then
@@ -2240,6 +2252,7 @@ begin
   end;
 end;
 
+///--
 function TypedSet.Contains(elem: object): boolean;
 begin
   if elem.GetType().IsEnum then
@@ -2255,6 +2268,7 @@ begin
   end;
 end;
 
+///--
 procedure TypedSet.Clip;
 begin
   if Self.len > 0 then
@@ -2279,6 +2293,7 @@ begin
   ht := tmp_ht;
 end;
 
+///--
 procedure TypedSet.Clip(len: integer);
 begin
   var tmp_ht := new Hashtable();
@@ -2377,6 +2392,7 @@ begin
   end
 end;
 
+///--
 procedure TypedSet.Init(params elems: array of object);
 begin
   for var i := 0 to elems.Length - 1 do
@@ -2390,6 +2406,7 @@ begin
   Clip;
 end;
 
+///--
 function TypedSet.GetEnumerator: System.Collections.IEnumerator;
 begin
   Result := ht.Keys.GetEnumerator; 
@@ -2403,6 +2420,7 @@ begin
     Result := string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', new object[](obj))
 end;
 
+///--
 class function TypedSet.operator implicit<T>(s: TypedSet): HashSet<T>;
 begin
   var hs := new HashSet<T>();
@@ -2413,6 +2431,7 @@ begin
   Result := hs; 
 end;
 
+///--
 class function TypedSet.operator implicit<T>(s: HashSet<T>): TypedSet;
 begin
   var ts := new TypedSet();
@@ -2423,6 +2442,7 @@ begin
   Result := ts; 
 end;
 
+///--
 function TypedSet.ToString: string;
 var
   i: System.Collections.IEnumerator;
@@ -2486,31 +2506,37 @@ begin
     Result.ht[x] := x;
 end;}
 
+///--
 function TypedSet.CompareEquals(s: TypedSet): boolean;
 begin
   Result := CompareSetEquals(Self, s);
 end;
 
+///--
 function TypedSet.CompareInEquals(s: TypedSet): boolean;
 begin
   Result := CompareSetInEquals(Self, s);
 end;
 
+///--
 function TypedSet.CompareLess(s: TypedSet): boolean;
 begin
   Result := CompareSetLess(Self, s);
 end;
 
+///--
 function TypedSet.CompareLessEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetLessEqual(Self, s);
 end;
 
+///--
 function TypedSet.CompareGreater(s: TypedSet): boolean;
 begin
   Result := CompareSetGreater(Self, s);
 end;
 
+///--
 function TypedSet.CompareGreaterEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetGreaterEqual(Self, s);
@@ -8707,34 +8733,34 @@ end;
 // Дополнения февраль 2016
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],v);
-// end;
+function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
+begin
+  Result := (Self[0],Self[1],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],v);
-// end;
+function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],v);
-// end;
+function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
-//end;
+function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
-// end;
+function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
+end;
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;

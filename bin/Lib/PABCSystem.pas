@@ -8733,34 +8733,34 @@ end;
 // Дополнения февраль 2016
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],v);
-// end;
+function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
+begin
+  Result := (Self[0],Self[1],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],v);
-// end;
+function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],v);
-// end;
+function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
-//end;
+function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
-// end;
+function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
+end;
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;
