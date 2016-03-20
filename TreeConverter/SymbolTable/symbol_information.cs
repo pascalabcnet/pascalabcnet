@@ -152,6 +152,16 @@ namespace PascalABCCompiler.TreeConverter
 		{
 		}
 
+        public SymbolInfo copy()
+        {
+            SymbolInfo si = new SymbolInfo();
+            si._access_level = this.access_level;
+            si._sym_info = this._sym_info;
+            si._symbol_kind = this._symbol_kind;
+            si.scope = this.scope;
+            si.Next = this.Next;
+            return si;
+        }
         private symbol_kind get_function_kind(function_node fn,bool is_overload)
         {
             symbol_kind sk;
