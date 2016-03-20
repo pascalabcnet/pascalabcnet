@@ -442,12 +442,8 @@ type
     function CompareGreaterEqual(s: TypedSet): boolean;
     function GetEnumerator: System.Collections.IEnumerator;
     function ToString: string; override;
-<<<<<<< HEAD
-    //class function operator implicit<T>(hset: HashSet<T>): TypedSet;
-=======
     class function operator implicit<T>(s: TypedSet): HashSet<T>;
     class function operator implicit<T>(s: HashSet<T>): TypedSet;
->>>>>>> 720f27d4c2f86c1415a78307d8ce8094bc514ca3
   end;
 
 type
