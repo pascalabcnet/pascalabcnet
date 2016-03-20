@@ -111,6 +111,7 @@ EXPLICIT_IMPLEMENTATION_EXPECTED=Метод, явно реализующий и�
 ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS=Недопустимо описание анонимных делегатов, использующих generic-параметры
 CLASS_NOT_IMPLEMENT_THIS_INTERFACE=Класс не реализует данный интерфейс
 INTERFACE_EXPECTED=Ожидался интерфейс
+IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=extension-операторы преобразования типов допустимы только для классов из других сборок .NET
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

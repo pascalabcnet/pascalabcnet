@@ -1963,6 +1963,17 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         method_compare mc = compare_methods(set_of_possible_functions[i],
                             set_of_possible_functions[j], tcll[i], tcll[j]);
+                        if (SystemLibrary.SystemLibInitializer.InSetProcedure != null)
+                        {
+                            if (set_of_possible_functions[j] == SystemLibrary.SystemLibInitializer.InSetProcedure.sym_info)
+                            {
+                                mc = method_compare.less_method;
+                            }
+                            else if (set_of_possible_functions[i] == SystemLibrary.SystemLibInitializer.InSetProcedure.sym_info)
+                            {
+                                mc = method_compare.greater_method;
+                            }
+                        }
                         if (mc == method_compare.greater_method)
                         {
                             tcll.remove_at(j);

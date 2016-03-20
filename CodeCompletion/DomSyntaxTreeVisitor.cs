@@ -39,6 +39,7 @@ namespace CodeCompletion
 		private bool search_all = false;//flag, iskat vse peregruzki ili tolko odnu. sdelal dlja effektivnosti. true zadaetsja tolko v visit(method_call)
         private ProcScope calling_method;
         internal bool parse_only_interface = false;
+        private template_type_reference converted_template_type = null;
 
 		public SemanticOptions semantic_options = new SemanticOptions();
 		
@@ -142,87 +143,94 @@ namespace CodeCompletion
             //if (_assign.to is ident && (_assign.to as ident).name == "result")
             //    _assign.from.visit(this);
         }
-		
-       
-        
+
+
+
         public override void visit(bin_expr _bin_expr)
         {
-        	try
-        	{
-        		_bin_expr.left.visit(this);
-        		RetValue left = cnst_val;
-        		TypeScope tleft = returned_scope as TypeScope;
-        		cnst_val.prim_val = null;
-        		_bin_expr.right.visit(this);
-        		TypeScope tright = returned_scope as TypeScope;
-        		RetValue right = cnst_val;
-        		cnst_val.prim_val = null;
-        		if (left.prim_val != null && right.prim_val != null)
-        		{
-        			ev.eval_stack.Push(left);
-        			ev.eval_stack.Push(right);
-        			switch (_bin_expr.operation_type)
-					{
-						case Operators.Plus : ev.EvalPlus(); break;
-						case Operators.Minus : ev.EvalMinus(); break;
-						case Operators.Multiplication: ev.EvalMult(); break;
-						case Operators.Division: ev.EvalDiv(); break;
-						case Operators.IntegerDivision: ev.EvalIDiv(); break;
-						case Operators.BitwiseAND: ev.EvalAnd(); break;
-						case Operators.BitwiseOR: ev.EvalOr(); break;
-						case Operators.BitwiseXOR: ev.EvalXor(); break;
-						case Operators.BitwiseLeftShift: ev.EvalBitwiseLeft(); break;
-						case Operators.BitwiseRightShift: ev.EvalBitwiseRight(); break;
-						case Operators.Equal: ev.EvalEqual(); break;
-						case Operators.NotEqual: ev.EvalNotEqual(); break;
-						case Operators.Less: ev.EvalLess(); break;
-						case Operators.LessEqual: ev.EvalLessEqual(); break;
-						case Operators.Greater: ev.EvalGreater(); break;
-						case Operators.GreaterEqual: ev.EvalGreaterEqual(); break;
-						case Operators.LogicalAND: ev.EvalAnd(); break;
-						case Operators.LogicalOR: ev.EvalOr(); break;
-						case Operators.ModulusRemainder: ev.EvalRem(); break;
-					}
-        			if (ev.eval_stack.Count > 0)
-        			{
-        				cnst_val = ev.eval_stack.Pop();
-        				returned_scope = TypeTable.get_type(cnst_val.prim_val);
-        			}
-        			else 
-        			{
-        				cnst_val.prim_val = null;
-        				
-        			}
-        		}
-        		else
-        		{
-        			cnst_val.prim_val = null;
-        		}
-        		
-        		if (tleft != null && tright != null)
-        		{
+            try
+            {
+                _bin_expr.left.visit(this);
+                RetValue left = cnst_val;
+                TypeScope tleft = returned_scope as TypeScope;
+                cnst_val.prim_val = null;
+                _bin_expr.right.visit(this);
+                TypeScope tright = returned_scope as TypeScope;
+                RetValue right = cnst_val;
+                cnst_val.prim_val = null;
+                if (left.prim_val != null && right.prim_val != null)
+                {
+                    ev.eval_stack.Push(left);
+                    ev.eval_stack.Push(right);
+                    switch (_bin_expr.operation_type)
+                    {
+                        case Operators.Plus: ev.EvalPlus(); break;
+                        case Operators.Minus: ev.EvalMinus(); break;
+                        case Operators.Multiplication: ev.EvalMult(); break;
+                        case Operators.Division: ev.EvalDiv(); break;
+                        case Operators.IntegerDivision: ev.EvalIDiv(); break;
+                        case Operators.BitwiseAND: ev.EvalAnd(); break;
+                        case Operators.BitwiseOR: ev.EvalOr(); break;
+                        case Operators.BitwiseXOR: ev.EvalXor(); break;
+                        case Operators.BitwiseLeftShift: ev.EvalBitwiseLeft(); break;
+                        case Operators.BitwiseRightShift: ev.EvalBitwiseRight(); break;
+                        case Operators.Equal: ev.EvalEqual(); break;
+                        case Operators.NotEqual: ev.EvalNotEqual(); break;
+                        case Operators.Less: ev.EvalLess(); break;
+                        case Operators.LessEqual: ev.EvalLessEqual(); break;
+                        case Operators.Greater: ev.EvalGreater(); break;
+                        case Operators.GreaterEqual: ev.EvalGreaterEqual(); break;
+                        case Operators.LogicalAND: ev.EvalAnd(); break;
+                        case Operators.LogicalOR: ev.EvalOr(); break;
+                        case Operators.ModulusRemainder: ev.EvalRem(); break;
+                    }
+                    if (ev.eval_stack.Count > 0)
+                    {
+                        cnst_val = ev.eval_stack.Pop();
+                        returned_scope = TypeTable.get_type(cnst_val.prim_val);
+                    }
+                    else
+                    {
+                        cnst_val.prim_val = null;
+
+                    }
+                }
+                else
+                {
+                    cnst_val.prim_val = null;
+                }
+
+                if (tleft != null && tright != null)
+                {
                     RetValue tmp = cnst_val;
-                    List<SymScope> lst = tleft.FindOverloadNamesOnlyInType
-        				(PascalABCCompiler.TreeConverter.name_reflector.get_name(_bin_expr.operation_type));
-        			ProcScope ps = select_method(lst.ToArray(),tleft,tright,_bin_expr.left,_bin_expr.right);
-        			if (ps != null)
-        				returned_scope = ps.return_type;
-        			else
-        				returned_scope = tleft;
+                    string name = PascalABCCompiler.TreeConverter.name_reflector.get_name(_bin_expr.operation_type);
+                    List<SymScope> lst = tleft.FindOverloadNamesOnlyInType(name);
+                    if (!char.IsLetter(name[0]))
+                        name = "operator" + name;
+                    else
+                        name = "operator " + name;
+                    List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
+                    foreach (ProcScope meth in meths)
+                        lst.Add(meth);
+                    ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, _bin_expr.left, _bin_expr.right);
+                    if (ps != null)
+                        returned_scope = ps.return_type;
+                    else
+                        returned_scope = tleft;
                     cnst_val = tmp;
-        		}
-        		else if (tleft != null)
-        			returned_scope = tleft;
-        		else
-        			returned_scope = tright;
-        	}
-        	catch (Exception e)
-        	{
-        		cnst_val.prim_val = null;
-        		ev.eval_stack.Clear();
-        		returned_scope = null;
-        	}
-        	
+                }
+                else if (tleft != null)
+                    returned_scope = tleft;
+                else
+                    returned_scope = tright;
+            }
+            catch (Exception e)
+            {
+                cnst_val.prim_val = null;
+                ev.eval_stack.Clear();
+                returned_scope = null;
+            }
+
         }
 
         public override void visit(un_expr _un_expr)
@@ -367,11 +375,15 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             returned_scope = cur_scope;
+            string suffix = "";
             for (int i = 0; i < _named_type_reference.names.Count; i++)
             {
+                if (i == _named_type_reference.names.Count - 1 && converted_template_type != null)
+                    suffix = "`" + _named_type_reference.names.Count;
                 if (i > 0)
-                    returned_scope = returned_scope.FindNameOnlyInType(_named_type_reference.names[i].name);
-                else returned_scope = returned_scope.FindName(_named_type_reference.names[i].name);
+                    returned_scope = returned_scope.FindNameOnlyInType(_named_type_reference.names[i].name+suffix);
+                else
+                    returned_scope = returned_scope.FindName(_named_type_reference.names[i].name+suffix);
                 if (returned_scope == null) break;
             }
 
@@ -2406,7 +2418,7 @@ namespace CodeCompletion
         	}
         }
         
-        private ProcScope select_method(SymScope[] procs, TypeScope tleft, TypeScope tright, params expression[] args)
+        private ProcScope select_method(SymScope[] procs, TypeScope tleft, TypeScope tright, TypeScope obj, params expression[] args)
         {
         	List<SymScope> arg_types = new List<SymScope>();
             List<TypeScope> arg_types2 = new List<TypeScope>();
@@ -2452,7 +2464,11 @@ namespace CodeCompletion
         	if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
         		return good_procs[i].GetInstance(arg_types2);
         	if (good_procs.Count > 0)
+            {
+                if (obj != null)
+                    arg_types2.Insert(0, obj);
                 return good_procs[0].GetInstance(arg_types2);
+            } 
         	return null;
         }
         
@@ -2463,30 +2479,45 @@ namespace CodeCompletion
             search_all = false;
         	this.cnst_val.prim_val = null;
         	SymScope[] names = returned_scopes.ToArray();
-        	ProcScope ps = select_method(names,null,null,_method_call.parameters != null?_method_call.parameters.expressions.ToArray():null);
+            List<expression> parameters = new List<expression>();
+            TypeScope obj = null;
+            foreach (SymScope ss in names)
+            {
+                if (ss is ProcScope && (ss as ProcScope).is_extension)
+                {
+                    ProcScope proc = ss as ProcScope;
+                    if (_method_call.dereferencing_value is dot_node)
+                    {
+                        (_method_call.dereferencing_value as dot_node).left.visit(this);
+                        obj = returned_scope as TypeScope;
+                        if (obj != null && proc.parameters != null && proc.parameters.Count > 0 && !(proc.parameters[0].sc is TemplateParameterScope || proc.parameters[0].sc is UnknownScope))
+                        {
+                            TypeScope param_type = proc.parameters[0].sc as TypeScope;
+                            if (obj.implemented_interfaces != null)
+                            {
+                                foreach (TypeScope interf in obj.implemented_interfaces)
+                                {
+                                    if (interf.original_type != null && param_type.original_type != null && interf.original_type == param_type.original_type)
+                                    {
+                                        List<TypeScope> generic_args = interf.GetInstances();
+                                        if (generic_args != null && generic_args.Count > 0)
+                                            obj = generic_args[0];    
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } 
+            }
+            if (_method_call.parameters != null)
+                parameters.AddRange(_method_call.parameters.expressions);
+            ProcScope ps = select_method(names, null, null, obj, parameters.ToArray());
         	returned_scopes.Clear();
 
         	if (ps != null)
         	{
         		if (ps.return_type != null)
                 {
-                    /*if (ps.IsGeneric())
-                    {
-                        List<TypeScope> gen_args = new List<TypeScope>();
-                        if (_method_call.parameters != null)
-                            foreach (expression expr in _method_call.parameters.expressions)
-                            {
-                                expr.visit(this);
-                                if (returned_scope == null || !(returned_scope is TypeScope))
-                                {
-                                    gen_args.Clear();
-                                    break;
-                                }
-                                gen_args.Add(returned_scope as TypeScope);
-                            }
-                        if (gen_args.Count > 0)
-                            ps = ps.GetInstance(gen_args);
-                    }*/
                     returned_scope = ps.return_type;
                 }
 				else 
@@ -3718,7 +3749,9 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             returned_scope = null;
+            converted_template_type = _template_type_reference;
             _template_type_reference.name.visit(this);
+            converted_template_type = null;
             List<TypeScope> gen_args = new List<TypeScope>();
             if (returned_scope != null && returned_scope is TypeScope)
             {

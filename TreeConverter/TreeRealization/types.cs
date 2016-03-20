@@ -2140,8 +2140,21 @@ namespace PascalABCCompiler.TreeRealization
         		while (si != null)
         		{
         			fn = si.sym_info as function_node;
-        			if (fn != null && fn.return_value_type == ctn)
-        				return fn;
+        			if (fn != null && type_table.is_type_or_original_generics_equal(fn.return_value_type, ctn) && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, this))
+                    {
+                        if (fn.is_generic_function)
+                        {
+                            if (this.instance_params != null && this.instance_params.Count > 0)
+                            {
+                                fn = fn.get_instance(this.instance_params, true, null);
+                            }
+                            else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
+                            {
+                                fn = fn.get_instance(ctn.instance_params, true, null);
+                            }
+                        }
+                        return fn;
+                    }	
         			si = si.Next;
         		}
         		return null;
@@ -2159,8 +2172,21 @@ namespace PascalABCCompiler.TreeRealization
         		while (si != null)
         		{
         			fn = si.sym_info as function_node;
-        			if (fn != null && fn.parameters.Count == 1 && fn.parameters[0].type == ctn)
-        				return fn;
+        			if (fn != null && fn.parameters.Count == 1 && type_table.is_type_or_original_generics_equal(fn.parameters[0].type, ctn) && type_table.is_type_or_original_generics_equal(fn.return_value_type, this))
+                    {
+                        if (fn.is_generic_function)
+                        {
+                            if (this.instance_params != null && this.instance_params.Count > 0)
+                            {
+                                fn = fn.get_instance(this.instance_params, true, null);
+                            }
+                            else if (ctn.instance_params != null && ctn.instance_params.Count > 0)
+                            {
+                                fn = fn.get_instance(ctn.instance_params, true, null);
+                            }
+                        }
+                        return fn;
+                    }
         			si = si.Next;
         		}
         		return null;
@@ -3306,7 +3332,7 @@ namespace PascalABCCompiler.TreeRealization
                             if (result != null)
                                 result.Next = start;
                         }
-                        else
+                        else if (tmp.Next != current)
                         {
                             current.Next = tmp;
                         }
