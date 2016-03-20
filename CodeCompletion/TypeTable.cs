@@ -1039,6 +1039,8 @@ namespace CodeCompletion
         	object o = ht[t];
         	if (o != null)
         		return o as CompiledScope;
+            if (si == null)
+                si = new SymInfo(t.Name, SymbolKind.Type, t.Name);
         	CompiledScope sc = new CompiledScope(si,t);
         	ht[t] = sc;
         	return sc;

@@ -795,6 +795,31 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public static bool is_type_or_original_generics_equal(type_node left, type_node right)
+        {
+            if (left == right)
+                return true;
+            if (left.is_generic_type_instance && right.is_generic_type_instance)
+            {
+                if (left.original_generic != right.original_generic)
+                    return false;
+                if (left.instance_params.Count != right.instance_params.Count)
+                    return false;
+                for (int i=0; i<left.instance_params.Count; i++)
+                {
+                    if (!is_type_or_original_generics_equal(left.instance_params[i], right.instance_params[i]))
+                        return false;
+                }
+                return true;
+            }
+            if (left.is_generic_parameter)
+                return true;
+            if (left.type_special_kind == SemanticTree.type_special_kind.set_type && right == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info
+                || right.type_special_kind == SemanticTree.type_special_kind.set_type && left == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info)
+                return true;
+            return left == right;
+        }
+
         //TODO: Возможно стоит если пересечение типов найдено в откомпилированных типах, добавлять к нашим структурам и не искать повторно.
 		public static possible_type_convertions get_convertions(type_node from,type_node to, bool is_implicit)
 		{

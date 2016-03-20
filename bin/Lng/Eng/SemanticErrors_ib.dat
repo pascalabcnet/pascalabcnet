@@ -117,6 +117,7 @@ EXPLICIT_IMPLEMENTATION_EXPECTED=Method implementation expected
 ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS=Anonymous delegates can not use generic parameters
 CLASS_NOT_IMPLEMENT_THIS_INTERFACE=Class doesn't implement this interface
 INTERFACE_EXPECTED=Interface expected
+IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=Operators implicit and explicit can be extended only for classes from another .NET assemblies 
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
