@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (¬©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using PascalABCCompiler.Errors;
@@ -364,11 +364,11 @@ namespace PascalABCCompiler
         {
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.WriteLine(StringResourcesGet("RESTARTING_COMPILER"));
-            //StringResourcesLanguage.CurrentLanguageName = "–ÛÒÒÍËÈ";
+            //StringResourcesLanguage.CurrentLanguageName = "‚Äì—É—Å—Å–∫–∏–π";
             DateTime ldt = DateTime.Now;
             Compiler = new PascalABCCompiler.Compiler(null,ChangeCompilerState);
             //GC.Collect();
-            WriteColorText(Compiler.Banner + "\nCopyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich\n", ConsoleColor.Black, ConsoleColor.Green);
+            WriteColorText(Compiler.Banner + "\nCopyright ¬© 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich\n", ConsoleColor.Black, ConsoleColor.Green);
             Console.WriteLine("OK {0}ms", (DateTime.Now - ldt).TotalMilliseconds);
             if (Compiler.SupportedSourceFiles.Length == 0)
                 WriteColorText(StringResourcesGet("ERROR_PARSERS_NOT_FOUND")+Environment.NewLine,ConsoleColor.Black,ConsoleColor.Red);
