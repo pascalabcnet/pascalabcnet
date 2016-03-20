@@ -4,6 +4,7 @@ using System;
 using PascalABCCompiler.Errors;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PascalABCCompiler
 {
@@ -16,7 +17,8 @@ namespace PascalABCCompiler
     }*/
 	class ConsoleCompiler
 	{        
-        
+        private const int DefaultConsoleBufferWidth = 80;
+
         private static string StringsPrefix = "PABCNETC_";
         static bool short_output = true;
         static string BlankString = "";
@@ -32,6 +34,7 @@ namespace PascalABCCompiler
         public static bool RestartOnNewCompile = false;
         public static bool DetailOut = false;
         public static bool Rebuild=false;
+        public static bool NoConsole = false;
         public static CompilerOptions.OutputType outputType;
         public static bool Debug = true;
         public static bool UseDll = false;
@@ -242,6 +245,11 @@ namespace PascalABCCompiler
 
         public static void ClearLine()
         {
+            if (NoConsole)
+            {
+                return;
+            }
+
             Console.CursorLeft = 0;
             Console.Write(BlankString);
             Console.CursorLeft = 0;
@@ -398,19 +406,24 @@ namespace PascalABCCompiler
         }
 
 
-        public static int Main(string[] args)
+        public static int Main(string[] initialArgs)
 		{
+            var args = initialArgs.ToList();
+            if (args.Remove("/noconsole"))
+            {
+                NoConsole = true;
+            }
 
             PascalABCCompiler.StringResourcesLanguage.LoadDefaultConfig();
 
-            if (args.Length == 1 && args[0] == "commandmode")
+            if (args.Count == 1 && args[0] == "commandmode")
             {
                 return (new CommandConsoleCompiler()).Run();
             }
             else
                 StringResourcesLanguage.CurrentLanguageName = StringResourcesLanguage.AccessibleLanguages[0];
 
-            for (int i = 0; i < Console.BufferWidth-1; i++)
+            for (int i = 0; i < ConsoleBufferWidth-1; i++)
               BlankString += " ";
 
             Console.ForegroundColor = ConsoleColor.White;
@@ -425,13 +438,13 @@ namespace PascalABCCompiler
             //Console.WriteLine(Compiler.Banner); 
 
 
-            short_output = args.Length != 1;
+            short_output = args.Count != 1;
 
-            if (args.Length >= 1) 
+            if (args.Count >= 1) 
             {
                 FileName = args[0];
             }
-            if (args.Length >= 2)
+            if (args.Count >= 2)
                 if (args[1] == "/rebuildnodebug")
                 {
                     Rebuild = true;
@@ -449,14 +462,14 @@ namespace PascalABCCompiler
                     else
                         TagertFileName = args[1];
             outputType = CompilerOptions.OutputType.ConsoleApplicaton;
-            if (args.Length >= 3)
+            if (args.Count >= 3)
                     SetOutType(args[2]);
             
 
 
             ShowConnectedParsers();
             ShowConnectedConversions();
-            if (args.Length >= 1)
+            if (args.Count >= 1)
             {
                 return CompileAssembly(FileName, outputType, true);
             }
@@ -481,6 +494,12 @@ namespace PascalABCCompiler
                 }
             }
 		}
+
+        private static int ConsoleBufferWidth
+        {
+            get { return NoConsole ? DefaultConsoleBufferWidth : Console.BufferWidth; }
+        }
+
 /*        public class MainClass
         {
             public static void Main(string[] args)
