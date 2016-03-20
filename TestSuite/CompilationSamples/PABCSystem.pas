@@ -442,6 +442,7 @@ type
     function CompareGreaterEqual(s: TypedSet): boolean;
     function GetEnumerator: System.Collections.IEnumerator;
     function ToString: string; override;
+    //class function operator implicit<T>(hset: HashSet<T>): TypedSet;
   end;
 
 type
@@ -2195,7 +2196,7 @@ begin
   else Result := true;
 end;
 
-function convert_elem(obj: object): object;
+function convert_elem(obj: object): object; // для TypedSet
 begin
   var t := obj.GetType;
   if t.IsEnum then
@@ -2456,6 +2457,13 @@ begin
   end;
   result := '[' + result + ']';
 end;
+
+{class function TypedSet.operator implicit<T>(hset: HashSet<T>): TypedSet;
+begin
+  Result := new TypedSet();
+  foreach var x in hset do
+    Result.ht[x] := x;
+end;}
 
 function TypedSet.CompareEquals(s: TypedSet): boolean;
 begin
@@ -3542,6 +3550,10 @@ end;
 
 function Range(a,b: real; n: integer): sequence of real;
 begin
+  if n=0 then
+    raise new System.ArgumentException('n=0');
+  if n<0 then
+    raise new System.ArgumentException('n<0');
   var ab1 := new AB(a,b,n);
   Result := Range(0,n).Select(ab1.F)
 end;
@@ -3559,11 +3571,16 @@ function Range(a, b, step: integer): sequence of integer;
 begin
   if step=0 then
     raise new System.ArgumentException('step=0');
+  if (step>0) and (b<a) or (step<0) and (b>a) then
+  begin
+    Result := System.Linq.Enumerable.Empty&<integer>;
+    exit;
+  end;
   var n := abs((b-a) div step) + 1;
   var ar: ArithmSeq;
-  if step<0 then
+  {if step<0 then
     ar := new ArithmSeq(b,step)
-  else ar := new ArithmSeq(a,step);
+  else} ar := new ArithmSeq(a,step);
   Result := System.Linq.Enumerable.Range(0, n).Select(ar.f);
 end;
 
@@ -8226,7 +8243,7 @@ begin
   Result := System.Array.FindIndex(self,p);  
 end;
 
-/// Возвращает в виде мессива все элементы, удовлетворяющие предикатуы
+/// Возвращает в виде массива все элементы, удовлетворяющие предикатуы
 function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
 begin
   Result := System.Array.FindAll(self,p);  
