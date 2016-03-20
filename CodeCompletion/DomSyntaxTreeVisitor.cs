@@ -376,6 +376,7 @@ namespace CodeCompletion
             //throw new Exception("The method or operation is not implemented.");
             returned_scope = cur_scope;
             string suffix = "";
+            SymScope tmp_scope = returned_scope;
             for (int i = 0; i < _named_type_reference.names.Count; i++)
             {
                 if (i == _named_type_reference.names.Count - 1 && converted_template_type != null)
@@ -384,7 +385,24 @@ namespace CodeCompletion
                     returned_scope = returned_scope.FindNameOnlyInType(_named_type_reference.names[i].name+suffix);
                 else
                     returned_scope = returned_scope.FindName(_named_type_reference.names[i].name+suffix);
-                if (returned_scope == null) break;
+                if (returned_scope == null)
+                {
+                    if (suffix != "")
+                    {
+                        returned_scope = tmp_scope;
+                        if (i > 0)
+                            returned_scope = returned_scope.FindNameOnlyInType(_named_type_reference.names[i].name);
+                        else
+                            returned_scope = returned_scope.FindName(_named_type_reference.names[i].name);
+                        if (returned_scope == null)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                        break;
+                }
+                tmp_scope = returned_scope;
             }
 
             if (returned_scope == null || !(returned_scope is TypeScope))

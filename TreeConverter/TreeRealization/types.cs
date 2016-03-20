@@ -3321,6 +3321,11 @@ namespace PascalABCCompiler.TreeRealization
                 while (ext != null)
                 {
                     SymbolInfo tmp = ext;
+                    if (ext == result)
+                    {
+                        ext = ext.Next;
+                        continue;
+                    }
                     ext = ext.Next;
                     if (tmp.sym_info is wrapped_definition_node)
                         BasePCUReader.RestoreSymbols(tmp, name);
@@ -3332,7 +3337,7 @@ namespace PascalABCCompiler.TreeRealization
                             if (result != null)
                                 result.Next = start;
                         }
-                        else if (tmp.Next != current)
+                        else
                         {
                             current.Next = tmp;
                         }

@@ -1111,6 +1111,8 @@ namespace PascalABCCompiler.TreeConverter
             if (left_type != right_type && !one_way_operation(name))
             {
                 //SymbolInfo si2 = right_type.find(name, context.CurrentScope);
+                if (si != null)
+                    si = si.copy();
                 si2 = right_type.find_in_type(name, right_type.Scope);
                 if ((si != null) && (si2 != null))
                 {
