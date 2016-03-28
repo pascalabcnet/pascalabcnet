@@ -1871,7 +1871,10 @@ const
   BAD_TYPE_IN_RUNTIMESIZEOF = 'Bad Type in RunTimeSizeOf';
   PARAMETER_COUNT_MUST_BE_GREATER_0 = 'Параметр count должен быть > 0!!Parameter count must be > 0';
   PARAMETER_COUNT_MUST_BE_GREATER_1 = 'Параметр count должен быть > 1!!Parameter count must be > 1';
-  PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
+  PARAMETER_STEP_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
+  PARAMETER_STEP_MUST_BE_GREATER_0 = 'Параметр step должен быть > 0!!The step parameter must be not greater than 0';
+  PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
+  PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -3494,7 +3497,7 @@ end;
 // -----------------------------------------------------------------------------
 
 type
-// Вспомогательный класс для генерации всех последовательностей. К сожалению, пока с object
+// Вспомогательный класс для генерации всех последовательностей
   SeqBase<T> = class(IEnumerable<T>,IEnumerator<T>)
   public
     function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
@@ -8113,12 +8116,23 @@ begin
   Result := SeqWhile(Self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
 end;
 
+function SliceSeqImpl<T>(Self: sequence of T; from,step,count: integer): sequence of T;
+begin
+  if step <= 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
+
+  if from < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0)
+end;
+
 
 /// Возвращает срез последовательности от номера from с шагом step
 function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
 begin
-  if step=0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0));
+  {if step=0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
   if step<0 then
   begin
     if from<0 then
@@ -8133,14 +8147,21 @@ begin
   else  
     if from<=0 then
       Result := Self.Where((x,i)->(i-from) mod step = 0)
-    else Result := Self.Skip(from).Where((x,i)->i mod step = 0);
+    else Result := Self.Skip(from).Where((x,i)->i mod step = 0);}
+  if step <= 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
+
+  if from < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0)
 end;
 
 /// Возвращает срез последовательности от номера from с шагом step длины не более count
 function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
 begin
-  if step=0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0));
+  {if step=0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
   if step<0 then
   begin
     if from<0 then
@@ -8162,7 +8183,15 @@ begin
       count -= abs(from+1) div step + 1;
       Result := Self.Where((x,i)->(i-from) mod step = 0).Take(count)
     end
-    else Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
+    else Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);}
+
+  if step <= 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
+
+  if from < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count)
 end;
 
 // -----------------------------------------------------
@@ -8183,18 +8212,145 @@ begin
 	Result := Self;  
 end;
 
+///-- 
+function CreateSliceFromListInternal<T>(Self: List<T>; from,step,count: integer): List<T>;
+begin
+  Result := new List<T>(count);
+  
+  var f := from;
+  for var i:=0 to count-1 do
+  begin
+    Result.Add(Self[f]);
+    f += step;
+  end;
+end;
+
+procedure CorrectCountForSlice(Len,from,step: integer; var count: integer);
+begin
+  if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if count < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
+
+  if (from < 0) or (from > Len - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Len - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;
+end;
+
+///-- 
+function SliceListImpl<T>(Self: List<T>; from,step,count: integer): List<T>;
+begin
+  CorrectCountForSlice(Self.Count,from,step,count);
+  {if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Self.Count - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Self.Count - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;}
+    
+  Result := CreateSliceFromListInternal(Self,from,step,count);
+end;
+
 /// Возвращает срез списка от индекса from с шагом step
 function Slice<T>(Self: List<T>; from,step: integer): List<T>; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step).ToList;
+  Result := SliceListImpl(Self,from,step,integer.MaxValue);
 end;
 
 /// Возвращает срез списка от индекса from с шагом step длины не более count
 function Slice<T>(Self: List<T>; from,step,count: integer): List<T>; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step,count).ToList;
+  Result := SliceListImpl(Self,from,step,count);
 end;
 
+/// Удаляет последний элемент. Если элементов нет, генерирует исключение
+function RemoveLast<T>(Self: List<T>): List<T>; extensionmethod;
+begin
+  Self.RemoveAt(Self.Count - 1);
+  Result := Self;
+end;
+
+///--
+function CalcCountForSystemSlice(situation: integer; Len: integer; var from,&to: integer; step: integer): integer;
+begin
+// situation = 0 - все параметры присутствуют
+// situation = 1 - from отсутствует
+// situation = 2 - to отсутствует
+// situation = 3 - from и to отсутствуют
+  if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Len - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  if (&to < -1) or (&to > Len) then
+    raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
+
+  var count: integer;
+  
+  if step>0 then
+  begin
+    case situation of
+  1: from := 0;
+  2: &to := Len;
+  3: begin
+       from := 0;
+       &to := Len;
+     end;
+    end;  
+  
+    var cnt := &to - from;
+    if cnt<=0 then 
+      count := 0
+    else count := (cnt-1) div step + 1;
+  end
+  else
+  begin
+    case situation of
+  1: from := Len - 1;
+  2: &to := -1;
+  3: begin
+       from := Len - 1;
+       &to := -1;
+     end;
+    end;  
+  
+    var cnt := from - &to;
+    if cnt<=0 then 
+      count := 0
+    else count := (cnt-1) div (-step) + 1;
+  end;
+  Result := count;
+end;
+
+///-- 
+function SystemSliceListImpl<T>(Self: List<T>; situation: integer; from,&to: integer; step: integer := 1): List<T>;
+begin
+  var count := CalcCountForSystemSlice(situation,Self.Count,from,&to,step);
+
+  Result := CreateSliceFromListInternal(Self,from,step,count);
+end;
+
+///--
+function SystemSlice<T>(Self: List<T>; situation: integer; from,&to: integer): List<T>; extensionmethod;
+begin
+  Result := SystemSliceListImpl(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSlice<T>(Self: List<T>; situation: integer; from,&to,step: integer): List<T>; extensionmethod;
+begin
+  Result := SystemSliceListImpl(Self,situation,from,&to,step);
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
@@ -8290,7 +8446,7 @@ begin
   Result := System.Array.FindIndex(self,p);  
 end;
 
-/// Возвращает в виде массива все элементы, удовлетворяющие предикатуы
+/// Возвращает в виде массива все элементы, удовлетворяющие предикату
 function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
 begin
   Result := System.Array.FindAll(self,p);  
@@ -8338,18 +8494,68 @@ begin
   System.Array.Sort(self,cmp);  
 end;
 
+///-- 
+function CreateSliceFromArrayInternal<T>(Self: array of T; from,step,count: integer): array of T;
+begin
+  Result := new T[count];
+  
+  var f := from;
+  for var i:=0 to count-1 do
+  begin
+    Result[i] := Self[f];
+    f += step;
+  end;
+end;
+
+function SliceArrayImpl<T>(Self: array of T; from,step,count: integer): array of T;
+begin
+  {if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Self.Length - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Self.Length - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;}
+    
+  CorrectCountForSlice(Self.Length,from,step,count);  
+    
+  Result := CreateSliceFromArrayInternal(Self,from,step,count)
+end;
+
 /// Возвращает срез массива от индекса from с шагом step
 function Slice<T>(Self: array of T; from,step: integer): array of T; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step).ToArray;
+  Result := SliceArrayImpl(Self,from,step,integer.MaxValue);
 end;
 
 /// Возвращает срез массива от индекса from с шагом step длины не более count
 function Slice<T>(Self: array of T; from,step,count: integer): array of T; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step,count).ToArray;
+  Result := SliceArrayImpl(Self,from,step,count);
 end;
 
+///-- 
+function SystemSliceArrayImpl<T>(Self: array of T; situation: integer; from,&to: integer; step: integer := 1): array of T;
+begin
+  var count := CalcCountForSystemSlice(situation,Self.Length,from,&to,step);
+
+  Result := CreateSliceFromArrayInternal(Self,from,step,count)
+end;
+
+///--
+function SystemSlice<T>(Self: array of T; situation: integer; from,&to: integer): array of T; extensionmethod;
+begin
+  Result := SystemSliceArrayImpl(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSlice<T>(Self: array of T; situation: integer; from,&to,step: integer): array of T; extensionmethod;
+begin
+  Result := SystemSliceArrayImpl(Self,situation,from,&to,step);
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
@@ -8636,17 +8842,72 @@ begin
   else Result := Self;
 end;
 
+///-- 
+function CreateSliceFromStringInternal(Self: string; from,step,count: integer): string;
+begin
+  var res := new StringBuilder(count);
+  
+  for var i:=0 to count-1 do
+  begin
+    res.Append(Self[from]);
+    from += step;
+  end;
+  Result := res.ToString;
+end;
+
+
+function SliceStringImpl(Self: string; from,step,count: integer): string;
+begin
+  {if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Self.Length - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Self.Length - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;}
+    
+  CorrectCountForSlice(Self.Length,from,step,count);
+  
+  Result := CreateSliceFromStringInternal(Self,from+1,step,count);
+end;
+
 /// Возвращает срез строки от индекса from с шагом step
 function Slice(Self: string; from,step: integer): string; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step).JoinIntoString('');
+  Result := SliceStringImpl(Self,from,step,integer.MaxValue);
 end;
 
 /// Возвращает срез строки от индекса from с шагом step длины не более count
 function Slice(Self: string; from,step,count: integer): string; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step,count).JoinIntoString('');
+  Result := SliceStringImpl(Self,from,step,count);
 end;
+
+///-- 
+function SystemSliceStringImpl(Self: string; situation: integer; from,&to: integer; step: integer := 1): string;
+begin
+  var fromv := from-1;
+  var tov := &to-1;
+  var count := CalcCountForSystemSlice(situation,Self.Length,fromv,tov,step);
+
+  Result := CreateSliceFromStringInternal(Self,fromv+1,step,count)
+end;
+
+///--
+function SystemSlice(Self: string; situation: integer; from,&to: integer): string; extensionmethod;
+begin
+  Result := SystemSliceStringImpl(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSlice(Self: string; situation: integer; from,&to,step: integer): string; extensionmethod;
+begin
+  Result := SystemSliceStringImpl(Self,situation,from,&to,step);
+end;
+
 
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func
@@ -8732,7 +8993,7 @@ end;
 // -------------------------------------------
 // Дополнения февраль 2016
 
-// Добавляет поле к кортежу
+{// Добавляет поле к кортежу
 function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
 begin
   Result := (Self[0],Self[1],v);
@@ -8760,7 +9021,7 @@ end;
 function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
 begin
   Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
-end;
+end;}
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;

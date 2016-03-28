@@ -18871,15 +18871,40 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        // Это в куче мест надо. Потому что либо compiled_type_node, либо compiled_generic_instance_type_node
+        // compiled_type_node если в записи A<T> все типы NETовские
+        // compiled_generic_instance_type_node если в записи A<T> хоть один тип - паскалевский
+        public Type ConvertSemanticTypeNodeToNETType(type_node tn)
+        {
+            if (tn is compiled_generic_instance_type_node)
+            {
+                var tnc = (tn as compiled_generic_instance_type_node);
+                var itnc = tnc.original_generic as compiled_type_node;
+                var tt = itnc.compiled_type;
+                if (tt.IsGenericType)
+                    tt = tt.GetGenericTypeDefinition();
+                return tt;
+            }
+            else if (tn is compiled_type_node)
+            {
+                var itnc = (tn as compiled_type_node);
+                var tt = itnc.compiled_type;
+                if (tt.IsGenericType)
+                    tt = tt.GetGenericTypeDefinition();
+                return tt;
+            }
+            return null;
+        }
+
         public override void visit(SyntaxTree.assign_tuple asstup)
         {
             // Проверить, что справа - Tuple
             var expr = convert_strong(asstup.expr);
 
-            var ent = expr.type as compiled_type_node;
-            if (ent == null)
+            var t = ConvertSemanticTypeNodeToNETType(expr.type);
+            if (t == null)
                 AddError(expr.location, "TUPLE_EXPECTED");
-            var t = ent.compiled_type;
+            //if (t != typeof(System.Tuple<>))
             if (!t.FullName.StartsWith("System.Tuple"))
                 AddError(expr.location, "TUPLE_EXPECTED");
 
@@ -18904,6 +18929,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr sl)
         {
+            // Устарело
             // Преобразуется в вызов a.Slice
             // from, step сохраняются, count вычисляется как count = (to-from+step-sign(step)) div step 
             // Для a: нужно to присвоить очень большое целое 
@@ -18911,16 +18937,35 @@ namespace PascalABCCompiler.TreeConverter
             // Для a::step нужно использовать a.Slice(from,step)
             // Для :b:step нужно закодировать from - from := -MaxInt div 2 и в методе Slice это проверить и поправить from в зависимости от знака step
 
+            // Новое
+            // Последовательности исключены
+            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
+            // situation = 0 - ничего не пропущено
+            // situation = 1 - пропущен from
+            // situation = 2 - пропущен to
+            // situation = 3 - пропущены from и to
+
             var semvar = convert_strong(sl.v);
             var semvartype = semvar.type;
 
-            var IsOrImplementsIEnumerableT = false; // проверим, является ли semvartype интерфейсом IEnumerable<T> или реализует его
+            // semvartype должен быть array of T, List<T> или string
 
-            var ct = semvartype as compiled_type_node;
+            var IsSlicedType = false; // проверим, является ли semvartype интерфейсом IEnumerable<T> или реализует его
+
+            var t = ConvertSemanticTypeNodeToNETType(semvartype);
+
+            if (t.IsArray)
+                IsSlicedType = true;
+            else if (t == typeof(System.String))
+                IsSlicedType = true;
+            else if (t.IsGenericType && t.GetGenericTypeDefinition()==typeof(System.Collections.Generic.List<>))
+                IsSlicedType = true;
+
+            /*var ct = semvartype as compiled_type_node;
             if (ct != null && ct.compiled_type.IsGenericType && ct.compiled_type.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IEnumerable<>)) // это он и есть
-                IsOrImplementsIEnumerableT = true;
+                IsSlicedType = true;
 
-            if (!IsOrImplementsIEnumerableT)
+            if (!IsSlicedType)
                 foreach (SemanticTree.ITypeNode itn in semvartype.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T>
                 {
                     if (itn is compiled_generic_instance_type_node)
@@ -18930,7 +18975,7 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (tt == typeof(System.Collections.Generic.IEnumerable<>))
                         {
-                            IsOrImplementsIEnumerableT = true;
+                            IsSlicedType = true;
                             break;
                         }
                     }
@@ -18944,15 +18989,44 @@ namespace PascalABCCompiler.TreeConverter
 
                         if (tt1 == typeof(System.Collections.Generic.IEnumerable<>))
                         {
-                            IsOrImplementsIEnumerableT = true;
+                            IsSlicedType = true;
                             break;
                         }
                     }
                 }
 
-            if (!IsOrImplementsIEnumerableT)
+            */
+
+            if (!IsSlicedType)
                 AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
 
+            int situation = 0;
+            if (sl.from == null && sl.to != null)
+                situation = 1;
+            else if (sl.from != null && sl.to == null)
+                situation = 2;
+            else if (sl.from == null && sl.to == null)
+                situation = 3;
+
+            var zero = new int32_const(0);
+
+            // заполняем пустые чем-нибудь
+            if (sl.from == null)
+                sl.from = zero;
+            if (sl.to == null)
+                sl.to = zero;
+            if (sl.step == null)
+                sl.step = new int32_const(1);
+
+            var el = new SyntaxTree.expression_list();
+            el.Add(new int32_const(situation));
+            el.Add(sl.from);
+            el.Add(sl.to);
+            el.Add(sl.step);
+
+            var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+            visit(mc);
+            /*
             // Ситуация from::step - вызвать Slice с двумя параметрами - пропустить вычисление и добавление count
             bool SituationFromSpaceStep = (sl.from != null) && (sl.to == null) && (sl.step != null);
             // Ситуация :to:step - закодировать from = -MaxInt div 2 и в Slice сделато коррекцию если step<0 !!!
@@ -19017,23 +19091,25 @@ namespace PascalABCCompiler.TreeConverter
 
             var mc = new method_call(new dot_node(sl.v, new ident("Slice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
             visit(mc);
+            */
+
         }
 
-            /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
-        {
-            // Неверно работает. Пока не используется. Доделать
-            addressed_value left = dqn.left;
-            addressed_value right = dqn.right;
-            var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
-            var dn = new dot_node(left, right, dqn.source_context);
-            var q = new SyntaxTree.question_colon_expression(eq, new nil_const(), dn, dqn.source_context);
-            return q;
-        }
-        public override void visit(SyntaxTree.dot_question_node dqn)
-        {
-            // a?.b
-            var q = ConvertToQCE(dqn);
-            visit(q);
-        }*/
+        /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
+    {
+        // Неверно работает. Пока не используется. Доделать
+        addressed_value left = dqn.left;
+        addressed_value right = dqn.right;
+        var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
+        var dn = new dot_node(left, right, dqn.source_context);
+        var q = new SyntaxTree.question_colon_expression(eq, new nil_const(), dn, dqn.source_context);
+        return q;
+    }
+    public override void visit(SyntaxTree.dot_question_node dqn)
+    {
+        // a?.b
+        var q = ConvertToQCE(dqn);
+        visit(q);
+    }*/
     }
 }

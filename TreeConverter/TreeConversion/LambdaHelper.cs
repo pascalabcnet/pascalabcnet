@@ -41,7 +41,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.var_statement defs)
         {
             indef = true;
-            ProcessNode(defs.var_def.vars); // исключаем типы - просматриваем только имена переменных
+            ProcessNode(defs.var_def.vars); // исключаем типы - 
+              // просматриваем только имена переменных
             indef = false;
         }
     }
