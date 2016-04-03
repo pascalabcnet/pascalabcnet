@@ -1844,6 +1844,7 @@ namespace CodeCompletion
             int i = 0;
             foreach (ElementScope parameter in this.parameters)
             {
+                i++;
                 if (parameter.sc is UnknownScope || (parameter.sc is TypeScope) && (parameter.sc as TypeScope).IsGenericParameter)
                 {
                     int ind = this.template_parameters.IndexOf((parameter.sc as TypeScope).Name);
@@ -1863,6 +1864,8 @@ namespace CodeCompletion
                         inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
                 }
+                if (parameter.param_kind == parametr_kind.params_parametr && i < gen_args.Count)
+                    gen_args.RemoveRange(i, gen_args.Count - i);
             }
             instance.si = this.si;
             instance.return_type = this.return_type.GetInstance(gen_args);
@@ -2515,6 +2518,13 @@ namespace CodeCompletion
             this.topScope = declScope;
             this.name = name;
             si.describe = name + " in " + declScope.si.name;
+        }
+
+        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        {
+            if (gen_args.Count > 0)
+                return gen_args[0];
+            return this;
         }
 
         public override bool IsGenericParameter
@@ -3855,6 +3865,8 @@ namespace CodeCompletion
             if (this is UnknownScope && ts is CompiledScope && (ts as CompiledScope).CompiledType.IsGenericParameter
                 || ts is UnknownScope && this is CompiledScope && (this as CompiledScope).CompiledType.IsGenericParameter)
                 return true;
+            if (this.IsGenericParameter && ts.IsGenericParameter && this.Name == ts.Name)
+                return true;
             TypeScope tmp = this.baseScope;
             while (tmp != null)
                 if (tmp.IsEqual(ts))
@@ -4767,10 +4779,19 @@ namespace CodeCompletion
         {
             Type t = this.ctn;
             if (!ctn.IsGenericTypeDefinition)
-                t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace+"."+this.ctn.Name);
+                t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
+            else if (this.instances != null && this.instances.Count > 0)
+            {
+                if (this.instances.Count != ctn.GetGenericArguments().Length)
+                {
+                    Type t2 = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name.Substring(0, this.ctn.Name.IndexOf('`')) + "`" + this.instances.Count);
+                    if (t2 != null)
+                        t = t2;
+                }
+            }
             else if (gen_args.Count != ctn.GetGenericArguments().Length)
-            { 
-                Type t2 = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace+"."+this.ctn.Name.Substring(0, this.ctn.Name.IndexOf('`')) + "`" + gen_args.Count);
+            {
+                Type t2 = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name.Substring(0, this.ctn.Name.IndexOf('`')) + "`" + gen_args.Count);
                 if (t2 != null)
                     t = t2;
             }
@@ -4778,11 +4799,24 @@ namespace CodeCompletion
             sc.generic_params = new List<string>();
             sc.instances = new List<TypeScope>();
             sc.original_type = this;
-            for (int i = 0; i < gen_args.Count; i++)
-            {
-                sc.generic_params.Add(gen_args[i].si.name);
-                sc.instances.Add(gen_args[i]);
-            }
+            if (this.instances != null && this.instances.Count > 0)
+                for (int i = 0; i < this.instances.Count; i++)
+                {
+                    if (this.instances[i] is UnknownScope || this.instances[i] is TemplateParameterScope)
+                    {
+                        List<TypeScope> lst = new List<TypeScope>();
+                        lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
+                        sc.instances.Add(this.instances[i].GetInstance(lst));
+                    }
+                    else
+                        sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                }
+            else
+                for (int i = 0; i < gen_args.Count; i++)
+                {
+                    sc.generic_params.Add(gen_args[i].si.name);
+                    sc.instances.Add(gen_args[i]);
+                }
             sc.si.describe = sc.GetDescription();
             return sc;
         }
@@ -6275,7 +6309,7 @@ namespace CodeCompletion
                 generic_args = new List<string>();
                 generic_args.AddRange(args);
             }
-            if (generic_args != null)
+            if (generic_args != null || declaringType.instances != null )
             {
                 //TypeScope ts = declaringType.instances[pi.PropertyType.GenericParameterPosition];
                 this.sc = CompiledScope.get_type_instance(pi.PropertyType, declaringType.instances);
@@ -6911,6 +6945,8 @@ namespace CodeCompletion
 
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
+            if (gen_args.Count > 0)
+                return gen_args[0];
             return this;
         }
 
