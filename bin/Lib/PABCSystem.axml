@@ -2459,9 +2459,9 @@
           </Node>
           <Node Name="SystemSliceArrayImpl">
             <FileName>\PABCSystem.pas</FileName>
-            <Text>function SystemSliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; situation: integer; from,&amp;to: integer; step: integer := 1): List&lt;T&gt;;</Text>
+            <Text>function SystemSliceArrayImpl&lt;T&gt;(Self: array of T; situation: integer; from,&amp;to: integer; step: integer := 1): array of T;</Text>
             <OCtx>
-              <i Type="Method">function SystemSliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : List &lt; T &gt;</i>
+              <i Type="Method">function SystemSliceArrayImpl &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
               <i Type="PAS_TreeNode">
               </i>
             </OCtx>

@@ -1932,6 +1932,8 @@ proc_func_decl_noclass
 		}
 	| tkProcedure proc_name fp_list tkAssign unlabelled_stmt tkSemiColon
 		{
+			if ($5 is empty_statement)
+				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, $5 as statement, @1.Merge(@3));
 		}
 	| proc_func_header tkForward tkSemiColon
@@ -2782,7 +2784,7 @@ simple_expr_or_nothing
 	}
 	|
 	{
-		$$ = null;
+		$$ = new int32_const(int.MaxValue);
 	}
 	;
 
@@ -2791,9 +2793,9 @@ format_expr
         { 
 			$$ = new format_expr($1, $3, null, @$); 
 		}
-    | tkColon simple_expr                        
+    | tkColon simple_expr_or_nothing                        
         { 
-			$$ = new format_expr(null, $2, null, @$); 
+			$$ = new format_expr(new int32_const(int.MaxValue), $2, null, @$); 
 		}
     | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
@@ -2801,7 +2803,7 @@ format_expr
 		}
     | tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
-			$$ = new format_expr(null, $2, $4, @$); 
+			$$ = new format_expr(new int32_const(int.MaxValue), $2, $4, @$); 
 		}
     ;
 

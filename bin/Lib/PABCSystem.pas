@@ -1609,18 +1609,22 @@ function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6):
 function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
 
 // -----------------------------------------------------
-//>>     Короткие функции Lst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
+//>>     Короткие функции Lst, LLst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
 function Lst<T>(params a: array of T): List<T>;
-/// Возвращает список, заполненное значениями из последовательности
+/// Возвращает список, заполненный значениями из последовательности
 function Lst<T>(a: sequence of T): List<T>;
+/// Возвращает двусвязный список, заполненный указанными значениями
+function LLst<T>(params a: array of T): LinkedList<T>;
+/// Возвращает двусвязный список, заполненный значениями из последовательности
+function LLst<T>(a: sequence of T): LinkedList<T>;
 /// Возвращает множество на базе хеш таблицы, заполненное указанными значениями
 function HSet<T>(params a: array of T): HashSet<T>;
-/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
-function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе хеш таблицы, заполненное значениями из последовательности
 function HSet<T>(a: sequence of T): HashSet<T>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(a: sequence of T): SortedSet<T>;
 /// Возвращает словарь пар элементов (ключ, значение)
@@ -4028,7 +4032,7 @@ begin
 end;
 
 // -----------------------------------------------------------------------------
-//                Функции Lst, Dict, KV, HSet, SSet
+//                Функции Lst, LLst, Dict, KV, HSet, SSet
 // -----------------------------------------------------------------------------
 function Lst<T>(params a: array of T): List<T>;
 begin
@@ -4038,6 +4042,16 @@ end;
 function Lst<T>(a: sequence of T): List<T>;
 begin
   Result := new List<T>(a);
+end;
+
+function LLst<T>(params a: array of T): LinkedList<T>;
+begin
+  Result := new LinkedList<T>(a);
+end;
+
+function LLst<T>(a: sequence of T): LinkedList<T>;
+begin
+  Result := new LinkedList<T>(a);
 end;
 
 function HSet<T>(params a: array of T): HashSet<T>;
@@ -7914,6 +7928,12 @@ begin
   Result := new SortedSet<T>(Self);
 end;
 
+/// Возвращает LinkedList по данной последовательности
+function ToLinkedList<T>(Self: sequence of T): LinkedList<T>; extensionmethod;
+begin
+  Result := new LinkedList<T>(Self);
+end;
+
 // Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
 //   Partition, ZipTuple, UnZipTuple, Interleave, Numerate, Tabulate, Pairwise, Batch 
 
@@ -8116,6 +8136,7 @@ begin
   Result := SeqWhile(Self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
 end;
 
+///--
 function SliceSeqImpl<T>(Self: sequence of T; from,step,count: integer): sequence of T;
 begin
   if step <= 0 then
@@ -8127,27 +8148,9 @@ begin
   Result := Self.Skip(from).Where((x,i)->i mod step = 0)
 end;
 
-
-/// Возвращает срез последовательности от номера from с шагом step
+/// Возвращает срез последовательности от номера from с шагом step > 0
 function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
 begin
-  {if step=0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
-  if step<0 then
-  begin
-    if from<0 then
-      Result := Self.Take(0)
-    else 
-    begin
-      step := -step;
-      var bb := from mod step;
-      Result := Self.Skip(bb).Where((x,i)->(i mod step = 0) and (i<=from-bb)).Reverse;
-    end;
-  end  
-  else  
-    if from<=0 then
-      Result := Self.Where((x,i)->(i-from) mod step = 0)
-    else Result := Self.Skip(from).Where((x,i)->i mod step = 0);}
   if step <= 0 then
     raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
 
@@ -8157,34 +8160,9 @@ begin
   Result := Self.Skip(from).Where((x,i)->i mod step = 0)
 end;
 
-/// Возвращает срез последовательности от номера from с шагом step длины не более count
+/// Возвращает срез последовательности от номера from с шагом step > 0 длины не более count
 function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
 begin
-  {if step=0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
-  if step<0 then
-  begin
-    if from<0 then
-      Result := Self.Take(0)
-    else 
-    begin
-      step := -step;
-      var bb := from - (count - 1)*step;
-      if bb<0 then
-        bb := bb mod step;
-      if bb < 0 then
-        bb += step;
-      Result := Self.Skip(bb).Where((x,i)->(i mod step = 0) and (i<=from-bb)).Reverse;
-    end;
-  end  
-  else  
-    if from<0 then
-    begin
-      count -= abs(from+1) div step + 1;
-      Result := Self.Where((x,i)->(i-from) mod step = 0).Take(count)
-    end
-    else Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);}
-
   if step <= 0 then
     raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
 
@@ -8225,6 +8203,7 @@ begin
   end;
 end;
 
+///-- 
 procedure CorrectCountForSlice(Len,from,step: integer; var count: integer);
 begin
   if step = 0 then
@@ -8289,11 +8268,13 @@ begin
   if step = 0 then
     raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
 
-  if (from < 0) or (from > Len - 1) then
-    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+  if (situation=0) or (situation=2) then
+    if (from < 0) or (from > Len - 1) then
+      raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
 
-  if (&to < -1) or (&to > Len) then
-    raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
+  if (situation=0) or (situation=1) then
+    if (&to < -1) or (&to > Len) then
+      raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
 
   var count: integer;
   
@@ -8507,6 +8488,7 @@ begin
   end;
 end;
 
+///-- 
 function SliceArrayImpl<T>(Self: array of T; from,step,count: integer): array of T;
 begin
   {if step = 0 then
@@ -8855,7 +8837,7 @@ begin
   Result := res.ToString;
 end;
 
-
+///-- 
 function SliceStringImpl(Self: string; from,step,count: integer): string;
 begin
   {if step = 0 then

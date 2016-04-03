@@ -18929,14 +18929,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr sl)
         {
-            // Устарело
-            // Преобразуется в вызов a.Slice
-            // from, step сохраняются, count вычисляется как count = (to-from+step-sign(step)) div step 
-            // Для a: нужно to присвоить очень большое целое 
-            // Для :b нужно from присвоить -1
-            // Для a::step нужно использовать a.Slice(from,step)
-            // Для :b:step нужно закодировать from - from := -MaxInt div 2 и в методе Slice это проверить и поправить from в зависимости от знака step
-
             // Новое
             // Последовательности исключены
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
@@ -18944,155 +18936,47 @@ namespace PascalABCCompiler.TreeConverter
             // situation = 1 - пропущен from
             // situation = 2 - пропущен to
             // situation = 3 - пропущены from и to
+            // пропущенность кодируется тем, что в соответствующем поле int.MaxValue
 
             var semvar = convert_strong(sl.v);
+            if (semvar is typed_expression)
+                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
+
             var semvartype = semvar.type;
 
             // semvartype должен быть array of T, List<T> или string
 
-            var IsSlicedType = false; // проверим, является ли semvartype интерфейсом IEnumerable<T> или реализует его
+            var IsSlicedType = 0; // проверим, является ли semvartype динамическим массивом, списком List или строкой
 
             var t = ConvertSemanticTypeNodeToNETType(semvartype);
 
             if (t.IsArray)
-                IsSlicedType = true;
+                IsSlicedType = 1;
             else if (t == typeof(System.String))
-                IsSlicedType = true;
+                IsSlicedType = 2;
             else if (t.IsGenericType && t.GetGenericTypeDefinition()==typeof(System.Collections.Generic.List<>))
-                IsSlicedType = true;
+                IsSlicedType = 3;
 
-            /*var ct = semvartype as compiled_type_node;
-            if (ct != null && ct.compiled_type.IsGenericType && ct.compiled_type.GetGenericTypeDefinition() == typeof(System.Collections.Generic.IEnumerable<>)) // это он и есть
-                IsSlicedType = true;
-
-            if (!IsSlicedType)
-                foreach (SemanticTree.ITypeNode itn in semvartype.ImplementingInterfaces) // Ищем интерфейс IEnumerable<T>
-                {
-                    if (itn is compiled_generic_instance_type_node)
-                    {
-                        var itnc = (itn as compiled_generic_instance_type_node);
-                        var tt = (itnc.original_generic as compiled_type_node).compiled_type;
-
-                        if (tt == typeof(System.Collections.Generic.IEnumerable<>))
-                        {
-                            IsSlicedType = true;
-                            break;
-                        }
-                    }
-                    else if (itn is compiled_type_node)
-                    {
-                        var itnc = (itn as compiled_type_node);
-                        var tt = itnc.compiled_type;
-                        if (!tt.IsGenericType)
-                            continue;
-                        var tt1 = tt.GetGenericTypeDefinition();
-
-                        if (tt1 == typeof(System.Collections.Generic.IEnumerable<>))
-                        {
-                            IsSlicedType = true;
-                            break;
-                        }
-                    }
-                }
-
-            */
-
-            if (!IsSlicedType)
+            if (IsSlicedType==0)
                 AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
 
             int situation = 0;
-            if (sl.from == null && sl.to != null)
-                situation = 1;
-            else if (sl.from != null && sl.to == null)
-                situation = 2;
-            else if (sl.from == null && sl.to == null)
-                situation = 3;
 
-            var zero = new int32_const(0);
-
-            // заполняем пустые чем-нибудь
-            if (sl.from == null)
-                sl.from = zero;
-            if (sl.to == null)
-                sl.to = zero;
-            if (sl.step == null)
-                sl.step = new int32_const(1);
+            if ((sl.from is int32_const) && (sl.from as int32_const).val==int.MaxValue)
+                situation += 1;
+            if ((sl.to is int32_const) && (sl.to as int32_const).val == int.MaxValue)
+                situation += 2;
 
             var el = new SyntaxTree.expression_list();
             el.Add(new int32_const(situation));
             el.Add(sl.from);
             el.Add(sl.to);
-            el.Add(sl.step);
+
+            if (sl.step != null)
+                el.Add(sl.step);
 
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
             visit(mc);
-            /*
-            // Ситуация from::step - вызвать Slice с двумя параметрами - пропустить вычисление и добавление count
-            bool SituationFromSpaceStep = (sl.from != null) && (sl.to == null) && (sl.step != null);
-            // Ситуация :to:step - закодировать from = -MaxInt div 2 и в Slice сделато коррекцию если step<0 !!!
-            bool SituationSpaceToStep = (sl.from == null) && (sl.to != null) && (sl.step != null);
-
-
-            SyntaxTree.expression synfrom;
-            if (sl.from != null)
-            {
-                var semfrom = convert_strong(sl.from);
-                convertion_data_and_alghoritms.check_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type, get_location(sl.from));
-                synfrom = new SyntaxTree.semantic_addr_value(semfrom);
-            }
-            else
-            {
-                synfrom = new int32_const(-1);
-            }
-
-            var int1 = new int32_const(1);
-            var el = new SyntaxTree.expression_list();
-
-            if (semvartype == SystemLibrary.SystemLibrary.string_type) // Сдвинуть from на 1
-                el.Add(new bin_expr(synfrom, int1, Operators.Minus));
-            else el.Add(synfrom);
-
-            SyntaxTree.expression synstep;
-            if (sl.step != null)
-            {
-                var semstep = convert_strong(sl.step);
-                convertion_data_and_alghoritms.check_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type, get_location(sl.step));
-                synstep = new SyntaxTree.semantic_addr_value(semstep);
-            }
-            else
-            {
-                synstep = int1;
-            }
-            el.Add(synstep);
-
-            SyntaxTree.expression synto;
-            if (sl.to != null)
-            {
-                var semto = convert_strong(sl.to);
-                convertion_data_and_alghoritms.check_convert_type(semto, SystemLibrary.SystemLibrary.integer_type, get_location(sl.to));
-                synto = new SyntaxTree.semantic_addr_value(semto);
-            }
-            else
-            {
-                synto = new int32_const(Int32.MaxValue/2);
-            }
-
-            if (!SituationFromSpaceStep) // если не from::step то вычислить count и вызвать Slice с тремя параметрами
-            {
-                // count = (to-from+step-sign(step)) div step 
-                SyntaxTree.expression ex = new bin_expr(synto, synfrom, Operators.Minus);
-                SyntaxTree.expression signstep = new method_call(new ident("sign"), new expression_list(synstep));
-                ex = new bin_expr(ex, synstep, Operators.Plus);
-                ex = new bin_expr(ex, signstep, Operators.Minus);
-                ex = new bin_expr(ex, synstep, Operators.IntegerDivision);
-
-                el.Add(ex); // Параметр count
-            }
-
-            var mc = new method_call(new dot_node(sl.v, new ident("Slice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
-            visit(mc);
-            */
-
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
