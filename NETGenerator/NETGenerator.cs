@@ -2261,15 +2261,9 @@ namespace PascalABCCompiler.NETGenerator
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
                 {
-                    try
-                    {
+                    if (default_value.GetType() != param_types[i + num])
+                        default_value = Convert.ChangeType(default_value, param_types[i + num]);
                     pb.SetConstant(default_value);
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(func.name);
-                        throw;
-                    }
                 }
                 if (func.functions_nodes.Length > 0)
                 {
