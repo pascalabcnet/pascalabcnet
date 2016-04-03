@@ -67,22 +67,6 @@ namespace PascalABCCompiler.Errors
     public class PABCNETUnexpectedToken : SyntaxError
     {
         private string _message;
-        public PABCNETUnexpectedToken(PascalABCCompiler.ParserTools.GPBParser parser)
-            : base("", parser.current_file_name, parser.parsertools.GetTokenSourceContext(parser.LRParser), (syntax_tree_node)parser.prev_node)
-        {
-            List<GoldParser.Symbol> Symbols = parser.parsertools.GetPrioritySymbols(parser.LRParser.GetExpectedTokens());
-            if (Symbols.Count == 1)
-            {
-                string OneSybmolText = "ONE_" + Symbols[0].Name.ToUpper();
-                string LocOneSybmolText = PascalABCSavParser.StringResources.Get(OneSybmolText);
-                if (LocOneSybmolText != OneSybmolText)
-                {
-                    _message = string.Format(LocOneSybmolText);
-                    return;
-                }
-            }
-            _message = string.Format(PascalABCSavParser.StringResources.Get("EXPECTED{0}"), PascalABCCompiler.FormatTools.ObjectsToString(parser.parsertools.SymbolsToStrings(Symbols.ToArray()), ","));
-        }
         public PABCNETUnexpectedToken(string _file_name, string expected, SourceContext _source_context, syntax_tree_node _node)
             : base("", _file_name, _source_context, _node)
         {
