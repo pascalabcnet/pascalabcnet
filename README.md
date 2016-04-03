@@ -24,7 +24,7 @@ Build the project and run tests.
 ```bash
 $ git clone https://github.com/pascalabcnet/pascalabcnet
 $ cd pascalabcnet
-$ sudo sh _RebuildReleaseAndRunTests.sh
+$ sh _RebuildReleaseAndRunTests.sh
 ```
 
 ## Building PascalABC.NET in MacOS
@@ -32,7 +32,7 @@ Download and install Mono from official page. Install the git-client. Run the co
 ```bash
 $ git clone https://github.com/pascalabcnet/pascalabcnet
 $ cd pascalabcnet
-$ sudo sh _RebuildReleaseAndRunTests.sh
+$ sh _RebuildReleaseAndRunTests.sh
 ```
 
 ### Run the PascalABC.NET command line compiler
@@ -73,7 +73,7 @@ sudo apt-get install mono-complete
 ```bash
 $ git clone https://github.com/pascalabcnet/pascalabcnet
 $ cd pascalabcnet
-$ sudo sh _RebuildReleaseAndRunTests.sh
+$ sh _RebuildReleaseAndRunTests.sh
 ```
 
 ## Сборка проекта в MacOS
@@ -81,7 +81,7 @@ $ sudo sh _RebuildReleaseAndRunTests.sh
 ```bash
 $ git clone https://github.com/pascalabcnet/pascalabcnet
 $ cd pascalabcnet
-$ sudo sh _RebuildReleaseAndRunTests.sh
+$ sh _RebuildReleaseAndRunTests.sh
 ```
 
 ### Запуск

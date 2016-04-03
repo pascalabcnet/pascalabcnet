@@ -1383,6 +1383,7 @@ namespace CodeCompletion
                     if (_function_header.return_type != null)
                         _function_header.return_type.visit(this);
                     return_type = returned_scope as TypeScope;
+                    
                     cur_scope = tmp;
                 }
             }

@@ -8515,13 +8515,23 @@ namespace PascalABCCompiler.TreeConverter
                             si_right,get_location(id_right));
                         return create_static_method_call(fn,get_location(id_right),tn,false);
                         */
-                       //if (!(si_right.sym_info is common_in_function_function_node))
+                        //if (!(si_right.sym_info is common_in_function_function_node))
+                        if (dn is compiled_function_node)
+                        {
+                            if ((dn as compiled_function_node).ConnectedToType == tn)
+                                AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                        }
+                        else if (dn is common_namespace_function_node)
+                        {
+                            if ((dn as common_namespace_function_node).ConnectedToType == tn)
+                                AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                        }
                         if (dn.semantic_node_type == semantic_node_type.indefinite_definition_node)
                         {
                             return new indefinite_reference(dn as indefinite_definition_node, get_location(id_right));
                         }
-                       return make_delegate_wrapper(null, si_right, get_location(id_right), true);
-                      
+                        return make_delegate_wrapper(null, si_right, get_location(id_right), true);
+
                     }
                 case general_node_type.property_node:
                     {
@@ -12165,6 +12175,8 @@ namespace PascalABCCompiler.TreeConverter
                 		}
                     case proc_attribute.attr_extension:
                         {
+                            if (context.converted_compiled_type != null)
+                                AddError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
                             if (in_interface_part)
                                 AddError(get_location(_procedure_attributes_list), "EXTENSION_METHODS_IN_INTERFACE_PART_NOT_ALLOWED");
                             if (!(context.top_function is common_namespace_function_node))

@@ -63,7 +63,6 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\Arrays.pcu
-    File ..\bin\Lib\BFSystem.pcu
     File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
     File ..\bin\Lib\DMCollect.pcu
@@ -74,7 +73,6 @@
     File ..\bin\Lib\Events.pcu
     File ..\bin\Lib\FilesOperations.pcu
     File ..\bin\Lib\FormsABC.pcu
-    File ..\bin\Lib\GOLDParserEngine.pcu
     File ..\bin\Lib\GraphABC.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu

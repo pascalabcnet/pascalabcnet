@@ -29,8 +29,8 @@ if [ $? -eq 0 ]; then
             sn -R PABCRtl32.dll KeyPair32.snk
             sn -Vu PABCRtl32.dll
             cp PABCRtl32.dll ../../bin/Lib
-            gacutil -u PABCRtl
-            gacutil -i ../../bin/Lib/PABCRtl.dll
+            sudo gacutil -u PABCRtl
+            sudo gacutil -i ../../bin/Lib/PABCRtl.dll
 	    cd ..
             mono ../bin/pabcnetc.exe RebuildStandartModules.pas /rebuild
             if [ $? -eq 0 ]; then
