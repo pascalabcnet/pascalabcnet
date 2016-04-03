@@ -2260,7 +2260,17 @@ namespace PascalABCCompiler.NETGenerator
                 if (parameters[i].is_params)
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
+                {
+                    try
+                    {
                     pb.SetConstant(default_value);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(func.name);
+                        throw;
+                    }
+                }
                 if (func.functions_nodes.Length > 0)
                 {
                     FieldBuilder fb = null;
