@@ -2261,7 +2261,7 @@ namespace PascalABCCompiler.NETGenerator
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
                 {
-                    if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && Environment.OSVersion.Platform == PlatformID.Unix)
+                    if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
                         default_value = Enum.ToObject(param_types[i + num], default_value);
                     pb.SetConstant(default_value);
                 }
