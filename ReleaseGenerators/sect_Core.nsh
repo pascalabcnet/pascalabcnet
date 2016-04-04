@@ -152,7 +152,6 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\Arrays.pas
-    File ..\bin\Lib\BFSystem.pas
     File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
     File ..\bin\Lib\DMCollect.pas
@@ -163,7 +162,6 @@
     File ..\bin\Lib\Events.pas
     File ..\bin\Lib\FilesOperations.pas
     File ..\bin\Lib\FormsABC.pas
-    File ..\bin\Lib\GOLDParserEngine.pas
     File ..\bin\Lib\GraphABC.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
@@ -197,7 +195,6 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "Arrays.pas"
-    ${AddFile} "BFSystem.pas"
     ${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
     ${AddFile} "DMCollect.pas"
@@ -208,7 +205,6 @@
     ${AddFile} "Events.pas"
     ${AddFile} "FilesOperations.pas"
     ${AddFile} "FormsABC.pas"
-    ${AddFile} "GOLDParserEngine.pas"
     ${AddFile} "GraphABC.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"

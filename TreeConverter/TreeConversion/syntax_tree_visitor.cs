@@ -11195,12 +11195,20 @@ namespace PascalABCCompiler.TreeConverter
                 var bl = _procedure_definition.proc_body as SyntaxTree.block;
                 if (bl != null && bl.program_code != null)
                 {
+                    if (bl.program_code.subnodes.Count != 1)
+                        AddError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
+
                     var ass = bl.program_code.subnodes[0] as SyntaxTree.assign;
-                    if (ass != null)
+                    if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
                     {
-                        var typ = SyntaxTreeBuilder.BuildSameType(ass.from);
+                        if (ass.from is nil_const)
+                            AddError(get_location(ass.from), "CAN_NOT_DEDUCE_TYPE_{0}","nil");
+                        
+                        // undefined_type означает, что где-то в будущем это надо исправить. Потому что и Result будет этого типа
+                        var typ = new semantic_type_node(new undefined_type("#Und",null));//SyntaxTreeBuilder.BuildSameType(ass.from);
                         fh.return_type = typ;
                     }
+                    else AddError(get_location(fh.name), "ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED");
                 }
             }
             //\ SSM
@@ -11362,6 +11370,20 @@ namespace PascalABCCompiler.TreeConverter
                     if (_procedure_definition.proc_body != null)
                     {
                         hard_node_test_and_visit(_procedure_definition.proc_body);
+                    }
+
+                    var ttt = context.top_function.return_value_type;
+                    if (ttt is undefined_type)
+                    {
+                        var cd = context.top_function.function_code as statements_list;
+                        statement_node aa = cd.statements[0];
+                        var bfc = cd.statements[0] as basic_function_call;
+                        if (bfc != null)
+                        {
+                            var ttt1 = bfc.type;
+                            context.top_function.return_value_type = ttt1;
+                            context.top_function.var_definition_nodes_list[0].type = ttt1;
+                        }
                     }
 
                     add_clip_for_set(context.top_function);
@@ -15677,6 +15699,10 @@ namespace PascalABCCompiler.TreeConverter
                 from = convert_strong(_assign.from);
             }
             /// end
+
+            //SSM 4.04.16
+            if (to.type is undefined_type)
+                to.type = from.type;
 
             if (stflambda.Count>0) // мы находимся внутри лямбды - возможно, вложенной
             {

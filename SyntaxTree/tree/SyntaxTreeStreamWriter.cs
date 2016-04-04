@@ -5908,6 +5908,18 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(no_type _no_type)
+		{
+			bw.Write((Int16)211);
+			write_no_type(_no_type);
+		}
+
+		public void write_no_type(no_type _no_type)
+		{
+			write_type_definition(_no_type);
+		}
+
 	}
 
 

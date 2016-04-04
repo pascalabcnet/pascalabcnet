@@ -442,6 +442,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new dot_question_node();
 				case 210:
 					return new slice_expr();
+				case 211:
+					return new no_type();
 			}
 			return null;
 		}
@@ -3748,6 +3750,17 @@ namespace PascalABCCompiler.SyntaxTree
 			_slice_expr.from = _read_node() as expression;
 			_slice_expr.to = _read_node() as expression;
 			_slice_expr.step = _read_node() as expression;
+		}
+
+
+		public void visit(no_type _no_type)
+		{
+			read_no_type(_no_type);
+		}
+
+		public void read_no_type(no_type _no_type)
+		{
+			read_type_definition(_no_type);
 		}
 
 	}

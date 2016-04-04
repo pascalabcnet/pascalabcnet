@@ -1062,6 +1062,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_slice_expr);
 		}
+
+		public virtual void visit(no_type _no_type)
+		{
+			DefaultVisit(_no_type);
+		}
 	}
 
 
