@@ -4653,8 +4653,10 @@ namespace CodeCompletion
             {
                 if (t.GenericParameterPosition < generic_args.Count)
                     return generic_args[t.GenericParameterPosition];
-                else
+                else if (generic_args.Count > 0)
                     return generic_args[0];
+                else
+                    return TypeTable.get_compiled_type(null, t);
             }
             if (t.IsArray)
                 return new ArrayScope(get_type_instance(t.GetElementType(), generic_args), null);
@@ -4806,6 +4808,8 @@ namespace CodeCompletion
                     {
                         List<TypeScope> lst = new List<TypeScope>();
                         lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
+                        if (lst[0].instances != null && lst[0].instances.Count > 0)
+                            lst[0] = lst[0].instances[0];
                         sc.instances.Add(this.instances[i].GetInstance(lst));
                     }
                     else
