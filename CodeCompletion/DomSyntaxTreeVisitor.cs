@@ -540,7 +540,23 @@ namespace CodeCompletion
             _indexer.dereferencing_value.visit(this);
             if (returned_scope != null && returned_scope is TypeScope)
             {
-            	returned_scope = returned_scope.GetElementType();
+                if ((returned_scope as TypeScope).GetFullName() != null && (returned_scope as TypeScope).GetFullName().IndexOf("System.Tuple") == 0)
+                {
+                    if (_indexer.indexes.expressions[0] is int32_const)
+                    {
+                        if ((_indexer.indexes.expressions[0] as int32_const).val >= 0)
+                        {
+                            dot_node dn = new dot_node(_indexer.dereferencing_value, new ident("Item" + ((_indexer.indexes.expressions[0] as int32_const).val + 1)));
+                            dn.visit(this);
+                        }
+                        else
+                            returned_scope = null;
+                    }
+                    else
+                        returned_scope = null;
+                }
+                else
+            	    returned_scope = returned_scope.GetElementType();
             }
         }
 
