@@ -1,4 +1,4 @@
-// Индексные свойства. Массив цветных квадратов 
+﻿// Индексные свойства. Массив цветных квадратов 
 uses GraphABC;
 
 const 
@@ -27,9 +27,7 @@ type
   public
     constructor (n: integer);
     begin
-      SetLength(a,n);
-      for var i:=0 to n-1 do
-        a[i] := clWhite;
+      a := ArrFill(n,Color.White);
       Draw;
     end;
     /// Рисует i-тый квадрат
@@ -53,7 +51,7 @@ var arr: VisualArray;
 begin
   Window.Title := 'Иллюстрация индексных свойств';
   arr := new VisualArray(dim);
-  SetWindowSize(sz*(dim+2),3*sz);
+  Window.SetSize(sz*(dim+2),3*sz);
   arr[0] := clGreen; // arr.Items[0] = arr[0] поскольку свойство Items является свойством по умолчанию
   Sleep(delay);
   arr[1] := clBlack;

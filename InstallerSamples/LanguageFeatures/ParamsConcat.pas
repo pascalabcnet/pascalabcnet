@@ -1,9 +1,9 @@
-// Создание функции Concat с переменным числом параметров
+﻿// Создание функции Concat с переменным числом параметров
 
 function Concat(params strs: array of string): string;
 begin
-  var sb := new System.Text.StringBuilder;
-  foreach x: string in strs do
+  var sb := new StringBuilder;
+  foreach var x in strs do
     sb.Append(x);
   Result := sb.ToString;
 end;

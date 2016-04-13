@@ -2790,7 +2790,9 @@ namespace CodeFormatters
         {
             //multiline_stack_push(at);
             visit_node(at.vars);
-            sb.Append(" := ");
+            //add_space_before = true;
+            add_space_after = true;
+            //sb.Append(" := ");
             visit_node(at.expr);
             //multiline_stack_pop(at);
         }
@@ -2804,9 +2806,10 @@ namespace CodeFormatters
                 /*if (i > 0)
                     sb.Append(", ");*/
                 visit_node(av);
+                add_space_after = true;
                 i++;
             }
-            sb.Append(")");
+            //sb.Append(")");
         }
         #endregion
     }

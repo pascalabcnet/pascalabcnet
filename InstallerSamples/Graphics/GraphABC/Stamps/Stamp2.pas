@@ -1,28 +1,17 @@
-// Класс штампа ряда прямоугольников
+﻿// Класс штампа ряда прямоугольников
 uses GraphABC;
 
 type 
-  RectangleStamp = class
+  RectangleStamp = auto class
     x,y,w,h: integer;
-    constructor (xx,yy,ww,hh: integer);
-    begin
-      x := xx; y := yy;
-      w := ww; h := hh;
-    end;
     procedure Stamp;
     begin
       Rectangle(x,y,x+w,y+h);
     end;
   end;
   
-  RowRectanglesStamp = class
+  RowRectanglesStamp = auto class
     x,y,w,h,n: integer;
-    constructor (xx,yy,ww,hh,nn: integer);
-    begin
-      x := xx; y := yy;
-      w := ww; h := hh;
-      n := nn;
-    end;
     procedure Stamp;
     begin
       var r := new RectangleStamp(x,y,w,h);
