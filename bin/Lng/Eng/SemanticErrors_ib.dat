@@ -119,6 +119,7 @@ CLASS_NOT_IMPLEMENT_THIS_INTERFACE=Class doesn't implement this interface
 INTERFACE_EXPECTED=Interface expected
 IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=Operators implicit and explicit can be extended only for classes from another .NET assemblies
 EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED=extensionmethod is not allowed in this context
+CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Can not extend operators +,+=,-,-= for delegates
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
