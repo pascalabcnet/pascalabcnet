@@ -56,7 +56,7 @@ namespace PascalABCCompiler.PCU
         }
         public int Size
         {
-            get { return (name.Length + 1) + 1 + 4 + 1 + 1 + 1 + 1; }
+            get { return (System.Text.UTF8Encoding.UTF8.GetByteCount(name) + 1) + 1 + 4 + 1 + 1 + 1 + 1; }
         }
     }
 
