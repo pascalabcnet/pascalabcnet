@@ -44,6 +44,12 @@ namespace PascalABCCompiler.TreeConverter
             return default(T);
         }
 
+        private T AddError<T>(location loc, string ErrString, params string[] values)
+        {
+            syntax_tree_visitor.AddError(loc, ErrString, values);
+            return default(T);
+        }
+
         private void AddError(location loc, string ErrString, params string[] values)
         {
             syntax_tree_visitor.AddError(loc, ErrString, values);
@@ -585,6 +591,18 @@ namespace PascalABCCompiler.TreeConverter
                 throw new TwoTypeConversionsPossible(en, pct.first, pct.second);
             if (pct.first == null)
                 throw new CanNotConvertTypes(en, en.type, to, loc);
+        }
+        
+        public bool can_convert_type(expression_node en, type_node to)
+        {
+            if (en.type == to)
+                return true;
+            possible_type_convertions pct = type_table.get_convertions(en.type, to);
+            if (pct.second != null)
+                return false;
+            if (pct.first == null)
+                return false;
+            return true;
         }
 
         public void check_convert_type_with_inheritance(type_node from, type_node to, location loc)
@@ -1890,7 +1908,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
-                AddError(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
+                return AddError<function_node>(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
             }
 
             possible_type_convertions_list_list tcll = new possible_type_convertions_list_list();

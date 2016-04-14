@@ -1638,7 +1638,8 @@ namespace PascalABCCompiler.Parsers
                         Type[] class_generic_args = pis[i].ParameterType.GetGenericArguments();
                         for (int j = 0; j < class_generic_args.Length; j++)
                         {
-                            class_generic_table.Add(class_generic_args[i].Name, j);
+                            if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
+                                class_generic_table.Add(class_generic_args[i].Name, j);
                         }
                         break;
                     }

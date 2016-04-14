@@ -1519,7 +1519,7 @@ namespace PascalABCCompiler.NetHelper
             {
             	SymbolInfo temp = new SymbolInfo(compiled_type_node.get_type_node(nested_t));
             	temp.Next = si;
-            	si = temp;
+                si = temp;
             }
             return si;
 		}

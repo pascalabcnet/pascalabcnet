@@ -41,7 +41,6 @@ namespace PascalABCCompiler.TreeConverter
         public Stack<common_type_node> type_stack; // Для вложенных типов
         public statement_list_stack stlist_stack;
         public semantic_node ret_value; // Возвращаемое значение класса returner
-
         //LambdaHelper.Reset(); // Пока не знаю, что с этим делать
     }
 	
@@ -286,6 +285,7 @@ namespace PascalABCCompiler.TreeConverter
             ShortStringTypes.Clear();
             TypedSets.Clear();
             _compiled_tn = null;
+            _explicit_interface_type = null;
             _ctt = null;
             allow_inherited_ctor_call = false;
             _types_predefined.Clear();
@@ -297,6 +297,11 @@ namespace PascalABCCompiler.TreeConverter
             SavedContext = null;
             SavedContextStack.Clear();
             compiled_tc_cache.Clear();
+            extension_method = false;
+            _last_created_function = null;
+            in_parameters_block = false;
+            is_order_independed_method_description = false;
+            
         }
         
         public bool inStaticArea()
