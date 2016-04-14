@@ -6,4 +6,6 @@ begin
   hs.Println;
   var set1: set of integer := hs;
   assert(2 in set1);
+  var h: HashSet<integer> := [1,3,5];
+  assert(3 in h);
 end.

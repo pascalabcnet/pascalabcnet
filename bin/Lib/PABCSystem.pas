@@ -8975,7 +8975,7 @@ end;
 // -------------------------------------------
 // Дополнения февраль 2016
 
-{// Добавляет поле к кортежу
+// Добавляет поле к кортежу
 function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
 begin
   Result := (Self[0],Self[1],v);
@@ -9003,7 +9003,7 @@ end;
 function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
 begin
   Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
-end;}
+end;
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;

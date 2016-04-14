@@ -569,6 +569,8 @@ namespace PascalABCCompiler.TreeConverter
             WaitedRefTypes.Clear();
             set_intls.Clear();
             NetHelper.NetHelper.reset();
+            if (ErrorsList != null)
+                ErrorsList.Clear();
             from_pabc_dll = false;
             in_interface_part = false;
             compiled_type_node[] ctns = new compiled_type_node[compiled_type_node.compiled_types.Values.Count];
@@ -1244,20 +1246,30 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-            if (si == null)
+            //if (si == null)
             {
-                if (si2 == null && left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
+                if (/*si2 == null && */left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
                 {
+                    SymbolInfo saved_si = si;
+                    SymbolInfo saved_si2 = si2;
                     base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
                     left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
                     si = left.type.find_in_type(name);
                     bfc = ((right as typed_expression).type as delegated_methods).proper_methods[0];
                     right = convertion_data_and_alghoritms.explicit_convert_type(right, CreateDelegate(bfc.simple_function_node));
                     si2 = right.type.find_in_type(name);
-                    if (si == null)
+                    if (saved_si != null)
+                        si.Next = saved_si;
+                    else
+                        saved_si = si;
+                    if (saved_si2 != null)
+                        si2.Next = saved_si2;
+                    else
+                        saved_si2 = si2;
+                    if (saved_si == null)
                         AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
                 }
-                else
+                else if (si == null)
                     AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
             }
 
@@ -4903,6 +4915,14 @@ namespace PascalABCCompiler.TreeConverter
                                                 if (cfn.polymorphic_state != SemanticTree.polymorphic_state.ps_static && cfn.ConnectedToType == null)
                                                     has_obj_methods = true;
                                             }
+                                            else if (si.sym_info is common_method_node)
+                                            {
+                                                common_method_node cfn = si.sym_info as common_method_node;
+                                                if (cfn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                                                    si_list.Add(si);
+                                                if (cfn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                                                    has_obj_methods = true;
+                                            }
                                             si = si.Next;
                                         }
                                         for (int i = 0; i < si_list.Count; i++)
@@ -4962,7 +4982,34 @@ namespace PascalABCCompiler.TreeConverter
                                             function_node_list spf = null;
                                             try
                                             {
+                                                ThrowCompilationError = false;
                                                 function_node ffn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
+                                                if (ffn == null)
+                                                {
+                                                    if (skip_first_parameter)
+                                                    {
+                                                        expressions_list ex_list = new expressions_list();
+                                                        ex_list.AddRange(exprs);
+                                                        ex_list.remove_at(0);
+                                                        ffn = convertion_data_and_alghoritms.select_function(ex_list, si, subloc, syntax_nodes_parameters);
+                                                        if (ffn == null)
+                                                        {
+                                                            ThrowCompilationError = true;
+                                                            throw LastError();
+                                                        }
+                                                        RemoveLastError();
+                                                        skip_first_parameter = false;
+                                                        exprs = ex_list;
+                                                        ThrowCompilationError = true;
+                                                    }
+                                                    else
+                                                    {
+                                                        ThrowCompilationError = true;
+                                                        throw LastError();
+                                                    }
+                                                        
+                                                }
+                                                ThrowCompilationError = true;
                                                 int exprCounter = 0;
                                                 if (skip_first_parameter)
                                                 {
@@ -12626,7 +12673,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (exp is compiled_static_method_call && (exp.type.type_special_kind == SemanticTree.type_special_kind.set_type || exp.type.type_special_kind == SemanticTree.type_special_kind.base_set_type))
             {
-                if (!(tn == exp.type) && !type_table.is_derived(tn, exp.type))
+                if (!(tn == exp.type) && !type_table.is_derived(tn, exp.type) && !(convertion_data_and_alghoritms.can_convert_type(exp, tn)))
                 {
                     AddError(new CanNotConvertTypes(exp, exp.type, tn, exp.location));
                 }
@@ -12655,7 +12702,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else if (exp is common_namespace_function_call && (exp.type.type_special_kind == SemanticTree.type_special_kind.set_type || exp.type.type_special_kind == SemanticTree.type_special_kind.base_set_type))
             {
-                if (!(tn == exp.type) && !type_table.is_derived(tn, exp.type))
+                if (!(tn == exp.type) && !type_table.is_derived(tn, exp.type) && !(convertion_data_and_alghoritms.can_convert_type(exp, tn)))
                 {
                     AddError(new CanNotConvertTypes(exp, exp.type, tn, exp.location));
                 }
