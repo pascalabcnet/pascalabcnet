@@ -1,16 +1,10 @@
-// Класс штампа текста
+﻿// Класс штампа текста
 uses GraphABC;
 
 type 
-  TextStamp = class
+  TextStamp = auto class
     x,y,pt: integer;
     Text: string;
-    constructor (xx,yy,ppt: integer; t: string);
-    begin
-      x := xx; y := yy;
-      pt := ppt; 
-      Text := t;
-    end;
     procedure Stamp;
     begin
       Font.Size := pt;

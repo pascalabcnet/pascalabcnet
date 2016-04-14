@@ -2786,7 +2786,31 @@ namespace CodeFormatters
             }
         }
 
+        public override void visit(assign_tuple at)
+        {
+            //multiline_stack_push(at);
+            visit_node(at.vars);
+            //add_space_before = true;
+            add_space_after = true;
+            //sb.Append(" := ");
+            visit_node(at.expr);
+            //multiline_stack_pop(at);
+        }
 
+        public override void visit(addressed_value_list al)
+        {
+            sb.Append("(");
+            var i = 0;
+            foreach (var av in al.variables)
+            {
+                /*if (i > 0)
+                    sb.Append(", ");*/
+                visit_node(av);
+                add_space_after = true;
+                i++;
+            }
+            //sb.Append(")");
+        }
         #endregion
     }
 }

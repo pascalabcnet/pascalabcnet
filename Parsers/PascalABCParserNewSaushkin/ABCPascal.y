@@ -2280,7 +2280,7 @@ assignment
 			if ($6.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
 			($4 as addressed_value_list).variables.Insert(0,$2 as addressed_value);
-			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@2,@3,@4);
+			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
     ;

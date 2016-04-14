@@ -11389,7 +11389,12 @@ namespace PascalABCCompiler.TreeConverter
                 must_visit_body = true;
             }
 
-           // try
+            if (context.top_function.return_value_type is undefined_type) // значит, это короткое определение функции, и тело есть, и его надо обойти
+            {
+                must_visit_body = true;
+            }
+
+            // try
             {
 
                 if (context.top_function.is_forward)
@@ -11399,48 +11404,57 @@ namespace PascalABCCompiler.TreeConverter
                         AddError(context.top_function.loc, "FORWARD_DEFINITION_WITH_FUNCTION_BODY");
                     }
                 }
-                else if (must_visit_body)
+                else
                 {
-                    common_method_node cmn = context.top_function as common_method_node;
-                    if (cmn != null && !cmn.IsStatic)
+                    if (must_visit_body)
                     {
-                        //if (cmn.find_only_in_namespace(compiler_string_consts.self_word) == null)
-                        //self variable
-                        //добавляем self, обращение к ней заменяется на this_node
-                        type_node self_type = cmn.cont_type;
-                        if (cmn.cont_type.is_generic_type_definition)
-                            self_type = cmn.cont_type.get_instance(cmn.cont_type.generic_params.ConvertAll<type_node>(o => (type_node)o));
-                        local_variable lv = new local_variable(compiler_string_consts.self_word, self_type, cmn, null);
-                        cmn.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
-                        cmn.self_variable = lv;
-                    }
-                    if (_procedure_definition.proc_body != null)
-                    {
-                        hard_node_test_and_visit(_procedure_definition.proc_body);
-                    }
-
-                    var ttt = context.top_function.return_value_type;
-                    if (ttt is undefined_type)
-                    {
-                        var cd = context.top_function.function_code as statements_list;
-                        statement_node aa = cd.statements[0];
-                        var bfc = cd.statements[0] as basic_function_call;
-                        if (bfc != null)
+                        common_method_node cmn = context.top_function as common_method_node;
+                        if (cmn != null && !cmn.IsStatic)
                         {
-                            var ttt1 = bfc.type;
-                            context.top_function.return_value_type = ttt1;
-                            context.top_function.var_definition_nodes_list[0].type = ttt1;
+                            //if (cmn.find_only_in_namespace(compiler_string_consts.self_word) == null)
+                            //self variable
+                            //добавляем self, обращение к ней заменяется на this_node
+                            type_node self_type = cmn.cont_type;
+                            if (cmn.cont_type.is_generic_type_definition)
+                                self_type = cmn.cont_type.get_instance(cmn.cont_type.generic_params.ConvertAll<type_node>(o => (type_node)o));
+                            local_variable lv = new local_variable(compiler_string_consts.self_word, self_type, cmn, null);
+                            cmn.scope.AddSymbol(compiler_string_consts.self_word, new SymbolInfo(lv));
+                            cmn.self_variable = lv;
                         }
+                        if (_procedure_definition.proc_body != null)
+                        {
+                            hard_node_test_and_visit(_procedure_definition.proc_body);
+                        }
+
+                        // SSM 12/04/16 - short func definitions - calc return_value_type
+                        var ttt = context.top_function.return_value_type;
+                        if (ttt is undefined_type)
+                        {
+                            var cd = context.top_function.function_code as statements_list;
+
+                            if (cd == null || cd.statements == null || cd.statements.Count == 0)
+                            {
+                                AddError(context.top_function.loc, "IMPOSSIBLE!SHORT_FUNC_WITHOUT_BODY");
+                            }
+
+                            statement_node aa = cd.statements[0];
+                            var bfc = cd.statements[0] as basic_function_call;
+                            if (bfc != null)
+                            {
+                                var ttt1 = bfc.type;
+                                context.top_function.return_value_type = ttt1;
+                                context.top_function.var_definition_nodes_list[0].type = ttt1;
+                            }
+                        }
+
+                        add_clip_for_set(context.top_function);
+                    }
+                    else // if (!must_visit_body)
+                    {
+                        context.add_method_header(_procedure_definition, context.top_function);
                     }
 
-                    add_clip_for_set(context.top_function);
                 }
-
-                if (!must_visit_body)
-                {
-                    context.add_method_header(_procedure_definition, context.top_function);
-                }
-
             }
             //finally
             {
