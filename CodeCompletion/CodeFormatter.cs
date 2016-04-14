@@ -2790,9 +2790,7 @@ namespace CodeFormatters
         {
             //multiline_stack_push(at);
             visit_node(at.vars);
-            //add_space_before = true;
             add_space_after = true;
-            //sb.Append(" := ");
             visit_node(at.expr);
             //multiline_stack_pop(at);
         }
@@ -2803,8 +2801,6 @@ namespace CodeFormatters
             var i = 0;
             foreach (var av in al.variables)
             {
-                /*if (i > 0)
-                    sb.Append(", ");*/
                 visit_node(av);
                 add_space_after = true;
                 i++;

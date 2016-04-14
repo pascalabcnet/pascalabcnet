@@ -3353,6 +3353,10 @@ keyword
 		{ $$ = $1; }
     | tkParams
 		{ $$ = $1; }
+	| tkEvent	
+		{ $$ = $1; }
+	| tkYield	
+		{ $$ = $1; }
     ;
 
 reserved_keyword
