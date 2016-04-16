@@ -25,7 +25,6 @@
     <name value="question_expr" />
     <name value="new_expr" />
     <name value="relop_expr" />
-    <name value="format_expr" />
     <name value="simple_expr" />
     <name value="as_is_expr" />
     <name value="term" />
@@ -36,7 +35,6 @@
     <name value="literal" />
     <name value="literal_list" />
     <name value="lambda_function_body" />
-    <name value="var_reference" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
@@ -238,8 +236,6 @@
     <name value="exception_class_type_identifier" />
     <name value="exception_variable" />
     <name value="array_name_for_new_expr" />
-    <name value="dotted_identifier" />
-    <name value="variable_as_type" />
     <name value="identifier" />
     <name value="identifier_or_keyword" />
     <name value="identifier_keyword_operatorname" />
@@ -294,7 +290,6 @@
     <name value="object_type" />
     <name value="record_type" />
     <name value="proc_type_decl" />
-    <name value="simple_type" />
     <name value="sequence_type" />
     <name value="enumeration_id" />
     <name value="template_param" />

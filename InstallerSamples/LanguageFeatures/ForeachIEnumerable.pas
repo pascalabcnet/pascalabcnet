@@ -1,10 +1,8 @@
-// Пример иллюстрирует реализацию классом интерфейса IEnumerable 
+﻿// Пример иллюстрирует реализацию классом интерфейса IEnumerable 
 // для использования его в операторе foreach
-uses System.Collections;
-
 type
   // Генератор чисел Фибоначчи
-  FibGen = class(IEnumerable, IEnumerator)
+  FibGen = class(IEnumerable<integer>, IEnumerator<integer>)
   private
     a,b,n,i: integer;
   public
@@ -15,37 +13,34 @@ type
       b := 1;
       Self.n := n;
     end;
-    function Get_Current: Object;
+    function Get_Current: integer;
     begin
       if i=0 then 
         Result := 1
       else Result := b;
     end;
-    function GetEnumerator: IEnumerator;
-    begin
-      Result := Self;
-    end;
+    function System.Collections.IEnumerator.Get_Current: object := Get_Current;
+    function GetEnumerator: IEnumerator<integer> := Self;
+    function System.Collections.IEnumerable.GetEnumerator: System.Collections.IEnumerator := Self;
     function MoveNext: boolean;
     begin
       i += 1;
       Result := i<n;
       if i=0 then exit;
-      var c := a + b;
-      a := b;
-      b := c;
+      (a,b) := (b,a+b);
     end;
-    property Current: Object read Get_Current;
+    property Current: integer read Get_Current;
     procedure Reset;
     begin
-      i := -1;
+    end;
+    procedure Dispose;
+    begin
     end;
   end;
 
-var f: FibGen;
-
 begin
   writeln('Числа Фибоначчи');
-  f := new FibGen(25);
+  var f := new FibGen(25);
   foreach var x in f do
-    write(x,' ');
+    Print(x);
 end.

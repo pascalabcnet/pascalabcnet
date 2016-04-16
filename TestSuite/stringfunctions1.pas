@@ -51,4 +51,7 @@ begin
   assert(StrToInt('234')=234);
   assert(StrToFloat('2.67')=2.67);
   assert(IntToStr(45)='45');
+  var c: char := 'a';
+  var o: object := 'bc';
+  assert(c+o='abc');
 end.

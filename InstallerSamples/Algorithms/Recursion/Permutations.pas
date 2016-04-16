@@ -1,4 +1,4 @@
-// Все перестановки
+﻿// Все перестановки
 const n = 4;
 
 var a: array of integer;
@@ -16,6 +16,6 @@ begin
 end;
 
 begin
-  a := Range(1,n).ToArray(); // заполнение массива a числами от 1 до n
+  a := Range(1,n).ToArray; // заполнение массива a числами от 1 до n
   Perm(n);
 end. 

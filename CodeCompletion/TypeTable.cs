@@ -32,7 +32,6 @@ namespace CodeCompletion
         public static CompiledScope ptr_type;
         public static CompiledScope obj_type;
         public static CompiledScope void_type;
-        
         private static Hashtable ht = new Hashtable();
         
         private static ProcScope int_plus;
@@ -1039,6 +1038,8 @@ namespace CodeCompletion
         	object o = ht[t];
         	if (o != null)
         		return o as CompiledScope;
+            if (si == null)
+                si = new SymInfo(t.Name, SymbolKind.Type, t.Name);
         	CompiledScope sc = new CompiledScope(si,t);
         	ht[t] = sc;
         	return sc;

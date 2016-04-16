@@ -185,6 +185,7 @@ UNICODEARROW \x890
 "["              { return (int)Tokens.tkSquareOpen; }
 "]"              { return (int)Tokens.tkSquareClose; }
 "?"              { return (int)Tokens.tkQuestion; }
+"?."              { return (int)Tokens.tkQuestionPoint; }
 "=>"			 { return (int)Tokens.tkMatching; }
 "@"              { yylval = new Union(); yylval.op = new op_type_node(Operators.AddressOf); return (int)Tokens.tkAddressOf; }
 ":="            { yylval = new Union(); yylval.op = new op_type_node(Operators.Assignment); return (int)Tokens.tkAssign; }
@@ -546,24 +547,32 @@ public static class Keywords
         keywords.Add("class",(int)Tokens.tkClass);
         keywords.Add("const",(int)Tokens.tkConst);
         keywords.Add("constructor",(int)Tokens.tkConstructor);
+        keywords.Add("default",(int)Tokens.tkDefault);
         keywords.Add("destructor",(int)Tokens.tkDestructor);
         keywords.Add("downto",(int)Tokens.tkDownto);
         keywords.Add("do",(int)Tokens.tkDo);
         keywords.Add("else",(int)Tokens.tkElse);
         keywords.Add("end",(int)Tokens.tkEnd);
+        keywords.Add("event",(int)Tokens.tkEvent);
         keywords.Add("except",(int)Tokens.tkExcept);
+        keywords.Add("exports",(int)Tokens.tkExports);
         keywords.Add("file",(int)Tokens.tkFile);
         keywords.Add("finalization",(int)Tokens.tkFinalization);
         keywords.Add("finally",(int)Tokens.tkFinally);
         keywords.Add("for",(int)Tokens.tkFor);
         keywords.Add("foreach",(int)Tokens.tkForeach);
         keywords.Add("function",(int)Tokens.tkFunction);
+        keywords.Add("goto",(int)Tokens.tkGoto);
         keywords.Add("if",(int)Tokens.tkIf);
         keywords.Add("implementation",(int)Tokens.tkImplementation);
         keywords.Add("inherited",(int)Tokens.tkInherited);
         keywords.Add("initialization",(int)Tokens.tkInitialization);
         keywords.Add("interface",(int)Tokens.tkInterface);
+        keywords.Add("label",(int)Tokens.tkLabel);
+        keywords.Add("lock",(int)Tokens.tkLock);
+        keywords.Add("nil",(int)Tokens.tkNil);
         keywords.Add("procedure",(int)Tokens.tkProcedure);
+        keywords.Add("of",(int)Tokens.tkOf);
         keywords.Add("operator",(int)Tokens.tkOperator);
         keywords.Add("property",(int)Tokens.tkProperty);
         keywords.Add("raise",(int)Tokens.tkRaise);
@@ -579,17 +588,9 @@ public static class Keywords
         keywords.Add("var",(int)Tokens.tkVar);
         keywords.Add("while",(int)Tokens.tkWhile);
         keywords.Add("with",(int)Tokens.tkWith);
-        keywords.Add("nil",(int)Tokens.tkNil);
-        keywords.Add("goto",(int)Tokens.tkGoto);
-        keywords.Add("of",(int)Tokens.tkOf);
-        keywords.Add("label",(int)Tokens.tkLabel);
-        keywords.Add("lock",(int)Tokens.tkLock);
         keywords.Add("program",(int)Tokens.tkProgram);
-        keywords.Add("event",(int)Tokens.tkEvent);
-        keywords.Add("default",(int)Tokens.tkDefault);
         keywords.Add("template",(int)Tokens.tkTemplate);
         keywords.Add("packed",(int)Tokens.tkPacked);
-        keywords.Add("exports",(int)Tokens.tkExports);
         keywords.Add("resourcestring",(int)Tokens.tkResourceString);
         keywords.Add("threadvar",(int)Tokens.tkThreadvar);
         keywords.Add("sealed",(int)Tokens.tkSealed);

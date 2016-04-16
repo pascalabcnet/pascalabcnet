@@ -67,80 +67,23 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class statement_list 
     {
-        public statement_list(statement st, SourceContext sc)
-        {
-            Add(st, sc);
-        }
         public statement_list(params statement[] sts)
         {
             AddMany(sts);
         }
-        public statement_list Add(statement st, SourceContext sc = null)
-        {
-            subnodes.Add(st);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
 
         //-- List members begin
         public List<statement> list
         {
             get { return subnodes; }
         }
-        public void AddMany(params statement[] els)
-        {
-            list.AddRange(els);
-        }
+
         public void AddMany(IEnumerable<statement> els)
         {
             list.AddRange(els);
         }
-        public bool Remove(statement el)
-        {
-            return list.Remove(el);
-        }
-        private int FindIndex(statement el)
-        {
-            var ind = list.FindIndex(x => x == el);
-            if (ind == -1)
-                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
-            return ind;
-        }
-        public void Replace(statement el, statement newel)
-        {
-            list[FindIndex(el)] = newel;
-        }
-        public void Replace(statement el, IEnumerable<statement> newels)
-        {
-            var ind = FindIndex(el);
-            list.RemoveAt(ind);
-            list.InsertRange(ind,newels);
-        }
-        public void InsertAfter(statement el, statement newel)
-        {
-            list.Insert(FindIndex(el) + 1, newel);
-        }
-        public void InsertBefore(statement el, statement newel)
-        {
-            list.Insert(FindIndex(el), newel);
-        }
-        public void InsertAfter(statement el, IEnumerable<statement> newels)
-        {
-            list.InsertRange(FindIndex(el) + 1, newels);
-        }
-        public void InsertBefore(statement el, IEnumerable<statement> newels)
-        {
-            list.InsertRange(FindIndex(el), newels);
-        }
-        public void AddFirst(statement el)
-        {
-            list.Insert(0, el);
-        }
-        public void AddFirst(IEnumerable<statement> els)
-        {
-            list.InsertRange(0, els);
-        }
+
         public static statement_list Empty
         {
             get { return new statement_list(); }
@@ -251,17 +194,7 @@ namespace PascalABCCompiler.SyntaxTree
         {
             this.names = name.Split('.').Select(s => new ident(s)).ToList();
         }
-        public named_type_reference(ident id, SourceContext sc = null)
-        {
-            Add(id, sc);
-        }
-        public named_type_reference Add(ident id, SourceContext sc = null)
-        {
-            names.Add(id);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+        
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
@@ -297,74 +230,22 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class variable_definitions
     {
-        public variable_definitions(var_def_statement _var_def_statement, SourceContext sc = null)
-        {
-            Add(_var_def_statement, sc);
-        }
-        public variable_definitions Add(var_def_statement _var_def_statement, SourceContext sc = null)
-        {
-            var_definitions.Add(_var_def_statement);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
         //-- List members begin
         public List<var_def_statement> list
         {
             get { return var_definitions; }
         }
 
-        public void AddMany(params var_def_statement[] sts)
-        {
-            list.AddRange(sts);
-        }
-        public bool Remove(var_def_statement st)
-        {
-            return list.Remove(st);
-        }
-        private int FindIndex(var_def_statement st)
-        {
-            var ind = list.FindIndex(x => x == st);
-            if (ind == -1)
-                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, st));
-            return ind;
-        }
-        public void Replace(var_def_statement st, var_def_statement newst)
-        {
-            list[FindIndex(st)] = newst;
-        }
-        public void InsertAfter(var_def_statement st, var_def_statement newst)
-        {
-            list.Insert(FindIndex(st) + 1, newst);
-        }
-        public void InsertBefore(var_def_statement st, var_def_statement newst)
-        {
-            list.Insert(FindIndex(st), newst);
-        }
-        public void AddFirst(var_def_statement st)
-        {
-            list.Insert(0, st);
-        }
         //-- List members end
     }
 
     public partial class ident_list
     {
-        public ident_list(ident id, SourceContext sc)
+        public ident_list(params ident[] idents)
         {
-            Add(id, sc);
+            this.idents = idents.ToList();
         }
-        public ident_list(params ident[] ids)
-        {
-            AddMany(ids);
-        }
-        public ident_list Add(ident id, SourceContext sc = null)
-        {
-            idents.Add(id);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
         public override string ToString()
         {
             var sb = new System.Text.StringBuilder();
@@ -379,37 +260,6 @@ namespace PascalABCCompiler.SyntaxTree
             get { return idents; }
         }
 
-        public void AddMany(params ident[] els)
-        {
-            list.AddRange(els);
-        }
-        public bool Remove(ident el)
-        {
-            return list.Remove(el);
-        }
-        private int FindIndex(ident el)
-        {
-            var ind = list.FindIndex(x => x == el);
-            if (ind == -1)
-                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
-            return ind;
-        }
-        public void Replace(ident el, ident newel)
-        {
-            list[FindIndex(el)] = newel;
-        }
-        public void InsertAfter(ident el, ident newel)
-        {
-            list.Insert(FindIndex(el) + 1, newel);
-        }
-        public void InsertBefore(ident el, ident newel)
-        {
-            list.Insert(FindIndex(el), newel);
-        }
-        public void AddFirst(ident el)
-        {
-            list.Insert(0, el);
-        }
         //-- List members end
     }
 
@@ -451,72 +301,13 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class declarations
     {
-        public declarations(declaration _declaration, SourceContext sc = null)
-        {
-            Add(_declaration, sc);
-        }
-        public declarations Add(declaration _declaration, SourceContext sc = null)
-        {
-            defs.Add(_declaration);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
 
         //-- List members begin
         public List<declaration> list
         {
             get { return defs; }
         }
-        public void AddMany(params declaration[] els)
-        {
-            list.AddRange(els);
-        }
-        public bool Remove(declaration el)
-        {
-            return list.Remove(el);
-        }
-        private int FindIndex(declaration el)
-        {
-            var ind = list.FindIndex(x => x == el);
-            if (ind == -1)
-                throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
-            return ind;
-        }
-        public void Replace(declaration el, declaration newel)
-        {
-            list[FindIndex(el)] = newel;
-        }
-        public void Replace(declaration el, IEnumerable<declaration> newels)
-        {
-            var ind = FindIndex(el);
-            list.RemoveAt(ind);
-            list.InsertRange(ind, newels);
-        }
-        public void InsertAfter(declaration el, declaration newel)
-        {
-            list.Insert(FindIndex(el) + 1, newel);
-        }
-        public void InsertBefore(declaration el, declaration newel)
-        {
-            list.Insert(FindIndex(el), newel);
-        }
-        public void InsertAfter(declaration el, IEnumerable<declaration> newels)
-        {
-            list.InsertRange(FindIndex(el) + 1, newels);
-        }
-        public void InsertBefore(declaration el, IEnumerable<declaration> newels)
-        {
-            list.InsertRange(FindIndex(el), newels);
-        }
-        public void AddFirst(declaration el)
-        {
-            list.Insert(0, el);
-        }
-        public void AddFirst(IEnumerable<declaration> els)
-        {
-            list.InsertRange(0, els);
-        }
+        
         public static statement_list Empty
         {
             get { return new statement_list(); }
@@ -526,17 +317,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class program_tree
     {
-        public program_tree(compilation_unit cu, SourceContext sc = null)
-        {
-            Add(cu, sc);
-        }
-        public program_tree Add(compilation_unit cu, SourceContext sc = null)
-        {
-            compilation_units.Add(cu);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class program_name
@@ -557,17 +338,6 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class expression_list
     {
-        public expression_list(expression _expression, SourceContext sc = null)
-        {
-            Add(_expression, sc);
-        }
-        public expression_list Add(expression _expression, SourceContext sc = null)
-        {
-            expressions.Add(_expression);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
         public static expression_list Empty
         {
             get { return new expression_list(); }
@@ -605,17 +375,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class indexers_types
     {
-        public indexers_types(type_definition _type_definition, SourceContext sc = null)
-        {
-            Add(_type_definition, sc);
-        }
-        public indexers_types Add(type_definition _type_definition, SourceContext sc = null)
-        {
-            indexers.Add(_type_definition);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class label_definitions
@@ -654,17 +414,6 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class formal_parameters
     {
-        public formal_parameters(typed_parameters _typed_parameters, SourceContext sc = null)
-        {
-            Add(_typed_parameters, sc);
-        }
-        public formal_parameters Add(typed_parameters _typed_parameters, SourceContext sc = null)
-        {
-            params_list.Add(_typed_parameters);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
         public override string ToString()
         {
             return string.Join(",", params_list.Select(p => p.ToString()));
@@ -677,19 +426,8 @@ namespace PascalABCCompiler.SyntaxTree
     ///
     public partial class procedure_attributes_list
     {
-        public procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc = null)
-        {
-            Add(_procedure_attribute, sc);
-        }
         public procedure_attributes_list(proc_attribute attr, SourceContext sc = null) : this(new procedure_attribute(attr), sc)
         { }
-        public procedure_attributes_list Add(procedure_attribute _procedure_attribute, SourceContext sc = null)
-        {
-            proc_attributes.Add(_procedure_attribute);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
     }
 
     public partial class procedure_header
@@ -862,32 +600,12 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class type_declarations
     {
-        public type_declarations(type_declaration _type_declaration, SourceContext sc = null)
-        {
-            Add(_type_declaration, sc);
-        }
-        public type_declarations Add(type_declaration _type_declaration, SourceContext sc = null)
-        {
-            types_decl.Add(_type_declaration);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class consts_definitions_list
     {
-        public consts_definitions_list(const_definition _const_definition, SourceContext sc = null)
-        {
-            Add(_const_definition, sc);
-        }
-        public consts_definitions_list Add(const_definition _const_definition, SourceContext sc = null)
-        {
-            const_defs.Add(_const_definition);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class unit_or_namespace
@@ -904,18 +622,7 @@ namespace PascalABCCompiler.SyntaxTree
         {
             Add(new unit_or_namespace(name), sc);
         }
-        public uses_list(unit_or_namespace un, SourceContext sc = null)
-        {
-            Add(un, sc);
-        }
-
-        public uses_list Add(unit_or_namespace un, SourceContext sc = null)
-        {
-            units.Add(un);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+        
         public uses_list AddUsesList(uses_list ul, SourceContext sc = null)
         {
             foreach (var un in ul.units)
@@ -1058,21 +765,12 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get { return new class_members(access_modifer.private_modifer); }
         }
-        public class_members(declaration _declaration, SourceContext sc = null)
-        {
-            Add(_declaration, sc);
-        }
+
         public class_members(access_modifer access)
         {
             access_mod = new access_modifer_node(access);
         }
-        public class_members Add(declaration _declaration, SourceContext sc)
-        {
-            members.Add(_declaration);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
         public class_members Add(params declaration[] decls)
         {
             foreach (var d in decls)
@@ -1083,17 +781,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class class_body
     {
-        public class_body(class_members _class_members, SourceContext sc = null)
-        {
-            Add(_class_members, sc);
-        }
-        public class_body Add(class_members _class_members, SourceContext sc = null)
-        {
-            class_def_blocks.Add(_class_members);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class class_definition
@@ -1107,62 +795,22 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class record_const
     {
-        public record_const(record_const_definition _record_const_definition, SourceContext sc = null)
-        {
-            Add(_record_const_definition, sc);
-        }
-        public record_const Add(record_const_definition _record_const_definition, SourceContext sc = null)
-        {
-            rec_consts.Add(_record_const_definition);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class literal_const_line
     {
-        public literal_const_line(literal _literal, SourceContext sc = null)
-        {
-            Add(_literal, sc);
-        }
-        public literal_const_line Add(literal _literal, SourceContext sc = null)
-        {
-            literals.Add(_literal);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class variant_list
     {
-        public variant_list(variant _variant, SourceContext sc = null)
-        {
-            Add(_variant, sc);
-        }
-        public variant_list Add(variant _variant, SourceContext sc = null)
-        {
-            vars.Add(_variant);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class variant_types
     {
-        public variant_types(variant_type _variant_type, SourceContext sc = null)
-        {
-            Add(_variant_type, sc);
-        }
-        public variant_types Add(variant_type _variant_type, SourceContext sc = null)
-        {
-            vars.Add(_variant_type);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class procedure_call
@@ -1208,47 +856,17 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class case_variants
     {
-        public case_variants(case_variant _case_variant, SourceContext sc = null)
-        {
-            Add(_case_variant, sc);
-        }
-        public case_variants Add(case_variant _case_variant, SourceContext sc = null)
-        {
-            variants.Add(_case_variant);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class var_def_list_for_record
     {
-        public var_def_list_for_record(var_def_statement _var_def_statement, SourceContext sc = null)
-        {
-            Add(_var_def_statement, sc);
-        }
-        public var_def_list_for_record Add(var_def_statement _var_def_statement, SourceContext sc = null)
-        {
-            vars.Add(_var_def_statement);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class property_parameter_list
     {
-        public property_parameter_list(property_parameter _property_parameter, SourceContext sc = null)
-        {
-            Add(_property_parameter, sc);
-        }
-        public property_parameter_list Add(property_parameter _property_parameter, SourceContext sc = null)
-        {
-            parameters.Add(_property_parameter);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class initfinal_part
@@ -1278,25 +896,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class exception_handler_list
     {
-        public exception_handler_list(exception_handler _exception_handler, SourceContext sc = null)
-        {
-            Add(_exception_handler, sc);
-        }
-        public exception_handler_list Add(exception_handler _exception_handler, SourceContext sc = null)
-        {
-            handlers.Add(_exception_handler);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class named_type_reference_list
     {
-        public named_type_reference_list(named_type_reference _named_type_reference, SourceContext sc = null)
-        {
-            Add(_named_type_reference, sc);
-        }
         public named_type_reference_list(string name)
         {
             Add(new named_type_reference(name));
@@ -1306,13 +910,7 @@ namespace PascalABCCompiler.SyntaxTree
             Add(new named_type_reference(name1));
             Add(new named_type_reference(name2));
         }
-        public named_type_reference_list Add(named_type_reference _named_type_reference, SourceContext sc = null)
-        {
-            types.Add(_named_type_reference);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
         public override string ToString()
         {
             return string.Join(",", this.types.Select(x => x.ToString()).ToArray());
@@ -1325,19 +923,6 @@ namespace PascalABCCompiler.SyntaxTree
         {
             foreach (var ntr in names.Split(',').Select(s => new named_type_reference(s)))
                 Add(ntr);
-        }
-
-        public template_param_list(type_definition _type_definition, SourceContext sc = null)
-        {
-            Add(_type_definition, sc);
-        }
-
-        public template_param_list Add(type_definition _type_definition, SourceContext sc = null)
-        {
-            params_list.Add(_type_definition);
-            if (sc != null)
-                source_context = sc;
-            return this;
         }
     }
 
@@ -1373,32 +958,12 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class where_type_specificator_list
     {
-        public where_type_specificator_list(type_definition _type_definition, SourceContext sc = null)
-        {
-            Add(_type_definition, sc);
-        }
-        public where_type_specificator_list Add(type_definition _type_definition, SourceContext sc = null)
-        {
-            defs.Add(_type_definition);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class where_definition_list
     {
-       public where_definition_list(where_definition _where_definition, SourceContext sc = null)
-        {
-            Add(_where_definition, sc);
-        }
-        public where_definition_list Add(where_definition _where_definition, SourceContext sc = null)
-        {
-            defs.Add(_where_definition);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class var_statement
@@ -1441,77 +1006,27 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class enumerator_list
     {
-        public enumerator_list(enumerator _enumerator, SourceContext sc = null)
-        {
-            Add(_enumerator, sc);
-        }
-        public enumerator_list Add(enumerator _enumerator, SourceContext sc = null)
-        {
-            enumerators.Add(_enumerator);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class type_definition_attr_list
     {
-        public type_definition_attr_list(type_definition_attr _type_definition_attr, SourceContext sc = null)
-        {
-            Add(_type_definition_attr, sc);
-        }
-        public type_definition_attr_list Add(type_definition_attr _type_definition_attr, SourceContext sc = null)
-        {
-            attributes.Add(_type_definition_attr);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class compiler_directive_list
     {
-        public compiler_directive_list(compiler_directive _compiler_directive, SourceContext sc = null)
-        {
-            Add(_compiler_directive, sc);
-        }
-        public compiler_directive_list Add(compiler_directive _compiler_directive, SourceContext sc = null)
-        {
-            directives.Add(_compiler_directive);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class documentation_comment_list
     {
-        public documentation_comment_list(documentation_comment_section _documentation_comment_section, SourceContext sc = null)
-        {
-            Add(_documentation_comment_section, sc);
-        }
-        public documentation_comment_list Add(documentation_comment_section _documentation_comment_section, SourceContext sc = null)
-        {
-            sections.Add(_documentation_comment_section);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class documentation_comment_section
     {
-        public documentation_comment_section(documentation_comment_tag _documentation_comment_tag, SourceContext sc = null)
-        {
-            Add(_documentation_comment_tag, sc);
-        }
-        public documentation_comment_section Add(documentation_comment_tag _documentation_comment_tag, SourceContext sc = null)
-        {
-            tags.Add(_documentation_comment_tag);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class bracket_expr
@@ -1524,37 +1039,17 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class simple_attribute_list
     {
-        public simple_attribute_list(attribute _attribute, SourceContext sc = null)
-        {
-            Add(_attribute, sc);
-        }
-        public simple_attribute_list Add(attribute _attribute, SourceContext sc = null)
-        {
-            attributes.Add(_attribute);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class attribute_list
     {
-        public attribute_list(simple_attribute_list _simple_attribute_list, SourceContext sc = null)
-        {
-            Add(_simple_attribute_list, sc);
-        }
-        public attribute_list Add(simple_attribute_list _simple_attribute_list, SourceContext sc = null)
-        {
-            attributes.Add(_simple_attribute_list);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class function_lambda_definition
     {
-        public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучщего выбора среди перегруженных методов с параметрами-лямбдами
+        public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучшего выбора среди перегруженных методов с параметрами-лямбдами
         public object RealSemTypeOfResult = null;
 
         public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)
@@ -1597,13 +1092,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class name_assign_expr_list
     {
-        public name_assign_expr_list Add(name_assign_expr ne, SourceContext sc = null)
-        {
-            name_expr.Add(ne);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
     public partial class unnamed_type_object
@@ -1679,17 +1168,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class uses_closure
     {
-        public uses_closure(uses_list st, SourceContext sc)
-        {
-            Add(st, sc);
-        }
-        public uses_closure Add(uses_list ul, SourceContext sc = null)
-        {
-            listunitsections.Add(ul);
-            if (sc != null)
-                source_context = sc;
-            return this;
-        }
+
     }
 
 

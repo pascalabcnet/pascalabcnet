@@ -44,6 +44,12 @@ namespace PascalABCCompiler.TreeConverter
             return default(T);
         }
 
+        private T AddError<T>(location loc, string ErrString, params string[] values)
+        {
+            syntax_tree_visitor.AddError(loc, ErrString, values);
+            return default(T);
+        }
+
         private void AddError(location loc, string ErrString, params string[] values)
         {
             syntax_tree_visitor.AddError(loc, ErrString, values);
@@ -585,6 +591,18 @@ namespace PascalABCCompiler.TreeConverter
                 throw new TwoTypeConversionsPossible(en, pct.first, pct.second);
             if (pct.first == null)
                 throw new CanNotConvertTypes(en, en.type, to, loc);
+        }
+        
+        public bool can_convert_type(expression_node en, type_node to)
+        {
+            if (en.type == to)
+                return true;
+            possible_type_convertions pct = type_table.get_convertions(en.type, to);
+            if (pct.second != null)
+                return false;
+            if (pct.first == null)
+                return false;
+            return true;
         }
 
         public void check_convert_type_with_inheritance(type_node from, type_node to, location loc)
@@ -1403,13 +1421,29 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     return false;
                 }
-                common_type_node ctdef = tdef as common_type_node;
-                int count = ctdef.generic_params.Count;
-                for (int i = 0; i < count; ++i)
+                
+                if (tdef is common_type_node)
                 {
-                    if (ctdef.generic_params[i] != tinst.instance_params[i])
+                    common_type_node ctdef = tdef as common_type_node;
+                    int count = ctdef.generic_params.Count;
+                    for (int i = 0; i < count; ++i)
                     {
-                        return false;
+                        if (ctdef.generic_params[i] != tinst.instance_params[i])
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else if (tdef is compiled_type_node)
+                {
+                    compiled_type_node ctdef = tdef as compiled_type_node;
+                    int count = ctdef.generic_params.Count;
+                    for (int i = 0; i < count; ++i)
+                    {
+                        if (ctdef.generic_params[i] != tinst.instance_params[i])
+                        {
+                            return false;
+                        }
                     }
                 }
                 return true;
@@ -1451,9 +1485,9 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         //Этот метод сверяет не только параметры, но и возвращаемое значение
-        public static bool function_eq_params_and_result(function_node left, function_node right)
+        public static bool function_eq_params_and_result(function_node left, function_node right, bool weak=false)
         {
-            if (!function_eq_params(left, right))
+            if (!function_eq_params(left, right, weak))
             {
                 return false;
             }
@@ -1466,18 +1500,8 @@ namespace PascalABCCompiler.TreeConverter
         //Сравниваем типы-параметры generic-функций
         public static bool function_eq_generic_params(function_node left, function_node right)
         {
-            common_function_node cleft = left as common_function_node;
-            common_function_node cright = right as common_function_node;
-            List<ICommonTypeNode> left_type_params = null;
-            List<ICommonTypeNode> right_type_params = null;
-            if (cleft != null)
-            {
-                left_type_params = cleft.generic_params;
-            }
-            if (cright != null)
-            {
-                right_type_params = cright.generic_params;
-            }
+            List<type_node> left_type_params = left.get_generic_params_list();
+            List<type_node> right_type_params = right.get_generic_params_list();
             if (left_type_params == null && right_type_params == null)
             {
                 return true;
@@ -1884,7 +1908,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
-                AddError(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
+                return AddError<function_node>(loc, "CAN_NOT_CALL_ANY_GENERIC_FUNCTION_{0}_WITH_THESE_PARAMETERS", first_function.name);
             }
 
             possible_type_convertions_list_list tcll = new possible_type_convertions_list_list();
@@ -1957,6 +1981,17 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         method_compare mc = compare_methods(set_of_possible_functions[i],
                             set_of_possible_functions[j], tcll[i], tcll[j]);
+                        if (SystemLibrary.SystemLibInitializer.InSetProcedure != null)
+                        {
+                            if (set_of_possible_functions[j] == SystemLibrary.SystemLibInitializer.InSetProcedure.sym_info)
+                            {
+                                mc = method_compare.less_method;
+                            }
+                            else if (set_of_possible_functions[i] == SystemLibrary.SystemLibInitializer.InSetProcedure.sym_info)
+                            {
+                                mc = method_compare.greater_method;
+                            }
+                        }
                         if (mc == method_compare.greater_method)
                         {
                             tcll.remove_at(j);
@@ -1980,61 +2015,6 @@ namespace PascalABCCompiler.TreeConverter
                 }
 
             }
-
-            // TODO: Исправить этот алгоритм, сделав каждый с каждым - вроде исправил - см. выше
-            /*j = 1;
-				while(j<set_of_possible_functions.Count)
-				{
-                    method_compare mc = compare_methods(set_of_possible_functions[0],
-                        set_of_possible_functions[j], tcll[0], tcll[j]);
-					if (mc==method_compare.greater_method)
-					{
-						tcll.remove_at(j);
-						set_of_possible_functions.remove_at(j);
-						remove=true;
-					}
-					else if (mc==method_compare.less_method)
-					{
-						tcll[0]=tcll[j];
-						set_of_possible_functions[0]=set_of_possible_functions[j];
-						tcll.remove_at(j);
-						set_of_possible_functions.remove_at(j);
-						remove=true;
-					}
-					else
-					{
-						j++;
-					}
-				}
-			}*/
-
-            /*remove=true;
-            while (remove)
-            {
-                if (set_of_possible_functions.Count == 1)
-                {
-                    check_single_possible_convertion(loc, tcll[0]);
-                    convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
-                    return set_of_possible_functions[0];
-                }
-                remove = false;
-                j = 1;
-                while (j < set_of_possible_functions.Count)
-                {
-
-                }
-            }*/
-			//Тут некоторое дублирование кода, но сюда программа не должна никогда зайти.
-			//Должен быть выполнен if выше.
-			//Но пусть пока повисит. Потом нужно разобраться и убрать.
-			/*if (set_of_possible_functions.Count==1)
-			{
-				check_single_possible_conversion(func_call,tcll[0]);
-				func_call.function=set_of_possible_functions[0];
-				convert_function_call_expressions(func_call,tcll[0]);
-				func_call.type=func_call.function.return_value_type;
-				return func_call;
-			}*/
 
             //Тупая заглушка для примитивных типов. иначе не работает +=, у нас лишком много неявных приведений
             //в дальнейшем может вызвать странное поведение, это надо проверить
@@ -2067,8 +2047,58 @@ namespace PascalABCCompiler.TreeConverter
                 return new indefinite_functions_set(indefinits);
             }
 
+            SortedDictionary<int, List<function_node>> distances = new SortedDictionary<int, List<function_node>>();
+            foreach (function_node fn in set_of_possible_functions)
+            {
+                int distance = 0;
+                for (int i = 0; i < parameters.Count; i++)
+                {
+                    type_node from = parameters[i].type;
+                    type_node to = fn.parameters[Math.Min(i,fn.parameters.Count-1)].type;
+                    if (fn.parameters[Math.Min(i, fn.parameters.Count - 1)].is_params)
+                        to = to.element_type;
+                    distance += get_type_distance(from, to);
+                }
+                List<function_node> lst;
+                if (distances.TryGetValue(distance,out lst))
+                {
+                    lst.Add(fn);
+                }
+                else
+                {
+                    lst = new List<function_node>();
+                    lst.Add(fn);
+                    distances[distance] = lst;
+                }
+            }
+            foreach (int dist in distances.Keys)
+            {
+                List<function_node> funcs = distances[dist];
+                if (funcs.Count == 1)
+                {
+                    possible_type_convertions_list tcl = get_conversions(parameters, funcs[0].parameters, true, loc);
+                    convert_function_call_expressions(funcs[0], parameters, tcl);
+                    return funcs[0];
+                }
+            }
             return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));
 		}
+
+        private int get_type_distance(type_node from, type_node to)
+        {
+            if (from == to)
+                return 0;
+            type_compare tc = type_table.compare_types(from, to);
+            if (tc == type_compare.non_comparable_type)
+                return 1000;
+            if (!from.IsInterface && to.IsInterface)
+                return 2;
+            if (tc == type_compare.less_type)
+                return 1;
+            if (tc == type_compare.greater_type)
+                return 3;
+            return 1000;
+        }
 
         private function_node is_exist_eq_return_value_method(function_node fn, function_node_list funcs)
         {

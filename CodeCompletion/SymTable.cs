@@ -356,7 +356,7 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray))
+                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray) || (t is TemplateParameterScope || t is UnknownScope))
                             {
                                 lst.AddRange(extension_methods[t]);
                             }
@@ -378,7 +378,7 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray) || (int_ts2 is ArrayScope && t.IsArray))
+                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray) || (int_ts2 is ArrayScope && t.IsArray))
                             {
                                 lst.AddRange(extension_methods[t]);
                                 //break;
@@ -736,6 +736,8 @@ namespace CodeCompletion
         //eto nuzhno tak kak u nas tablicy vse zapolneny
         protected SymScope internal_find(string name, bool check_for_def)
         {
+            if (name.Length > 0 && name[0] == '?')
+                name = name.Substring(1);
             if (symbol_table != null)
             {
                 object o = symbol_table[name];
@@ -822,7 +824,7 @@ namespace CodeCompletion
                     }
                     else names.Add(ss);
             }
-            else
+            else if (members != null)
                 foreach (SymScope ss in members)
                     if (string.Compare(ss.si.name, name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0)
                         if (ss.loc != null && loc != null && check_for_def && cur_line != -1 && cur_col != -1)
@@ -1842,9 +1844,10 @@ namespace CodeCompletion
             int i = 0;
             foreach (ElementScope parameter in this.parameters)
             {
-                if (parameter.sc is TemplateParameterScope || parameter.sc is UnknownScope)
+                i++;
+                if (parameter.sc is UnknownScope || (parameter.sc is TypeScope) && (parameter.sc as TypeScope).IsGenericParameter)
                 {
-                    int ind = this.template_parameters.IndexOf((parameter.sc as TypeScope).name);
+                    int ind = this.template_parameters.IndexOf((parameter.sc as TypeScope).Name);
                     ElementScope inst_param = null;
                     if (gen_args.Count > ind && ind != -1)
                         inst_param = new ElementScope(parameter.si, gen_args[ind], parameter.topScope);
@@ -1861,6 +1864,8 @@ namespace CodeCompletion
                         inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
                 }
+                if (parameter.param_kind == parametr_kind.params_parametr && i < gen_args.Count)
+                    gen_args.RemoveRange(i, gen_args.Count - i);
             }
             instance.si = this.si;
             instance.return_type = this.return_type.GetInstance(gen_args);
@@ -2513,6 +2518,21 @@ namespace CodeCompletion
             this.topScope = declScope;
             this.name = name;
             si.describe = name + " in " + declScope.si.name;
+        }
+
+        public override TypeScope GetInstance(List<TypeScope> gen_args)
+        {
+            if (gen_args.Count > 0)
+                return gen_args[0];
+            return this;
+        }
+
+        public override bool IsGenericParameter
+        {
+            get
+            {
+                return true;
+            }
         }
 
     }
@@ -3490,6 +3510,27 @@ namespace CodeCompletion
 
         }
 
+        public virtual List<TypeScope> GetInstances()
+        {
+            return this.instances;
+        }
+
+        public virtual TypeScope GenericTypeDefinition
+        {
+            get
+            {
+                return this;
+            }
+        }
+
+        public virtual bool IsGenericParameter
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public override ScopeKind Kind
         {
             get
@@ -3823,6 +3864,8 @@ namespace CodeCompletion
                 return true;
             if (this is UnknownScope && ts is CompiledScope && (ts as CompiledScope).CompiledType.IsGenericParameter
                 || ts is UnknownScope && this is CompiledScope && (this as CompiledScope).CompiledType.IsGenericParameter)
+                return true;
+            if (this.IsGenericParameter && ts.IsGenericParameter && this.Name == ts.Name)
                 return true;
             TypeScope tmp = this.baseScope;
             while (tmp != null)
@@ -4589,12 +4632,17 @@ namespace CodeCompletion
             this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
             this.si.kind = get_kind();
             this.si.describe = GetDescription();
+            if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
+            {
+                this.original_type = TypeTable.get_compiled_type(null, ctn.GetGenericTypeDefinition());
+            }
+            
             if (ctn.GetInterfaces().Length > 0)
             {
                 this.implemented_interfaces = new List<TypeScope>();
                 foreach (Type intf in ctn.GetInterfaces())
                 {
-                    this.implemented_interfaces.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Type, null),intf));
+                    this.implemented_interfaces.Add(TypeTable.get_compiled_type(null,intf));
                 }
             }
         }
@@ -4605,8 +4653,10 @@ namespace CodeCompletion
             {
                 if (t.GenericParameterPosition < generic_args.Count)
                     return generic_args[t.GenericParameterPosition];
-                else
+                else if (generic_args.Count > 0)
                     return generic_args[0];
+                else
+                    return TypeTable.get_compiled_type(null, t);
             }
             if (t.IsArray)
                 return new ArrayScope(get_type_instance(t.GetElementType(), generic_args), null);
@@ -4644,6 +4694,16 @@ namespace CodeCompletion
             return TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Type, t.Name), t);
         }
 
+        public override List<TypeScope> GetInstances()
+        {
+            if (this.instances.Count == 0 && ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
+            {
+                foreach (Type inst_t in ctn.GetGenericArguments())
+                    this.instances.Add(TypeTable.get_compiled_type(null, inst_t));
+            }
+            return base.GetInstances();
+        }
+
         private SymbolKind get_kind()
         {
             if (ctn.BaseType == typeof(MulticastDelegate)) return SymbolKind.Delegate;
@@ -4652,6 +4712,24 @@ namespace CodeCompletion
             if (ctn.IsEnum) return SymbolKind.Enum;
             if (ctn.IsValueType) return SymbolKind.Struct;
             return SymbolKind.Type;
+        }
+
+        public override TypeScope GenericTypeDefinition
+        {
+            get
+            {
+                if (this.ctn.IsGenericType)
+                    return TypeTable.get_compiled_type(null,this.ctn.GetGenericTypeDefinition());
+                return this;
+            }
+        }
+
+        public override bool IsGenericParameter
+        {
+            get
+            {
+                return this.ctn.IsGenericParameter;
+            }
         }
 
         public override ScopeKind Kind
@@ -4703,10 +4781,19 @@ namespace CodeCompletion
         {
             Type t = this.ctn;
             if (!ctn.IsGenericTypeDefinition)
-                t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.FullName + "`" + gen_args.Count);
+                t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
+            else if (this.instances != null && this.instances.Count > 0)
+            {
+                if (this.instances.Count != ctn.GetGenericArguments().Length)
+                {
+                    Type t2 = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name.Substring(0, this.ctn.Name.IndexOf('`')) + "`" + this.instances.Count);
+                    if (t2 != null)
+                        t = t2;
+                }
+            }
             else if (gen_args.Count != ctn.GetGenericArguments().Length)
-            { 
-                Type t2 = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.FullName.Substring(0, this.ctn.FullName.IndexOf('`')) + "`" + gen_args.Count);
+            {
+                Type t2 = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name.Substring(0, this.ctn.Name.IndexOf('`')) + "`" + gen_args.Count);
                 if (t2 != null)
                     t = t2;
             }
@@ -4714,11 +4801,26 @@ namespace CodeCompletion
             sc.generic_params = new List<string>();
             sc.instances = new List<TypeScope>();
             sc.original_type = this;
-            for (int i = 0; i < gen_args.Count; i++)
-            {
-                sc.generic_params.Add(gen_args[i].si.name);
-                sc.instances.Add(gen_args[i]);
-            }
+            if (this.instances != null && this.instances.Count > 0)
+                for (int i = 0; i < this.instances.Count; i++)
+                {
+                    if (this.instances[i] is UnknownScope || this.instances[i] is TemplateParameterScope)
+                    {
+                        List<TypeScope> lst = new List<TypeScope>();
+                        lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
+                        if (lst[0].instances != null && lst[0].instances.Count > 0)
+                            lst[0] = lst[0].instances[0];
+                        sc.instances.Add(this.instances[i].GetInstance(lst));
+                    }
+                    else
+                        sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                }
+            else
+                for (int i = 0; i < gen_args.Count; i++)
+                {
+                    sc.generic_params.Add(gen_args[i].si.name);
+                    sc.instances.Add(gen_args[i]);
+                }
             sc.si.describe = sc.GetDescription();
             return sc;
         }
@@ -4885,6 +4987,8 @@ namespace CodeCompletion
                 {
                     if (ts is UnknownScope)
                         return true;
+                    else if (ts is TemplateParameterScope)
+                        return true;
                     else if (ts is ProcType)
                     {
                         ProcType pt = ts as ProcType;
@@ -4903,7 +5007,7 @@ namespace CodeCompletion
                         ParameterInfo[] parameters = invoke_meth.GetParameters();
                         for (int i = 0; i < parameters.Length; i++)
                         {
-                            CompiledScope param_cs = TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Type, null), parameters[i].ParameterType);
+                            CompiledScope param_cs = TypeTable.get_compiled_type(null, parameters[i].ParameterType);
                             if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope))
                                 return false;
                         }
@@ -5659,7 +5763,7 @@ namespace CodeCompletion
         {
             if (!is_def_prop_searched)
                 get_default_property();
-            if (ctn == typeof(IEnumerable<>) && instances.Count > 0)
+            if ((ctn == typeof(IEnumerable<>) || ctn.IsGenericType && ctn.GetGenericTypeDefinition() == typeof(IEnumerable<>)) && instances.Count > 0)
             {
                 return instances[0];
             }
@@ -6209,7 +6313,7 @@ namespace CodeCompletion
                 generic_args = new List<string>();
                 generic_args.AddRange(args);
             }
-            if (generic_args != null)
+            if (generic_args != null || declaringType.instances != null )
             {
                 //TypeScope ts = declaringType.instances[pi.PropertyType.GenericParameterPosition];
                 this.sc = CompiledScope.get_type_instance(pi.PropertyType, declaringType.instances);
@@ -6340,6 +6444,12 @@ namespace CodeCompletion
             {
                 generic_args = new List<string>();
                 generic_args.AddRange(args);
+            }
+            if (mi.GetGenericArguments().Length > 0)
+            {
+                this.template_parameters = new List<string>();
+                foreach (Type t in mi.GetGenericArguments())
+                    this.template_parameters.Add(t.Name);
             }
             if (mi.ReturnType != typeof(void))
             {
@@ -6839,6 +6949,8 @@ namespace CodeCompletion
 
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
+            if (gen_args.Count > 0)
+                return gen_args[0];
             return this;
         }
 

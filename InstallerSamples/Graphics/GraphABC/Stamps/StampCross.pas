@@ -1,4 +1,4 @@
-// Класс штампа креста
+﻿// Класс штампа креста
 uses GraphABC;
 
 type 
@@ -33,10 +33,7 @@ type
     begin
       MoveOn(a*w,b*w);
     end;
-    function Clone(): CrossStamp;
-    begin
-      Result := new CrossStamp(x,y,w);
-    end;
+    function Clone := new CrossStamp(x,y,w);
   end;
   
 begin

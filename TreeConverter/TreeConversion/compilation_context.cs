@@ -41,7 +41,6 @@ namespace PascalABCCompiler.TreeConverter
         public Stack<common_type_node> type_stack; // Для вложенных типов
         public statement_list_stack stlist_stack;
         public semantic_node ret_value; // Возвращаемое значение класса returner
-
         //LambdaHelper.Reset(); // Пока не знаю, что с этим делать
     }
 	
@@ -164,7 +163,8 @@ namespace PascalABCCompiler.TreeConverter
         //TODO: Можно сделать возможность объявления вложенных типов.
 		public common_type_node _ctn; // SSM - пытаюсь выходить из класса и входить заново
 		private common_function_node_stack _func_stack=new common_function_node_stack();
-        
+        private type_node _explicit_interface_type;
+
         internal common_function_node_stack func_stack
         {
             get
@@ -285,6 +285,7 @@ namespace PascalABCCompiler.TreeConverter
             ShortStringTypes.Clear();
             TypedSets.Clear();
             _compiled_tn = null;
+            _explicit_interface_type = null;
             _ctt = null;
             allow_inherited_ctor_call = false;
             _types_predefined.Clear();
@@ -294,7 +295,13 @@ namespace PascalABCCompiler.TreeConverter
             skip_check_where_sections = false;
             LambdaHelper.Reset(); //lroman//
             SavedContext = null;
+            SavedContextStack.Clear();
             compiled_tc_cache.Clear();
+            extension_method = false;
+            _last_created_function = null;
+            in_parameters_block = false;
+            is_order_independed_method_description = false;
+            
         }
         
         public bool inStaticArea()
@@ -583,7 +590,21 @@ namespace PascalABCCompiler.TreeConverter
 				return (_func_stack.top());
 			}
 		}
-        
+
+        public type_node converted_explicit_interface_type
+        {
+            get
+            {
+                return _explicit_interface_type;
+            }
+            //ssyy
+            set
+            {
+                _explicit_interface_type = value;
+            }
+            //\ssyy
+        }
+
         public common_type_node converted_type
 		{
 			get
@@ -893,7 +914,22 @@ namespace PascalABCCompiler.TreeConverter
 
         public void leave_type_method()
         {
-            if (_compiled_tn != null)
+            if (_explicit_interface_type != null)
+            {
+                function_node fn = top_function;
+                SymbolInfo si = _ctn.Scope.FindOnlyInType(fn.name, null);
+                function_node compar;
+                while (si != null)
+                {
+                    compar = si.sym_info as function_node;
+                    if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar))
+                        //if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
+
+                        AddError(new FunctionDuplicateDefinition(compar, fn));
+                    si = si.Next;
+                }
+            }
+            else if (_compiled_tn != null)
             {
                 function_node fn = top_function;
                 SymbolInfo si = _compiled_tn.scope.FindOnlyInType(fn.name, null);
@@ -908,8 +944,10 @@ namespace PascalABCCompiler.TreeConverter
                     si = si.Next;
                 }                
             }
-            _ctn = null;
+            if (_explicit_interface_type == null)
+                _ctn = null;
             _compiled_tn = null;
+            _explicit_interface_type = null;
         }
 
         private readonly System.Collections.Generic.Stack<common_type_node> type_stack = new System.Collections.Generic.Stack<common_type_node>();
@@ -2700,12 +2738,26 @@ _cmn.types.AddElement(tctn);*/
                 }
             }
         }
-        
+
         //Проверка типа на наличие функции из интерфейса
         private void check_implement_function(common_type_node cnode, function_node meth, type_node interf)
         {
             //Ищем все функции с нужным именем в типе и его предках
             SymbolInfo si = cnode.find_in_type(meth.name, cnode.Scope);
+            SymbolInfo tmp_si = null;
+            if (meth is compiled_function_node)
+                tmp_si = cnode.find_in_type((meth as compiled_function_node).cont_type.BaseFullName + "." + meth.name, cnode.Scope);
+            else if (meth is common_method_node)
+                tmp_si = cnode.find_in_type((meth as common_method_node).cont_type.BaseFullName + "." + meth.name, cnode.Scope);
+            if (tmp_si != null)
+            {
+                SymbolInfo tmp_si2 = tmp_si;
+                while (tmp_si2.Next != null)
+                    tmp_si2 = tmp_si2.Next;
+                tmp_si.Next = si;
+                si = tmp_si;
+            }
+
             function_node fn = null;
             while (si != null)
             {
@@ -2713,7 +2765,7 @@ _cmn.types.AddElement(tctn);*/
                 {
                     fn = si.sym_info as function_node;
                     //Сверяем параметры и тип возвращаемого значения
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                    if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
                     {
                         //Нашли нужную функцию
                         common_method_node fn_common = fn as common_method_node;
@@ -2723,7 +2775,7 @@ _cmn.types.AddElement(tctn);*/
                             {
                                 if (fn_common.name != meth.name)
                                 {
-                                    syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}" ,fn_common.name, meth.name);
+                                    syntax_tree_visitor.AddError(fn_common.loc, "AMBIGUITY_BETWEEN_NAMES_{0}_AND_{1}", fn_common.name, meth.name);
                                 }
                             }
                             else
@@ -2731,7 +2783,7 @@ _cmn.types.AddElement(tctn);*/
                                 fn_common.SetName(meth.name);
                                 fn_common.name_case_fixed = true;
                             }
-                            
+
                         }
                         break;
                     }
@@ -2780,7 +2832,7 @@ _cmn.types.AddElement(tctn);*/
             {
                 AddError(new DerivedFromInterfaceMethodMustBePublicAndNonStatic(
                     cnode.name, interf.name,
-                    Tools.GetFullMethodHeaderString(meth),cnode.is_value_type, cnode.loc));
+                    Tools.GetFullMethodHeaderString(meth), cnode.is_value_type, cnode.loc));
             }
             //Проверка пройдена!
 
@@ -3021,10 +3073,36 @@ _cmn.types.AddElement(tctn);*/
 			bool in_unit = false;
 			if (_func_stack.size<=1)
 			{
-				if (_ctn!=null)
+                if (_explicit_interface_type != null)
+                {
+                    si = _explicit_interface_type.find_in_type(fn.name);
+                }
+				else if (_ctn!=null)
 				{
 					si=_ctn.Scope.FindOnlyInScope(fn.name);
-				}
+                    if (_ctn is compiled_generic_instance_type_node && fn is common_namespace_function_node)
+                    { 
+                        si = (_ctn as compiled_generic_instance_type_node).compiled_original_generic.find_in_type(fn.name);
+                        SymbolInfo si_tmp = si;
+                        while (si_tmp != null)
+                        {
+                            if (si_tmp.sym_info.general_node_type != general_node_type.function_node)
+                            {
+                                TreeRealization.BasePCUReader.RestoreSymbols(si_tmp, fn.name);
+                            }
+                            common_namespace_function_node cnfn = si_tmp.sym_info as common_namespace_function_node;
+                            if (cnfn != null)
+                            {
+                                if (cnfn.namespace_node == (fn as common_namespace_function_node).namespace_node)
+                                {
+                                    break;
+                                }
+                            }
+                            si_tmp = si_tmp.Next;
+                        }
+                        si = si_tmp;
+                    }
+                }
                 else if (_compiled_tn != null)
                 {
                     si = _compiled_tn.find_in_type(fn.name);
@@ -3092,7 +3170,17 @@ _cmn.types.AddElement(tctn);*/
                     			AddError(new FunctionDuplicateDefinition(compar, fn));
                     	}
                     	else
-                    	    AddError(new FunctionDuplicateDefinition(compar, fn));
+                        {
+                            if (fn is common_method_node && compar is common_method_node)
+                            {
+                                common_method_node cmn1 = fn as common_method_node;
+                                common_method_node cmn2 = compar as common_method_node;
+                                if (cmn1.explicit_interface == cmn2.explicit_interface)
+                                    AddError(new FunctionDuplicateDefinition(compar, fn));
+                            }
+                            else
+                                AddError(new FunctionDuplicateDefinition(compar, fn));
+                        }
                     }
                     si = si.Next;
                     continue;
@@ -3326,7 +3414,7 @@ _cmn.types.AddElement(tctn);*/
 				//si.sym_info=fn;
 				break;
 			}
-            if (fn is common_method_node && !predef_find && syntax_tree_visitor.current_converted_method_not_in_class_defined)
+            if (fn is common_method_node && !predef_find && syntax_tree_visitor.current_converted_method_not_in_class_defined && _explicit_interface_type == null)
             {
                 AddError(new NoMethodInClassWithThisParams(fn as common_method_node, (fn as common_method_node).cont_type, fn.loc));
             }

@@ -3414,7 +3414,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_format_expr(format_expr _format_expr)
 		{
-			write_addressed_value(_format_expr);
+			write_expression(_format_expr);
 			if (_format_expr.expr == null)
 			{
 				bw.Write((byte)0);
@@ -5828,6 +5828,96 @@ namespace PascalABCCompiler.SyntaxTree
 					}
 				}
 			}
+		}
+
+
+		public void visit(dot_question_node _dot_question_node)
+		{
+			bw.Write((Int16)209);
+			write_dot_question_node(_dot_question_node);
+		}
+
+		public void write_dot_question_node(dot_question_node _dot_question_node)
+		{
+			write_addressed_value_funcname(_dot_question_node);
+			if (_dot_question_node.left == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_dot_question_node.left.visit(this);
+			}
+			if (_dot_question_node.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_dot_question_node.right.visit(this);
+			}
+		}
+
+
+		public void visit(slice_expr _slice_expr)
+		{
+			bw.Write((Int16)210);
+			write_slice_expr(_slice_expr);
+		}
+
+		public void write_slice_expr(slice_expr _slice_expr)
+		{
+			write_dereference(_slice_expr);
+			if (_slice_expr.v == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.v.visit(this);
+			}
+			if (_slice_expr.from == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.from.visit(this);
+			}
+			if (_slice_expr.to == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.to.visit(this);
+			}
+			if (_slice_expr.step == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.step.visit(this);
+			}
+		}
+
+
+		public void visit(no_type _no_type)
+		{
+			bw.Write((Int16)211);
+			write_no_type(_no_type);
+		}
+
+		public void write_no_type(no_type _no_type)
+		{
+			write_type_definition(_no_type);
 		}
 
 	}

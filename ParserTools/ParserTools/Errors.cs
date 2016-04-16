@@ -46,31 +46,10 @@ namespace PascalABCCompiler.Errors
         {
         }
     }
-    public class TokenReadError : SyntaxError
-    {
-        public TokenReadError(PascalABCCompiler.ParserTools.GPBParser parser)
-            : base(string.Format(ParserErrorsStringResources.Get("UNEXPECTED_SYMBOL{0}"), parser.LRParser.TokenText!="" ? parser.LRParser.TokenText : "(EOF)"), 
-                    parser.current_file_name,
-                    parser.parsertools.GetTokenSourceContext(parser.LRParser), 
-                    (syntax_tree_node)parser.prev_node)
-        {
-        }
-    }
     public class BadExpr : SyntaxError
     {
         public BadExpr(string _file_name, SourceContext _source_context, syntax_tree_node _node)
             : base(ParserErrorsStringResources.Get("BAD_EXPR"), _file_name, _source_context, _node)
-        {
-        }
-    }
-
-    
-
-    public class UnexpectedToken : SyntaxError
-    {
-        public UnexpectedToken(PascalABCCompiler.ParserTools.GPBParser parser,string ExpectedTokens)
-            : base(string.Format(ParserErrorsStringResources.Get("EXPECTED{0}"), ExpectedTokens),
-                parser.current_file_name, parser.parsertools.GetTokenSourceContext(parser.LRParser), (syntax_tree_node)parser.prev_node)
         {
         }
     }

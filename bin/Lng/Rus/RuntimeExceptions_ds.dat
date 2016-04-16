@@ -1,4 +1,4 @@
-%PREFIX%=RUNTIME_EXCEPTION
-Attempted to divide by zero.=Попытка деления на ноль
-Process is terminated due to StackOverflowException.=Программа завершена из-за переполнения программного стека
-Index was outside the bounds of the array.=Индекс выходит за границы массива
+п»ї%PREFIX%=RUNTIME_EXCEPTION
+Attempted to divide by zero.=РџРѕРїС‹С‚РєР° РґРµР»РµРЅРёСЏ РЅР° РЅРѕР»СЊ
+Process is terminated due to StackOverflowException.=РџСЂРѕРіСЂР°РјРјР° Р·Р°РІРµСЂС€РµРЅР° РёР·-Р·Р° РїРµСЂРµРїРѕР»РЅРµРЅРёСЏ РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ СЃС‚РµРєР°
+Index was outside the bounds of the array.=РРЅРґРµРєСЃ РІС‹С…РѕРґРёС‚ Р·Р° РіСЂР°РЅРёС†С‹ РјР°СЃСЃРёРІР°

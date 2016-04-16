@@ -1052,6 +1052,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_uses_closure);
 		}
+
+		public virtual void visit(dot_question_node _dot_question_node)
+		{
+			DefaultVisit(_dot_question_node);
+		}
+
+		public virtual void visit(slice_expr _slice_expr)
+		{
+			DefaultVisit(_slice_expr);
+		}
+
+		public virtual void visit(no_type _no_type)
+		{
+			DefaultVisit(_no_type);
+		}
 	}
 
 

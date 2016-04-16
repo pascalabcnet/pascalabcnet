@@ -943,7 +943,7 @@ namespace SymbolTable
                         return si;
                 }
                 else
-                if (AreaNodes != null)
+                if (AreaNodes != null && sc != null)
                 {
                     p = AreaNodes.IndexOf(sc.ScopeNum);
                     if (p >= 0)

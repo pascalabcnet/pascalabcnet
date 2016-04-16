@@ -166,16 +166,6 @@ namespace PascalABCCompiler.TreeRealization
 					if (tin1.this_to_another != null && tin1.this_to_another.is_explicit)
 						return new type_intersection_node[0];
 					type_intersection_node[] tinarr2=new type_intersection_node[1];
-					/*type_intersection_node new_tin = null;
-					if (tin1.type_compare == type_compare.greater_type)
-						new_tin = new type_intersection_node(type_compare.less_type);
-					else if (tin1.type_compare == type_compare.less_type)
-						new_tin = new type_intersection_node(type_compare.greater_type);
-					else
-						new_tin = new type_intersection_node(type_compare.non_comparable_type);
-					new_tin.another_to_this = tin1.another_to_this;
-					new_tin.this_to_another = tin1.this_to_another;
-					tinarr2[0]=new_tin;*/
 					tinarr2[0]=tin1;
 					return tinarr2;
 				}
@@ -233,19 +223,6 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-        //(ssyy) Это не используется - я закомментировал.
-		/*private static void add_type_intersection(type_node left,type_node right,type_intersection_node intersection)
-		{
-			left.add_intersection_node(right,intersection);
-		}*/
-
-        //(ssyy) Это не используется - я закомментировал.
-        /*public static void add_type_conversion_from_defined(type_node from, type_node to,
-            function_node convertion_method, type_compare comp)
-        {
-            add_type_conversion_from_defined(from, to, convertion_method, comp, true);
-        }*/
-
         public static void add_type_conversion_from_defined(type_node from, type_node to,
             function_node convertion_method, type_compare comp, bool is_implicit)
         {
@@ -276,47 +253,6 @@ namespace PascalABCCompiler.TreeRealization
 #endif
 			tin.this_to_another=new type_conversion(convertion_method,!is_implicit);		
 		}
-
-        //(ssyy) Это не используется - я закомментировал.
-        /*public static void add_type_conversion_to_defined(type_node from, type_node to,
-            function_node convertion_method, type_compare comp)
-        {
-            add_type_conversion_to_defined(from, to, convertion_method, comp, true);
-        }*/
-
-        //(ssyy) Это не используется - я закомментировал.
-        /*public static void add_type_conversion_to_defined(type_node from,type_node to,
-			function_node convertion_method,type_compare comp,bool is_implicit)
-		{
-			type_intersection_node tin=to.get_type_intersection(from);
-			if (tin==null)
-			{
-				tin=new type_intersection_node(comp);
-				to.add_intersection_node(from,tin);
-			}
-#if (DEBUG)
-			else
-			{
-				if (tin.this_to_another!=null)
-				{
-                    throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Duplicate type conversion added");
-				}
-			}
-#endif
-			tin.this_to_another=new type_conversion(convertion_method,!is_implicit);		
-		}*/
-
-        //(ssyy) Это не используется - я закомментировал.
-        /*public static void add_type_conversion_from_defined(type_node from,type_node to,function_node convertion_method)
-		{
-			add_type_conversion_from_defined(from,to,convertion_method,type_compare.non_comparable_type);
-		}*/
-
-        //(ssyy) Это не используется - я закомментировал.
-		/*public static void add_type_conversion_to_defined(type_node from,type_node to,function_node convertion_method)
-		{
-			add_type_conversion_to_defined(from,to,convertion_method,type_compare.non_comparable_type);
-		}*/
 		
 		public static bool is_with_nil_allowed(type_node tn)
         {
@@ -380,7 +316,6 @@ namespace PascalABCCompiler.TreeRealization
         //Добавляет интерфейс и всех его предков в список реализуемых данным классом.
         public static void AddInterface(common_type_node cnode, type_node _interface, location loc)
         {
-            //if (_interface == cnode)
             if (original_types_equals(_interface, cnode))
                 throw new TreeConverter.UndefinedNameReference(_interface.name, loc);
             if (!_interface.IsInterface)
@@ -417,11 +352,6 @@ namespace PascalABCCompiler.TreeRealization
 				return true;
 			else
 				return false;
-			/*if (base_class.semantic_node_type == semantic_node_type.null_type_node) 
-				if (!derived_class.is_value || derived_class.IsPointer)
-				return true;
-			else if (!is_with_nil_allowed(derived_class)) return false;
-			else return true;*/
 			if (base_class.type_special_kind == SemanticTree.type_special_kind.short_string && derived_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
 			else if (derived_class == SystemLibrary.SystemLibrary.string_type && base_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
 			else if (base_class == SystemLibrary.SystemLibrary.string_type && derived_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
@@ -592,8 +522,6 @@ namespace PascalABCCompiler.TreeRealization
 					return !tin.this_to_another.is_explicit;
 				}
 			}
-            // if (base_class is common_type_node && (base_class as common_type_node).IsEnum && derived_class == SystemLibrary.SystemLibrary.integer_type) 
-           //     return true;
             //ssyy Рассматриваем случай интерфейса
             if (base_class.IsInterface)
             {
@@ -605,21 +533,8 @@ namespace PascalABCCompiler.TreeRealization
                     tnode = tnode.base_type;
                 }
                 return implements;
-                //return derived_class.ImplementingInterfaces.Contains(base_class);
             }
             //\ssyy
-            /*if (base_class.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-            {
-            	if (derived_class.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-            		return is_derived(base_class.base_type,derived_class.base_type);
-            	else return is_derived(base_class.base_type,derived_class);
-            }
-            else if (derived_class.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-            {
-            	//if (derived_class.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-            		return is_derived(base_class,derived_class.base_type);
-            	//else return is_derived(base_class.base_type,derived_class);
-            }*/
             
             if (base_class.type_special_kind == SemanticTree.type_special_kind.diap_type && derived_class.type_special_kind == SemanticTree.type_special_kind.diap_type)
 			{
@@ -633,103 +548,7 @@ namespace PascalABCCompiler.TreeRealization
 				}
 				return !tin.this_to_another.is_explicit;
             }
-            else if (base_class.type_special_kind != SemanticTree.type_special_kind.diap_type && derived_class.type_special_kind == SemanticTree.type_special_kind.diap_type)
-            {
-            	/*if (base_class == derived_class.base_type) return true;
-				type_compare tc = get_table_type_compare(base_class,derived_class.base_type);
-				if (tc == type_compare.non_comparable_type) return false;
-				type_intersection_node tin = base_class.get_type_intersection(derived_class.base_type);
-				if (tin == null || tin.this_to_another == null)
-				{
-					if ((base_class == SystemLibrary.SystemLibrary.real_type || base_class == SystemLibrary.SystemLibrary.float_type) && derived_class.base_type != SystemLibrary.SystemLibrary.char_type)
-					{
-						return true;
-					}
-					else if (base_class == SystemLibrary.SystemLibrary.string_type && derived_class.base_type == SystemLibrary.SystemLibrary.char_type)
-					{
-						return true;
-					}
-					//else if (base_class == SystemLibrary.SystemLibrary.char_type) return 
-					return false;
-				}
-				return true;*///!tin.this_to_another.is_explicit;
-            }
-            else if (base_class.type_special_kind == SemanticTree.type_special_kind.diap_type && derived_class.type_special_kind != SemanticTree.type_special_kind.diap_type)
-            {
-            	/*if (base_class.base_type == derived_class) return true;
-				type_compare tc = get_table_type_compare(base_class.base_type,derived_class);
-				if (tc == type_compare.non_comparable_type) return false;
-				type_intersection_node tin = base_class.base_type.get_type_intersection(derived_class);
-				if (tin == null || tin.this_to_another == null)
-				{
-					return false;
-				}
-				return true;*/// !tin.this_to_another.is_explicit;
-            }
 				
-//            if (base_class.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-//            {
-////            	if (derived_class.type_special_kind != PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-////            	{
-////            		if (base_class.base_type == derived_class) return true;
-////            		return get_table_type_compare(base_class.base_type,derived_class) == type_compare.greater_type || get_table_type_compare(base_class.base_type,derived_class) == type_compare.less_type ;
-////            	}
-////            	else
-////            	{
-////            		if (base_class.base_type == derived_class.base_type) return true;
-////            		return get_table_type_compare(base_class.base_type,derived_class.base_type) == type_compare.greater_type || get_table_type_compare(base_class.base_type,derived_class.base_type) == type_compare.less_type;
-////            	}
-//            	if (derived_class.type_special_kind != PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-//            	{
-//            		if (base_class.base_type == derived_class) return true;
-//            		if (base_class.base_type != SystemLibrary.SystemLibrary.bool_type && base_class.base_type != SystemLibrary.SystemLibrary.char_type)
-//            		{
-//            			if (derived_class == SystemLibrary.SystemLibrary.integer_type || derived_class == SystemLibrary.SystemLibrary.byte_type //|| derived_class == SystemLibrary.SystemLibrary.sbyte_type
-//            			   || derived_class == SystemLibrary.SystemLibrary.short_type || derived_class == SystemLibrary.SystemLibrary.ushort_type || derived_class == SystemLibrary.SystemLibrary.uint_type
-//            			  || derived_class == SystemLibrary.SystemLibrary.long_type || derived_class == SystemLibrary.SystemLibrary.ulong_type)
-//            				return true;
-//            		}
-//            		else
-//            		return get_table_type_compare(base_class,derived_class.base_type) == type_compare.less_type || get_table_type_compare(base_class,derived_class.base_type) == type_compare.greater_type;
-//            	}
-//            	else
-//            	{
-//            		if (base_class.base_type == derived_class.base_type) return true;
-//            		return is_derived(base_class.base_type,derived_class);
-//            	}
-//            }
-//            else if (derived_class.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-//            {
-//            	if (base_class.type_special_kind != PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-//            	{
-//            		if (base_class == derived_class.base_type) return true;
-//            		if (base_class == SystemLibrary.SystemLibrary.bool_type || base_class == SystemLibrary.SystemLibrary.sbyte_type) return false;
-//            		else if (derived_class.base_type != SystemLibrary.SystemLibrary.bool_type && derived_class.base_type != SystemLibrary.SystemLibrary.char_type)
-//            		{
-//            			if (base_class == SystemLibrary.SystemLibrary.integer_type || base_class == SystemLibrary.SystemLibrary.byte_type //|| base_class == SystemLibrary.SystemLibrary.sbyte_type
-//            			   || base_class == SystemLibrary.SystemLibrary.short_type || base_class == SystemLibrary.SystemLibrary.ushort_type || base_class == SystemLibrary.SystemLibrary.uint_type
-//            			  || base_class == SystemLibrary.SystemLibrary.long_type || base_class == SystemLibrary.SystemLibrary.ulong_type)
-//            				return true;
-//            		}
-//            		else
-//            		return get_table_type_compare(base_class,derived_class.base_type) == type_compare.less_type || get_table_type_compare(base_class,derived_class.base_type) == type_compare.greater_type;
-//            	}
-//            	else
-//            	{
-//            		if (base_class.base_type == derived_class.base_type) return true;
-////            		if (base_class.base_type == SystemLibrary.SystemLibrary.bool_type || base_class.base_type == SystemLibrary.SystemLibrary.sbyte_type) return false;
-////            		else if (base_class.base_type != SystemLibrary.SystemLibrary.bool_type && base_class.base_type != SystemLibrary.SystemLibrary.char_type)
-////            		{
-////            			if (base_class == SystemLibrary.SystemLibrary.integer_type || base_class == SystemLibrary.SystemLibrary.byte_type || base_class == SystemLibrary.SystemLibrary.sbyte_type
-////            			   || base_class == SystemLibrary.SystemLibrary.short_type || base_class == SystemLibrary.SystemLibrary.ushort_type || base_class == SystemLibrary.SystemLibrary.uint_type
-////            			  || base_class == SystemLibrary.SystemLibrary.long_type || base_class == SystemLibrary.SystemLibrary.ulong_type)
-////            				return true;
-////            		}
-////            		else
-//            		return is_derived(base_class.base_type,derived_class);
-//            		//return get_table_type_compare(base_class.base_type,derived_class.base_type) == type_compare.less_type || get_table_type_compare(base_class.base_type,derived_class.base_type) == type_compare.greater_type;
-//            	}
-//            }
 			while((tn!=null)&&(tn!=base_class))
 			{
 				tn=tn.base_type;
@@ -820,10 +639,6 @@ namespace PascalABCCompiler.TreeRealization
 			{
 				return type_compare.less_type;
 			}
-			/*if (left.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type || right.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-			{
-				return type_compare.less_type;
-			}*/
 			return type_compare.non_comparable_type;
 		}
 		
@@ -842,28 +657,8 @@ namespace PascalABCCompiler.TreeRealization
 			{
 				return type_compare.less_type;
 			}
-			/*if (left.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type || right.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-			{
-				return type_compare.less_type;
-			}*/
 			return type_compare.non_comparable_type;
 		}
-
-        /*
-        public static void add_explicit_type_conversion(type_node from, type_node to, function_node conversion_method)
-        {
-            //В этом методе преобразование типа добавляется только в один из них.
-            //Возможно следует сделать пару методов, для добавления преобразования к типу из которого мы преобразуем 
-            //и для добавления преобразования типа к которому мы преобразуем.
-            to.add_explicit_type_conversion(from, conversion_method);
-        }
-
-        public static function_node get_explicit_type_conversion(type_node from,type_node to)
-        {
-            //Возможно этот метод должен возвращать possible_type_conversions.
-            return to.get_explicit_type_conversion(from);
-        }
-        */
 
         private static void add_conversion(possible_type_convertions ptc, function_node fn,type_node from,type_node to)
         {
@@ -882,66 +677,6 @@ namespace PascalABCCompiler.TreeRealization
             ptc.from = from;
             ptc.to = to;
         }
-
-        /*
-        if (ctn_to != null)
-                    {
-                        function_node ccfn2 = ctn_to.get_implicit_conversion_from(from);
-                        if (ccfn2 != null)
-                        {
-                            if (ret.first == null)
-                            {
-                                ret.first = new type_conversion(ccfn2);
-                            }
-                            else
-                            {
-                                ret.second = new type_conversion(ccfn2);
-                            }
-                        }
-                        else
-                        {
-                            ccfn2 = ctn_from.get_implicit_conversion_to(to);
-                            if (ccfn2 != null)
-                            {
-                                if (ret.first == null)
-                                {
-                                    ret.first = new type_conversion(ccfn2);
-                                }
-                                else
-                                {
-                                    ret.second = new type_conversion(ccfn2);
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        function_node ccfn2 = ctn_from.get_implicit_conversion_to(to);
-                        if (ccfn2 != null)
-                        {
-                            if (ret.first == null)
-                            {
-                                ret.first = new type_conversion(ccfn2);
-                            }
-                            else
-                            {
-                                ret.second = new type_conversion(ccfn2);
-                            }
-                        }
-                        else
-                        {
-                            ccfn2 = ctn_to.get_implicit_conversion_from(from);
-                            if (ret.first == null)
-                            {
-                                ret.first = new type_conversion(ccfn2);
-                            }
-                            else
-                            {
-                                ret.second = new type_conversion(ccfn2);
-                            }
-                        }
-                    } 
-        */
 
         public static expression_node convert_delegate_to_return_value_type(location call_location, params expression_node[] parameters)
         {
@@ -1060,6 +795,31 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
+        public static bool is_type_or_original_generics_equal(type_node left, type_node right)
+        {
+            if (left == right)
+                return true;
+            if (left.is_generic_type_instance && right.is_generic_type_instance)
+            {
+                if (left.original_generic != right.original_generic)
+                    return false;
+                if (left.instance_params.Count != right.instance_params.Count)
+                    return false;
+                for (int i=0; i<left.instance_params.Count; i++)
+                {
+                    if (!is_type_or_original_generics_equal(left.instance_params[i], right.instance_params[i]))
+                        return false;
+                }
+                return true;
+            }
+            if (left.is_generic_parameter)
+                return true;
+            if (left.type_special_kind == SemanticTree.type_special_kind.set_type && right == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info
+                || right.type_special_kind == SemanticTree.type_special_kind.set_type && left == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info)
+                return true;
+            return left == right;
+        }
+
         //TODO: Возможно стоит если пересечение типов найдено в откомпилированных типах, добавлять к нашим структурам и не искать повторно.
 		public static possible_type_convertions get_convertions(type_node from,type_node to, bool is_implicit)
 		{
@@ -1157,15 +917,6 @@ namespace PascalABCCompiler.TreeRealization
 
             //TODO: Вот это должно быть в каком нибудь другом месте.
             internal_interface ii = from.get_internal_interface(internal_interface_kind.delegate_interface);
-//            if (ii == null)
-//            {
-//            	delegate_methods dels = ctn_from as delegated_methods;
-//            	if (dels != null && (ctn_to is compiled_type_node) && (ctn_to as compiled_type_node).compiled_type == NetHelper.NetHelper.DelegateType)
-//            	{
-//            		PascalABCCompiler.TreeConverter.type_constructor.instance.create_delegate();
-//            	}
-//            }
-//            else
             if (ii != null)
             {
                 delegate_internal_interface dii = (delegate_internal_interface)ii;
@@ -1178,13 +929,6 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         //ms100 error fixed (DS)
                         bool eq = TreeConverter.convertion_data_and_alghoritms.function_eq_params_and_result(dii.invoke_method, to_dii.invoke_method);
-                        /*bool eq = true;
-                        int i = 0;
-                        while ((eq)&&(i<dii.parameters.Count))
-                        {
-                            eq=(dii.parameters[i].type==to_dii.parameters[i].type);
-                            i++;
-                        }*/
                         if (eq)
                         {
                             delegate_to_delegate_type_converter dtdtc = new delegate_to_delegate_type_converter(to);

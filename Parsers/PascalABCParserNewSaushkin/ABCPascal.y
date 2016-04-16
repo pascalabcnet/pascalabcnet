@@ -28,7 +28,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkMatching
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkMatching tkQuestionPoint
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -53,7 +53,7 @@
 %type <stn> attribute_declarations  
 %type <stn> ot_visibility_specifier  
 %type <stn> one_attribute attribute_variable 
-%type <ex> const_factor const_variable_2 const_term const_variable var_specifiers literal_or_number unsigned_number
+%type <ex> const_factor const_variable_2 const_term const_variable literal_or_number unsigned_number  
 %type <stn> program_block  
 %type <ob> optional_var class_attribute class_attributes class_attributes1 
 %type <stn> member_list_section optional_component_list_seq_end  
@@ -77,7 +77,7 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term typed_const typed_const_or_new expr const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -86,7 +86,6 @@
 %type <td> file_type sequence_type 
 %type <stn> var_address  
 %type <stn> goto_stmt 
-%type <stn> my_stmt 
 %type <id> func_name_ident param_name const_field_name func_name_with_template_args identifier_or_keyword unit_name exception_variable const_name func_meth_name_ident label_name type_decl_identifier template_identifier_with_equal 
 %type <id> program_param identifier identifier_keyword_operatorname func_class_name_ident optional_identifier visibility_specifier 
 %type <id> property_specifier_directives non_reserved 
@@ -1147,8 +1146,10 @@ template_param
     ;
 
 simple_type
-    : simple_type_identifier
-	    { $$ = $1; }
+    : range_expr
+	    {
+	    	$$ = parsertools.ConvertDotNodeOrIdentToNamedTypeReference($1); 
+	    }
     | range_expr tkDotDot range_expr  
         { 
 			$$ = new diapason($1, $3, @$); 
@@ -1180,10 +1181,7 @@ range_term
 range_factor
     : simple_type_identifier                   
         { 
-			if(($1 as named_type_reference).names.Count>0)
-				$$ = ($1 as named_type_reference).names[0];
-			else
-				$$ = null;
+			$$ = parsertools.ConvertNamedTypeReferenceToDotNodeOrIdent($1 as named_type_reference);
         }
     | unsigned_number
 		{ $$ = $1; }
@@ -1261,7 +1259,7 @@ unpacked_structured_type
     ;
     
 sequence_type
-	: tkSequence tkOf template_param
+	: tkSequence tkOf type_ref
 		{
 			$$ = new sequence_type($3,@$);
 		}
@@ -1924,17 +1922,19 @@ proc_func_decl_noclass
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
         }
-	| tkFunction func_name fp_list tkColon fptype tkAssign relop_expr tkSemiColon
+	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign relop_expr tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, $5 as type_definition, $7, @1.Merge(@5));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@5));
 		}
-	| tkFunction func_name fp_list tkAssign relop_expr tkSemiColon
+	| tkFunction func_name fp_list optional_method_modificators1 tkAssign relop_expr tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, null, $5, @1.Merge(@3));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@3));
 		}
-	| tkProcedure proc_name fp_list tkAssign stmt tkSemiColon
+	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, $5 as statement, @1.Merge(@3));
+			if ($6 is empty_statement)
+				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
+			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@3));
 		}
 	| proc_func_header tkForward tkSemiColon
 		{
@@ -1971,7 +1971,7 @@ inclass_proc_func_decl_noclass
 			if (parsertools.build_tree_for_formatter)
 				$$ = new short_func_definition($$ as procedure_definition);
 		}
-	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign stmt tkSemiColon
+	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
 			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
 			if (parsertools.build_tree_for_formatter)
@@ -2252,12 +2252,10 @@ unlabelled_stmt
 		{ $$ = $1; }
     | lock_stmt
 		{ $$ = $1; }
-	| my_stmt	
-		{ $$ = $1; }
 	| yield_stmt	
 		{ $$ = $1; }
     ;
-	
+    
 yield_stmt
 	: tkYield expr_l1
 		{
@@ -2265,13 +2263,6 @@ yield_stmt
 		}
 	;
 	
-my_stmt
-	: tkCycle expr unlabelled_stmt
-		{
-			$$ = parsertools.MyStmt($2,$3 as statement); 
-		}
-	;
-		
 var_stmt
     : tkVar var_decl_part
         { 
@@ -2289,7 +2280,7 @@ assignment
 			if ($6.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
 			($4 as addressed_value_list).variables.Insert(0,$2 as addressed_value);
-			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@2,@3,@4);
+			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
     ;
@@ -2343,18 +2334,18 @@ stmt_list
     ;
 
 if_stmt
-	: tkIf expr tkThen stmt
+	: tkIf expr_l1 tkThen unlabelled_stmt
         { 
 			$$ = new if_node($2, $4 as statement, null, @$); 
         }
-	| tkIf expr tkThen stmt tkElse stmt
+	| tkIf expr_l1 tkThen unlabelled_stmt tkElse unlabelled_stmt
         {
 			$$ = new if_node($2, $4 as statement, $6 as statement, @$); 
         }
     ;
 
 case_stmt
-    : tkCase expr tkOf case_list else_case tkEnd 
+    : tkCase expr_l1 tkOf case_list else_case tkEnd 
         { 
 			$$ = new case_node($2, $4 as case_variants, $5 as statement, @$); 
 		}                          
@@ -2378,7 +2369,7 @@ case_item
         { 
 			$$ = new empty_statement(); 
 		}
-    | case_label_list tkColon stmt            
+    | case_label_list tkColon unlabelled_stmt            
         { 
 			$$ = new case_variant($1 as expression_list, $3 as statement, @$); 
 		}
@@ -2418,7 +2409,7 @@ repeat_stmt
 	;
 	
 while_stmt
-    : tkWhile expr optional_tk_do stmt                        
+    : tkWhile expr_l1 optional_tk_do unlabelled_stmt                        
         { 
 			$$ = NewWhileStmt($1, $2, $3, $4 as statement, @$);    
         }
@@ -2432,22 +2423,22 @@ optional_tk_do
     ;
         
 lock_stmt
-    : tkLock expr tkDo stmt            
+    : tkLock expr_l1 tkDo unlabelled_stmt            
         { 
 			$$ = new lock_stmt($2, $4 as statement, @$); 
         }
 	;
 	
 foreach_stmt
-    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr tkDo stmt
+    : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($2, $3, $5, $7 as statement, @$); 
         }
-    | tkForeach tkVar identifier tkColon type_ref tkIn expr tkDo stmt
+    | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($3, $5, $7, $9 as statement, @$); 
         }
-    | tkForeach tkVar identifier tkIn expr tkDo stmt
+    | tkForeach tkVar identifier tkIn expr_l1 tkDo unlabelled_stmt
         { 
 			$$ = new foreach_stmt($3, new no_type_foreach(), $5, (statement)$7, @$); 
         }
@@ -2460,7 +2451,7 @@ foreach_stmt_ident_dype_opt
     ;
            
 for_stmt
-    : tkFor optional_var identifier for_stmt_decl_or_assign expr for_cycle_type expr optional_tk_do stmt
+    : tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
         { 
 			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
         }
@@ -2487,7 +2478,7 @@ for_cycle_type
     ;
 
 with_stmt
-    : tkWith expr_list tkDo stmt               
+    : tkWith expr_list tkDo unlabelled_stmt               
         { 
 			$$ = new with_statement($4 as statement, $2 as expression_list, @$); 
 		}  
@@ -2562,7 +2553,7 @@ exception_block_else_branch
     ;
 
 exception_handler
-    : tkOn exception_identifier tkDo stmt            
+    : tkOn exception_identifier tkDo unlabelled_stmt            
         { 
 			$$ = new exception_handler(($2 as exception_ident).variable, ($2 as exception_ident).type_name, $4 as statement, @$);
 		}
@@ -2786,14 +2777,33 @@ relop_expr
 		}
     ;
 
+simple_expr_or_nothing
+	: simple_expr 
+	{
+		$$ = $1;
+	}
+	|
+	{
+		$$ = new int32_const(int.MaxValue);
+	}
+	;
+
 format_expr 
-    : simple_expr tkColon simple_expr                        
+    : simple_expr tkColon simple_expr_or_nothing                        
         { 
 			$$ = new format_expr($1, $3, null, @$); 
 		}
-    | simple_expr tkColon simple_expr tkColon simple_expr   
+    | tkColon simple_expr_or_nothing                        
+        { 
+			$$ = new format_expr(new int32_const(int.MaxValue), $2, null, @$); 
+		}
+    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
 			$$ = new format_expr($1, $3, $5, @$); 
+		}
+    | tkColon simple_expr_or_nothing tkColon simple_expr   
+        { 
+			$$ = new format_expr(new int32_const(int.MaxValue), $2, $4, @$); 
 		}
     ;
 
@@ -2928,6 +2938,19 @@ literal_or_number
 		{ $$ = $1; }
     ;
 
+
+/*var_question_colon
+	: variable tkQuestionPoint variable
+	{
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
+	}
+	| variable tkQuestionPoint var_question_colon 
+	{
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
+	}
+	;
+*/	
+
 var_reference
     : var_address variable                   
         {
@@ -2935,6 +2958,8 @@ var_reference
 		}
     | variable 
 		{ $$ = $1; }
+    /*| var_question_colon 
+		{ $$ = $1; }*/
     ;
  
 var_address
@@ -2995,36 +3020,38 @@ variable
         { 
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$); 
 		}
-    | variable var_specifiers                
+    | variable tkSquareOpen expr_list tkSquareClose                
         {
-			$$ = NewVariable($1 as addressed_value, $2, @$);
+        	var el = $3 as expression_list; // SSM 10/03/16
+        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	{
+        		var fe = el.expressions[0] as format_expr;
+        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.source_context);
+			}   
+			else $$ = new indexer($1 as addressed_value,el, @$);
+        }
+    | variable tkRoundOpen optional_expr_list tkRoundClose                
+        {
+			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
+        }
+    | variable tkPoint identifier_keyword_operatorname
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+    /*| variable tkQuestionPoint identifier_keyword_operatorname                
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }*/
+    | variable tkDeref              
+        {
+			$$ = new roof_dereference($1 as addressed_value,@$);
+        }
+    | variable tkAmpersend template_type_params                
+        {
+			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
         }
     ;
-
-var_specifiers
-    : tkSquareOpen expr_list tkSquareClose     
-        { 
-			$$ = new indexer($2 as expression_list, @$);  
-		}
-    | tkRoundOpen optional_expr_list tkRoundClose
-        { 
-			$$ = new method_call($2 as expression_list, @$);  
-		}
-    | tkPoint identifier_keyword_operatorname   
-        { 
-			$$ = new dot_node(null, $2 as addressed_value, @$);  
-		}
-    | tkDeref                             
-        { 
-			$$ = new roof_dereference();  
-			$$.source_context = @$;
-		}
-    | tkAmpersend template_type_params         
-        { 
-			$$ = new ident_with_templateparams(null, $2 as template_param_list, @$);  
-		}
-    ;
-
+    
 optional_expr_list
     : expr_list
 		{ $$ = $1; }
@@ -3325,6 +3352,10 @@ keyword
     | tkExternal
 		{ $$ = $1; }
     | tkParams
+		{ $$ = $1; }
+	| tkEvent	
+		{ $$ = $1; }
+	| tkYield	
 		{ $$ = $1; }
     ;
 
@@ -3633,6 +3664,46 @@ lambda_procedure_body
 	| compound_stmt
 		{
 			$$ = $1;
+		}
+	| if_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| while_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| repeat_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| for_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| foreach_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| case_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| try_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| lock_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| yield_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| assignment
+		{
+			$$ = new statement_list($1 as statement, @$);
 		}
 	;
 

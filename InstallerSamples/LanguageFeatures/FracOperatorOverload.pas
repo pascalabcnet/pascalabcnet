@@ -1,4 +1,4 @@
-// Перегрузка операций. Класс "Дробь"
+﻿// Перегрузка операций. Класс "Дробь"
 type 
   Frac = record
   private
@@ -25,11 +25,9 @@ type
     end;
   end;
 
-var f,f1: Frac;
-
 begin
-  f := new Frac(2,3);
-  f1 := new Frac(1,2);
+  var f := new Frac(2,3);
+  var f1 := new Frac(1,2);
   writelnFormat('{0} + {1} = {2} ',f,f1,f+f1);
   // f+f1 переводится компилятором в Frac.operator+(f,f1)
   writelnFormat('{0} - {1} = {2} ',f,f1,f-f1);

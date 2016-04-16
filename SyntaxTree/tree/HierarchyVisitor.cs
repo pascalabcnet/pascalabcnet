@@ -1677,6 +1677,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(dot_question_node _dot_question_node)
+		{
+		}
+
+		public virtual void post_do_visit(dot_question_node _dot_question_node)
+		{
+		}
+
+		public virtual void pre_do_visit(slice_expr _slice_expr)
+		{
+		}
+
+		public virtual void post_do_visit(slice_expr _slice_expr)
+		{
+		}
+
+		public virtual void pre_do_visit(no_type _no_type)
+		{
+		}
+
+		public virtual void post_do_visit(no_type _no_type)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3471,6 +3495,33 @@ namespace PascalABCCompiler.SyntaxTree
 			for (int i = 0; i < listunitsections.Count; i++)
 				visit(uses_closure.listunitsections[i]);
 			post_do_visit(_uses_closure);
+		}
+
+		public override void visit(dot_question_node _dot_question_node)
+		{
+			DefaultVisit(_dot_question_node);
+			pre_do_visit(_dot_question_node);
+			visit(dot_question_node.left);
+			visit(dot_question_node.right);
+			post_do_visit(_dot_question_node);
+		}
+
+		public override void visit(slice_expr _slice_expr)
+		{
+			DefaultVisit(_slice_expr);
+			pre_do_visit(_slice_expr);
+			visit(slice_expr.v);
+			visit(slice_expr.from);
+			visit(slice_expr.to);
+			visit(slice_expr.step);
+			post_do_visit(_slice_expr);
+		}
+
+		public override void visit(no_type _no_type)
+		{
+			DefaultVisit(_no_type);
+			pre_do_visit(_no_type);
+			post_do_visit(_no_type);
 		}
 	}
 

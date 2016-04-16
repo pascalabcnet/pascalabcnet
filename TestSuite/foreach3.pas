@@ -10,7 +10,7 @@ begin
   var a2 := new integer[2,2]((3,3),(3,3));
   foreach x: integer in a2 do
     assert(x = 3);
-  {var a3 := new integer[2,2]((3,3),(3,3));
+  var a3 := new integer[2,2]((3,3),(3,3));
   foreach var x in a3 do
-    assert(x=3);}
+    assert(x=3);
 end.

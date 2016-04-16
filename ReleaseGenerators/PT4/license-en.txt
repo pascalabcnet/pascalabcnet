@@ -1,6 +1,6 @@
 PROGRAMMING TASKBOOK FOR PASCALABC.NET
 
-                           Copyright (c) M. Abramyan, 1998-2015
+                           Copyright (c) M. Abramyan, 1998-2016
 
 
 LICENSE FOR USE AND DISTRIBUTION

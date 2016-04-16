@@ -1,7 +1,7 @@
-// Это - главная программа
+﻿// Это - главная программа
 // Именами из dll-библиотеки, написанной на PascalABC.NET, можно пользоваться, 
 // не подключая пространства имен
-#reference 'mydll.dll'
+{$reference 'mydll.dll'}
 
 begin
   PrintPascalABCNET;

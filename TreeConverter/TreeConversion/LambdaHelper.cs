@@ -41,7 +41,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.var_statement defs)
         {
             indef = true;
-            ProcessNode(defs.var_def.vars); // исключаем типы - просматриваем только имена переменных
+            ProcessNode(defs.var_def.vars); // исключаем типы - 
+              // просматриваем только имена переменных
             indef = false;
         }
     }
@@ -325,8 +326,8 @@ namespace PascalABCCompiler.TreeConverter
             return procDef;    
         }
 
-        #region Поиск всех result - ов
-        public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew
+        #region Поиск всех result - ов 
+        public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew // Нигде в проекте не используется потому что expr могут использовать локальные переменные, тип которых неизвестен до семантического разбора
         {
             public List<expression> exprList = new List<expression>();
             public ResultNodesSearcher(syntax_tree_node root)

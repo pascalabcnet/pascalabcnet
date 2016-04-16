@@ -438,6 +438,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new tuple_node_for_formatter();
 				case 208:
 					return new uses_closure();
+				case 209:
+					return new dot_question_node();
+				case 210:
+					return new slice_expr();
+				case 211:
+					return new no_type();
 			}
 			return null;
 		}
@@ -2333,7 +2339,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_format_expr(format_expr _format_expr)
 		{
-			read_addressed_value(_format_expr);
+			read_expression(_format_expr);
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
@@ -3716,6 +3722,45 @@ namespace PascalABCCompiler.SyntaxTree
 					_uses_closure.listunitsections.Add(_read_node() as uses_list);
 				}
 			}
+		}
+
+
+		public void visit(dot_question_node _dot_question_node)
+		{
+			read_dot_question_node(_dot_question_node);
+		}
+
+		public void read_dot_question_node(dot_question_node _dot_question_node)
+		{
+			read_addressed_value_funcname(_dot_question_node);
+			_dot_question_node.left = _read_node() as addressed_value;
+			_dot_question_node.right = _read_node() as addressed_value;
+		}
+
+
+		public void visit(slice_expr _slice_expr)
+		{
+			read_slice_expr(_slice_expr);
+		}
+
+		public void read_slice_expr(slice_expr _slice_expr)
+		{
+			read_dereference(_slice_expr);
+			_slice_expr.v = _read_node() as addressed_value;
+			_slice_expr.from = _read_node() as expression;
+			_slice_expr.to = _read_node() as expression;
+			_slice_expr.step = _read_node() as expression;
+		}
+
+
+		public void visit(no_type _no_type)
+		{
+			read_no_type(_no_type);
+		}
+
+		public void read_no_type(no_type _no_type)
+		{
+			read_type_definition(_no_type);
 		}
 
 	}
