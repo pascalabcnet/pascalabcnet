@@ -3654,6 +3654,42 @@ lambda_function_body
 		{
 			$$ = $1;
 		}
+    | if_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| while_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| repeat_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| for_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| foreach_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| case_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| try_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| lock_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| yield_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
 	;	
 
 lambda_procedure_body
@@ -3665,7 +3701,7 @@ lambda_procedure_body
 		{
 			$$ = $1;
 		}
-	| if_stmt
+    | if_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}

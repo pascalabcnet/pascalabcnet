@@ -34,7 +34,6 @@
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
-    <name value="lambda_function_body" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />

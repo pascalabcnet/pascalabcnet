@@ -5934,7 +5934,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     
             		expression_node bfcint = make_read_call(si, _method_call.parameters, subloc2);
-                    if (!proc_wait) AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
+                    if (!proc_wait)
+                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
                     switch (mot)
                     {
                         case motivation.expression_evaluation:
@@ -6192,7 +6193,8 @@ namespace PascalABCCompiler.TreeConverter
             else if (SystemLibrary.SystemLibInitializer.IncProcedure.Equal(si))
             {
             	expression_node bfcint = make_inc_call(si, _method_call.parameters, subloc2);
-            	if (!proc_wait) AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
+            	if (!proc_wait)
+                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
             	switch (mot)
                     {
                         case motivation.expression_evaluation:
@@ -6217,7 +6219,8 @@ namespace PascalABCCompiler.TreeConverter
             else if (SystemLibrary.SystemLibInitializer.DecProcedure.Equal(si))
             {
             	expression_node bfcint = make_dec_call(si, _method_call.parameters, subloc2);
-            	if (!proc_wait) AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
+            	if (!proc_wait)
+                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
             	switch (mot)
                     {
                         case motivation.expression_evaluation:
@@ -6374,7 +6377,8 @@ namespace PascalABCCompiler.TreeConverter
             else if (si == SystemLibrary.SystemLibInitializer.NewProcedure)
             {
             	expression_node bfcint = make_new_call(si, _method_call.parameters, subloc2);
-            	if (!proc_wait) AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
+            	if (!proc_wait)
+                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
             	switch (mot)
                     {
                         case motivation.expression_evaluation:
@@ -6401,7 +6405,8 @@ namespace PascalABCCompiler.TreeConverter
                 //if (convertion_data_and_alghoritms.select_function(convert_expression_list(_method_call.parameters.expressions), si, subloc2) == SystemLibrary.SystemLibInitializer.DisposeProcedure.sym_info)
                 //{
                     expression_node bfcint = make_dispose_call(si, _method_call.parameters, subloc2);
-                    if (!proc_wait) AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
+                    if (!proc_wait)
+                        AddError(subloc2, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", (si.sym_info as function_node).name);
                     switch (mot)
                     {
                         case motivation.expression_evaluation:
@@ -18372,6 +18377,46 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
         {
+            // SSM 18/04/16 попытка разрешить x->Print(x)
+            var stl = _function_lambda_definition.proc_body as SyntaxTree.statement_list;
+            if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1)
+            {
+                var ass = (_function_lambda_definition.proc_body as SyntaxTree.statement_list).list[0] as assign;
+                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
+                {
+                    var f = ass.from;
+                    if (f is method_call)
+                    {
+                        var ff = f as method_call;
+                        // Надо посмотреть, как это делается для преобразования типов T(x). А пока так
+                        expression_node qq = null; 
+                        delegated_methods dm = null;
+                        try
+                        {
+                            qq = convert_strong(ff.dereferencing_value);
+                            dm = qq.type as delegated_methods;
+                        }
+                        catch
+                        {
+                             // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
+                        }
+                        if (dm != null && dm.proper_methods != null && dm.proper_methods.Count > 0)
+                        {
+                            if (dm.proper_methods[0].ret_type == null)
+                            {
+                                // Очищаем от Result :=
+                                (_function_lambda_definition.proc_body as SyntaxTree.statement_list).list[0] = new procedure_call(ff, ff.source_context); // заменить result := Print(x) на Print(x)
+                                _function_lambda_definition.return_type = null;
+                            }
+                        }
+                    }
+                }
+                else // значит, первый и единственный оператор - не присваивание и это лямбда - процедура!
+                {
+                    _function_lambda_definition.return_type = null;
+                }
+            }
+
             _function_lambda_definition.RealSemTypeOfResExpr = null; // После первого присваивания Result она будет содержать тип type_node в правой части Result
             _function_lambda_definition.RealSemTypeOfResult = null;
             try
