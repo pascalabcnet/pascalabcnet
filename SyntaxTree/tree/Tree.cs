@@ -255,21 +255,23 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket)
+		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,bool _expr_lambda_body)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
+			this._expr_lambda_body=_expr_lambda_body;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,SourceContext sc)
+		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,bool _expr_lambda_body,SourceContext sc)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
+			this._expr_lambda_body=_expr_lambda_body;
 			source_context = sc;
 		}
 		// Конструкторы списка
@@ -283,6 +285,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected List<statement> _subnodes=new List<statement>();
 		protected syntax_tree_node _left_logical_bracket;
 		protected syntax_tree_node _right_logical_bracket;
+		protected bool _expr_lambda_body=new bool();
 
 		///<summary>
 		///Список операторов
@@ -326,6 +329,21 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right_logical_bracket=value;
+			}
+		}
+
+		///<summary>
+		///Поле, показывающее, что это - тело лямбда-выражения из одного выражения (созданное вызовом NewLambdaBody)
+		///</summary>
+		public bool expr_lambda_body
+		{
+			get
+			{
+				return _expr_lambda_body;
+			}
+			set
+			{
+				_expr_lambda_body=value;
 			}
 		}
 
@@ -27243,7 +27261,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -27255,12 +27273,13 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
+			this._usedkeyword=_usedkeyword;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,SourceContext sc)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword,SourceContext sc)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -27272,6 +27291,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
+			this._usedkeyword=_usedkeyword;
 			source_context = sc;
 		}
 		// Конструкторы списка
@@ -27292,6 +27312,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected List<declaration> _defs;
 		protected LambdaVisitMode _lambda_visit_mode;
 		protected syntax_tree_node _substituting_node;
+		protected int _usedkeyword;
 
 		///<summary>
 		///
@@ -27440,6 +27461,21 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_substituting_node=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public int usedkeyword
+		{
+			get
+			{
+				return _usedkeyword;
+			}
+			set
+			{
+				_usedkeyword=value;
 			}
 		}
 

@@ -127,6 +127,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_statement_list.right_logical_bracket.visit(this);
 			}
+			bw.Write(_statement_list.expr_lambda_body);
 		}
 
 
@@ -5268,6 +5269,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_function_lambda_definition.substituting_node.visit(this);
 			}
+			bw.Write((byte)_function_lambda_definition.usedkeyword);
 		}
 
 

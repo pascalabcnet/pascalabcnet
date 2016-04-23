@@ -18379,9 +18379,9 @@ namespace PascalABCCompiler.TreeConverter
         {
             // SSM 18/04/16 попытка разрешить x->Print(x)
             var stl = _function_lambda_definition.proc_body as SyntaxTree.statement_list;
-            if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1)
+            if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1 && _function_lambda_definition.usedkeyword==0)
             {
-                var ass = (_function_lambda_definition.proc_body as SyntaxTree.statement_list).list[0] as assign;
+                var ass = stl.list[0] as assign;
                 if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
                 {
                     var f = ass.from;
@@ -18399,19 +18399,28 @@ namespace PascalABCCompiler.TreeConverter
                         catch
                         {
                              // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
+                             // Плохо, но лучше пока не получается
                         }
                         if (dm != null && dm.proper_methods != null && dm.proper_methods.Count > 0)
                         {
-                            if (dm.proper_methods[0].ret_type == null)
+                            if (dm.proper_methods[0].ret_type == null && stl.expr_lambda_body)
                             {
                                 // Очищаем от Result :=
-                                (_function_lambda_definition.proc_body as SyntaxTree.statement_list).list[0] = new procedure_call(ff, ff.source_context); // заменить result := Print(x) на Print(x)
+                                stl.list[0] = new procedure_call(ff, ff.source_context); // заменить result := Print(x) на Print(x)
                                 _function_lambda_definition.return_type = null;
                             }
                         }
                     }
                 }
                 else // значит, первый и единственный оператор - не присваивание и это лямбда - процедура!
+                {
+                    _function_lambda_definition.return_type = null;
+                }
+            }
+            else if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count > 1 && _function_lambda_definition.usedkeyword == 0)
+            {
+                var rns = new LambdaHelper.ResultNodesSearcher(_function_lambda_definition.proc_body);
+                if (rns.exprList.Count==0) // Значит, это процедура, т.к. в блоке begin-end нет ни одного result := ...
                 {
                     _function_lambda_definition.return_type = null;
                 }

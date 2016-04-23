@@ -1052,7 +1052,7 @@ namespace PascalABCCompiler.SyntaxTree
         public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучшего выбора среди перегруженных методов с параметрами-лямбдами
         public object RealSemTypeOfResult = null;
 
-        public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)
+        public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, int usedkw, SourceContext sc)
         {
             statement_list _statement_list = body;
             expression_list _expression_list = new expression_list();
@@ -1077,9 +1077,15 @@ namespace PascalABCCompiler.SyntaxTree
             parameters = _expression_list;
             lambda_name = name;
             proc_body = _statement_list;
+            usedkeyword = usedkw;
             source_context = sc;
         }
+        public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc) :
+            this(name, formalPars, returnType, body, 0, sc)
+        {
+        }
     }
+
 
     public partial class semantic_check
     {

@@ -3566,27 +3566,27 @@ rem_lambda
 expl_func_decl_lambda
 	: tkFunction lambda_type_ref tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, 1, @$);
 		}
 	| tkFunction tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $4, $6 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $4, $6 as statement_list, 1, @$);
 		}
 	| tkFunction tkRoundOpen full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, $5, $7 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, $5, $7 as statement_list, 1, @$);
 		}
 	| tkProcedure tkArrow lambda_procedure_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $3 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $3 as statement_list, 2, @$);
 		}
 	| tkProcedure tkRoundOpen tkRoundClose tkArrow lambda_procedure_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $5 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $5 as statement_list, 2, @$);
 		}
 	| tkProcedure tkRoundOpen full_lambda_fp_list tkRoundClose tkArrow lambda_procedure_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, null, $6 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, null, $6 as statement_list, 2, @$);
 		}
 	;
 	

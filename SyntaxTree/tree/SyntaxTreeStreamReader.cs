@@ -534,6 +534,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			_statement_list.left_logical_bracket = _read_node() as syntax_tree_node;
 			_statement_list.right_logical_bracket = _read_node() as syntax_tree_node;
+			_statement_list.expr_lambda_body = br.ReadBoolean();
 		}
 
 
@@ -3393,6 +3394,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			_function_lambda_definition.lambda_visit_mode = (LambdaVisitMode)br.ReadByte();
 			_function_lambda_definition.substituting_node = _read_node() as syntax_tree_node;
+			_function_lambda_definition.usedkeyword = (int)br.ReadByte();
 		}
 
 
