@@ -2799,7 +2799,26 @@ namespace CodeCompletion
             	ss.body_loc = get_location(_class_definition);
             	ss.real_body_loc = get_location(_class_definition.body);
             	ss.AddDefaultConstructorIfNeed();
+                if (((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == class_attribute.Auto))
+                {
+                    ProcScope ps = new ProcScope("Create", ss, true);
+                    foreach (class_members members in _class_definition.body.class_def_blocks)
+                    {
+                        foreach (var_def_statement vds in members.members)
+                        {
+                            vds.vars_type.visit(this);
+                            foreach (ident id in vds.vars.list)
+                            {
+                                ps.parameters.Add(new ElementScope(new SymInfo(id.name, SymbolKind.Parameter,id.name),returned_scope, ps));
+                            }
+                        }
+                    }
+                    ps.return_type = ss;
+                    ps.Complete();
+                    ss.AddName("Create", ps);
+                }
             }
+            
             cur_type_name = tmp_name;
             returned_scope = ss;
             cur_scope = tmp;
