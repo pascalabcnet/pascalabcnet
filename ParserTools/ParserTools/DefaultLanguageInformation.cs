@@ -409,9 +409,9 @@ namespace PascalABCCompiler.Parsers
                 return ctn.FullName;
             if (!no_alias)
             {
-                if (ctn.Name.Contains("Func`"))
+                if (ctn.Name.Contains("Func`") || ctn.Name.Contains("Predicate`"))
                     return getLambdaRepresentation(ctn, true, new List<string>());
-                else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
+                else if (ctn.Name.Contains("Action`"))
                     return getLambdaRepresentation(ctn, false, new List<string>());
                 else if (ctn.Name == "IEnumerable`1")
                     return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
@@ -822,9 +822,9 @@ namespace PascalABCCompiler.Parsers
 			{
                 if (!noalias)
                 {
-                    if (ctn.Name.Contains("Func`"))
+                    if (ctn.Name.Contains("Func`") || ctn.Name.Contains("Predicate`"))
                         return getLambdaRepresentation(ctn, true, new List<string>());
-                    else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
+                    else if (ctn.Name.Contains("Action`"))
                         return getLambdaRepresentation(ctn, false, new List<string>());
                     else if (ctn.Name == "IEnumerable`1")
                         return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
@@ -1081,7 +1081,13 @@ namespace PascalABCCompiler.Parsers
                 else if (parameters.Count > 1)
                     sb.Append(parameters[0] + "->" + parameters[1]);
                 else if (parameters.Count == 1)
-                    sb.Append("()->"+parameters[0]);
+                {
+                    if (t.Name == "Predicate`1")
+                        sb.Append(parameters[0] + "->boolean");
+                    else
+                        sb.Append("()->" + parameters[0]);
+                }
+
             }
             else if (parameters.Count > 0)
             {
@@ -1510,9 +1516,9 @@ namespace PascalABCCompiler.Parsers
                         else 
                             return "sequence of " + (generic_args.Count>0?generic_args[0]:GetShortTypeName(tt, false));
                     }
-                    else if (t.Name.Contains("Func`"))
+                    else if (t.Name.Contains("Func`") || t.Name.Contains("Predicate`"))
                         return getLambdaRepresentation(t, true, generic_args, generic_param_args);
-                    else if (t.Name.Contains("Action`") || t.Name.Contains("Predicate`"))
+                    else if (t.Name.Contains("Action`") )
                         return getLambdaRepresentation(t, false, generic_args, generic_param_args);
                 }
                 string name = GetShortTypeName(t);
