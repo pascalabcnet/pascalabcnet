@@ -1139,7 +1139,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                string s = GetFullTypeName(scope.CompiledType);
+                string s = GetShortTypeName(scope.CompiledType);
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
                 {
