@@ -19055,7 +19055,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             // Проверить, что справа - Tuple
             var expr = convert_strong(asstup.expr);
-
+            expr = convert_if_typed_expression_to_function_call(expr);
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
             if (t == null)
                 AddError(expr.location, "TUPLE_EXPECTED");
