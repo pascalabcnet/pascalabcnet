@@ -16629,7 +16629,7 @@ namespace PascalABCCompiler.TreeConverter
         public List<type_node> visit_type_list(List<SyntaxTree.type_definition> types)
         {
             List<type_node> tparams = new List<type_node>();
-            foreach (SyntaxTree.named_type_reference id in types)
+            foreach (SyntaxTree.type_definition id in types)
             {
                 type_node tn = ret.visit(id);
                 if (tn == null)

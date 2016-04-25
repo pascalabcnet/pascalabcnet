@@ -1139,7 +1139,11 @@ template_param_list
     ;
 
 template_param
-    : simple_type_identifier
+    : simple_type
+		{ $$ = $1; }
+    | structured_type
+		{ $$ = $1; }
+    | procedural_type
 		{ $$ = $1; }
     | template_type
 		{ $$ = $1; }
