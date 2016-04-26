@@ -1,6 +1,4 @@
-// Быстрая сортировка Ч. Хоара
-uses ArrayLib;
-
+﻿// Быстрая сортировка Ч. Хоара
 /// Разделение a[l]..a[r] на части a[l]..a[q] <= a[q+1]..a[r] 
 function Partition(a: array of integer; l,r: integer): integer;
 begin
@@ -10,10 +8,10 @@ begin
   while True do
   begin
     repeat
-      Inc(i);
+      i += 1;
     until a[i]>=x;
     repeat
-      Dec(j);
+      j -= 1;
     until a[j]<=x;
     if i<j then 
       Swap(a[i],a[j])
@@ -36,10 +34,8 @@ end;
 
 const n = 20;
 
-var a: array of integer;
-
 begin
-  CreateRandom(a,n);
+  var a := ArrRandom(n);
   writeln('До сортировки: ');
   Writeln(a);
   QuickSort(a,0,a.Length-1);
