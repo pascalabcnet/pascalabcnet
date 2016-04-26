@@ -15736,7 +15736,13 @@ namespace PascalABCCompiler.TreeConverter
 
 
             #region Вывод параметров лямбда-выражения
-            LambdaHelper.InferTypesFromVarStmt(to.type, _assign.from as SyntaxTree.function_lambda_definition, this);  //lroman//
+            var fld1 = _assign.from as SyntaxTree.function_lambda_definition;
+            if (fld1 != null)
+            {
+                MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
+                LambdaHelper.InferTypesFromVarStmt(to.type, _assign.from as SyntaxTree.function_lambda_definition, this);  //lroman//
+            }
+            
             #endregion
 			
 
@@ -18375,21 +18381,21 @@ namespace PascalABCCompiler.TreeConverter
             visit(_closure_substituting_node.substitution);
         }
 
-        public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
+        public void MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(function_lambda_definition _function_lambda_definition)
         {
             // SSM 18/04/16 попытка разрешить x->Print(x)
             var stl = _function_lambda_definition.proc_body as SyntaxTree.statement_list;
-            if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1 && _function_lambda_definition.usedkeyword==0)
+            if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1 && _function_lambda_definition.usedkeyword == 0)
             {
                 var ass = stl.list[0] as assign;
-                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower()=="result")
+                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
                 {
                     var f = ass.from;
                     if (f is method_call)
                     {
                         var ff = f as method_call;
                         // Надо посмотреть, как это делается для преобразования типов T(x). А пока так
-                        expression_node qq = null; 
+                        expression_node qq = null;
                         delegated_methods dm = null;
                         try
                         {
@@ -18398,8 +18404,8 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         catch
                         {
-                             // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
-                             // Плохо, но лучше пока не получается
+                            // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
+                            // Плохо, но лучше пока не получается
                         }
                         if (dm != null && dm.proper_methods != null && dm.proper_methods.Count > 0)
                         {
@@ -18420,11 +18426,16 @@ namespace PascalABCCompiler.TreeConverter
             else if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count > 1 && _function_lambda_definition.usedkeyword == 0)
             {
                 var rns = new LambdaHelper.ResultNodesSearcher(_function_lambda_definition.proc_body);
-                if (rns.exprList.Count==0) // Значит, это процедура, т.к. в блоке begin-end нет ни одного result := ...
+                if (rns.exprList.Count == 0) // Значит, это процедура, т.к. в блоке begin-end нет ни одного result := ...
                 {
                     _function_lambda_definition.return_type = null;
                 }
             }
+        }
+
+        public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)
+        {
+            MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(_function_lambda_definition);
 
             _function_lambda_definition.RealSemTypeOfResExpr = null; // После первого присваивания Result она будет содержать тип type_node в правой части Result
             _function_lambda_definition.RealSemTypeOfResult = null;
