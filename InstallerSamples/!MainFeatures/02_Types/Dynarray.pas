@@ -1,40 +1,24 @@
-// Процедуры и методы работы с динамическим массивом
-uses System;
-
-procedure Print(a: array of integer);
-begin
-  foreach v: integer in a do
-    Write(v, ' ');
-  Writeln;
-end;    
-
-var a: array of integer;
+﻿// Процедуры и методы работы с динамическим массивом
 
 begin
-  SetLength(a,10); // выделение памяти. А можно так: a := new integer[10];
-  
-  // Заполнение массива
-  for var i:=0 to a.Length-1 do
-    a[i] := PABCSystem.Random(100);
+  var a := ArrRandom(10);
   
   // Вывод всех элементов массива
-  Print(a);
+  a.Println;
   
-  // Сортировка массива (знак & используется для того,
-  // чтобы воспользоваться ключевым словом array при обозначении
-  // класса Array)
-  &Array.Sort(a);
-  Print(a);
+  // Сортировка массива 
+  a.Sort;
+  a.Println;
 
   // Обращение массива
-  &Array.Reverse(a);
-  Print(a);
+  a.Reverse;
+  a.Println;
 
   // Изменение размерамассиав с сохранением элементов. То же делает SetLength
-  &Array.Resize(a,a.Length+2);
-  Print(a);
+  a.Resize(a.Length+2);
+  a.Println;
 
   // Поиск вхождения элемента в массив
-  var i := &Array.IndexOf(a, 50);
+  var i := a.IndexOf(50);
   Writeln(i);
 end.
