@@ -1632,10 +1632,12 @@ namespace PascalABCCompiler.Parsers
             Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
             ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
             Type[] tt = scope.CompiledMethod.GetGenericArguments();
+            int gen_ind = 0;
             if (!scope.IsExtension)
                 sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
             else
             {
+                gen_ind = 1;
                 generic_param_args = new Dictionary<string, string>();
                 for (int i = 0; i < pis.Length; i++)
                 {
@@ -1661,7 +1663,7 @@ namespace PascalABCCompiler.Parsers
             if (scope.CompiledMethod.GetGenericArguments().Length > 0)
             {
                 sb.Append('<');
-                for (int i = 1; i < tt.Length; i++)
+                for (int i = gen_ind; i < tt.Length; i++)
                 {
                     if (class_generic_table.ContainsKey(tt[i].Name))
                     {

@@ -11833,6 +11833,15 @@ namespace PascalABCCompiler.TreeConverter
                     AddError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
             }
+            if (context.converted_type != null && context.converted_type.IsInterface)
+            {
+                if (body_exists)
+                {
+                    AddError(new InterfaceFunctionWithBody(get_location(_function_header)));
+                }
+                common_method_node cmnode = context.top_function as common_method_node;
+                context.set_virtual_abstract(cmnode);
+            }
             convertion_data_and_alghoritms.create_function_return_variable(context.top_function, si);
 
             /*if (_function_header.name != null && context.converted_compiled_type != null && context.top_function is common_namespace_function_node)
