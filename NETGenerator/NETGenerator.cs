@@ -1455,10 +1455,20 @@ namespace PascalABCCompiler.NETGenerator
                 ICommonClassFieldNode icfn = dn as ICommonClassFieldNode;
                 if (icfn != null)
                 {
-                    FieldInfo finfo = helper.GetField(icfn).fi;
-                    Type ftype = GetTypeOfGenericInstanceField(t, finfo);
-                    FieldInfo fi = TypeBuilder.GetField(t, finfo);
-                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    FldInfo fldinfo = helper.GetField(icfn);
+                    if (!(fldinfo is GenericFldInfo))
+                    {
+                        FieldInfo finfo = fldinfo.fi;
+                        Type ftype = GetTypeOfGenericInstanceField(t, finfo);
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    }
+                    else
+                    {
+                        FieldInfo finfo = fldinfo.fi;
+                        FieldInfo fi = finfo;
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type);
+                    }
                     continue;
                 }
             }
