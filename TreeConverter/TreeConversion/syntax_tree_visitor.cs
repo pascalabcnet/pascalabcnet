@@ -11442,8 +11442,11 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(context.top_function.loc, "IMPOSSIBLE!SHORT_FUNC_WITHOUT_BODY");
                             }
 
-                            statement_node aa = cd.statements[0];
-                            var bfc = cd.statements[0] as basic_function_call;
+                            // Проблема в том, что если в теле короткого определения функции - лямбда
+                            // и происходит захват переменной, то в тело выносится вызов конструктора сгенерированного класса
+                            // Поэтому result := ... - это не первый оператор, а последний!!!
+                            statement_node aa = cd.statements[cd.statements.Count-1];
+                            var bfc = aa as basic_function_call;
                             if (bfc != null)
                             {
                                 var ttt1 = bfc.type;
