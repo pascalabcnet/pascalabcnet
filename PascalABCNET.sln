@@ -55,7 +55,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETGenerator", "NETGenerato
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PABCNETC", "pabcnetc\PABCNETC.csproj", "{2AEF58A1-2BCF-4C4B-AB03-F44BBB2628E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxToSemanticTreeConverter", "TreeConverter\SyntaxToSemanticTreeConverter.csproj", "{1C9C945A-586D-42A2-A06B-65D84FA7FF78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TreeConverter", "TreeConverter\TreeConverter.csproj", "{1C9C945A-586D-42A2-A06B-65D84FA7FF78}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParserTools", "ParserTools\ParserTools.csproj", "{AF2EFD7B-69DD-4B43-AF65-B59B29349C23}"
 EndProject

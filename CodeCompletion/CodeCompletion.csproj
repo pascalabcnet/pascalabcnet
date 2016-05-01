@@ -98,9 +98,9 @@
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TreeConverter\SyntaxToSemanticTreeConverter.csproj">
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
       <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
-      <Name>SyntaxToSemanticTreeConverter</Name>
+      <Name>TreeConverter</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
