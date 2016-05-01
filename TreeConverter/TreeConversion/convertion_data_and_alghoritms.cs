@@ -299,18 +299,6 @@ namespace PascalABCCompiler.TreeConverter
 
             switch (fn.semantic_node_type)
             {
-                /*
-                case semantic_node_type.empty_function_node:
-				{
-#if (DEBUG)
-					if (exprs.Length!=1)
-					{
-						throw new CompilerInternalError("Epty functions with only single parameter allowed.");
-					}
-#endif
-					return exprs[0];
-				}
-                */
                 case semantic_node_type.basic_function_node:
                     {
                         return create_basic_function_call((basic_function_node)fn, loc, exprs);
@@ -411,16 +399,6 @@ namespace PascalABCCompiler.TreeConverter
         {
             function_node fn = select_function(exprs, si, loc);
 
-            /*
-            if (fn.compile_time_executor != null)
-            {
-                expression_node ex = fn.compile_time_executor(loc, exprs.ToArray());
-                if (ex != null)
-                {
-                    return ex;
-                }
-            }
-            */
             //allow_procedure = true;
             if ((!allow_procedure) && (fn.return_value_type == null))
             {
@@ -1577,38 +1555,6 @@ namespace PascalABCCompiler.TreeConverter
 		private void convert_function_call_expressions(function_node fn,expressions_list exprs,
 			possible_type_convertions_list ptcal)
 		{
-			/*if (SystemLibrary.SystemLibrary.syn_visitor.SystemUnitAssigned && fn.name != compiler_string_consts.assign_name && !SystemLibrary.SystemLibrary.syn_visitor.one_way_operation(fn.name) && SystemLibrary.SystemLibrary.syn_visitor.in_check_range_region())
-            {
-				for (int i=0; i<exprs.Count; i++)
-				{
-					if (exprs[i] is statements_expression_node)
-						break;
-					expression_node right = exprs[i];
-					if (fn.parameters.Count <= i)
-						break;
-					if (fn.parameters[i].parameter_type == parameter_type.var)
-						continue;
-					type_node left_type = fn.parameters[i].type;
-					
-					if (SystemLibrary.SystemLibrary.syn_visitor.is_range_checkable(left_type) && SystemLibrary.SystemLibrary.syn_visitor.is_range_checkable(exprs[i].type))
-					{
-						ordinal_type_interface oti = left_type.get_internal_interface(internal_interface_kind.ordinal_interface) as ordinal_type_interface;
-            			if (left_type != SystemLibrary.SystemLibrary.char_type) 
-            			if(!(oti.lower_value is enum_const_node) && !(oti.lower_value is char_const_node))
-            			right = SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.CheckRangeFunction.sym_info as common_namespace_function_node, null, SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(right,SystemLibrary.SystemLibrary.int64_type), 
-            				                                                                                                                                                                                               SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(oti.lower_value,SystemLibrary.SystemLibrary.int64_type),SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.convert_type(oti.upper_value,SystemLibrary.SystemLibrary.int64_type)),right.type);
-            			else if (oti.lower_value is enum_const_node)
-            			{
-            				right = SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.explicit_convert_type(SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.CheckRangeFunction.sym_info as common_namespace_function_node, null, SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.explicit_convert_type(right,SystemLibrary.SystemLibrary.int64_type),
-            		                                                                                                               SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.explicit_convert_type(oti.lower_value,SystemLibrary.SystemLibrary.int64_type),SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.explicit_convert_type(oti.upper_value,SystemLibrary.SystemLibrary.int64_type)),right.type);
-            			}
-            			else if (oti.lower_value is char_const_node)
-            			right = SystemLibrary.SystemLibrary.syn_visitor.convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.CheckCharRangeFunction.sym_info as common_namespace_function_node, null, right, oti.lower_value,oti.upper_value);
-					
-					}
-					exprs[i] = right;
-				}
-            }*/
 			for(int i=0;i<exprs.Count;i++)
 			{
                 if ((ptcal.snl != null) && (i >= fn.parameters.Count - 1))
@@ -1673,20 +1619,6 @@ namespace PascalABCCompiler.TreeConverter
 			
 		}
 
-        //public common_function_node find_eq_method_in_symbol_info(function_node fn,SymbolInfo si)
-        //{
-        //    while(si!=null)
-        //    {
-        //        common_function_node cfn=si.sym_info as common_function_node;
-        //        if (function_eq_params(cfn,fn))
-        //        {
-        //            return cfn;
-        //        }
-        //        si = si.Next;
-        //    }
-        //    return null;
-        //}
-
         private function_node find_eq_return_value_method_in_list(function_node fn, function_node_list funcs)
         {
             foreach (function_node f in funcs)
@@ -1732,11 +1664,6 @@ namespace PascalABCCompiler.TreeConverter
 		public function_node is_exist_eq_method_in_list(function_node fn,function_node_list funcs)
 		{
 			return find_eq_method_in_list(fn,funcs);
-			/*if (fn==null)
-			{
-				return false;
-			}
-			return true;*/
 		}
 
 		public void init_reference_type(type_node ctn)
@@ -2104,11 +2031,6 @@ namespace PascalABCCompiler.TreeConverter
         {
             fn = find_eq_return_value_method_in_list(fn, funcs);
             return fn;
-            /*if (fn == null)
-            {
-                return false;
-            }
-            return true;*/
         }
 
 		private string get_return_variable_name(string function_name)
