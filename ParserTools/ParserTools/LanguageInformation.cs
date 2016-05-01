@@ -339,18 +339,18 @@ namespace PascalABCCompiler.Parsers
     {
         public string name;
         public string addit_name;
-        public string describe;
+        public string description;
         public SymbolKind kind;
         public bool IsUnitNamespace = false;
         public access_modifer acc_mod;
         public bool has_doc = false;
         public bool not_include = false;
 
-        public SymInfo(string name, SymbolKind kind, string describe)
+        public SymInfo(string name, SymbolKind kind, string description)
         {
             this.name = name;
             this.kind = kind;
-            this.describe = describe;
+            this.description = description;
         }
     }
 

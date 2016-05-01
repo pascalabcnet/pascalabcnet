@@ -932,28 +932,22 @@ namespace CodeCompletion
                             ss.AddDocumentation(AssemblyDocCache.GetDocumentationForNamespace((ss as NamespaceScope).name));
                         else if (ss is TypeScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as TypeScope));
-                        /*else if (ss is ElementScope)
-                        {
-                            if ((ss as ElementScope).sc is CompiledScope)
-                                ss.AddDocumentation(AssemblyDocCache.GetDocumentation(((ss as ElementScope).sc as CompiledScope).ctn));
-                            else if ((ss as ElementScope).sc is TypeScope)
-                                ss.AddDocumentation(UnitDocCache.GetDocumentation(((ss as ElementScope).sc as TypeScope)));
-                            else
-                                ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as ElementScope));
-                        }*/
                         else if (ss is ProcScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as ProcScope));
                         else if (ss is InterfaceUnitScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
-                        else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.describe) && (ss as ElementScope).sc is TypeScope)
-                            ss.si.describe = (ss as ElementScope).sc.Description;
+                        else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
+                            ss.si.description = (ss as ElementScope).sc.Description;
         		}
         		catch (Exception e)
         		{
         			
         		}
                 RestoreCurrentUsedAssemblies();
-        		return ss.si.describe;
+                string description = ss.si.description;
+                if (description != null)
+                    description = description.Replace("!#","");
+        		return description;
         	}
             RestoreCurrentUsedAssemblies();
         	return null;
@@ -1060,7 +1054,7 @@ namespace CodeCompletion
         					if (ev.IsInOneModule(ev.entry_scope,ps.topScope))
         						if (!ps.si.not_include && !equal_params(ps,proc_defs))
         						{
-        							procs.Add(ps.si.describe);
+        							procs.Add(ps.si.description);
         							proc_defs.Add(ps);
         						}
         				}
@@ -1068,7 +1062,7 @@ namespace CodeCompletion
         				if (ev.CheckForBaseAccess(ev.entry_scope,ps.topScope))
         					if (!ps.si.not_include && !equal_params(ps,proc_defs))
         					{
-        						procs.Add(ps.si.describe);
+        						procs.Add(ps.si.description);
         						proc_defs.Add(ps);
         					}
         			}
@@ -1085,7 +1079,7 @@ namespace CodeCompletion
         			}*/
         			if (!equal_params(ps,proc_defs))
         			{
-        				procs.Add(ps.si.describe);
+        				procs.Add(ps.si.description);
         				proc_defs.Add(ps);
         			}
         			i++;

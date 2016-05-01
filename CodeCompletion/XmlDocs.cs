@@ -323,42 +323,42 @@ namespace CodeCompletion
                     {
                         case MemberTypes.TypeInfo:
                             si = doc_wait_list[mi];
-                            si.describe += "\n" + AssemblyDocCache.GetDocumentation(mi as Type);
+                            si.description += "\n" + AssemblyDocCache.GetDocumentation(mi as Type);
                             si.has_doc = true;
                             dispatcher.Update(si);
                             break;
                         case MemberTypes.Method:
                             si = doc_wait_list[mi];
                             MethodInfo meth = mi as MethodInfo;
-                            si.describe += "\n" + AssemblyDocCache.GetDocumentation(meth);//AssemblyDocCache.GetDocumentation(meth.DeclaringType.Assembly,"M:"+meth.DeclaringType.FullName+"."+meth.Name+GetParamNames(meth));
+                            si.description += "\n" + AssemblyDocCache.GetDocumentation(meth);//AssemblyDocCache.GetDocumentation(meth.DeclaringType.Assembly,"M:"+meth.DeclaringType.FullName+"."+meth.Name+GetParamNames(meth));
                             si.has_doc = true;
                             dispatcher.Update(si);
                             break;
                         case MemberTypes.Property:
                             si = doc_wait_list[mi];
                             PropertyInfo pi = mi as PropertyInfo;
-                            si.describe += "\n" + AssemblyDocCache.GetDocumentation(pi);//AssemblyDocCache.GetDocumentation(pi.DeclaringType.Assembly,"P:"+pi.DeclaringType.FullName+"."+pi.Name);
+                            si.description += "\n" + AssemblyDocCache.GetDocumentation(pi);//AssemblyDocCache.GetDocumentation(pi.DeclaringType.Assembly,"P:"+pi.DeclaringType.FullName+"."+pi.Name);
                             si.has_doc = true;
                             dispatcher.Update(si);
                             break;
                         case MemberTypes.Event:
                             si = doc_wait_list[mi];
                             EventInfo ei = mi as EventInfo;
-                            si.describe += "\n" + AssemblyDocCache.GetDocumentation(ei);//AssemblyDocCache.GetDocumentation(ei.DeclaringType.Assembly,"E:"+ei.DeclaringType.FullName+"."+ei.Name);
+                            si.description += "\n" + AssemblyDocCache.GetDocumentation(ei);//AssemblyDocCache.GetDocumentation(ei.DeclaringType.Assembly,"E:"+ei.DeclaringType.FullName+"."+ei.Name);
                             si.has_doc = true;
                             dispatcher.Update(si);
                             break;
                         case MemberTypes.Constructor:
                             si = doc_wait_list[mi];
                             ConstructorInfo ci = mi as ConstructorInfo;
-                            si.describe += "\n" + AssemblyDocCache.GetDocumentation(ci);//AssemblyDocCache.GetDocumentation(ci.DeclaringType.Assembly,"M:"+ci.DeclaringType.FullName+".#ctor"+GetParamNames(ci));
+                            si.description += "\n" + AssemblyDocCache.GetDocumentation(ci);//AssemblyDocCache.GetDocumentation(ci.DeclaringType.Assembly,"M:"+ci.DeclaringType.FullName+".#ctor"+GetParamNames(ci));
                             si.has_doc = true;
                             dispatcher.Update(si);
                             break;
                         case MemberTypes.Field:
                             si = doc_wait_list[mi];
                             FieldInfo fi = mi as FieldInfo;
-                            si.describe += "\n" + AssemblyDocCache.GetDocumentation(fi);//AssemblyDocCache.GetDocumentation(fi.DeclaringType.Assembly,"F:"+fi.DeclaringType.FullName+"."+fi.Name);
+                            si.description += "\n" + AssemblyDocCache.GetDocumentation(fi);//AssemblyDocCache.GetDocumentation(fi.DeclaringType.Assembly,"F:"+fi.DeclaringType.FullName+"."+fi.Name);
                             si.has_doc = true;
                             dispatcher.Update(si);
                             break;

@@ -357,7 +357,7 @@ namespace VisualPascalABC
                         if (cache.Contains(mi.name))
                             continue;
 
-                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.describe, ImagesProvider.GetPictureNum(mi), false);
+                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.description, ImagesProvider.GetPictureNum(mi), false);
                         if (!stop && data != null && string.Compare(mi.name, data.Text, true) == 0)
                         {
                             defaultCompletionElement = ddd;
@@ -483,7 +483,7 @@ namespace VisualPascalABC
                         if (cache.Contains(mi.name))
                             continue;
 
-                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.addit_name != null ? mi.addit_name : mi.name, mi.describe, ImagesProvider.GetPictureNum(mi), false);
+                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.addit_name != null ? mi.addit_name : mi.name, mi.description, ImagesProvider.GetPictureNum(mi), false);
 
                         disp.Add(mi, ddd);
                         resultList.Add(ddd);
@@ -567,7 +567,7 @@ namespace VisualPascalABC
                 {
                     foreach (SymInfo mi in mis)
                     {
-                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.describe, ImagesProvider.GetPictureNum(mi), true);
+                        UserDefaultCompletionData ddd = new UserDefaultCompletionData(mi.name, mi.description, ImagesProvider.GetPictureNum(mi), true);
                         lst.Add(ddd);
                     }
                 }

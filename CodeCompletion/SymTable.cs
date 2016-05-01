@@ -276,7 +276,7 @@ namespace CodeCompletion
         {
             get
             {
-                if (si != null) return si.describe;
+                if (si != null) return si.description;
                 return null;
             }
         }
@@ -419,7 +419,7 @@ namespace CodeCompletion
         public virtual string GetDescription()
         {
             if (si != null)
-                return si.describe;
+                return si.description;
             return "";
         }
 
@@ -511,7 +511,7 @@ namespace CodeCompletion
                         string s = doc.Substring(1);
                         if (s.Length >= 1 && s[0] == '-')
                         {
-                            si.describe = null;
+                            si.description = null;
                             si.has_doc = false;
                             si.not_include = true;
                             return;
@@ -520,23 +520,23 @@ namespace CodeCompletion
                         int end_ind = s.IndexOf('\n');
                         if (end_ind != -1)
                         {
-                            si.describe = s.Substring(0, end_ind);
+                            si.description = s.Substring(0, end_ind);
                             if (end_ind < s.Length - 1)
-                                si.describe += "\n" + AssemblyDocCache.GetNormalHint(s.Substring(end_ind + 1));
+                                si.description += "\n" + AssemblyDocCache.GetNormalHint(s.Substring(end_ind + 1));
                         }
                         else
-                            si.describe = s.Substring(0);
+                            si.description = s.Substring(0);
                         //si.describe = s.TrimStart(' ','\t');
                     }
                     else if (doc.Length > 0 && doc[0] == '<')
                     {
                         this.documentation = AssemblyDocCache.GetNormalHint(doc);
-                        si.describe += "\n" + this.documentation;
+                        si.description += "\n" + this.documentation;
                     }
                     else
                     {
 
-                        si.describe += "\n" + doc;
+                        si.description += "\n" + doc;
                     }
                     si.has_doc = true;
                 }
@@ -960,7 +960,7 @@ namespace CodeCompletion
         {
             UnitDocCache.AddDescribeToComplete(this);
             this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
-            si.describe = this.ToString();
+            si.description = this.ToString();
         }
 
         public override bool InUsesRange(int line, int column)
@@ -1268,7 +1268,7 @@ namespace CodeCompletion
 
         public void MakeDescription()
         {
-            si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
         }
 
         public virtual void AddIndexer(TypeScope ts)
@@ -1363,7 +1363,7 @@ namespace CodeCompletion
             this.top_mod_scope = top_mod_scope;
             if (def_proc != null)
                 this.topScope = def_proc.topScope;
-            this.si = new SymInfo(def_proc.si.name, def_proc.si.kind, def_proc.si.describe);
+            this.si = new SymInfo(def_proc.si.name, def_proc.si.kind, def_proc.si.description);
         }
 
         public override ScopeKind Kind
@@ -1886,15 +1886,15 @@ namespace CodeCompletion
         public override void MakeSynonimDescription()
         {
             //aliased = true;
-            si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
+            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
         }
 
         //zavershenie opisanija, vyzyvaetsja kogda parametry razobrany
         public void Complete()
         {
             if (documentation != null && documentation.Length > 0 && documentation[0] == '-') return;
-            this.si.describe = this.ToString();
-            if (documentation != null) this.si.describe += "\n" + this.documentation;
+            this.si.description = this.ToString();
+            if (documentation != null) this.si.description += "\n" + this.documentation;
         }
 
         public void AddTemplateParameter(string name)
@@ -2517,7 +2517,7 @@ namespace CodeCompletion
             this.declScope = declScope;
             this.topScope = declScope;
             this.name = name;
-            si.describe = name + " in " + declScope.si.name;
+            si.description = name + " in " + declScope.si.name;
         }
 
         public override TypeScope GetInstance(List<TypeScope> gen_args)
@@ -2547,8 +2547,8 @@ namespace CodeCompletion
         {
             this.actType = actType as TypeScope;
             this.si = si;
-            if (actType.si != null && actType.si.describe != null)
-                this.si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            if (actType.si != null && actType.si.description != null)
+                this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
             //this.si.describe = "type "+this.si.name + " = "+actType.si.name;
         }
 
@@ -2710,7 +2710,7 @@ namespace CodeCompletion
             if (len != null)
             {
                 this.si = new SymInfo("string", SymbolKind.Type, "string");
-                this.si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+                this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
             }
             else this.si = actType.si;
         }
@@ -3502,10 +3502,10 @@ namespace CodeCompletion
             //UnitDocCache.AddDescribeToComplete(this);
             switch (kind)
             {
-                case SymbolKind.Struct: si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Struct); break;
-                case SymbolKind.Class: si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Class); break;
-                case SymbolKind.Interface: si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Interface); break;
-                case SymbolKind.Enum: si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Enum); break;
+                case SymbolKind.Struct: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Struct); break;
+                case SymbolKind.Class: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Class); break;
+                case SymbolKind.Interface: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Interface); break;
+                case SymbolKind.Enum: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Enum); break;
             }
 
         }
@@ -3617,32 +3617,16 @@ namespace CodeCompletion
             if (members != null)
             {
                 bool has_def_constr = false;
-                ProcScope last_constr = null;
-                //SymScope cnstr_ss = this.FindNameOnlyInThisType("Create");
 
                 foreach (SymScope ss in members)
                     if (ss is ProcScope && (ss as ProcScope).is_constructor)
                     {
-                        /*if ((ss as ProcScope).parameters != null && (ss as ProcScope).parameters.Count==0)
-                        {
-                            has_def_constr = true;
-                            break;
-                        }
-                        else
-                        {
-                            //last_constr = ss as ProcScope;
-                        }*/
                         has_def_constr = true;
                     }
                 if (!has_def_constr)
                 {
                     ProcScope ps = new ProcScope("Create", this, true);
                     ps.Complete();
-                    /*if (cnstr_ss != null && cnstr_ss is ProcScope)
-                        //last_constr.nextProc = ps;
-                        ps.nextProc = cnstr_ss as ProcScope;
-                    //else*/
-                    //ps.si.name = this.si.name;
                     members.Insert(0, ps);
                 }
             }
@@ -3737,7 +3721,7 @@ namespace CodeCompletion
             }
             ts.si.name = this.si.name;
             ts.documentation = this.documentation;
-            ts.si.describe = ts.GetDescription();
+            ts.si.description = ts.GetDescription();
             return ts;
         }
 
@@ -3753,7 +3737,7 @@ namespace CodeCompletion
             }
             ts.si.name = this.si.name;
             ts.documentation = this.documentation;
-            ts.si.describe = ts.GetDescription();
+            ts.si.description = ts.GetDescription();
             if (this.elementType != null)
             {
                 ts.elementType = internalInstance(this.elementType, gen_args);
@@ -3855,7 +3839,7 @@ namespace CodeCompletion
         public override void MakeSynonimDescription()
         {
             aliased = true;
-            si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
+            si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetSynonimDescription(this);
         }
 
         public virtual bool IsConvertable(TypeScope ts)
@@ -4160,6 +4144,8 @@ namespace CodeCompletion
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
             }
+            if (this.documentation != null && this.documentation.Contains("!#") && baseScope is CompiledScope)
+                return lst.ToArray();
             if (baseScope != null)
             {
                 lst.AddRange(baseScope.GetNamesAsInObject(ev));
@@ -4167,8 +4153,6 @@ namespace CodeCompletion
             if (implemented_interfaces != null)
                 foreach (TypeScope ts in implemented_interfaces)
                     lst.AddRange(ts.GetNamesAsInObject(ev));
-            /*if (topScope != null)
-                lst.AddRange(topScope.GetNames());*/
             return lst.ToArray();
         }
 
@@ -4348,7 +4332,7 @@ namespace CodeCompletion
         {
             this.name = name;
             this.si = new SymInfo(name, SymbolKind.Namespace, name);
-            this.si.describe = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
         }
 
         public override ScopeKind Kind
@@ -4631,7 +4615,7 @@ namespace CodeCompletion
                 AssemblyDocCache.AddDescribeToComplete(this.si, ctn);
             this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
             this.si.kind = get_kind();
-            this.si.describe = GetDescription();
+            this.si.description = GetDescription();
             if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
             {
                 this.original_type = TypeTable.get_compiled_type(null, ctn.GetGenericTypeDefinition());
@@ -4688,7 +4672,7 @@ namespace CodeCompletion
                         typ.AddGenericInstanciation(ts);
                     }
                 }
-                typ.si.describe = typ.GetDescription();
+                typ.si.description = typ.GetDescription();
                 return typ;
             }
             return TypeTable.get_compiled_type(new SymInfo(t.Name, SymbolKind.Type, t.Name), t);
@@ -4797,7 +4781,7 @@ namespace CodeCompletion
                 if (t2 != null)
                     t = t2;
             }
-            CompiledScope sc = new CompiledScope(new SymInfo(si.name, si.kind, si.describe), t);
+            CompiledScope sc = new CompiledScope(new SymInfo(si.name, si.kind, si.description), t);
             sc.generic_params = new List<string>();
             sc.instances = new List<TypeScope>();
             sc.original_type = this;
@@ -4821,7 +4805,7 @@ namespace CodeCompletion
                     sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
                 }
-            sc.si.describe = sc.GetDescription();
+            sc.si.description = sc.GetDescription();
             return sc;
         }
 
@@ -6094,7 +6078,7 @@ namespace CodeCompletion
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, fi);
             this.si.name = fi.Name;
-            this.si.describe = this.ToString();
+            this.si.description = this.ToString();
             //this.si.describe += "\n"+AssemblyDocCache.GetDocumentation(fi.DeclaringType.Assembly,"F:"+fi.DeclaringType.FullName+"."+fi.Name);
             this.topScope = declaringType;
             if (fi.IsPrivate)
@@ -6137,7 +6121,7 @@ namespace CodeCompletion
                 AssemblyDocCache.AddDescribeToComplete(this.si, fi);
             this.si.name = fi.Name;
             this.is_global = is_global;
-            this.si.describe = this.ToString();
+            this.si.description = this.ToString();
             //this.si.describe += "\n"+AssemblyDocCache.GetDocumentation(fi.DeclaringType.Assembly,"F:"+fi.DeclaringType.FullName+"."+fi.Name);
             this.topScope = declaringType;
             if (fi.IsPrivate)
@@ -6231,7 +6215,7 @@ namespace CodeCompletion
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, ei);
             this.si.name = ei.Name;
-            this.si.describe = this.ToString();
+            this.si.description = this.ToString();
             this.topScope = declaringType;
             MethodInfo acc_mi = ei.GetAddMethod(true);
             is_static = acc_mi.IsStatic;
@@ -6356,7 +6340,7 @@ namespace CodeCompletion
                     this.acc_mod = access_modifer.internal_modifer;
                     this.si.acc_mod = access_modifer.internal_modifer;
                 }
-            this.si.describe = this.ToString();
+            this.si.description = this.ToString();
         }
 
         public override ScopeKind Kind
@@ -6470,7 +6454,7 @@ namespace CodeCompletion
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, mi);
             this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
-            this.si.describe = this.ToString();
+            this.si.description = this.ToString();
             //this.si.describe += "\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+"."+mi.Name+GetParamNames());
             this.topScope = declaringType;
             if (mi.IsPrivate)
@@ -6513,7 +6497,7 @@ namespace CodeCompletion
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, mi);
             this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
-            this.si.describe = this.ToString();
+            this.si.description = this.ToString();
             //this.si.describe += "\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+"."+mi.Name+GetParamNames());
             this.topScope = declaringType;
             if (mi.IsPrivate)
@@ -6699,7 +6683,7 @@ namespace CodeCompletion
                 parameters.Add(new CompiledParameterScope(new SymInfo(pi.Name, SymbolKind.Parameter, pi.Name), pi));
 
             this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
-            this.si.describe = this.ToString();//+"\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+".#ctor"+GetParamNames());
+            this.si.description = this.ToString();//+"\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+".#ctor"+GetParamNames());
             this.topScope = declaringType;
             if (mi.IsPrivate)
             {
@@ -7001,7 +6985,7 @@ namespace CodeCompletion
 
         public override string ToString()
         {
-            return si.describe;
+            return si.description;
         }
     }
     /*public class ClassScope : BaseScope

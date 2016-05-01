@@ -78,6 +78,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		{
 			this.text        = text;
 			this.description = description;
+            if (this.description != null)
+                this.description = this.description.Replace("!#","");
 			this.imageIndex  = imageIndex;
 			this.IsOnOverrideWindow = is_in_override_window;
             this.isExtension = is_extension;

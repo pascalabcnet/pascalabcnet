@@ -85,7 +85,7 @@ namespace VisualPascalABC
     		ICompletionData val=null;
     		if (dict.TryGetValue(si,out val))
     		{
-    			val.Description = si.describe;
+    			val.Description = si.description;
     		}
 		}
     }
