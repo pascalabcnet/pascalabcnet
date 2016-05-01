@@ -161,6 +161,7 @@ using System.CodeDom.Compiler;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
 using System.Reflection;
+using SyntaxTreeChanger;
 
 
 namespace PascalABCCompiler
@@ -662,11 +663,6 @@ namespace PascalABCCompiler
 
     public delegate void ChangeCompilerStateEventDelegate(ICompiler sender, CompilerState State, string FileName);
         
-    public interface ISyntaxTreeChanger
-    {
-        void Change(SyntaxTree.syntax_tree_node root);
-    }
-
     public class Compiler : MarshalByRefObject, ICompiler
 	{
         public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
@@ -917,13 +913,17 @@ namespace PascalABCCompiler
 
         public Compiler()
         {
+            SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange();
+
             OnChangeCompilerState += ChangeCompilerStateEvent;
             Reload();            
         }
         
         public Compiler(ICompiler comp, SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
         {
-        	this.ParsersController = comp.ParsersController;
+            SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange(); // SSM 01/05/16 - подключение изменяльщика синтаксического дерева
+
+            this.ParsersController = comp.ParsersController;
         	this.internalDebug = comp.InternalDebug;
         	OnChangeCompilerState += ChangeCompilerStateEvent;
         	if (SourceFilesProvider != null)

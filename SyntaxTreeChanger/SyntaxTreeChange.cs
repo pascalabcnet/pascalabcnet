@@ -7,6 +7,11 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxTreeChanger
 {
+    public interface ISyntaxTreeChanger
+    {
+        void Change(syntax_tree_node root);
+    }
+
     public class SyntaxTreeChange: ISyntaxTreeChanger
     {
         public void Change(syntax_tree_node root)
