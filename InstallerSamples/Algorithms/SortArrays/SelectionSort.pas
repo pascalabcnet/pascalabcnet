@@ -16,13 +16,6 @@ begin
   end;
 end;
 
-function CreateRandomArr(n: integer): array of real; 
-begin
-  Result := new real[n];
-  for var i:=0 to Result.Length-1 do
-    Result[i] := Random(100);
-end;
-
 begin
   var a := ArrRandomReal(20);
   writeln('Содержимое массива: ');

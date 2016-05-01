@@ -133,9 +133,9 @@
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\TreeConverter\TreeConverter.csproj">
+    <ProjectReference Include="..\..\TreeConverter\SyntaxToSemanticTreeConverter.csproj">
       <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
-      <Name>TreeConverter</Name>
+      <Name>SyntaxToSemanticTreeConverter</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

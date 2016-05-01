@@ -664,7 +664,7 @@ namespace PascalABCCompiler
         
     public interface ISyntaxTreeChanger
     {
-        void Change(SyntaxTree.syntax_tree_node sn);
+        void Change(SyntaxTree.syntax_tree_node root);
     }
 
     public class Compiler : MarshalByRefObject, ICompiler
