@@ -2300,6 +2300,12 @@ namespace PascalABCCompiler.Parsers
         		sb.Insert(0,Text[i]);
         		i--;
         	}
+            while (i >= 0 && char.IsWhiteSpace(Text[i]))
+            {
+                i--;
+            }
+            if (i >= 0 && (Text[i] == '.' || Text[i] == '&'))
+                sb.Insert(0, Text[i]);
         	string s = sb.ToString().ToLower();
         	if (s == "new")
         	{
@@ -2785,80 +2791,80 @@ namespace PascalABCCompiler.Parsers
         	}
             return null;
 		}
-		
-		public virtual KeywordKind TestForKeyword(string Text, int i)
-		{
-			StringBuilder sb = new StringBuilder();
-        	int j = i;
-        	bool in_keyw = false;
-        	while (j >= 0 && Text[j] != '\n')
-        		j--;
-        	Stack<char> kav_stack = new Stack<char>();
-        	j++;
-        	while (j <= i)
-        	{
-        		if (Text[j] == '\'')
-        		{
-        			if (kav_stack.Count == 0 && !in_keyw)
-        				kav_stack.Push('\'');
-        			else if (kav_stack.Count > 0)
-        				kav_stack.Pop();
-        		}
-        		else if (Text[j] == '{' && kav_stack.Count == 0)
-        			in_keyw = true;
-        		else
-        			if (Text[j] == '}')
-        			in_keyw = false;
-        		j++;
-        	}
-        	j=i;
-        	if (kav_stack.Count != 0 || in_keyw) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        	if (j >= 0 && Text[j] == '.') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        	while (j >= 0)
-        	{
-        		//if (Text[j] == '{') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        		if (!in_keyw && (Text[j] == '\'' || Text[j] == '\n'))
-        			break;
-        		if (Text[j] == '}')
-        			in_keyw = true;
-        		else
-        		if (Text[j] == '/' && !in_keyw) 
-        			if (j > 0 && Text[j-1] == '/') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        		j--;
-        	}
-        	//if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
-        	while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]))) i--;
-        	if (i >= 0 && Text[i] == ':') return PascalABCCompiler.Parsers.KeywordKind.Colon;
-        	
-        	if (i>=0 && Text[i] == ',')
-        	{
-        		
-        		while (i >= 0 && Text[i] != '\n')
-        		{
-        			if (char.IsLetterOrDigit(Text[i]))
-        			sb.Insert(0,Text[i]);
-        			else 
-        			{
-        				PascalABCCompiler.Parsers.KeywordKind keyw = GetKeywordKind(sb.ToString());
-        				if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
-        				return PascalABCCompiler.Parsers.KeywordKind.Uses;
-        				else if (keyw == PascalABCCompiler.Parsers.KeywordKind.Var)
-        				return PascalABCCompiler.Parsers.KeywordKind.Var;
-        				else sb.Remove(0,sb.Length);
-        			}
-        			i--;
-        		}
-        	}
-        	else
-        	while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
-        	{
-        		sb.Insert(0,Text[i]);
-        		i--;
-        	}
-        	string s = sb.ToString().ToLower();
-        	
-        	return GetKeywordKind(s);
-		}
+
+        public virtual KeywordKind TestForKeyword(string Text, int i)
+        {
+            StringBuilder sb = new StringBuilder();
+            int j = i;
+            bool in_keyw = false;
+            while (j >= 0 && Text[j] != '\n')
+                j--;
+            Stack<char> kav_stack = new Stack<char>();
+            j++;
+            while (j <= i)
+            {
+                if (Text[j] == '\'')
+                {
+                    if (kav_stack.Count == 0 && !in_keyw)
+                        kav_stack.Push('\'');
+                    else if (kav_stack.Count > 0)
+                        kav_stack.Pop();
+                }
+                else if (Text[j] == '{' && kav_stack.Count == 0)
+                    in_keyw = true;
+                else
+                    if (Text[j] == '}')
+                    in_keyw = false;
+                j++;
+            }
+            j = i;
+            if (kav_stack.Count != 0 || in_keyw) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+            if (j >= 0 && Text[j] == '.') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+            while (j >= 0)
+            {
+                //if (Text[j] == '{') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                if (!in_keyw && (Text[j] == '\'' || Text[j] == '\n'))
+                    break;
+                if (Text[j] == '}')
+                    in_keyw = true;
+                else
+                if (Text[j] == '/' && !in_keyw)
+                    if (j > 0 && Text[j - 1] == '/') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                j--;
+            }
+            //if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
+            while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]))) i--;
+            if (i >= 0 && Text[i] == ':') return PascalABCCompiler.Parsers.KeywordKind.Colon;
+
+            if (i >= 0 && Text[i] == ',')
+            {
+
+                while (i >= 0 && Text[i] != '\n')
+                {
+                    if (char.IsLetterOrDigit(Text[i]))
+                        sb.Insert(0, Text[i]);
+                    else
+                    {
+                        PascalABCCompiler.Parsers.KeywordKind keyw = GetKeywordKind(sb.ToString());
+                        if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
+                            return PascalABCCompiler.Parsers.KeywordKind.Uses;
+                        else if (keyw == PascalABCCompiler.Parsers.KeywordKind.Var)
+                            return PascalABCCompiler.Parsers.KeywordKind.Var;
+                        else sb.Remove(0, sb.Length);
+                    }
+                    i--;
+                }
+            }
+            else
+                while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
+                {
+                    sb.Insert(0, Text[i]);
+                    i--;
+                }
+            string s = sb.ToString().ToLower();
+
+            return GetKeywordKind(s);
+        }
 		
 		public virtual string SkipNew(int off, string Text, ref KeywordKind keyw)
         {
