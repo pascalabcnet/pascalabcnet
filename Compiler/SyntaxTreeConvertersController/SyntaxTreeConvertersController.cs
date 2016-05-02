@@ -1,6 +1,7 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -42,7 +43,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         private void AddConverters(string DirectoryName)
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
-            FileInfo[] dllfiles = di.GetFiles("*ConversionSyntax.dll");
+            List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntax.dll").ToList();
+            dllfiles.Add(new FileInfo("SyntaxTreeConverters.dll"));
+
             System.Reflection.Assembly assembly = null;
             ISyntaxTreeConverter Converter;
             foreach (FileInfo fi in dllfiles)
