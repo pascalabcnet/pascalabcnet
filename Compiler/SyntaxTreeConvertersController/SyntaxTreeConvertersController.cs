@@ -4,10 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.SyntaxTreeConverters;
 
-namespace PascalABCCompiler.SemanticTreeConverters
+namespace PascalABCCompiler.SyntaxTreeConverters
 {
-    public class SemanticTreeConvertersController
+    public class SyntaxTreeConvertersController
     {
         public enum State
         {
@@ -15,20 +17,20 @@ namespace PascalABCCompiler.SemanticTreeConverters
         }
         ICompiler Compiler;
 
-        private List<ISemanticTreeConverter> semanticTreeConverters = new List<ISemanticTreeConverter>();
-        public List<ISemanticTreeConverter> SemanticTreeConverters
+        private List<ISyntaxTreeConverter> syntaxTreeConverters = new List<ISyntaxTreeConverter>();
+        public List<ISyntaxTreeConverter> SyntaxTreeConverters
         {
             get
             {
-                return semanticTreeConverters;
+                return syntaxTreeConverters;
             }
         }
 
-        public delegate void ChangeStateDelegate(State State, ISemanticTreeConverter SemanticTreeConverter);
+        public delegate void ChangeStateDelegate(State State, ISyntaxTreeConverter SyntaxTreeConverter);
         public event ChangeStateDelegate ChangeState;
 
 
-        public SemanticTreeConvertersController(ICompiler Compiler)
+        public SyntaxTreeConvertersController(ICompiler Compiler)
         {
             this.Compiler = Compiler;
         }
@@ -40,9 +42,9 @@ namespace PascalABCCompiler.SemanticTreeConverters
         private void AddConverters(string DirectoryName)
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
-            FileInfo[] dllfiles = di.GetFiles("*Conversion.dll");
+            FileInfo[] dllfiles = di.GetFiles("*ConversionSyntax.dll");
             System.Reflection.Assembly assembly = null;
-            ISemanticTreeConverter Converter;
+            ISyntaxTreeConverter Converter;
             foreach (FileInfo fi in dllfiles)
             {
                 try
@@ -55,13 +57,13 @@ namespace PascalABCCompiler.SemanticTreeConverters
                             Type[] types = assembly.GetTypes();
                             foreach (Type type in types)
                             {
-                                if (type.Name.IndexOf("SemanticTreeConverter") >= 0 && type.IsClass)
+                                if (type.Name.IndexOf("SyntaxTreeConverter") >= 0 && type.IsClass)
                                 {
                                     Object obj = Activator.CreateInstance(type);
-                                    if (obj is ISemanticTreeConverter)
+                                    if (obj is ISyntaxTreeConverter)
                                     {
-                                        Converter = obj as ISemanticTreeConverter;
-                                        semanticTreeConverters.Add(Converter);
+                                        Converter = obj as ISyntaxTreeConverter;
+                                        syntaxTreeConverters.Add(Converter);
                                         ChangeState(State.ConnectConverter, Converter);
                                     }
                                 }
@@ -82,14 +84,14 @@ namespace PascalABCCompiler.SemanticTreeConverters
 
         }
 
-        public SemanticTree.IProgramNode Convert(SemanticTree.IProgramNode ProgramNode)
+        public syntax_tree_node Convert(syntax_tree_node root)
         {
-            foreach (ISemanticTreeConverter SemanticTreeConverter in semanticTreeConverters)
+            foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)
             {
-                ChangeState(State.Convert, SemanticTreeConverter);
-                ProgramNode = SemanticTreeConverter.Convert(Compiler, ProgramNode);
+                ChangeState(State.Convert, SyntaxTreeConverter);
+                root = SyntaxTreeConverter.Convert(root);
             }
-            return ProgramNode;
+            return root;
         }
     }
 }

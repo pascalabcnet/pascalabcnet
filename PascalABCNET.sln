@@ -93,7 +93,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PascalABCSaushkinParser", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DA0402DA-D618-47B4-8BF0-2959D16F2160}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeChanger", "SyntaxTreeChanger\SyntaxTreeChanger.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyntaxTreeConverters", "SyntaxTreeConverters\SyntaxTreeConverters.csproj", "{F10A5330-DCF4-4533-877C-7B1B1BE23884}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
