@@ -2524,6 +2524,11 @@ namespace CodeCompletion
         	SymScope[] names = returned_scopes.ToArray();
             List<expression> parameters = new List<expression>();
             TypeScope obj = null;
+            if (names.Length > 0 && names[0] is TypeScope)
+            {
+                returned_scope = names[0];
+                return;
+            }
             foreach (SymScope ss in names)
             {
                 if (ss is ProcScope && (ss as ProcScope).is_extension)

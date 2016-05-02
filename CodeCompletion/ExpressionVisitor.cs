@@ -893,7 +893,12 @@ namespace CodeCompletion
 				returned_scope = names[0];
 				return;
 			}
-			ProcScope ps = select_method(names,_method_call.parameters!=null?_method_call.parameters.expressions.ToArray():null);
+            if (names.Length > 0 && names[0] is TypeScope)
+            {
+                returned_scope = names[0];
+                return;
+            }
+            ProcScope ps = select_method(names,_method_call.parameters!=null?_method_call.parameters.expressions.ToArray():null);
 			returned_scope = ps;
 			if (ps == null && names.Length > 0)
         	{
