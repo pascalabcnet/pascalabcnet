@@ -279,6 +279,13 @@ namespace CodeCompletion
                 returned_scope = null;
                 //if (any_order) ret_scope = entry_scope.FindNameInAnyOrder(_ident.name);
                 returned_scope = entry_scope.FindName(_ident.name);
+                if (returned_scope is ProcScope && (returned_scope as ProcScope).parameters.Count != 0)
+                {
+                    returned_scopes = entry_scope.FindOverloadNames(_ident.name);
+                    returned_scope = returned_scopes.Find(x => x is ProcScope && (x as ProcScope).parameters.Count == 0);
+                    if (returned_scope == null)
+                        returned_scope = returned_scopes[0];
+                }
                 if (returned_scope == null && entry_scope.topScope == null)
                 {
                     try

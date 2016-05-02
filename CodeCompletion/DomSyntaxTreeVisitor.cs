@@ -332,11 +332,19 @@ namespace CodeCompletion
                 }
                 else
                     if (returned_scope is ProcScope)
+                    { 
                         if ((returned_scope as ProcScope).parameters.Count == 0)
                             returned_scope = (returned_scope as ProcScope).return_type;
-                    else
-                        if (returned_scope is TypeScope)
-                            is_type = true;
+                        else
+                        {
+                            returned_scopes = cur_scope.FindOverloadNames(_ident.name);
+                            returned_scope = returned_scopes.Find(x => x is ProcScope && (x as ProcScope).parameters.Count == 0);
+                            if (returned_scope == null)
+                                returned_scope = returned_scopes[0];
+                        }
+                    }
+                    else if (returned_scope is TypeScope)
+                        is_type = true;
         	}
         	else
         	{
@@ -2804,8 +2812,11 @@ namespace CodeCompletion
                     ProcScope ps = new ProcScope("Create", ss, true);
                     foreach (class_members members in _class_definition.body.class_def_blocks)
                     {
-                        foreach (var_def_statement vds in members.members)
+                        foreach (declaration decl in members.members)
                         {
+                            var_def_statement vds = decl as var_def_statement;
+                            if (vds == null)
+                                continue;
                             vds.vars_type.visit(this);
                             foreach (ident id in vds.vars.list)
                             {
