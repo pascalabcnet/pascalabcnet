@@ -112,50 +112,52 @@ namespace CodeCompletion
 			return returned_scope;
 		}
 
-		public List<ProcScope> GetOverloadScopes()
-		{
-			if (expr is const_node && !(expr is string_const) && !(expr is char_const) && !(expr is bool_const))
-				return null;
-			this.search_all = true;
-			this.on_bracket = true;
-			List<ProcScope> proces = new List<ProcScope>();
-			try
-			{
-				expr.visit(this);
-			}
-			catch (Exception e)
-			{
-				returned_scope = null;
-			}
-			if (returned_scopes != null)
-			for (int i=0; i<returned_scopes.Count; i++)
-			{
-				if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcScope) 
-				{
-					ProcScope tmp = (returned_scopes[i] as ElementScope).sc as ProcScope;
-					if (tmp != null)
-						proces.Add(tmp);
-				}
-				else
-        		if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcType) 
-        		{
-        			ProcScope tmp = ((returned_scopes[i] as ElementScope).sc as ProcType).target;
-        			if (tmp != null)
-						proces.Add(tmp);
-        		}
-				else if (returned_scopes[i] is ProcScope)
-					proces.Add(returned_scopes[i] as ProcScope);
-                else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
+        public List<ProcScope> GetOverloadScopes()
+        {
+            if (expr is const_node && !(expr is string_const) && !(expr is char_const) && !(expr is bool_const))
+                return null;
+            this.search_all = true;
+            this.on_bracket = true;
+            List<ProcScope> proces = new List<ProcScope>();
+            try
+            {
+                expr.visit(this);
+            }
+            catch (Exception e)
+            {
+                returned_scope = null;
+            }
+            if (returned_scopes != null)
+                for (int i = 0; i < returned_scopes.Count; i++)
                 {
-                    //ProcType pt = new ProcType();
-                    CompiledScope cs = (returned_scopes[i] as ElementScope).sc as CompiledScope;
-                    ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
-                    if (ps != null)
-                        proces.Add(ps);
+                    if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcScope)
+                    {
+                        ProcScope tmp = (returned_scopes[i] as ElementScope).sc as ProcScope;
+                        if (tmp != null)
+                            proces.Add(tmp);
+                    }
+                    else
+                    if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcType)
+                    {
+                        ProcScope tmp = ((returned_scopes[i] as ElementScope).sc as ProcType).target;
+                        if (tmp != null)
+                            proces.Add(tmp);
+                    }
+                    else if (returned_scopes[i] is ProcScope)
+                        proces.Add(returned_scopes[i] as ProcScope);
+                    else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
+                    {
+                        //ProcType pt = new ProcType();
+                        CompiledScope cs = (returned_scopes[i] as ElementScope).sc as CompiledScope;
+                        ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
+                        if (ps != null)
+                            proces.Add(ps);
+                    }
+                    else if (i == 0)
+                        return proces;
                 }
-			}
-			return proces;
-		}
+            return proces;
+        }
 		
         public override void visit(default_operator node)
         {
