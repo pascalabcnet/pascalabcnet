@@ -1928,7 +1928,7 @@ namespace PascalABCCompiler.Parsers
 		
 		protected virtual string GetDescriptionForShortString(IShortStringScope scope)
 		{
-			return "string "+"["+scope.Length+"]";
+			return "string"+"["+scope.Length+"]";
 		}
 		
 		public string GetSynonimDescription(ITypeScope scope)
