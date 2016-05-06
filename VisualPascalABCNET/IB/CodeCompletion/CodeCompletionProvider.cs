@@ -248,9 +248,9 @@ namespace VisualPascalABC
                         {
                             dc = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                             CodeCompletion.ReferenceFinder rf = null;
-                            if (dc != null && dc.stv.entry_scope != null)
+                            if (dc != null && dc.visitor.entry_scope != null)
                             {
-                                rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.stv.entry_scope, cu, FileName, for_refact);
+                                rf = new CodeCompletion.ReferenceFinder(fnd_scope, dc.visitor.entry_scope, cu, FileName, for_refact);
                                 lst.AddRange(rf.FindPositions());
                             }
                         }

@@ -854,7 +854,7 @@ namespace PascalABCCompiler.Parsers
 				sb.Append('>');*/
 				return sb.ToString();
 			}
-			//if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
+			if (ctn.IsArray) return "array of "+GetShortTypeName(ctn.GetElementType());
 			//if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
 			return ctn.Name;
 		}
@@ -2616,8 +2616,14 @@ namespace PascalABCCompiler.Parsers
             return sb.ToString();
 
         }
-		
-		public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
+
+        public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
+        {
+            KeywordKind keyw = KeywordKind.None;
+            return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
+        }
+
+        public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
 		{
 			int i = off-1;
 			expr_without_brackets = null;

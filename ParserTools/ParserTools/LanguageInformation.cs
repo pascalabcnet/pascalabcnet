@@ -83,10 +83,14 @@ namespace PascalABCCompiler.Parsers
     	/// Получить выражение в строке Text, до смещения off и возможно после смещения до конца идентификатора (используется при наведении мыши)
     	/// </summary>
     	string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets);
-    	/// <summary>
-    	/// Получить выражение в строке Text, до смещения off (используется при нажатии (, [, запятой)
+        /// <summary>
+    	/// Получить выражение в строке Text, до смещения off и возможно после смещения до конца идентификатора (используется при наведении мыши)
     	/// </summary>
-    	string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
+    	string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets);
+        /// <summary>
+        /// Получить выражение в строке Text, до смещения off (используется при нажатии (, [, запятой)
+        /// </summary>
+        string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
     	/// <summary>
     	/// Получить идентификатор
     	/// </summary>
