@@ -599,7 +599,7 @@ namespace PascalABCCompiler
         Ready, CompilationStarting, Reloading, ParserConnected,
         BeginCompileFile, BeginParsingFile, EndParsingFile, CompileInterface, CompileImplementation, EndCompileFile,
         ReadDLL, ReadPCUFile, SavePCUFile, CodeGeneration, CompilationFinished, PCUReadingError, PCUWritingError,
-        SemanticTreeConverterConnected, SemanticTreeConversion 
+        SemanticTreeConverterConnected, SemanticTreeConversion, SyntaxTreeConversion, SyntaxTreeConverterConnected
     }
 
     [Serializable()]
@@ -998,10 +998,10 @@ namespace PascalABCCompiler
             switch (State)
             {
                 case SyntaxTreeConvertersController.State.Convert:
-                    OnChangeCompilerState(this, CompilerState.SemanticTreeConversion, SyntaxTreeConverter.Name);
+                    OnChangeCompilerState(this, CompilerState.SyntaxTreeConversion, SyntaxTreeConverter.Name);
                     break;
                 case SyntaxTreeConvertersController.State.ConnectConverter:
-                    OnChangeCompilerState(this, CompilerState.SemanticTreeConverterConnected, SyntaxTreeConverter.Name);
+                    OnChangeCompilerState(this, CompilerState.SyntaxTreeConverterConnected, SyntaxTreeConverter.Name);
                     break;
             }
         }

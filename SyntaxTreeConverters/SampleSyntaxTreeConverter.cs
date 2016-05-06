@@ -7,13 +7,34 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
+    public class EmptyVisitor : BaseEnterExitVisitor
+    {
+        System.IO.StreamWriter fs;
+        DateTime d;
+        public EmptyVisitor()
+        {
+            fs = File.CreateText("logSampleVisitor.log");
+            d = DateTime.Now;
+        }
+        public override void Exit(syntax_tree_node st)
+        {
+            if (st.GetType() == typeof(program_module))
+            {
+                var t = (DateTime.Now - d).Milliseconds;
+                fs.WriteLine(t.ToString());
+                fs.Close();
+            }
+                
+        }
+    }
+
     public class SampleVisitor: BaseEnterExitVisitor
     {
         int Tabs = -2;
         System.IO.StreamWriter fs;
         public SampleVisitor()
         {
-            fs = File.CreateText("d:\\logSampleVisitor.log");
+            fs = File.CreateText("logSampleVisitor.log");
         }
 
         public string TabString
