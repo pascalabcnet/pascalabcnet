@@ -20,7 +20,7 @@ namespace CodeCompletion
     	{
     		TestExpressionExtract();
             //TestVBNETExpressionExtract();
-            TestIntellisense(Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests"));
+            //TestIntellisense(Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests"));
     	}
     	
         public static void TestIntellisense(string dir)

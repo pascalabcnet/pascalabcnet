@@ -8645,6 +8645,17 @@ begin
   Result := TruncBigInteger(Self);
 end;
 
+/// Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки
+function ToString(Self: real; frac: integer): string; extensionmethod;
+begin
+  if frac<0 then
+    raise new System.ArgumentOutOfRangeException('frac','frac<0');
+  if frac>=100 then
+    raise new System.ArgumentOutOfRangeException('frac','frac>=100');
+  Result := Format('{0:f'+frac+'}',Self)
+end;
+
+
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
 //------------------------------------------------------------------------------
