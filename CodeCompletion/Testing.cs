@@ -51,7 +51,10 @@ namespace CodeCompletion
                     var col = GetColByPos(lines, pos);
                     var desc = CodeCompletion.CodeCompletionTester.GetDescription(pos, tmp, line, col, FileName, dc, comp.ParsersController);
                     var should_desc = tmp.Substring(ind + 2, tmp.IndexOf("@}") - ind - 2);
-                    assert(desc == should_desc, FileName+" "+should_desc);
+                    if (desc == null)
+                        desc = "";
+                    desc = desc.Split(new string[] { "\n"},StringSplitOptions.None)[0].Trim();
+                    assert(desc == should_desc, FileName+", should: "+should_desc+", is: "+desc);
                     tmp = tmp.Remove(ind, tmp.IndexOf("@}") + 2 - ind);
                     ind = tmp.IndexOf("{@");
                 }

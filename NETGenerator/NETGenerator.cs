@@ -2345,7 +2345,7 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            if (funcs.Count > 0) il.Emit(OpCodes.Ldarga_S, (byte)(j + 1));
+                            if (funcs.Count > 0) il.Emit(OpCodes.Ldarg_S, (byte)(j + 1));
                             else il.Emit(OpCodes.Ldarg_S, (byte)j);
                         }
                         il.Emit(OpCodes.Stfld, fba[j]);

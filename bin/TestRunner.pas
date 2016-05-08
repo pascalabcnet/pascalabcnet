@@ -351,8 +351,8 @@ begin
     System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
     RunExpressionsExtractTests;
     writeln('Intellisense expression tests run successfully');
-    RunIntellisenseTests;
-    writeln('Intellisense tests run successfully');
+    //RunIntellisenseTests;
+    //writeln('Intellisense tests run successfully');
     RunFormatterTests;
     writeln('Formatter tests run successfully');
   except

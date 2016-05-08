@@ -1,3 +1,5 @@
+uses System.Text;
+
 type TClass = class
 end;
 
@@ -15,4 +17,5 @@ begin
   var t3: TArr2{@type TArr2 = array[,] of TArr@};
   var t4: TArr3{@type TArr3 = array[1..10] of string@};
   var t5: TStr{@type TStr = string[5]@};
+  var sb: StringBuilder{@final class System.Text.StringBuilder@};
 end.
