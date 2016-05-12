@@ -520,6 +520,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class procedure_definition
     {
+        public bool has_yield = false;
         public procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)
         {
             this.proc_header = proc_header;
