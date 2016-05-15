@@ -12625,7 +12625,9 @@ namespace PascalABCCompiler.TreeConverter
             {
             	basic_function_call cnfc=expr as basic_function_call;
                 //if (cnfc.function_node.namespace_node == context.converted_namespace)
-                  //  throw new ConstantExpressionExpected(loc);
+                //  throw new ConstantExpressionExpected(loc);
+                foreach (expression_node el in cnfc.parameters)
+                        convert_strong_to_constant_node(el, el.type);
                 constant = new basic_function_call_as_constant(expr as basic_function_call, loc);
             }
             else if (expr is typed_expression)

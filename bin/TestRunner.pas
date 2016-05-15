@@ -52,8 +52,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count = 0 then
     begin
-      //System.Windows.Forms.MessageBox.Show('Compilation of error sample '+files[i]+' was successfull'+System.Environment.NewLine);
-      //Halt();
+      System.Windows.Forms.MessageBox.Show('Compilation of error sample '+files[i]+' was successfull'+System.Environment.NewLine);
+      Halt();
     end
     else if comp.ErrorsList.Count = 1 then
     begin
