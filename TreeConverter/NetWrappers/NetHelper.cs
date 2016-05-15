@@ -2179,6 +2179,10 @@ namespace PascalABCCompiler.NetHelper
                     return new char_const_node((char)val, null);
                 if (t == typeof(string))
                     return new string_const_node((string)val, null);
+                if (t == typeof(double))
+                    return new double_const_node((double)val, null);
+                if (t == typeof(float))
+                    return new double_const_node((float)val, null);
                 if (t.IsEnum)
                     return new enum_const_node(Convert.ToInt32(val), compiled_type_node.get_type_node(t), null);
             }

@@ -8677,7 +8677,8 @@ namespace PascalABCCompiler.TreeConverter
             function_node fn = bfc.simple_function_node;
             common_namespace_function_node cnfn = fn as common_namespace_function_node;
             if ((fn.parameters.Count == 1 || cnfn != null && fn.parameters.Count == 2 && cnfn.ConnectedToType != null)
-                && (fn.parameters[fn.parameters.Count - 1].is_params || fn.parameters[fn.parameters.Count - 1].default_value != null))
+                && (fn.parameters[fn.parameters.Count - 1].is_params || fn.parameters[fn.parameters.Count - 1].default_value != null)
+                || fn.parameters.Count > 0 && fn.num_of_default_parameters == fn.parameters.Count)
             {
                 fn = convertion_data_and_alghoritms.select_function(bfc.parameters, new SymbolInfo(fn), bfc.location);
                 if (fn.polymorphic_state == SemanticTree.polymorphic_state.ps_static || fn is common_namespace_function_node || fn is basic_function_node)

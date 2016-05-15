@@ -4066,11 +4066,15 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             funcs.Add(bfc.simple_function_node);
                         }
+                        if (cnfn.num_of_default_parameters == cnfn.parameters.Count)
+                            funcs.Add(bfc.simple_function_node);
                     }
                     else if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
                         if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))
+                            funcs.Add(bfc.simple_function_node);
+                        if (cfn.num_of_default_parameters == cfn.parameters.Count)
                             funcs.Add(bfc.simple_function_node);
                     }
                 }
@@ -4095,11 +4099,15 @@ namespace PascalABCCompiler.TreeRealization
                         {
                             return bfc;
                         }
+                        if (cnfn.num_of_default_parameters == cnfn.parameters.Count)
+                            return bfc;
                     }
                     else if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
                         if (cfn.ConnectedToType != null && (bfc.simple_function_node.parameters.Count == 1 || bfc.simple_function_node.parameters.Count == 2 && (bfc.simple_function_node.parameters[1].is_params || bfc.simple_function_node.parameters[1].default_value != null)))
+                            return bfc;
+                        if (cfn.num_of_default_parameters == cfn.parameters.Count)
                             return bfc;
                     }
                 }
@@ -4116,7 +4124,9 @@ namespace PascalABCCompiler.TreeRealization
         {
             foreach (base_function_call fn in _proper_methods)
             {
-                if (fn.simple_function_node.parameters.Count == 0 || (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
+                if (fn.simple_function_node.parameters.Count == 0
+                    || (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null 
+                            || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
                     && fn.simple_function_node.parameters.Count == 1 && !fn.simple_function_node.parameters[0].is_params)
                 {
                     if (fn.simple_function_node.return_value_type == ctn)
@@ -4200,6 +4210,32 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     copy_fn = get_function_call_copy(fn);
                     copy_fn.parameters.AddElement(fn.simple_function_node.parameters[param_num].default_value);
+                    expression_node ennew = type_table.type_table_function_call_maker(ptc.first.convertion_method, null, copy_fn);
+                    convert_function_to_function_call cftfc2 = new convert_function_to_function_call(ennew);
+                    return (new convert_types_function_node(cftfc2.compile_time_executor, false));
+                }
+                else if (fn.simple_function_node.parameters.Count == fn.simple_function_node.num_of_default_parameters)
+                {
+                    base_function_call copy_fn = get_function_call_copy(fn);
+                    if (fn.simple_function_node.return_value_type == ctn)
+                    {
+                        foreach (parameter p in fn.simple_function_node.parameters)
+                            copy_fn.parameters.AddElement(p.default_value);
+                        convert_function_to_function_call cftfc = new convert_function_to_function_call(copy_fn);
+                        return (new convert_types_function_node(cftfc.compile_time_executor, true));
+                    }
+                    if (fn.simple_function_node.return_value_type == null)
+                    {
+                        continue;
+                    }
+                    //TODO: Очень внимательно рассмотреть. Если преобразование типов должно идти через compile_time_executor.
+                    possible_type_convertions ptc = type_table.get_convertions(fn.simple_function_node.return_value_type, ctn);
+                    if ((ptc.first == null) || (ptc.first.convertion_method == null))
+                    {
+                        continue;
+                    }
+                    foreach (parameter p in fn.simple_function_node.parameters)
+                        copy_fn.parameters.AddElement(p.default_value);
                     expression_node ennew = type_table.type_table_function_call_maker(ptc.first.convertion_method, null, copy_fn);
                     convert_function_to_function_call cftfc2 = new convert_function_to_function_call(ennew);
                     return (new convert_types_function_node(cftfc2.compile_time_executor, false));
