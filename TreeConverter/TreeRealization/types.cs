@@ -3220,10 +3220,7 @@ namespace PascalABCCompiler.TreeRealization
                         if (si == null)
                             si = tmp_si;
                         else if (si.sym_info != tmp_si.sym_info)
-                        {
-                            tmp_si.Next = si;
-                            si = tmp_si;
-                        }
+                            si = AddToSymbolInfo(tmp_si, si, true);
                         clone = true;
                     }
                 }
@@ -3238,7 +3235,7 @@ namespace PascalABCCompiler.TreeRealization
                             if (si == null)
                                 si = tmp_si;
                             else if (si.sym_info != tmp_si.sym_info)
-                                si = AddToSymbolInfo(si, tmp_si);
+                                si = AddToSymbolInfo(si, tmp_si, true);
                             clone = true;
                         }
                     }
@@ -3258,7 +3255,7 @@ namespace PascalABCCompiler.TreeRealization
                         else
                         {
                             if (si.sym_info != tmp_si.sym_info)
-                                si = AddToSymbolInfo(si, tmp_si);
+                                si = AddToSymbolInfo(si, tmp_si, true);
                         }
                         clone = true;
                     }
@@ -3279,7 +3276,7 @@ namespace PascalABCCompiler.TreeRealization
                             else
                             {
                                 if (si.sym_info != tmp_si.sym_info)
-                                    si = AddToSymbolInfo(si, tmp_si);
+                                    si = AddToSymbolInfo(si, tmp_si, true);
                             }
                             clone = true;
                         }
