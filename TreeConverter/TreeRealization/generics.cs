@@ -1721,21 +1721,21 @@ namespace PascalABCCompiler.TreeRealization
             return rez_start;
         }
 
-        public override SymbolInfo find(string name)
+        public override SymbolInfo find(string name, bool no_search_in_extension_methods = false)
         {
             SymbolInfo si = _original_generic.find(name);
             si = ConvertSymbolInfo(si);
             return si;
         }
 
-        public override SymbolInfo find_in_type(string name)
+        public override SymbolInfo find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             SymbolInfo si = _original_generic.find_in_type(name);
             si = ConvertSymbolInfo(si);
             return si;
         }
 
-        public override SymbolInfo find_in_type(string name, SymbolTable.Scope CurrentScope)
+        public override SymbolInfo find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
             SymbolInfo si = _original_generic.find_in_type(name, CurrentScope);
             si = ConvertSymbolInfo(si);
