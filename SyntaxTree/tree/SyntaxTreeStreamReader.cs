@@ -532,8 +532,8 @@ namespace PascalABCCompiler.SyntaxTree
 					_statement_list.subnodes.Add(_read_node() as statement);
 				}
 			}
-			_statement_list.left_logical_bracket = _read_node() as syntax_tree_node;
-			_statement_list.right_logical_bracket = _read_node() as syntax_tree_node;
+			_statement_list.left_logical_bracket = _read_node() as token_info;
+			_statement_list.right_logical_bracket = _read_node() as token_info;
 			_statement_list.expr_lambda_body = br.ReadBoolean();
 		}
 

@@ -255,7 +255,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,bool _expr_lambda_body)
+		public statement_list(List<statement> _subnodes,token_info _left_logical_bracket,token_info _right_logical_bracket,bool _expr_lambda_body)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
@@ -266,7 +266,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,bool _expr_lambda_body,SourceContext sc)
+		public statement_list(List<statement> _subnodes,token_info _left_logical_bracket,token_info _right_logical_bracket,bool _expr_lambda_body,SourceContext sc)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
@@ -283,8 +283,8 @@ namespace PascalABCCompiler.SyntaxTree
 		// Окончание конструкторов списка
 
 		protected List<statement> _subnodes=new List<statement>();
-		protected syntax_tree_node _left_logical_bracket;
-		protected syntax_tree_node _right_logical_bracket;
+		protected token_info _left_logical_bracket;
+		protected token_info _right_logical_bracket;
 		protected bool _expr_lambda_body=new bool();
 
 		///<summary>
@@ -305,7 +305,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Левая операторная скобка
 		///</summary>
-		public syntax_tree_node left_logical_bracket
+		public token_info left_logical_bracket
 		{
 			get
 			{
@@ -320,7 +320,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Правая операторная скобка
 		///</summary>
-		public syntax_tree_node right_logical_bracket
+		public token_info right_logical_bracket
 		{
 			get
 			{
@@ -471,10 +471,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left_logical_bracket = (syntax_tree_node)value;
+						left_logical_bracket = (token_info)value;
 						break;
 					case 1:
-						right_logical_bracket = (syntax_tree_node)value;
+						right_logical_bracket = (token_info)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;

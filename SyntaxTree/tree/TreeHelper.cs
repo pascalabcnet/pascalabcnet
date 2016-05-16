@@ -872,7 +872,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class initfinal_part
     {
-        public initfinal_part(syntax_tree_node stn1, statement_list init, syntax_tree_node stn2, statement_list fin, syntax_tree_node stn3, SourceContext sc)
+        public initfinal_part(token_info stn1, statement_list init, token_info stn2, statement_list fin, token_info stn3, SourceContext sc)
         {
             _initialization_sect = init;
             _finalization_sect = fin;
