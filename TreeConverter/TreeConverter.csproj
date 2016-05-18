@@ -258,6 +258,10 @@
     <Compile Include="OpenMP\VarFinderSyntaxVisitor.cs" />
     <Compile Include="TreeRealization\generics.cs" />
     <Compile Include="TreeRealization\labels.cs" />
+    <ProjectReference Include="..\Yield\YieldHelpers\YieldHelpers.csproj">
+      <Project>{ce5c55c2-a11c-4e94-a9fa-3fc6ca3e4c09}</Project>
+      <Name>YieldHelpers</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

@@ -31312,6 +31312,518 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///Неопознанный идентификатор. Откладывает определение необходимости захвата имени как поля класса до этапа семантики.
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_ident : ident
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_ident()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(ident _UnknownID,ident _ClassName)
+		{
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(ident _UnknownID,ident _ClassName,SourceContext sc)
+		{
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName)
+		{
+			this._name=_name;
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName,SourceContext sc)
+		{
+			this._name=_name;
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+			source_context = sc;
+		}
+
+		protected ident _UnknownID;
+		protected ident _ClassName;
+
+		///<summary>
+		///
+		///</summary>
+		public ident UnknownID
+		{
+			get
+			{
+				return _UnknownID;
+			}
+			set
+			{
+				_UnknownID=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident ClassName
+		{
+			get
+			{
+				return _ClassName;
+			}
+			set
+			{
+				_ClassName=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return UnknownID;
+					case 1:
+						return ClassName;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						UnknownID = (ident)value;
+						break;
+					case 1:
+						ClassName = (ident)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел для вычисления типа выражения используемого в теле функции-итератора (с yield)
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_expression_type : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_expression_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(var_def_statement _Vds)
+		{
+			this._Vds=_Vds;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(var_def_statement _Vds,SourceContext sc)
+		{
+			this._Vds=_Vds;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds)
+		{
+			this._attr_list=_attr_list;
+			this._Vds=_Vds;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			this._Vds=_Vds;
+			source_context = sc;
+		}
+
+		protected var_def_statement _Vds;
+
+		///<summary>
+		///
+		///</summary>
+		public var_def_statement Vds
+		{
+			get
+			{
+				return _Vds;
+			}
+			set
+			{
+				_Vds=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+					case 1:
+						return Vds;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
+						break;
+					case 1:
+						Vds = (var_def_statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел-обертка для yield для определения типов локальных переменных в var_def_statement
+	///</summary>
+	[Serializable]
+	public partial class yield_var_def_statement_with_unknown_type : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_var_def_statement_with_unknown_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_var_def_statement_with_unknown_type(var_def_statement _vars)
+		{
+			this._vars=_vars;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_var_def_statement_with_unknown_type(var_def_statement _vars,SourceContext sc)
+		{
+			this._vars=_vars;
+			source_context = sc;
+		}
+
+		protected var_def_statement _vars;
+
+		///<summary>
+		///
+		///</summary>
+		public var_def_statement vars
+		{
+			get
+			{
+				return _vars;
+			}
+			set
+			{
+				_vars=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (var_def_statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел-обертка для yield для определения типов локальных переменных в variable_definitions
+	///</summary>
+	[Serializable]
+	public partial class yield_variable_definitions_with_unknown_type : declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_variable_definitions_with_unknown_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_variable_definitions_with_unknown_type(variable_definitions _vars)
+		{
+			this._vars=_vars;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_variable_definitions_with_unknown_type(variable_definitions _vars,SourceContext sc)
+		{
+			this._vars=_vars;
+			source_context = sc;
+		}
+
+		protected variable_definitions _vars;
+
+		///<summary>
+		///
+		///</summary>
+		public variable_definitions vars
+		{
+			get
+			{
+				return _vars;
+			}
+			set
+			{
+				_vars=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (variable_definitions)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

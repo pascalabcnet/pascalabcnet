@@ -4649,6 +4649,15 @@ namespace PascalABCCompiler.TreeConverter
 
         internal void visit_method_call(SyntaxTree.method_call _method_call)
         {
+            // frninja 01/03/16 - for iterator capturing (yield)
+            if (_method_call.dereferencing_value is yield_unknown_ident)
+            {
+                var nodeToVisit = new method_call(ProcessUnknownIdent(_method_call.dereferencing_value as yield_unknown_ident), _method_call.parameters);
+                visit(nodeToVisit);
+                return;
+            }
+            // end frninja
+
             //lroman
             if (_method_call.dereferencing_value is closure_substituting_node)
             {
@@ -9634,6 +9643,16 @@ namespace PascalABCCompiler.TreeConverter
             hard_node_test_and_visit(_program_module.program_block);
             context.check_labels(context.converted_namespace.labels);
 
+            // frninja 28/04/16 - режем мусорные методы хелперы yield
+            {
+                var toRemove = cnsn.functions.Where(m => m.name.StartsWith(YieldHelpers.YieldConsts.YieldHelperMethodPrefix)).ToArray();
+                foreach (var m in toRemove)
+                {
+                    cnsn.functions.remove(m);
+                }
+            }
+            // end frninja
+
             common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
                 null, null, cnsn, null);
             main_function.function_code = context.code;
@@ -10323,6 +10342,17 @@ namespace PascalABCCompiler.TreeConverter
             CheckWaitedRefTypes(ctn);
             is_direct_type_decl = true;
             hard_node_test_and_visit(_type_declaration.type_def);
+
+            // frninja 28/04/16 - режем мусорные методы хелперы yield
+            {
+                var toRemove = ctn.methods.Where(m => m.name.StartsWith(YieldHelpers.YieldConsts.YieldHelperMethodPrefix)).ToArray();
+                foreach (var m in toRemove)
+                {
+                    ctn.methods.remove(m);
+                }
+            }
+            // end frninja
+
             is_direct_type_decl = false;
             if (_type_declaration.attributes != null)
             {
@@ -18722,6 +18752,111 @@ namespace PascalABCCompiler.TreeConverter
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
             visit(mc);
         }
+
+        // frninja 04/03/16 - для yield
+
+        private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk)
+        {
+            string Consts__Self = YieldHelpers.YieldConsts.Self;
+
+            // Find semantic class containing iterator (yield-method) with unknown ident
+            var iteratorContainingClass = context._ctn.fields.Where(f => f.name == Consts__Self).First().type;
+            //var iteratorContainingClass = context._cmn.types.Where(t => t.name == _unk.ClassName.name).First();
+
+            if (iteratorContainingClass != null)
+            {
+                // Search for unknown ident in class
+                var found = iteratorContainingClass.find(_unk.UnknownID.name);
+                if ((object)found != null)
+                {
+                    // class_field - поле класса
+                    // common_method_node - метод класса
+                    // common_property_node - свойство класса
+
+                    // че там с .NET как базовым?
+                    // compiled_function_node - метод базового .NET класса
+                    // compiled_property_node - свойство базового .NET класса
+
+                    // че с классом из другого модуля?
+                    // то же что и с классом из этого же
+                    if (found.sym_info is class_field
+                        || found.sym_info is common_method_node
+                        || found.sym_info is common_property_node
+                        || found.sym_info is compiled_function_node
+                        || found.sym_info is compiled_property_node)
+                    {
+                        if (found.access_level != access_level.al_private)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // common_namespace_function_node - глобальный метод
+
+                }
+            }
+
+            return false;
+        }
+
+        private dot_node CaptureUnknownIdent(yield_unknown_ident unk)
+        {
+            string Consts__Self = YieldHelpers.YieldConsts.Self;
+
+            return new dot_node(new dot_node(new ident("self"), new ident(Consts__Self)), unk.UnknownID);
+        }
+
+        private SyntaxTree.addressed_value_funcname ProcessUnknownIdent(yield_unknown_ident unk)
+        {
+            if (CheckUnknownIdentNeedsClassCapture(unk))
+            {
+                return CaptureUnknownIdent(unk);
+            }
+            else
+            {
+                return unk.UnknownID;
+            }
+        }
+
+        // frninja - захват полей класса для yield
+        public override void visit(SyntaxTree.yield_unknown_ident _unk)
+        {
+            ProcessUnknownIdent(_unk).visit(this);
+        }
+
+        public override void visit(SyntaxTree.yield_unknown_expression_type _unk_expr)
+        {
+            _unk_expr.MapHelper.vars_type_map[_unk_expr.Vds].visit(this);
+        }
+
+        // frninja - заполнение хелпера типов локальных переменных для yield
+        public override void visit(SyntaxTree.yield_var_def_statement_with_unknown_type _vars)
+        {
+            if ((object)_vars.vars.vars_type != null)
+                return;
+            var t = convert_strong(_vars.vars.inital_value);
+            _vars.map_helper.vars_type_map[_vars.vars] = new SyntaxTree.semantic_type_node(t.type);
+
+            // Visit stored vars
+            _vars.vars.visit(this);
+        }
+
+        // frninja - заполнение хелпера типов локальных переменных для yield// frninja - заполнение хелпера типов локальных переменных для yield
+        public override void visit(SyntaxTree.yield_variable_definitions_with_unknown_type _vars)
+        {
+            foreach (var vd in _vars.vars.list)
+            {
+                if ((object)vd.vars_type != null)
+                    continue;
+                var t = convert_strong(vd.inital_value);
+                _vars.map_helper.vars_type_map[vd] = new SyntaxTree.semantic_type_node(t.type);
+            }
+
+            // Visit stored vars
+            _vars.vars.visit(this);
+        }
+
+        // end frninja
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
     {
