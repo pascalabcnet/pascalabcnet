@@ -932,7 +932,21 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-		public void SetName(string name)
+        public override int num_of_default_parameters
+        {
+            get
+            {
+                int num = 0;
+                foreach (parameter p in parameters)
+                {
+                    if (p.default_value != null)
+                        num++;
+                }
+                return num;
+            }
+        }
+
+        public void SetName(string name)
         {
             _name = name;
         }

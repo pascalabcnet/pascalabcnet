@@ -32,8 +32,7 @@ namespace CodeCompletion
         public static CompiledScope ptr_type;
         public static CompiledScope obj_type;
         public static CompiledScope void_type;
-        
-        private static Hashtable ht = new Hashtable();
+        private static Dictionary<Type, CompiledScope> type_cache = new Dictionary<Type, CompiledScope>();
         
         private static ProcScope int_plus;
         private static ProcScope int_minus;
@@ -131,916 +130,923 @@ namespace CodeCompletion
         
         public static void Clear()
         {
-        	ht.Clear();
+        	type_cache.Clear();
         }
-        
+
         static TypeTable()
         {
-        	obj_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name),typeof(object));
-        	
-        	int_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name),typeof(int));
-        	
-        	
-        	real_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name),typeof(double));
-        	
-        	string_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name, SymbolKind.Class,PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name),typeof(string));
-        	
-        	char_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name),typeof(char));
-        	
-        	bool_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name),typeof(bool));
-        	
-        	byte_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name),typeof(byte));
-        	
-        	int16_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name),typeof(short));
-        	
-        	sbyte_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name),typeof(sbyte));
-        	
-        	uint16_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name),typeof(ushort));
-        	
-        	uint32_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name),typeof(uint));
-        	
-        	int64_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name),typeof(long));
-        	
-        	uint64_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name),typeof(ulong));
-        	
-        	float_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name),typeof(float));
-        	
-        	ptr_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name, SymbolKind.Type,PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name),Type.GetType("System.Void*"));
-        	
-        	void_type = get_compiled_type(new SymInfo("void", SymbolKind.Type,"void"),typeof(void));
-        	
-        	ProcScope ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name,int_type);
-        	int_plus = ps;
-        	ElementScope left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ElementScope right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name,int_type);
-         	int_minus = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name,int_type);
-         	int_mul = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name,int_type);
-         	int_div = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name,int_type);
-         	int_mod = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name,int_type);
-         	int_shl = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name,int_type);
-         	int_shr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,int_type);
-         	int_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,int_type);
-         	int_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,int_type);
-         	int_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = int_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name,int_type);
-         	int_eq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name,int_type);
-         	int_noteq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name,int_type);
-         	int_sm = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name,int_type);
-         	int_smeq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name,int_type);
-         	int_gr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name,int_type);
-         	int_greq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int_type,int_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
-        	
-        	//byte type
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,byte_type);
-        	byte_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),byte_type,byte_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),byte_type,byte_type);
-        	ps.return_type = byte_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,byte_type);
-         	byte_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),byte_type,byte_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),byte_type,byte_type);
-        	ps.return_type = byte_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,byte_type);
-         	byte_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),byte_type,byte_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),byte_type,byte_type);
-        	ps.return_type = byte_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	//sbyte
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,sbyte_type);
-        	sbyte_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),sbyte_type,sbyte_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),sbyte_type,sbyte_type);
-        	ps.return_type = sbyte_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,sbyte_type);
-         	sbyte_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),sbyte_type,sbyte_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),sbyte_type,sbyte_type);
-        	ps.return_type = sbyte_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,sbyte_type);
-         	sbyte_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),sbyte_type,sbyte_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),sbyte_type,sbyte_type);
-        	ps.return_type = sbyte_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	//ushort
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,uint16_type);
-        	uint16_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint16_type,uint16_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint16_type,uint16_type);
-        	ps.return_type = uint16_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,uint16_type);
-         	uint16_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint16_type,uint16_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint16_type,uint16_type);
-        	ps.return_type = uint16_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,uint16_type);
-         	uint16_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint16_type,uint16_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint16_type,uint16_type);
-        	ps.return_type = uint16_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	//int16
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,uint16_type);
-        	int16_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int16_type,int16_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int16_type,int16_type);
-        	ps.return_type = int16_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,int16_type);
-         	int16_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int16_type,int16_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int16_type,int16_type);
-        	ps.return_type = int16_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,int16_type);
-         	int16_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int16_type,int16_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int16_type,int16_type);
-        	ps.return_type = int16_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	//int64
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name,int64_type);
-         	int64_plus = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name,int64_type);
-         	int64_minus = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name,int64_type);
-         	int64_mul = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name,int64_type);
-         	int64_div = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name,int64_type);
-         	int64_mod = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name,int64_type);
-         	int64_shl = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name,int64_type);
-         	int64_shr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,int64_type);
-         	int64_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,int64_type);
-         	int64_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,int64_type);
-         	int64_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = int64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name,int64_type);
-         	int64_eq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name,int64_type);
-         	int64_noteq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name,int64_type);
-         	int64_sm = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name,int64_type);
-         	int64_smeq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name,int64_type);
-         	int64_gr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name,int64_type);
-         	int64_greq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
-        	
-        	//uint
-        	//int16
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int64_div);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_eq);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_noteq);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_sm);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_smeq);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_gr);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_greq);
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,uint32_type);
-        	uint32_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint32_type,uint32_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint32_type,uint32_type);
-        	ps.return_type = uint32_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,uint32_type);
-         	uint32_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint32_type,uint32_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint32_type,uint32_type);
-        	ps.return_type = uint32_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,uint32_type);
-         	uint32_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint32_type,uint32_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint32_type,uint32_type);
-        	ps.return_type = uint32_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	//uint64 type
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int64_div);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_eq);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_noteq);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_sm);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_smeq);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_gr);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_greq);
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,uint64_type);
-        	uint64_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint64_type,uint64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint64_type,uint64_type);
-        	ps.return_type = uint64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,uint64_type);
-         	uint64_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint64_type,uint64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint64_type,uint64_type);
-        	ps.return_type = uint64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,uint64_type);
-         	uint64_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint64_type,uint64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),uint64_type,uint64_type);
-        	ps.return_type = uint64_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	//real_type
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name,real_type);
-         	real_plus = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = real_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name,real_type);
-         	real_minus = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = real_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name,real_type);
-         	real_mul = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = real_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name,real_type);
-         	real_div = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = real_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name,real_type);
-         	real_eq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = real_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name,real_type);
-         	real_noteq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name,real_type);
-         	real_sm = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name,real_type);
-         	real_smeq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name,real_type);
-         	real_gr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),real_type,real_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name,int64_type);
-         	real_greq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),int64_type,int64_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
-        	
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, int64_div);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_eq);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_noteq);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_sm);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_smeq);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_gr);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_greq);
-        	
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, real_plus);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, real_minus);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, real_mul);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, real_div);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, real_eq);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, real_noteq);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, real_sm);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, real_smeq);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, real_gr);
-        	int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, real_greq);
-        	
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, real_plus);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, real_minus);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, real_mul);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, real_div);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, real_eq);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, real_noteq);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, real_sm);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, real_smeq);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, real_gr);
-        	int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, real_greq);
-        	
-        	//boolean type
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name,bool_type);
-         	bool_and = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name,bool_type);
-         	bool_or = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name,bool_type);
-         	bool_xor = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name,bool_type);
-         	bool_eq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name,bool_type);
-         	bool_noteq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name,bool_type);
-         	bool_sm = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name,bool_type);
-         	bool_smeq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name,bool_type);
-         	bool_gr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name,bool_type);
-         	bool_greq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),bool_type,bool_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
-        	
-        	//char type
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name,char_type);
-         	char_eq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name,char_type);
-         	char_noteq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name,char_type);
-         	char_sm = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name,char_type);
-         	char_smeq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name,char_type);
-         	char_greq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name,char_type);
-         	char_gr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),char_type,char_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
-        	
-        	//string type
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name,string_type);
-         	string_plus = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = string_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name,string_type);
-         	string_eq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name,string_type);
-         	string_noteq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name,string_type);
-         	string_sm = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name,string_type);
-         	string_smeq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name,string_type);
-         	string_gr = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
-        	
-        	ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name,string_type);
-         	string_greq = ps;
-        	left = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	right = new ElementScope(new SymInfo("", SymbolKind.Parameter,""),string_type,string_type);
-        	ps.return_type = bool_type;
-        	ps.AddParameter(left);
-        	ps.AddParameter(right);
-        	string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
+            obj_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.object_type_name), typeof(object));
+
+            int_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.integer_type_name), typeof(int));
+
+
+            real_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.real_type_name), typeof(double));
+
+            string_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name, SymbolKind.Class, PascalABCCompiler.TreeConverter.compiler_string_consts.string_type_name), typeof(string));
+
+            char_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.char_type_name), typeof(char));
+
+            bool_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.bool_type_name), typeof(bool));
+
+            byte_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.byte_type_name), typeof(byte));
+
+            int16_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.short_type_name), typeof(short));
+
+            sbyte_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.sbyte_type_name), typeof(sbyte));
+
+            uint16_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.ushort_type_name), typeof(ushort));
+
+            uint32_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.uint_type_name), typeof(uint));
+
+            int64_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.long_type_name), typeof(long));
+
+            uint64_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.ulong_type_name), typeof(ulong));
+
+            float_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.float_type_name), typeof(float));
+
+            ptr_type = get_compiled_type(new SymInfo(PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name, SymbolKind.Type, PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name), Type.GetType("System.Void*"));
+
+            void_type = get_compiled_type(new SymInfo("void", SymbolKind.Type, "void"), typeof(void));
+
+            ProcScope ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_type);
+            int_plus = ps;
+            ElementScope left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ElementScope right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_type);
+            int_minus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_type);
+            int_mul = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_type);
+            int_div = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_type);
+            int_mod = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_type);
+            int_shl = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_type);
+            int_shr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, int_type);
+            int_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, int_type);
+            int_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, int_type);
+            int_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = int_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_type);
+            int_eq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_type);
+            int_noteq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_type);
+            int_sm = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_type);
+            int_smeq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_type);
+            int_gr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_type);
+            int_greq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int_type, int_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
+
+            //byte type
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, byte_type);
+            byte_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), byte_type, byte_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), byte_type, byte_type);
+            ps.return_type = byte_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, byte_type);
+            byte_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), byte_type, byte_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), byte_type, byte_type);
+            ps.return_type = byte_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, byte_type);
+            byte_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), byte_type, byte_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), byte_type, byte_type);
+            ps.return_type = byte_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            byte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            //sbyte
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, sbyte_type);
+            sbyte_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), sbyte_type, sbyte_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), sbyte_type, sbyte_type);
+            ps.return_type = sbyte_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, sbyte_type);
+            sbyte_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), sbyte_type, sbyte_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), sbyte_type, sbyte_type);
+            ps.return_type = sbyte_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, sbyte_type);
+            sbyte_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), sbyte_type, sbyte_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), sbyte_type, sbyte_type);
+            ps.return_type = sbyte_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            sbyte_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            //ushort
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, uint16_type);
+            uint16_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint16_type, uint16_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint16_type, uint16_type);
+            ps.return_type = uint16_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, uint16_type);
+            uint16_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint16_type, uint16_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint16_type, uint16_type);
+            ps.return_type = uint16_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, uint16_type);
+            uint16_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint16_type, uint16_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint16_type, uint16_type);
+            ps.return_type = uint16_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            //int16
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int_plus);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int_minus);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int_mul);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int_div);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int_mod);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int_shl);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int_shr);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int_eq);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int_noteq);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int_sm);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int_smeq);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int_gr);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int_greq);
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, uint16_type);
+            int16_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int16_type, int16_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int16_type, int16_type);
+            ps.return_type = int16_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, int16_type);
+            int16_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int16_type, int16_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int16_type, int16_type);
+            ps.return_type = int16_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, int16_type);
+            int16_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int16_type, int16_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int16_type, int16_type);
+            ps.return_type = int16_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int16_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            //int64
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_type);
+            int64_plus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_type);
+            int64_minus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_type);
+            int64_mul = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int64_type);
+            int64_div = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_type);
+            int64_mod = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_type);
+            int64_shl = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_type);
+            int64_shr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, int64_type);
+            int64_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, int64_type);
+            int64_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, int64_type);
+            int64_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = int64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_type);
+            int64_eq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_type);
+            int64_noteq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_type);
+            int64_sm = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_type);
+            int64_smeq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_type);
+            int64_gr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_type);
+            int64_greq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
+
+            //uint
+            //int16
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int64_div);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_eq);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_noteq);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_sm);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_smeq);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_gr);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_greq);
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, uint32_type);
+            uint32_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint32_type, uint32_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint32_type, uint32_type);
+            ps.return_type = uint32_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, uint32_type);
+            uint32_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint32_type, uint32_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint32_type, uint32_type);
+            ps.return_type = uint32_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, uint32_type);
+            uint32_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint32_type, uint32_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint32_type, uint32_type);
+            ps.return_type = uint32_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint32_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            //uint64 type
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int64_div);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_eq);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_noteq);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_sm);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_smeq);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_gr);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_greq);
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, uint64_type);
+            uint64_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint64_type, uint64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint64_type, uint64_type);
+            ps.return_type = uint64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, uint64_type);
+            uint64_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint64_type, uint64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint64_type, uint64_type);
+            ps.return_type = uint64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, uint64_type);
+            uint64_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint64_type, uint64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), uint64_type, uint64_type);
+            ps.return_type = uint64_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            uint64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            //real_type
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, real_type);
+            real_plus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = real_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, real_type);
+            real_minus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = real_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, real_type);
+            real_mul = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = real_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, real_type);
+            real_div = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = real_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, real_type);
+            real_eq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = real_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, real_type);
+            real_noteq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, real_type);
+            real_sm = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, real_type);
+            real_smeq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, real_type);
+            real_gr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), real_type, real_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_type);
+            real_greq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), int64_type, int64_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            real_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
+
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, int64_div);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, int64_eq);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, int64_noteq);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, int64_sm);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, int64_smeq);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, int64_gr);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, int64_greq);
+
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, real_plus);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, real_minus);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, real_mul);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, real_div);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, real_eq);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, real_noteq);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, real_sm);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, real_smeq);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, real_gr);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, real_greq);
+
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, real_plus);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, real_minus);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, real_mul);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, real_div);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, real_eq);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, real_noteq);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, real_sm);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, real_smeq);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, real_gr);
+            int64_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, real_greq);
+
+            //boolean type
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, bool_type);
+            bool_and = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.and_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, bool_type);
+            bool_or = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.or_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, bool_type);
+            bool_xor = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.xor_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, bool_type);
+            bool_eq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, bool_type);
+            bool_noteq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, bool_type);
+            bool_sm = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, bool_type);
+            bool_smeq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, bool_type);
+            bool_gr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, bool_type);
+            bool_greq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), bool_type, bool_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            bool_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
+
+            //char type
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, char_type);
+            char_eq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, char_type);
+            char_noteq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, char_type);
+            char_sm = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, char_type);
+            char_smeq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, char_type);
+            char_greq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, char_type);
+            char_gr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            //string type
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, string_type);
+            string_plus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = string_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, string_type);
+            string_eq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, string_type);
+            string_noteq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.noteq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, string_type);
+            string_sm = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.sm_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, string_type);
+            string_smeq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.smeq_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, string_type);
+            string_gr = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, string_type);
+            string_greq = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, string_type);
+            ps.return_type = bool_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            string_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.greq_name, ps);
         }
-        
+
+        public static CompiledScope get_compiled_type(Type t)
+        {
+            return get_compiled_type(null, t);
+        }
+
         public static CompiledScope get_compiled_type(SymInfo si, Type t)
         {
-        	object o = ht[t];
-        	if (o != null)
-        		return o as CompiledScope;
-        	CompiledScope sc = new CompiledScope(si,t);
-        	ht[t] = sc;
+            CompiledScope sc = null;
+            if (type_cache.TryGetValue(t, out sc))
+                return sc;
+            if (si == null)
+                si = new SymInfo(t.Name, SymbolKind.Type, t.FullName);
+            sc = new CompiledScope(si,t);
+        	type_cache[t] = sc;
         	return sc;
         }
         

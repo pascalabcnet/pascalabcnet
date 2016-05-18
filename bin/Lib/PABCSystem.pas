@@ -111,7 +111,7 @@ type
   /// Представляет кортеж
   Tuple = System.Tuple;
   
-  /// Представляет динамический массив 
+  /// Представляет список на базе динамического массива
   List<T> = System.Collections.Generic.List<T>;
   
   /// Представляет базовый класс для реализации интерфейса IComparer
@@ -442,6 +442,8 @@ type
     function CompareGreaterEqual(s: TypedSet): boolean;
     function GetEnumerator: System.Collections.IEnumerator;
     function ToString: string; override;
+    class function operator implicit<T>(s: TypedSet): HashSet<T>;
+    class function operator implicit<T>(s: HashSet<T>): TypedSet;
   end;
 
 type
@@ -1097,7 +1099,8 @@ function Power(x, y: real): real;
 function Power(x, y: integer): real;
 /// Возвращает x в степени y
 function Power(x: BigInteger; y: integer): BigInteger;
-/// Возвращает x, округленное до ближайшего целого
+/// Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми, 
+///то округление осуществляется к ближайшему четному (банковское округление): Round(2.5)=2, Round(3.5)=4
 function Round(x: real): integer;
 /// Возвращает x, округленное до ближайшего длинного целого
 function RoundBigInteger(x: real): BigInteger;
@@ -1606,18 +1609,22 @@ function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6):
 function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
 
 // -----------------------------------------------------
-//>>     Короткие функции Lst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
+//>>     Короткие функции Lst, LLst, HSet, SSet, Dict, KV # Short functions Lst, HSet, SSet, Dict, KV
 // -----------------------------------------------------
 /// Возвращает список, заполненный указанными значениями
 function Lst<T>(params a: array of T): List<T>;
-/// Возвращает список, заполненное значениями из последовательности
+/// Возвращает список, заполненный значениями из последовательности
 function Lst<T>(a: sequence of T): List<T>;
+/// Возвращает двусвязный список, заполненный указанными значениями
+function LLst<T>(params a: array of T): LinkedList<T>;
+/// Возвращает двусвязный список, заполненный значениями из последовательности
+function LLst<T>(a: sequence of T): LinkedList<T>;
 /// Возвращает множество на базе хеш таблицы, заполненное указанными значениями
 function HSet<T>(params a: array of T): HashSet<T>;
-/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
-function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе хеш таблицы, заполненное значениями из последовательности
 function HSet<T>(a: sequence of T): HashSet<T>;
+/// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
+function SSet<T>(params a: array of T): SortedSet<T>;
 /// Возвращает множество на базе бинарного дерева поиска, заполненное значениями из последовательности
 function SSet<T>(a: sequence of T): SortedSet<T>;
 /// Возвращает словарь пар элементов (ключ, значение)
@@ -1868,7 +1875,10 @@ const
   BAD_TYPE_IN_RUNTIMESIZEOF = 'Bad Type in RunTimeSizeOf';
   PARAMETER_COUNT_MUST_BE_GREATER_0 = 'Параметр count должен быть > 0!!Parameter count must be > 0';
   PARAMETER_COUNT_MUST_BE_GREATER_1 = 'Параметр count должен быть > 1!!Parameter count must be > 1';
-  PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
+  PARAMETER_STEP_MUST_BE_NOT_EQUAL_0 = 'Параметр step не может быть равен 0!!The step parameter must be not equal to 0';
+  PARAMETER_STEP_MUST_BE_GREATER_0 = 'Параметр step должен быть > 0!!The step parameter must be not greater than 0';
+  PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
+  PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -2004,17 +2014,20 @@ end;
 // -----------------------------------------------------
 //                  TypedSet
 // -----------------------------------------------------
+///--
 constructor TypedSet.Create;
 begin
   ht := new Hashtable({new TypedSetComparer()});
 end;
 
+///--
 constructor TypedSet.Create(len: integer);
 begin
   ht := new Hashtable({new TypedSetComparer()});
   Self.len := len;
 end;
 
+///--
 constructor TypedSet.Create(low_bound, upper_bound: object);
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2022,6 +2035,7 @@ begin
   Self.upper_bound := upper_bound;
 end;
 
+///--
 constructor TypedSet.Create(initValue: TypedSet);
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2029,6 +2043,7 @@ begin
   Self.len := initValue.len;
 end;
 
+///--
 constructor TypedSet.Create(low_bound, upper_bound: object; initValue: TypedSet);
 begin
   ht := new Hashtable({new TypedSetComparer()});
@@ -2037,6 +2052,7 @@ begin
   Self.AssignSetFrom(initValue);
 end;
 
+///--
 constructor TypedSet.Create(vals: array of byte);
 var
   i: integer;
@@ -2057,6 +2073,7 @@ begin
   end;
 end;
 
+///--
 procedure TypedSet.CreateIfNeed;
 begin
   if ht = nil then ht := new Hashtable({new TypedSetComparer()});
@@ -2072,6 +2089,7 @@ begin
   Result.upper_bound := upper_bound;
 end;
 
+///--
 function TypedSet.GetBytes: array of byte;
 var
   ba: System.Collections.BitArray;
@@ -2106,21 +2124,25 @@ begin
   end;
 end;
 
+///--
 function TypedSet.UnionSet(s: TypedSet): TypedSet;
 begin
   Result := Union(Self, s);
 end;
 
+///--
 function TypedSet.SubtractSet(s: TypedSet): TypedSet;
 begin
   Result := Subtract(Self, s);
 end;
 
+///--
 function TypedSet.IntersectSet(s: TypedSet): TypedSet;
 begin
   Result := Intersect(Self, s);
 end;
 
+///--
 function TypedSet.IsInDiapason(elem: object): boolean;
 begin
   if (low_bound <> nil) and (upper_bound <> nil) and (elem is IComparable) then
@@ -2194,7 +2216,7 @@ begin
   else Result := true;
 end;
 
-function convert_elem(obj: object): object;
+function convert_elem(obj: object): object; // для TypedSet
 begin
   var t := obj.GetType;
   if t.IsEnum then
@@ -2237,6 +2259,7 @@ begin
   end;
 end;
 
+///--
 function TypedSet.Contains(elem: object): boolean;
 begin
   if elem.GetType().IsEnum then
@@ -2252,6 +2275,7 @@ begin
   end;
 end;
 
+///--
 procedure TypedSet.Clip;
 begin
   if Self.len > 0 then
@@ -2276,6 +2300,7 @@ begin
   ht := tmp_ht;
 end;
 
+///--
 procedure TypedSet.Clip(len: integer);
 begin
   var tmp_ht := new Hashtable();
@@ -2374,6 +2399,7 @@ begin
   end
 end;
 
+///--
 procedure TypedSet.Init(params elems: array of object);
 begin
   for var i := 0 to elems.Length - 1 do
@@ -2387,6 +2413,7 @@ begin
   Clip;
 end;
 
+///--
 function TypedSet.GetEnumerator: System.Collections.IEnumerator;
 begin
   Result := ht.Keys.GetEnumerator; 
@@ -2400,6 +2427,29 @@ begin
     Result := string.Format(System.Globalization.NumberFormatInfo.InvariantInfo, '{0}', new object[](obj))
 end;
 
+///--
+class function TypedSet.operator implicit<T>(s: TypedSet): HashSet<T>;
+begin
+  var hs := new HashSet<T>();
+  foreach key: T in s.ht.Keys do
+  begin
+    hs.Add(key);  
+  end;
+  Result := hs; 
+end;
+
+///--
+class function TypedSet.operator implicit<T>(s: HashSet<T>): TypedSet;
+begin
+  var ts := new TypedSet();
+  foreach key: T in s.ToArray() do
+  begin
+    ts.ht[key] := key;  
+  end;
+  Result := ts; 
+end;
+
+///--
 function TypedSet.ToString: string;
 var
   i: System.Collections.IEnumerator;
@@ -2456,31 +2506,44 @@ begin
   result := '[' + result + ']';
 end;
 
+{class function TypedSet.operator implicit<T>(hset: HashSet<T>): TypedSet;
+begin
+  Result := new TypedSet();
+  foreach var x in hset do
+    Result.ht[x] := x;
+end;}
+
+///--
 function TypedSet.CompareEquals(s: TypedSet): boolean;
 begin
   Result := CompareSetEquals(Self, s);
 end;
 
+///--
 function TypedSet.CompareInEquals(s: TypedSet): boolean;
 begin
   Result := CompareSetInEquals(Self, s);
 end;
 
+///--
 function TypedSet.CompareLess(s: TypedSet): boolean;
 begin
   Result := CompareSetLess(Self, s);
 end;
 
+///--
 function TypedSet.CompareLessEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetLessEqual(Self, s);
 end;
 
+///--
 function TypedSet.CompareGreater(s: TypedSet): boolean;
 begin
   Result := CompareSetGreater(Self, s);
 end;
 
+///--
 function TypedSet.CompareGreaterEqual(s: TypedSet): boolean;
 begin
   Result := CompareSetGreaterEqual(Self, s);
@@ -3135,20 +3198,32 @@ end;
 //          Операции для HashSet<T> 
 //------------------------------------------------------------------------------
 ///--
-function HashSet<T>.operator in(x: T; Self: HashSet<T>): boolean;
+function operator in<T>(x: T; Self: HashSet<T>): boolean; extensionmethod;
 begin
   Result := Self.Contains(x);
 end;
 
-function HashSet<T>.operator+=(var Self: HashSet<T>; x: T): HashSet<T>;
+function operator+=<T>(var Self: HashSet<T>; x: T): HashSet<T>; extensionmethod;
 begin
   Self.Add(x);
   Result := Self;
 end;
 
-function HashSet<T>.operator-=(var Self: HashSet<T>; x: T): HashSet<T>;
+function operator+=<T>(var Self: HashSet<T>; x: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Self.UnionWith(x);
+  Result := Self;
+end;
+
+function operator-=<T>(var Self: HashSet<T>; x: T): HashSet<T>; extensionmethod;
 begin
   Self.Remove(x);
+  Result := Self;
+end;
+
+function operator-=<T>(var Self: HashSet<T>; x: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Self.ExceptWith(x);
   Result := Self;
 end;
 
@@ -3206,21 +3281,84 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для SortedSet<T> 
 //------------------------------------------------------------------------------
-function SortedSet<T>.operator in(x: T; Self: SortedSet<T>): boolean;
+function operator in<T>(x: T; Self: SortedSet<T>): boolean; extensionmethod;
 begin
   Result := Self.Contains(x);
 end;
 
-function SortedSet<T>.operator+=(var Self: SortedSet<T>; x: T): SortedSet<T>;
+function operator+=<T>(var Self: SortedSet<T>; x: T): SortedSet<T>; extensionmethod;
 begin
   Self.Add(x);
   Result := Self;
 end;
 
-function SortedSet<T>.operator-=(var Self: SortedSet<T>; x: T): SortedSet<T>;
+function operator+=<T>(var Self: SortedSet<T>; x: sequence of T): SortedSet<T>; extensionmethod;
+begin
+  Self.UnionWith(x);
+  Result := Self;
+end;
+
+function operator-=<T>(var Self: SortedSet<T>; x: T): SortedSet<T>; extensionmethod;
 begin
   Self.Remove(x);
   Result := Self;
+end;
+
+function operator-=<T>(var Self: SortedSet<T>; x: sequence of T): SortedSet<T>; extensionmethod;
+begin
+  Self.ExceptWith(x);
+  Result := Self;
+end;
+
+function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.SetEquals(y)
+end;
+
+function operator<><T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := not x.SetEquals(y)
+end;
+
+function operator-<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.ExceptWith(y);
+  Result := v;
+end;
+
+function operator+<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.UnionWith(y);
+  Result := v;
+end;
+
+function operator*<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.IntersectWith(y);
+  Result := v;
+end;
+
+function operator< <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsProperSubsetOf(y);
+end;
+
+function operator<= <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsSubsetOf(y);
+end;
+
+function operator> <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsProperSupersetOf(y);
+end;
+
+function operator>= <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsSupersetOf(y);
 end;
 
 //------------------------------------------------------------------------------
@@ -3428,27 +3566,32 @@ begin
   Result := a*n;
 end;
 
+///--
+function operator in<T>(x: T; Self: sequence of T): boolean; extensionmethod;
+begin
+  Result := Self.Contains(x);
+end;
 // -----------------------------------------------------------------------------
 //                Функции для последовательностей и динамических массивов
 // -----------------------------------------------------------------------------
 
 type
-// Вспомогательный класс для генерации всех последовательностей. К сожалению, пока с object
-  SeqBase = class(IEnumerable<object>,IEnumerator<object>)
+// Вспомогательный класс для генерации всех последовательностей
+  SeqBase<T> = class(IEnumerable<T>,IEnumerator<T>)
   public
     function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
     begin
       Result := Self;
     end;
 
-    function GetEnumerator(): IEnumerator<object>;
+    function GetEnumerator(): IEnumerator<T>;
     begin
       Result := Self;
     end;
 
-    function get_Current: object; virtual;
+    function get_Current: T; virtual;
     begin
-      Result := nil;
+      Result := default(T);
     end;
 
     function System.Collections.IEnumerator.get_Current(): object;
@@ -3536,6 +3679,10 @@ end;
 
 function Range(a,b: real; n: integer): sequence of real;
 begin
+  if n=0 then
+    raise new System.ArgumentException('n=0');
+  if n<0 then
+    raise new System.ArgumentException('n<0');
   var ab1 := new AB(a,b,n);
   Result := Range(0,n).Select(ab1.F)
 end;
@@ -3553,11 +3700,16 @@ function Range(a, b, step: integer): sequence of integer;
 begin
   if step=0 then
     raise new System.ArgumentException('step=0');
+  if (step>0) and (b<a) or (step<0) and (b>a) then
+  begin
+    Result := System.Linq.Enumerable.Empty&<integer>;
+    exit;
+  end;
   var n := abs((b-a) div step) + 1;
   var ar: ArithmSeq;
-  if step<0 then
+  {if step<0 then
     ar := new ArithmSeq(b,step)
-  else ar := new ArithmSeq(a,step);
+  else} ar := new ArithmSeq(a,step);
   Result := System.Linq.Enumerable.Range(0, n).Select(ar.f);
 end;
 
@@ -3635,12 +3787,12 @@ type
     end;
     procedure Dispose(); override;
     begin
-      cur := first;
+      cur := first-1;
     end;
   end;
 
 // Вспомогательный класс для генерации рекуррентных последовательностей
-  IterateClass<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
+  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
   private
     first: T;
     cur: T;
@@ -3654,7 +3806,7 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; virtual;
+    function get_Current: T; virtual;
     begin
       Result := cur;
     end;
@@ -3675,7 +3827,7 @@ type
   end;
 
 // Вспомогательный класс для генерации рекуррентных последовательностей по двум предыдущим значениям
-  Iterate2Class<T> = class(SeqBase,IEnumerable<object>,IEnumerator<object>)
+  Iterate2Class<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
   private
     first,second: T;
     a,b: T;
@@ -3691,7 +3843,7 @@ type
       Self.next := next;
     end;
     
-    function get_Current: object; virtual;
+    function get_Current: T; virtual;
     begin
       Result := a;
     end;
@@ -3955,7 +4107,7 @@ begin
 end;
 
 // -----------------------------------------------------------------------------
-//                Функции Lst, Dict, KV, HSet, SSet
+//                Функции Lst, LLst, Dict, KV, HSet, SSet
 // -----------------------------------------------------------------------------
 function Lst<T>(params a: array of T): List<T>;
 begin
@@ -3965,6 +4117,16 @@ end;
 function Lst<T>(a: sequence of T): List<T>;
 begin
   Result := new List<T>(a);
+end;
+
+function LLst<T>(params a: array of T): LinkedList<T>;
+begin
+  Result := new LinkedList<T>(a);
+end;
+
+function LLst<T>(a: sequence of T): LinkedList<T>;
+begin
+  Result := new LinkedList<T>(a);
 end;
 
 function HSet<T>(params a: array of T): HashSet<T>;
@@ -7694,13 +7856,15 @@ end;
 // -----------------------------------------------------
 // Дополнения февраль 2016: Iterate, Step, &Repeat, Cycle
 
-/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом и функцией next
+// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом и функцией next
+///--
 function Iterate<T>(Self: T; next: T -> T): sequence of T; extensionmethod;
 begin
   Result := Iterate&<T>(Self,next);
 end;
 
-/// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом, следующим за ним элементом и функцией next
+// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом, следующим за ним элементом и функцией next
+///--
 function Iterate<T>(Self,second: T; next: (T,T) -> T): sequence of T; extensionmethod;
 begin
   Result := Iterate&<T>(Self,second,next);
@@ -7726,7 +7890,8 @@ begin
   Result := IntNumbersClass.Create().Select(x->x*step+slf);
 end;
 
-/// Возвращает бесконечную последовательность элементов, совпадающих с данным
+// Возвращает бесконечную последовательность элементов, совпадающих с данным
+///--
 function &Repeat<T>(Self: T): sequence of T; extensionmethod;
 begin
   Result := SeqFill(MaxInt,Self);
@@ -7839,6 +8004,12 @@ end;
 function ToSortedSet<T>(Self: sequence of T): SortedSet<T>; extensionmethod;
 begin
   Result := new SortedSet<T>(Self);
+end;
+
+/// Возвращает LinkedList по данной последовательности
+function ToLinkedList<T>(Self: sequence of T): LinkedList<T>; extensionmethod;
+begin
+  Result := new LinkedList<T>(Self);
 end;
 
 // Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
@@ -8043,56 +8214,40 @@ begin
   Result := SeqWhile(Self,v->v.Skip(size),v->v.Count>0).Select(v->v.Take(size)).Select(ss->proj(ss));
 end;
 
-
-/// Возвращает срез последовательности от номера from с шагом step
-function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
+///--
+function SliceSeqImpl<T>(Self: sequence of T; from,step,count: integer): sequence of T;
 begin
-  if step=0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0));
-  if step<0 then
-  begin
-    if from<0 then
-      Result := Self.Take(0)
-    else 
-    begin
-      step := -step;
-      var bb := from mod step;
-      Result := Self.Skip(bb).Where((x,i)->(i mod step = 0) and (i<=from-bb)).Reverse;
-    end;
-  end  
-  else  
-    if from<=0 then
-      Result := Self.Where((x,i)->(i-from) mod step = 0)
-    else Result := Self.Skip(from).Where((x,i)->i mod step = 0);
+  if step <= 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
+
+  if from < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0)
 end;
 
-/// Возвращает срез последовательности от номера from с шагом step длины не более count
+/// Возвращает срез последовательности от номера from с шагом step > 0
+function Slice<T>(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;
+begin
+  if step <= 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
+
+  if from < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0)
+end;
+
+/// Возвращает срез последовательности от номера from с шагом step > 0 длины не более count
 function Slice<T>(Self: sequence of T; from,step,count: integer): sequence of T; extensionmethod;
 begin
-  if step=0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_NOT_EQUAL_0));
-  if step<0 then
-  begin
-    if from<0 then
-      Result := Self.Take(0)
-    else 
-    begin
-      step := -step;
-      var bb := from - (count - 1)*step;
-      if bb<0 then
-        bb := bb mod step;
-      if bb < 0 then
-        bb += step;
-      Result := Self.Skip(bb).Where((x,i)->(i mod step = 0) and (i<=from-bb)).Reverse;
-    end;
-  end  
-  else  
-    if from<0 then
-    begin
-      count -= abs(from+1) div step + 1;
-      Result := Self.Where((x,i)->(i-from) mod step = 0).Take(count)
-    end
-    else Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count);
+  if step <= 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_GREATER_0));
+
+  if from < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count)
 end;
 
 // -----------------------------------------------------
@@ -8113,18 +8268,148 @@ begin
 	Result := Self;  
 end;
 
+///-- 
+function CreateSliceFromListInternal<T>(Self: List<T>; from,step,count: integer): List<T>;
+begin
+  Result := new List<T>(count);
+  
+  var f := from;
+  for var i:=0 to count-1 do
+  begin
+    Result.Add(Self[f]);
+    f += step;
+  end;
+end;
+
+///-- 
+procedure CorrectCountForSlice(Len,from,step: integer; var count: integer);
+begin
+  if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if count < 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_COUNT_MUST_BE_GREATER_0));
+
+  if (from < 0) or (from > Len - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Len - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;
+end;
+
+///-- 
+function SliceListImpl<T>(Self: List<T>; from,step,count: integer): List<T>;
+begin
+  CorrectCountForSlice(Self.Count,from,step,count);
+  {if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Self.Count - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Self.Count - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;}
+    
+  Result := CreateSliceFromListInternal(Self,from,step,count);
+end;
+
 /// Возвращает срез списка от индекса from с шагом step
 function Slice<T>(Self: List<T>; from,step: integer): List<T>; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step).ToList;
+  Result := SliceListImpl(Self,from,step,integer.MaxValue);
 end;
 
 /// Возвращает срез списка от индекса from с шагом step длины не более count
 function Slice<T>(Self: List<T>; from,step,count: integer): List<T>; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step,count).ToList;
+  Result := SliceListImpl(Self,from,step,count);
 end;
 
+/// Удаляет последний элемент. Если элементов нет, генерирует исключение
+function RemoveLast<T>(Self: List<T>): List<T>; extensionmethod;
+begin
+  Self.RemoveAt(Self.Count - 1);
+  Result := Self;
+end;
+
+///--
+function CalcCountForSystemSlice(situation: integer; Len: integer; var from,&to: integer; step: integer): integer;
+begin
+// situation = 0 - все параметры присутствуют
+// situation = 1 - from отсутствует
+// situation = 2 - to отсутствует
+// situation = 3 - from и to отсутствуют
+  if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (situation=0) or (situation=2) then
+    if (from < 0) or (from > Len - 1) then
+      raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  if (situation=0) or (situation=1) then
+    if (&to < -1) or (&to > Len) then
+      raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
+
+  var count: integer;
+  
+  if step>0 then
+  begin
+    case situation of
+  1: from := 0;
+  2: &to := Len;
+  3: begin
+       from := 0;
+       &to := Len;
+     end;
+    end;  
+  
+    var cnt := &to - from;
+    if cnt<=0 then 
+      count := 0
+    else count := (cnt-1) div step + 1;
+  end
+  else
+  begin
+    case situation of
+  1: from := Len - 1;
+  2: &to := -1;
+  3: begin
+       from := Len - 1;
+       &to := -1;
+     end;
+    end;  
+  
+    var cnt := from - &to;
+    if cnt<=0 then 
+      count := 0
+    else count := (cnt-1) div (-step) + 1;
+  end;
+  Result := count;
+end;
+
+///-- 
+function SystemSliceListImpl<T>(Self: List<T>; situation: integer; from,&to: integer; step: integer := 1): List<T>;
+begin
+  var count := CalcCountForSystemSlice(situation,Self.Count,from,&to,step);
+
+  Result := CreateSliceFromListInternal(Self,from,step,count);
+end;
+
+///--
+function SystemSlice<T>(Self: List<T>; situation: integer; from,&to: integer): List<T>; extensionmethod;
+begin
+  Result := SystemSliceListImpl(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSlice<T>(Self: List<T>; situation: integer; from,&to,step: integer): List<T>; extensionmethod;
+begin
+  Result := SystemSliceListImpl(Self,situation,from,&to,step);
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
@@ -8220,7 +8505,7 @@ begin
   Result := System.Array.FindIndex(self,p);  
 end;
 
-/// Возвращает в виде мессива все элементы, удовлетворяющие предикатуы
+/// Возвращает в виде массива все элементы, удовлетворяющие предикату
 function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
 begin
   Result := System.Array.FindAll(self,p);  
@@ -8268,18 +8553,69 @@ begin
   System.Array.Sort(self,cmp);  
 end;
 
+///-- 
+function CreateSliceFromArrayInternal<T>(Self: array of T; from,step,count: integer): array of T;
+begin
+  Result := new T[count];
+  
+  var f := from;
+  for var i:=0 to count-1 do
+  begin
+    Result[i] := Self[f];
+    f += step;
+  end;
+end;
+
+///-- 
+function SliceArrayImpl<T>(Self: array of T; from,step,count: integer): array of T;
+begin
+  {if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Self.Length - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Self.Length - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;}
+    
+  CorrectCountForSlice(Self.Length,from,step,count);  
+    
+  Result := CreateSliceFromArrayInternal(Self,from,step,count)
+end;
+
 /// Возвращает срез массива от индекса from с шагом step
 function Slice<T>(Self: array of T; from,step: integer): array of T; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step).ToArray;
+  Result := SliceArrayImpl(Self,from,step,integer.MaxValue);
 end;
 
 /// Возвращает срез массива от индекса from с шагом step длины не более count
 function Slice<T>(Self: array of T; from,step,count: integer): array of T; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step,count).ToArray;
+  Result := SliceArrayImpl(Self,from,step,count);
 end;
 
+///-- 
+function SystemSliceArrayImpl<T>(Self: array of T; situation: integer; from,&to: integer; step: integer := 1): array of T;
+begin
+  var count := CalcCountForSystemSlice(situation,Self.Length,from,&to,step);
+
+  Result := CreateSliceFromArrayInternal(Self,from,step,count)
+end;
+
+///--
+function SystemSlice<T>(Self: array of T; situation: integer; from,&to: integer): array of T; extensionmethod;
+begin
+  Result := SystemSliceArrayImpl(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSlice<T>(Self: array of T; situation: integer; from,&to,step: integer): array of T; extensionmethod;
+begin
+  Result := SystemSliceArrayImpl(Self,situation,from,&to,step);
+end;
 
 // -----------------------------------------------------
 //>>     Методы расширения типа integer # Extension methods for integer
@@ -8383,6 +8719,17 @@ function TruncBigInteger(Self: real): BigInteger; extensionmethod;
 begin
   Result := TruncBigInteger(Self);
 end;
+
+/// Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки
+function ToString(Self: real; frac: integer): string; extensionmethod;
+begin
+  if frac<0 then
+    raise new System.ArgumentOutOfRangeException('frac','frac<0');
+  if frac>=100 then
+    raise new System.ArgumentOutOfRangeException('frac','frac>=100');
+  Result := Format('{0:f'+frac+'}',Self)
+end;
+
 
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
@@ -8520,13 +8867,13 @@ end;
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
 function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
 begin
-	Result := (new Regex (reg, options)).Matches(Self).Cast&<Match>();
+	Result := (new Regex(reg, options)).Matches(Self).Cast&<Match>();
 end;
 
 /// Ищет в указанной строке первое вхождение регулярного выражения и возвращает его в виде строки
 function MatchValue(Self: string; reg: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
-	Result := (new Regex (reg, options)).Match(Self).Value;
+	Result := (new Regex(reg, options)).Match(Self).Value;
 end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности строк
@@ -8566,17 +8913,72 @@ begin
   else Result := Self;
 end;
 
+///-- 
+function CreateSliceFromStringInternal(Self: string; from,step,count: integer): string;
+begin
+  var res := new StringBuilder(count);
+  
+  for var i:=0 to count-1 do
+  begin
+    res.Append(Self[from]);
+    from += step;
+  end;
+  Result := res.ToString;
+end;
+
+///-- 
+function SliceStringImpl(Self: string; from,step,count: integer): string;
+begin
+  {if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  if (from < 0) or (from > Self.Length - 1) then
+    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  var cnt := step > 0 ? Self.Length - from : from + 1; 
+  var cntstep := (cnt-1) div abs(step) + 1;
+  if count > cntstep then 
+    count := cntstep;}
+    
+  CorrectCountForSlice(Self.Length,from,step,count);
+  
+  Result := CreateSliceFromStringInternal(Self,from+1,step,count);
+end;
+
 /// Возвращает срез строки от индекса from с шагом step
 function Slice(Self: string; from,step: integer): string; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step).JoinIntoString('');
+  Result := SliceStringImpl(Self,from,step,integer.MaxValue);
 end;
 
 /// Возвращает срез строки от индекса from с шагом step длины не более count
 function Slice(Self: string; from,step,count: integer): string; extensionmethod;
 begin
-  Result := Self.AsEnumerable.Slice(from,step,count).JoinIntoString('');
+  Result := SliceStringImpl(Self,from,step,count);
 end;
+
+///-- 
+function SystemSliceStringImpl(Self: string; situation: integer; from,&to: integer; step: integer := 1): string;
+begin
+  var fromv := from-1;
+  var tov := &to-1;
+  var count := CalcCountForSystemSlice(situation,Self.Length,fromv,tov,step);
+
+  Result := CreateSliceFromStringInternal(Self,fromv+1,step,count)
+end;
+
+///--
+function SystemSlice(Self: string; situation: integer; from,&to: integer): string; extensionmethod;
+begin
+  Result := SystemSliceStringImpl(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSlice(Self: string; situation: integer; from,&to,step: integer): string; extensionmethod;
+begin
+  Result := SystemSliceStringImpl(Self,situation,from,&to,step);
+end;
+
 
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func
@@ -8663,34 +9065,34 @@ end;
 // Дополнения февраль 2016
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],v);
-// end;
+function Add<T1, T2, T3> (Self: (T1,T2); v: T3): (T1,T2,T3); extensionmethod;
+begin
+  Result := (Self[0],Self[1],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],v);
-// end;
+function Add<T1, T2, T3, T4> (Self: (T1,T2,T3); v: T4): (T1,T2,T3,T4); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],v);
-// end;
+function Add<T1, T2, T3, T4, T5> (Self: (T1,T2,T3,T4); v: T5): (T1,T2,T3,T4,T5); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
-//end;
+function Add<T1, T2, T3, T4, T5, T6> (Self: (T1,T2,T3,T4,T5); v: T6): (T1,T2,T3,T4,T5,T6); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],v);
+end;
 
 // Добавляет поле к кортежу
-// function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
-// begin
-//  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
-// end;
+function Add<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7): (T1,T2,T3,T4,T5,T6,T7); extensionmethod;
+begin
+  Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
+end;
 
 {// Определяет, есть ли указанный элемент в массиве
  function Contains<T>(self: array of T; x: T): boolean; extensionmethod;

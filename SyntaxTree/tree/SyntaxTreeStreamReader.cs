@@ -442,6 +442,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new dot_question_node();
 				case 210:
 					return new slice_expr();
+				case 211:
+					return new no_type();
 			}
 			return null;
 		}
@@ -530,8 +532,9 @@ namespace PascalABCCompiler.SyntaxTree
 					_statement_list.subnodes.Add(_read_node() as statement);
 				}
 			}
-			_statement_list.left_logical_bracket = _read_node() as syntax_tree_node;
-			_statement_list.right_logical_bracket = _read_node() as syntax_tree_node;
+			_statement_list.left_logical_bracket = _read_node() as token_info;
+			_statement_list.right_logical_bracket = _read_node() as token_info;
+			_statement_list.expr_lambda_body = br.ReadBoolean();
 		}
 
 
@@ -3391,6 +3394,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			_function_lambda_definition.lambda_visit_mode = (LambdaVisitMode)br.ReadByte();
 			_function_lambda_definition.substituting_node = _read_node() as syntax_tree_node;
+			_function_lambda_definition.usedkeyword = (int)br.ReadByte();
 		}
 
 
@@ -3748,6 +3752,17 @@ namespace PascalABCCompiler.SyntaxTree
 			_slice_expr.from = _read_node() as expression;
 			_slice_expr.to = _read_node() as expression;
 			_slice_expr.step = _read_node() as expression;
+		}
+
+
+		public void visit(no_type _no_type)
+		{
+			read_no_type(_no_type);
+		}
+
+		public void read_no_type(no_type _no_type)
+		{
+			read_type_definition(_no_type);
 		}
 
 	}

@@ -1,19 +1,19 @@
-//CompilerController
+п»ї//CompilerController
 
 %PREFIX%=VPP_COMPCONTR_
 
-NAME=Управление компилятором
-DESCRIPTION=Управление компилятором
-FORMNAME=Управление компилятором
-DISABLE_PCU_READ=Отключить чтение PCU (Rebuild)
-DISABLE_ADD_STANDART_UNTS=Отключить добавление стандартных модулей
-DISABLE_SEMANTIC_ANALYSIS=Отключить семантический анализ
-DISABLE_PCU_SAVING=Отключить сохранение PCU
-DISABLE_CODE_GENERATION=Отключить генерацию кода
-DISABLE_SKIP_PCU_ERRORS=Не пропускать ошибки работы с PCU файлами
-DISABLE_SKIP_INTERNALERRORS_IF_SYNTAXTREE_IS_CORRUPT=Не пропускать внутренние ошибки если дерево испорчено
-RUN_ILDASM=Запустить ILDASM
-RUN_DBGCLR=Запустить DbgCLR
-RESTART_COMPILER=Перезапустить компилятор
-COMPILER_MESSAGES=Сообщения компилятора
-NOT_USE_REMOTE_COMPILER=Не запускать компилятор в отдельном процессе
+NAME=РЈРїСЂР°РІР»РµРЅРёРµ РєРѕРјРїРёР»СЏС‚РѕСЂРѕРј
+DESCRIPTION=РЈРїСЂР°РІР»РµРЅРёРµ РєРѕРјРїРёР»СЏС‚РѕСЂРѕРј
+FORMNAME=РЈРїСЂР°РІР»РµРЅРёРµ РєРѕРјРїРёР»СЏС‚РѕСЂРѕРј
+DISABLE_PCU_READ=РћС‚РєР»СЋС‡РёС‚СЊ С‡С‚РµРЅРёРµ PCU (Rebuild)
+DISABLE_ADD_STANDART_UNTS=РћС‚РєР»СЋС‡РёС‚СЊ РґРѕР±Р°РІР»РµРЅРёРµ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… РјРѕРґСѓР»РµР№
+DISABLE_SEMANTIC_ANALYSIS=РћС‚РєР»СЋС‡РёС‚СЊ СЃРµРјР°РЅС‚РёС‡РµСЃРєРёР№ Р°РЅР°Р»РёР·
+DISABLE_PCU_SAVING=РћС‚РєР»СЋС‡РёС‚СЊ СЃРѕС…СЂР°РЅРµРЅРёРµ PCU
+DISABLE_CODE_GENERATION=РћС‚РєР»СЋС‡РёС‚СЊ РіРµРЅРµСЂР°С†РёСЋ РєРѕРґР°
+DISABLE_SKIP_PCU_ERRORS=РќРµ РїСЂРѕРїСѓСЃРєР°С‚СЊ РѕС€РёР±РєРё СЂР°Р±РѕС‚С‹ СЃ PCU С„Р°Р№Р»Р°РјРё
+DISABLE_SKIP_INTERNALERRORS_IF_SYNTAXTREE_IS_CORRUPT=РќРµ РїСЂРѕРїСѓСЃРєР°С‚СЊ РІРЅСѓС‚СЂРµРЅРЅРёРµ РѕС€РёР±РєРё РµСЃР»Рё РґРµСЂРµРІРѕ РёСЃРїРѕСЂС‡РµРЅРѕ
+RUN_ILDASM=Р—Р°РїСѓСЃС‚РёС‚СЊ ILDASM
+RUN_DBGCLR=Р—Р°РїСѓСЃС‚РёС‚СЊ DbgCLR
+RESTART_COMPILER=РџРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ РєРѕРјРїРёР»СЏС‚РѕСЂ
+COMPILER_MESSAGES=РЎРѕРѕР±С‰РµРЅРёСЏ РєРѕРјРїРёР»СЏС‚РѕСЂР°
+NOT_USE_REMOTE_COMPILER=РќРµ Р·Р°РїСѓСЃРєР°С‚СЊ РєРѕРјРїРёР»СЏС‚РѕСЂ РІ РѕС‚РґРµР»СЊРЅРѕРј РїСЂРѕС†РµСЃСЃРµ

@@ -142,6 +142,10 @@
       <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
+    <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
+      <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
+      <Name>SyntaxTreeConverters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Name>SyntaxTree</Name>
       <Project>{C2CAC65A-B2AE-4CCC-B067-E6B8E75DF73A}</Project>
@@ -177,6 +181,7 @@
     <Compile Include="string_constants.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

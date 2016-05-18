@@ -359,7 +359,7 @@ namespace CodeCompletion
                 def_prop_off = br.ReadInt32();
             }
             ReadDebugInfo();
-            ctn.si.describe = ctn.GetDescription();
+            ctn.si.description = ctn.GetDescription();
             //ñîçäàåì scope äëÿ êëàññà
             //ctn = new wrapped_common_type_node(this, base_type, name, tal, ns, scope, loc, offset);
             //members[offset] = ctn;
@@ -723,7 +723,7 @@ namespace CodeCompletion
             {
                ts.AddGenericInstanciation(GetTypeReference());
             }
-            ts.si.describe = ts.ToString();
+            ts.si.description = ts.ToString();
             return ts;
         }
 		

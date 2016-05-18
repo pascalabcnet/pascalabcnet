@@ -165,17 +165,17 @@ namespace VisualPascalABC
                         if (dc.is_compiled)
                         {
                             //CodeCompletion.CodeCompletionController.comp_modules.Remove(FileName);
-                            if (tmp != null && tmp.stv.entry_scope != null)
+                            if (tmp != null && tmp.visitor.entry_scope != null)
                             {
-                                tmp.stv.entry_scope.Clear();
-                                if (tmp.stv.cur_scope != null)
-                                    tmp.stv.cur_scope.Clear();
+                                tmp.visitor.entry_scope.Clear();
+                                if (tmp.visitor.cur_scope != null)
+                                    tmp.visitor.cur_scope.Clear();
                             }
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                             recomp_files[FileName] = FileName;
                             open_files[FileName] = false;
                             if (ParseInformationUpdated != null)
-                                ParseInformationUpdated(dc.stv.entry_scope, FileName);
+                                ParseInformationUpdated(dc.visitor.entry_scope, FileName);
                         }
                         else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
@@ -187,19 +187,19 @@ namespace VisualPascalABC
                     CodeCompletion.SymScope ss = null;
                     if (dc != null)
                     {
-                        if (dc.stv.entry_scope != null) ss = dc.stv.entry_scope;
-                        else if (dc.stv.impl_scope != null) ss = dc.stv.impl_scope;
+                        if (dc.visitor.entry_scope != null) ss = dc.visitor.entry_scope;
+                        else if (dc.visitor.impl_scope != null) ss = dc.visitor.impl_scope;
                         int j = 0;
                         while (j < 2)
                         {
                             if (j == 0)
                             {
-                                ss = dc.stv.entry_scope;
+                                ss = dc.visitor.entry_scope;
                                 j++;
                             }
                             else
                             {
-                                ss = dc.stv.impl_scope;
+                                ss = dc.visitor.impl_scope;
                                 j++;
                             }
                             if (ss != null)
@@ -227,9 +227,9 @@ namespace VisualPascalABC
                                             }*/
                                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;
                                             recomp_files[FileName] = FileName;
-                                            ss.used_units[i] = dc.stv.entry_scope;
+                                            ss.used_units[i] = dc.visitor.entry_scope;
                                             if (ParseInformationUpdated != null)
-                                                ParseInformationUpdated(dc.stv.entry_scope, FileName);
+                                                ParseInformationUpdated(dc.visitor.entry_scope, FileName);
                                         }
                                         else if (CodeCompletion.CodeCompletionController.comp_modules[FileName] == null)
                                             CodeCompletion.CodeCompletionController.comp_modules[FileName] = dc;

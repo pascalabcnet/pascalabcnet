@@ -1,12 +1,9 @@
-// Пример иллюстрирует всевозможные типы контейнеров, 
+﻿// Пример иллюстрирует всевозможные типы контейнеров, 
 // по которым можно перемещаться с помощью оператора foreach
-
-uses System.Collections.Generic;
 
 const n = 10;
 
 var 
-  x: integer;
   a: array [1..n] of integer;
   b: array of integer;
   s: set of integer;
@@ -16,8 +13,8 @@ begin
   for var i:=1 to n do 
     a[i] := Random(100);
   // Цикл foreach по статическому массиву
-  foreach x in a do
-    write(x,' ');
+  foreach var x in a do
+    Print(x);
   writeln;  
     
   SetLength(b,n);
@@ -25,20 +22,22 @@ begin
     b[i] := Random(100);
   
   // Цикл foreach по динамическому массиву
-  foreach x in b do
-    write(x,' ');
+  foreach var x in b do
+    Print(x);
   writeln;  
   
   s := [2..5,10..14];
-  foreach x in s do
-    write(x,' ');
+  // Цикл foreach по множеству
+  foreach var x in s do
+    Print(x);
   writeln;  
   
   l := new List<integer>;
   l.AddRange(b);
   l.Reverse;
-  foreach x in l do
-    write(x,' ');
+  // Цикл foreach по списку
+  foreach var x in l do
+    Print(x);
   writeln;  
   
 end.

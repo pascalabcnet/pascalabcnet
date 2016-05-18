@@ -2374,6 +2374,127 @@
           </Node>
         </Items>
       </Node>
+      <Node Name="Slices">
+        <Items>
+          <Node Name="Slice&lt;T&gt;(Self: sequence of T">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Slice&lt;T&gt;(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : sequence of T ; from , step : integer ) : sequence of T extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Slice&lt;T&gt;(Self: List&lt;T&gt;">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Slice&lt;T&gt;(Self: List&lt;T&gt;; from,step,count: integer): List&lt;T&gt;; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt; extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Slice&lt;T&gt;(Self: array of T">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Slice&lt;T&gt;(Self: array of T; from,step: integer): array of T; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step : integer ) : array of T extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Slice(Self: string;">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Slice(Self: string; from,step: integer): string; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Slice ( Self : string ; from , step : integer ) : string extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="CalcCountForSystemSlice">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function CalcCountForSystemSlice(situation: integer; Len: integer; var from,&amp;to: integer; step: integer): integer;</Text>
+            <OCtx>
+              <i Type="Method">function CalcCountForSystemSlice ( situation : integer ; Len : integer ; var from , &amp;to : integer ; step : integer ) : integer</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="SliceListImpl&lt;T&gt;(Self: List&lt;T&gt;">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; from,step,count: integer): List&lt;T&gt;;</Text>
+            <OCtx>
+              <i Type="Method">function SliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt;</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="SliceArrayImpl&lt;T&gt;(Self: array of T">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SliceArrayImpl&lt;T&gt;(Self: array of T; from,step,count: integer): array of T;</Text>
+            <OCtx>
+              <i Type="Method">function SliceArrayImpl &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="SliceStringImpl(Self: string">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SliceStringImpl(Self: string; from,step,count: integer): string;</Text>
+            <OCtx>
+              <i Type="Method">function SliceStringImpl ( Self : string ; from , step , count : integer ) : string</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="SystemSliceListImpl">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SystemSliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; situation: integer; from,&amp;to: integer; step: integer := 1): List&lt;T&gt;;</Text>
+            <OCtx>
+              <i Type="Method">function SystemSliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : List &lt; T &gt;</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="SystemSliceArrayImpl">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SystemSliceArrayImpl&lt;T&gt;(Self: array of T; situation: integer; from,&amp;to: integer; step: integer := 1): array of T;</Text>
+            <OCtx>
+              <i Type="Method">function SystemSliceArrayImpl &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="SystemSliceStringImpl">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function SystemSliceStringImpl(Self: string; situation: integer; from,&amp;to: integer; step: integer := 1): string;</Text>
+            <OCtx>
+              <i Type="Method">function SystemSliceStringImpl ( Self : string ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : string</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="CreateSliceFromArrayInternal">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function CreateSliceFromArrayInternal&lt;T&gt;(Self: array of T; from,step,count: integer): array of T;</Text>
+            <OCtx>
+              <i Type="Method">function CreateSliceFromArrayInternal &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="CreateSliceFromStringInternal">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function CreateSliceFromStringInternal&lt;T&gt;(Self: string; from,count,step: integer): string;</Text>
+            <OCtx>
+              <i Type="Method">function CreateSliceFromStringInternal ( Self : string ; from , count , step : integer ) : string</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
       <Node Name="read_lexem">
         <FileName>\PABCSystem.pas</FileName>
         <Text>function read_lexem: string;// SSM 08.03.11 - пытаюсь исправить с peekом ситуацию с вводом '1 hello'. Должно работать</Text>
@@ -2496,15 +2617,6 @@
           <i Type="ClassMethod">procedure Dispose ( ) virtual</i>
           <i Type="ClassMethod">procedure Reset ( )</i>
         </ICtx>
-      </Node>
-      <Node Name="Slice&lt;T&gt;(Self: sequence of T">
-        <FileName>\PABCSystem.pas</FileName>
-        <Text>function Slice&lt;T&gt;(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;</Text>
-        <OCtx>
-          <i Type="Method">function Slice &lt; T &gt; ( Self : sequence of T ; from , step : integer ) : sequence of T extensionmethod</i>
-          <i Type="PAS_TreeNode">
-          </i>
-        </OCtx>
       </Node>
     </Items>
   </Node>

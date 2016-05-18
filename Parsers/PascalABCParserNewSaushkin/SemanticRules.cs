@@ -375,16 +375,16 @@ namespace GPPGParserScanner
 
         public statement_list NewLambdaBody(expression expr_l1, LexLocation loc)
         {
-            var _statement_list = new statement_list();
-			var id = new ident("result");
-			var _op_type_node = new op_type_node(Operators.Assignment);
+            var sl = new statement_list();
+            sl.expr_lambda_body = true;
+            var id = new ident("result");
+			var op = new op_type_node(Operators.Assignment);
 			//_op_type_node.source_context = parsertools.GetTokenSourceContext();
-			var _assign = new assign((addressed_value)id, expr_l1, _op_type_node.type);
-			parsertools.create_source_context(_assign, id, expr_l1);
-			_statement_list.subnodes.Add((statement)_assign);
-            _statement_list.source_context = loc;
-			//block _block = new block(null, _statement_list);
-			return _statement_list;
+			var ass = new assign(id, expr_l1, op.type);
+			parsertools.create_source_context(ass, id, expr_l1);
+            sl.subnodes.Add(ass);
+            sl.source_context = loc;
+			return sl;
         }
     } 
 }

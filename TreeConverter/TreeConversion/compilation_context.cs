@@ -41,7 +41,6 @@ namespace PascalABCCompiler.TreeConverter
         public Stack<common_type_node> type_stack; // Для вложенных типов
         public statement_list_stack stlist_stack;
         public semantic_node ret_value; // Возвращаемое значение класса returner
-
         //LambdaHelper.Reset(); // Пока не знаю, что с этим делать
     }
 	
@@ -286,6 +285,7 @@ namespace PascalABCCompiler.TreeConverter
             ShortStringTypes.Clear();
             TypedSets.Clear();
             _compiled_tn = null;
+            _explicit_interface_type = null;
             _ctt = null;
             allow_inherited_ctor_call = false;
             _types_predefined.Clear();
@@ -297,6 +297,11 @@ namespace PascalABCCompiler.TreeConverter
             SavedContext = null;
             SavedContextStack.Clear();
             compiled_tc_cache.Clear();
+            extension_method = false;
+            _last_created_function = null;
+            in_parameters_block = false;
+            is_order_independed_method_description = false;
+            
         }
         
         public bool inStaticArea()
@@ -917,7 +922,7 @@ namespace PascalABCCompiler.TreeConverter
                 while (si != null)
                 {
                     compar = si.sym_info as function_node;
-                    if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar, false))
+                    if (fn != compar && convertion_data_and_alghoritms.function_eq_params(fn, compar))
                         //if (fn is common_namespace_function_node && compar is common_namespace_function_node && (fn as common_namespace_function_node).comprehensive_namespace == (compar as common_namespace_function_node).comprehensive_namespace)
 
                         AddError(new FunctionDuplicateDefinition(compar, fn));
@@ -1442,34 +1447,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (ShortStringTypes.ContainsKey(length))
                 return ShortStringTypes[length];
-            //type_node base_type = SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node;
-            //check_name_free(name, def_loc);
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(null, SystemLibrary.SystemLibrary.string_type.Scope);
             short_string_type_node tctn = new short_string_type_node(//SemanticTree.type_access_level.tal_public, _cmn,
                 scope, def_loc, length);
-            //tctn.IsFictive = true;
-            //set_field_access_level(SemanticTree.field_access_level.fal_public);
-            //_cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
-            //tctn.internal_is_value = false;//base_type.is_value;
-            //tctn.is_class = false;//base_type.is_class;
-            //common_property_node cpn = new common_property_node(compiler_string_consts.index_property_pascal_array_name,tctn,SystemLibrary.SystemLibrary.char_type,SystemLibrary.SystemLibInitializer.GetCharInShortStringProcedure.sym_info as function_node,
-            //                                                    null,null,SemanticTree.field_access_level.fal_public,SemanticTree.polymorphic_state.ps_common);
-           	//tctn.default_property = cpn;
-            //SystemLibrary.SystemLibrary.make_type_conversion(tctn,SystemLibrary.SystemLibrary.string_type,type_compare.less_type,SemanticTree.basic_function_type.none,true);
-            //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibrary.string_type,tctn,type_compare.greater_type,SemanticTree.basic_function_type.none,true);
-            //SystemLibrary.SystemLibrary.make_equivalence_operator(tctn);
-            //SystemLibrary.SystemLibrary.make_not_equivalence_operator(tctn);
             tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
             tctn.add_name(compiler_string_consts.plus_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_add));
-            //tctn.add_name(compiler_string_consts.eq_name,new SymbolInfo(SystemLibrary.SystemLibrary));
-            //tctn.add_name(compiler_string_consts.noteq_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_type.find_in_type(compiler_string_consts.noteq_name).sym_info as function_node));
-            /*tctn.add_name(compiler_string_consts.smeq_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_type.find_in_type(compiler_string_consts.smeq_name).sym_info as function_node));
-            tctn.add_name(compiler_string_consts.sm_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_type.find_in_type(compiler_string_consts.sm_name).sym_info as function_node));
-            tctn.add_name(compiler_string_consts.greq_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_type.find_in_type(compiler_string_consts.greq_name).sym_info as function_node));
-            tctn.add_name(compiler_string_consts.gr_name,new SymbolInfo(SystemLibrary.SystemLibrary.string_type.find_in_type(compiler_string_consts.gr_name).sym_info as function_node));*/
-            //_ctn = tctn;
-            //SystemLibrary.SystemLibrary.init_reference_type(tctn);
-            //converted_namespace.types.AddElement(tctn);
             tctn.scope.AddSymbol(compiler_string_consts.plusassign_name,new SymbolInfo(make_short_string_plus_assign(tctn)));
             type_intersection_node inter = new type_intersection_node(type_compare.greater_type);
             inter.another_to_this = new type_conversion(SystemLibrary.SystemLibrary.char_to_string);
@@ -1491,9 +1473,7 @@ namespace PascalABCCompiler.TreeConverter
             if (top_function != null)
                 tctn.defined_in_scope = top_function.scope;
             set_field_access_level(SemanticTree.field_access_level.fal_public);
-            //_cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
             tctn.SetBaseType(SemanticRules.StructBaseType);
-            //_cmn.types.AddElement(tctn);
             if (_ctn != null) type_stack.Push(_ctn);
             add_type(name, tctn, def_loc);
             _ctn = tctn;
@@ -1501,10 +1481,6 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibrary.init_reference_type(tctn);
             tctn.internal_is_value = true;
             return tctn;
-
-            /*tctn.SetName(BuildName(tctn.name));
-_cmn.scope.AddSymbol(tctn.name, new SymbolInfo(tctn));
-_cmn.types.AddElement(tctn);*/
 
         }
 
@@ -1964,13 +1940,6 @@ _cmn.types.AddElement(tctn);*/
             tctn.internal_is_value = true;
             
             add_convertions_to_enum_type(tctn);
-            //SystemLibrary.SystemLibrary.add_funtion_to_type(compiler_string_consts.gr_name, tctn, enum_gr);
-			//SystemLibrary.SystemLibrary.add_funtion_to_type(compiler_string_consts.greq_name, tctn, enum_greq);
-			//SystemLibrary.SystemLibrary.add_funtion_to_type(compiler_string_consts.sm_name, tctn, enum_sm);
-			//SystemLibrary.SystemLibrary.add_funtion_to_type(compiler_string_consts.smeq_name, tctn, enum_smeq);
-			//SystemLibrary.SystemLibrary.add_funtion_to_type(compiler_string_consts.eq_name, tctn, SystemLibrary.SystemLibrary.int_eq);
-			//SystemLibrary.SystemLibrary.add_funtion_to_type(compiler_string_consts.noteq_name, tctn, SystemLibrary.SystemLibrary.int_noteq);
-            //_cmn.types.AddElement(tctn);
             if (_ctn != null) type_stack.Push(_ctn);
             add_type(name, tctn, def_loc);
             _ctn = tctn;
@@ -1978,68 +1947,10 @@ _cmn.types.AddElement(tctn);*/
             return tctn;
         }
 
-        //(ssyy) эта функция нигде не вызывается из-за изменения концепции конструкторов
-        /*
-		public void make_constructor()
-		{
-#if (DEBUG)
-			if (converting_block()!=block_type.function_block)
-			{
-				throw new CompilerInternalError("Create constructor call without function");
-			}
-			if (_func_stack.top().node_location_kind!=SemanticTree.node_location_kind.in_class_location)
-			{
-				throw new CompilerInternalError("Create constructor applied to non class method");
-			}
-#endif
-			common_function_node top_func=_func_stack.top();
-			
-			top_func.return_value_type=_ctn;
-
-			common_method_node top_method=(common_method_node)top_func;
-
-			common_method_node cmn=new common_method_node(top_func.name,_ctn,top_method.loc,_ctn,
-                SemanticTree.polymorphic_state.ps_static,_fal,top_func.scope);
-			cmn.is_constructor=true;
-			cmn.is_overload=top_function.is_overload;
-
-            //parameter_list pl = new parameter_list();
-            foreach (common_parameter pr in top_method.parameters)
-            {
-                common_parameter new_par = new common_parameter(pr.name, pr.type, pr.parameter_type, cmn, pr.concrete_parameter_type,
-                    pr.default_value, pr.loc);
-                cmn.parameters.AddElement(new_par);
-            }
-            //cmn.parameters.AddRange(top_method.parameters);
-			
-			statements_list stl=new statements_list(top_func.loc);
-			cmn.function_code=stl;
-			this_node thn=new this_node(_ctn,top_func.loc);
-            //ssyy -
-			common_method_call csmc=new common_method_call(top_method,thn,top_func.loc);
-			foreach(common_parameter cp in cmn.parameters)
-			{
-				common_parameter_reference cpr=new common_parameter_reference(cp,0,top_func.loc);
-				csmc.parameters.AddElement(cpr);
-			}
-			stl.statements.AddElement(csmc);
-            stl.statements.AddElement(new empty_statement(null));
-            //\ssyy -
-			_ctn.methods.AddElement(cmn);
-
-			top_method.pascal_associated_constructor=cmn;
-		}
-         */
-
 		public void close_var_definition_list(type_node tp, expression_node inital_value)
 		{
 			if (var_defs.Count==0)
 				return;
-//            foreach (var_definition_node vdn in var_defs)
-//            {
-//                vdn.type = tp;
-//                vdn.inital_value = GetInitalValueForVariable(vdn, inital_value);
-//            }
             int count = var_defs.Count;
             for (int i=0; i<count; i++)
             {
@@ -2096,12 +2007,6 @@ _cmn.types.AddElement(tctn);*/
                 {
                     if (vdn.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                 	{
-                		/*common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as common_namespace_function_node,null);
-        				cmc.parameters.AddElement(userInitalValue);
-        				cmc.parameters.AddElement(new int_const_node((vdn.type as short_string_type_node).Length,null));*/
-//                		expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(userInitalValue,SystemLibrary.SystemLibrary.string_type),new int_const_node((vdn.type as short_string_type_node).Length,null));
-//						expression_node varref2 = convertion_data_and_alghoritms.CreateVariableReference(vdn, null);
-//        				userInitalValue = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, cmc, null);
 						expression_node varref2 = convertion_data_and_alghoritms.CreateVariableReference(vdn, null);
 						userInitalValue = syntax_tree_visitor.find_operator(compiler_string_consts.assign_name, varref2, userInitalValue, null);
                 	}
@@ -2129,9 +2034,6 @@ _cmn.types.AddElement(tctn);*/
                 }
                 else if (vdn.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                 {
-//                	common_namespace_function_call cmc = new common_namespace_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as common_namespace_function_node,null);
-//        			cmc.parameters.AddElement(userInitalValue);
-//        			cmc.parameters.AddElement(new int_const_node((vdn.type as short_string_type_node).Length,null));
 					expression_node cmc = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node,null,convertion_data_and_alghoritms.convert_type(userInitalValue,SystemLibrary.SystemLibrary.string_type),new int_const_node((vdn.type as short_string_type_node).Length,null));
         			userInitalValue = cmc;
                 }
@@ -2169,50 +2071,11 @@ _cmn.types.AddElement(tctn);*/
                             userInitalValue = SystemLibrary.SystemLibrary.empty_string;
                     break;
             }
-            /*if (tp.type_special_kind == SemanticTree.type_special_kind.typed_file)
-                userInitalValue = syntax_tree_visitor.get_init_call_for_typed_file(vdn, tp.element_type);
-            else if (tp.type_special_kind == SemanticTree.type_special_kind.set_type)
-                userInitalValue = syntax_tree_visitor.get_init_call_for_set(vdn);
-            else
-                if (tp is short_string_type_node)
-                    userInitalValue = syntax_tree_visitor.get_init_call_for_short_string(vdn);
-                else
-                    if (tp == SystemLibrary.SystemLibrary.string_type && SemanticRules.InitStringAsEmptyString)
-                        userInitalValue = SystemLibrary.SystemLibrary.empty_string;*/
             return userInitalValue;
         }
 
 		public SymbolInfo find(string name)
 		{
-			/*switch (converting_block())
-			{
-				case block_type.function_block:
-				{
-					return _func_stack.top().find(name, CurrentScope);
-				}
-				case block_type.type_block:
-				{
-                    return _ctn.find(name, CurrentScope);
-				}
-				case block_type.namespace_block:
-				{
-					return _cmn.find(name);
-				}
-                /*case block_type.with_block:
-                {
-                    SymbolInfo si = null;
-                    for (int i=0; i<with_stack.Count; i++)
-                    {
-                        si = with_stack[i].Find(name,CurrentScope);
-                        if (si != null)
-                        {
-                            si.with_expr = with_expr_stack[i];
-                            return si;
-                        }
-                    }
-                    return _func_stack.top().find(name, CurrentScope);
-                }
-			}*/
             SymbolTable.Scope curscope = CurrentScope;
             SymbolInfo si = curscope.Find(name, curscope);
             if (si == null && _compiled_tn != null && curscope.TopScope != null)
@@ -2234,28 +2097,7 @@ _cmn.types.AddElement(tctn);*/
 		public SymbolInfo find_only_in_namespace(string name)
 		{
             SymbolInfo si = CurrentScope.FindOnlyInScope(name);
-            //(ssyy) Пока закомментировал, иначе не работает. Не знаю, нужна ли вообще здесь конвертация.
-            //if (_ctn != null && _ctn.base_generic_instance != null)
-            //{
-            //    return _ctn.base_generic_instance.ConvertSymbolInfo(si);
-            //}
             return si;
-			/*switch (converting_block())
-			{
-				case block_type.function_block:
-				{
-					return _func_stack.top().find_only_in_namespace(name);
-				}
-				case block_type.type_block:
-				{
-					return _ctn.Scope.FindOnlyInScope(name);
-				}
-				case block_type.namespace_block:
-				{
-					return _cmn.scope.FindOnlyInScope(name);
-				}
-			}*/
-			//return null;
 		}
 
         public void leave_interface_part()
@@ -2378,11 +2220,6 @@ _cmn.types.AddElement(tctn);*/
                 {
                     if (gpa.useful_for_pointers)
                     {
-                        /*common_namespace_function_call cnfc = new common_namespace_function_call(
-                            SystemLibrary.SystemLibInitializer.CheckCanUsePointerOnTypeProcedure.sym_info as common_namespace_function_node, null);
-                        expression_node ex = new typeof_operator(param, null);
-                        cnfc.parameters.AddElement(ex);
-                        stl.statements.AddElement(cnfc);*/
                         stl.statements.AddElement(CreateTypeCheckCall(SystemLibrary.SystemLibInitializer.CheckCanUsePointerOnTypeProcedure.sym_info, param));
                     }
                     if (gpa.useful_for_binary_files)
@@ -2760,7 +2597,7 @@ _cmn.types.AddElement(tctn);*/
                 {
                     fn = si.sym_info as function_node;
                     //Сверяем параметры и тип возвращаемого значения
-                    if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                    if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
                     {
                         //Нашли нужную функцию
                         common_method_node fn_common = fn as common_method_node;
@@ -2993,10 +2830,6 @@ _cmn.types.AddElement(tctn);*/
                                         AddError(cmn.loc, "FUNCTION_PREDEFINITION_WITHOUT_DEFINITION");
                                     }
                                 }
-                                //ssyy
-                                //Проверяем, что тип реализует заявленные интерфейсы.
-                                //check_implement_interfaces(ctn);
-                                //\ssyy
                             }
                             if (ctn.is_generic_type_definition && !ctn.IsInterface && !ctn.IsDelegate)
                             {
@@ -3037,17 +2870,6 @@ _cmn.types.AddElement(tctn);*/
                 }
             }
         }
-
-        /*public void block_defined_labels(List<label_node> lab_list)
-        {
-            foreach (label_node ln in lab_list)
-            {
-                if (ln.is_defined)
-                {
-                    ln.goto_blocked = true;
-                }
-            }
-        }*/
 
         //\ssyy
 
@@ -3190,19 +3012,6 @@ _cmn.types.AddElement(tctn);*/
 					{
                         
 						is_find_predefinition=true;
-						//Добавляем все описанные параметры
-                        /*
-						foreach(parameter par in compar.parameters)
-						{
-							//Тут, конечно, приведение типа параметра, но оно вроде всегда должно быть такого типа.
-							common_parameter intcpar=(common_parameter)par;
-                            common_parameter new_par = new common_parameter(intcpar.name, intcpar.type, intcpar.parameter_type,
-                                fn, intcpar.concrete_parameter_type, intcpar.default_value, intcpar.loc);
-                            fn.parameters.AddElement(new_par);
-							fn.scope.AddSymbol(new_par.name,new SymbolInfo(new_par));
-						}
-						compar.scope=fn.scope;
-                        */
 					}
 					else
 					{
@@ -3395,15 +3204,6 @@ _cmn.types.AddElement(tctn);*/
                     }
                 }
 
-                /*
-                compar.parameters.clear();
-                foreach (common_parameter pr in fn.parameters)
-                {
-                    pr.common_function = compar;
-                    compar.parameters.AddElement(pr);
-                }
-                */
-
 				_func_stack.push(compar);
 				compar.attributes.AddRange(fn.attributes);
 				//si.sym_info=fn;
@@ -3437,15 +3237,6 @@ _cmn.types.AddElement(tctn);*/
 				si=_func_stack.top().scope.FindOnlyInScope(fn.name);
 				_func_stack.push(temp);
 			}
-			//SymbolInfo si=find_only_in_namespace(fn.name);
-
-			//И эта проверка наверно не нужна, но пусть пока повисит
-			//Тем более с ней, наверное, быстрее работает
-			//Лучше удалю пока
-			//if (si.Next==null)
-			//{
-			//	return;
-			//}
 
 			while(si!=null)
 			{
@@ -3527,9 +3318,6 @@ _cmn.types.AddElement(tctn);*/
                     _cmn.runtime_types.AddElement(comp_tn);
                 }
             }
-            //_cmn.type_synonyms.Add(new type_synonym(name, tn, loc));
-			//_cmn.scope.AddSymbol(name,new SymbolInfo(tn));
-            //DS MODIFED 22.07.07
             CurrentScope.AddSymbol(name, new SymbolInfo(tn));
             if (tn is ref_type_node && converting_block() == block_type.namespace_block)
                 converted_namespace.ref_types.Add(tn as ref_type_node);

@@ -10,6 +10,7 @@
     File "..\bin\ParserTools.dll"
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
+    File "..\bin\SyntaxTreeConverters.dll"
 	File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
     File "..\bin\OptimizerConversion.dll"
@@ -43,6 +44,7 @@
     ${AddFile} "ParserTools.dll"
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
+    ${AddFile} "SyntaxTreeConverters.dll"
 	${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
@@ -63,7 +65,6 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\Arrays.pcu
-    File ..\bin\Lib\BFSystem.pcu
     File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
     File ..\bin\Lib\DMCollect.pcu
@@ -74,7 +75,6 @@
     File ..\bin\Lib\Events.pcu
     File ..\bin\Lib\FilesOperations.pcu
     File ..\bin\Lib\FormsABC.pcu
-    File ..\bin\Lib\GOLDParserEngine.pcu
     File ..\bin\Lib\GraphABC.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
@@ -154,7 +154,6 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\Arrays.pas
-    File ..\bin\Lib\BFSystem.pas
     File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
     File ..\bin\Lib\DMCollect.pas
@@ -165,7 +164,6 @@
     File ..\bin\Lib\Events.pas
     File ..\bin\Lib\FilesOperations.pas
     File ..\bin\Lib\FormsABC.pas
-    File ..\bin\Lib\GOLDParserEngine.pas
     File ..\bin\Lib\GraphABC.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
@@ -199,7 +197,6 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "Arrays.pas"
-    ${AddFile} "BFSystem.pas"
     ${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
     ${AddFile} "DMCollect.pas"
@@ -210,7 +207,6 @@
     ${AddFile} "Events.pas"
     ${AddFile} "FilesOperations.pas"
     ${AddFile} "FormsABC.pas"
-    ${AddFile} "GOLDParserEngine.pas"
     ${AddFile} "GraphABC.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"

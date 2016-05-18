@@ -25,7 +25,6 @@
     <name value="question_expr" />
     <name value="new_expr" />
     <name value="relop_expr" />
-    <name value="format_expr" />
     <name value="simple_expr" />
     <name value="as_is_expr" />
     <name value="term" />
@@ -35,7 +34,6 @@
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
-    <name value="lambda_function_body" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
@@ -192,7 +190,6 @@
     <name value="inclass_proc_func_decl" />
     <name value="inclass_proc_func_decl_noclass" />
     <name value="simple_fp_sect" />
-    <name value="func_decl_lambda" />
   </tag>
   <tag value="Операторы">
     <name value="stmt_or_expression" />
@@ -333,7 +330,6 @@
     <name value="simple_type_decl" />
   </tag>
   <tag value="Лямбда-выражения">
-    <name value="func_decl_lambda" />
     <name value="full_lambda_fp_list" />
     <name value="expr" />
     <name value="var_decl_part" />

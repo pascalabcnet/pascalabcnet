@@ -161,6 +161,8 @@ using System.CodeDom.Compiler;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
 using System.Reflection;
+//using SyntaxTreeChanger;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 
 namespace PascalABCCompiler
@@ -597,7 +599,7 @@ namespace PascalABCCompiler
         Ready, CompilationStarting, Reloading, ParserConnected,
         BeginCompileFile, BeginParsingFile, EndParsingFile, CompileInterface, CompileImplementation, EndCompileFile,
         ReadDLL, ReadPCUFile, SavePCUFile, CodeGeneration, CompilationFinished, PCUReadingError, PCUWritingError,
-        SemanticTreeConverterConnected, SemanticTreeConversion 
+        SemanticTreeConverterConnected, SemanticTreeConversion, SyntaxTreeConversion, SyntaxTreeConverterConnected
     }
 
     [Serializable()]
@@ -662,14 +664,9 @@ namespace PascalABCCompiler
 
     public delegate void ChangeCompilerStateEventDelegate(ICompiler sender, CompilerState State, string FileName);
         
-    public interface ISyntaxTreeChanger
-    {
-        void Change(SyntaxTree.syntax_tree_node sn);
-    }
-
     public class Compiler : MarshalByRefObject, ICompiler
 	{
-        public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
+        //public ISyntaxTreeChanger SyntaxTreeChanger = null; // SSM 17/08/15 - для операций над синтаксическим деревом после его построения
 
         public static string Version
         {
@@ -702,6 +699,15 @@ namespace PascalABCCompiler
         public override string ToString()
         {
             return Banner;
+        }
+
+        private SyntaxTreeConvertersController syntaxTreeConvertersController = null;
+        public SyntaxTreeConvertersController SyntaxTreeConvertersController
+        {
+            get
+            {
+                return syntaxTreeConvertersController;
+            }
         }
 
         private SemanticTreeConvertersController semanticTreeConvertersController = null;
@@ -917,13 +923,17 @@ namespace PascalABCCompiler
 
         public Compiler()
         {
+            //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange();
+
             OnChangeCompilerState += ChangeCompilerStateEvent;
             Reload();            
         }
         
         public Compiler(ICompiler comp, SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
         {
-        	this.ParsersController = comp.ParsersController;
+            //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange(); // SSM 01/05/16 - подключение изменяльщика синтаксического дерева
+
+            this.ParsersController = comp.ParsersController;
         	this.internalDebug = comp.InternalDebug;
         	OnChangeCompilerState += ChangeCompilerStateEvent;
         	if (SourceFilesProvider != null)
@@ -936,6 +946,7 @@ namespace PascalABCCompiler
         
         public Compiler(SourceFilesProviderDelegate SourceFilesProvider, ChangeCompilerStateEventDelegate ChangeCompilerState)
 		{
+            //SyntaxTreeChanger = new SyntaxTreeChanger.SyntaxTreeChange(); // SSM 01/05/16 - подключение изменяльщика синтаксического дерева
             OnChangeCompilerState += ChangeCompilerStateEvent;
             if (SourceFilesProvider != null)
                 this.sourceFilesProvider = SourceFilesProvider;
@@ -964,9 +975,15 @@ namespace PascalABCCompiler
             //PABCToCppCodeGeneratorsController = new PascalToCppConverter.Controller();
             SetSupportedSourceFiles();
             SetSupportedProjectFiles();
+
+            syntaxTreeConvertersController = new SyntaxTreeConvertersController(this);
+            syntaxTreeConvertersController.ChangeState += syntaxTreeConvertersController_ChangeState;
+            syntaxTreeConvertersController.AddConverters();
+
             semanticTreeConvertersController = new SemanticTreeConvertersController(this);
-            semanticTreeConvertersController.ChangeState += new SemanticTreeConvertersController.ChangeStateDelegate(semanticTreeConvertersController_ChangeState);
+            semanticTreeConvertersController.ChangeState += semanticTreeConvertersController_ChangeState;
             semanticTreeConvertersController.AddConverters();
+
             OnChangeCompilerState(this, CompilerState.Ready, null);    
         }
 
@@ -974,6 +991,19 @@ namespace PascalABCCompiler
         {
             if (OnChangeCompilerState != null)
                 OnChangeCompilerState(this, CompilerState.ParserConnected, Parser.GetType().Assembly.ManifestModule.FullyQualifiedName);
+        }
+
+        void syntaxTreeConvertersController_ChangeState(SyntaxTreeConvertersController.State State, ISyntaxTreeConverter SyntaxTreeConverter)
+        {
+            switch (State)
+            {
+                case SyntaxTreeConvertersController.State.Convert:
+                    OnChangeCompilerState(this, CompilerState.SyntaxTreeConversion, SyntaxTreeConverter.Name);
+                    break;
+                case SyntaxTreeConvertersController.State.ConnectConverter:
+                    OnChangeCompilerState(this, CompilerState.SyntaxTreeConverterConnected, SyntaxTreeConverter.Name);
+                    break;
+            }
         }
 
         void semanticTreeConvertersController_ChangeState(SemanticTreeConvertersController.State State, ISemanticTreeConverter SemanticTreeConverter)
@@ -2866,10 +2896,9 @@ namespace PascalABCCompiler
 
                 CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList);
 
-                if (errorsList.Count == 0) // SSM 17/08/15 - для преобразования синтаксических деревьев извне
+                if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
-                    if (SyntaxTreeChanger != null)
-                        SyntaxTreeChanger.Change(CurrentUnit.SyntaxTree);
+                    CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
                 }
 
                 if (errorsList.Count == 0 && need_gen_doc(CurrentUnit.SyntaxTree))

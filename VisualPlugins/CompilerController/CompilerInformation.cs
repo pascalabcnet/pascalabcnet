@@ -231,9 +231,8 @@ namespace VisualPascalABCPlugins
         
         void Button2Click(object sender, EventArgs e)
         {
-        	#if (DEBUG)
         	CodeCompletion.CodeCompletionTester.Test();
-        	#endif
+            MessageBox.Show("Done");
         }
         
         void CbRunMonoCheckedChanged(object sender, EventArgs e)
@@ -244,10 +243,8 @@ namespace VisualPascalABCPlugins
 
         private void button3_Click(object sender, EventArgs e)
         {
-#if (DEBUG)
             CodeCompletion.FormatterTester.Test();
-            MessageBox.Show("Finish");
-#endif
+            MessageBox.Show("Done");
         }
     }
 }

@@ -1455,10 +1455,20 @@ namespace PascalABCCompiler.NETGenerator
                 ICommonClassFieldNode icfn = dn as ICommonClassFieldNode;
                 if (icfn != null)
                 {
-                    FieldInfo finfo = helper.GetField(icfn).fi;
-                    Type ftype = GetTypeOfGenericInstanceField(t, finfo);
-                    FieldInfo fi = TypeBuilder.GetField(t, finfo);
-                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    FldInfo fldinfo = helper.GetField(icfn);
+                    if (!(fldinfo is GenericFldInfo))
+                    {
+                        FieldInfo finfo = fldinfo.fi;
+                        Type ftype = GetTypeOfGenericInstanceField(t, finfo);
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    }
+                    else
+                    {
+                        FieldInfo finfo = fldinfo.fi;
+                        FieldInfo fi = finfo;
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type);
+                    }
                     continue;
                 }
             }
@@ -2144,7 +2154,10 @@ namespace PascalABCCompiler.NETGenerator
             Type[] tpars = new Type[tcount];
             for (int i = 0; i < tcount; i++)
             {
-                tpars[i] = helper.GetTypeReference(igfi.generic_parameters[i]).tp;
+                TypeInfo ti = helper.GetTypeReference(igfi.generic_parameters[i]);
+                if (ti == null)
+                    return;
+                tpars[i] = ti.tp;
             }
             MethodInfo rez = mi.MakeGenericMethod(tpars);
             helper.AddMethod(igfi, rez);
@@ -2260,7 +2273,11 @@ namespace PascalABCCompiler.NETGenerator
                 if (parameters[i].is_params)
                     pb.SetCustomAttribute(TypeFactory.ParamArrayAttributeConstructor, new byte[] { 0x1, 0x0, 0x0, 0x0 });
                 if (default_value != null)
+                {
+                    if (default_value.GetType() != param_types[i + num] && param_types[i + num].IsEnum && (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX))
+                        default_value = Enum.ToObject(param_types[i + num], default_value);
                     pb.SetConstant(default_value);
+                }
                 if (func.functions_nodes.Length > 0)
                 {
                     FieldBuilder fb = null;
@@ -2331,7 +2348,7 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            if (funcs.Count > 0) il.Emit(OpCodes.Ldarga_S, (byte)(j + 1));
+                            if (funcs.Count > 0) il.Emit(OpCodes.Ldarg_S, (byte)(j + 1));
                             else il.Emit(OpCodes.Ldarg_S, (byte)j);
                         }
                         il.Emit(OpCodes.Stfld, fba[j]);
@@ -6475,7 +6492,8 @@ namespace PascalABCCompiler.NETGenerator
                 ret_type = TypeFactory.VoidType;
             else
             {
-                ret_type = helper.GetTypeReference(value.return_value_type).tp;
+                TypeInfo ti = helper.GetTypeReference(value.return_value_type);
+                ret_type = ti.tp;
                 if (IsNeedCorrectGetType(cur_ti, ret_type))
                 {
                     ret_type = ret_type.MakePointerType();

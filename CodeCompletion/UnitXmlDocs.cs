@@ -63,25 +63,25 @@ namespace CodeCompletion
 					if (ss.si.has_doc) continue;
 					if (ss is TypeScope)
 					{
-						ss.si.describe += "\n"+UnitDocCache.GetDocumentation(ss as TypeScope);
+						ss.si.description += "\n"+UnitDocCache.GetDocumentation(ss as TypeScope);
 						ss.si.has_doc = true;
 						dispatcher.Update(ss.si);
 					}
 					else if (ss is ElementScope)
 					{
-						ss.si.describe += "\n"+UnitDocCache.GetDocumentation(ss as ElementScope);
+						ss.si.description += "\n"+UnitDocCache.GetDocumentation(ss as ElementScope);
 						ss.si.has_doc = true;
 						dispatcher.Update(ss.si);
 					}
 					else if (ss is ProcScope)
 					{
-						ss.si.describe += "\n"+UnitDocCache.GetDocumentation(ss as ProcScope);
+						ss.si.description += "\n"+UnitDocCache.GetDocumentation(ss as ProcScope);
 						ss.si.has_doc = true;
 						dispatcher.Update(ss.si);
 					}
 					else if (ss is InterfaceUnitScope)
 					{
-						ss.si.describe += "\n"+UnitDocCache.GetDocumentation(ss as InterfaceUnitScope);
+						ss.si.description += "\n"+UnitDocCache.GetDocumentation(ss as InterfaceUnitScope);
 						ss.si.has_doc = true;
 						dispatcher.Update(ss.si);
 					}

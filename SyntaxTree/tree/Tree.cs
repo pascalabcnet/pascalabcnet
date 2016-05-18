@@ -255,21 +255,23 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket)
+		public statement_list(List<statement> _subnodes,token_info _left_logical_bracket,token_info _right_logical_bracket,bool _expr_lambda_body)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
+			this._expr_lambda_body=_expr_lambda_body;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,SourceContext sc)
+		public statement_list(List<statement> _subnodes,token_info _left_logical_bracket,token_info _right_logical_bracket,bool _expr_lambda_body,SourceContext sc)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
+			this._expr_lambda_body=_expr_lambda_body;
 			source_context = sc;
 		}
 		// Конструкторы списка
@@ -281,8 +283,9 @@ namespace PascalABCCompiler.SyntaxTree
 		// Окончание конструкторов списка
 
 		protected List<statement> _subnodes=new List<statement>();
-		protected syntax_tree_node _left_logical_bracket;
-		protected syntax_tree_node _right_logical_bracket;
+		protected token_info _left_logical_bracket;
+		protected token_info _right_logical_bracket;
+		protected bool _expr_lambda_body=new bool();
 
 		///<summary>
 		///Список операторов
@@ -302,7 +305,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Левая операторная скобка
 		///</summary>
-		public syntax_tree_node left_logical_bracket
+		public token_info left_logical_bracket
 		{
 			get
 			{
@@ -317,7 +320,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Правая операторная скобка
 		///</summary>
-		public syntax_tree_node right_logical_bracket
+		public token_info right_logical_bracket
 		{
 			get
 			{
@@ -326,6 +329,21 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right_logical_bracket=value;
+			}
+		}
+
+		///<summary>
+		///Поле, показывающее, что это - тело лямбда-выражения из одного выражения (созданное вызовом NewLambdaBody)
+		///</summary>
+		public bool expr_lambda_body
+		{
+			get
+			{
+				return _expr_lambda_body;
+			}
+			set
+			{
+				_expr_lambda_body=value;
 			}
 		}
 
@@ -453,10 +471,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left_logical_bracket = (syntax_tree_node)value;
+						left_logical_bracket = (token_info)value;
 						break;
 					case 1:
-						right_logical_bracket = (syntax_tree_node)value;
+						right_logical_bracket = (token_info)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -27243,7 +27261,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -27255,12 +27273,13 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
+			this._usedkeyword=_usedkeyword;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,SourceContext sc)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword,SourceContext sc)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -27272,6 +27291,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
+			this._usedkeyword=_usedkeyword;
 			source_context = sc;
 		}
 		// Конструкторы списка
@@ -27292,6 +27312,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected List<declaration> _defs;
 		protected LambdaVisitMode _lambda_visit_mode;
 		protected syntax_tree_node _substituting_node;
+		protected int _usedkeyword;
 
 		///<summary>
 		///
@@ -27440,6 +27461,21 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_substituting_node=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public int usedkeyword
+		{
+			get
+			{
+				return _usedkeyword;
+			}
+			set
+			{
+				_usedkeyword=value;
 			}
 		}
 
@@ -31165,6 +31201,100 @@ namespace PascalABCCompiler.SyntaxTree
 						break;
 					case 4:
 						step = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class no_type : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public no_type()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public no_type(type_definition_attr_list _attr_list)
+		{
+			this._attr_list=_attr_list;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public no_type(type_definition_attr_list _attr_list,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}

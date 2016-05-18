@@ -127,7 +127,7 @@ namespace VisualPascalABC
                         case PascalABCCompiler.SyntaxTree.access_modifer.internal_modifer:
                             return IconNumberInternalMethod;
                         default:
-                            if (si.describe != null && si.describe.Contains("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ")"))
+                            if (si.description != null && si.description.Contains("(" + PascalABCCompiler.StringResources.Get("CODE_COMPLETION_EXTENSION") + ")"))
                                 return IconNumberExtensionMethod;
                             return IconNumberMethod;
                     }

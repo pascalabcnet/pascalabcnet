@@ -8,6 +8,11 @@ begin
   Result := a;
 end;
 
+function test3(a: integer := 4; b: real := 2.3): integer;
+begin
+  Result := a;
+end;
+
 function string.test(a: integer := 6): integer;
 begin
   Result := a;
@@ -29,6 +34,7 @@ begin
 end;
 
 begin
+assert(test3=4);
 assert(test(2)=3);
 assert(test(2,4)=4);
 var j : integer := test2;
@@ -40,4 +46,6 @@ assert(s.test=6);
 var k := s.test;
 assert(k = 6);
 tt(ff);
+assert(ArrRandomReal <> nil);
+assert(ArrRandomReal.Any = true);
 end.

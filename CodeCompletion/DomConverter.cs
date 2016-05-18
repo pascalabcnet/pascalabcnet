@@ -21,7 +21,7 @@ namespace CodeCompletion
 
 	public class DomConverter
     {
-    	public DomSyntaxTreeVisitor stv;
+    	public DomSyntaxTreeVisitor visitor;
         //TreeConverterSymbolTable tcst;
         public CodeCompletionController controller;
         public bool is_compiled = false;
@@ -52,7 +52,7 @@ namespace CodeCompletion
         
         public DomConverter(CodeCompletionController controller)
         {
-        	stv = new DomSyntaxTreeVisitor(this);
+        	visitor = new DomSyntaxTreeVisitor(this);
         	this.controller = controller;
         	if (standard_units == null) InitModules();
         }
@@ -60,7 +60,7 @@ namespace CodeCompletion
     	public void ConvertToDom(compilation_unit cu)
         {
             CodeCompletionController.comp.CompilerOptions.SourceFileName = cu.file_name;
-            stv.Convert(cu);
+            visitor.Convert(cu);
            	is_compiled = true;
             cur_used_assemblies = (Hashtable)PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies.Clone();
    			return;
@@ -68,7 +68,7 @@ namespace CodeCompletion
 		
     	public bool IsAssembliesChanged()
     	{
-    		return stv.entry_scope.IsAssembliesChanged();
+    		return visitor.entry_scope.IsAssembliesChanged();
     	}
 
         public definition_node[] GetNamesAfterDot(expression expr, string str, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, ref definition_node root)
@@ -82,18 +82,18 @@ namespace CodeCompletion
         /// </summary>
         public SymInfo[] GetName(expression expr, string str, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, ref SymScope root)
         {
-            if (stv.cur_scope == null) return null;
+            if (visitor.cur_scope == null) return null;
             if (col + 1 > str.Length)
                 col -= str.Length;
-            SymScope si = stv.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
             if (si == null)
             {
-                si = stv.FindScopeByLocation(line, col + 1);
+                si = visitor.FindScopeByLocation(line, col + 1);
                 if (si == null)
                     return null;
             }
             SetCurrentUsedAssemblies();
-            ExpressionVisitor ev = new ExpressionVisitor(expr, si, stv);
+            ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
             si = ev.GetScopeOfExpression(true, false);
             root = si;
             if (si is ElementScope) root = (si as ElementScope).sc;
@@ -105,7 +105,7 @@ namespace CodeCompletion
                     SymInfo[] syms = si.GetNamesAsInObject(ev);
                     SymInfo[] ext_syms = null;
                     if (si is ElementScope)
-                        ext_syms = stv.cur_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
+                        ext_syms = visitor.cur_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
                     List<SymInfo> lst = new List<SymInfo>();
                     lst.AddRange(syms);
                     if (ext_syms != null)
@@ -135,8 +135,8 @@ namespace CodeCompletion
         
         public SymInfo[] GetOverridableMethods(int line, int col)
         {
-        	if (stv.cur_scope == null) return null;
-        	SymScope ss = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	if (visitor.cur_scope == null) return null;
+        	SymScope ss = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	if (ss == null) return null;
         	List<SymInfo> meths = new List<SymInfo>();
             SetCurrentUsedAssemblies();
@@ -166,11 +166,11 @@ namespace CodeCompletion
         
         public ProcScope[] GetNotImplementedMethodHeaders(int line, int col, ref Position pos)
         {
-        	if (stv.cur_scope == null) return null;
-        	SymScope ss = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	if (visitor.cur_scope == null) return null;
+        	SymScope ss = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	if (ss == null) return null;
         	List<ProcScope> meths = new List<ProcScope>();
-        	pos.file_name = this.stv.doc.file_name;
+        	pos.file_name = this.visitor.doc.file_name;
             SetCurrentUsedAssemblies();
         	if (ss is TypeScope && (ss as TypeScope).kind == SymbolKind.Class)
         	{
@@ -230,11 +230,11 @@ namespace CodeCompletion
         {
             try
             {
-                if (stv.cur_scope == null) return null;
-                SymScope ss = stv.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+                if (visitor.cur_scope == null) return null;
+                SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
                 if (ss == null) return null;
                 List<ProcScope> meths = new List<ProcScope>();
-                pos.file_name = this.stv.doc.file_name;
+                pos.file_name = this.visitor.doc.file_name;
                 SetCurrentUsedAssemblies();
                 if (ss is TypeScope && ((ss as TypeScope).kind == SymbolKind.Class || (ss as TypeScope).kind == SymbolKind.Struct))
                 {
@@ -333,8 +333,8 @@ namespace CodeCompletion
         /// </summary>
         public IBaseScope GetSymDefinition(expression expr, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword)
         {
-            if (stv.cur_scope == null) return null;
-            SymScope ss = stv.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            if (visitor.cur_scope == null) return null;
+            SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
             if (ss == null) return null;
             bool on_proc = false;
             if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
@@ -360,7 +360,7 @@ namespace CodeCompletion
             if (!on_proc)
             {
                 SetCurrentUsedAssemblies();
-                ExpressionVisitor ev = new ExpressionVisitor(expr, ss, stv);
+                ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
                 ss = ev.GetScopeOfExpression();
                 RestoreCurrentUsedAssemblies();
             }
@@ -372,8 +372,8 @@ namespace CodeCompletion
         /// </summary>
         public SymScope FindScopeByLocation(int line, int col)
         {
-        	if (stv.entry_scope != null)
-        	return stv.entry_scope.FindScopeByLocation(line,col);
+        	if (visitor.entry_scope != null)
+        	return visitor.entry_scope.FindScopeByLocation(line,col);
         	return null;
         }
         
@@ -382,7 +382,7 @@ namespace CodeCompletion
         /// </summary>
         public SymInfo[] GetNamespaces()
         {
-        	SymInfo[] elems = stv.entry_scope.GetNamesInAllTopScopes(true,null,false);
+        	SymInfo[] elems = visitor.entry_scope.GetNamesInAllTopScopes(true,null,false);
         	List<SymInfo> result_names = new List<SymInfo>();
         	result_names.AddRange(standard_units);
         	if (elems == null) return null;
@@ -399,18 +399,18 @@ namespace CodeCompletion
         /// </summary>
         public SymInfo[] GetNameByPattern(string pattern, int line, int col, bool all_names, int nest_level)
         {
-        	if (stv.cur_scope == null) return null;
-        	SymScope si = stv.FindScopeByLocation(line+1,col+1);
+        	if (visitor.cur_scope == null) return null;
+        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);
         	if (si == null)
         	{
-        		si = stv.FindScopeByLocation(line,col+1);
+        		si = visitor.FindScopeByLocation(line,col+1);
         		if (si == null)
-        		si = stv.cur_scope;
+        		si = visitor.cur_scope;
         	}
         	SymInfo[] elems = null;
         	if (si == null) return null;
-        	if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si,stv),false);
-        	else elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si,stv),false);
+        	if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si,visitor),false);
+        	else elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si,visitor),false);
         	List<SymInfo> result_names = new List<SymInfo>();
         	if (elems == null) return null;
         	for (int i=0; i<elems.Length; i++)
@@ -457,16 +457,16 @@ namespace CodeCompletion
         /// </summary>
         public SymInfo[] GetTypeByPattern(string pattern, int line, int col, bool all_names, int nest_level)
         {
-        	if (stv.cur_scope == null) return null;
-        	SymScope si = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	if (visitor.cur_scope == null) return null;
+        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	SymInfo[] elems = null;
         	if (si == null)
         	{
-        		elems = stv.entry_scope.GetNamesInAllTopScopes(all_names,null,false);
+        		elems = visitor.entry_scope.GetNamesInAllTopScopes(all_names,null,false);
         	}
         	else
-        	if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si, stv),false);
-        	else elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si, stv),false);
+        	if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si, visitor),false);
+        	else elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si, visitor),false);
         	List<SymInfo> result_names = new List<SymInfo>();
         	if (elems == null) return null;
         	for (int i=0; i<elems.Length; i++)
@@ -493,14 +493,14 @@ namespace CodeCompletion
         public SymInfo[] GetTypes(expression expr, int line, int col, out SymInfo out_si)
         {
             out_si = null;
-            if (stv.cur_scope == null) return null;
-            SymScope si = stv.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            if (visitor.cur_scope == null) return null;
+            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
             SymInfo[] elems = null;
             if (si == null) return null;
-            elems = si.GetNamesInAllTopScopes(true, new ExpressionVisitor(si, stv), false);
+            elems = si.GetNamesInAllTopScopes(true, new ExpressionVisitor(si, visitor), false);
             if (expr != null)
             {
-                ExpressionVisitor ev = new ExpressionVisitor(expr, si, stv);
+                ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
                 si = ev.GetScopeOfExpression();
                 if (si is TypeScope)
                     si = new ElementScope(si);
@@ -593,8 +593,8 @@ namespace CodeCompletion
         	Position pos = new Position(); pos.line = -1; pos.column = -1;
         	try
         	{
-        	    if (stv.cur_scope == null) return poses;
-        	    SymScope ss = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	    if (visitor.cur_scope == null) return poses;
+        	    SymScope ss = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	    if (ss == null) return poses;
         	    bool on_proc = false;
                 SetCurrentUsedAssemblies();
@@ -625,7 +625,7 @@ namespace CodeCompletion
         	    if (!on_proc)
         	    //if (!((keyword == KeywordKind.kw_proc || keyword == KeywordKind.kw_constr || keyword == KeywordKind.kw_destr) && ss is ProcRealization))
         	    {
-        		    ExpressionVisitor ev = new ExpressionVisitor(expr, ss, stv);
+        		    ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
         		    ss = ev.GetScopeOfExpression();
         	    }
         	    else 
@@ -812,8 +812,8 @@ namespace CodeCompletion
         	Position pos = new Position(); pos.line = -1; pos.column = -1;
         	try
         	{
-        	    if (stv.cur_scope == null) return poses;
-        	    SymScope ss = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	    if (visitor.cur_scope == null) return poses;
+        	    SymScope ss = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	    if (ss == null) return poses;
         	    //if (!(expr is ident && string.Compare((expr as ident).name,ss.si.name) == 0))
         	    bool on_proc = false;
@@ -845,7 +845,7 @@ namespace CodeCompletion
         	    if (!on_proc)
         	    //if (keyword != KeywordKind.kw_proc && keyword != KeywordKind.kw_constr && keyword != KeywordKind.kw_destr)
         	    {
-        		    ExpressionVisitor ev = new ExpressionVisitor(expr, ss, stv);
+        		    ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
         		    ss = ev.GetScopeOfExpression();
         	    }
         	    while (ss != null && ss is ProcScope && (ss as ProcScope).proc_realization != null && (ss as ProcScope).proc_realization.loc != null)
@@ -873,8 +873,8 @@ namespace CodeCompletion
         /// </summary>
         public string GetDescription(expression expr, string FileName, string expr_without_brackets, PascalABCCompiler.Parsers.Controller parser, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, bool header)
         {
-        	if (stv.cur_scope == null) return null;
-        	SymScope ss = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	if (visitor.cur_scope == null) return null;
+        	SymScope ss = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	if (ss == null) return null;
         	if (!header && ss.IsInScope(ss.head_loc,line+1,col+1))
         	{
@@ -907,7 +907,7 @@ namespace CodeCompletion
         	//if (!((keyword == KeywordKind.kw_proc || keyword == KeywordKind.kw_constr || keyword == KeywordKind.kw_destr) && ss is ProcScope))
         	if (!on_proc)
         	{
-        		ExpressionVisitor ev = new ExpressionVisitor(expr, ss, stv);
+        		ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
         		ev.mouse_hover = true;
         		ss = ev.GetScopeOfExpression();
         	}
@@ -932,28 +932,22 @@ namespace CodeCompletion
                             ss.AddDocumentation(AssemblyDocCache.GetDocumentationForNamespace((ss as NamespaceScope).name));
                         else if (ss is TypeScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as TypeScope));
-                        /*else if (ss is ElementScope)
-                        {
-                            if ((ss as ElementScope).sc is CompiledScope)
-                                ss.AddDocumentation(AssemblyDocCache.GetDocumentation(((ss as ElementScope).sc as CompiledScope).ctn));
-                            else if ((ss as ElementScope).sc is TypeScope)
-                                ss.AddDocumentation(UnitDocCache.GetDocumentation(((ss as ElementScope).sc as TypeScope)));
-                            else
-                                ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as ElementScope));
-                        }*/
                         else if (ss is ProcScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as ProcScope));
                         else if (ss is InterfaceUnitScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
-                        else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.describe) && (ss as ElementScope).sc is TypeScope)
-                            ss.si.describe = (ss as ElementScope).sc.Description;
+                        else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
+                            ss.si.description = (ss as ElementScope).sc.Description;
         		}
         		catch (Exception e)
         		{
         			
         		}
                 RestoreCurrentUsedAssemblies();
-        		return ss.si.describe;
+                string description = ss.si.description;
+                if (description != null)
+                    description = description.Replace("!#","");
+        		return description;
         	}
             RestoreCurrentUsedAssemblies();
         	return null;
@@ -964,15 +958,15 @@ namespace CodeCompletion
         /// </summary>
         public string[] GetIndex(expression expr, int line, int col)
         {
-        	if (stv.cur_scope == null) return null;
-        	SymScope si = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	if (visitor.cur_scope == null) return null;
+        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	if (si == null) 
         	{
-        		si = stv.FindScopeByLocation(line,col+1);
+        		si = visitor.FindScopeByLocation(line,col+1);
         		if (si == null)
         		return null;
         	}
-        	ExpressionVisitor ev = new ExpressionVisitor(expr, si, stv);
+        	ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
         	si = ev.GetScopeOfExpression(false,true);
         	return CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
         }
@@ -983,18 +977,18 @@ namespace CodeCompletion
         public string[] GetNameOfMethod(expression expr, string str, int line, int col, int num_param,ref int defIndex, int choose_param_num, out int param_count)
         {
         	param_count = 0;
-        	if (stv.cur_scope == null) return null;
+        	if (visitor.cur_scope == null) return null;
         	if (col +1 > str.Length)
         		col -= str.Length;
-        	SymScope si = stv.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
+        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
         	if (si == null) 
         	{
-        		si = stv.FindScopeByLocation(line,col+1);
+        		si = visitor.FindScopeByLocation(line,col+1);
         		if (si == null)
         		return null;
         	}
             SetCurrentUsedAssemblies();
-        	ExpressionVisitor ev = new ExpressionVisitor(expr, si, stv);
+        	ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
         	List<ProcScope> scopes = ev.GetOverloadScopes();
         	bool was_empty_params = false;
             if (scopes.Count == 0)
@@ -1060,7 +1054,7 @@ namespace CodeCompletion
         					if (ev.IsInOneModule(ev.entry_scope,ps.topScope))
         						if (!ps.si.not_include && !equal_params(ps,proc_defs))
         						{
-        							procs.Add(ps.si.describe);
+        							procs.Add(ps.si.description);
         							proc_defs.Add(ps);
         						}
         				}
@@ -1068,7 +1062,7 @@ namespace CodeCompletion
         				if (ev.CheckForBaseAccess(ev.entry_scope,ps.topScope))
         					if (!ps.si.not_include && !equal_params(ps,proc_defs))
         					{
-        						procs.Add(ps.si.describe);
+        						procs.Add(ps.si.description);
         						proc_defs.Add(ps);
         					}
         			}
@@ -1085,7 +1079,7 @@ namespace CodeCompletion
         			}*/
         			if (!equal_params(ps,proc_defs))
         			{
-        				procs.Add(ps.si.describe);
+        				procs.Add(ps.si.description);
         				proc_defs.Add(ps);
         			}
         			i++;

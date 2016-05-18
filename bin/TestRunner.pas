@@ -4,6 +4,7 @@
 {$reference CodeCompletion.dll}
 {$reference Errors.dll}
 {$reference CompilerTools.dll}
+{$reference Localization.dll}
 {$reference System.Windows.Forms.dll}
 
 uses PascalABCCompiler, System.IO, System.Diagnostics;
@@ -51,8 +52,8 @@ begin
     comp.Compile(co);
     if comp.ErrorsList.Count = 0 then
     begin
-      //System.Windows.Forms.MessageBox.Show('Compilation of error sample '+files[i]+' was successfull'+System.Environment.NewLine);
-      //Halt();
+      System.Windows.Forms.MessageBox.Show('Compilation of error sample '+files[i]+' was successfull'+System.Environment.NewLine);
+      Halt();
     end
     else if comp.ErrorsList.Count = 1 then
     begin
@@ -225,6 +226,42 @@ begin
   CodeCompletion.CodeCompletionTester.Test();  
 end;
 
+function GetLineByPos(lines: array of string; pos: integer): integer;
+begin
+  var cum_pos := 0;
+  for var i := 0 to lines.Length - 1 do
+  for var j := 0 to lines[j].Length - 1 do
+  begin
+    if cum_pos = pos then
+    begin
+      Result := i + 1;
+      exit;
+    end;
+    Inc(cum_pos);  
+  end;
+end;
+
+function GetColByPos(lines: array of string; pos: integer): integer;
+begin
+  var cum_pos := 0;
+  for var i := 0 to lines.Length - 1 do
+  for var j := 0 to lines[j].Length - 1 do
+  begin
+    if cum_pos = pos then
+    begin
+      Result := j + 1;
+      exit;
+    end;
+    Inc(cum_pos);  
+  end;
+end;
+
+procedure RunIntellisenseTests;
+begin
+  PascalABCCompiler.StringResourcesLanguage.CurrentTwoLetterISO := 'ru';
+  CodeCompletion.CodeCompletionTester.TestIntellisense(TestSuiteDir+PathSeparator+'intellisense_tests');
+end;
+
 procedure RunFormatterTests;
 begin
   CodeCompletion.FormatterTester.Test();
@@ -314,6 +351,8 @@ begin
     System.Environment.CurrentDirectory := Path.GetDirectoryName(GetEXEFileName());
     RunExpressionsExtractTests;
     writeln('Intellisense expression tests run successfully');
+    RunIntellisenseTests;
+    writeln('Intellisense tests run successfully');
     RunFormatterTests;
     writeln('Formatter tests run successfully');
   except

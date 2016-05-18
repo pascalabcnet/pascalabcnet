@@ -1,5 +1,3 @@
-{$reference System.Core.dll}
-
 uses System, System.Collections.Generic;
 
 type TArr = array of integer;

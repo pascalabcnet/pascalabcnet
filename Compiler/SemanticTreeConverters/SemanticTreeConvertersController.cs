@@ -41,18 +41,18 @@ namespace PascalABCCompiler.SemanticTreeConverters
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
             FileInfo[] dllfiles = di.GetFiles("*Conversion.dll");
-            System.Reflection.Assembly asssembly = null;
+            System.Reflection.Assembly assembly = null;
             ISemanticTreeConverter Converter;
             foreach (FileInfo fi in dllfiles)
             {
                 try
                 {
-                    asssembly = System.Reflection.Assembly.LoadFile(fi.FullName);
+                    assembly = System.Reflection.Assembly.LoadFile(fi.FullName);
                     try
                     {
-                        Type[] types = asssembly.GetTypes();
-                        if (asssembly != null)
+                        if (assembly != null)
                         {
+                            Type[] types = assembly.GetTypes();
                             foreach (Type type in types)
                             {
                                 if (type.Name.IndexOf("SemanticTreeConverter") >= 0 && type.IsClass)
