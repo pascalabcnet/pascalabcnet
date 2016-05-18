@@ -26,6 +26,42 @@ namespace PascalABCCompiler.SyntaxTree
             var ind = FindIndex(from);
             this[ind] = to;
         }
+
+        /// <summary>
+        /// Получает список узлов поддерева в depth-first порядке
+        /// </summary>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Список узлов поддерева</returns>
+        public IEnumerable<syntax_tree_node> DescendantNodes(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        {
+            var stack = new Stack<syntax_tree_node>();
+
+            if (includeSelf)
+                stack.Push(this);
+            else
+                for (int childIndex = subnodes_count - 1; childIndex >= 0; childIndex--)
+                    if (this[childIndex] != null)
+                        stack.Push(this[childIndex]);
+
+            while (stack.Count > 0)
+            {
+                syntax_tree_node node = stack.Pop();
+
+                if (descendIntoChildren == null || descendIntoChildren(node))
+                    for (int childIndex = node.subnodes_count - 1; childIndex >= 0; childIndex--)
+                    {
+                        var child = node[childIndex];
+
+                        if (child == null)
+                            continue;
+
+                        stack.Push(child);
+                    }
+
+                yield return node;
+            }
+        }
     }
 
     //------------------------------
