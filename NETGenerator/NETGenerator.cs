@@ -2154,7 +2154,10 @@ namespace PascalABCCompiler.NETGenerator
             Type[] tpars = new Type[tcount];
             for (int i = 0; i < tcount; i++)
             {
-                tpars[i] = helper.GetTypeReference(igfi.generic_parameters[i]).tp;
+                TypeInfo ti = helper.GetTypeReference(igfi.generic_parameters[i]);
+                if (ti == null)
+                    return;
+                tpars[i] = ti.tp;
             }
             MethodInfo rez = mi.MakeGenericMethod(tpars);
             helper.AddMethod(igfi, rez);

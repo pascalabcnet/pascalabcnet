@@ -479,13 +479,13 @@ namespace PascalABCCompiler.TreeRealization
         //    return rez;
         //}
 
-        public override SymbolInfo find_in_type(string name)
+        public override SymbolInfo find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             indefinite_definition_node idn = new indefinite_definition_node(name, this);
             return new SymbolInfo(idn, access_level.al_public, symbol_kind.sk_indefinite);
         }
 
-        public override SymbolInfo find(string name)
+        public override SymbolInfo find(string name, bool no_search_in_extension_methods = false)
         {
             return find_in_type(name);
         }

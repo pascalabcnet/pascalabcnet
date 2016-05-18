@@ -287,30 +287,18 @@ namespace PascalABCCompiler.PCU
         public int offset;
 
         public wrapped_common_type_node(PCUReader pr, type_node base_type, string name, SemanticTree.type_access_level type_access_level,
-            common_namespace_node comprehensive_namespace, SymbolTable.ClassScope cs, location loc,int offset):
-            base(base_type, name, type_access_level, comprehensive_namespace,cs,loc) 
+            common_namespace_node comprehensive_namespace, SymbolTable.ClassScope cs, location loc, int offset) :
+            base(base_type, name, type_access_level, comprehensive_namespace, cs, loc)
         {
             this.pr = pr;
             this.offset = offset;
         }
 
-       /* public override SymbolInfo find(string name)
+        public override SymbolInfo find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            SymbolInfo si = scope.Find(name);
-            if (si == null) return si;
-            if (si.sym_info.semantic_node_type == semantic_node_type.wrap_def)
-            {
-                wrapped_definition_node wdn = (wrapped_definition_node)si.sym_info;
-                si.sym_info = pr.CreateInterfaceInClassMember(wdn.offset, name);
-            }
-            return si;
-        }*/
-        
-        public override SymbolInfo find_in_type(string name)
-        {
-            return find_in_type(name,null);
+            return find_in_type(name, null, no_search_in_extension_methods);
         }
-        public override SymbolInfo find_in_type(string name, Scope CurrentScope)
+        public override SymbolInfo find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
             SymbolInfo si = scope.FindOnlyInType(name, CurrentScope);
             if (si == null) return si;
@@ -325,7 +313,7 @@ namespace PascalABCCompiler.PCU
                 }
                 tsi = tsi.Next;
             }
-            return si; 
+            return si;
         }
 
     }

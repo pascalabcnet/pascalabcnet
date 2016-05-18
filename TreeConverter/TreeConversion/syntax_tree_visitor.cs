@@ -176,7 +176,7 @@ namespace PascalABCCompiler.TreeConverter
             motivation_keeper.reset();
             SystemLibrary.SystemLibInitializer.NeedsToRestore.Clear();
             type_section_converting = false;
-
+            ThrowCompilationError = true;
             #region MikhailoMMX, реинициализация класса OpenMP
             OpenMP.InternalReset();
             CurrentParallelPosition = ParallelPosition.Outside;
@@ -1031,7 +1031,7 @@ namespace PascalABCCompiler.TreeConverter
         	return false;
         }
         
-        public expression_node find_operator(string name, expression_node left, expression_node right, location loc)
+        public expression_node find_operator(string name, expression_node left, expression_node right, location loc, bool no_search_in_extension_methods = true)
         {
 #if (DEBUG)
             if (name == null)
@@ -1039,7 +1039,6 @@ namespace PascalABCCompiler.TreeConverter
                 throw new CompilerInternalError("Invalid operator name");
             }
 #endif
-
             if (right.semantic_node_type == semantic_node_type.null_const_node)
             {
             	if ( !type_table.is_with_nil_allowed(left.type) && !left.type.IsPointer)
@@ -1078,7 +1077,7 @@ namespace PascalABCCompiler.TreeConverter
             //TODO: Посмотреть.
             //TODO: Не find а find_in_type.
             //SymbolInfo si=left_type.find(name, context.CurrentScope);
-            SymbolInfo si = left_type.find_in_type(name, left_type.Scope);
+            SymbolInfo si = left_type.find_in_type(name, left_type.Scope, no_search_in_extension_methods);
             SymbolInfo added_symbols = null;
             SymbolInfo si2 = null;
             if (left_type != right_type && !one_way_operation(name))
@@ -1086,7 +1085,7 @@ namespace PascalABCCompiler.TreeConverter
                 //SymbolInfo si2 = right_type.find(name, context.CurrentScope);
                 if (si != null)
                     si = si.copy();
-                si2 = right_type.find_in_type(name, right_type.Scope);
+                si2 = right_type.find_in_type(name, right_type.Scope, no_search_in_extension_methods);
                 if ((si != null) && (si2 != null))
                 {
                     //Важная проверка. Возможно один и тот же оператор с одними и теми же типами определен в двух разных классах.
@@ -1204,10 +1203,22 @@ namespace PascalABCCompiler.TreeConverter
                     else
                         saved_si2 = si2;
                     if (saved_si == null)
-                        AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                    {
+                        if (!no_search_in_extension_methods)
+                            AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                        else
+                            return find_operator(name, left, right, loc, false);
+                    }
+                        
                 }
                 else if (si == null)
-                    AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                {
+                    if (!no_search_in_extension_methods)
+                        AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
+                    else
+                        return find_operator(name, left, right, loc, false);
+                }
+                    
             }
 
             expressions_list pars = null;
@@ -1222,8 +1233,18 @@ namespace PascalABCCompiler.TreeConverter
             pars = new expressions_list();
             pars.AddElement(left);
             pars.AddElement(right);
+            bool tmp_throw_error = ThrowCompilationError;
+            ThrowCompilationError = !no_search_in_extension_methods;
 
             fnsel = convertion_data_and_alghoritms.select_function(pars, si, loc);
+            if (!ThrowCompilationError && fnsel == null)
+            {
+                RemoveLastError();
+                ThrowCompilationError = tmp_throw_error;
+                return find_operator(name, left, right, loc, false);
+            }
+            else
+                ThrowCompilationError = tmp_throw_error;
             //function_node fnsel=convertion_data_and_alghoritms.select_function(pars,si,loc);
             CheckSpecialFunctionCall(si, pars,loc);
             //TODO: А это зачем? Можно передать в create_simple_function_call pars.
