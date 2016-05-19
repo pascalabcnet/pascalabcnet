@@ -11,5 +11,6 @@ end;
 
 begin
   var q := new A<integer>();
+  q.testField := 777;
   q.Gen.Println;
 end.
