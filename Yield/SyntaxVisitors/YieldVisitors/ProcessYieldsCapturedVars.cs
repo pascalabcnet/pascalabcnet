@@ -770,7 +770,8 @@ namespace SyntaxVisitors
             // Вставляем классы-хелперы
             InsertYieldHelpers(pd, cct);
 
-            
+            // frninja 18/05/16
+            pd.has_yield = false;
 
             //mids = null; // вдруг мы выйдем из процедуры, не зайдем в другую, а там - оператор! Такого конечно не может быть
         }

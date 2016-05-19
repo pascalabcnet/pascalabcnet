@@ -9644,13 +9644,14 @@ namespace PascalABCCompiler.TreeConverter
             context.check_labels(context.converted_namespace.labels);
 
             // frninja 28/04/16 - режем мусорные методы хелперы yield
-            {
-                var toRemove = cnsn.functions.Where(m => m.name.StartsWith(YieldHelpers.YieldConsts.YieldHelperMethodPrefix)).ToArray();
+            // SSM оптимизировать!!! - 19.05.16
+            /*{
+                var toRemove = cnsn.functions.Where(m => m.name.StartsWith("<yield_helper")).ToArray();
                 foreach (var m in toRemove)
                 {
                     cnsn.functions.remove(m);
                 }
-            }
+            }*/
             // end frninja
 
             common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
@@ -10344,13 +10345,14 @@ namespace PascalABCCompiler.TreeConverter
             hard_node_test_and_visit(_type_declaration.type_def);
 
             // frninja 28/04/16 - режем мусорные методы хелперы yield
-            {
-                var toRemove = ctn.methods.Where(m => m.name.StartsWith(YieldHelpers.YieldConsts.YieldHelperMethodPrefix)).ToArray();
+            // SSM оптимизировать!!! - 19.05.16
+            /*{
+                var toRemove = ctn.methods.Where(m => m.name.StartsWith("<yield_helper")).ToArray();
                 foreach (var m in toRemove)
                 {
                     ctn.methods.remove(m);
                 }
-            }
+            }*/
             // end frninja
 
             is_direct_type_decl = false;

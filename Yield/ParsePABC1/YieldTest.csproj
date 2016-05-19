@@ -40,7 +40,7 @@
     </Reference>
     <Reference Include="Localization, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\pascalabcnet\_ParsePABC1\dlls\Localization.dll</HintPath>
+      <HintPath>..\..\bin\Localization.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
