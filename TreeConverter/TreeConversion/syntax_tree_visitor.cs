@@ -3699,6 +3699,13 @@ namespace PascalABCCompiler.TreeConverter
         			
         			if (cmn != null)
         			{
+                        // frninja 20/05/16 - ставим флаг is_yield_helper
+                        if (sd is SyntaxTree.procedure_definition)
+                        {
+                            cmn.is_yield_helper = (sd as SyntaxTree.procedure_definition).is_yield_helper;
+                        }
+                        // end frninja
+
         				context.push_function(cmn);
         				if (!cmn.IsStatic)
                 		{
@@ -9645,7 +9652,7 @@ namespace PascalABCCompiler.TreeConverter
 
             // frninja 28/04/16 - режем мусорные методы хелперы yield
             {
-                var toRemove = cnsn.functions.Where(m => m.name.StartsWith(YieldHelpers.YieldConsts.YieldHelperMethodPrefix)).ToArray();
+                var toRemove = cnsn.functions.Where(m => m.is_yield_helper).ToArray();
                 foreach (var m in toRemove)
                 {
                     cnsn.functions.remove(m);
@@ -10345,7 +10352,7 @@ namespace PascalABCCompiler.TreeConverter
 
             // frninja 28/04/16 - режем мусорные методы хелперы yield
             {
-                var toRemove = ctn.methods.Where(m => m.name.StartsWith(YieldHelpers.YieldConsts.YieldHelperMethodPrefix)).ToArray();
+                var toRemove = ctn.methods.Where(m => m.is_yield_helper).ToArray();
                 foreach (var m in toRemove)
                 {
                     ctn.methods.remove(m);
@@ -11246,6 +11253,14 @@ namespace PascalABCCompiler.TreeConverter
             {
                 return;
             }
+
+            // frninja 20/05/16 - ставим флаг is_yield_helper
+            if (context.top_function is common_namespace_function_node)
+            {
+                (context.top_function as common_namespace_function_node).is_yield_helper = _procedure_definition.is_yield_helper;
+            }
+            // end frninja
+
             if (context.converted_explicit_interface_type != null)
                 (context.top_function as common_method_node).explicit_interface = context.converted_explicit_interface_type;
             if (has_dll_import_attribute(context.top_function))
