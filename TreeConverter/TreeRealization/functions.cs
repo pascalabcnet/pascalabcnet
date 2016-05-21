@@ -1086,6 +1086,22 @@ namespace PascalABCCompiler.TreeRealization
 
         public type_node ConnectedToType = null;
 
+        // frninja 20/05/16
+        private bool _is_yield_helper = false;
+
+        public bool is_yield_helper
+        {
+            get
+            {
+                return _is_yield_helper;
+            }
+            set
+            {
+                _is_yield_helper = value;
+            }
+        }
+        // end frninja
+
         public override bool is_extension_method
         {
             get
@@ -1324,6 +1340,24 @@ namespace PascalABCCompiler.TreeRealization
                 return _polymorphic_state == PascalABCCompiler.SemanticTree.polymorphic_state.ps_static;
             }
         }
+
+        // frninja 20/05/16
+
+        private bool _is_yield_helper = false;
+
+        public bool is_yield_helper
+        {
+            get
+            {
+                return _is_yield_helper;
+            }
+            set
+            {
+                _is_yield_helper = value;
+            }
+        }
+        // end frninja
+
 
         public override bool is_final
         {

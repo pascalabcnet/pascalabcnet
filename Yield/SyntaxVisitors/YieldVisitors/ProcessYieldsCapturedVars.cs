@@ -471,6 +471,8 @@ namespace SyntaxVisitors
 
             // Добавляем в класс метод с обертками для локальных переменных
             pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+            pdCloned.is_yield_helper = true;
+
             if (IsClassMethod(pd))
             {
                 var cd = UpperTo<class_definition>();
@@ -770,7 +772,7 @@ namespace SyntaxVisitors
             // Вставляем классы-хелперы
             InsertYieldHelpers(pd, cct);
 
-            // frninja 18/05/16
+            // frninja 20/05/16 - фикс для повторного обхода
             pd.has_yield = false;
 
             //mids = null; // вдруг мы выйдем из процедуры, не зайдем в другую, а там - оператор! Такого конечно не может быть
