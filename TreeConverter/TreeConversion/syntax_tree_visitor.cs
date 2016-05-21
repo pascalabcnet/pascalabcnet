@@ -9658,7 +9658,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     cnsn.functions.remove(m);
                 }
-            }*/
+            }
             // end frninja
 
             common_namespace_function_node main_function = new common_namespace_function_node(compiler_string_consts.temp_main_function_name,
@@ -10358,7 +10358,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     ctn.methods.remove(m);
                 }
-            }*/
+            }
             // end frninja
 
             is_direct_type_decl = false;

@@ -746,6 +746,17 @@
           </Node>
         </Items>
       </Node>
+      <Node Name="YieldHelpers">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>string Consts__Self = YieldHelpers.YieldConsts.Self;</Text>
+        <OCtx>
+          <i Type="Method">private bool CheckUnknownIdentNeedsClassCapture ( SyntaxTree . yield_unknown_ident _unk )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>
