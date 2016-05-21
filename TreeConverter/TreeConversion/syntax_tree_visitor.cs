@@ -7994,7 +7994,8 @@ namespace PascalABCCompiler.TreeConverter
                         	}
                         	else
                         	{
-                                if (SystemLibrary.SystemLibInitializer.readln_procedure.Equal(si) && parameters.expressions.Count == 2 && en.type == SystemLibrary.SystemLibrary.string_type)
+                                /// SSM 21/05/16 - read_from_text_file && - bug fix #161
+                                if (read_from_text_file && SystemLibrary.SystemLibInitializer.readln_procedure.Equal(si) && parameters.expressions.Count == 2 && en.type == SystemLibrary.SystemLibrary.string_type)
                                 {
                                     fn = convertion_data_and_alghoritms.select_function(exl, SystemLibrary.SystemLibInitializer.readln_procedure.SymbolInfo, loc);
                                     readln_string_file = true;
