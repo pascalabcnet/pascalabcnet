@@ -557,6 +557,10 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class procedure_definition
     {
         public bool has_yield = false;
+        // frninja 20/05/16 - для методов хелперов yield
+        public bool is_yield_helper = false;
+        // end frninja
+
         public procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)
         {
             this.proc_header = proc_header;
@@ -1229,6 +1233,55 @@ namespace PascalABCCompiler.SyntaxTree
     {
 
     }
+
+    // frninja 12/05/16 - хелпер для yield. Хранит типы локальных переменных метода-итератора
+    [Serializable]
+    public class yield_locals_type_map_helper
+    {
+        public Dictionary<var_def_statement, semantic_type_node> vars_type_map { get; private set; }
+
+        public yield_locals_type_map_helper()
+        {
+            vars_type_map = new Dictionary<var_def_statement, semantic_type_node>();
+        }
+    }
+    // end frninja
+
+    // frninja 12/05/16 - хелперы для yield
+    public partial class yield_unknown_expression_type : type_definition
+    {
+        public yield_locals_type_map_helper MapHelper { get; private set; }
+
+        public yield_unknown_expression_type(var_def_statement vds, yield_locals_type_map_helper map_helper)
+        {
+            this.Vds = vds;
+            this.MapHelper = map_helper;
+        }
+    }
+
+    public partial class yield_var_def_statement_with_unknown_type : statement
+    {
+        public yield_locals_type_map_helper map_helper { get; private set; }
+
+        public yield_var_def_statement_with_unknown_type(var_def_statement vds, yield_locals_type_map_helper map_helper)
+        {
+            this.vars = vds;
+            this.map_helper = map_helper;
+        }
+    }
+
+    public partial class yield_variable_definitions_with_unknown_type : declaration
+    {
+        public yield_locals_type_map_helper map_helper { get; private set; }
+
+        public yield_variable_definitions_with_unknown_type(variable_definitions vd, yield_locals_type_map_helper map_helper)
+        {
+            this.vars = vd;
+            this.map_helper = map_helper;
+        }
+    }
+
+    // end frninja
 
 
 }

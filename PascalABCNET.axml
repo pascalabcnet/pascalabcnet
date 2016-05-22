@@ -524,6 +524,239 @@
           </Node>
         </Items>
       </Node>
+      <Node Name="PVS Studio Detected">
+        <Items>
+          <Node Name="Нужно использовать &amp;&amp; вместо ||">
+            <FileName>\codecompletion\domconverter.cs</FileName>
+            <Text>if (pattern != null || pattern != "")</Text>
+            <OCtx>
+              <i Type="Method">public SymInfo [ ] GetTypeByPattern ( string pattern , int line , int col , bool all_names , int nest_level )</i>
+              <i Type="ClassOrNamespace">public class DomConverter</i>
+              <i Type="ClassOrNamespace">namespace CodeCompletion</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Неиспользуемый результат Replace">
+            <FileName>\visualplugins\languageconverter\source\textformatter.cs</FileName>
+            <Text>_word.Replace(specSymbol, "");</Text>
+            <OCtx>
+              <i Type="Method">public string FormatWordWithKeyWord ( string _word , object _node )</i>
+              <i Type="ClassOrNamespace">public class TextFormatter</i>
+              <i Type="ClassOrNamespace">namespace Converter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Неиспользуемый результат OrderBy">
+            <FileName>\visualpascalabcnet\formsdesignerbinding\dependecies\src\main\base\project\src\services\refactoringservice\refactoringservice.cs</FileName>
+            <Text>result.OrderBy(node =&gt; node.Content.FullyQualifiedName);</Text>
+            <OCtx>
+              <i Type="Method">static IEnumerable &lt; ITreeNode &lt; IClass &gt; &gt; FindDerivedClassesTree ( IClass baseClass , IEnumerable &lt; IProjectContent &gt; projectContents , HashSet &lt; IClass &gt; seenClasses )</i>
+              <i Type="ClassOrNamespace">public static class RefactoringService</i>
+              <i Type="ClassOrNamespace">namespace ICSharpCode . SharpDevelop . Refactoring</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Одинаковые подвыражения в условии">
+            <Items>
+              <Node Name="1">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>if (_pascal_set_constant.values != null &amp;&amp; _pascal_set_constant.values != null)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . pascal_set_constant _pascal_set_constant )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="2">
+                <FileName>\visualpascalabcnet\workbench\runnermanagerhandlers.cs</FileName>
+                <Text>if (File.Exists(pdbFileName) &amp;&amp; File.Exists(pdbFileName))</Text>
+                <OCtx>
+                  <i Type="Method">void WaitCallback_DeleteEXEAndPDB ( object state )</i>
+                  <i Type="ClassOrNamespace">public partial class WorkbenchRunService : VisualPascalABCPlugins . IWorkbenchRunService</i>
+                  <i Type="ClassOrNamespace">namespace VisualPascalABC</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Самая интересная ошибка">
+                <FileName>\visualpascalabcnet\formsdesignerbinding\dependecies\src\main\base\project\src\editor\codecompletion\nrefactoryinsightwindowhandler.cs</FileName>
+                <Note>Вот здесь то место, где не учитывается один вариант открывающих скобок
+Вместо одного из openBracketToken нужно написать openBracesToken</Note>
+                <Text>if (token.Kind == openParensToken || token.Kind == openBracketToken || token.Kind == openBracketToken) {</Text>
+                <OCtx>
+                  <i Type="Method">public void InitializeOpenedInsightWindow ( ITextEditor editor , IInsightWindow insightWindow )</i>
+                  <i Type="ClassOrNamespace">public class NRefactoryInsightWindowHandler : IInsightWindowHandler</i>
+                  <i Type="ClassOrNamespace">namespace ICSharpCode . SharpDevelop . Editor . CodeCompletion</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="Всегда истинные выражения">
+            <Items>
+              <Node Name="1">
+                <FileName>\treeconverter\systemlib\static_executors.cs</FileName>
+                <Text>if (value &gt;= int.MinValue &amp;&amp; value &lt;= int.MaxValue)</Text>
+                <OCtx>
+                  <i Type="Method">private static int check_int_overflow ( location loc , int value )</i>
+                  <i Type="ClassOrNamespace">public static class static_executors</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . SystemLibrary</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="2">
+                <FileName>\treeconverter\systemlib\static_executors.cs</FileName>
+                <Text>if (value &gt;= long.MinValue &amp;&amp; value &lt;= long.MaxValue)</Text>
+                <OCtx>
+                  <i Type="Method">private static long check_long_overflow ( location loc , long value )</i>
+                  <i Type="ClassOrNamespace">public static class static_executors</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . SystemLibrary</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="3">
+                <FileName>\NETGenerator\NETGenerator.cs</FileName>
+                <Text>if (pos &lt;= 255) il.Emit(OpCodes.Starg_S, pos);</Text>
+                <OCtx>
+                  <i Type="Method">private void ConvertInc ( IExpressionNode e )</i>
+                  <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="4">
+                <FileName>\NETGenerator\NETGenerator.cs</FileName>
+                <Text>if (pos &lt;= 255) il.Emit(OpCodes.Starg_S, pos);</Text>
+                <OCtx>
+                  <i Type="Method">private void ConvertDec ( IExpressionNode e )</i>
+                  <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="5">
+                <FileName>\NETGenerator\NETGenerator.cs</FileName>
+                <Text>if (pos &lt;= 255) il.Emit(OpCodes.Ldarga_S, pos);</Text>
+                <OCtx>
+                  <i Type="Method">private void AddrOfParameterNode ( ICommonParameterReferenceNode value )</i>
+                  <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="Повторная проверка условия">
+            <FileName>\codecompletion\findreferences.cs</FileName>
+            <Note>Двумя строчками ниже
+(Здесь сказывается недостаток моего инструмента - если в методе есть две одинаковые строчки - переход осуществляется только на первую, а надо на вторую)</Note>
+            <Text>if (ret_tn != null)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( indexer _indexer )</i>
+              <i Type="ClassOrNamespace">public class ReferenceFinder : AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace CodeCompletion</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Дважды проверяется if (left is int64_const)">
+            <FileName>\parsertools\syntaxtreevisitors\syntaxtreecomparer.cs</FileName>
+            <Note>597 и 631 строки в текущей версии</Note>
+            <Text>else if (left is int64_const)</Text>
+            <OCtx>
+              <i Type="Method">public void CompareInternal ( expression left , expression right )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeComparer</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTree</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Трижды проверяется if (left is case_node)">
+            <FileName>\parsertools\syntaxtreevisitors\syntaxtreecomparer.cs</FileName>
+            <Note>1599
+1611
+1615 строки</Note>
+            <Text>else if (left is case_node)</Text>
+            <OCtx>
+              <i Type="Method">public void CompareInternal ( statement left , statement right )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeComparer</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTree</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Ошибка read(x,s)">
+        <Items>
+          <Node Name="make_read_call вызов">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>expression_node bfcint = make_read_call(si, _method_call.parameters, subloc2);</Text>
+            <OCtx>
+              <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="make_read_call - описание">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <OCtx>
+              <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="readln_string_file = true;">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Note>Это - непонятное место из-за которого происходит ошибка</Note>
+            <Text>readln_string_file = true;</Text>
+            <OCtx>
+              <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="!readln_string_file">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (!readln_string_file)</Text>
+            <OCtx>
+              <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="YieldHelpers">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>string Consts__Self = YieldHelpers.YieldConsts.Self;</Text>
+        <OCtx>
+          <i Type="Method">private bool CheckUnknownIdentNeedsClassCapture ( SyntaxTree . yield_unknown_ident _unk )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>
