@@ -332,6 +332,13 @@ namespace NodeGenerator
 		}
 ";
 
+        public static readonly string list_remove_all_method =
+@"      public int RemoveAll(Predicate<list_element_type> match)
+        {
+            return list_name.RemoveAll(match);
+        }
+";
+
         public static readonly string[] list_methods =
         {
             list_add_method,
@@ -345,7 +352,8 @@ namespace NodeGenerator
             list_insert_before_many_method,
             list_remove_method,
             list_replace_method,
-            list_replace_many_method
+            list_replace_many_method,
+            list_remove_all_method
         };
 
         // !Методы
