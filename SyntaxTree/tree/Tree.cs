@@ -417,7 +417,7 @@ namespace PascalABCCompiler.SyntaxTree
 			subnodes.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<statement> match)
+		public int RemoveAll(Predicate<statement> match)
         {
             return subnodes.RemoveAll(match);
         }
@@ -1955,7 +1955,7 @@ namespace PascalABCCompiler.SyntaxTree
 			names.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<ident> match)
+		public int RemoveAll(Predicate<ident> match)
         {
             return names.RemoveAll(match);
         }
@@ -2165,7 +2165,7 @@ namespace PascalABCCompiler.SyntaxTree
 			var_definitions.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<var_def_statement> match)
+		public int RemoveAll(Predicate<var_def_statement> match)
         {
             return var_definitions.RemoveAll(match);
         }
@@ -2364,7 +2364,7 @@ namespace PascalABCCompiler.SyntaxTree
 			idents.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<ident> match)
+		public int RemoveAll(Predicate<ident> match)
         {
             return idents.RemoveAll(match);
         }
@@ -2867,7 +2867,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<declaration> match)
+		public int RemoveAll(Predicate<declaration> match)
         {
             return defs.RemoveAll(match);
         }
@@ -3066,7 +3066,7 @@ namespace PascalABCCompiler.SyntaxTree
 			compilation_units.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<compilation_unit> match)
+		public int RemoveAll(Predicate<compilation_unit> match)
         {
             return compilation_units.RemoveAll(match);
         }
@@ -3476,7 +3476,7 @@ namespace PascalABCCompiler.SyntaxTree
 			expressions.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<expression> match)
+		public int RemoveAll(Predicate<expression> match)
         {
             return expressions.RemoveAll(match);
         }
@@ -4940,7 +4940,7 @@ namespace PascalABCCompiler.SyntaxTree
 			indexers.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<type_definition> match)
+		public int RemoveAll(Predicate<type_definition> match)
         {
             return indexers.RemoveAll(match);
         }
@@ -5715,7 +5715,7 @@ namespace PascalABCCompiler.SyntaxTree
 			params_list.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<typed_parameters> match)
+		public int RemoveAll(Predicate<typed_parameters> match)
         {
             return params_list.RemoveAll(match);
         }
@@ -5914,7 +5914,7 @@ namespace PascalABCCompiler.SyntaxTree
 			proc_attributes.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<procedure_attribute> match)
+		public int RemoveAll(Predicate<procedure_attribute> match)
         {
             return proc_attributes.RemoveAll(match);
         }
@@ -6848,7 +6848,7 @@ namespace PascalABCCompiler.SyntaxTree
 			types_decl.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<type_declaration> match)
+		public int RemoveAll(Predicate<type_declaration> match)
         {
             return types_decl.RemoveAll(match);
         }
@@ -7424,7 +7424,7 @@ namespace PascalABCCompiler.SyntaxTree
 			const_defs.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<const_definition> match)
+		public int RemoveAll(Predicate<const_definition> match)
         {
             return const_defs.RemoveAll(match);
         }
@@ -7998,7 +7998,7 @@ namespace PascalABCCompiler.SyntaxTree
 			units.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<unit_or_namespace> match)
+		public int RemoveAll(Predicate<unit_or_namespace> match)
         {
             return units.RemoveAll(match);
         }
@@ -8413,7 +8413,7 @@ namespace PascalABCCompiler.SyntaxTree
 			compiler_directives.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<compiler_directive> match)
+		public int RemoveAll(Predicate<compiler_directive> match)
         {
             return compiler_directives.RemoveAll(match);
         }
@@ -9653,7 +9653,7 @@ namespace PascalABCCompiler.SyntaxTree
 			ln.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<ident> match)
+		public int RemoveAll(Predicate<ident> match)
         {
             return ln.RemoveAll(match);
         }
@@ -11624,7 +11624,7 @@ namespace PascalABCCompiler.SyntaxTree
 			members.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<declaration> match)
+		public int RemoveAll(Predicate<declaration> match)
         {
             return members.RemoveAll(match);
         }
@@ -11934,7 +11934,7 @@ namespace PascalABCCompiler.SyntaxTree
 			class_def_blocks.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<class_members> match)
+		public int RemoveAll(Predicate<class_members> match)
         {
             return class_def_blocks.RemoveAll(match);
         }
@@ -12893,7 +12893,7 @@ namespace PascalABCCompiler.SyntaxTree
 			rec_consts.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<record_const_definition> match)
+		public int RemoveAll(Predicate<record_const_definition> match)
         {
             return rec_consts.RemoveAll(match);
         }
@@ -13698,7 +13698,7 @@ namespace PascalABCCompiler.SyntaxTree
 			literals.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<literal> match)
+		public int RemoveAll(Predicate<literal> match)
         {
             return literals.RemoveAll(match);
         }
@@ -14191,7 +14191,7 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<variant> match)
+		public int RemoveAll(Predicate<variant> match)
         {
             return vars.RemoveAll(match);
         }
@@ -14524,7 +14524,7 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<variant_type> match)
+		public int RemoveAll(Predicate<variant_type> match)
         {
             return vars.RemoveAll(match);
         }
@@ -16829,7 +16829,7 @@ namespace PascalABCCompiler.SyntaxTree
 			variants.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<case_variant> match)
+		public int RemoveAll(Predicate<case_variant> match)
         {
             return variants.RemoveAll(match);
         }
@@ -17162,7 +17162,7 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<var_def_statement> match)
+		public int RemoveAll(Predicate<var_def_statement> match)
         {
             return vars.RemoveAll(match);
         }
@@ -17852,7 +17852,7 @@ namespace PascalABCCompiler.SyntaxTree
 			parameters.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<property_parameter> match)
+		public int RemoveAll(Predicate<property_parameter> match)
         {
             return parameters.RemoveAll(match);
         }
@@ -19323,7 +19323,7 @@ namespace PascalABCCompiler.SyntaxTree
 			handlers.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<exception_handler> match)
+		public int RemoveAll(Predicate<exception_handler> match)
         {
             return handlers.RemoveAll(match);
         }
@@ -20301,7 +20301,7 @@ namespace PascalABCCompiler.SyntaxTree
 			namespaces.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<unit_or_namespace> match)
+		public int RemoveAll(Predicate<unit_or_namespace> match)
         {
             return namespaces.RemoveAll(match);
         }
@@ -20986,7 +20986,7 @@ namespace PascalABCCompiler.SyntaxTree
 			types.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<named_type_reference> match)
+		public int RemoveAll(Predicate<named_type_reference> match)
         {
             return types.RemoveAll(match);
         }
@@ -21204,7 +21204,7 @@ namespace PascalABCCompiler.SyntaxTree
 			params_list.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<type_definition> match)
+		public int RemoveAll(Predicate<type_definition> match)
         {
             return params_list.RemoveAll(match);
         }
@@ -21968,7 +21968,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<type_definition> match)
+		public int RemoveAll(Predicate<type_definition> match)
         {
             return defs.RemoveAll(match);
         }
@@ -22301,7 +22301,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<where_definition> match)
+		public int RemoveAll(Predicate<where_definition> match)
         {
             return defs.RemoveAll(match);
         }
@@ -24083,7 +24083,7 @@ namespace PascalABCCompiler.SyntaxTree
 			enumerators.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<enumerator> match)
+		public int RemoveAll(Predicate<enumerator> match)
         {
             return enumerators.RemoveAll(match);
         }
@@ -24614,7 +24614,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<type_definition_attr> match)
+		public int RemoveAll(Predicate<type_definition_attr> match)
         {
             return attributes.RemoveAll(match);
         }
@@ -25098,7 +25098,7 @@ namespace PascalABCCompiler.SyntaxTree
 			directives.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<compiler_directive> match)
+		public int RemoveAll(Predicate<compiler_directive> match)
         {
             return directives.RemoveAll(match);
         }
@@ -25480,7 +25480,7 @@ namespace PascalABCCompiler.SyntaxTree
 			sections.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<documentation_comment_section> match)
+		public int RemoveAll(Predicate<documentation_comment_section> match)
         {
             return sections.RemoveAll(match);
         }
@@ -25715,7 +25715,7 @@ namespace PascalABCCompiler.SyntaxTree
 			parameters.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<documentation_comment_tag_param> match)
+		public int RemoveAll(Predicate<documentation_comment_tag_param> match)
         {
             return parameters.RemoveAll(match);
         }
@@ -26050,7 +26050,7 @@ namespace PascalABCCompiler.SyntaxTree
 			tags.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<documentation_comment_tag> match)
+		public int RemoveAll(Predicate<documentation_comment_tag> match)
         {
             return tags.RemoveAll(match);
         }
@@ -27161,7 +27161,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<attribute> match)
+		public int RemoveAll(Predicate<attribute> match)
         {
             return attributes.RemoveAll(match);
         }
@@ -27360,7 +27360,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<simple_attribute_list> match)
+		public int RemoveAll(Predicate<simple_attribute_list> match)
         {
             return attributes.RemoveAll(match);
         }
@@ -27739,7 +27739,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<declaration> match)
+		public int RemoveAll(Predicate<declaration> match)
         {
             return defs.RemoveAll(match);
         }
@@ -28149,7 +28149,7 @@ namespace PascalABCCompiler.SyntaxTree
 			param.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<syntax_tree_node> match)
+		public int RemoveAll(Predicate<syntax_tree_node> match)
         {
             return param.RemoveAll(match);
         }
@@ -28747,7 +28747,7 @@ namespace PascalABCCompiler.SyntaxTree
 			name_expr.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<name_assign_expr> match)
+		public int RemoveAll(Predicate<name_assign_expr> match)
         {
             return name_expr.RemoveAll(match);
         }
@@ -30668,7 +30668,7 @@ namespace PascalABCCompiler.SyntaxTree
 			variables.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<addressed_value> match)
+		public int RemoveAll(Predicate<addressed_value> match)
         {
             return variables.RemoveAll(match);
         }
@@ -30997,7 +30997,7 @@ namespace PascalABCCompiler.SyntaxTree
 			listunitsections.InsertRange(ind, newels);
 		}
 
-      public int RemoveAll(Predicate<uses_list> match)
+		public int RemoveAll(Predicate<uses_list> match)
         {
             return listunitsections.RemoveAll(match);
         }
