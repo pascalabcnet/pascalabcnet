@@ -759,6 +759,22 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class method_call
     {
+        /// <summary>
+        /// Простое имя метода. Возвращает null, если не удалось такое получить.
+        /// </summary>
+        public string SimpleName
+        {
+            get { return (dereferencing_value as ident)?.name; }
+        }
+
+        /// <summary>
+        /// Количество параметров метода
+        /// </summary>
+        public int ParametersCount
+        {
+            get { return parameters?.subnodes_count ?? 0; }
+        }
+
         public override string ToString()
         {
             string s = dereferencing_value.ToString();
