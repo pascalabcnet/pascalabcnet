@@ -418,9 +418,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<statement> match)
-        {
-            return subnodes.RemoveAll(match);
-        }
+		{
+			return subnodes.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -1956,9 +1956,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<ident> match)
-        {
-            return names.RemoveAll(match);
-        }
+		{
+			return names.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -2166,9 +2166,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<var_def_statement> match)
-        {
-            return var_definitions.RemoveAll(match);
-        }
+		{
+			return var_definitions.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -2365,9 +2365,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<ident> match)
-        {
-            return idents.RemoveAll(match);
-        }
+		{
+			return idents.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -2868,9 +2868,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<declaration> match)
-        {
-            return defs.RemoveAll(match);
-        }
+		{
+			return defs.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -3067,9 +3067,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<compilation_unit> match)
-        {
-            return compilation_units.RemoveAll(match);
-        }
+		{
+			return compilation_units.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -3477,9 +3477,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<expression> match)
-        {
-            return expressions.RemoveAll(match);
-        }
+		{
+			return expressions.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -4941,9 +4941,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<type_definition> match)
-        {
-            return indexers.RemoveAll(match);
-        }
+		{
+			return indexers.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -5716,9 +5716,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<typed_parameters> match)
-        {
-            return params_list.RemoveAll(match);
-        }
+		{
+			return params_list.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -5915,9 +5915,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<procedure_attribute> match)
-        {
-            return proc_attributes.RemoveAll(match);
-        }
+		{
+			return proc_attributes.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -6849,9 +6849,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<type_declaration> match)
-        {
-            return types_decl.RemoveAll(match);
-        }
+		{
+			return types_decl.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -7425,9 +7425,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<const_definition> match)
-        {
-            return const_defs.RemoveAll(match);
-        }
+		{
+			return const_defs.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -7999,9 +7999,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<unit_or_namespace> match)
-        {
-            return units.RemoveAll(match);
-        }
+		{
+			return units.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -8414,9 +8414,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<compiler_directive> match)
-        {
-            return compiler_directives.RemoveAll(match);
-        }
+		{
+			return compiler_directives.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -9654,9 +9654,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<ident> match)
-        {
-            return ln.RemoveAll(match);
-        }
+		{
+			return ln.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -11625,9 +11625,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<declaration> match)
-        {
-            return members.RemoveAll(match);
-        }
+		{
+			return members.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -11935,9 +11935,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<class_members> match)
-        {
-            return class_def_blocks.RemoveAll(match);
-        }
+		{
+			return class_def_blocks.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -12894,9 +12894,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<record_const_definition> match)
-        {
-            return rec_consts.RemoveAll(match);
-        }
+		{
+			return rec_consts.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -13699,9 +13699,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<literal> match)
-        {
-            return literals.RemoveAll(match);
-        }
+		{
+			return literals.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -14192,9 +14192,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<variant> match)
-        {
-            return vars.RemoveAll(match);
-        }
+		{
+			return vars.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -14525,9 +14525,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<variant_type> match)
-        {
-            return vars.RemoveAll(match);
-        }
+		{
+			return vars.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -16830,9 +16830,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<case_variant> match)
-        {
-            return variants.RemoveAll(match);
-        }
+		{
+			return variants.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -17163,9 +17163,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<var_def_statement> match)
-        {
-            return vars.RemoveAll(match);
-        }
+		{
+			return vars.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -17853,9 +17853,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<property_parameter> match)
-        {
-            return parameters.RemoveAll(match);
-        }
+		{
+			return parameters.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -19324,9 +19324,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<exception_handler> match)
-        {
-            return handlers.RemoveAll(match);
-        }
+		{
+			return handlers.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -20302,9 +20302,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<unit_or_namespace> match)
-        {
-            return namespaces.RemoveAll(match);
-        }
+		{
+			return namespaces.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -20987,9 +20987,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<named_type_reference> match)
-        {
-            return types.RemoveAll(match);
-        }
+		{
+			return types.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -21205,9 +21205,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<type_definition> match)
-        {
-            return params_list.RemoveAll(match);
-        }
+		{
+			return params_list.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -21969,9 +21969,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<type_definition> match)
-        {
-            return defs.RemoveAll(match);
-        }
+		{
+			return defs.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -22302,9 +22302,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<where_definition> match)
-        {
-            return defs.RemoveAll(match);
-        }
+		{
+			return defs.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -24084,9 +24084,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<enumerator> match)
-        {
-            return enumerators.RemoveAll(match);
-        }
+		{
+			return enumerators.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -24615,9 +24615,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<type_definition_attr> match)
-        {
-            return attributes.RemoveAll(match);
-        }
+		{
+			return attributes.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -25099,9 +25099,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<compiler_directive> match)
-        {
-            return directives.RemoveAll(match);
-        }
+		{
+			return directives.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -25481,9 +25481,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<documentation_comment_section> match)
-        {
-            return sections.RemoveAll(match);
-        }
+		{
+			return sections.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -25716,9 +25716,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<documentation_comment_tag_param> match)
-        {
-            return parameters.RemoveAll(match);
-        }
+		{
+			return parameters.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -26051,9 +26051,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<documentation_comment_tag> match)
-        {
-            return tags.RemoveAll(match);
-        }
+		{
+			return tags.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -27162,9 +27162,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<attribute> match)
-        {
-            return attributes.RemoveAll(match);
-        }
+		{
+			return attributes.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -27361,9 +27361,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<simple_attribute_list> match)
-        {
-            return attributes.RemoveAll(match);
-        }
+		{
+			return attributes.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -27740,9 +27740,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<declaration> match)
-        {
-            return defs.RemoveAll(match);
-        }
+		{
+			return defs.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -28150,9 +28150,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<syntax_tree_node> match)
-        {
-            return param.RemoveAll(match);
-        }
+		{
+			return param.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -28748,9 +28748,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<name_assign_expr> match)
-        {
-            return name_expr.RemoveAll(match);
-        }
+		{
+			return name_expr.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -30669,9 +30669,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<addressed_value> match)
-        {
-            return variables.RemoveAll(match);
-        }
+		{
+			return variables.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>
@@ -30998,9 +30998,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		public int RemoveAll(Predicate<uses_list> match)
-        {
-            return listunitsections.RemoveAll(match);
-        }
+		{
+			return listunitsections.RemoveAll(match);
+		}
 
 		// Окончание методов списка
 		///<summary>

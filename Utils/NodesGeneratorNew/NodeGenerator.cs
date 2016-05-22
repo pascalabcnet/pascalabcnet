@@ -334,9 +334,9 @@ namespace NodeGenerator
 
         public static readonly string list_remove_all_method =
 @"		public int RemoveAll(Predicate<list_element_type> match)
-        {
-            return list_name.RemoveAll(match);
-        }
+		{
+			return list_name.RemoveAll(match);
+		}
 ";
 
         public static readonly string[] list_methods =
