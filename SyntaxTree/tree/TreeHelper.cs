@@ -784,9 +784,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
             get
             {
-                if (parameters == null)
+                if (parameters != null)
+                    return parameters.subnodes_count;
+                else
                     return 0;
-                else return parameters.subnodes_count;
             }
         }
 
