@@ -768,7 +768,13 @@ namespace PascalABCCompiler.SyntaxTree
         /// </summary>
         public string SimpleName
         {
-            get { return (dereferencing_value as ident)?.name; }
+            get
+            {
+                var dv = dereferencing_value as ident;
+                if (dv == null)
+                    return null;
+                else return dv.name;
+            }
         }
 
         /// <summary>
@@ -776,7 +782,12 @@ namespace PascalABCCompiler.SyntaxTree
         /// </summary>
         public int ParametersCount
         {
-            get { return parameters?.subnodes_count ?? 0; }
+            get
+            {
+                if (parameters == null)
+                    return 0;
+                else return parameters.subnodes_count;
+            }
         }
 
         public override string ToString()
