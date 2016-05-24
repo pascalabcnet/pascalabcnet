@@ -89,13 +89,13 @@ namespace SyntaxVisitors
         public void ReplaceStatement(statement from, statement to)
         {
             var stl = UpperNodeAs<statement_list>();
-            stl.Replace(from, to);
+            stl.ReplaceInList(from, to);
         }
 
         public void ReplaceStatement(statement from, IEnumerable<statement> to)
         {
             var stl = UpperNodeAs<statement_list>();
-            stl.Replace(from, to);
+            stl.ReplaceInList(from, to);
         }
     }
 
