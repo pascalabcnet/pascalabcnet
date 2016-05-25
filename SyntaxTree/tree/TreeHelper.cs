@@ -28,12 +28,29 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
-        /// Получает список узлов поддерева в depth-first порядке
+        /// Находит последнего потомка, удовлетворяющего условию. Возвращает null, если такой не найден.
+        /// </summary>
+        /// <param name="condition">Условие</param>
+        /// <returns>Найденный узел, либо null</returns>
+        public syntax_tree_node FindLast(Predicate<syntax_tree_node> condition)
+        {
+            for (int i = subnodes_count - 1; i >= 0; i--)
+            {
+                if (condition(this[i]))
+                    return this[i];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Получает список узлов поддерева, в котором корнем является текущий узел. 
+        /// Порядок добавления в список: родитель, затем потомки.
         /// </summary>
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodes(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        public IEnumerable<syntax_tree_node> DescendantNodesPreOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var stack = new Stack<syntax_tree_node>();
 
@@ -62,7 +79,95 @@ namespace PascalABCCompiler.SyntaxTree
                 yield return node;
             }
         }
+
+        /// <summary>
+        /// Получает список узлов поддерева, в котором корнем является текущий узел. 
+        /// Порядок добавления в список: потомки, затем родитель.
+        /// </summary>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Список узлов поддерева</returns>
+        public IEnumerable<syntax_tree_node> DescendantNodesPostOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        {
+            var stack = new Stack<syntax_tree_node>();
+
+            if (includeSelf)
+                stack.Push(this);
+            else
+                for (int childIndex = subnodes_count - 1; childIndex >= 0; childIndex--)
+                    if (this[childIndex] != null)
+                        stack.Push(this[childIndex]);
+
+            syntax_tree_node lastReturnedNode = null;
+            while (stack.Count > 0)
+            {
+                syntax_tree_node node = stack.Peek();
+                bool isLeafNode = true;
+
+                // Если мы не должны посещать потомков узла или уже добавили их в список,
+                // то не кладем их на стек
+                if (!ReferenceEquals(lastReturnedNode, node.FindLast(x => x != null)))
+                if (descendIntoChildren == null || 
+                    descendIntoChildren(node))
+                    for (int childIndex = node.subnodes_count - 1; childIndex >= 0; childIndex--)
+                    {
+                        var child = node[childIndex];
+
+                        if (child == null)
+                            continue;
+
+                        stack.Push(child);
+                        isLeafNode = false;
+                    }
+
+                if (isLeafNode)
+                {
+                    stack.Pop();
+                    lastReturnedNode = node;
+                    yield return node;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Получает список узлов поддерева, в котором корнем является текущий узел. 
+        /// Порядок добавления в список: узлы первого уровня, затем второго и т.д.
+        /// </summary>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Список узлов поддерева</returns>
+        public IEnumerable<syntax_tree_node> DescendantNodesLevelOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        {
+            var queue = new Queue<syntax_tree_node>();
+
+            if (includeSelf)
+                queue.Enqueue(this);
+            else
+                for (int childIndex = 0; childIndex < subnodes_count; childIndex++)
+                    if (this[childIndex] != null)
+                        queue.Enqueue(this[childIndex]);
+
+            while (queue.Count > 0)
+            {
+                syntax_tree_node node = queue.Dequeue();
+
+                if (descendIntoChildren == null || descendIntoChildren(node))
+                    for (int childIndex = 0; childIndex < node.subnodes_count; childIndex++)
+                    {
+                        var child = node[childIndex];
+
+                        if (child == null)
+                            continue;
+
+                        queue.Enqueue(child);
+                    }
+
+                yield return node;
+            }
+        }
     }
+
+
 
     //------------------------------
     public class SyntaxList<T> where T : syntax_tree_node // операции для работы с вложенными списками синтаксических узлов. Класс пока не используется

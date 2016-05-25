@@ -263,7 +263,7 @@ namespace NodeGenerator
 		}
 ";
         public static readonly string list_find_index_method =
-@"		private int FindIndex(list_element_type el)
+@"		private int FindIndexInList(list_element_type el)
 		{
 			var ind = list_name.FindIndex(x => x == el);
 			if (ind == -1)
@@ -272,15 +272,15 @@ namespace NodeGenerator
 		}
 ";
         public static readonly string list_replace_method =
-@"		public void Replace(list_element_type el, list_element_type newel)
+@"		public void ReplaceInList(list_element_type el, list_element_type newel)
 		{
-			list_name[FindIndex(el)] = newel;
+			list_name[FindIndexInList(el)] = newel;
 		}
 ";
         public static readonly string list_replace_many_method =
-@"		public void Replace(list_element_type el, IEnumerable<list_element_type> newels)
+@"		public void ReplaceInList(list_element_type el, IEnumerable<list_element_type> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			list_name.RemoveAt(ind);
 			list_name.InsertRange(ind, newels);
 		}
