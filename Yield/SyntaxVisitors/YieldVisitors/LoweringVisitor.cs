@@ -65,6 +65,16 @@ namespace SyntaxVisitors
             }
         }
 
+
+
+        // frninja 21/05/16
+        /*public override void visit(foreach_stmt frch)
+        {
+            ProcessNode(frch.stmt);
+            
+
+        }*/
+
         public override void visit(if_node ifn)
         {
             ProcessNode(ifn.then_body);
@@ -199,6 +209,8 @@ namespace SyntaxVisitors
 
             bl.defs.Add(new label_definitions(gt1.label, gt2.label));
         }
+
+        
     }
 
 }

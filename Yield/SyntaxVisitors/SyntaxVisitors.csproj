@@ -55,6 +55,7 @@
     <Compile Include="ObjectCopier.cs" />
     <Compile Include="Optimization\CalcConstExprs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UniversalVisitors\AddBeginEndsVisitor.cs" />
     <Compile Include="UniversalVisitors\CountNodesVisitor.cs" />
     <Compile Include="UniversalVisitors\DeleteRedundantBeginEnds.cs" />
     <Compile Include="UniversalVisitors\SimplePrettyPrinterVisitor.cs" />

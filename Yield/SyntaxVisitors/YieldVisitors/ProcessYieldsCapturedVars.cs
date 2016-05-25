@@ -712,6 +712,10 @@ namespace SyntaxVisitors
             //if (!hasYields) // т.е. мы разобрали функцию и уже выходим. Это значит, что пока yield будет обрабатываться только в функциях. Так это и надо.
             //    return;
 
+            // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
+            AddBeginEndsVisitor addBeginEndsVis = new AddBeginEndsVisitor();
+            pd.visit(addBeginEndsVis);
+
             // Проверяем проблемы имен для for
             CheckVariablesRedefenitionVisitor checkVarRedefVisitor = new CheckVariablesRedefenitionVisitor(
                 new HashSet<string>(
