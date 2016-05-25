@@ -1,4 +1,4 @@
-%windir%\microsoft.net\framework\v4.0.30319\msbuild /t:rebuild /property:Configuration=Release /p:Platform="Any CPU" PascalABCNET.sln
+"%ProgramFiles(x86)%\MSBuild\14.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release /p:Platform="Any CPU" PascalABCNET.sln
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 cd ReleaseGenerators
