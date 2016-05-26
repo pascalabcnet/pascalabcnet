@@ -6583,7 +6583,8 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(SemanticTree.ICompiledStaticMethodCallNode value)
         {
             //if (save_debug_info) MarkSequencePoint(value.Location);
-
+            if (comp_opt.dbg_attrs == DebugAttributes.Release && has_debug_conditional_attr(value.static_method.method_info))
+                return;
             bool tmp_dot = is_dot_expr;//идет ли после этого точка
             is_dot_expr = false;
             ParameterInfo[] pinfs = value.static_method.method_info.GetParameters();
@@ -6697,10 +6698,17 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Nop);
         }
 
+        private bool has_debug_conditional_attr(MethodInfo mi)
+        {
+            var attrs = mi.GetCustomAttributes(typeof(System.Diagnostics.ConditionalAttribute), true);
+            if (attrs != null && attrs.Length > 0 && (attrs[0] as System.Diagnostics.ConditionalAttribute).ConditionString == "DEBUG")
+                return true;
+            return false;
+        }
+
         //вызов откомпилированного метода
         public override void visit(SemanticTree.ICompiledMethodCallNode value)
         {
-            //if (save_debug_info) MarkSequencePoint(value.Location);
             IExpressionNode[] real_parameters = value.real_parameters;
             IParameterNode[] parameters = value.compiled_method.parameters;
             bool tmp_dot = is_dot_expr;
