@@ -1188,6 +1188,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     SymbolInfo saved_si = si;
                     SymbolInfo saved_si2 = si2;
+                    if (!(left is typed_expression))
+                        AddError(new OperatorCanNotBeAppliedToThisTypes(name, left, right, loc));
                     base_function_call bfc = ((left as typed_expression).type as delegated_methods).proper_methods[0];
                     left = convertion_data_and_alghoritms.explicit_convert_type(left, CreateDelegate(bfc.simple_function_node));
                     si = left.type.find_in_type(name);
