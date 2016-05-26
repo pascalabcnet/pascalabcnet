@@ -187,7 +187,7 @@ namespace PascalABCCompiler.VBNETParser
 			}
 		}
 		
-		public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode)
+		public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
 		{
 			if (string.IsNullOrEmpty(Text))
 				return null;

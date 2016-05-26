@@ -2743,10 +2743,10 @@ namespace PascalABCCompiler
             return cu;
         }
 
-        private SyntaxTree.compilation_unit InternalParseText(string FileName, string Text, List<Error> ErrorList)
+        private SyntaxTree.compilation_unit InternalParseText(string FileName, string Text, List<Error> ErrorList, List<string> DefinesList = null)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, FileName);
-            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList);
+            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, DefinesList);
             OnChangeCompilerState(this, CompilerState.EndParsingFile, FileName);
             //Вычисляем сколько строк скомпилировали
             if (ErrorList.Count == 0 && cu != null && cu.source_context!=null)
@@ -2893,8 +2893,12 @@ namespace PascalABCCompiler
                         throw new SourceFileNotFound(UnitName);
                     else
                         throw new UnitNotFound(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, SyntaxUsesUnit.source_context);
-
-                CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList);
+                List<string> DefinesList = new List<string>();
+                if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
+                    DefinesList.Add("RELEASE");
+                else
+                    DefinesList.Add("DEBUG");
+                CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList, DefinesList);
 
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {

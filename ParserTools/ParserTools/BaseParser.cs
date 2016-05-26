@@ -103,7 +103,7 @@ namespace PascalABCCompiler.Parsers
             }
         }
 
-        public virtual PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode)
+        public virtual PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
         {
             syntax_tree_node root = null;
 
@@ -146,7 +146,7 @@ namespace PascalABCCompiler.Parsers
 
         }
 
-        public virtual syntax_tree_node BuildTreeInNormalMode(string FileName, string Text)
+        public virtual syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
         {
             return null;
         }

@@ -3,7 +3,7 @@
     Stack<BufferContext> buffStack = new Stack<BufferContext>();
     Stack<string> fNameStack = new Stack<string>();
 	Stack<int> IfStack = new Stack<int>(); // 0 - if, 1 - else
-	List<string> Defines = new List<string>();
+	public List<string> Defines = new List<string>();
 	int IfExclude;
 	string Pars;
 	string directivename;

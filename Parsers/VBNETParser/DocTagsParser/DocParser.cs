@@ -115,7 +115,7 @@ namespace PascalABCCompiler.VBNETParser
             dcs.text = text;
             return dcs;
         }
-        public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode)
+        public syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
         {
             MatchCollection mc = Regex.Matches(Text, @"(([\f\t\v\x85\p{Z}])*///.*\r\n)*([\f\t\v\x85\p{Z}])*'''.*", RegexOptions.Compiled);
             syntax_tree_node cu = null;
