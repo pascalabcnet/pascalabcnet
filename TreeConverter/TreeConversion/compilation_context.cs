@@ -3067,7 +3067,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
 
-				if (!convertion_data_and_alghoritms.eq_type_nodes(compar.return_value_type,fn.return_value_type) && fn.return_value_type != null)
+				if (!convertion_data_and_alghoritms.eq_type_nodes(compar.return_value_type,fn.return_value_type) && fn.return_value_type != null && !(fn.return_value_type is undefined_type))
 				{
 					AddError(fn.loc, "FUNCTION_PREDEFINITION_AND_DEFINITION_HAVE_DIFFERENT_RESULT_TYPES");
 				}
