@@ -37,6 +37,8 @@ namespace PascalABCCompiler.SystemLibrary
         private static compiled_type_node _delegate_base_type;
         private static compiled_type_node _enum_base_type;
         private static compiled_type_node _pointer_type;
+        private static compiled_type_node _complex_type;
+        private static compiled_constructor_node _complex_type_constructor;
         private static compiled_type_node _void_type;
         private static compiled_type_node _value_type;
         private static compiled_type_node _decimal_type;
@@ -1188,8 +1190,8 @@ namespace PascalABCCompiler.SystemLibrary
             _object_type = compiled_type_node.get_type_node(typeof(object), symtab);
             _object_type.SetName(compiler_string_consts.object_type_name);
 
-            
-
+            _complex_type = compiled_type_node.get_type_node(typeof(System.Numerics.Complex), symtab);
+            _complex_type_constructor = compiled_constructor_node.get_compiled_constructor(_complex_type.compiled_type.GetConstructor(new Type[] { typeof(double), typeof(double)}));
             _enum_base_type = compiled_type_node.get_type_node(typeof(System.Enum), symtab);
 
             _delegate_base_type = compiled_type_node.get_type_node(typeof(System.MulticastDelegate), symtab);
@@ -2580,7 +2582,23 @@ namespace PascalABCCompiler.SystemLibrary
                 return _object_type;
             }
         }
-		
+
+        public static type_node complex_type
+        {
+            get
+            {
+                return _complex_type;
+            }
+        }
+
+        public static compiled_constructor_node complex_type_constructor
+        {
+            get
+            {
+                return _complex_type_constructor;
+            }
+        }
+
         public static type_node flags_attribute_type
         {
         	get

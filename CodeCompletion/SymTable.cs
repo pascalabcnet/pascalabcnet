@@ -1269,6 +1269,8 @@ namespace CodeCompletion
         public void MakeDescription()
         {
             si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
+            if (!string.IsNullOrEmpty(documentation))
+                si.description += Environment.NewLine + documentation;
         }
 
         public virtual void AddIndexer(TypeScope ts)

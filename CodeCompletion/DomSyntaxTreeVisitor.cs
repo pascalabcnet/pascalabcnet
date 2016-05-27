@@ -1475,7 +1475,36 @@ namespace CodeCompletion
             is_proc_realization = false;
             if (_procedure_definition.proc_body != null)
             {
-            	cur_scope = returned_scope;
+                if (_procedure_definition.proc_header is function_header && (_procedure_definition.proc_header as function_header).return_type == null)
+                {
+                    var fh = (_procedure_definition.proc_header as function_header);
+                    if (fh != null && fh.return_type == null)
+                    {
+                        var bl = _procedure_definition.proc_body as block;
+                        if (bl != null && bl.program_code != null)
+                        {
+                            if (bl.program_code.subnodes.Count == 1)
+                            {
+                                var ass = bl.program_code.subnodes[0] as assign;
+                                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                                {
+                                    if (!(ass.from is nil_const))
+                                    {
+                                        ProcScope tmp_scope = returned_scope as ProcScope;
+                                        ass.from.visit(this);
+                                        if (returned_scope != null && returned_scope is TypeScope)
+                                        {
+                                            tmp_scope.return_type = returned_scope as TypeScope;
+                                            tmp_scope.Complete();
+                                            returned_scope = tmp_scope;
+                                        }
+                                    }
+                                }
+                            } 
+                        }
+                    }
+                }
+                cur_scope = returned_scope;
             	/*if ((ret_tn as ProcScope).return_type != null)
             	{
             		ret_tn.AddName("Result",new ElementScope(new SymInfo("Result", SymbolKind.Variable,"Result"),(ret_tn as ProcScope).return_type,cur_scope));

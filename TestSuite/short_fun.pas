@@ -11,9 +11,9 @@ end ;
 
 begin
   var a1 := new A;
-  write(a1.f);
+  assert(a1.f=2);
   a1.p;
   write(3);
-  write(f);
+  assert(f=4);
   p;
 end.
