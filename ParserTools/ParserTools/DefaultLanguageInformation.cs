@@ -1318,7 +1318,7 @@ namespace PascalABCCompiler.Parsers
 				{
 					if (scope.ConstantValue == null)
 						sb.Append("const "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					else sb.Append("const "+GetTopScopeName(scope.TopScope)+scope.Name+" = "+scope.ConstantValue.ToString());
+					else sb.Append("const "+GetTopScopeName(scope.TopScope)+scope.Name+ ": "+ type_name + " = "+scope.ConstantValue.ToString());
 				}
 				break;
 				case SymbolKind.Event :
