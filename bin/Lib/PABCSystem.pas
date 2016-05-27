@@ -117,6 +117,8 @@ type
   /// Представляет базовый класс для реализации интерфейса IComparer
   Comparer<T> = System.Collections.Generic.Comparer<T>;
   
+  IComparable<T> = System.Collections.Generic.IComparable<T>;
+
   /// Представляет множество значений, реализованное на базе хеш-таблицы
   HashSet<T> = System.Collections.Generic.HashSet<T>;
   
@@ -152,7 +154,7 @@ type
 
   /// Представляет интерфейс для сравнения двух элементов
   IComparer<T> = System.Collections.Generic.IComparer<T>;
-  
+
   /// Представляет интерфейс для набора пар Ключ-Значение
   IDictionary<Key,Value> = System.Collections.Generic.IDictionary<Key,Value>;
   
@@ -2145,61 +2147,61 @@ end;
 ///--
 function TypedSet.IsInDiapason(elem: object): boolean;
 begin
-  if (low_bound <> nil) and (upper_bound <> nil) and (elem is IComparable) then
+  if (low_bound <> nil) and (upper_bound <> nil) and (elem is System.IComparable) then
   begin
     case System.Type.GetTypeCode(elem.GetType) of
       TypeCode.Char:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToChar(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToChar(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToChar(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToChar(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Int32:
         begin
           if not (elem is integer) then elem := Convert.ToInt32(elem);
-          if ((elem as IComparable).CompareTo(Convert.ToInt32(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToInt32(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToInt32(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToInt32(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Byte:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToByte(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToByte(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToByte(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToByte(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.SByte:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToSByte(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToSByte(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToSByte(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToSByte(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Int16:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToInt16(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToInt16(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToInt16(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToInt16(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.UInt16:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToUint16(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToUInt16(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToUint16(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToUInt16(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.UInt32:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToUInt32(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToUInt32(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToUInt32(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToUInt32(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Int64:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToInt64(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToInt64(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToInt64(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToInt64(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.UInt64:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToUInt64(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToUInt64(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToUInt64(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToUInt64(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
@@ -2460,7 +2462,7 @@ begin
   var t: &Type; 
   var added := false;
   if i.MoveNext then
-    if not (i.Current is IComparable) then
+    if not (i.Current is System.IComparable) then
     begin
       result := '' + FormatStr(i.Current) + '';
       added := true;
@@ -2471,7 +2473,7 @@ begin
       t := i.Current.GetType;
     end;
   while i.MoveNext do
-    if not (i.Current is IComparable) then
+    if not (i.Current is System.IComparable) then
     begin
       result := (added ? result + ',' : '') + FormatStr(i.Current);
       added := true;
@@ -3198,20 +3200,32 @@ end;
 //          Операции для HashSet<T> 
 //------------------------------------------------------------------------------
 ///--
-function HashSet<T>.operator in(x: T; Self: HashSet<T>): boolean;
+function operator in<T>(x: T; Self: HashSet<T>): boolean; extensionmethod;
 begin
   Result := Self.Contains(x);
 end;
 
-function HashSet<T>.operator+=(var Self: HashSet<T>; x: T): HashSet<T>;
+function operator+=<T>(var Self: HashSet<T>; x: T): HashSet<T>; extensionmethod;
 begin
   Self.Add(x);
   Result := Self;
 end;
 
-function HashSet<T>.operator-=(var Self: HashSet<T>; x: T): HashSet<T>;
+function operator+=<T>(var Self: HashSet<T>; x: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Self.UnionWith(x);
+  Result := Self;
+end;
+
+function operator-=<T>(var Self: HashSet<T>; x: T): HashSet<T>; extensionmethod;
 begin
   Self.Remove(x);
+  Result := Self;
+end;
+
+function operator-=<T>(var Self: HashSet<T>; x: sequence of T): HashSet<T>; extensionmethod;
+begin
+  Self.ExceptWith(x);
   Result := Self;
 end;
 
@@ -3269,21 +3283,84 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для SortedSet<T> 
 //------------------------------------------------------------------------------
-function SortedSet<T>.operator in(x: T; Self: SortedSet<T>): boolean;
+function operator in<T>(x: T; Self: SortedSet<T>): boolean; extensionmethod;
 begin
   Result := Self.Contains(x);
 end;
 
-function SortedSet<T>.operator+=(var Self: SortedSet<T>; x: T): SortedSet<T>;
+function operator+=<T>(var Self: SortedSet<T>; x: T): SortedSet<T>; extensionmethod;
 begin
   Self.Add(x);
   Result := Self;
 end;
 
-function SortedSet<T>.operator-=(var Self: SortedSet<T>; x: T): SortedSet<T>;
+function operator+=<T>(var Self: SortedSet<T>; x: sequence of T): SortedSet<T>; extensionmethod;
+begin
+  Self.UnionWith(x);
+  Result := Self;
+end;
+
+function operator-=<T>(var Self: SortedSet<T>; x: T): SortedSet<T>; extensionmethod;
 begin
   Self.Remove(x);
   Result := Self;
+end;
+
+function operator-=<T>(var Self: SortedSet<T>; x: sequence of T): SortedSet<T>; extensionmethod;
+begin
+  Self.ExceptWith(x);
+  Result := Self;
+end;
+
+function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.SetEquals(y)
+end;
+
+function operator<><T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := not x.SetEquals(y)
+end;
+
+function operator-<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.ExceptWith(y);
+  Result := v;
+end;
+
+function operator+<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.UnionWith(y);
+  Result := v;
+end;
+
+function operator*<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.IntersectWith(y);
+  Result := v;
+end;
+
+function operator< <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsProperSubsetOf(y);
+end;
+
+function operator<= <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsSubsetOf(y);
+end;
+
+function operator> <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsProperSupersetOf(y);
+end;
+
+function operator>= <T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  Result := x.IsSupersetOf(y);
 end;
 
 //------------------------------------------------------------------------------
@@ -8644,6 +8721,17 @@ function TruncBigInteger(Self: real): BigInteger; extensionmethod;
 begin
   Result := TruncBigInteger(Self);
 end;
+
+/// Возвращает вещественное, отформатированное к строке с frac цифрами после десятичной точки
+function ToString(Self: real; frac: integer): string; extensionmethod;
+begin
+  if frac<0 then
+    raise new System.ArgumentOutOfRangeException('frac','frac<0');
+  if frac>=100 then
+    raise new System.ArgumentOutOfRangeException('frac','frac>=100');
+  Result := Format('{0:f'+frac+'}',Self)
+end;
+
 
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char

@@ -1455,10 +1455,20 @@ namespace PascalABCCompiler.NETGenerator
                 ICommonClassFieldNode icfn = dn as ICommonClassFieldNode;
                 if (icfn != null)
                 {
-                    FieldInfo finfo = helper.GetField(icfn).fi;
-                    Type ftype = GetTypeOfGenericInstanceField(t, finfo);
-                    FieldInfo fi = TypeBuilder.GetField(t, finfo);
-                    helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    FldInfo fldinfo = helper.GetField(icfn);
+                    if (!(fldinfo is GenericFldInfo))
+                    {
+                        FieldInfo finfo = fldinfo.fi;
+                        Type ftype = GetTypeOfGenericInstanceField(t, finfo);
+                        FieldInfo fi = TypeBuilder.GetField(t, finfo);
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, ftype);
+                    }
+                    else
+                    {
+                        FieldInfo finfo = fldinfo.fi;
+                        FieldInfo fi = finfo;
+                        helper.AddGenericField(value.used_members[dn] as ICommonClassFieldNode, fi, (fldinfo as GenericFldInfo).field_type);
+                    }
                     continue;
                 }
             }
@@ -2144,7 +2154,10 @@ namespace PascalABCCompiler.NETGenerator
             Type[] tpars = new Type[tcount];
             for (int i = 0; i < tcount; i++)
             {
-                tpars[i] = helper.GetTypeReference(igfi.generic_parameters[i]).tp;
+                TypeInfo ti = helper.GetTypeReference(igfi.generic_parameters[i]);
+                if (ti == null)
+                    return;
+                tpars[i] = ti.tp;
             }
             MethodInfo rez = mi.MakeGenericMethod(tpars);
             helper.AddMethod(igfi, rez);
@@ -2335,7 +2348,7 @@ namespace PascalABCCompiler.NETGenerator
                         }
                         else
                         {
-                            if (funcs.Count > 0) il.Emit(OpCodes.Ldarga_S, (byte)(j + 1));
+                            if (funcs.Count > 0) il.Emit(OpCodes.Ldarg_S, (byte)(j + 1));
                             else il.Emit(OpCodes.Ldarg_S, (byte)j);
                         }
                         il.Emit(OpCodes.Stfld, fba[j]);
@@ -6570,7 +6583,8 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(SemanticTree.ICompiledStaticMethodCallNode value)
         {
             //if (save_debug_info) MarkSequencePoint(value.Location);
-
+            if (comp_opt.dbg_attrs == DebugAttributes.Release && has_debug_conditional_attr(value.static_method.method_info))
+                return;
             bool tmp_dot = is_dot_expr;//идет ли после этого точка
             is_dot_expr = false;
             ParameterInfo[] pinfs = value.static_method.method_info.GetParameters();
@@ -6684,10 +6698,17 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Nop);
         }
 
+        private bool has_debug_conditional_attr(MethodInfo mi)
+        {
+            var attrs = mi.GetCustomAttributes(typeof(System.Diagnostics.ConditionalAttribute), true);
+            if (attrs != null && attrs.Length > 0 && (attrs[0] as System.Diagnostics.ConditionalAttribute).ConditionString == "DEBUG")
+                return true;
+            return false;
+        }
+
         //вызов откомпилированного метода
         public override void visit(SemanticTree.ICompiledMethodCallNode value)
         {
-            //if (save_debug_info) MarkSequencePoint(value.Location);
             IExpressionNode[] real_parameters = value.real_parameters;
             IParameterNode[] parameters = value.compiled_method.parameters;
             bool tmp_dot = is_dot_expr;

@@ -409,9 +409,9 @@ namespace PascalABCCompiler.Parsers
                 return ctn.FullName;
             if (!no_alias)
             {
-                if (ctn.Name.Contains("Func`"))
+                if (ctn.Name.Contains("Func`") || ctn.Name.Contains("Predicate`"))
                     return getLambdaRepresentation(ctn, true, new List<string>());
-                else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
+                else if (ctn.Name.Contains("Action`"))
                     return getLambdaRepresentation(ctn, false, new List<string>());
                 else if (ctn.Name == "IEnumerable`1")
                     return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
@@ -822,9 +822,9 @@ namespace PascalABCCompiler.Parsers
 			{
                 if (!noalias)
                 {
-                    if (ctn.Name.Contains("Func`"))
+                    if (ctn.Name.Contains("Func`") || ctn.Name.Contains("Predicate`"))
                         return getLambdaRepresentation(ctn, true, new List<string>());
-                    else if (ctn.Name.Contains("Action`") || ctn.Name.Contains("Predicate`"))
+                    else if (ctn.Name.Contains("Action`"))
                         return getLambdaRepresentation(ctn, false, new List<string>());
                     else if (ctn.Name == "IEnumerable`1")
                         return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
@@ -854,7 +854,7 @@ namespace PascalABCCompiler.Parsers
 				sb.Append('>');*/
 				return sb.ToString();
 			}
-			//if (ctn.IsArray) return "array of "+GetTypeName(ctn.GetElementType());
+			if (ctn.IsArray) return "array of "+GetShortTypeName(ctn.GetElementType());
 			//if (ctn == Type.GetType("System.Void*")) return PascalABCCompiler.TreeConverter.compiler_string_consts.pointer_type_name;
 			return ctn.Name;
 		}
@@ -1081,7 +1081,13 @@ namespace PascalABCCompiler.Parsers
                 else if (parameters.Count > 1)
                     sb.Append(parameters[0] + "->" + parameters[1]);
                 else if (parameters.Count == 1)
-                    sb.Append("()->"+parameters[0]);
+                {
+                    if (t.Name == "Predicate`1")
+                        sb.Append(parameters[0] + "->boolean");
+                    else
+                        sb.Append("()->" + parameters[0]);
+                }
+
             }
             else if (parameters.Count > 0)
             {
@@ -1139,7 +1145,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                string s = GetFullTypeName(scope.CompiledType);
+                string s = GetShortTypeName(scope.CompiledType);
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
                 {
@@ -1312,7 +1318,7 @@ namespace PascalABCCompiler.Parsers
 				{
 					if (scope.ConstantValue == null)
 						sb.Append("const "+ GetTopScopeName(scope.TopScope)+scope.Name + ": "+type_name);
-					else sb.Append("const "+GetTopScopeName(scope.TopScope)+scope.Name+" = "+scope.ConstantValue.ToString());
+					else sb.Append("const "+GetTopScopeName(scope.TopScope)+scope.Name+ ": "+ type_name + " = "+scope.ConstantValue.ToString());
 				}
 				break;
 				case SymbolKind.Event :
@@ -1510,9 +1516,9 @@ namespace PascalABCCompiler.Parsers
                         else 
                             return "sequence of " + (generic_args.Count>0?generic_args[0]:GetShortTypeName(tt, false));
                     }
-                    else if (t.Name.Contains("Func`"))
+                    else if (t.Name.Contains("Func`") || t.Name.Contains("Predicate`"))
                         return getLambdaRepresentation(t, true, generic_args, generic_param_args);
-                    else if (t.Name.Contains("Action`") || t.Name.Contains("Predicate`"))
+                    else if (t.Name.Contains("Action`") )
                         return getLambdaRepresentation(t, false, generic_args, generic_param_args);
                 }
                 string name = GetShortTypeName(t);
@@ -1626,10 +1632,12 @@ namespace PascalABCCompiler.Parsers
             Dictionary<string, int> class_generic_table = new Dictionary<string, int>();
             ParameterInfo[] pis = scope.CompiledMethod.GetParameters();
             Type[] tt = scope.CompiledMethod.GetGenericArguments();
+            int gen_ind = 0;
             if (!scope.IsExtension)
                 sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
             else
             {
+                gen_ind = 1;
                 generic_param_args = new Dictionary<string, string>();
                 for (int i = 0; i < pis.Length; i++)
                 {
@@ -1655,7 +1663,7 @@ namespace PascalABCCompiler.Parsers
             if (scope.CompiledMethod.GetGenericArguments().Length > 0)
             {
                 sb.Append('<');
-                for (int i = 1; i < tt.Length; i++)
+                for (int i = gen_ind; i < tt.Length; i++)
                 {
                     if (class_generic_table.ContainsKey(tt[i].Name))
                     {
@@ -1920,7 +1928,7 @@ namespace PascalABCCompiler.Parsers
 		
 		protected virtual string GetDescriptionForShortString(IShortStringScope scope)
 		{
-			return "string "+"["+scope.Length+"]";
+			return "string"+"["+scope.Length+"]";
 		}
 		
 		public string GetSynonimDescription(ITypeScope scope)
@@ -2292,6 +2300,12 @@ namespace PascalABCCompiler.Parsers
         		sb.Insert(0,Text[i]);
         		i--;
         	}
+            while (i >= 0 && char.IsWhiteSpace(Text[i]))
+            {
+                i--;
+            }
+            if (i >= 0 && (Text[i] == '.' || Text[i] == '&'))
+                sb.Insert(0, Text[i]);
         	string s = sb.ToString().ToLower();
         	if (s == "new")
         	{
@@ -2602,8 +2616,14 @@ namespace PascalABCCompiler.Parsers
             return sb.ToString();
 
         }
-		
-		public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
+
+        public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets)
+        {
+            KeywordKind keyw = KeywordKind.None;
+            return FindExpressionFromAnyPosition(off, Text, line, col, out keyw, out expr_without_brackets);
+        }
+
+        public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
 		{
 			int i = off-1;
 			expr_without_brackets = null;
@@ -2777,80 +2797,80 @@ namespace PascalABCCompiler.Parsers
         	}
             return null;
 		}
-		
-		public virtual KeywordKind TestForKeyword(string Text, int i)
-		{
-			StringBuilder sb = new StringBuilder();
-        	int j = i;
-        	bool in_keyw = false;
-        	while (j >= 0 && Text[j] != '\n')
-        		j--;
-        	Stack<char> kav_stack = new Stack<char>();
-        	j++;
-        	while (j <= i)
-        	{
-        		if (Text[j] == '\'')
-        		{
-        			if (kav_stack.Count == 0 && !in_keyw)
-        				kav_stack.Push('\'');
-        			else if (kav_stack.Count > 0)
-        				kav_stack.Pop();
-        		}
-        		else if (Text[j] == '{' && kav_stack.Count == 0)
-        			in_keyw = true;
-        		else
-        			if (Text[j] == '}')
-        			in_keyw = false;
-        		j++;
-        	}
-        	j=i;
-        	if (kav_stack.Count != 0 || in_keyw) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        	if (j >= 0 && Text[j] == '.') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        	while (j >= 0)
-        	{
-        		//if (Text[j] == '{') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        		if (!in_keyw && (Text[j] == '\'' || Text[j] == '\n'))
-        			break;
-        		if (Text[j] == '}')
-        			in_keyw = true;
-        		else
-        		if (Text[j] == '/' && !in_keyw) 
-        			if (j > 0 && Text[j-1] == '/') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
-        		j--;
-        	}
-        	//if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
-        	while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]))) i--;
-        	if (i >= 0 && Text[i] == ':') return PascalABCCompiler.Parsers.KeywordKind.Colon;
-        	
-        	if (i>=0 && Text[i] == ',')
-        	{
-        		
-        		while (i >= 0 && Text[i] != '\n')
-        		{
-        			if (char.IsLetterOrDigit(Text[i]))
-        			sb.Insert(0,Text[i]);
-        			else 
-        			{
-        				PascalABCCompiler.Parsers.KeywordKind keyw = GetKeywordKind(sb.ToString());
-        				if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
-        				return PascalABCCompiler.Parsers.KeywordKind.Uses;
-        				else if (keyw == PascalABCCompiler.Parsers.KeywordKind.Var)
-        				return PascalABCCompiler.Parsers.KeywordKind.Var;
-        				else sb.Remove(0,sb.Length);
-        			}
-        			i--;
-        		}
-        	}
-        	else
-        	while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
-        	{
-        		sb.Insert(0,Text[i]);
-        		i--;
-        	}
-        	string s = sb.ToString().ToLower();
-        	
-        	return GetKeywordKind(s);
-		}
+
+        public virtual KeywordKind TestForKeyword(string Text, int i)
+        {
+            StringBuilder sb = new StringBuilder();
+            int j = i;
+            bool in_keyw = false;
+            while (j >= 0 && Text[j] != '\n')
+                j--;
+            Stack<char> kav_stack = new Stack<char>();
+            j++;
+            while (j <= i)
+            {
+                if (Text[j] == '\'')
+                {
+                    if (kav_stack.Count == 0 && !in_keyw)
+                        kav_stack.Push('\'');
+                    else if (kav_stack.Count > 0)
+                        kav_stack.Pop();
+                }
+                else if (Text[j] == '{' && kav_stack.Count == 0)
+                    in_keyw = true;
+                else
+                    if (Text[j] == '}')
+                    in_keyw = false;
+                j++;
+            }
+            j = i;
+            if (kav_stack.Count != 0 || in_keyw) return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+            if (j >= 0 && Text[j] == '.') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+            while (j >= 0)
+            {
+                //if (Text[j] == '{') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                if (!in_keyw && (Text[j] == '\'' || Text[j] == '\n'))
+                    break;
+                if (Text[j] == '}')
+                    in_keyw = true;
+                else
+                if (Text[j] == '/' && !in_keyw)
+                    if (j > 0 && Text[j - 1] == '/') return PascalABCCompiler.Parsers.KeywordKind.Punkt;
+                j--;
+            }
+            //if (j>= 0 && Text[j] == '\'') return CodeCompletion.KeywordKind.kw_punkt;
+            while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]))) i--;
+            if (i >= 0 && Text[i] == ':') return PascalABCCompiler.Parsers.KeywordKind.Colon;
+
+            if (i >= 0 && Text[i] == ',')
+            {
+
+                while (i >= 0 && Text[i] != '\n')
+                {
+                    if (char.IsLetterOrDigit(Text[i]))
+                        sb.Insert(0, Text[i]);
+                    else
+                    {
+                        PascalABCCompiler.Parsers.KeywordKind keyw = GetKeywordKind(sb.ToString());
+                        if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
+                            return PascalABCCompiler.Parsers.KeywordKind.Uses;
+                        else if (keyw == PascalABCCompiler.Parsers.KeywordKind.Var)
+                            return PascalABCCompiler.Parsers.KeywordKind.Var;
+                        else sb.Remove(0, sb.Length);
+                    }
+                    i--;
+                }
+            }
+            else
+                while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
+                {
+                    sb.Insert(0, Text[i]);
+                    i--;
+                }
+            string s = sb.ToString().ToLower();
+
+            return GetKeywordKind(s);
+        }
 		
 		public virtual string SkipNew(int off, string Text, ref KeywordKind keyw)
         {

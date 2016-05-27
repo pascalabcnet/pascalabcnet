@@ -537,12 +537,8 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\FolderNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ProjectNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ReferenceFolderNodeCommands.cs" />
-    <Compile Include="Src\Gui\BrowserDisplayBinding\HtmlViewPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideBar.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Src\Gui\BrowserDisplayBinding\HtmlViewPane.cs" />
+    <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideBar.cs" />
     <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideTabItem.cs" />
     <Compile Include="Src\Gui\Components\StatusBar\SdStatusBar.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IPrintable.cs" />
@@ -586,9 +582,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReference.cs" />
-    <Compile Include="Src\Gui\Pads\FileScout.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Src\Gui\Pads\FileScout.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
@@ -782,9 +776,7 @@
       <DependentUpon>BuildEvents.xaml</DependentUpon>
     </Compile>
     <Compile Include="Src\Gui\BrowserDisplayBinding\SchemeExtension.cs" />
-    <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs" />
     <Compile Include="Src\Bookmarks\BookmarkConverter.cs" />
     <Compile Include="Src\Bookmarks\ClassMemberBookmark.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />

@@ -60,7 +60,7 @@ namespace PascalABCCompiler.Parsers
         {
             get;
         }*/
-        syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode);
+        syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null);
 
         void Reset();
 

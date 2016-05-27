@@ -19,13 +19,105 @@ namespace CodeCompletion
     	public static void Test()
     	{
     		TestExpressionExtract();
-    		//TestVBNETExpressionExtract();
+            //TestVBNETExpressionExtract();
+            //TestIntellisense(Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests"));
     	}
     	
-    	private static void assert(bool cond)
+        public static void TestIntellisense(string dir)
+        {
+            //string dir = Path.Combine(@"c:\Work\Miks\_PABCNETGitHub\TestSuite", "intellisense_tests");
+            var comp = new PascalABCCompiler.Compiler();
+            var controller = new CodeCompletion.CodeCompletionController();
+            CodeCompletion.CodeCompletionController.comp = comp;
+            CodeCompletion.CodeCompletionController.SetParser(".pas");
+            CodeCompletion.CodeCompletionController.ParsersController = comp.ParsersController;
+            var files = Directory.GetFiles(dir, "*.pas");
+            var parser = comp.ParsersController;
+            for (int i = 0; i < files.Length; i++)
+            {
+                var FileName = files[i];
+                var content = File.ReadAllText(FileName);
+                var dc = controller.Compile(FileName, content);
+                
+                string expr_without_brackets = null;
+                var tmp = content;
+                var ind = -1;
+                ind = tmp.IndexOf("{@");
+                while (ind != -1)
+                {
+                    var lines = tmp.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.None);
+                    var pos = ind-1;
+                    var line = GetLineByPos(lines, pos);
+                    var col = GetColByPos(lines, pos);
+                    var desc = CodeCompletion.CodeCompletionTester.GetDescription(pos, tmp, line, col, FileName, dc, comp.ParsersController);
+                    var should_desc = tmp.Substring(ind + 2, tmp.IndexOf("@}") - ind - 2);
+                    if (desc == null)
+                        desc = "";
+                    desc = desc.Split(new string[] { "\n"},StringSplitOptions.None)[0].Trim();
+                    assert(desc == should_desc, FileName+", should: "+should_desc+", is: "+desc);
+                    tmp = tmp.Remove(ind, tmp.IndexOf("@}") + 2 - ind);
+                    ind = tmp.IndexOf("{@");
+                }
+
+            }
+        }
+        
+        private static int GetLineByPos(string[] lines, int pos)
+        {
+            var cum_pos = 0;
+            for (int i = 0; i<lines.Length; i++)
+            { 
+                for (int j=0; j<lines[i].Length; j++)
+                {
+                    if (cum_pos == pos)
+                    {
+                        return i;// i + 1 ;
+                    }
+                    cum_pos++;
+                }
+                cum_pos += Environment.NewLine.Length;
+            }
+            return -1;
+        }
+
+        private static int GetColByPos(string[] lines, int pos)
+        {
+            var cum_pos = 0;
+            for (int i = 0; i < lines.Length; i++)
+            {
+                for (int j = 0; j < lines[i].Length; j++)
+                {
+                    if (cum_pos == pos)
+                    {
+                        return j;// + 1;
+                    }
+                    cum_pos++;
+                }
+                cum_pos += Environment.NewLine.Length;
+            }
+            return -1;
+        }
+
+        public static string GetDescription(int pos, string content, int line, int col, string FileName, DomConverter dc, PascalABCCompiler.Parsers.Controller controller)
+        {
+            string expr_without_brackets = null;
+            PascalABCCompiler.Parsers.KeywordKind keyw;
+            var expr = CodeCompletion.CodeCompletionController.CurrentParser.LanguageInformation.FindExpressionFromAnyPosition(pos, content, line, col, out keyw, out expr_without_brackets);
+            if (expr == null)
+              expr = expr_without_brackets;
+            var errors = new List<PascalABCCompiler.Errors.Error>();
+            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors);
+            var desc = dc.GetDescription(tree, FileName, expr_without_brackets, controller, line, col, keyw, false);
+            return desc;
+        }
+
+    	private static void assert(bool cond, string message=null)
     	{
-    		System.Diagnostics.Debug.Assert(cond);
-    	}
+            if (message != null)
+    		    System.Diagnostics.Debug.Assert(cond, message);
+            else
+                System.Diagnostics.Debug.Assert(cond);
+        }
     	
     	private static void TestVBNETExpressionExtract()
     	{

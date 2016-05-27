@@ -1701,6 +1701,38 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(yield_unknown_ident _yield_unknown_ident)
+		{
+		}
+
+		public virtual void post_do_visit(yield_unknown_ident _yield_unknown_ident)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+		}
+
+		public virtual void post_do_visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		{
+		}
+
+		public virtual void post_do_visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		{
+		}
+
+		public virtual void post_do_visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3522,6 +3554,39 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_no_type);
 			pre_do_visit(_no_type);
 			post_do_visit(_no_type);
+		}
+
+		public override void visit(yield_unknown_ident _yield_unknown_ident)
+		{
+			DefaultVisit(_yield_unknown_ident);
+			pre_do_visit(_yield_unknown_ident);
+			visit(yield_unknown_ident.UnknownID);
+			visit(yield_unknown_ident.ClassName);
+			post_do_visit(_yield_unknown_ident);
+		}
+
+		public override void visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+			DefaultVisit(_yield_unknown_expression_type);
+			pre_do_visit(_yield_unknown_expression_type);
+			visit(yield_unknown_expression_type.Vds);
+			post_do_visit(_yield_unknown_expression_type);
+		}
+
+		public override void visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		{
+			DefaultVisit(_yield_var_def_statement_with_unknown_type);
+			pre_do_visit(_yield_var_def_statement_with_unknown_type);
+			visit(yield_var_def_statement_with_unknown_type.vars);
+			post_do_visit(_yield_var_def_statement_with_unknown_type);
+		}
+
+		public override void visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		{
+			DefaultVisit(_yield_variable_definitions_with_unknown_type);
+			pre_do_visit(_yield_variable_definitions_with_unknown_type);
+			visit(yield_variable_definitions_with_unknown_type.vars);
+			post_do_visit(_yield_variable_definitions_with_unknown_type);
 		}
 	}
 

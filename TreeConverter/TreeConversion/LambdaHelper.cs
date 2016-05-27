@@ -103,7 +103,7 @@ namespace PascalABCCompiler.TreeConverter
                     context.converted_namespace.functions.remove_at(lastIndex);
                 }
             }
-            else
+            //else SSM 27/04/16 - грубое исправление ошибки #147
             {
                 // Если добавилась лямбда как метод класса, то удаляем оттуда
                 if (context.converted_type != null

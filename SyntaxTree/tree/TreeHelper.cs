@@ -26,7 +26,148 @@ namespace PascalABCCompiler.SyntaxTree
             var ind = FindIndex(from);
             this[ind] = to;
         }
+
+        /// <summary>
+        /// Находит последнего потомка, удовлетворяющего условию. Возвращает null, если такой не найден.
+        /// </summary>
+        /// <param name="condition">Условие</param>
+        /// <returns>Найденный узел, либо null</returns>
+        public syntax_tree_node FindLast(Predicate<syntax_tree_node> condition)
+        {
+            for (int i = subnodes_count - 1; i >= 0; i--)
+            {
+                if (condition(this[i]))
+                    return this[i];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Получает список узлов поддерева, в котором корнем является текущий узел. 
+        /// Порядок добавления в список: родитель, затем потомки.
+        /// </summary>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Список узлов поддерева</returns>
+        public IEnumerable<syntax_tree_node> DescendantNodesPreOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        {
+            var stack = new Stack<syntax_tree_node>();
+
+            if (includeSelf)
+                stack.Push(this);
+            else
+                for (int childIndex = subnodes_count - 1; childIndex >= 0; childIndex--)
+                    if (this[childIndex] != null)
+                        stack.Push(this[childIndex]);
+
+            while (stack.Count > 0)
+            {
+                syntax_tree_node node = stack.Pop();
+
+                if (descendIntoChildren == null || descendIntoChildren(node))
+                    for (int childIndex = node.subnodes_count - 1; childIndex >= 0; childIndex--)
+                    {
+                        var child = node[childIndex];
+
+                        if (child == null)
+                            continue;
+
+                        stack.Push(child);
+                    }
+
+                yield return node;
+            }
+        }
+
+        /// <summary>
+        /// Получает список узлов поддерева, в котором корнем является текущий узел. 
+        /// Порядок добавления в список: потомки, затем родитель.
+        /// </summary>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Список узлов поддерева</returns>
+        public IEnumerable<syntax_tree_node> DescendantNodesPostOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        {
+            var stack = new Stack<syntax_tree_node>();
+
+            if (includeSelf)
+                stack.Push(this);
+            else
+                for (int childIndex = subnodes_count - 1; childIndex >= 0; childIndex--)
+                    if (this[childIndex] != null)
+                        stack.Push(this[childIndex]);
+
+            syntax_tree_node lastReturnedNode = null;
+            while (stack.Count > 0)
+            {
+                syntax_tree_node node = stack.Peek();
+                bool isLeafNode = true;
+
+                // Если мы не должны посещать потомков узла или уже добавили их в список,
+                // то не кладем их на стек
+                if (!ReferenceEquals(lastReturnedNode, node.FindLast(x => x != null)))
+                if (descendIntoChildren == null || 
+                    descendIntoChildren(node))
+                    for (int childIndex = node.subnodes_count - 1; childIndex >= 0; childIndex--)
+                    {
+                        var child = node[childIndex];
+
+                        if (child == null)
+                            continue;
+
+                        stack.Push(child);
+                        isLeafNode = false;
+                    }
+
+                if (isLeafNode)
+                {
+                    stack.Pop();
+                    lastReturnedNode = node;
+                    yield return node;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Получает список узлов поддерева, в котором корнем является текущий узел. 
+        /// Порядок добавления в список: узлы первого уровня, затем второго и т.д.
+        /// </summary>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Список узлов поддерева</returns>
+        public IEnumerable<syntax_tree_node> DescendantNodesLevelOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        {
+            var queue = new Queue<syntax_tree_node>();
+
+            if (includeSelf)
+                queue.Enqueue(this);
+            else
+                for (int childIndex = 0; childIndex < subnodes_count; childIndex++)
+                    if (this[childIndex] != null)
+                        queue.Enqueue(this[childIndex]);
+
+            while (queue.Count > 0)
+            {
+                syntax_tree_node node = queue.Dequeue();
+
+                if (descendIntoChildren == null || descendIntoChildren(node))
+                    for (int childIndex = 0; childIndex < node.subnodes_count; childIndex++)
+                    {
+                        var child = node[childIndex];
+
+                        if (child == null)
+                            continue;
+
+                        queue.Enqueue(child);
+                    }
+
+                yield return node;
+            }
+        }
     }
+
+
 
     //------------------------------
     public class SyntaxList<T> where T : syntax_tree_node // операции для работы с вложенными списками синтаксических узлов. Класс пока не используется
@@ -520,6 +661,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class procedure_definition
     {
+        public bool has_yield = false;
+        // frninja 20/05/16 - для методов хелперов yield
+        public bool is_yield_helper = false;
+        // end frninja
+
         public procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)
         {
             this.proc_header = proc_header;
@@ -722,6 +868,34 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class method_call
     {
+        /// <summary>
+        /// Простое имя метода. Возвращает null, если не удалось такое получить.
+        /// </summary>
+        public string SimpleName
+        {
+            get
+            {
+                var dv = dereferencing_value as ident;
+                if (dv == null)
+                    return null;
+                else return dv.name;
+            }
+        }
+
+        /// <summary>
+        /// Количество параметров метода
+        /// </summary>
+        public int ParametersCount
+        {
+            get
+            {
+                if (parameters != null)
+                    return parameters.subnodes_count;
+                else
+                    return 0;
+            }
+        }
+
         public override string ToString()
         {
             string s = dereferencing_value.ToString();
@@ -871,7 +1045,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class initfinal_part
     {
-        public initfinal_part(syntax_tree_node stn1, statement_list init, syntax_tree_node stn2, statement_list fin, syntax_tree_node stn3, SourceContext sc)
+        public initfinal_part(token_info stn1, statement_list init, token_info stn2, statement_list fin, token_info stn3, SourceContext sc)
         {
             _initialization_sect = init;
             _finalization_sect = fin;
@@ -1052,7 +1226,7 @@ namespace PascalABCCompiler.SyntaxTree
         public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучшего выбора среди перегруженных методов с параметрами-лямбдами
         public object RealSemTypeOfResult = null;
 
-        public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)
+        public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, int usedkw, SourceContext sc)
         {
             statement_list _statement_list = body;
             expression_list _expression_list = new expression_list();
@@ -1077,9 +1251,15 @@ namespace PascalABCCompiler.SyntaxTree
             parameters = _expression_list;
             lambda_name = name;
             proc_body = _statement_list;
+            usedkeyword = usedkw;
             source_context = sc;
         }
+        public function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc) :
+            this(name, formalPars, returnType, body, 0, sc)
+        {
+        }
     }
+
 
     public partial class semantic_check
     {
@@ -1170,6 +1350,55 @@ namespace PascalABCCompiler.SyntaxTree
     {
 
     }
+
+    // frninja 12/05/16 - хелпер для yield. Хранит типы локальных переменных метода-итератора
+    [Serializable]
+    public class yield_locals_type_map_helper
+    {
+        public Dictionary<var_def_statement, semantic_type_node> vars_type_map { get; private set; }
+
+        public yield_locals_type_map_helper()
+        {
+            vars_type_map = new Dictionary<var_def_statement, semantic_type_node>();
+        }
+    }
+    // end frninja
+
+    // frninja 12/05/16 - хелперы для yield
+    public partial class yield_unknown_expression_type : type_definition
+    {
+        public yield_locals_type_map_helper MapHelper { get; private set; }
+
+        public yield_unknown_expression_type(var_def_statement vds, yield_locals_type_map_helper map_helper)
+        {
+            this.Vds = vds;
+            this.MapHelper = map_helper;
+        }
+    }
+
+    public partial class yield_var_def_statement_with_unknown_type : statement
+    {
+        public yield_locals_type_map_helper map_helper { get; private set; }
+
+        public yield_var_def_statement_with_unknown_type(var_def_statement vds, yield_locals_type_map_helper map_helper)
+        {
+            this.vars = vds;
+            this.map_helper = map_helper;
+        }
+    }
+
+    public partial class yield_variable_definitions_with_unknown_type : declaration
+    {
+        public yield_locals_type_map_helper map_helper { get; private set; }
+
+        public yield_variable_definitions_with_unknown_type(variable_definitions vd, yield_locals_type_map_helper map_helper)
+        {
+            this.vars = vd;
+            this.map_helper = map_helper;
+        }
+    }
+
+    // end frninja
 
 
 }

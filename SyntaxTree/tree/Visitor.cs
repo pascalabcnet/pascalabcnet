@@ -1276,6 +1276,30 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_no_type">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(no_type _no_type);
+		///<summary>
+		///Method to visit yield_unknown_ident.
+		///</summary>
+		///<param name="_yield_unknown_ident">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(yield_unknown_ident _yield_unknown_ident);
+		///<summary>
+		///Method to visit yield_unknown_expression_type.
+		///</summary>
+		///<param name="_yield_unknown_expression_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(yield_unknown_expression_type _yield_unknown_expression_type);
+		///<summary>
+		///Method to visit yield_var_def_statement_with_unknown_type.
+		///</summary>
+		///<param name="_yield_var_def_statement_with_unknown_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type);
+		///<summary>
+		///Method to visit yield_variable_definitions_with_unknown_type.
+		///</summary>
+		///<param name="_yield_variable_definitions_with_unknown_type">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type);
 	}
 
 

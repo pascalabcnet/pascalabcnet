@@ -255,21 +255,23 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket)
+		public statement_list(List<statement> _subnodes,token_info _left_logical_bracket,token_info _right_logical_bracket,bool _expr_lambda_body)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
+			this._expr_lambda_body=_expr_lambda_body;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public statement_list(List<statement> _subnodes,syntax_tree_node _left_logical_bracket,syntax_tree_node _right_logical_bracket,SourceContext sc)
+		public statement_list(List<statement> _subnodes,token_info _left_logical_bracket,token_info _right_logical_bracket,bool _expr_lambda_body,SourceContext sc)
 		{
 			this._subnodes=_subnodes;
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
+			this._expr_lambda_body=_expr_lambda_body;
 			source_context = sc;
 		}
 		// Конструкторы списка
@@ -281,8 +283,9 @@ namespace PascalABCCompiler.SyntaxTree
 		// Окончание конструкторов списка
 
 		protected List<statement> _subnodes=new List<statement>();
-		protected syntax_tree_node _left_logical_bracket;
-		protected syntax_tree_node _right_logical_bracket;
+		protected token_info _left_logical_bracket;
+		protected token_info _right_logical_bracket;
+		protected bool _expr_lambda_body=new bool();
 
 		///<summary>
 		///Список операторов
@@ -302,7 +305,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Левая операторная скобка
 		///</summary>
-		public syntax_tree_node left_logical_bracket
+		public token_info left_logical_bracket
 		{
 			get
 			{
@@ -317,7 +320,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Правая операторная скобка
 		///</summary>
-		public syntax_tree_node right_logical_bracket
+		public token_info right_logical_bracket
 		{
 			get
 			{
@@ -326,6 +329,21 @@ namespace PascalABCCompiler.SyntaxTree
 			set
 			{
 				_right_logical_bracket=value;
+			}
+		}
+
+		///<summary>
+		///Поле, показывающее, что это - тело лямбда-выражения из одного выражения (созданное вызовом NewLambdaBody)
+		///</summary>
+		public bool expr_lambda_body
+		{
+			get
+			{
+				return _expr_lambda_body;
+			}
+			set
+			{
+				_expr_lambda_body=value;
 			}
 		}
 
@@ -354,7 +372,7 @@ namespace PascalABCCompiler.SyntaxTree
 			subnodes.AddRange(els);
 		}
 
-		private int FindIndex(statement el)
+		private int FindIndexInList(statement el)
 		{
 			var ind = subnodes.FindIndex(x => x == el);
 			if (ind == -1)
@@ -387,16 +405,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return subnodes.Remove(el);
 		}
 
-		public void Replace(statement el, statement newel)
+		public void ReplaceInList(statement el, statement newel)
 		{
-			subnodes[FindIndex(el)] = newel;
+			subnodes[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(statement el, IEnumerable<statement> newels)
+		public void ReplaceInList(statement el, IEnumerable<statement> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			subnodes.RemoveAt(ind);
 			subnodes.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<statement> match)
+		{
+			return subnodes.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -453,10 +476,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left_logical_bracket = (syntax_tree_node)value;
+						left_logical_bracket = (token_info)value;
 						break;
 					case 1:
-						right_logical_bracket = (syntax_tree_node)value;
+						right_logical_bracket = (token_info)value;
 						break;
 				}
 				Int32 index_counter=ind - 2;
@@ -1887,7 +1910,7 @@ namespace PascalABCCompiler.SyntaxTree
 			names.AddRange(els);
 		}
 
-		private int FindIndex(ident el)
+		private int FindIndexInList(ident el)
 		{
 			var ind = names.FindIndex(x => x == el);
 			if (ind == -1)
@@ -1920,16 +1943,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return names.Remove(el);
 		}
 
-		public void Replace(ident el, ident newel)
+		public void ReplaceInList(ident el, ident newel)
 		{
-			names[FindIndex(el)] = newel;
+			names[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(ident el, IEnumerable<ident> newels)
+		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			names.RemoveAt(ind);
 			names.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<ident> match)
+		{
+			return names.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -2092,7 +2120,7 @@ namespace PascalABCCompiler.SyntaxTree
 			var_definitions.AddRange(els);
 		}
 
-		private int FindIndex(var_def_statement el)
+		private int FindIndexInList(var_def_statement el)
 		{
 			var ind = var_definitions.FindIndex(x => x == el);
 			if (ind == -1)
@@ -2125,16 +2153,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return var_definitions.Remove(el);
 		}
 
-		public void Replace(var_def_statement el, var_def_statement newel)
+		public void ReplaceInList(var_def_statement el, var_def_statement newel)
 		{
-			var_definitions[FindIndex(el)] = newel;
+			var_definitions[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(var_def_statement el, IEnumerable<var_def_statement> newels)
+		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			var_definitions.RemoveAt(ind);
 			var_definitions.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<var_def_statement> match)
+		{
+			return var_definitions.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -2286,7 +2319,7 @@ namespace PascalABCCompiler.SyntaxTree
 			idents.AddRange(els);
 		}
 
-		private int FindIndex(ident el)
+		private int FindIndexInList(ident el)
 		{
 			var ind = idents.FindIndex(x => x == el);
 			if (ind == -1)
@@ -2319,16 +2352,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return idents.Remove(el);
 		}
 
-		public void Replace(ident el, ident newel)
+		public void ReplaceInList(ident el, ident newel)
 		{
-			idents[FindIndex(el)] = newel;
+			idents[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(ident el, IEnumerable<ident> newels)
+		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			idents.RemoveAt(ind);
 			idents.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<ident> match)
+		{
+			return idents.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -2784,7 +2822,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.AddRange(els);
 		}
 
-		private int FindIndex(declaration el)
+		private int FindIndexInList(declaration el)
 		{
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
@@ -2817,16 +2855,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.Remove(el);
 		}
 
-		public void Replace(declaration el, declaration newel)
+		public void ReplaceInList(declaration el, declaration newel)
 		{
-			defs[FindIndex(el)] = newel;
+			defs[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(declaration el, IEnumerable<declaration> newels)
+		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<declaration> match)
+		{
+			return defs.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -2978,7 +3021,7 @@ namespace PascalABCCompiler.SyntaxTree
 			compilation_units.AddRange(els);
 		}
 
-		private int FindIndex(compilation_unit el)
+		private int FindIndexInList(compilation_unit el)
 		{
 			var ind = compilation_units.FindIndex(x => x == el);
 			if (ind == -1)
@@ -3011,16 +3054,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return compilation_units.Remove(el);
 		}
 
-		public void Replace(compilation_unit el, compilation_unit newel)
+		public void ReplaceInList(compilation_unit el, compilation_unit newel)
 		{
-			compilation_units[FindIndex(el)] = newel;
+			compilation_units[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(compilation_unit el, IEnumerable<compilation_unit> newels)
+		public void ReplaceInList(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			compilation_units.RemoveAt(ind);
 			compilation_units.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<compilation_unit> match)
+		{
+			return compilation_units.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -3383,7 +3431,7 @@ namespace PascalABCCompiler.SyntaxTree
 			expressions.AddRange(els);
 		}
 
-		private int FindIndex(expression el)
+		private int FindIndexInList(expression el)
 		{
 			var ind = expressions.FindIndex(x => x == el);
 			if (ind == -1)
@@ -3416,16 +3464,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return expressions.Remove(el);
 		}
 
-		public void Replace(expression el, expression newel)
+		public void ReplaceInList(expression el, expression newel)
 		{
-			expressions[FindIndex(el)] = newel;
+			expressions[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(expression el, IEnumerable<expression> newels)
+		public void ReplaceInList(expression el, IEnumerable<expression> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			expressions.RemoveAt(ind);
 			expressions.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<expression> match)
+		{
+			return expressions.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -4842,7 +4895,7 @@ namespace PascalABCCompiler.SyntaxTree
 			indexers.AddRange(els);
 		}
 
-		private int FindIndex(type_definition el)
+		private int FindIndexInList(type_definition el)
 		{
 			var ind = indexers.FindIndex(x => x == el);
 			if (ind == -1)
@@ -4875,16 +4928,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return indexers.Remove(el);
 		}
 
-		public void Replace(type_definition el, type_definition newel)
+		public void ReplaceInList(type_definition el, type_definition newel)
 		{
-			indexers[FindIndex(el)] = newel;
+			indexers[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(type_definition el, IEnumerable<type_definition> newels)
+		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			indexers.RemoveAt(ind);
 			indexers.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<type_definition> match)
+		{
+			return indexers.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -5612,7 +5670,7 @@ namespace PascalABCCompiler.SyntaxTree
 			params_list.AddRange(els);
 		}
 
-		private int FindIndex(typed_parameters el)
+		private int FindIndexInList(typed_parameters el)
 		{
 			var ind = params_list.FindIndex(x => x == el);
 			if (ind == -1)
@@ -5645,16 +5703,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return params_list.Remove(el);
 		}
 
-		public void Replace(typed_parameters el, typed_parameters newel)
+		public void ReplaceInList(typed_parameters el, typed_parameters newel)
 		{
-			params_list[FindIndex(el)] = newel;
+			params_list[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(typed_parameters el, IEnumerable<typed_parameters> newels)
+		public void ReplaceInList(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<typed_parameters> match)
+		{
+			return params_list.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -5806,7 +5869,7 @@ namespace PascalABCCompiler.SyntaxTree
 			proc_attributes.AddRange(els);
 		}
 
-		private int FindIndex(procedure_attribute el)
+		private int FindIndexInList(procedure_attribute el)
 		{
 			var ind = proc_attributes.FindIndex(x => x == el);
 			if (ind == -1)
@@ -5839,16 +5902,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return proc_attributes.Remove(el);
 		}
 
-		public void Replace(procedure_attribute el, procedure_attribute newel)
+		public void ReplaceInList(procedure_attribute el, procedure_attribute newel)
 		{
-			proc_attributes[FindIndex(el)] = newel;
+			proc_attributes[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(procedure_attribute el, IEnumerable<procedure_attribute> newels)
+		public void ReplaceInList(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			proc_attributes.RemoveAt(ind);
 			proc_attributes.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<procedure_attribute> match)
+		{
+			return proc_attributes.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -6735,7 +6803,7 @@ namespace PascalABCCompiler.SyntaxTree
 			types_decl.AddRange(els);
 		}
 
-		private int FindIndex(type_declaration el)
+		private int FindIndexInList(type_declaration el)
 		{
 			var ind = types_decl.FindIndex(x => x == el);
 			if (ind == -1)
@@ -6768,16 +6836,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return types_decl.Remove(el);
 		}
 
-		public void Replace(type_declaration el, type_declaration newel)
+		public void ReplaceInList(type_declaration el, type_declaration newel)
 		{
-			types_decl[FindIndex(el)] = newel;
+			types_decl[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(type_declaration el, IEnumerable<type_declaration> newels)
+		public void ReplaceInList(type_declaration el, IEnumerable<type_declaration> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			types_decl.RemoveAt(ind);
 			types_decl.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<type_declaration> match)
+		{
+			return types_decl.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -7306,7 +7379,7 @@ namespace PascalABCCompiler.SyntaxTree
 			const_defs.AddRange(els);
 		}
 
-		private int FindIndex(const_definition el)
+		private int FindIndexInList(const_definition el)
 		{
 			var ind = const_defs.FindIndex(x => x == el);
 			if (ind == -1)
@@ -7339,16 +7412,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return const_defs.Remove(el);
 		}
 
-		public void Replace(const_definition el, const_definition newel)
+		public void ReplaceInList(const_definition el, const_definition newel)
 		{
-			const_defs[FindIndex(el)] = newel;
+			const_defs[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(const_definition el, IEnumerable<const_definition> newels)
+		public void ReplaceInList(const_definition el, IEnumerable<const_definition> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			const_defs.RemoveAt(ind);
 			const_defs.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<const_definition> match)
+		{
+			return const_defs.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -7875,7 +7953,7 @@ namespace PascalABCCompiler.SyntaxTree
 			units.AddRange(els);
 		}
 
-		private int FindIndex(unit_or_namespace el)
+		private int FindIndexInList(unit_or_namespace el)
 		{
 			var ind = units.FindIndex(x => x == el);
 			if (ind == -1)
@@ -7908,16 +7986,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return units.Remove(el);
 		}
 
-		public void Replace(unit_or_namespace el, unit_or_namespace newel)
+		public void ReplaceInList(unit_or_namespace el, unit_or_namespace newel)
 		{
-			units[FindIndex(el)] = newel;
+			units[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
+		public void ReplaceInList(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			units.RemoveAt(ind);
 			units.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<unit_or_namespace> match)
+		{
+			return units.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -8285,7 +8368,7 @@ namespace PascalABCCompiler.SyntaxTree
 			compiler_directives.AddRange(els);
 		}
 
-		private int FindIndex(compiler_directive el)
+		private int FindIndexInList(compiler_directive el)
 		{
 			var ind = compiler_directives.FindIndex(x => x == el);
 			if (ind == -1)
@@ -8318,16 +8401,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return compiler_directives.Remove(el);
 		}
 
-		public void Replace(compiler_directive el, compiler_directive newel)
+		public void ReplaceInList(compiler_directive el, compiler_directive newel)
 		{
-			compiler_directives[FindIndex(el)] = newel;
+			compiler_directives[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(compiler_directive el, IEnumerable<compiler_directive> newels)
+		public void ReplaceInList(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			compiler_directives.RemoveAt(ind);
 			compiler_directives.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<compiler_directive> match)
+		{
+			return compiler_directives.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -9520,7 +9608,7 @@ namespace PascalABCCompiler.SyntaxTree
 			ln.AddRange(els);
 		}
 
-		private int FindIndex(ident el)
+		private int FindIndexInList(ident el)
 		{
 			var ind = ln.FindIndex(x => x == el);
 			if (ind == -1)
@@ -9553,16 +9641,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return ln.Remove(el);
 		}
 
-		public void Replace(ident el, ident newel)
+		public void ReplaceInList(ident el, ident newel)
 		{
-			ln[FindIndex(el)] = newel;
+			ln[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(ident el, IEnumerable<ident> newels)
+		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			ln.RemoveAt(ind);
 			ln.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<ident> match)
+		{
+			return ln.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -11486,7 +11579,7 @@ namespace PascalABCCompiler.SyntaxTree
 			members.AddRange(els);
 		}
 
-		private int FindIndex(declaration el)
+		private int FindIndexInList(declaration el)
 		{
 			var ind = members.FindIndex(x => x == el);
 			if (ind == -1)
@@ -11519,16 +11612,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return members.Remove(el);
 		}
 
-		public void Replace(declaration el, declaration newel)
+		public void ReplaceInList(declaration el, declaration newel)
 		{
-			members[FindIndex(el)] = newel;
+			members[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(declaration el, IEnumerable<declaration> newels)
+		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			members.RemoveAt(ind);
 			members.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<declaration> match)
+		{
+			return members.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -11791,7 +11889,7 @@ namespace PascalABCCompiler.SyntaxTree
 			class_def_blocks.AddRange(els);
 		}
 
-		private int FindIndex(class_members el)
+		private int FindIndexInList(class_members el)
 		{
 			var ind = class_def_blocks.FindIndex(x => x == el);
 			if (ind == -1)
@@ -11824,16 +11922,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return class_def_blocks.Remove(el);
 		}
 
-		public void Replace(class_members el, class_members newel)
+		public void ReplaceInList(class_members el, class_members newel)
 		{
-			class_def_blocks[FindIndex(el)] = newel;
+			class_def_blocks[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(class_members el, IEnumerable<class_members> newels)
+		public void ReplaceInList(class_members el, IEnumerable<class_members> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			class_def_blocks.RemoveAt(ind);
 			class_def_blocks.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<class_members> match)
+		{
+			return class_def_blocks.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -12745,7 +12848,7 @@ namespace PascalABCCompiler.SyntaxTree
 			rec_consts.AddRange(els);
 		}
 
-		private int FindIndex(record_const_definition el)
+		private int FindIndexInList(record_const_definition el)
 		{
 			var ind = rec_consts.FindIndex(x => x == el);
 			if (ind == -1)
@@ -12778,16 +12881,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return rec_consts.Remove(el);
 		}
 
-		public void Replace(record_const_definition el, record_const_definition newel)
+		public void ReplaceInList(record_const_definition el, record_const_definition newel)
 		{
-			rec_consts[FindIndex(el)] = newel;
+			rec_consts[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(record_const_definition el, IEnumerable<record_const_definition> newels)
+		public void ReplaceInList(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			rec_consts.RemoveAt(ind);
 			rec_consts.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<record_const_definition> match)
+		{
+			return rec_consts.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -13545,7 +13653,7 @@ namespace PascalABCCompiler.SyntaxTree
 			literals.AddRange(els);
 		}
 
-		private int FindIndex(literal el)
+		private int FindIndexInList(literal el)
 		{
 			var ind = literals.FindIndex(x => x == el);
 			if (ind == -1)
@@ -13578,16 +13686,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return literals.Remove(el);
 		}
 
-		public void Replace(literal el, literal newel)
+		public void ReplaceInList(literal el, literal newel)
 		{
-			literals[FindIndex(el)] = newel;
+			literals[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(literal el, IEnumerable<literal> newels)
+		public void ReplaceInList(literal el, IEnumerable<literal> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			literals.RemoveAt(ind);
 			literals.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<literal> match)
+		{
+			return literals.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -14033,7 +14146,7 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.AddRange(els);
 		}
 
-		private int FindIndex(variant el)
+		private int FindIndexInList(variant el)
 		{
 			var ind = vars.FindIndex(x => x == el);
 			if (ind == -1)
@@ -14066,16 +14179,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars.Remove(el);
 		}
 
-		public void Replace(variant el, variant newel)
+		public void ReplaceInList(variant el, variant newel)
 		{
-			vars[FindIndex(el)] = newel;
+			vars[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(variant el, IEnumerable<variant> newels)
+		public void ReplaceInList(variant el, IEnumerable<variant> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<variant> match)
+		{
+			return vars.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -14361,7 +14479,7 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.AddRange(els);
 		}
 
-		private int FindIndex(variant_type el)
+		private int FindIndexInList(variant_type el)
 		{
 			var ind = vars.FindIndex(x => x == el);
 			if (ind == -1)
@@ -14394,16 +14512,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars.Remove(el);
 		}
 
-		public void Replace(variant_type el, variant_type newel)
+		public void ReplaceInList(variant_type el, variant_type newel)
 		{
-			vars[FindIndex(el)] = newel;
+			vars[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(variant_type el, IEnumerable<variant_type> newels)
+		public void ReplaceInList(variant_type el, IEnumerable<variant_type> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<variant_type> match)
+		{
+			return vars.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -16661,7 +16784,7 @@ namespace PascalABCCompiler.SyntaxTree
 			variants.AddRange(els);
 		}
 
-		private int FindIndex(case_variant el)
+		private int FindIndexInList(case_variant el)
 		{
 			var ind = variants.FindIndex(x => x == el);
 			if (ind == -1)
@@ -16694,16 +16817,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return variants.Remove(el);
 		}
 
-		public void Replace(case_variant el, case_variant newel)
+		public void ReplaceInList(case_variant el, case_variant newel)
 		{
-			variants[FindIndex(el)] = newel;
+			variants[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(case_variant el, IEnumerable<case_variant> newels)
+		public void ReplaceInList(case_variant el, IEnumerable<case_variant> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			variants.RemoveAt(ind);
 			variants.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<case_variant> match)
+		{
+			return variants.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -16989,7 +17117,7 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.AddRange(els);
 		}
 
-		private int FindIndex(var_def_statement el)
+		private int FindIndexInList(var_def_statement el)
 		{
 			var ind = vars.FindIndex(x => x == el);
 			if (ind == -1)
@@ -17022,16 +17150,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars.Remove(el);
 		}
 
-		public void Replace(var_def_statement el, var_def_statement newel)
+		public void ReplaceInList(var_def_statement el, var_def_statement newel)
 		{
-			vars[FindIndex(el)] = newel;
+			vars[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(var_def_statement el, IEnumerable<var_def_statement> newels)
+		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<var_def_statement> match)
+		{
+			return vars.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -17674,7 +17807,7 @@ namespace PascalABCCompiler.SyntaxTree
 			parameters.AddRange(els);
 		}
 
-		private int FindIndex(property_parameter el)
+		private int FindIndexInList(property_parameter el)
 		{
 			var ind = parameters.FindIndex(x => x == el);
 			if (ind == -1)
@@ -17707,16 +17840,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return parameters.Remove(el);
 		}
 
-		public void Replace(property_parameter el, property_parameter newel)
+		public void ReplaceInList(property_parameter el, property_parameter newel)
 		{
-			parameters[FindIndex(el)] = newel;
+			parameters[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(property_parameter el, IEnumerable<property_parameter> newels)
+		public void ReplaceInList(property_parameter el, IEnumerable<property_parameter> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<property_parameter> match)
+		{
+			return parameters.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -19140,7 +19278,7 @@ namespace PascalABCCompiler.SyntaxTree
 			handlers.AddRange(els);
 		}
 
-		private int FindIndex(exception_handler el)
+		private int FindIndexInList(exception_handler el)
 		{
 			var ind = handlers.FindIndex(x => x == el);
 			if (ind == -1)
@@ -19173,16 +19311,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return handlers.Remove(el);
 		}
 
-		public void Replace(exception_handler el, exception_handler newel)
+		public void ReplaceInList(exception_handler el, exception_handler newel)
 		{
-			handlers[FindIndex(el)] = newel;
+			handlers[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(exception_handler el, IEnumerable<exception_handler> newels)
+		public void ReplaceInList(exception_handler el, IEnumerable<exception_handler> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			handlers.RemoveAt(ind);
 			handlers.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<exception_handler> match)
+		{
+			return handlers.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -20113,7 +20256,7 @@ namespace PascalABCCompiler.SyntaxTree
 			namespaces.AddRange(els);
 		}
 
-		private int FindIndex(unit_or_namespace el)
+		private int FindIndexInList(unit_or_namespace el)
 		{
 			var ind = namespaces.FindIndex(x => x == el);
 			if (ind == -1)
@@ -20146,16 +20289,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return namespaces.Remove(el);
 		}
 
-		public void Replace(unit_or_namespace el, unit_or_namespace newel)
+		public void ReplaceInList(unit_or_namespace el, unit_or_namespace newel)
 		{
-			namespaces[FindIndex(el)] = newel;
+			namespaces[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
+		public void ReplaceInList(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			namespaces.RemoveAt(ind);
 			namespaces.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<unit_or_namespace> match)
+		{
+			return namespaces.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -20793,7 +20941,7 @@ namespace PascalABCCompiler.SyntaxTree
 			types.AddRange(els);
 		}
 
-		private int FindIndex(named_type_reference el)
+		private int FindIndexInList(named_type_reference el)
 		{
 			var ind = types.FindIndex(x => x == el);
 			if (ind == -1)
@@ -20826,16 +20974,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return types.Remove(el);
 		}
 
-		public void Replace(named_type_reference el, named_type_reference newel)
+		public void ReplaceInList(named_type_reference el, named_type_reference newel)
 		{
-			types[FindIndex(el)] = newel;
+			types[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(named_type_reference el, IEnumerable<named_type_reference> newels)
+		public void ReplaceInList(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			types.RemoveAt(ind);
 			types.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<named_type_reference> match)
+		{
+			return types.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -21006,7 +21159,7 @@ namespace PascalABCCompiler.SyntaxTree
 			params_list.AddRange(els);
 		}
 
-		private int FindIndex(type_definition el)
+		private int FindIndexInList(type_definition el)
 		{
 			var ind = params_list.FindIndex(x => x == el);
 			if (ind == -1)
@@ -21039,16 +21192,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return params_list.Remove(el);
 		}
 
-		public void Replace(type_definition el, type_definition newel)
+		public void ReplaceInList(type_definition el, type_definition newel)
 		{
-			params_list[FindIndex(el)] = newel;
+			params_list[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(type_definition el, IEnumerable<type_definition> newels)
+		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<type_definition> match)
+		{
+			return params_list.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -21765,7 +21923,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.AddRange(els);
 		}
 
-		private int FindIndex(type_definition el)
+		private int FindIndexInList(type_definition el)
 		{
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
@@ -21798,16 +21956,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.Remove(el);
 		}
 
-		public void Replace(type_definition el, type_definition newel)
+		public void ReplaceInList(type_definition el, type_definition newel)
 		{
-			defs[FindIndex(el)] = newel;
+			defs[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(type_definition el, IEnumerable<type_definition> newels)
+		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<type_definition> match)
+		{
+			return defs.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -22093,7 +22256,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.AddRange(els);
 		}
 
-		private int FindIndex(where_definition el)
+		private int FindIndexInList(where_definition el)
 		{
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
@@ -22126,16 +22289,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.Remove(el);
 		}
 
-		public void Replace(where_definition el, where_definition newel)
+		public void ReplaceInList(where_definition el, where_definition newel)
 		{
-			defs[FindIndex(el)] = newel;
+			defs[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(where_definition el, IEnumerable<where_definition> newels)
+		public void ReplaceInList(where_definition el, IEnumerable<where_definition> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<where_definition> match)
+		{
+			return defs.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -23870,7 +24038,7 @@ namespace PascalABCCompiler.SyntaxTree
 			enumerators.AddRange(els);
 		}
 
-		private int FindIndex(enumerator el)
+		private int FindIndexInList(enumerator el)
 		{
 			var ind = enumerators.FindIndex(x => x == el);
 			if (ind == -1)
@@ -23903,16 +24071,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return enumerators.Remove(el);
 		}
 
-		public void Replace(enumerator el, enumerator newel)
+		public void ReplaceInList(enumerator el, enumerator newel)
 		{
-			enumerators[FindIndex(el)] = newel;
+			enumerators[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(enumerator el, IEnumerable<enumerator> newels)
+		public void ReplaceInList(enumerator el, IEnumerable<enumerator> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			enumerators.RemoveAt(ind);
 			enumerators.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<enumerator> match)
+		{
+			return enumerators.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -24396,7 +24569,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.AddRange(els);
 		}
 
-		private int FindIndex(type_definition_attr el)
+		private int FindIndexInList(type_definition_attr el)
 		{
 			var ind = attributes.FindIndex(x => x == el);
 			if (ind == -1)
@@ -24429,16 +24602,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes.Remove(el);
 		}
 
-		public void Replace(type_definition_attr el, type_definition_attr newel)
+		public void ReplaceInList(type_definition_attr el, type_definition_attr newel)
 		{
-			attributes[FindIndex(el)] = newel;
+			attributes[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(type_definition_attr el, IEnumerable<type_definition_attr> newels)
+		public void ReplaceInList(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<type_definition_attr> match)
+		{
+			return attributes.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -24875,7 +25053,7 @@ namespace PascalABCCompiler.SyntaxTree
 			directives.AddRange(els);
 		}
 
-		private int FindIndex(compiler_directive el)
+		private int FindIndexInList(compiler_directive el)
 		{
 			var ind = directives.FindIndex(x => x == el);
 			if (ind == -1)
@@ -24908,16 +25086,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return directives.Remove(el);
 		}
 
-		public void Replace(compiler_directive el, compiler_directive newel)
+		public void ReplaceInList(compiler_directive el, compiler_directive newel)
 		{
-			directives[FindIndex(el)] = newel;
+			directives[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(compiler_directive el, IEnumerable<compiler_directive> newels)
+		public void ReplaceInList(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			directives.RemoveAt(ind);
 			directives.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<compiler_directive> match)
+		{
+			return directives.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -25252,7 +25435,7 @@ namespace PascalABCCompiler.SyntaxTree
 			sections.AddRange(els);
 		}
 
-		private int FindIndex(documentation_comment_section el)
+		private int FindIndexInList(documentation_comment_section el)
 		{
 			var ind = sections.FindIndex(x => x == el);
 			if (ind == -1)
@@ -25285,16 +25468,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return sections.Remove(el);
 		}
 
-		public void Replace(documentation_comment_section el, documentation_comment_section newel)
+		public void ReplaceInList(documentation_comment_section el, documentation_comment_section newel)
 		{
-			sections[FindIndex(el)] = newel;
+			sections[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
+		public void ReplaceInList(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			sections.RemoveAt(ind);
 			sections.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<documentation_comment_section> match)
+		{
+			return sections.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -25482,7 +25670,7 @@ namespace PascalABCCompiler.SyntaxTree
 			parameters.AddRange(els);
 		}
 
-		private int FindIndex(documentation_comment_tag_param el)
+		private int FindIndexInList(documentation_comment_tag_param el)
 		{
 			var ind = parameters.FindIndex(x => x == el);
 			if (ind == -1)
@@ -25515,16 +25703,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return parameters.Remove(el);
 		}
 
-		public void Replace(documentation_comment_tag_param el, documentation_comment_tag_param newel)
+		public void ReplaceInList(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
-			parameters[FindIndex(el)] = newel;
+			parameters[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
+		public void ReplaceInList(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<documentation_comment_tag_param> match)
+		{
+			return parameters.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -25812,7 +26005,7 @@ namespace PascalABCCompiler.SyntaxTree
 			tags.AddRange(els);
 		}
 
-		private int FindIndex(documentation_comment_tag el)
+		private int FindIndexInList(documentation_comment_tag el)
 		{
 			var ind = tags.FindIndex(x => x == el);
 			if (ind == -1)
@@ -25845,16 +26038,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return tags.Remove(el);
 		}
 
-		public void Replace(documentation_comment_tag el, documentation_comment_tag newel)
+		public void ReplaceInList(documentation_comment_tag el, documentation_comment_tag newel)
 		{
-			tags[FindIndex(el)] = newel;
+			tags[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
+		public void ReplaceInList(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			tags.RemoveAt(ind);
 			tags.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<documentation_comment_tag> match)
+		{
+			return tags.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -26918,7 +27116,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.AddRange(els);
 		}
 
-		private int FindIndex(attribute el)
+		private int FindIndexInList(attribute el)
 		{
 			var ind = attributes.FindIndex(x => x == el);
 			if (ind == -1)
@@ -26951,16 +27149,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes.Remove(el);
 		}
 
-		public void Replace(attribute el, attribute newel)
+		public void ReplaceInList(attribute el, attribute newel)
 		{
-			attributes[FindIndex(el)] = newel;
+			attributes[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(attribute el, IEnumerable<attribute> newels)
+		public void ReplaceInList(attribute el, IEnumerable<attribute> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<attribute> match)
+		{
+			return attributes.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -27112,7 +27315,7 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.AddRange(els);
 		}
 
-		private int FindIndex(simple_attribute_list el)
+		private int FindIndexInList(simple_attribute_list el)
 		{
 			var ind = attributes.FindIndex(x => x == el);
 			if (ind == -1)
@@ -27145,16 +27348,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes.Remove(el);
 		}
 
-		public void Replace(simple_attribute_list el, simple_attribute_list newel)
+		public void ReplaceInList(simple_attribute_list el, simple_attribute_list newel)
 		{
-			attributes[FindIndex(el)] = newel;
+			attributes[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
+		public void ReplaceInList(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<simple_attribute_list> match)
+		{
+			return attributes.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -27243,7 +27451,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -27255,12 +27463,13 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
+			this._usedkeyword=_usedkeyword;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,SourceContext sc)
+		public function_lambda_definition(ident_list _ident_list,type_definition _return_type,formal_parameters _formal_parameters,statement _proc_body,procedure_definition _proc_definition,expression_list _parameters,string _lambda_name,List<declaration> _defs,LambdaVisitMode _lambda_visit_mode,syntax_tree_node _substituting_node,int _usedkeyword,SourceContext sc)
 		{
 			this._ident_list=_ident_list;
 			this._return_type=_return_type;
@@ -27272,6 +27481,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
+			this._usedkeyword=_usedkeyword;
 			source_context = sc;
 		}
 		// Конструкторы списка
@@ -27292,6 +27502,7 @@ namespace PascalABCCompiler.SyntaxTree
 		protected List<declaration> _defs;
 		protected LambdaVisitMode _lambda_visit_mode;
 		protected syntax_tree_node _substituting_node;
+		protected int _usedkeyword;
 
 		///<summary>
 		///
@@ -27443,6 +27654,21 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+		///<summary>
+		///
+		///</summary>
+		public int usedkeyword
+		{
+			get
+			{
+				return _usedkeyword;
+			}
+			set
+			{
+				_usedkeyword=value;
+			}
+		}
+
 
 		// Методы списка
 		public function_lambda_definition Add(declaration elem, SourceContext sc = null)
@@ -27468,7 +27694,7 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.AddRange(els);
 		}
 
-		private int FindIndex(declaration el)
+		private int FindIndexInList(declaration el)
 		{
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
@@ -27501,16 +27727,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.Remove(el);
 		}
 
-		public void Replace(declaration el, declaration newel)
+		public void ReplaceInList(declaration el, declaration newel)
 		{
-			defs[FindIndex(el)] = newel;
+			defs[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(declaration el, IEnumerable<declaration> newels)
+		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<declaration> match)
+		{
+			return defs.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -27873,7 +28104,7 @@ namespace PascalABCCompiler.SyntaxTree
 			param.AddRange(els);
 		}
 
-		private int FindIndex(syntax_tree_node el)
+		private int FindIndexInList(syntax_tree_node el)
 		{
 			var ind = param.FindIndex(x => x == el);
 			if (ind == -1)
@@ -27906,16 +28137,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return param.Remove(el);
 		}
 
-		public void Replace(syntax_tree_node el, syntax_tree_node newel)
+		public void ReplaceInList(syntax_tree_node el, syntax_tree_node newel)
 		{
-			param[FindIndex(el)] = newel;
+			param[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		public void ReplaceInList(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			param.RemoveAt(ind);
 			param.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<syntax_tree_node> match)
+		{
+			return param.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -28466,7 +28702,7 @@ namespace PascalABCCompiler.SyntaxTree
 			name_expr.AddRange(els);
 		}
 
-		private int FindIndex(name_assign_expr el)
+		private int FindIndexInList(name_assign_expr el)
 		{
 			var ind = name_expr.FindIndex(x => x == el);
 			if (ind == -1)
@@ -28499,16 +28735,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return name_expr.Remove(el);
 		}
 
-		public void Replace(name_assign_expr el, name_assign_expr newel)
+		public void ReplaceInList(name_assign_expr el, name_assign_expr newel)
 		{
-			name_expr[FindIndex(el)] = newel;
+			name_expr[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(name_assign_expr el, IEnumerable<name_assign_expr> newels)
+		public void ReplaceInList(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			name_expr.RemoveAt(ind);
 			name_expr.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<name_assign_expr> match)
+		{
+			return name_expr.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -30382,7 +30623,7 @@ namespace PascalABCCompiler.SyntaxTree
 			variables.AddRange(els);
 		}
 
-		private int FindIndex(addressed_value el)
+		private int FindIndexInList(addressed_value el)
 		{
 			var ind = variables.FindIndex(x => x == el);
 			if (ind == -1)
@@ -30415,16 +30656,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return variables.Remove(el);
 		}
 
-		public void Replace(addressed_value el, addressed_value newel)
+		public void ReplaceInList(addressed_value el, addressed_value newel)
 		{
-			variables[FindIndex(el)] = newel;
+			variables[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(addressed_value el, IEnumerable<addressed_value> newels)
+		public void ReplaceInList(addressed_value el, IEnumerable<addressed_value> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			variables.RemoveAt(ind);
 			variables.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<addressed_value> match)
+		{
+			return variables.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -30706,7 +30952,7 @@ namespace PascalABCCompiler.SyntaxTree
 			listunitsections.AddRange(els);
 		}
 
-		private int FindIndex(uses_list el)
+		private int FindIndexInList(uses_list el)
 		{
 			var ind = listunitsections.FindIndex(x => x == el);
 			if (ind == -1)
@@ -30739,16 +30985,21 @@ namespace PascalABCCompiler.SyntaxTree
 			return listunitsections.Remove(el);
 		}
 
-		public void Replace(uses_list el, uses_list newel)
+		public void ReplaceInList(uses_list el, uses_list newel)
 		{
-			listunitsections[FindIndex(el)] = newel;
+			listunitsections[FindIndexInList(el)] = newel;
 		}
 
-		public void Replace(uses_list el, IEnumerable<uses_list> newels)
+		public void ReplaceInList(uses_list el, IEnumerable<uses_list> newels)
 		{
-			var ind = FindIndex(el);
+			var ind = FindIndexInList(el);
 			listunitsections.RemoveAt(ind);
 			listunitsections.InsertRange(ind, newels);
+		}
+
+		public int RemoveAll(Predicate<uses_list> match)
+		{
+			return listunitsections.RemoveAll(match);
 		}
 
 		// Окончание методов списка
@@ -31259,6 +31510,518 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Неопознанный идентификатор. Откладывает определение необходимости захвата имени как поля класса до этапа семантики.
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_ident : ident
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_ident()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(ident _UnknownID,ident _ClassName)
+		{
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(ident _UnknownID,ident _ClassName,SourceContext sc)
+		{
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName)
+		{
+			this._name=_name;
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName,SourceContext sc)
+		{
+			this._name=_name;
+			this._UnknownID=_UnknownID;
+			this._ClassName=_ClassName;
+			source_context = sc;
+		}
+
+		protected ident _UnknownID;
+		protected ident _ClassName;
+
+		///<summary>
+		///
+		///</summary>
+		public ident UnknownID
+		{
+			get
+			{
+				return _UnknownID;
+			}
+			set
+			{
+				_UnknownID=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public ident ClassName
+		{
+			get
+			{
+				return _ClassName;
+			}
+			set
+			{
+				_ClassName=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return UnknownID;
+					case 1:
+						return ClassName;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						UnknownID = (ident)value;
+						break;
+					case 1:
+						ClassName = (ident)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел для вычисления типа выражения используемого в теле функции-итератора (с yield)
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_expression_type : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_expression_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(var_def_statement _Vds)
+		{
+			this._Vds=_Vds;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(var_def_statement _Vds,SourceContext sc)
+		{
+			this._Vds=_Vds;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds)
+		{
+			this._attr_list=_attr_list;
+			this._Vds=_Vds;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			this._Vds=_Vds;
+			source_context = sc;
+		}
+
+		protected var_def_statement _Vds;
+
+		///<summary>
+		///
+		///</summary>
+		public var_def_statement Vds
+		{
+			get
+			{
+				return _Vds;
+			}
+			set
+			{
+				_Vds=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+					case 1:
+						return Vds;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
+						break;
+					case 1:
+						Vds = (var_def_statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел-обертка для yield для определения типов локальных переменных в var_def_statement
+	///</summary>
+	[Serializable]
+	public partial class yield_var_def_statement_with_unknown_type : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_var_def_statement_with_unknown_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_var_def_statement_with_unknown_type(var_def_statement _vars)
+		{
+			this._vars=_vars;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_var_def_statement_with_unknown_type(var_def_statement _vars,SourceContext sc)
+		{
+			this._vars=_vars;
+			source_context = sc;
+		}
+
+		protected var_def_statement _vars;
+
+		///<summary>
+		///
+		///</summary>
+		public var_def_statement vars
+		{
+			get
+			{
+				return _vars;
+			}
+			set
+			{
+				_vars=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (var_def_statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел-обертка для yield для определения типов локальных переменных в variable_definitions
+	///</summary>
+	[Serializable]
+	public partial class yield_variable_definitions_with_unknown_type : declaration
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_variable_definitions_with_unknown_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_variable_definitions_with_unknown_type(variable_definitions _vars)
+		{
+			this._vars=_vars;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_variable_definitions_with_unknown_type(variable_definitions _vars,SourceContext sc)
+		{
+			this._vars=_vars;
+			source_context = sc;
+		}
+
+		protected variable_definitions _vars;
+
+		///<summary>
+		///
+		///</summary>
+		public variable_definitions vars
+		{
+			get
+			{
+				return _vars;
+			}
+			set
+			{
+				_vars=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (variable_definitions)value;
 						break;
 				}
 			}

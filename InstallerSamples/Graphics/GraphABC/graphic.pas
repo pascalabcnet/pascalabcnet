@@ -1,33 +1,20 @@
-// Процедура drawGraph рисования графика функции в полном окне
+﻿// Процедура drawGraph рисования графика функции в полном окне
 // с масштабированием по оси OY
 // Перерисовывает график при изменении размеров окна
 uses GraphABC;
 
-type FUN = function (x: real): real;
-
-function f(x: real): real;
-begin
-  Result := x*sin(x)*exp(-0.1*x);
-end;
+function f(x: real) := x*sin(x)*exp(-0.1*x);
 
 // l (logical) - логические координаты
 // s (screen) - физические координаты
-procedure drawGraph(x1,x2: real; f: FUN);
+procedure drawGraph(x1,x2: real; f: real -> real);
  var
   xl0,wl,yl0,hl: real;
   xs0,ws,ys0,hs: integer;
- function LtoSx(xl: real): integer;
- begin
-   Result := round(ws/wl*(xl-xl0)+xs0);
- end;
- function LtoSy(yl: real): integer;
- begin
-   Result := round(hs/hl*(yl-yl0)+ys0);
- end;
- function StoLx(xs: integer): real;
- begin
-   Result := wl/ws*(xs-xs0)+xl0;
- end;
+
+ function LtoSx(xl: real) := round(ws/wl*(xl-xl0)+xs0);
+ function LtoSy(yl: real) := round(hs/hl*(yl-yl0)+ys0);
+ function StoLx(xs: integer) := wl/ws*(xs-xs0)+xl0;
 
 begin // drawGraph
   xs0 := 0;
@@ -38,12 +25,11 @@ begin // drawGraph
   xl0 := x1;
   wl := x2-x1;
 
-  var min := real.MaxValue;
-  var max := real.MinValue;
-  
   var yi: array of real;
   SetLength(yi,ws+1);
 
+  var min := real.MaxValue;
+  var max := real.MinValue;
   for var xi:=0 to ws do
   begin
     yi[xi] := f(StoLx(xi+xs0));

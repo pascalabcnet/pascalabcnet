@@ -144,6 +144,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_function_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.namespace_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node ||
+                si.sym_info.semantic_node_type == semantic_node_type.common_method_node || // SSM bug fix  #167
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_variable_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_type_node ||

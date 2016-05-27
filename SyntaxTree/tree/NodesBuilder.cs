@@ -115,6 +115,18 @@ namespace PascalABCCompiler.SyntaxTree
             return cd;
         }
 
+        // frninja 23/04/16 - для шаблонных классов в yield
+        public static class_definition BuildClassDefinition(named_type_reference_list parents, ident_list template_args, params class_members[] cms)
+        {
+            var cb = new class_body();
+            foreach (var cm in cms)
+                cb.Add(cm);
+
+            var cd = new class_definition(parents, cb, class_keyword.Class, template_args, null, class_attribute.None, false, null);
+            return cd;
+        }
+        // end frninja
+
         // names и types передаю во внешний мир на предмет анализа того, что они не указатели. Снаружи они инициализируются пустыми списками
         public static void AddMembersForAutoClass(class_definition cd, ref List<ident> names, ref List<type_definition> types) // SSM 24.03.14
         {
