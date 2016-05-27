@@ -117,6 +117,8 @@ type
   /// Представляет базовый класс для реализации интерфейса IComparer
   Comparer<T> = System.Collections.Generic.Comparer<T>;
   
+  IComparable<T> = System.Collections.Generic.IComparable<T>;
+
   /// Представляет множество значений, реализованное на базе хеш-таблицы
   HashSet<T> = System.Collections.Generic.HashSet<T>;
   

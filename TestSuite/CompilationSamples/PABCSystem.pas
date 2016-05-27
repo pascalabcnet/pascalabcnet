@@ -117,6 +117,8 @@ type
   /// Представляет базовый класс для реализации интерфейса IComparer
   Comparer<T> = System.Collections.Generic.Comparer<T>;
   
+  IComparable<T> = System.Collections.Generic.IComparable<T>;
+
   /// Представляет множество значений, реализованное на базе хеш-таблицы
   HashSet<T> = System.Collections.Generic.HashSet<T>;
   
@@ -152,7 +154,7 @@ type
 
   /// Представляет интерфейс для сравнения двух элементов
   IComparer<T> = System.Collections.Generic.IComparer<T>;
-  
+
   /// Представляет интерфейс для набора пар Ключ-Значение
   IDictionary<Key,Value> = System.Collections.Generic.IDictionary<Key,Value>;
   
@@ -2145,61 +2147,61 @@ end;
 ///--
 function TypedSet.IsInDiapason(elem: object): boolean;
 begin
-  if (low_bound <> nil) and (upper_bound <> nil) and (elem is IComparable) then
+  if (low_bound <> nil) and (upper_bound <> nil) and (elem is System.IComparable) then
   begin
     case System.Type.GetTypeCode(elem.GetType) of
       TypeCode.Char:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToChar(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToChar(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToChar(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToChar(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Int32:
         begin
           if not (elem is integer) then elem := Convert.ToInt32(elem);
-          if ((elem as IComparable).CompareTo(Convert.ToInt32(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToInt32(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToInt32(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToInt32(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Byte:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToByte(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToByte(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToByte(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToByte(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.SByte:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToSByte(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToSByte(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToSByte(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToSByte(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Int16:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToInt16(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToInt16(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToInt16(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToInt16(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.UInt16:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToUint16(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToUInt16(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToUint16(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToUInt16(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.UInt32:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToUInt32(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToUInt32(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToUInt32(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToUInt32(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.Int64:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToInt64(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToInt64(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToInt64(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToInt64(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
       TypeCode.UInt64:
         begin
-          if ((elem as IComparable).CompareTo(Convert.ToUInt64(low_bound)) >= 0) and ((elem as IComparable).CompareTo(Convert.ToUInt64(upper_bound)) <= 0) then
+          if ((elem as System.IComparable).CompareTo(Convert.ToUInt64(low_bound)) >= 0) and ((elem as System.IComparable).CompareTo(Convert.ToUInt64(upper_bound)) <= 0) then
             Result := true
           else Result := false
         end;
@@ -2460,7 +2462,7 @@ begin
   var t: &Type; 
   var added := false;
   if i.MoveNext then
-    if not (i.Current is IComparable) then
+    if not (i.Current is System.IComparable) then
     begin
       result := '' + FormatStr(i.Current) + '';
       added := true;
@@ -2471,7 +2473,7 @@ begin
       t := i.Current.GetType;
     end;
   while i.MoveNext do
-    if not (i.Current is IComparable) then
+    if not (i.Current is System.IComparable) then
     begin
       result := (added ? result + ',' : '') + FormatStr(i.Current);
       added := true;
