@@ -13107,7 +13107,7 @@ namespace PascalABCCompiler.TreeConverter
         	return constant;
         }
         
-        private array_initializer ConvertArrayInitializer(type_node tn, array_initializer constant)
+        private expression_node ConvertArrayInitializer(type_node tn, array_initializer constant)
         {
         	type_node element_type = null;
             if (IsBoundedArray(tn))
@@ -13131,8 +13131,16 @@ namespace PascalABCCompiler.TreeConverter
                     	return cnst;
                     }
                 }
-                else
-                	AddError(new CanNotConvertTypes(constant,constant.type,tn,constant.location));//CompilerInternalError("Unexpected array type");
+            else if (tn == SystemLibrary.SystemLibrary.complex_type && constant.element_values.Count == 2)
+            {
+                compiled_constructor_call cccall = new compiled_constructor_call(SystemLibrary.SystemLibrary.complex_type_constructor, null);
+                cccall.parameters.AddElement(convertion_data_and_alghoritms.convert_type(constant.element_values[0], SystemLibrary.SystemLibrary.double_type));
+                cccall.parameters.AddElement(convertion_data_and_alghoritms.convert_type(constant.element_values[1], SystemLibrary.SystemLibrary.double_type));
+                compiled_constructor_call_as_constant cccall_cnst = new compiled_constructor_call_as_constant(cccall, null);
+                return cccall_cnst;
+            }
+            else
+                AddError(new CanNotConvertTypes(constant,constant.type,tn,constant.location));//CompilerInternalError("Unexpected array type");
             for (int i = 0; i < constant.element_values.Count; i++)
             if (constant.element_values[i] is array_initializer)
             	constant.element_values[i] = ConvertArrayInitializer(element_type, constant.element_values[i] as array_initializer);
