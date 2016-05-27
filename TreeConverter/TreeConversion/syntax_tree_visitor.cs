@@ -8646,6 +8646,54 @@ namespace PascalABCCompiler.TreeConverter
             dot_node_as_namespace_ident(cun.namespaces[0], id_right, mot);
         }
 
+        private void dot_node_as_ident_dot_template_ident(SyntaxTree.ident id_left, SyntaxTree.ident_with_templateparams template_id_right,
+            motivation mot)
+        {
+            SymbolInfo si_left = context.find(id_left.name);
+            SyntaxTree.ident id_right = template_id_right.name as SyntaxTree.ident;
+            if (si_left == null)
+            {
+                AddError(new UndefinedNameReference(id_left.name, get_location(id_left)));
+            }
+            definition_node dn = context.check_name_node_type(id_left.name, si_left, get_location(id_left),
+                general_node_type.constant_definition, general_node_type.function_node,
+                general_node_type.namespace_node, general_node_type.property_node,
+                general_node_type.type_node, general_node_type.variable_node,
+                general_node_type.unit_node);
+            switch (dn.general_node_type)
+            {
+                case general_node_type.constant_definition:
+                case general_node_type.function_node:
+                case general_node_type.property_node:
+                case general_node_type.variable_node:
+                    {
+                        expression_node ex_nd = ident_value_reciving(si_left, id_left);
+                        dot_node_as_expression_dot_template_ident(ex_nd, template_id_right, mot, id_left);
+                        return;
+                    }
+                case general_node_type.namespace_node:
+                    {
+                        //throw new CompilerInternalError("Unsupported now.");
+                        namespace_node nn = dn as namespace_node;
+                        dot_node_as_namespace_ident(nn, id_right, mot);
+                        return;
+                    }
+                case general_node_type.type_node:
+                    {
+                        type_node tn = dn as type_node;
+                        dot_node_as_type_ident(tn, id_right, mot);
+                        return;
+                    }
+                case general_node_type.unit_node:
+                    {
+                        //throw new NotSupportedError(get_location(id_left));
+                        dot_node_as_unit_ident((common_unit_node)dn, id_right, mot);
+                        return;
+                    }
+            }
+            return;
+        }
+
         private void dot_node_as_ident_dot_ident(SyntaxTree.ident id_left, SyntaxTree.ident id_right,
             motivation mot)
         {
@@ -8987,6 +9035,51 @@ namespace PascalABCCompiler.TreeConverter
             throw new CompilerInternalError("Undefined expression to address reciving");
         }
 
+        private void dot_node_as_expression_dot_template_ident(expression_node en, SyntaxTree.ident_with_templateparams template_id_right, motivation mot, addressed_value syntax_node)
+        {
+            SyntaxTree.ident id_right = template_id_right.name as ident;
+            if (en is typed_expression)
+                try_convert_typed_expression_to_function_call(ref en);
+            SymbolInfo si = en.type.find_in_type(id_right.name, context.CurrentScope);
+            if (si == null)
+            {
+                AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
+            }
+
+            try_convert_typed_expression_to_function_call(ref en);
+
+            switch (mot)
+            {
+                case motivation.address_reciving:
+                    {
+                        return_addressed_value(address_expression_reciving(id_right, si, en));
+                        return;
+                    }
+                case motivation.expression_evaluation:
+                    {
+                        //en = expression_value_reciving(id_right, si, en, true);
+                        //try_convert_typed_expression_to_function_call(ref en);
+                        //return_value(en);
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                        {
+                            //dot_node dnode = new dot_node(syntax_node, template_id_right);
+                            template_id_right.name = new dot_node(syntax_node, id_right);
+                            method_call mc = new method_call(template_id_right, new expression_list());
+                            mc.visit(this);
+                            return;
+                        }
+                        return_value(expression_value_reciving(id_right, si, en, true));
+                        return;
+                    }
+                case motivation.semantic_node_reciving:
+                    {
+                        return_semantic_value(expression_value_reciving(id_right, si, en, true));
+                        return;
+                    }
+            }
+            throw new CompilerInternalError("Invalid motivation.");
+        }
+
         private void dot_node_as_expression_dot_ident(expression_node en, SyntaxTree.ident id_right, motivation mot, addressed_value syntax_node)
         {
             if (en is typed_expression)
@@ -9009,8 +9102,8 @@ namespace PascalABCCompiler.TreeConverter
                 case motivation.expression_evaluation:
                     {
                         //en = expression_value_reciving(id_right, si, en, true);
-            			//try_convert_typed_expression_to_function_call(ref en);
-            			//return_value(en);
+                        //try_convert_typed_expression_to_function_call(ref en);
+                        //return_value(en);
                         if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
                         {
                             dot_node dnode = new dot_node(syntax_node, id_right);
@@ -9062,18 +9155,46 @@ namespace PascalABCCompiler.TreeConverter
             throw new CompilerInternalError("Invalid left dot node kind");
         }
 
+        private void dot_node_as_dot_node_dot_template_ident(SyntaxTree.dot_node left_dot, SyntaxTree.ident_with_templateparams template_id_right,
+            motivation mot)
+        {
+            semantic_node sn = convert_semantic_strong(left_dot);
+            ident id_right = template_id_right.name as ident;
+            switch (sn.general_node_type)
+            {
+                case general_node_type.expression:
+                    {
+                        expression_node en = (expression_node)sn;
+                        dot_node_as_expression_dot_template_ident(en, template_id_right, mot, left_dot);
+                        return;
+                    }
+                case general_node_type.namespace_node:
+                    {
+                        namespace_node nn = (namespace_node)sn;
+                        dot_node_as_namespace_ident(nn, id_right, mot);
+                        return;
+                    }
+                case general_node_type.type_node:
+                    {
+                        type_node tn = (type_node)sn;
+                        dot_node_as_type_ident(tn, id_right, mot);
+                        return;
+                    }
+                case general_node_type.unit_node:
+                    {
+                        throw new CompilerInternalError("Not supported");
+                    }
+            }
+            throw new CompilerInternalError("Invalid left dot node kind");
+        }
+
         public override void visit(SyntaxTree.dot_node _dot_node)
         {
             motivation mot = motivation_keeper.motivation;
             SyntaxTree.ident id_left = _dot_node.left as SyntaxTree.ident;
             SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
-#if (DEBUG)
-            if (id_right == null)
-            {
-                throw new CompilerInternalError("Ident expected in left part of dot operator.");
-            }
-#endif
-
+            if (_dot_node.right is ident_with_templateparams)
+                id_right = (_dot_node.right as ident_with_templateparams).name as ident;
             //lroman
             if (_dot_node.left is closure_substituting_node)
             {
@@ -9085,6 +9206,11 @@ namespace PascalABCCompiler.TreeConverter
 
             if (id_left != null)
             {
+                if (_dot_node.right is ident_with_templateparams)
+                {
+                    dot_node_as_ident_dot_template_ident(id_left, _dot_node.right as ident_with_templateparams, mot);
+                    return;
+                }
                 dot_node_as_ident_dot_ident(id_left, id_right, mot);
                 return;
             }
@@ -9100,10 +9226,20 @@ namespace PascalABCCompiler.TreeConverter
                 SyntaxTree.dot_node left_dot = _dot_node.left as SyntaxTree.dot_node;
                 if (left_dot != null)
                 {
+                    if (_dot_node.right is ident_with_templateparams)
+                    {
+                        dot_node_as_dot_node_dot_template_ident(left_dot, _dot_node.right as ident_with_templateparams, mot);
+                        return;
+                    }
                     dot_node_as_dot_node_dot_ident(left_dot, id_right, mot);
                     return;
                 }
                 expression_node en = convert_strong(_dot_node.left);
+                if (_dot_node.right is ident_with_templateparams)
+                {
+                    dot_node_as_expression_dot_template_ident(en, _dot_node.right as ident_with_templateparams, mot, _dot_node.left);
+                    return;
+                }
                 dot_node_as_expression_dot_ident(en, id_right, mot, _dot_node.left);
                 return;
             }
@@ -17866,7 +18002,10 @@ namespace PascalABCCompiler.TreeConverter
                     return_value(instance_any(tc, tpars, get_location(_ident_with_templateparams)));
                     return;
                 }
+                dot_node dn2 = new dot_node(dn.left, new ident_with_templateparams(dn.right, _ident_with_templateparams.template_params, dn.right.source_context), dn.source_context);
+                ex = dn2;
             }
+            
             expression_node adr = ret.visit(ex);
             typed_expression te = adr as typed_expression;
             if (te != null)
@@ -17967,7 +18106,8 @@ namespace PascalABCCompiler.TreeConverter
                     return;
                 }
             }
-            AddError(get_location(_ident_with_templateparams.name), "TRIANGLE_BRACKETS_NOT_AWAITED");
+            if (!(adr is compiled_static_method_call) && !(adr is common_static_method_call))
+                AddError(get_location(_ident_with_templateparams.name), "TRIANGLE_BRACKETS_NOT_AWAITED");
          }
 
         public override void visit(SyntaxTree.template_type_name node)
