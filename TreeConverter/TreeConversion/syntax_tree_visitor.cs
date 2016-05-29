@@ -19059,13 +19059,13 @@ namespace PascalABCCompiler.TreeConverter
         {
             type_node tn;
 
-            if (_foreach_stmt.type_name == null)
+            /*if (_foreach_stmt.type_name == null)
             {
                 // Внешнее имя, ищем тип
                 var cv = convert_strong(_foreach_stmt.identifier);
                 tn = cv.type;
             }
-            else
+            else*/
             {
                 expression_node in_what = convert_strong(_foreach_stmt.in_what);
                 type_node elem_type = null;
