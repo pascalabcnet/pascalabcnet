@@ -4771,6 +4771,8 @@ namespace CodeCompletion
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
             Type t = this.ctn;
+            if (!ctn.IsGenericType)
+                return this;
             if (!ctn.IsGenericTypeDefinition)
                 t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
             else if (this.instances != null && this.instances.Count > 0)
