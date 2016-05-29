@@ -8538,22 +8538,25 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case general_node_type.function_node:
                     {
-                        //TODO: Передается пустой список выражений.
-                        /*
-                        function_node fn=convertion_data_and_alghoritms.select_function(new expressions_list(),
-                            si_right,get_location(id_right));
-                        return create_static_method_call(fn,get_location(id_right),tn,false);
-                        */
-                        //if (!(si_right.sym_info is common_in_function_function_node))
                         if (dn is compiled_function_node)
                         {
                             if ((dn as compiled_function_node).ConnectedToType == tn)
-                                AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                            {
+                                if (si_right.Next != null)
+                                    return create_static_expression(tn, id_right, si_right.Next);
+                                else
+                                    AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                            }
                         }
                         else if (dn is common_namespace_function_node)
                         {
                             if ((dn as common_namespace_function_node).ConnectedToType == tn)
-                                AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                            {
+                                if (si_right.Next != null)
+                                    return create_static_expression(tn, id_right, si_right.Next);
+                                else
+                                    AddError(new UndefinedNameReference(id_right.name, get_location(id_right)));
+                            }
                         }
                         if (dn.semantic_node_type == semantic_node_type.indefinite_definition_node)
                         {
