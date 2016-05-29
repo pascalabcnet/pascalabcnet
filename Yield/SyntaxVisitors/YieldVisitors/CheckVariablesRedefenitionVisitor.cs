@@ -114,6 +114,15 @@ namespace SyntaxVisitors
             base.visit(fn);
         }
 
+        public override void visit(foreach_stmt frch)
+        {
+            if (frch.type_name != null)
+            {
+                CheckVariableAlreadyDefined(frch.identifier);
+            }
+            base.visit(frch);
+        }
+
         private bool IsVariableAlreadyDefined(string name)
         {
             if (UpperBlockNames.Contains(name))
