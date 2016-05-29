@@ -140,6 +140,13 @@ namespace SyntaxVisitors
                               whileNode));
 
         }
+
+        // frninja 30/05/16
+        public override void visit(case_node csn)
+        {
+            
+        }
+
         public override void visit(if_node ifn)
         {
             ProcessNode(ifn.then_body);
