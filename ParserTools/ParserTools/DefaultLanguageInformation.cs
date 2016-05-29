@@ -1643,7 +1643,7 @@ namespace PascalABCCompiler.Parsers
                     {
                         if (generic_param_args == null)
                             generic_param_args = new Dictionary<string, string>();
-                        if (scope.GenericArgs.Count > ind)
+                        if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                             generic_param_args.Add(gen_arg.Name, scope.GenericArgs[ind]);
                     }
                     ind++;
@@ -1663,7 +1663,7 @@ namespace PascalABCCompiler.Parsers
                         {
                             if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
                                 class_generic_table.Add(class_generic_args[i].Name, j);
-                            if (scope.GenericArgs.Count > j)
+                            if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
                                 generic_param_args.Add(class_generic_args[i].Name, scope.GenericArgs[j]);
                         }
                         break;
