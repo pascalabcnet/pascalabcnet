@@ -795,6 +795,10 @@
       <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
       <Name>SyntaxVisitors</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Yield\YieldConversionSyntax\YieldConversionSyntax.csproj">
+      <Project>{276ee073-60f6-46d2-8811-1b8026bcaada}</Project>
+      <Name>YieldConversionSyntax</Name>
+    </ProjectReference>
     <ProjectReference Include="FormsDesignerBinding\Dependecies\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>

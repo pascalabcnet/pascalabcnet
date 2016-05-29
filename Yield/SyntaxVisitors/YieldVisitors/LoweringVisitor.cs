@@ -34,12 +34,7 @@ namespace SyntaxVisitors
         }
 
         private int _varnum = 0;
-
-        private string newVarName()
-        {
-            _varnum++;
-            return "<>varLV" + _varnum.ToString();
-        }
+        private int _enumeratorNum = 0;
 
         private VarNames NewVarNames(ident name)
         {
@@ -49,6 +44,12 @@ namespace SyntaxVisitors
                 VarName = "$" + name.name + _varnum,
                 VarEndName = "<>varLV" + _varnum
             };
+        }
+
+        private ident NewEnumeratorName()
+        {
+            ++_enumeratorNum;
+            return "$enumerator$" + _enumeratorNum;
         }
 
         public static void Accept(procedure_definition pd)
@@ -67,14 +68,78 @@ namespace SyntaxVisitors
 
 
 
-        // frninja 21/05/16
-        /*public override void visit(foreach_stmt frch)
+        public override void visit(yield_unknown_foreach_type _unk)
         {
+            // DO NOTHING
+        }
+
+        public override void visit(yield_unknown_foreach_type_ident _unk)
+        {
+            // DO NOTHING
+        }
+
+        // frninja 21/05/16
+        public override void visit(foreach_stmt frch)
+        {
+            var enumeratorIdent = this.NewEnumeratorName();
+
+            // Переменная цикла
+            var currentIdent = frch.identifier;
+            type_definition currentIdentType = null;
+
+            // Новое тело
+            var stl = new statement_list();
+
+            // С типом
+            if (frch.type_name == null)
+            {
+                // Внешнее имя, создавать ниче не надо
+            }
+            else
+            {
+                // var имеет место быть
+                if (frch.type_name is no_type_foreach)
+                {
+                    // автовывод
+                    currentIdentType = new yield_unknown_foreach_type(frch);
+                }
+                else
+                {
+                    currentIdentType = frch.type_name;
+                }
+
+                // Получаем служебное имя с $ и заменяем его в теле цикла
+                currentIdent = this.NewVarNames(frch.identifier).VarName;
+                var replacerVis = new ReplaceVariableNameVisitor(frch.identifier, currentIdent);
+                frch.visit(replacerVis);
+
+
+                // Создаем переменную цикла и добавляем в stl
+                stl.Add(new var_statement(currentIdent, currentIdentType));
+
+            }
+
+            // Добавляем $current$ = $enumerator$.Current
+            //stl.Add(new assign(currentIdent, new dot_node(enumeratorIdent, "Current")));
+            stl.Add(new assign(currentIdent, new method_call(new yield_unknown_foreach_type_ident(frch), new expression_list(new dot_node(enumeratorIdent, "Current")))));
+
+
+            // Добавляем тело цикла в stl
             ProcessNode(frch.stmt);
-            
+            stl.Add(frch.stmt);
 
-        }*/
+            var whileNode = new while_node(new method_call(new dot_node(enumeratorIdent, "MoveNext"), new expression_list()),
+                stl,
+                WhileCycleType.While);
 
+            ReplaceStatement(frch,
+                SeqStatements(new var_statement(enumeratorIdent,
+                                    new named_type_reference("System.Collections.IEnumerator"),
+                // НЕБЕЗОПАСНО!
+                                    new method_call(new dot_node(frch.in_what as addressed_value, new ident("GetEnumerator")), new expression_list())),
+                              whileNode));
+
+        }
         public override void visit(if_node ifn)
         {
             ProcessNode(ifn.then_body);
@@ -179,7 +244,7 @@ namespace SyntaxVisitors
             var newLoopVar = fn.create_loop_variable ? new ident(newNames.VarName) : fn.loop_variable;
 
             // Нужно заменить fn.loop_variable -> newLoopVar в теле цикла
-            var replacerVis = new ReplaceForVariableVisitor(fn.loop_variable, newLoopVar);
+            var replacerVis = new ReplaceVariableNameVisitor(fn.loop_variable, newLoopVar);
             fn.visit(replacerVis);
 
             fn.loop_variable = newLoopVar;

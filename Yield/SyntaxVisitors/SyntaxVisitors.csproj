@@ -73,7 +73,7 @@
     <Compile Include="YieldVisitors\RenameSameBlockLocalVarsVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceCapturedVariablesVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceFormalParametersRefsVisitor.cs" />
-    <Compile Include="YieldVisitors\ReplaceForVariableVisitor.cs" />
+    <Compile Include="YieldVisitors\ReplaceVariableNameVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\Compiler.csproj">

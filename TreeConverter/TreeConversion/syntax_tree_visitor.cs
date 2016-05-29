@@ -4667,6 +4667,15 @@ namespace PascalABCCompiler.TreeConverter
             }
             // end frninja
 
+            // frninja 29/05/16 - для приведения типов в lowered foreach
+            if (_method_call.dereferencing_value is yield_unknown_foreach_type_ident)
+            {
+                var nodeToVisit = new method_call(GetForeachVariableTypeName((_method_call.dereferencing_value as yield_unknown_foreach_type_ident).unknown_foreach), _method_call.parameters);
+                visit(nodeToVisit);
+                return;
+            }
+            // end frninja
+
             //lroman
             if (_method_call.dereferencing_value is closure_substituting_node)
             {
@@ -19002,7 +19011,11 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.yield_var_def_statement_with_unknown_type _vars)
         {
             if ((object)_vars.vars.vars_type != null)
+            {
+                // Visit stored vars
+                _vars.vars.visit(this);
                 return;
+            }
             var t = convert_strong(_vars.vars.inital_value);
             _vars.map_helper.vars_type_map[_vars.vars] = new SyntaxTree.semantic_type_node(t.type);
 
@@ -19016,13 +19029,62 @@ namespace PascalABCCompiler.TreeConverter
             foreach (var vd in _vars.vars.list)
             {
                 if ((object)vd.vars_type != null)
+                {
                     continue;
+                }
                 var t = convert_strong(vd.inital_value);
                 _vars.map_helper.vars_type_map[vd] = new SyntaxTree.semantic_type_node(t.type);
             }
 
             // Visit stored vars
             _vars.vars.visit(this);
+        }
+
+        // frninja 29/05/16 - выявляем тип перемнной в foreach
+        public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)
+        {
+            var _foreach_stmt = _unk.unknown_foreach;
+            expression_node in_what = convert_strong(_foreach_stmt.in_what);
+            type_node elem_type = null;
+            if (!FindIEnumerableElementType(_foreach_stmt, in_what.type, ref elem_type))
+            {
+                AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
+            }
+            // Visit type
+            var t = new SyntaxTree.semantic_type_node(elem_type);
+            t.visit(this);
+        }
+
+        private ident GetForeachVariableTypeName(foreach_stmt _foreach_stmt)
+        {
+            type_node tn;
+
+            if (_foreach_stmt.type_name == null)
+            {
+                // Внешнее имя, ищем тип
+                var cv = convert_strong(_foreach_stmt.identifier);
+                tn = cv.type;
+            }
+            else
+            {
+                expression_node in_what = convert_strong(_foreach_stmt.in_what);
+                type_node elem_type = null;
+                if (!FindIEnumerableElementType(_foreach_stmt, in_what.type, ref elem_type))
+                {
+                    AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
+                }
+                tn = elem_type;
+            }
+
+            return new SyntaxTree.ident(tn.name);
+        }
+
+        // frninja 29/05/16 - получаем имя типа переменной в foreach
+        public override void visit(SyntaxTree.yield_unknown_foreach_type_ident _unk)
+        {
+            var t = this.GetForeachVariableTypeName(_unk.unknown_foreach);
+            // Visit type
+            t.visit(this);
         }
 
         // end frninja

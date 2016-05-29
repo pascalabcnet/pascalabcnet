@@ -9,12 +9,12 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
-    public class ReplaceForVariableVisitor : BaseChangeVisitor
+    public class ReplaceVariableNameVisitor : BaseChangeVisitor
     {
         private ident _oldName;
         private ident _newName;
 
-        public ReplaceForVariableVisitor(ident oldName, ident newName)
+        public ReplaceVariableNameVisitor(ident oldName, ident newName)
         {
             _oldName = oldName;
             _newName = newName;
