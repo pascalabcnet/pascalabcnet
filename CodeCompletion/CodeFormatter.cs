@@ -2752,20 +2752,28 @@ namespace CodeFormatters
             }
             else
             {
-                
-                if (_modern_proc_type.el != null && _modern_proc_type.el.enumerators != null)
+                if (_modern_proc_type.el == null && _modern_proc_type.res == null)
                 {
-                    sb.Append("(");
-                    for (int i = 0; i < _modern_proc_type.el.enumerators.Count; i++)
-                    {
-                        visit_node(_modern_proc_type.el.enumerators[i]);
-                    }
+                    int beg_pos = GetPosition(_modern_proc_type.source_context.begin_position.line_num, _modern_proc_type.source_context.begin_position.column_num);
+                    int end_pos = GetPosition(_modern_proc_type.source_context.end_position.line_num, _modern_proc_type.source_context.end_position.column_num);
+                    sb.Append(Text.Substring(beg_pos, end_pos - beg_pos + 1));
                 }
                 else
-                    read_from_beg_pos = true;
-                add_space_before = false;
-                add_space_after = false;
-                visit_node(_modern_proc_type.res);
+                {
+                    if (_modern_proc_type.el != null && _modern_proc_type.el.enumerators != null)
+                    {
+                        sb.Append("(");
+                        for (int i = 0; i < _modern_proc_type.el.enumerators.Count; i++)
+                        {
+                            visit_node(_modern_proc_type.el.enumerators[i]);
+                        }
+                    }
+                    else
+                        read_from_beg_pos = true;
+                    add_space_before = false;
+                    add_space_after = false;
+                    visit_node(_modern_proc_type.res);
+                }
             }
         }
 

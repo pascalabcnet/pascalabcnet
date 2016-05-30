@@ -4332,7 +4332,10 @@ namespace CodeCompletion
                 if (_modern_proc_type.res != null)
                     ttr.params_list.params_list.Add(_modern_proc_type.res);
             }
-            visit(ttr);
+            if (ttr.params_list.params_list.Count > 0)
+                visit(ttr);
+            else
+                visit(ttr.name);
         }
     }
 }
