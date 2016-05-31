@@ -141,10 +141,75 @@ namespace SyntaxVisitors
 
         }
 
+        private expression CreateConditionFromCaseVariant(expression param, expression_list list)
+        {
+            var res = list.expressions.Aggregate(new bool_const(false) as expression, (acc, expr) =>
+                {
+                    bin_expr currentExpr = null;
+                    diapason_expr diap = expr as diapason_expr;
+                    if (diap != null)
+                    {
+                        currentExpr = new bin_expr(new bin_expr(param, diap.left, Operators.GreaterEqual),
+                            new bin_expr(param, diap.right, Operators.LessEqual),
+                            Operators.LogicalAND);
+                    }
+                    else
+                    {
+                        currentExpr = new bin_expr(param, expr, Operators.Equal);
+                    }
+
+                    return new bin_expr(acc, currentExpr, Operators.LogicalOR);
+                });
+
+            return res;
+        }
+
         // frninja 30/05/16
         public override void visit(case_node csn)
         {
+            var b = HasStatementVisitor<yield_node>.Has(csn);
+            if (!b)
+                return;
             
+            /*
+             * 
+             * case i of
+             *   cv1: bla1;
+             *   cv2: bla2;
+             *   ..
+             *   cvN: blaN;
+             * else: bla_else;
+             * 
+             * --->
+             * 
+             * if i satisfy cv1 
+             *   then bla1
+             * else if i satisfy cv2
+             *   then bla2
+             * ..
+             * else if i satisfy cvN
+             *   then blaN
+             * else bla_else
+             * 
+            */
+
+            if_node currentIfNode = null;
+            statement currentIfElseClause = (csn.else_statement != null) ? csn.else_statement :new statement_list(new empty_statement()); ;
+            
+            for (int i = csn.conditions.variants.Count - 1; i >= 0; --i)
+            {
+                case_variant cv = csn.conditions.variants[i];
+
+                ProcessNode(cv.exec_if_true);
+
+                var ifCondition = this.CreateConditionFromCaseVariant(csn.param, cv.conditions);
+                currentIfNode = new if_node(ifCondition, new statement_list(cv.exec_if_true), new statement_list(currentIfElseClause));
+                currentIfElseClause = currentIfNode;
+            }
+
+            if_node finalIfNode = currentIfNode;
+
+            ReplaceStatement(csn, finalIfNode);
         }
 
         public override void visit(if_node ifn)
