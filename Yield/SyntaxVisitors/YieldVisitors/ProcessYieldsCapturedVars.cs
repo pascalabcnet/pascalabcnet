@@ -691,6 +691,56 @@ namespace SyntaxVisitors
             return false;
         }
 
+        private void CreateErrorCheckerHelper(procedure_definition pd)
+        {
+            // Клонируем исходный метод для проверок ошибок бэкендом
+            var pdCloned = ObjectCopier.Clone(pd);
+            pdCloned.has_yield = false;
+
+
+            // Добавляем в класс метод с обертками для локальных переменных
+            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+            pdCloned.is_yield_helper = true;
+
+            if (IsClassMethod(pd))
+            {
+                var cd = UpperTo<class_definition>();
+                if (cd != null)
+                {
+                    // Метод класса описан в классе
+                    var classMembers = UpperTo<class_members>();
+                    classMembers.Add(pdCloned);
+                }
+                else
+                {
+                    // Метод класса описан вне класса
+
+                    var decls = UpperTo<declarations>();
+                    var classMembers = decls.list
+                        .Select(decl => decl as type_declarations)
+                        .Where(tdecls => tdecls != null)
+                        .SelectMany(tdecls => tdecls.types_decl)
+                        .Where(td => td.type_name.name == GetClassName(pd).name)
+                        .Select(td => td.type_def as class_definition)
+                        .Where(_cd => _cd != null)
+                        .SelectMany(_cd => _cd.body.class_def_blocks);
+
+
+                    // Вставляем предописание метода-хелпера 
+                    var helperPredefHeader = ObjectCopier.Clone(pdCloned.proc_header);
+                    helperPredefHeader.name.class_name = null;
+                    classMembers.First().members.Insert(0, helperPredefHeader);
+
+                    // Вставляем тело метода-хелпера
+                    UpperTo<declarations>().InsertBefore(pd, pdCloned);
+                }
+            }
+            else
+            {
+                UpperTo<declarations>().InsertBefore(pd, pdCloned);
+            }
+        }
+
         public override void visit(procedure_definition pd)
         {
             if (!pd.has_yield)
@@ -712,10 +762,14 @@ namespace SyntaxVisitors
             //if (!hasYields) // т.е. мы разобрали функцию и уже выходим. Это значит, что пока yield будет обрабатываться только в функциях. Так это и надо.
             //    return;
 
+            // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
+            CreateErrorCheckerHelper(pd);
+
             // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
             AddBeginEndsVisitor addBeginEndsVis = new AddBeginEndsVisitor();
             pd.visit(addBeginEndsVis);
 
+            /*
             // Проверяем проблемы имен для for
             CheckVariablesRedefenitionVisitor checkVarRedefVisitor = new CheckVariablesRedefenitionVisitor(
                 new HashSet<string>(
@@ -725,6 +779,7 @@ namespace SyntaxVisitors
                     :
                     Enumerable.Empty<string>()));
             pd.visit(checkVarRedefVisitor);
+            */
 
             // Переименовываем одинаковые имена в мини-ПИ
             RenameSameBlockLocalVarsVisitor renameLocalsVisitor = new RenameSameBlockLocalVarsVisitor();
