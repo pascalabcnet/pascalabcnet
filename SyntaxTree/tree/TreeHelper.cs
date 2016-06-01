@@ -5,6 +5,27 @@ using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTree
 {
+    /// <summary>
+    /// Тип обхода дерева
+    /// </summary>
+    public enum TraversalType
+    {
+        /// <summary>
+        /// Обход в ширину
+        /// </summary>
+        LevelOrder,
+
+        /// <summary>
+        /// Постфиксный обход
+        /// </summary>
+        PostOrder,
+
+        /// <summary>
+        /// Префиксный обход
+        /// </summary>
+        PreOrder
+    }
+
     public partial class syntax_tree_node
     {
         public int FindIndex(syntax_tree_node node)
@@ -44,13 +65,39 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
+        /// Получает коллекцию узлов поддерева, в котором корнем является текущий узел. 
+        /// </summary>
+        /// <param name="traversalType">Тип обхода дерева. Определяет порядок добавления узлов в коллекцию</param>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Коллекция узлов поддерева</returns>
+        /// <exception cref="NotImplementedException">Выбрасывается при отсутствии реализации для заданного обхода</exception>
+        public IEnumerable<syntax_tree_node> DescendantNodes(
+            TraversalType traversalType = TraversalType.PostOrder, 
+            Func<syntax_tree_node, bool> descendIntoChildren = null, 
+            bool includeSelf = false)
+        {
+            switch (traversalType)
+            {
+                case TraversalType.LevelOrder:
+                    return DescendantNodesLevelOrder(descendIntoChildren, includeSelf);
+                case TraversalType.PostOrder:
+                    return DescendantNodesPostOrder(descendIntoChildren, includeSelf);
+                case TraversalType.PreOrder:
+                    return DescendantNodesPreOrder(descendIntoChildren, includeSelf);
+                default:
+                    throw new NotImplementedException("Данный вид обхода не поддерживается");
+            }
+        }
+
+        /// <summary>
         /// Получает список узлов поддерева, в котором корнем является текущий узел. 
         /// Порядок добавления в список: родитель, затем потомки.
         /// </summary>
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodesPreOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        private IEnumerable<syntax_tree_node> DescendantNodesPreOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var stack = new Stack<syntax_tree_node>();
 
@@ -87,7 +134,7 @@ namespace PascalABCCompiler.SyntaxTree
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodesPostOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        private IEnumerable<syntax_tree_node> DescendantNodesPostOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var stack = new Stack<syntax_tree_node>();
 
@@ -136,7 +183,7 @@ namespace PascalABCCompiler.SyntaxTree
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodesLevelOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        private IEnumerable<syntax_tree_node> DescendantNodesLevelOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var queue = new Queue<syntax_tree_node>();
 
