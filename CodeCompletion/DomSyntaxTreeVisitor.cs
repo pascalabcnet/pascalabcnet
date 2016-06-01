@@ -387,7 +387,7 @@ namespace CodeCompletion
             for (int i = 0; i < _named_type_reference.names.Count; i++)
             {
                 if (i == _named_type_reference.names.Count - 1 && converted_template_type != null)
-                    suffix = "`" + _named_type_reference.names.Count;
+                    suffix = "`" + converted_template_type.params_list.params_list.Count;
                 if (i > 0)
                     returned_scope = returned_scope.FindNameOnlyInType(_named_type_reference.names[i].name+suffix);
                 else
@@ -1081,10 +1081,27 @@ namespace CodeCompletion
             ps.declaringUnit = entry_scope;
             if (_procedure_header.template_args != null && !ps.IsGeneric())
             {
+                Dictionary<string, TypeScope> where_types = new Dictionary<string, TypeScope>();
+                if (_procedure_header.where_defs != null)
+                {
+                    foreach (where_definition wd in _procedure_header.where_defs.defs)
+                    {
+                        for (int i = 0; i < wd.names.idents.Count; i++)
+                        {
+                            string name = wd.names.idents[i].name;
+                            wd.types.defs[i].visit(this);
+                            where_types[name] = returned_scope as TypeScope;
+                        }
+                    }
+                }
                 foreach (ident s in _procedure_header.template_args.idents)
                 {
                     ps.AddTemplateParameter(s.name);
-                    TemplateParameterScope tps = new TemplateParameterScope(s.name, TypeTable.obj_type, ps);
+                    TypeScope where_ts = null;
+                    where_types.TryGetValue(s.name, out where_ts);
+                    if (where_ts == null)
+                        where_ts = TypeTable.obj_type;
+                    TemplateParameterScope tps = new TemplateParameterScope(s.name, where_ts, ps);
                     tps.loc = get_location(s);
                     ps.AddName(s.name, tps);
                 }
@@ -1393,10 +1410,28 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             if (_function_header.template_args != null && !ps.IsGeneric())
         	{
-        		foreach (ident s in _function_header.template_args.idents)
+                Dictionary<string, TypeScope> where_types = new Dictionary<string, TypeScope>();
+                if (_function_header.where_defs != null)
+                {
+                    foreach (where_definition wd in _function_header.where_defs.defs)
+                    {
+                        for (int i = 0; i < wd.names.idents.Count; i++)
+                        {
+                            string name = wd.names.idents[i].name;
+                            wd.types.defs[i].visit(this);
+                            where_types[name] = returned_scope as TypeScope;
+                        }
+                    }
+                }
+                foreach (ident s in _function_header.template_args.idents)
         		{
         			ps.AddTemplateParameter(s.name);
-                    TemplateParameterScope tps = new TemplateParameterScope(s.name, TypeTable.obj_type, ps);
+                    TypeScope where_ts = null;
+                    where_types.TryGetValue(s.name, out where_ts);
+                    if (where_ts == null)
+                        where_ts = TypeTable.obj_type;
+                    TemplateParameterScope tps = new TemplateParameterScope(s.name, where_ts, ps);
+                    
                     tps.loc = get_location(s);
                     ps.AddName(s.name, tps);
         		}
@@ -4332,7 +4367,10 @@ namespace CodeCompletion
                 if (_modern_proc_type.res != null)
                     ttr.params_list.params_list.Add(_modern_proc_type.res);
             }
-            visit(ttr);
+            if (ttr.params_list.params_list.Count > 0)
+                visit(ttr);
+            else
+                visit(ttr.name);
         }
     }
 }

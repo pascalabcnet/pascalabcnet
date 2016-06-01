@@ -305,6 +305,10 @@ namespace CodeCompletion
             if (extension_methods == null)
                 extension_methods = new Dictionary<TypeScope, List<ProcScope>>();
             List<ProcScope> meth_list = null;
+            if (ts is CompiledScope && (ts as CompiledScope).CompiledType.IsGenericType && !(ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
+                ts = TypeTable.get_compiled_type((ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+            if (ts.original_type != null)
+                ts = ts.original_type;
             if (!extension_methods.TryGetValue(ts, out meth_list))
             {
                 meth_list = new List<ProcScope>();
@@ -347,7 +351,7 @@ namespace CodeCompletion
                 {
                     TypeScope tmp_ts2 = tmp_ts;
                     if (tmp_ts is CompiledScope && (tmp_ts as CompiledScope).CompiledType.IsGenericType && !(tmp_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
-                        tmp_ts2 = TypeTable.get_compiled_type(new SymInfo("", SymbolKind.Class, ""), (tmp_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+                        tmp_ts2 = TypeTable.get_compiled_type((tmp_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
                     if (extension_methods.TryGetValue(tmp_ts2, out meths))
                     {
                         lst.AddRange(meths);
@@ -369,7 +373,7 @@ namespace CodeCompletion
                 {
                     TypeScope int_ts2 = int_ts;
                     if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
-                        int_ts2 = TypeTable.get_compiled_type(new SymInfo("", SymbolKind.Class, ""), (int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+                        int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
                     if (extension_methods.TryGetValue(int_ts2, out meths))
                     {
                         lst.AddRange(meths);
@@ -4767,6 +4771,8 @@ namespace CodeCompletion
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
             Type t = this.ctn;
+            if (!ctn.IsGenericType)
+                return this;
             if (!ctn.IsGenericTypeDefinition)
                 t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
             else if (this.instances != null && this.instances.Count > 0)

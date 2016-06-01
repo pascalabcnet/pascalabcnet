@@ -6015,6 +6015,48 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+			bw.Write((Int16)216);
+			write_yield_unknown_foreach_type(_yield_unknown_foreach_type);
+		}
+
+		public void write_yield_unknown_foreach_type(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+			write_type_definition(_yield_unknown_foreach_type);
+			if (_yield_unknown_foreach_type.unknown_foreach == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_unknown_foreach_type.unknown_foreach.visit(this);
+			}
+		}
+
+
+		public void visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
+		{
+			bw.Write((Int16)217);
+			write_yield_unknown_foreach_type_ident(_yield_unknown_foreach_type_ident);
+		}
+
+		public void write_yield_unknown_foreach_type_ident(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
+		{
+			write_ident(_yield_unknown_foreach_type_ident);
+			if (_yield_unknown_foreach_type_ident.unknown_foreach == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_unknown_foreach_type_ident.unknown_foreach.visit(this);
+			}
+		}
+
 	}
 
 

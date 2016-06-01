@@ -16,7 +16,7 @@ namespace SyntaxVisitors
         {
             var sts = st as statement;
 
-            if (sts != null && !(sts is statement_list) && !(UpperNode() is statement_list))
+            if (sts != null && !(sts is statement_list) && !(sts is case_variant) && !(UpperNode() is statement_list))
             {
                 // Одиночный оператор
                 var stl = new statement_list(sts, st.source_context);
@@ -25,8 +25,8 @@ namespace SyntaxVisitors
 
             
             var lst = st as labeled_statement;
-            
-            if (lst != null && !(lst.to_statement is statement_list))
+
+            if (lst != null && !(lst.to_statement is statement_list) && !(lst.to_statement is case_variant))
             {
                 // Одиночный оператор
                 var stl = new statement_list(sts, st.source_context);

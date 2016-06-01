@@ -1634,7 +1634,22 @@ namespace PascalABCCompiler.Parsers
             Type[] tt = scope.CompiledMethod.GetGenericArguments();
             int gen_ind = 0;
             if (!scope.IsExtension)
+            {
                 sb.Append(GetShortTypeName(scope.CompiledMethod.DeclaringType));
+                int ind = 0;
+                foreach (Type gen_arg in scope.CompiledMethod.DeclaringType.GetGenericArguments())
+                {
+                    if (gen_arg.IsGenericParameter)
+                    {
+                        if (generic_param_args == null)
+                            generic_param_args = new Dictionary<string, string>();
+                        if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
+                            generic_param_args.Add(gen_arg.Name, scope.GenericArgs[ind]);
+                    }
+                    ind++;
+                }
+                    
+            }
             else
             {
                 gen_ind = 1;
@@ -1648,6 +1663,8 @@ namespace PascalABCCompiler.Parsers
                         {
                             if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
                                 class_generic_table.Add(class_generic_args[i].Name, j);
+                            if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
+                                generic_param_args.Add(class_generic_args[i].Name, scope.GenericArgs[j]);
                         }
                         break;
                     }

@@ -34,12 +34,7 @@ namespace SyntaxVisitors
         }
 
         private int _varnum = 0;
-
-        private string newVarName()
-        {
-            _varnum++;
-            return "<>varLV" + _varnum.ToString();
-        }
+        private int _enumeratorNum = 0;
 
         private VarNames NewVarNames(ident name)
         {
@@ -49,6 +44,12 @@ namespace SyntaxVisitors
                 VarName = "$" + name.name + _varnum,
                 VarEndName = "<>varLV" + _varnum
             };
+        }
+
+        private ident NewEnumeratorName()
+        {
+            ++_enumeratorNum;
+            return "$enumerator$" + _enumeratorNum;
         }
 
         public static void Accept(procedure_definition pd)
@@ -67,13 +68,149 @@ namespace SyntaxVisitors
 
 
 
-        // frninja 21/05/16
-        /*public override void visit(foreach_stmt frch)
+        public override void visit(yield_unknown_foreach_type _unk)
         {
-            ProcessNode(frch.stmt);
-            
+            // DO NOTHING
+        }
 
-        }*/
+        public override void visit(yield_unknown_foreach_type_ident _unk)
+        {
+            // DO NOTHING
+        }
+
+        // frninja 21/05/16
+        public override void visit(foreach_stmt frch)
+        {
+            var enumeratorIdent = this.NewEnumeratorName();
+
+            // Переменная цикла
+            var currentIdent = frch.identifier;
+            type_definition currentIdentType = null;
+
+            // Новое тело
+            var stl = new statement_list();
+
+            // С типом
+            if (frch.type_name == null)
+            {
+                // Внешнее имя, создавать ниче не надо
+            }
+            else
+            {
+                // var имеет место быть
+                if (frch.type_name is no_type_foreach)
+                {
+                    // автовывод
+                    currentIdentType = new yield_unknown_foreach_type(frch);
+                }
+                else
+                {
+                    currentIdentType = frch.type_name;
+                }
+
+                // Получаем служебное имя с $ и заменяем его в теле цикла
+                currentIdent = this.NewVarNames(frch.identifier).VarName;
+                var replacerVis = new ReplaceVariableNameVisitor(frch.identifier, currentIdent);
+                frch.visit(replacerVis);
+
+
+                // Создаем переменную цикла и добавляем в stl
+                stl.Add(new var_statement(currentIdent, currentIdentType));
+
+            }
+
+            // Добавляем $current$ = $enumerator$.Current
+            //stl.Add(new assign(currentIdent, new dot_node(enumeratorIdent, "Current")));
+            stl.Add(new assign(currentIdent, new method_call(new yield_unknown_foreach_type_ident(frch), new expression_list(new dot_node(enumeratorIdent, "Current")))));
+
+
+            // Добавляем тело цикла в stl
+            ProcessNode(frch.stmt);
+            stl.Add(frch.stmt);
+
+            var whileNode = new while_node(new method_call(new dot_node(enumeratorIdent, "MoveNext"), new expression_list()),
+                stl,
+                WhileCycleType.While);
+
+            ReplaceStatement(frch,
+                SeqStatements(new var_statement(enumeratorIdent,
+                                    new named_type_reference("System.Collections.IEnumerator"),
+                // НЕБЕЗОПАСНО!
+                                    new method_call(new dot_node(frch.in_what as addressed_value, new ident("GetEnumerator")), new expression_list())),
+                              whileNode));
+
+        }
+
+        private expression CreateConditionFromCaseVariant(expression param, expression_list list)
+        {
+            var res = list.expressions.Aggregate(new bool_const(false) as expression, (acc, expr) =>
+                {
+                    bin_expr currentExpr = null;
+                    diapason_expr diap = expr as diapason_expr;
+                    if (diap != null)
+                    {
+                        currentExpr = new bin_expr(new bin_expr(param, diap.left, Operators.GreaterEqual),
+                            new bin_expr(param, diap.right, Operators.LessEqual),
+                            Operators.LogicalAND);
+                    }
+                    else
+                    {
+                        currentExpr = new bin_expr(param, expr, Operators.Equal);
+                    }
+
+                    return new bin_expr(acc, currentExpr, Operators.LogicalOR);
+                });
+
+            return res;
+        }
+
+        // frninja 30/05/16
+        public override void visit(case_node csn)
+        {
+            var b = HasStatementVisitor<yield_node>.Has(csn);
+            if (!b)
+                return;
+            
+            /*
+             * 
+             * case i of
+             *   cv1: bla1;
+             *   cv2: bla2;
+             *   ..
+             *   cvN: blaN;
+             * else: bla_else;
+             * 
+             * --->
+             * 
+             * if i satisfy cv1 
+             *   then bla1
+             * else if i satisfy cv2
+             *   then bla2
+             * ..
+             * else if i satisfy cvN
+             *   then blaN
+             * else bla_else
+             * 
+            */
+
+            if_node currentIfNode = null;
+            statement currentIfElseClause = (csn.else_statement != null) ? csn.else_statement :new statement_list(new empty_statement()); ;
+            
+            for (int i = csn.conditions.variants.Count - 1; i >= 0; --i)
+            {
+                case_variant cv = csn.conditions.variants[i];
+
+                ProcessNode(cv.exec_if_true);
+
+                var ifCondition = this.CreateConditionFromCaseVariant(csn.param, cv.conditions);
+                currentIfNode = new if_node(ifCondition, new statement_list(cv.exec_if_true), new statement_list(currentIfElseClause));
+                currentIfElseClause = currentIfNode;
+            }
+
+            if_node finalIfNode = currentIfNode;
+
+            ReplaceStatement(csn, finalIfNode);
+        }
 
         public override void visit(if_node ifn)
         {
@@ -179,7 +316,7 @@ namespace SyntaxVisitors
             var newLoopVar = fn.create_loop_variable ? new ident(newNames.VarName) : fn.loop_variable;
 
             // Нужно заменить fn.loop_variable -> newLoopVar в теле цикла
-            var replacerVis = new ReplaceForVariableVisitor(fn.loop_variable, newLoopVar);
+            var replacerVis = new ReplaceVariableNameVisitor(fn.loop_variable, newLoopVar);
             fn.visit(replacerVis);
 
             fn.loop_variable = newLoopVar;

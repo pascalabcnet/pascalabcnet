@@ -11,8 +11,6 @@ end;
 
 
 begin
-  //var a := Arr(1,2,3);
-  //System.Linq.Enumerable.Select(a,x->x); - жаль - пока не работает. Закомментил чтобы тесты не падали
   var a := Arr(1,2,3);
   var seq := System.Linq.Enumerable.Select(a,x->x*2);
   //a.Reverse.Print;

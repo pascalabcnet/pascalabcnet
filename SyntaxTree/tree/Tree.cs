@@ -32039,6 +32039,271 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///Узел для вычисления типа переменной используемой в теле foreach (с yield)
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_foreach_type : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_foreach_type()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type(foreach_stmt _unknown_foreach)
+		{
+			this._unknown_foreach=_unknown_foreach;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type(foreach_stmt _unknown_foreach,SourceContext sc)
+		{
+			this._unknown_foreach=_unknown_foreach;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type(type_definition_attr_list _attr_list,foreach_stmt _unknown_foreach)
+		{
+			this._attr_list=_attr_list;
+			this._unknown_foreach=_unknown_foreach;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type(type_definition_attr_list _attr_list,foreach_stmt _unknown_foreach,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			this._unknown_foreach=_unknown_foreach;
+			source_context = sc;
+		}
+
+		protected foreach_stmt _unknown_foreach;
+
+		///<summary>
+		///
+		///</summary>
+		public foreach_stmt unknown_foreach
+		{
+			get
+			{
+				return _unknown_foreach;
+			}
+			set
+			{
+				_unknown_foreach=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+					case 1:
+						return unknown_foreach;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
+						break;
+					case 1:
+						unknown_foreach = (foreach_stmt)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел для приведения типа enumerator.Current к типу переменной цикла foreach
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_foreach_type_ident : ident
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_foreach_type_ident()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach)
+		{
+			this._unknown_foreach=_unknown_foreach;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach,SourceContext sc)
+		{
+			this._unknown_foreach=_unknown_foreach;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type_ident(string _name,foreach_stmt _unknown_foreach)
+		{
+			this._name=_name;
+			this._unknown_foreach=_unknown_foreach;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type_ident(string _name,foreach_stmt _unknown_foreach,SourceContext sc)
+		{
+			this._name=_name;
+			this._unknown_foreach=_unknown_foreach;
+			source_context = sc;
+		}
+
+		protected foreach_stmt _unknown_foreach;
+
+		///<summary>
+		///
+		///</summary>
+		public foreach_stmt unknown_foreach
+		{
+			get
+			{
+				return _unknown_foreach;
+			}
+			set
+			{
+				_unknown_foreach=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return unknown_foreach;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						unknown_foreach = (foreach_stmt)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 
