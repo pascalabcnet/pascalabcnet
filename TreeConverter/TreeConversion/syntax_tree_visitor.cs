@@ -3704,7 +3704,7 @@ namespace PascalABCCompiler.TreeConverter
                         // frninja 20/05/16 - ставим флаг is_yield_helper
                         if (sd is SyntaxTree.procedure_definition)
                         {
-                            cmn.is_yield_helper = (sd as SyntaxTree.procedure_definition).is_yield_helper;
+                            cmn.is_yield_helper = (sd as SyntaxTree.procedure_definition).proc_header.is_yield_helper;
                         }
                         // end frninja
 
@@ -11408,7 +11408,7 @@ namespace PascalABCCompiler.TreeConverter
             // frninja 20/05/16 - ставим флаг is_yield_helper
             if (context.top_function is common_namespace_function_node)
             {
-                (context.top_function as common_namespace_function_node).is_yield_helper = _procedure_definition.is_yield_helper;
+                (context.top_function as common_namespace_function_node).is_yield_helper = _procedure_definition.proc_header.is_yield_helper;
             }
             // end frninja
 
@@ -11446,6 +11446,12 @@ namespace PascalABCCompiler.TreeConverter
                     if (must_visit_body)
                     {
                         common_method_node cmn = context.top_function as common_method_node;
+
+                        // frninja 3/06/16 - ставим флаг is_yield_helper для предописанных методов класса
+                        if (cmn != null)
+                            cmn.is_yield_helper = _procedure_definition.proc_header.is_yield_helper;
+                        // end frninja
+
                         if (cmn != null && !cmn.IsStatic)
                         {
                             //if (cmn.find_only_in_namespace(compiler_string_consts.self_word) == null)
