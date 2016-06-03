@@ -88,9 +88,13 @@ namespace CodeCompletion
 			}
 			else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
 			{
-				if (by_dot) 
-                    if (((returned_scope as ElementScope).sc as ProcScope).return_type != null) 
-                        returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type);
+                ProcScope ps = (returned_scope as ElementScope).sc as ProcScope;
+                TypeScope return_type = ps.return_type;
+                if (ps.is_constructor)
+                    return_type = ps.declaringType;
+                if (by_dot) 
+                    if (return_type != null) 
+                        returned_scope = new ElementScope(return_type);
 					else 
                         returned_scope = null;
 			}
@@ -101,14 +105,18 @@ namespace CodeCompletion
                     returned_scope = new ElementScope(invoke_meth.return_type);
             }
             else if (returned_scope != null && returned_scope is ProcScope)
-                if ((returned_scope as ProcScope).return_type == null)
+            {
+                ProcScope ps = returned_scope as ProcScope;
+                TypeScope return_type = ps.return_type;
+                if (ps.is_constructor)
+                    return_type = ps.declaringType;
+                if (return_type == null)
                 {
                     if (by_dot) returned_scope = null;
                 }
-                else if (by_dot) 
-                    returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
-				
-				//else ret_scope = (ret_scope as ElementScope).sc as ProcScope;
+                else if (by_dot)
+                    returned_scope = new ElementScope(return_type);
+            }
 			return returned_scope;
 		}
 
@@ -723,9 +731,13 @@ namespace CodeCompletion
 			}
 			else if (returned_scope != null && returned_scope is ProcScope)
 			{
-				if ((returned_scope as ProcScope).return_type == null) 
+                ProcScope ps = returned_scope as ProcScope;
+				if (ps.return_type == null) 
 				{
-					returned_scope = null;
+                    if (ps.is_constructor)
+                        returned_scope = new ElementScope(ps.declaringType);
+                    else
+					    returned_scope = null;
 				}
 				else 
 					returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
@@ -924,9 +936,12 @@ namespace CodeCompletion
 					ps = returned_scope as ProcScope;
 					if (by_dot)
 					{
-						if (ps.return_type != null)
-							returned_scope = new ElementScope(ps.return_type);
-						else returned_scope = null;
+                        if (ps.return_type != null)
+                            returned_scope = new ElementScope(ps.return_type);
+                        else if (ps.is_constructor)
+                            returned_scope = new ElementScope(ps.declaringType);
+                        else
+                            returned_scope = null;
 					}
 					else
 						returned_scope = new ElementScope(ps);
