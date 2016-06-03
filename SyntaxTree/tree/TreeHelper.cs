@@ -1401,5 +1401,10 @@ namespace PascalABCCompiler.SyntaxTree
     // end frninja
 
 
+    // SSM 02/06/16 - пробуем добавить кеш для семантического выражения
+    public partial class expression
+    {
+    }
+
 }
 

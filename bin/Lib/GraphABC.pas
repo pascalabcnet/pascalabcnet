@@ -333,6 +333,12 @@ procedure DrawTextCentered(x,y,x1,y1: integer; s: string);
 procedure DrawTextCentered(x,y,x1,y1: integer; n: integer); 
 /// Выводит вещественное значение r, отцентрированное в прямоугольнике с координатами (x,y,x1,y1)
 procedure DrawTextCentered(x,y,x1,y1: integer; r: real); 
+/// Выводит строку s, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; s: string); 
+/// Выводит целое n, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; n: integer); 
+/// Выводит вещественное r, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; r: real); 
 /// Заливает область одного цвета цветом c, начиная с точки (x,y).
 procedure FloodFill(x,y: integer; c: Color);
 
@@ -837,7 +843,7 @@ type
 
 /// Тип рисунка GraphABC
   Picture = class
-  private
+  public
     bmp,savedbmp: Bitmap;
     gb: Graphics;
     istransp: boolean;
@@ -2570,6 +2576,30 @@ begin
 
   DrawTextCentered(x,y,x1,y1,r.ToString(nfi));  
 end;
+
+procedure DrawTextCentered(x,y: integer; s: string); 
+begin
+  Monitor.Enter(f);
+  if NotLockDrawing then
+    DrawTextCentered(x,y,s,gr);
+  if DrawInBuffer then   
+    DrawTextCentered(x,y,s,gbmp);
+  Monitor.Exit(f);
+end;
+
+procedure DrawTextCentered(x,y: integer; n: integer); 
+begin
+  DrawTextCentered(x,y,n.ToString);  
+end;
+
+procedure DrawTextCentered(x,y: integer; r: real); 
+begin
+  var nfi := new System.Globalization.NumberFormatInfo();
+  nfi.NumberGroupSeparator := '.';
+
+  DrawTextCentered(x,y,r.ToString(nfi));  
+end;
+
 
 function Pnt(x,y: integer): Point;
 begin

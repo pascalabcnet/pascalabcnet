@@ -817,6 +817,7 @@ namespace PascalABCCompiler.TreeConverter
             expression_node en = ret.visit(expr);
 
             //en.loc=get_location(expr);
+
             return en;
         }
 
