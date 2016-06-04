@@ -726,7 +726,35 @@ namespace SyntaxVisitors
             return false;
         }
 
-        
+        /// <summary>
+        /// Вставляет предописание метода-итератора для рекурсивных вызовов, если метод описан вне класса
+        /// </summary>
+        private void InsertGlobalIteratorMethodPredefinition(procedure_definition pd)
+        {
+            if (IsClassMethod(pd))
+            {
+                return;
+            }
+
+            bool isPredefined = UpperTo<declarations>().defs
+                .OfType<procedure_definition>()
+                .Where(lpd => lpd.proc_body == null
+                        && lpd.proc_header.name.meth_name.name == pd.proc_header.name.meth_name.name
+                        && lpd.proc_header.proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_forward) != -1)
+                .Count() > 0;
+
+            if (!isPredefined)
+            {
+
+                var fh = ObjectCopier.Clone(pd.proc_header as function_header);
+                fh.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
+
+                procedure_definition predef = new procedure_definition() { proc_header = fh };
+
+
+                UpperTo<declarations>().AddFirst(predef);
+            }
+        }
 
         public override void visit(procedure_definition pd)
         {
@@ -751,6 +779,9 @@ namespace SyntaxVisitors
 
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
             CreateErrorCheckerHelper(pd);
+            
+            // frninja 05/06/16 - вставляем предописание если метод-итератор описан не в классе (обычная функция) чтоб работали рекурсивные вызовы
+            InsertGlobalIteratorMethodPredefinition(pd);
 
             // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
             AddBeginEndsVisitor addBeginEndsVis = new AddBeginEndsVisitor();
