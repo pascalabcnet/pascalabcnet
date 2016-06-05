@@ -31542,79 +31542,23 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_ident(ident _UnknownID,ident _ClassName)
-		{
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_ident(ident _UnknownID,ident _ClassName,SourceContext sc)
-		{
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName)
+		public yield_unknown_ident(string _name)
 		{
 			this._name=_name;
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName,SourceContext sc)
+		public yield_unknown_ident(string _name,SourceContext sc)
 		{
 			this._name=_name;
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
 			source_context = sc;
 		}
-
-		protected ident _UnknownID;
-		protected ident _ClassName;
-
-		///<summary>
-		///
-		///</summary>
-		public ident UnknownID
-		{
-			get
-			{
-				return _UnknownID;
-			}
-			set
-			{
-				_UnknownID=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public ident ClassName
-		{
-			get
-			{
-				return _ClassName;
-			}
-			set
-			{
-				_ClassName=value;
-			}
-		}
-
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -31623,7 +31567,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
@@ -31633,7 +31577,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
@@ -31645,28 +31589,12 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return UnknownID;
-					case 1:
-						return ClassName;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						UnknownID = (ident)value;
-						break;
-					case 1:
-						ClassName = (ident)value;
-						break;
-				}
 			}
 		}
 		///<summary>
