@@ -324,9 +324,13 @@ namespace SyntaxVisitors
             var endtemp = new ident(newNames.VarEndName); //new ident(newVarName());
 
             //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
-            var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
             //var ass2 = new var_statement(endtemp, fn.type_name, fn.finish_value);
 
+            // frninja 05/06/16 - фиксим для !fn.create_variable
+            var ass1 = fn.create_loop_variable
+                ? new var_statement(fn.loop_variable, fn.type_name, fn.initial_value) as statement
+                : new assign(fn.loop_variable, fn.initial_value) as statement;
 
 
             var if0 = new if_node((fn.cycle_type == for_cycle_type.to) ?
