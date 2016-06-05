@@ -503,11 +503,14 @@ namespace SyntaxVisitors
         {
             // Клонируем исходный метод для проверок ошибок бэкендом
             var pdCloned = ObjectCopier.Clone(pd);
+
             pdCloned.has_yield = false;
 
 
             // Добавляем в класс метод с обертками для локальных переменных
-            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name,
+                // frninja 05/06/16 - фиксим source_context
+                pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
             //pdCloned.is_yield_helper = true;
 
             InsertHelperMethod(pd, pdCloned);
@@ -524,6 +527,7 @@ namespace SyntaxVisitors
 
             // Клонируем исходный метод для вставки оберток-хелперов для локальных переменных и дальнейшей обработки на семантике
             var pdCloned = ObjectCopier.Clone(pd);
+
             pdCloned.has_yield = false;
 
             // Заменяем локальные переменные с неизвестным типом на обертки-хелперы (откладываем до семантики)
@@ -538,7 +542,9 @@ namespace SyntaxVisitors
             localsClonesCollection = localsTypeDetectorHelperVisitor.LocalDeletedDefs.ToArray();
 
             // Добавляем в класс метод с обертками для локальных переменных
-            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name,
+                // frninja 05/06/16 - фиксим source_context
+                pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
             //pdCloned.is_yield_helper = true;
 
             InsertHelperMethod(pd, pdCloned);
