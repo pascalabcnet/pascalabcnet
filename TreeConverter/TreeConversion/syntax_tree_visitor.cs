@@ -18945,6 +18945,26 @@ namespace PascalABCCompiler.TreeConverter
 
         // frninja 04/03/16 - для yield
 
+        // frninja 06/06/16 - фикс для видимости private методов и полей с классов в том же модуле
+        private unit_node GetUnknownIdentUnit(definition_node dn)
+        {
+            if (dn is class_field)
+            {
+                return (dn as class_field).cont_type.comprehensive_namespace.cont_unit;
+            }
+            else if (dn is common_method_node)
+            {
+                return (dn as common_method_node).cont_type.comprehensive_namespace.cont_unit;
+            }
+            else if (dn is common_property_node)
+            {
+                return (dn as common_property_node).common_comprehensive_type.comprehensive_namespace.cont_unit;
+            }
+
+            return null;
+        }
+        // end frninja 06/06/16
+
         private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk)
         {
             string Consts__Self = YieldHelpers.YieldConsts.Self;
@@ -18975,7 +18995,13 @@ namespace PascalABCCompiler.TreeConverter
                         || found.sym_info is compiled_function_node
                         || found.sym_info is compiled_property_node)
                     {
-                        if (found.access_level != access_level.al_private)
+                        // frninja 06/06/16 - фиксим private того же модуля
+                        if ((iteratorContainingClass is common_type_node) 
+                            && this.GetUnknownIdentUnit(found.sym_info) == (iteratorContainingClass as common_type_node).comprehensive_namespace.cont_unit)
+                        {
+                            return true;
+                        }
+                        else if (found.access_level != access_level.al_private)
                         {
                             return true;
                         }
