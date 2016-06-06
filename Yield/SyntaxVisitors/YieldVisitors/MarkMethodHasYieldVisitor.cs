@@ -27,6 +27,25 @@ namespace SyntaxVisitors
             this.CurrentMethod = null;
         }
 
+        public override void visit(ident id)
+        {
+            if (CurrentMethod == null || !HasYields)
+            {
+                return;
+            }
+            if (id.name.ToLower() == "result")
+            {
+                throw new SyntaxError("Функции с yield не могут использовать result", "", id.source_context, id);
+            }
+        }
+
+        public override void visit(dot_node dn)
+        {
+            ProcessNode(dn.left);
+            if (dn.right.GetType() != typeof(ident))
+                ProcessNode(dn.right);
+        }
+
         public override void visit(yield_node yn)
         {
             var pd = CurrentMethod;
@@ -49,6 +68,8 @@ namespace SyntaxVisitors
                 }
 
             HasYields = true;
+
+            base.visit(yn);
         }
     }
 }
