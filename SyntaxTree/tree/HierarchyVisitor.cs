@@ -3576,8 +3576,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_ident);
 			pre_do_visit(_yield_unknown_ident);
-			visit(yield_unknown_ident.UnknownID);
-			visit(yield_unknown_ident.ClassName);
 			post_do_visit(_yield_unknown_ident);
 		}
 

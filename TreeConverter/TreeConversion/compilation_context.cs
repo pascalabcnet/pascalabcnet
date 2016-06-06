@@ -914,12 +914,6 @@ namespace PascalABCCompiler.TreeConverter
 
         public void leave_type_method()
         {
-            // frninja 03/06/16 - убираем мусорные методы-хелперы yield
-            if (_ctn != null && (top_function is common_method_node) && (top_function as common_method_node).is_yield_helper)
-            {
-                _ctn.methods.remove(top_function as common_method_node);
-            }
-            // end frninja
             if (_explicit_interface_type != null)
             {
                 function_node fn = top_function;

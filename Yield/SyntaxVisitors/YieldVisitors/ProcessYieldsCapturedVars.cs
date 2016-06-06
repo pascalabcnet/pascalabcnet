@@ -254,8 +254,15 @@ namespace SyntaxVisitors
             interfaces1.Add(IEnumerableT).Add(IEnumeratorT);
 
             // frninja 24/04/16 - поддержка шаблонных классов
-            var td1 = new type_declaration(className, this.CreateHelperClassDefinition(className, pd, interfaces1, cm1));
+
+            // frninja 05/06/16 - фикс. Поддержка where секции
+            var helperClassDefinition = this.CreateHelperClassDefinition(className, pd, interfaces1, cm1);
+            helperClassDefinition.where_section = this.GetMethodWhereSection(pd);
+
+            var td1 = new type_declaration(className, helperClassDefinition);
                 //SyntaxTreeBuilder.BuildClassDefinition(interfaces1, cm1));
+
+            
 
             var cct = new type_declarations(/*td*/);
             cct.Add(td1);
@@ -350,6 +357,67 @@ namespace SyntaxVisitors
                     {
                         return td.type_name;
                     }
+                }
+            }
+
+            return null;
+        }
+
+        private class_definition GetMethodClassDefinition(procedure_definition pd)
+        {
+            if (!IsClassMethod(pd))
+            {
+                return null;
+            }
+
+            var cd = UpperTo<class_definition>();
+            if (cd != null)
+            {
+                // Метод класса описан в классе
+                return cd;
+            }
+            else
+            {
+                // Метод класса описан вне класса
+
+                return UpperTo<declarations>().list
+                    .OfType<type_declarations>()
+                    .SelectMany(tdecls => tdecls.types_decl)
+                    .Where(td => td.type_name.name == GetClassName(pd).name)
+                    .Select(td => td.type_def as class_definition)
+                    .Where(_cd => _cd != null)
+                    .DefaultIfEmpty()
+                    .First();
+            }
+        }
+
+        private where_definition_list GetMethodWhereSection(procedure_definition pd)
+        {
+            if (!IsClassMethod(pd))
+            {
+                if (pd.proc_header.where_defs != null)
+                {
+                    return ObjectCopier.Clone(pd.proc_header.where_defs);
+                }
+                else
+                {
+                    var pdPredefs = UpperTo<declarations>().defs
+                        .OfType<procedure_definition>()
+                        .Where(lpd => lpd.proc_body == null
+                                && lpd.proc_header.name.meth_name.name == pd.proc_header.name.meth_name.name
+                                && lpd.proc_header.proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_forward) != -1);
+                    if (pdPredefs.Count() > 0)
+                    {
+                        return ObjectCopier.Clone(pdPredefs.First().proc_header.where_defs);
+                    }
+                }
+            }
+            else
+            {
+                class_definition cd = GetMethodClassDefinition(pd);
+                if (cd != null)
+                {
+                    return ObjectCopier.Clone(cd.where_section);
                 }
             }
 
@@ -503,11 +571,14 @@ namespace SyntaxVisitors
         {
             // Клонируем исходный метод для проверок ошибок бэкендом
             var pdCloned = ObjectCopier.Clone(pd);
+
             pdCloned.has_yield = false;
 
 
             // Добавляем в класс метод с обертками для локальных переменных
-            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix + "_error_checkerr>" + pd.proc_header.name.meth_name.name,
+                // frninja 05/06/16 - фиксим source_context
+                pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
             //pdCloned.is_yield_helper = true;
 
             InsertHelperMethod(pd, pdCloned);
@@ -524,6 +595,7 @@ namespace SyntaxVisitors
 
             // Клонируем исходный метод для вставки оберток-хелперов для локальных переменных и дальнейшей обработки на семантике
             var pdCloned = ObjectCopier.Clone(pd);
+
             pdCloned.has_yield = false;
 
             // Заменяем локальные переменные с неизвестным типом на обертки-хелперы (откладываем до семантики)
@@ -538,7 +610,9 @@ namespace SyntaxVisitors
             localsClonesCollection = localsTypeDetectorHelperVisitor.LocalDeletedDefs.ToArray();
 
             // Добавляем в класс метод с обертками для локальных переменных
-            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
+            pdCloned.proc_header.name.meth_name = new ident(YieldConsts.YieldHelperMethodPrefix+ "_locals_type_detector>" + pd.proc_header.name.meth_name.name,
+                // frninja 05/06/16 - фиксим source_context
+                pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
             //pdCloned.is_yield_helper = true;
 
             InsertHelperMethod(pd, pdCloned);
@@ -726,7 +800,42 @@ namespace SyntaxVisitors
             return false;
         }
 
-        
+        /// <summary>
+        /// Вставляет предописание метода-итератора для рекурсивных вызовов, если метод описан вне класса
+        /// </summary>
+        private bool InsertGlobalIteratorMethodPredefinition(procedure_definition pd)
+        {
+            if (IsClassMethod(pd))
+            {
+                return false;
+            }
+
+            var pdPredefs = UpperTo<declarations>().defs
+                .OfType<procedure_definition>()
+                .Where(lpd => lpd.proc_body == null
+                        && lpd.proc_header.name.meth_name.name == pd.proc_header.name.meth_name.name
+                        && lpd.proc_header.proc_attributes.proc_attributes.FindIndex(attr => attr.attribute_type == proc_attribute.attr_forward) != -1);
+
+
+            bool isPredefined = pdPredefs.Count() > 0;
+
+            if (!isPredefined)
+            {
+
+                var fh = ObjectCopier.Clone(pd.proc_header as function_header);
+                fh.proc_attributes.Add(new procedure_attribute(proc_attribute.attr_forward));
+
+                procedure_definition predef = new procedure_definition() { proc_header = fh };
+                // frninja 05/06/16 - для шаблонов с where
+                predef.proc_header.where_defs = ObjectCopier.Clone(pd.proc_header.where_defs);
+
+                UpperTo<declarations>().AddFirst(predef);
+
+                return true;
+            }
+
+            return false;
+        }
 
         public override void visit(procedure_definition pd)
         {
@@ -751,6 +860,9 @@ namespace SyntaxVisitors
 
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
             CreateErrorCheckerHelper(pd);
+            
+            // frninja 05/06/16 - вставляем предописание если метод-итератор описан не в классе (обычная функция) чтоб работали рекурсивные вызовы
+            bool methodPredefCreated = InsertGlobalIteratorMethodPredefinition(pd);
 
             // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
             AddBeginEndsVisitor addBeginEndsVis = new AddBeginEndsVisitor();
@@ -820,6 +932,12 @@ namespace SyntaxVisitors
 
             // frninja 20/05/16 - фикс для повторного обхода
             pd.has_yield = false;
+
+            // frninja 05/06/16 - убираем where-секцию у описания метода. Они уже скопированы куда надо
+            if (methodPredefCreated)
+            {
+                pd.proc_header.where_defs = null;
+            }
 
             //mids = null; // вдруг мы выйдем из процедуры, не зайдем в другую, а там - оператор! Такого конечно не может быть
         }

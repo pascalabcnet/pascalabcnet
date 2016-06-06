@@ -1447,6 +1447,45 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class yield_unknown_ident : ident
+    {
+        protected ident _UnknownID;
+        protected ident _ClassName;
+
+        public ident UnknownID
+        {
+            get { return _UnknownID; }
+            set { _UnknownID = value; }
+        }
+
+        public ident ClassName
+        {
+            get { return _ClassName; }
+            set { _ClassName = value; }
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_ident(ident _UnknownID, ident _ClassName)
+        {
+            this._name = _UnknownID.name;
+            this._UnknownID = _UnknownID;
+            this._ClassName = _ClassName;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_ident(ident _UnknownID, ident _ClassName, SourceContext sc)
+        {
+            this._name = _UnknownID.name;
+            this._UnknownID = _UnknownID;
+            this._ClassName = _ClassName;
+            source_context = sc;
+        }
+    }
+
     // end frninja
 
 

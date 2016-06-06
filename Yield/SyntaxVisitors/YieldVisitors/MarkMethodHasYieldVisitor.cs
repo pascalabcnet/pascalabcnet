@@ -19,6 +19,8 @@ namespace SyntaxVisitors
         {
             this.CurrentMethod = pd;
 
+            HasYields = false;
+
             base.visit(pd);
             pd.has_yield = HasYields;
 
