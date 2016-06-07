@@ -13420,7 +13420,8 @@ namespace PascalABCCompiler.TreeConverter
                 context.CurrentScope.Find((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name) == null)
             {
                 //это указатель на тип который еще не описан
-                if (!is_direct_type_decl) AddError(new UndefinedNameReference((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name,get_location(_ref_type.pointed_to)));
+                if (!is_direct_type_decl)
+                    AddError(new UndefinedNameReference((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name,get_location(_ref_type.pointed_to)));
                 return_value(GetWaitedRefType((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name, get_location(_ref_type.pointed_to)));
             }
             else
@@ -17725,6 +17726,7 @@ namespace PascalABCCompiler.TreeConverter
             foreach (ref_type_node rtn in WaitedRefTypes.Values)
             	CheckForCircularityInPointers(rtn, rtn.pointed_type,rtn.loc);
             ProcessRefTypesForCheckPointersTypeForDotNetFramework();
+            WaitedRefTypes.Clear();
         }
 
         internal void ProcessCheckPointersInRecord()

@@ -99,6 +99,7 @@
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
+    File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
@@ -143,6 +144,7 @@
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
+    ${AddFile} "OpenGL.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -188,6 +190,7 @@
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
+    File ..\bin\Lib\OpenGL.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -231,6 +234,7 @@
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
+    ${AddFile} "OpenGL.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
