@@ -13421,7 +13421,8 @@ namespace PascalABCCompiler.TreeConverter
                 context.CurrentScope.Find((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name) == null)
             {
                 //это указатель на тип который еще не описан
-                if (!is_direct_type_decl) AddError(new UndefinedNameReference((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name,get_location(_ref_type.pointed_to)));
+                if (!is_direct_type_decl)
+                    AddError(new UndefinedNameReference((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name,get_location(_ref_type.pointed_to)));
                 return_value(GetWaitedRefType((_ref_type.pointed_to as SyntaxTree.named_type_reference).names[0].name, get_location(_ref_type.pointed_to)));
             }
             else
@@ -17726,6 +17727,7 @@ namespace PascalABCCompiler.TreeConverter
             foreach (ref_type_node rtn in WaitedRefTypes.Values)
             	CheckForCircularityInPointers(rtn, rtn.pointed_type,rtn.loc);
             ProcessRefTypesForCheckPointersTypeForDotNetFramework();
+            WaitedRefTypes.Clear();
         }
 
         internal void ProcessCheckPointersInRecord()
@@ -18946,6 +18948,26 @@ namespace PascalABCCompiler.TreeConverter
 
         // frninja 04/03/16 - для yield
 
+        // frninja 06/06/16 - фикс для видимости private методов и полей с классов в том же модуле
+        private unit_node GetUnknownIdentUnit(definition_node dn)
+        {
+            if (dn is class_field)
+            {
+                return (dn as class_field).cont_type.comprehensive_namespace.cont_unit;
+            }
+            else if (dn is common_method_node)
+            {
+                return (dn as common_method_node).cont_type.comprehensive_namespace.cont_unit;
+            }
+            else if (dn is common_property_node)
+            {
+                return (dn as common_property_node).common_comprehensive_type.comprehensive_namespace.cont_unit;
+            }
+
+            return null;
+        }
+        // end frninja 06/06/16
+
         private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk)
         {
             string Consts__Self = YieldHelpers.YieldConsts.Self;
@@ -18976,7 +18998,13 @@ namespace PascalABCCompiler.TreeConverter
                         || found.sym_info is compiled_function_node
                         || found.sym_info is compiled_property_node)
                     {
-                        if (found.access_level != access_level.al_private)
+                        // frninja 06/06/16 - фиксим private того же модуля
+                        if ((iteratorContainingClass is common_type_node) 
+                            && this.GetUnknownIdentUnit(found.sym_info) == (iteratorContainingClass as common_type_node).comprehensive_namespace.cont_unit)
+                        {
+                            return true;
+                        }
+                        else if (found.access_level != access_level.al_private)
                         {
                             return true;
                         }
