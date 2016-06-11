@@ -5,7 +5,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace TreeConverter.LambdaExpressions
 {
-    internal class LambdaSearcher : WalkingVisitorNew
+    public class LambdaSearcher : WalkingVisitorNew
     {
         private readonly syntax_tree_node _treeNodeToProcess;
         private class LambdaIsFound : Exception { }

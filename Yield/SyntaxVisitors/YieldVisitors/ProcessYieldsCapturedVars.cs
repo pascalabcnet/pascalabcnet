@@ -858,8 +858,7 @@ namespace SyntaxVisitors
             //if (!hasYields) // т.е. мы разобрали функцию и уже выходим. Это значит, что пока yield будет обрабатываться только в функциях. Так это и надо.
             //    return;
 
-            // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
-            CreateErrorCheckerHelper(pd);
+            
             
             // frninja 05/06/16 - вставляем предописание если метод-итератор описан не в классе (обычная функция) чтоб работали рекурсивные вызовы
             bool methodPredefCreated = InsertGlobalIteratorMethodPredefinition(pd);
@@ -883,6 +882,12 @@ namespace SyntaxVisitors
             // Переименовываем одинаковые имена в мини-ПИ
             RenameSameBlockLocalVarsVisitor renameLocalsVisitor = new RenameSameBlockLocalVarsVisitor();
             pd.visit(renameLocalsVisitor);
+
+            ReplaceYieldWithLamdasVisitor replaceYieldWithLabdaVis = new ReplaceYieldWithLamdasVisitor();
+            pd.visit(replaceYieldWithLabdaVis);
+
+            // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
+            CreateErrorCheckerHelper(pd);
 
             // Теперь lowering
             LoweringVisitor.Accept(pd);

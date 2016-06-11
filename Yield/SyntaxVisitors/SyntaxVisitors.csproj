@@ -74,6 +74,7 @@
     <Compile Include="YieldVisitors\ReplaceCapturedVariablesVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceFormalParametersRefsVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceVariableNameVisitor.cs" />
+    <Compile Include="YieldVisitors\ReplaceYieldWithLamdasVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Compiler\Compiler.csproj">
@@ -91,6 +92,10 @@
     <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TreeConverter\TreeConverter.csproj">
+      <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
+      <Name>TreeConverter</Name>
     </ProjectReference>
     <ProjectReference Include="..\YieldHelpers\YieldHelpers.csproj">
       <Project>{ce5c55c2-a11c-4e94-a9fa-3fc6ca3e4c09}</Project>
