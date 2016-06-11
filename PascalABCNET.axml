@@ -757,6 +757,39 @@
           </i>
         </OCtx>
       </Node>
+      <Node Name="ObjectCopier.Clone">
+        <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+        <Text>function_header nfh = ObjectCopier.Clone(fh);</Text>
+        <OCtx>
+          <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap , IDictionary &lt; var_def_statement , var_def_statement &gt; localsCloneMap , yield_locals_type_map_helper localTypeMapHelper )</i>
+          <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+          <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name="visit_program_code(_block.program_code)">
+        <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+        <Text>visit_program_code(_block.program_code);</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . block _block )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name="lab.is_defined">
+        <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+        <Text>if (lab.is_defined)</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . labeled_statement _labeled_statement )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>

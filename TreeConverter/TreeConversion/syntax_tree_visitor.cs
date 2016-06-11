@@ -8308,10 +8308,12 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(get_location(_labeled_statement.label_name), "IDENT_{0}_IS_NOT_LABEL", _labeled_statement.label_name.name);
             }
-            if (lab.is_defined)
-            {
-                AddError(get_location(_labeled_statement.label_name), "LABEL_{0}_REDEFINED", _labeled_statement.label_name.name);
-            }
+            // SSM - Patch повторного определения меток в подпрограммах при наличии лямбд
+            if (lambdaProcessingState != LambdaProcessingState.FinishPhase)
+                if (lab.is_defined)
+                {
+                    AddError(get_location(_labeled_statement.label_name), "LABEL_{0}_REDEFINED", _labeled_statement.label_name.name);
+                }
             lab.is_defined = true;
             lab.comprehensive_code_block = context.block_stack.Peek();
             foreach (goto_statement gs in lab.goto_statements)
