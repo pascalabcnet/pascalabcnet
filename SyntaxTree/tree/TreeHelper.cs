@@ -1416,6 +1416,14 @@ namespace PascalABCCompiler.SyntaxTree
     // frninja 12/05/16 - хелперы для yield
     public partial class yield_unknown_expression_type : type_definition
     {
+        protected var_def_statement _Vds;
+
+        public var_def_statement Vds
+        {
+            get { return _Vds; }
+            set { _Vds = value; }
+        }
+
         public yield_locals_type_map_helper MapHelper { get; private set; }
 
         public yield_unknown_expression_type(var_def_statement vds, yield_locals_type_map_helper map_helper)

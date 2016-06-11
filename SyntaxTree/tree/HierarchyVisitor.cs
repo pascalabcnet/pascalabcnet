@@ -3583,7 +3583,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_expression_type);
 			pre_do_visit(_yield_unknown_expression_type);
-			visit(yield_unknown_expression_type.Vds);
 			post_do_visit(_yield_unknown_expression_type);
 		}
 

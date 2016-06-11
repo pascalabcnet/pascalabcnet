@@ -31625,59 +31625,23 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_expression_type(var_def_statement _Vds)
-		{
-			this._Vds=_Vds;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_expression_type(var_def_statement _Vds,SourceContext sc)
-		{
-			this._Vds=_Vds;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds)
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
-			this._Vds=_Vds;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds,SourceContext sc)
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list,SourceContext sc)
 		{
 			this._attr_list=_attr_list;
-			this._Vds=_Vds;
 			source_context = sc;
 		}
-
-		protected var_def_statement _Vds;
-
-		///<summary>
-		///
-		///</summary>
-		public var_def_statement Vds
-		{
-			get
-			{
-				return _Vds;
-			}
-			set
-			{
-				_Vds=value;
-			}
-		}
-
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -31686,7 +31650,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -31696,7 +31660,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -31712,8 +31676,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return Vds;
 				}
 				return null;
 			}
@@ -31725,9 +31687,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						Vds = (var_def_statement)value;
 						break;
 				}
 			}

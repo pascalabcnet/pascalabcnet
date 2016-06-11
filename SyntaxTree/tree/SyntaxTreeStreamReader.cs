@@ -3797,7 +3797,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_expression_type(yield_unknown_expression_type _yield_unknown_expression_type)
 		{
 			read_type_definition(_yield_unknown_expression_type);
-			_yield_unknown_expression_type.Vds = _read_node() as var_def_statement;
 		}
 
 

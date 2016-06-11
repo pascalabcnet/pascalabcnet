@@ -5944,15 +5944,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_yield_unknown_expression_type(yield_unknown_expression_type _yield_unknown_expression_type)
 		{
 			write_type_definition(_yield_unknown_expression_type);
-			if (_yield_unknown_expression_type.Vds == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_yield_unknown_expression_type.Vds.visit(this);
-			}
 		}
 
 
