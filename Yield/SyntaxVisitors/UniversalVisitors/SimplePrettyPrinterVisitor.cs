@@ -20,41 +20,49 @@ namespace SyntaxVisitors
 
         bool printNodeType = false;
 
+        string filename = null;
+
         public static SimplePrettyPrinterVisitor New
         {
             get { return new SimplePrettyPrinterVisitor(); }
         }
 
-        public SimplePrettyPrinterVisitor()
+        public SimplePrettyPrinterVisitor(string filename = null)
         {
             OnEnter = Enter;
             OnLeave = Exit;
+            this.filename = filename;
         }
 
         public void Println(string s)
         {
-            Console.Write(new string(' ', off));
-            Console.WriteLine(s);
+            Print(s + Environment.NewLine);
         }
         public void Print(string s)
         {
-            Console.Write(new string(' ', off));
-            Console.Write(s);
+            PrintNoOffset(new string(' ', off) + s);
         }
         public void PrintNoOffset(string s)
         {
-            Console.Write(s);
+            if (filename == null)
+            {
+                Console.Write(s);
+            }
+            else
+            {
+                System.IO.File.AppendAllText(filename, s);
+            }
         }
         public void PrintlnNoOffset(string s)
         {
-            Console.WriteLine(s);
+            PrintNoOffset(s + Environment.NewLine);
         }
 
         public void PrintlnNode(syntax_tree_node st)
         {
             if (printNodeType)
-                Console.Write(st.GetType().Name + ": ");
-            Console.WriteLine(new string(' ', off)+st);
+                PrintNoOffset(st.GetType().Name + ": ");
+            Println(""+st);
         }
         public virtual void Enter(syntax_tree_node st)
         {
@@ -83,6 +91,11 @@ namespace SyntaxVisitors
                 Print(td.type_name + " = ");
                 ProcessNode(td.type_def);
                 visitNode = false;
+            }
+            else if (st is procedure_definition)
+            {
+                //ProcessNode(st as procedure_definition);
+                visitNode = visitNode;
             }
             else if (st is class_definition)
             {
