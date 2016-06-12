@@ -253,27 +253,30 @@ namespace SyntaxVisitors
 
         public override void visit(repeat_node rn)
         {
-            ProcessNode(rn.statements);
-
             var b = HasStatementVisitor<yield_node>.Has(rn);
             if (!b)
                 return;
 
-            var gtContinue = goto_statement.New;
-            var gtBreak = goto_statement.New;
+            var gotoContinue = goto_statement.New;
+            var gotoBreak = goto_statement.New;
 
-            var lbContinue = new labeled_statement(gtContinue.label, rn.statements);
-            var lbBreak = new labeled_statement(gtBreak.label);
+            ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
+            rn.statements.visit(replaceBreakContinueVis);
 
-            var if0 = new if_node(un_expr.Not(rn.expr), gtContinue);
+            ProcessNode(rn.statements);
+
+            var gotoContinueIfNotCondition = new if_node(un_expr.Not(rn.expr), gotoContinue);
+            var continueLabeledStatement = new labeled_statement(gotoContinue.label, new statement_list(rn.statements, gotoContinueIfNotCondition));
+
+            var breakLabeledStatement = new labeled_statement(gotoBreak.label);
 
 
-            ReplaceStatement(rn, SeqStatements(lbContinue, if0, lbBreak));
+            ReplaceStatement(rn, SeqStatements(gotoContinue, continueLabeledStatement, breakLabeledStatement));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
 
-            bl.defs.Add(new label_definitions(gtContinue.label, gtBreak.label));
+            bl.defs.Add(new label_definitions(gotoContinue.label, gotoBreak.label));
 
         }
 
