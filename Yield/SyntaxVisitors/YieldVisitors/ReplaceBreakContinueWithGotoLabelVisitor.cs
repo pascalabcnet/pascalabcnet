@@ -25,7 +25,7 @@ namespace SyntaxVisitors
         {
             base.Enter(st);
             // Не заходим во вложенные циклы, там свои break-continue
-            if ((st is for_node || st is foreach_stmt || st is while_node || st is repeat_node || st is case_node))
+            if ((st is for_node || st is foreach_stmt || st is while_node || st is repeat_node))
             {
                 visitNode = false;
             }
