@@ -286,28 +286,24 @@ namespace SyntaxVisitors
             if (!b)
                 return;
 
-            var gotoStart = goto_statement.New;
-            var gotoContinue = goto_statement.New;
             var gotoBreak = goto_statement.New;
+            var gotoContinue = goto_statement.New;
 
             ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
             wn.statements.visit(replaceBreakContinueVis);
 
             ProcessNode(wn.statements);
 
-            var startLabeledStatement = new labeled_statement(gotoStart.label, wn.statements);
+            var if0 = new if_node(un_expr.Not(wn.expr), gotoBreak);
+            var lb2 = new labeled_statement(gotoContinue.label, if0); // continue
+            var lb1 = new labeled_statement(gotoBreak.label); // break
 
-            var gotoStartIfCondition = new if_node(wn.expr, gotoStart);
-
-            var continueLabeledStatement = new labeled_statement(gotoContinue.label, gotoStartIfCondition); // continue
-            var breakLabeledStatement = new labeled_statement(gotoBreak.label); // break
-
-            ReplaceStatement(wn, SeqStatements(gotoContinue, startLabeledStatement, continueLabeledStatement, breakLabeledStatement));
+            ReplaceStatement(wn, SeqStatements(lb2, wn.statements, gotoContinue, lb1));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
 
-            bl.defs.Add(new label_definitions(gotoStart.label, gotoContinue.label, gotoBreak.label));
+            bl.defs.Add(new label_definitions(gotoBreak.label, gotoContinue.label));
         }
 
         public override void visit(for_node fn)
