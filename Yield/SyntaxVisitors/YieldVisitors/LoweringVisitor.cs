@@ -227,7 +227,7 @@ namespace SyntaxVisitors
             if ((object)ifn.else_body == null)
             {
                 var if0 = new if_node(un_expr.Not(ifn.condition), gtAfter);
-                //Replace(ifn, SeqStatements(if0, ifn.then_body, lbAfter));
+                //Replace(ifn, SeqStatements(gotoStartIfCondition, ifn.then_body, lbAfter));
                 ReplaceStatement(ifn, SeqStatements(if0, ifn.then_body, lbAfter));
 
                 // в declarations ближайшего блока добавить описание labels
@@ -302,14 +302,33 @@ namespace SyntaxVisitors
 
         public override void visit(for_node fn)
         {
-            ProcessNode(fn.statements);
+            /*
+             * initializer;
+             * goto end;
+             * start:
+             *      body;
+             * continue:
+             *      increment;
+             * end:
+             *      GotoIfTrue condition start;
+             * break:
+
+             */
 
             var b = HasStatementVisitor<yield_node>.Has(fn);
             if (!b)
                 return;
 
-            var gt1 = goto_statement.New;
-            var gt2 = goto_statement.New;
+            var gotoStart = goto_statement.New;
+            var gotoEnd = goto_statement.New;
+            var gotoContinue = goto_statement.New;
+            var gotoBreak = goto_statement.New;
+
+            ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
+            fn.statements.visit(replaceBreakContinueVis);
+
+            ProcessNode(fn.statements);
+
 
             var newNames = this.NewVarNames(fn.loop_variable);
 
@@ -323,32 +342,35 @@ namespace SyntaxVisitors
 
             var endtemp = new ident(newNames.VarEndName); //new ident(newVarName());
 
-            //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
-            //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            //var initializer = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            //var initializer = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
             //var ass2 = new var_statement(endtemp, fn.type_name, fn.finish_value);
 
             // frninja 05/06/16 - фиксим для !fn.create_variable
-            var ass1 = fn.create_loop_variable
+            var initializer = fn.create_loop_variable
                 ? new var_statement(fn.loop_variable, fn.type_name, fn.initial_value) as statement
                 : new assign(fn.loop_variable, fn.initial_value) as statement;
 
 
-            var if0 = new if_node((fn.cycle_type == for_cycle_type.to) ?
-                bin_expr.Greater(fn.loop_variable, fn.finish_value) :
-                bin_expr.Less(fn.loop_variable, fn.finish_value), gt1);
+            var gotoStartIfCondition = new if_node((fn.cycle_type == for_cycle_type.to) ?
+                new bin_expr(fn.loop_variable, fn.finish_value, Operators.LessEqual) :
+                new bin_expr(fn.loop_variable, fn.finish_value, Operators.GreaterEqual), gotoStart);
 
-            var lb2 = new labeled_statement(gt2.label, if0);
-            var lb1 = new labeled_statement(gt1.label);
+            var endLabeledStatement = new labeled_statement(gotoEnd.label, gotoStartIfCondition);
+            var startLabeledStatement = new labeled_statement(gotoStart.label, fn.statements);
             var Inc = new procedure_call(new method_call((fn.cycle_type == for_cycle_type.to) ?
                 new ident("Inc") :
                 new ident("Dec"), new expression_list(fn.loop_variable)));
 
-            ReplaceStatement(fn, SeqStatements(ass1, /*ass2,*/ lb2, fn.statements, Inc, gt2, lb1));
+            var continueLabeledStatement = new labeled_statement(gotoContinue.label, Inc);
+            var breakLabeledStatement = new labeled_statement(gotoBreak.label);
+
+            ReplaceStatement(fn, SeqStatements(initializer, gotoEnd, startLabeledStatement, continueLabeledStatement, endLabeledStatement, breakLabeledStatement));
 
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
 
-            bl.defs.Add(new label_definitions(gt1.label, gt2.label));
+            bl.defs.Add(new label_definitions(gotoStart.label, gotoEnd.label, gotoContinue.label, gotoBreak.label));
         }
 
         

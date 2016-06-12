@@ -71,6 +71,7 @@
     <Compile Include="YieldVisitors\MarkMethodHasYieldVisitor.cs" />
     <Compile Include="YieldVisitors\ProcessYieldsCapturedVars.cs" />
     <Compile Include="YieldVisitors\RenameSameBlockLocalVarsVisitor.cs" />
+    <Compile Include="YieldVisitors\ReplaceBreakContinueWithGotoLabelVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceCapturedVariablesVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceFormalParametersRefsVisitor.cs" />
     <Compile Include="YieldVisitors\ReplaceVariableNameVisitor.cs" />
