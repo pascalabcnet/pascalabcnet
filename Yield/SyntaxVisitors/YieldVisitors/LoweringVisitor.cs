@@ -306,9 +306,68 @@ namespace SyntaxVisitors
             bl.defs.Add(new label_definitions(gotoBreak.label, gotoContinue.label));
         }
 
+        
         public override void visit(for_node fn)
         {
-            /*
+            var b = HasStatementVisitor<yield_node>.Has(fn);
+            if (!b)
+                return;
+
+            var gotoContinue = goto_statement.New;
+            var gotoBreak = goto_statement.New;
+            var gotoStart = goto_statement.New;
+
+            ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
+            fn.statements.visit(replaceBreakContinueVis);
+
+            ProcessNode(fn.statements);
+
+            var newNames = this.NewVarNames(fn.loop_variable);
+
+            var newLoopVar = fn.create_loop_variable ? new ident(newNames.VarName) : fn.loop_variable;
+
+            // Нужно заменить fn.loop_variable -> newLoopVar в теле цикла
+            var replacerVis = new ReplaceVariableNameVisitor(fn.loop_variable, newLoopVar);
+            fn.visit(replacerVis);
+
+            fn.loop_variable = newLoopVar;
+
+            var endtemp = new ident(newNames.VarEndName); //new ident(newVarName());
+
+            //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            //var ass1 = new var_statement(fn.loop_variable, fn.type_name, fn.initial_value);
+            //var ass2 = new var_statement(endtemp, fn.type_name, fn.finish_value);
+
+            // frninja 05/06/16 - фиксим для !fn.create_variable
+            var ass1 = fn.create_loop_variable
+                ? new var_statement(fn.loop_variable, fn.type_name, fn.initial_value) as statement
+                : new assign(fn.loop_variable, fn.initial_value) as statement;
+
+
+            var if0 = new if_node((fn.cycle_type == for_cycle_type.to) ?
+                bin_expr.Greater(fn.loop_variable, fn.finish_value) :
+                bin_expr.Less(fn.loop_variable, fn.finish_value), gotoBreak);
+
+            var lb2 = new labeled_statement(gotoStart.label, if0);
+            var lb1 = new labeled_statement(gotoBreak.label);
+            var Inc = new procedure_call(new method_call((fn.cycle_type == for_cycle_type.to) ?
+                new ident("Inc") :
+                new ident("Dec"), new expression_list(fn.loop_variable)));
+
+            var lbInc = new labeled_statement(gotoContinue.label, Inc);
+
+            ReplaceStatement(fn, SeqStatements(ass1, lb2, fn.statements, lbInc, gotoStart, lb1));
+
+            // в declarations ближайшего блока добавить описание labels
+            block bl = listNodes.FindLast(x => x is block) as block;
+
+            bl.defs.Add(new label_definitions(gotoContinue.label, gotoBreak.label, gotoStart.label));
+        }
+
+        /*
+        public override void visit(for_node fn)
+        {
+            
              * initializer;
              * goto end;
              * start:
@@ -319,7 +378,7 @@ namespace SyntaxVisitors
              *      GotoIfTrue condition start;
              * break:
 
-             */
+            
 
             var b = HasStatementVisitor<yield_node>.Has(fn);
             if (!b)
@@ -327,10 +386,10 @@ namespace SyntaxVisitors
 
             var gotoStart = goto_statement.New;
             var gotoEnd = goto_statement.New;
-            var gotoContinue = goto_statement.New;
+            var gotoStart = goto_statement.New;
             var gotoBreak = goto_statement.New;
 
-            ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoContinue, gotoBreak);
+            ReplaceBreakContinueWithGotoLabelVisitor replaceBreakContinueVis = new ReplaceBreakContinueWithGotoLabelVisitor(gotoStart, gotoBreak);
             fn.statements.visit(replaceBreakContinueVis);
 
             ProcessNode(fn.statements);
@@ -368,7 +427,7 @@ namespace SyntaxVisitors
                 new ident("Inc") :
                 new ident("Dec"), new expression_list(fn.loop_variable)));
 
-            var continueLabeledStatement = new labeled_statement(gotoContinue.label, Inc);
+            var continueLabeledStatement = new labeled_statement(gotoStart.label, Inc);
             var breakLabeledStatement = new labeled_statement(gotoBreak.label);
 
             ReplaceStatement(fn, SeqStatements(initializer, gotoEnd, startLabeledStatement, continueLabeledStatement, endLabeledStatement, breakLabeledStatement));
@@ -376,8 +435,8 @@ namespace SyntaxVisitors
             // в declarations ближайшего блока добавить описание labels
             block bl = listNodes.FindLast(x => x is block) as block;
 
-            bl.defs.Add(new label_definitions(gotoStart.label, gotoEnd.label, gotoContinue.label, gotoBreak.label));
-        }
+            bl.defs.Add(new label_definitions(gotoStart.label, gotoEnd.label, gotoStart.label, gotoBreak.label));
+        }*/
 
         
     }
