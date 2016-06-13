@@ -35,7 +35,7 @@ namespace SyntaxVisitors
             }
             if (id.name.ToLower() == "result")
             {
-                //throw new SyntaxError("Функции с yield не могут использовать result", "", id.source_context, id);
+                throw new SyntaxError("Функции с yield не могут использовать result", "", id.source_context, id);
             }
         }
 
