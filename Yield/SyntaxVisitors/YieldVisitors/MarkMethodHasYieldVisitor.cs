@@ -35,7 +35,7 @@ namespace SyntaxVisitors
             }
             if (id.name.ToLower() == "result")
             {
-                throw new SyntaxError("Функции с yield не могут использовать result", "", id.source_context, id);
+                //throw new SyntaxError("Функции с yield не могут использовать result", "", id.source_context, id);
             }
         }
 
@@ -50,12 +50,15 @@ namespace SyntaxVisitors
         {
             var pd = CurrentMethod;
 
+            if (pd == null)
+                throw new SyntaxError("Только функции могут содержать yield", "", yn.source_context, yn);
+
             var fh = (pd.proc_header as function_header);
             if (fh == null)
                 throw new SyntaxError("Только функции могут содержать yield", "", pd.proc_header.source_context, pd.proc_header);
             var seqt = fh.return_type as sequence_type;
             if (seqt == null)
-                throw new SyntaxError("Функции с yield должны возвращать последовательность", "", fh.return_type.source_context, fh.return_type);
+                throw new SyntaxError("Функции с yield должны возвращать последовательность", "", fh.source_context, fh);
 
             var pars = fh.parameters;
             if (pars != null)
