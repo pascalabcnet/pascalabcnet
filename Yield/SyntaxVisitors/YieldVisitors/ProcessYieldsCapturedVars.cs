@@ -829,7 +829,7 @@ namespace SyntaxVisitors
                 // frninja 05/06/16 - для шаблонов с where
                 predef.proc_header.where_defs = ObjectCopier.Clone(pd.proc_header.where_defs);
 
-                UpperTo<declarations>().AddFirst(predef);
+                UpperTo<declarations>().InsertBefore(pd, predef);
 
                 return true;
             }
