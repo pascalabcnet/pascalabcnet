@@ -18955,15 +18955,21 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (dn is class_field)
             {
-                return (dn as class_field).cont_type.comprehensive_namespace.cont_unit;
+                return ((dn as class_field).cont_type.comprehensive_namespace != null) 
+                    ? (dn as class_field).cont_type.comprehensive_namespace.cont_unit
+                    : null;
             }
             else if (dn is common_method_node)
             {
-                return (dn as common_method_node).cont_type.comprehensive_namespace.cont_unit;
+                return ((dn as common_method_node).cont_type.comprehensive_namespace != null)
+                    ? (dn as common_method_node).cont_type.comprehensive_namespace.cont_unit
+                    : null;
             }
             else if (dn is common_property_node)
             {
-                return (dn as common_property_node).common_comprehensive_type.comprehensive_namespace.cont_unit;
+                return ((dn as common_property_node).common_comprehensive_type.comprehensive_namespace != null)
+                    ? (dn as common_property_node).common_comprehensive_type.comprehensive_namespace.cont_unit
+                    : null;
             }
 
             return null;
@@ -19001,8 +19007,11 @@ namespace PascalABCCompiler.TreeConverter
                         || found.sym_info is compiled_property_node)
                     {
                         // frninja 06/06/16 - фиксим private того же модуля
-                        if ((iteratorContainingClass is common_type_node) 
-                            && this.GetUnknownIdentUnit(found.sym_info) == (iteratorContainingClass as common_type_node).comprehensive_namespace.cont_unit)
+                        if ((iteratorContainingClass is common_type_node)
+                            && this.GetUnknownIdentUnit(found.sym_info) == 
+                                (((iteratorContainingClass as common_type_node).comprehensive_namespace != null) 
+                                    ? (iteratorContainingClass as common_type_node).comprehensive_namespace.cont_unit 
+                                    : null))
                         {
                             return true;
                         }
