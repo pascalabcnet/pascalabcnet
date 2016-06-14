@@ -38,7 +38,7 @@ namespace SyntaxVisitors
                 throw new SyntaxError("Функции с yield не могут содержать вложенных подпрограмм result", "", pd.source_context, pd);
             }
 
-            if (pd.DescendantNodes().OfType<try_stmt>().Count() > 0)
+            if (pd.has_yield && pd.DescendantNodes().OfType<try_stmt>().Count() > 0)
             {
                 throw new SyntaxError("Функции с yield не могут содержать блоков try..except..finally", "", pd.source_context, pd);
             }
