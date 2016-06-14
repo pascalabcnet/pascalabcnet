@@ -15,21 +15,40 @@ namespace SyntaxVisitors
         private bool HasYields = false;
         private procedure_definition CurrentMethod = null;
 
+        private Stack<procedure_definition> MethodsStack = new Stack<procedure_definition>();
+
         public override void visit(procedure_definition pd)
         {
-            this.CurrentMethod = pd;
+            //this.CurrentMethod = pd;
+
+            MethodsStack.Push(pd);
 
             HasYields = false;
 
             base.visit(pd);
             pd.has_yield = HasYields;
 
-            this.CurrentMethod = null;
+            var innerPds = pd.DescendantNodes().OfType<procedure_definition>();
+
+            if (pd.has_yield && innerPds.Count() > 0
+                || innerPds.Where(npd => npd.has_yield).Count() > 0)
+            {
+                // Есть yield и вложенные - плохо
+                // Или нет yield но есть вложенные с yield
+                throw new SyntaxError("Функции с yield не могут содержать вложенных подпрограмм result", "", pd.source_context, pd);
+            }
+
+            HasYields = false;
+
+            MethodsStack.Pop();
+
+            //this.CurrentMethod = null;
         }
 
         public override void visit(ident id)
         {
-            if (CurrentMethod == null || !HasYields)
+            //if (CurrentMethod == null || !HasYields)
+            if (MethodsStack.Count == 0 || !HasYields)
             {
                 return;
             }
@@ -48,7 +67,8 @@ namespace SyntaxVisitors
 
         public override void visit(yield_node yn)
         {
-            var pd = CurrentMethod;
+            //var pd = CurrentMethod;
+            var pd = MethodsStack.Peek();
 
             if (pd == null)
                 throw new SyntaxError("Только функции могут содержать yield", "", yn.source_context, yn);
