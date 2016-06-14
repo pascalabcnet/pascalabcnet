@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit GraphABCHelper;
 
@@ -47,6 +47,7 @@ procedure ClosedCurve(a: array of Point; gr: Graphics);
 
 procedure TextOut(x,y: integer; s: string; gr: Graphics); 
 procedure DrawTextCentered(x,y,x1,y1: integer; s: string; gr: Graphics); 
+procedure DrawTextCentered(x,y: integer; s: string; gr: Graphics); 
 
 function GetView(b: Bitmap; r: System.Drawing.Rectangle): Bitmap;
 function ImageIntersect(b1,b2: Bitmap): boolean;
@@ -386,6 +387,14 @@ begin
   gr.DrawString(s,Font.NETFont,_CurrentTextBrush,new System.Drawing.RectangleF(x,y,x1-x,y1-y),sf);
 end;
 
+procedure DrawTextCentered(x,y: integer; s: string; gr: Graphics); 
+begin
+  var sf := new StringFormat();
+  sf.Alignment := StringAlignment.Center;
+  sf.LineAlignment := StringAlignment.Center;
+   
+  gr.DrawString(s,Font.NETFont,_CurrentTextBrush,x,y,sf);
+end;
 
 var __initialized := false;
 
