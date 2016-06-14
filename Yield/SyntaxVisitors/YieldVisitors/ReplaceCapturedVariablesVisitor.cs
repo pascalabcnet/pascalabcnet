@@ -102,16 +102,16 @@ namespace SyntaxVisitors
             else if (IsInClassMethod)
             {
                 // In class -> check fields
-                if (CollectedClassFields.Contains(idName))
+                //if (CollectedClassFields.Contains(idName))
                 {
                     // Good 
                     // Name in class fields -> capture as class field
 
 
-                    var capturedId = new dot_node(new dot_node(new ident("self"), new ident(YieldConsts.Self)), id);
-                    Replace(id, capturedId);
+                    //var capturedId = new dot_node(new dot_node(new ident("self"), new ident(YieldConsts.Self)), id);
+                    //Replace(id, capturedId);
                 }
-                else
+                //else
                 {
                     // Bad
                     // At syntax we don't know if the className is class field or not coz of e.g. base .NET classes

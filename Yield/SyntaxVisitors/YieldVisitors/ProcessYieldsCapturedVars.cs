@@ -191,7 +191,7 @@ namespace SyntaxVisitors
             stl.AddMany(lid.Select(id => new assign(new dot_node("res", new ident(formalParamsMap[id.name])), id)));
 
             // frninja 08/12/15 - захват self
-            if (iteratorClassName != null)
+            if (iteratorClassName != null && !pd.proc_header.class_keyword)
             {
                 stl.Add(new assign(new dot_node("res", YieldConsts.Self), new ident("self")));
             }
@@ -837,8 +837,20 @@ namespace SyntaxVisitors
             return false;
         }
 
+        private void CheckInnerMethodsWithYield(procedure_definition pd)
+        {
+            var pdWithYields = pd.DescendantNodes(includeSelf: true)
+                .OfType<procedure_definition>()
+                .Where(npd => npd.has_yield);
+
+            var pddds = pdWithYields.Count();
+        }
+
         public override void visit(procedure_definition pd)
         {
+            // frninja 14/06/16 - проверяем наличие yield у вложенных методов (и запрещаем )
+            CheckInnerMethodsWithYield(pd);
+
             if (!pd.has_yield)
                 return;
 

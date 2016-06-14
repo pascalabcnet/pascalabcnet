@@ -18976,13 +18976,35 @@ namespace PascalABCCompiler.TreeConverter
         }
         // end frninja 06/06/16
 
-        private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk)
+        private bool CheckIsStaticName(definition_node dn)
+        {
+            if (dn is class_field && (dn as class_field).polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                return true;
+
+            if (dn is common_method_node && (dn as common_method_node).polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                return true;
+
+            if (dn is common_property_node && (dn as common_property_node).polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                return true;
+
+            if (dn is compiled_function_node && (dn as compiled_function_node).polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                return true;
+
+            if (dn is compiled_property_node && (dn as compiled_property_node).polymorphic_state == SemanticTree.polymorphic_state.ps_static)
+                return true;
+
+            return false;
+        }
+
+        private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk, out bool isStaticIdent)
         {
             string Consts__Self = YieldHelpers.YieldConsts.Self;
 
             // Find semantic class containing iterator (yield-method) with unknown ident
             var iteratorContainingClass = context._ctn.fields.Where(f => f.name == Consts__Self).First().type;
             //var iteratorContainingClass = context._cmn.types.Where(t => t.name == _unk.ClassName.name).First();
+
+            isStaticIdent = false;
 
             if (iteratorContainingClass != null)
             {
@@ -19000,6 +19022,9 @@ namespace PascalABCCompiler.TreeConverter
 
                     // че с классом из другого модуля?
                     // то же что и с классом из этого же
+
+                    isStaticIdent = CheckIsStaticName(found.sym_info);
+
                     if (found.sym_info is class_field
                         || found.sym_info is common_method_node
                         || found.sym_info is common_property_node
@@ -19029,8 +19054,12 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
-        private dot_node CaptureUnknownIdent(yield_unknown_ident unk)
+        private dot_node CaptureUnknownIdent(yield_unknown_ident unk, bool isStaticIdent = false)
         {
+            if (isStaticIdent)
+            {
+                return new dot_node(unk.ClassName, unk.UnknownID);
+            }
             string Consts__Self = YieldHelpers.YieldConsts.Self;
 
             return new dot_node(new dot_node(new ident("self"), new ident(Consts__Self)), unk.UnknownID);
@@ -19038,9 +19067,10 @@ namespace PascalABCCompiler.TreeConverter
 
         private SyntaxTree.addressed_value_funcname ProcessUnknownIdent(yield_unknown_ident unk)
         {
-            if (CheckUnknownIdentNeedsClassCapture(unk))
+            bool isStaticIdent;
+            if (CheckUnknownIdentNeedsClassCapture(unk, out isStaticIdent))
             {
-                return CaptureUnknownIdent(unk);
+                return CaptureUnknownIdent(unk, isStaticIdent);
             }
             else
             {
