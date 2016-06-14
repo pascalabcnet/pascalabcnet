@@ -31941,59 +31941,23 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_foreach_type(foreach_stmt _unknown_foreach)
-		{
-			this._unknown_foreach=_unknown_foreach;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_foreach_type(foreach_stmt _unknown_foreach,SourceContext sc)
-		{
-			this._unknown_foreach=_unknown_foreach;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_foreach_type(type_definition_attr_list _attr_list,foreach_stmt _unknown_foreach)
+		public yield_unknown_foreach_type(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
-			this._unknown_foreach=_unknown_foreach;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_foreach_type(type_definition_attr_list _attr_list,foreach_stmt _unknown_foreach,SourceContext sc)
+		public yield_unknown_foreach_type(type_definition_attr_list _attr_list,SourceContext sc)
 		{
 			this._attr_list=_attr_list;
-			this._unknown_foreach=_unknown_foreach;
 			source_context = sc;
 		}
-
-		protected foreach_stmt _unknown_foreach;
-
-		///<summary>
-		///
-		///</summary>
-		public foreach_stmt unknown_foreach
-		{
-			get
-			{
-				return _unknown_foreach;
-			}
-			set
-			{
-				_unknown_foreach=value;
-			}
-		}
-
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -32002,7 +31966,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -32012,7 +31976,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -32028,8 +31992,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return unknown_foreach;
 				}
 				return null;
 			}
@@ -32041,9 +32003,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
-						break;
-					case 1:
-						unknown_foreach = (foreach_stmt)value;
 						break;
 				}
 			}
@@ -32076,59 +32035,23 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach)
-		{
-			this._unknown_foreach=_unknown_foreach;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach,SourceContext sc)
-		{
-			this._unknown_foreach=_unknown_foreach;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_foreach_type_ident(string _name,foreach_stmt _unknown_foreach)
+		public yield_unknown_foreach_type_ident(string _name)
 		{
 			this._name=_name;
-			this._unknown_foreach=_unknown_foreach;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_foreach_type_ident(string _name,foreach_stmt _unknown_foreach,SourceContext sc)
+		public yield_unknown_foreach_type_ident(string _name,SourceContext sc)
 		{
 			this._name=_name;
-			this._unknown_foreach=_unknown_foreach;
 			source_context = sc;
 		}
-
-		protected foreach_stmt _unknown_foreach;
-
-		///<summary>
-		///
-		///</summary>
-		public foreach_stmt unknown_foreach
-		{
-			get
-			{
-				return _unknown_foreach;
-			}
-			set
-			{
-				_unknown_foreach=value;
-			}
-		}
-
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -32137,7 +32060,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
@@ -32147,7 +32070,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 0;
 			}
 		}
 		///<summary>
@@ -32159,23 +32082,12 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return unknown_foreach;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						unknown_foreach = (foreach_stmt)value;
-						break;
-				}
 			}
 		}
 		///<summary>

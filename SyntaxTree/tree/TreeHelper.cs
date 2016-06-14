@@ -1494,6 +1494,63 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class yield_unknown_foreach_type : type_definition
+    {
+        protected foreach_stmt _unknown_foreach;
+
+        public foreach_stmt unknown_foreach
+        {
+            get { return _unknown_foreach; }
+            set { _unknown_foreach = value; }
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type(foreach_stmt _unknown_foreach)
+        {
+            this._unknown_foreach = _unknown_foreach;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type(foreach_stmt _unknown_foreach, SourceContext sc)
+        {
+            this._unknown_foreach = _unknown_foreach;
+            source_context = sc;
+        }
+
+    }
+
+    public partial class yield_unknown_foreach_type_ident : ident
+    {
+        protected foreach_stmt _unknown_foreach;
+
+        public foreach_stmt unknown_foreach
+        {
+            get { return _unknown_foreach; }
+            set { _unknown_foreach = value; }
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach)
+        {
+            this._unknown_foreach = _unknown_foreach;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach, SourceContext sc)
+        {
+            this._unknown_foreach = _unknown_foreach;
+            source_context = sc;
+        }
+    }
+
     // end frninja
 
 

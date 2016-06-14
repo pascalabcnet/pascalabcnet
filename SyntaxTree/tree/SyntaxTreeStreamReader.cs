@@ -3832,7 +3832,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_foreach_type(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
 			read_type_definition(_yield_unknown_foreach_type);
-			_yield_unknown_foreach_type.unknown_foreach = _read_node() as foreach_stmt;
 		}
 
 
@@ -3844,7 +3843,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_foreach_type_ident(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
 		{
 			read_ident(_yield_unknown_foreach_type_ident);
-			_yield_unknown_foreach_type_ident.unknown_foreach = _read_node() as foreach_stmt;
 		}
 
 	}

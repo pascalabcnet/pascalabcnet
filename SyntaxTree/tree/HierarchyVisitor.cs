@@ -3606,7 +3606,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_foreach_type);
 			pre_do_visit(_yield_unknown_foreach_type);
-			visit(yield_unknown_foreach_type.unknown_foreach);
 			post_do_visit(_yield_unknown_foreach_type);
 		}
 
@@ -3614,7 +3613,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_foreach_type_ident);
 			pre_do_visit(_yield_unknown_foreach_type_ident);
-			visit(yield_unknown_foreach_type_ident.unknown_foreach);
 			post_do_visit(_yield_unknown_foreach_type_ident);
 		}
 	}
