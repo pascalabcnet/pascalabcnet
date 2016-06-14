@@ -18998,6 +18998,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private bool CheckUnknownIdentNeedsClassCapture(SyntaxTree.yield_unknown_ident _unk, out bool isStaticIdent)
         {
+
             string Consts__Self = YieldHelpers.YieldConsts.Self;
 
             // Find semantic class containing iterator (yield-method) with unknown ident
@@ -19031,6 +19032,9 @@ namespace PascalABCCompiler.TreeConverter
                         || found.sym_info is compiled_function_node
                         || found.sym_info is compiled_property_node)
                     {
+                        if (!isStaticIdent && _unk.IsYieldInStaticMethod)
+                            return false;
+
                         // frninja 06/06/16 - фиксим private того же модуля
                         if ((iteratorContainingClass is common_type_node)
                             && this.GetUnknownIdentUnit(found.sym_info) == 

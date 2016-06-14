@@ -662,7 +662,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("procedure ");
-            sb.Append(name.ToString());
+            if (name != null)
+                sb.Append(name.ToString());
+            else
+                sb.Append("NONAME");
 
             if (template_args != null)
                 sb.Append("<" + template_args.ToString() + ">");
@@ -1175,7 +1178,7 @@ namespace PascalABCCompiler.SyntaxTree
         { }
         public override string ToString()
         {
-            return "new "+this.type.ToString()+"("+this.params_list.ToString()+")";
+            return "new "+ (this.type != null ? this.type.ToString() : "NOTYPE") + "(" +(this.params_list != null ? this.params_list.ToString() : "NOPARAMS") + ")";
         }
     }
 
@@ -1459,6 +1462,7 @@ namespace PascalABCCompiler.SyntaxTree
     {
         protected ident _UnknownID;
         protected ident _ClassName;
+        protected bool _IsYieldInStaticMethod;
 
         public ident UnknownID
         {
@@ -1472,24 +1476,32 @@ namespace PascalABCCompiler.SyntaxTree
             set { _ClassName = value; }
         }
 
-        ///<summary>
-        ///Конструктор с параметрами.
-        ///</summary>
-        public yield_unknown_ident(ident _UnknownID, ident _ClassName)
+        public bool IsYieldInStaticMethod
         {
-            this._name = _UnknownID.name;
-            this._UnknownID = _UnknownID;
-            this._ClassName = _ClassName;
+            get { return _IsYieldInStaticMethod; }
+            set { _IsYieldInStaticMethod = value; }
         }
 
         ///<summary>
         ///Конструктор с параметрами.
         ///</summary>
-        public yield_unknown_ident(ident _UnknownID, ident _ClassName, SourceContext sc)
+        public yield_unknown_ident(ident _UnknownID, ident _ClassName, bool isYieldInStaticMethod = false)
         {
             this._name = _UnknownID.name;
             this._UnknownID = _UnknownID;
             this._ClassName = _ClassName;
+            this._IsYieldInStaticMethod = isYieldInStaticMethod;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_ident(ident _UnknownID, ident _ClassName, bool isYieldInStaticMethod, SourceContext sc)
+        {
+            this._name = _UnknownID.name;
+            this._UnknownID = _UnknownID;
+            this._ClassName = _ClassName;
+            this._IsYieldInStaticMethod = isYieldInStaticMethod;
             source_context = sc;
         }
     }

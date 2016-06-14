@@ -755,6 +755,7 @@ namespace SyntaxVisitors
                 capturedLocalsNamesMap,
                 capturedFormalParamsNamesMap,
                 IsClassMethod(pd),
+                pd.proc_header.class_keyword,
                 GetClassName(pd)
                 );
             // Replace

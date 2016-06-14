@@ -23,6 +23,7 @@ namespace SyntaxVisitors
         private IDictionary<string, string> CapturedFormalParamsMap = new Dictionary<string, string>();
 
         private bool IsInClassMethod = true;
+        private bool IsStaticMethod = false;
 
         private ident ClassName;
 
@@ -35,7 +36,7 @@ namespace SyntaxVisitors
             IEnumerable<string> unitGlobals,
             IDictionary<string, string> localsMap,
             IDictionary<string, string> formalParamsMap,
-            bool isInClassMethod, ident className)
+            bool isInClassMethod, bool isStaticMethod, ident className)
         {
             CollectedLocals = new HashSet<string>(locals);
             CollectedFormalParams = new HashSet<string>(formalParams);
@@ -120,7 +121,7 @@ namespace SyntaxVisitors
 
                     if (!id.name.StartsWith("<")) // Check for already captured
                     {
-                        Replace(id, new yield_unknown_ident(id, ClassName));
+                        Replace(id, new yield_unknown_ident(id, ClassName, this.IsStaticMethod));
                     }
                 }
             }
