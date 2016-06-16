@@ -27,6 +27,15 @@ namespace SyntaxVisitors
             base.visit(ld);
         }
 
+        public override void visit(with_statement ws)
+        {
+            if (ws.DescendantNodes().OfType<yield_node>().Count() > 0)
+            {
+                throw new SyntaxError("Yield запрещен внутри with", "", ws.source_context, ws);
+            }
+            base.visit(ws);
+        }
+
         public override void visit(procedure_definition pd)
         {
             //this.CurrentMethod = pd;
