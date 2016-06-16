@@ -62,6 +62,11 @@ namespace SyntaxVisitors
                 throw new SyntaxError("Функции с yield не могут содержать блоков try..except..finally", "", pd.source_context, pd);
             }
 
+            if (pd.has_yield && pd.DescendantNodes().OfType<lock_stmt>().Count() > 0)
+            {
+                throw new SyntaxError("Функции с yield не могут содержать lock", "", pd.source_context, pd);
+            }
+
             HasYields = false;
 
             MethodsStack.Pop();
