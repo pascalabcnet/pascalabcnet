@@ -43,6 +43,17 @@ namespace SyntaxVisitors
                 throw new SyntaxError("Функции с yield не могут содержать блоков try..except..finally", "", pd.source_context, pd);
             }
 
+            pd.DescendantNodes()
+              .OfType<function_lambda_definition>()
+              .Select(ld =>
+                {
+                    if (ld.DescendantNodes().OfType<yield_node>().Count() > 0)
+                    {
+                        throw new SyntaxError("Лямбда-выражения не могут содержать yield", "", ld.source_context, ld);
+                    }
+                    return ld;
+                }).ToArray();
+
             HasYields = false;
 
             MethodsStack.Pop();
