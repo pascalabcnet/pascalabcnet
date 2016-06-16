@@ -17,6 +17,16 @@ namespace SyntaxVisitors
 
         private Stack<procedure_definition> MethodsStack = new Stack<procedure_definition>();
 
+        public override void visit(function_lambda_definition ld)
+        {
+            if (ld.DescendantNodes().OfType<yield_node>().Count() > 0)
+            {
+                throw new SyntaxError("Лямбда-выражения не могут содержать yield", "", ld.source_context, ld);
+            }
+
+            base.visit(ld);
+        }
+
         public override void visit(procedure_definition pd)
         {
             //this.CurrentMethod = pd;
@@ -42,17 +52,6 @@ namespace SyntaxVisitors
             {
                 throw new SyntaxError("Функции с yield не могут содержать блоков try..except..finally", "", pd.source_context, pd);
             }
-
-            pd.DescendantNodes()
-              .OfType<function_lambda_definition>()
-              .Select(ld =>
-                {
-                    if (ld.DescendantNodes().OfType<yield_node>().Count() > 0)
-                    {
-                        throw new SyntaxError("Лямбда-выражения не могут содержать yield", "", ld.source_context, ld);
-                    }
-                    return ld;
-                }).ToArray();
 
             HasYields = false;
 
