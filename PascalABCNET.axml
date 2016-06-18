@@ -790,6 +790,17 @@
           </i>
         </OCtx>
       </Node>
+      <Node Name="root.visit(new ProcessYieldCapturedVarsVisitor());">
+        <FileName>\Yield\YieldConversionSyntax\YieldDesugarSyntaxTreeConverter.cs</FileName>
+        <Text>root.visit(new ProcessYieldCapturedVarsVisitor());</Text>
+        <OCtx>
+          <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+          <i Type="ClassOrNamespace">public class YieldDesugarSyntaxTreeConverter : ISyntaxTreeConverter</i>
+          <i Type="ClassOrNamespace">namespace YieldDesugarSyntaxTreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>

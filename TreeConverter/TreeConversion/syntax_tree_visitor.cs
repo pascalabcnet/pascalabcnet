@@ -19126,32 +19126,21 @@ namespace PascalABCCompiler.TreeConverter
             _vars.vars.visit(this);
         }
 
+        private Dictionary<Guid, semantic_type_node> _yieldForeachTypeMap = new Dictionary<Guid, semantic_type_node>();
+
         // frninja 29/05/16 - выявляем тип перемнной в foreach
         public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)
         {
+            
             var _foreach_stmt = _unk.unknown_foreach;
-            expression_node in_what = convert_strong(_foreach_stmt.in_what);
-            type_node elem_type = null;
-            if (!FindIEnumerableElementType(_foreach_stmt, in_what.type, ref elem_type))
-            {
-                AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
-            }
-            // Visit type
-            var t = new SyntaxTree.semantic_type_node(elem_type);
-            t.visit(this);
-        }
 
-        private ident GetForeachVariableTypeName(foreach_stmt _foreach_stmt)
-        {
-            type_node tn;
+            semantic_type_node t;
 
-            /*if (_foreach_stmt.type_name == null)
+            if (_yieldForeachTypeMap.ContainsKey(_foreach_stmt.Guid))
             {
-                // Внешнее имя, ищем тип
-                var cv = convert_strong(_foreach_stmt.identifier);
-                tn = cv.type;
+                t = _yieldForeachTypeMap[_foreach_stmt.Guid];
             }
-            else*/
+            else
             {
                 expression_node in_what = convert_strong(_foreach_stmt.in_what);
                 type_node elem_type = null;
@@ -19159,9 +19148,22 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
                 }
-                tn = elem_type;
+                t = new SyntaxTree.semantic_type_node(elem_type);
+                // Add to map
+                _yieldForeachTypeMap.Add(_foreach_stmt.Guid, t);
             }
+            // Visit type
+            t.visit(this);
+        }
 
+        private ident GetForeachVariableTypeName(foreach_stmt _foreach_stmt)
+        {
+            type_node tn = null;
+
+            if (_yieldForeachTypeMap.ContainsKey(_foreach_stmt.Guid))
+            {
+                tn = _yieldForeachTypeMap[_foreach_stmt.Guid].type as type_node;
+            }
             return new SyntaxTree.ident(tn.name);
         }
 

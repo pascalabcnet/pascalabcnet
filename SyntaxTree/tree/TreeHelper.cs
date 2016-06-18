@@ -1563,6 +1563,14 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    // frninja 18/06/16 - для foreach yield и клонов
+    public partial class foreach_stmt : statement
+    {
+        protected Guid _guid = Guid.NewGuid();
+        public Guid Guid { get { return _guid; } }
+        
+    }
+
     // end frninja
 
 
