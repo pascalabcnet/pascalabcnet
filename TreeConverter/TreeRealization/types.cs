@@ -1744,7 +1744,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return this.comprehensive_namespace.namespace_full_name + "." + name;
+                return (this.comprehensive_namespace != null?this.comprehensive_namespace.namespace_full_name + ".":"") + name;
             }
         }
 
