@@ -319,6 +319,8 @@ namespace CodeCompletion
 
         public SymInfo[] GetSymInfosForExtensionMethods(TypeScope ts)
         {
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new SymInfo[0];
             List<SymInfo> lst = new List<SymInfo>();
             List<ProcScope> meth_list = GetExtensionMethods(ts);
             for (int i = 0; i < meth_list.Count; i++)
@@ -328,6 +330,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(string name, TypeScope ts)
         {
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new List<ProcScope>();
             List<ProcScope> meths = GetExtensionMethods(ts);
             List<ProcScope> lst = new List<ProcScope>();
             for (int i = 0; i < meths.Count; i++)
@@ -342,6 +346,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(TypeScope ts)
         {
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new List<ProcScope>();
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -2988,6 +2994,8 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
         {
+            if (!is_dynamic_arr)
+                return new List<SymScope>();
             List<SymScope> syms = base.FindOverloadNamesOnlyInType(name);
             if (implemented_interfaces != null)
             {
@@ -3005,6 +3013,8 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
+            if (!is_dynamic_arr)
+                return null;
             SymScope sc = null;
             if (baseScope != null && is_dynamic_arr) sc = baseScope.FindNameOnlyInType(name);
             if (sc != null) return sc;
@@ -3015,6 +3025,8 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> names = new List<SymScope>();
+            if (!is_dynamic_arr)
+                return names;
             if (baseScope != null && is_dynamic_arr) names.AddRange(baseScope.FindOverloadNamesOnlyInType(name));
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
@@ -3023,6 +3035,8 @@ namespace CodeCompletion
 
         public override SymScope FindNameInAnyOrder(string name)
         {
+            if (!is_dynamic_arr)
+                return null;
             SymScope sc = null;
             if (baseScope != null && is_dynamic_arr) sc = baseScope.FindNameOnlyInType(name);
             if (sc != null) return sc;
