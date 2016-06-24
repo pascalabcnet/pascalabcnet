@@ -8555,6 +8555,12 @@ begin
   System.Array.Sort(self,cmp);  
 end;
 
+/// Возвращает индекс последнего элемента массива
+function High(self: System.Array); extensionmethod := High(Self);
+
+/// Возвращает индекс первого элемента массива
+function Low(self: System.Array); extensionmethod := Low(Self);
+
 ///-- 
 function CreateSliceFromArrayInternal<T>(Self: array of T; from,step,count: integer): array of T;
 begin

@@ -764,6 +764,15 @@ type
     procedure SetMathematic;
     /// Устанавливает левую систему координат (ось OY направлена вниз, ось OX - вправо)
     procedure SetStandard;
+    
+    procedure ScaleOn(scale: real);
+
+    procedure Transform(x,y: real);
+
+    procedure Rotate(angle: real);
+    
+    procedure ClearMatrix;
+
     /// X-координата начала координат относительно левого верхнего угла окна
     property OriginX: integer read GetOriginX write SetOriginX;
     /// Y-координата начала координат относительно левого верхнего угла окна
@@ -1308,6 +1317,42 @@ procedure GraphABCCoordinate.SetStandard;
 begin
   coef := 1;
   SetTransform(OriginX,OriginY,Angle,ScaleX,ScaleY);
+end;
+
+procedure GraphABCCoordinate.ScaleOn(scale: real);
+begin
+  lock f do
+  begin
+    gr.ScaleTransform(scale,scale);
+    gbmp.ScaleTransform(scale,scale);
+  end;
+end;
+
+procedure GraphABCCoordinate.Transform(x,y: real);
+begin
+  lock f do
+  begin
+    gr.TranslateTransform(x,y);
+    gbmp.TranslateTransform(x,y)
+  end;
+end;
+
+procedure GraphABCCoordinate.Rotate(angle: real);
+begin
+  lock f do
+  begin
+    gr.RotateTransform(angle);
+    gbmp.RotateTransform(angle);
+  end;
+end;
+
+procedure GraphABCCoordinate.ClearMatrix;
+begin
+  lock f do
+  begin
+    gr.Transform := new System.Drawing.Drawing2D.Matrix();
+    gbmp.Transform := new System.Drawing.Drawing2D.Matrix();
+  end;
 end;
 
 procedure GraphABCCoordinate.SetOriginX(x: integer);
