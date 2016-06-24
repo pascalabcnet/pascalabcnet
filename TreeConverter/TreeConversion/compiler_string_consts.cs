@@ -283,6 +283,8 @@ namespace PascalABCCompiler.TreeConverter
         public static string check_in_range = "check_in_range";
         public static string check_in_range_char = "check_in_range_char";
         public static string ShortStringTypeNameTemplate = string_type_name + "[{0}]";
+        public static string GetCurrentLineFunction = "__GetCurrentLine__";
+        public static string GetCurrentFileFunction = "__GetCurrentFile__";
         public static string GetShortStringTypeName(int length)
         {
             if (length < 256)

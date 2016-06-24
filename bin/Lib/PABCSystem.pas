@@ -910,6 +910,10 @@ procedure Seek(f: BinaryFile; n: int64);
 procedure BinaryFileInit(var f: BinaryFile);
 ///--
 function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
+///--
+function __GetCurrentLine__: integer;
+///--
+function __GetCurrentFile__: string;
 
 // -----------------------------------------------------
 //>>     Cистемные подпрограммы # System subroutines
@@ -946,9 +950,9 @@ function ChangeFileNameExtension(name, newext: string): string;
 function FileExists(name: string): boolean;
 
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
-procedure Assert(cond: boolean);
+procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
-procedure Assert(cond: boolean; message: string);
+procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
 
 /// Возвращает свободное место в байтах на диске с именем diskname
 function DiskFree(diskname: string): int64;
@@ -1885,6 +1889,17 @@ const
 // -----------------------------------------------------
 //                  WINAPI
 // -----------------------------------------------------
+
+///--
+function __GetCurrentLine__: integer;
+begin
+  
+end;
+///--
+function __GetCurrentFile__: string;
+begin
+  
+end;
 
 function WINAPI_AllocConsole: longword; external 'kernel32.dll' name 'AllocConsole';
 
@@ -6308,7 +6323,7 @@ begin
   Result := System.IO.File.Exists(name);
 end;
 
-procedure Assert(cond: boolean);
+procedure Assert(cond: boolean; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
@@ -6319,10 +6334,10 @@ begin
     var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
     var currentFile := stackTrace.GetFrame(ind).GetFileName();
     if not IsWDE then
-      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString())
+      System.Diagnostics.Debug.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
     else if not cond then
     begin
-      var err := 'Сбой подтверждения: '+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      var err := 'Сбой подтверждения: '+Environment.NewLine+'Файл '+sourceFile+', строка '+line.ToString();
       writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
@@ -6332,7 +6347,7 @@ begin
     System.Diagnostics.Debug.Assert(cond);
 end;
 
-procedure Assert(cond: boolean; message: string);
+procedure Assert(cond: boolean; message: string; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
@@ -6343,10 +6358,10 @@ begin
     var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
     var currentFile := stackTrace.GetFrame(ind).GetFileName();
     if not IsWDE then
-      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString()+': '+message)
+      System.Diagnostics.Debug.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString()+': '+message)
     else if not cond then
     begin
-      var err := 'Сбой подтверждения: '+message+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      var err := 'Сбой подтверждения: '+message+Environment.NewLine+'Файл '+sourceFile+', строка '+line.ToString();
       writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();

@@ -1526,6 +1526,7 @@ namespace CodeCompletion
                                     if (!(ass.from is nil_const))
                                     {
                                         ProcScope tmp_scope = returned_scope as ProcScope;
+                                        cur_scope = returned_scope;
                                         ass.from.visit(this);
                                         if (returned_scope != null && returned_scope is TypeScope)
                                         {
