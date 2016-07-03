@@ -1544,6 +1544,10 @@ namespace CodeCompletion
         {
             _sequence_type.elements_type.visit(this);
         }
+        public override void visit(yield_node _yield_node)
+        {
+            _yield_node.ex.visit(this);
+        }
         public override void visit(modern_proc_type _modern_proc_type)
         {
             if (_modern_proc_type.aloneparam != null)
