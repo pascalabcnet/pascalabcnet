@@ -83,6 +83,18 @@ namespace CodeCompletion
             _assign.from.visit(this);
         }
 
+        public override void visit(assign_tuple _assign_tuple)
+        {
+            _assign_tuple.vars.visit(this);
+            _assign_tuple.expr.visit(this);
+        }
+
+        public override void visit(addressed_value_list _addressed_value_list)
+        {
+            foreach (addressed_value av in _addressed_value_list.variables)
+                av.visit(this);
+        }
+
         public override void visit(bin_expr _bin_expr)
         {
             //throw new NotImplementedException();
