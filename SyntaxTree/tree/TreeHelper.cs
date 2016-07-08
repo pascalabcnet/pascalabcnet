@@ -708,7 +708,8 @@ namespace PascalABCCompiler.SyntaxTree
             sb.Remove(0, 9);
             sb.Remove(sb.Length - 1, 1);
             sb.Insert(0, "function");
-            sb.Append(": " + return_type.ToString() + ";");
+            if (return_type!=null)
+                sb.Append(": " + return_type.ToString() + ";");
             return sb.ToString();
         }
     }
@@ -1445,6 +1446,25 @@ namespace PascalABCCompiler.SyntaxTree
             this.vars = vds;
             this.map_helper = map_helper;
         }
+
+        public override string ToString()
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append(vars.ToString());
+
+            /*if (vars_type != null)
+            {
+                sb.Append(": ");
+                sb.Append(vars_type.ToString());
+            }
+            if (inital_value != null)
+            {
+                sb.Append(" := ");
+                sb.Append(inital_value.ToString());
+            }*/
+            return sb.ToString();
+        }
+
     }
 
     public partial class yield_variable_definitions_with_unknown_type : declaration
@@ -1577,6 +1597,14 @@ namespace PascalABCCompiler.SyntaxTree
     // SSM 02/06/16 - пробуем добавить кеш для семантического выражения
     public partial class expression
     {
+    }
+
+	public partial class array_type
+    {
+        public override string ToString()
+        {
+            return "array of " + this.elements_type.ToString();
+        }
     }
 
 }

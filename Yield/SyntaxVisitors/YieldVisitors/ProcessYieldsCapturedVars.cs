@@ -153,6 +153,8 @@ namespace SyntaxVisitors
                 cm.Add(new var_def_statement(YieldConsts.Self, iteratorClassRef));
             }
 
+            var GetEnumeratorBody = new statement_list();
+
             // Системные поля и методы для реализации интерфейса IEnumerable
             cm.Add(new var_def_statement(YieldConsts.State, "integer"),
                 new var_def_statement(YieldConsts.Current, stels),
@@ -160,11 +162,9 @@ namespace SyntaxVisitors
                 new procedure_definition("Reset"),
                 new procedure_definition("MoveNext", "boolean", pd.proc_body),
                 new procedure_definition("System.Collections.IEnumerator.get_Current", "object", new assign("Result", YieldConsts.Current)),
-                new procedure_definition("System.Collections.IEnumerable.GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"))
+                //new procedure_definition("System.Collections.IEnumerable.GetEnumerator", "System.Collections.IEnumerator", new assign("Result", "Self"))
+                new procedure_definition("System.Collections.IEnumerable.GetEnumerator", "System.Collections.IEnumerator", GetEnumeratorBody)
                 );
-
-            
-            
 
             // frninja 20/04/16 - поддержка шаблонных классов
             var yieldClassName = NewYieldClassName();
@@ -242,7 +242,7 @@ namespace SyntaxVisitors
             var cm1 = cm.Add( //class_members.Public.Add(
                 //procedure_definition.EmptyDefaultConstructor,
                 new procedure_definition(new function_header("get_Current", stels), new assign("Result", YieldConsts.Current)),
-                new procedure_definition(new function_header("GetEnumerator", IEnumeratorT), new assign("Result", "Self")),
+                new procedure_definition(new function_header("GetEnumerator", IEnumeratorT), GetEnumeratorBody),
                 new procedure_definition("Dispose")
             );
 
@@ -260,9 +260,26 @@ namespace SyntaxVisitors
             helperClassDefinition.where_section = this.GetMethodWhereSection(pd);
 
             var td1 = new type_declaration(className, helperClassDefinition);
-                //SyntaxTreeBuilder.BuildClassDefinition(interfaces1, cm1));
+            //SyntaxTreeBuilder.BuildClassDefinition(interfaces1, cm1));
 
+
+            var stl1 = new statement_list(new var_statement("res", new new_expr(this.CreateClassReference(className), new expression_list())));
             
+
+            stl1.AddMany(lid.Select(id => new assign(new dot_node("res", new ident(formalParamsMap[id.name])), new ident(formalParamsMap[id.name]))));
+
+            // Переприсваивание self 
+            if (iteratorClassName != null && !pd.proc_header.class_keyword)
+            {
+                stl1.Add(new assign(new dot_node("res", YieldConsts.Self), new ident(YieldConsts.Self)));
+            }
+
+            stl1.Add(new assign("Result", "res"));
+
+
+            GetEnumeratorBody.Add(new if_node(new bin_expr(new ident(YieldConsts.State), new int32_const(0), Operators.Equal),
+                new assign("Result", "Self"),
+                stl1));
 
             var cct = new type_declarations(/*td*/);
             cct.Add(td1);
@@ -937,7 +954,7 @@ namespace SyntaxVisitors
             // Обработать параметры! 
             // Как? Ищем в mids formal_parametrs, но надо выделить именно обращение к параметрам - не полям класса, не глобальным переменным
 
-            var cfa = new ConstructFiniteAutomata((pd.proc_body as block).program_code);
+            var cfa = new ConstructFiniteAutomata(pd.proc_body as block);
             cfa.Transform();
 
             (pd.proc_body as block).program_code = cfa.res;
@@ -976,7 +993,7 @@ namespace SyntaxVisitors
         }
     }
 
-    class ConstructFiniteAutomata
+    /*class ConstructFiniteAutomata1
     {
         public statement_list res = new statement_list();
         statement_list stl;
@@ -992,9 +1009,9 @@ namespace SyntaxVisitors
         private labeled_statement OuterLabeledStatement;
         private Dictionary<int, labeled_statement> Dispatches = new Dictionary<int,labeled_statement>();
 
-        public ConstructFiniteAutomata(statement_list stl)
+        public ConstructFiniteAutomata1(block bl)
         {
-            this.stl = stl;
+            this.stl = bl.program_code;
         }
 
         private void AddState(out int stateNumber, out ident resumeLabel)
@@ -1064,6 +1081,69 @@ namespace SyntaxVisitors
             //statement_list res = new statement_list(cas);
             res = stl;
         }
-    }
+    }*/
 
+    // SSM 07/07/16 - изменен алгоритм генерации конечного автомата на более простой. Вместо case генерируется последовательность if ... goto состояние.
+    class ConstructFiniteAutomata
+    {
+        public statement_list res = new statement_list(); // сюда писать результат
+        statement_list stl; // это исходные операторы тела функции
+        declarations defs;  // это декларации функции - для добавления меток
+
+        int curState = 0;
+
+        public ConstructFiniteAutomata(block bl)
+        {
+            this.stl = bl.program_code;
+            defs = bl.defs;
+        }
+
+        public void Process(statement st)
+        {
+            if (st is yield_node)
+            {
+                var yn = st as yield_node;
+                curState += 1;
+                res.AddMany(
+                    new assign(YieldConsts.Current, yn.ex),
+                    new assign(YieldConsts.State, curState),
+                    new assign("Result", true),
+                    new procedure_call("exit"),
+                    new labeled_statement(YieldConsts.LabelStatePrefix+curState.ToString())
+                );
+            }
+            else if (st is labeled_statement)
+            {
+                var ls = st as labeled_statement;
+                res.Add(new labeled_statement(ls.label_name));
+                Process(ls.to_statement);
+            }
+            else
+            {
+                res.Add(st);
+            }
+        }
+
+        public void Transform()
+        {
+            res.Add(new labeled_statement(YieldConsts.LabelStatePrefix+curState.ToString()));
+
+            foreach (var st in stl.subnodes)
+                Process(st);
+
+            // добавим метки состояний
+            var idseq = Enumerable.Range(0, curState + 1).Select(i => new ident("lbstate#" + i.ToString()));
+            var idl = new ident_list(idseq.ToList());
+            defs.Add(new label_definitions(idl));
+
+            statement ifgoto = new goto_statement(YieldConsts.LabelStatePrefix + curState.ToString());
+            for (var i = curState - 1; i >= 0; i--)
+                ifgoto = new if_node(new bin_expr(new ident(YieldConsts.State), new int32_const(i), Operators.Equal),
+                    new goto_statement(YieldConsts.LabelStatePrefix + i.ToString()),
+                    ifgoto
+                    );
+            res.AddFirst(ifgoto);
+            res.AddFirst(new assign("Result", false));
+        }
+    }
 }

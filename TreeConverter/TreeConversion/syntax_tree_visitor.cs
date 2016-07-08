@@ -15725,6 +15725,50 @@ namespace PascalABCCompiler.TreeConverter
             else
             {
                 from = convert_strong(_assign.from);
+                // SSM 26.06.16 - правка в связи с автовыведением типов в yieldах
+                if (to.type is auto_type)
+                {
+                    if (to is class_field_reference)
+                    {
+                        var cfr = to as class_field_reference;
+                        cfr.field.type = from.type;
+                        cfr.type = from.type;
+                    }
+                    else if (to is local_block_variable_reference)
+                    {
+                        var lvr = to as local_block_variable_reference;
+                        lvr.var.type = from.type;
+                        lvr.type = from.type;
+                    }
+                    else AddError(to.location, "Не могу вывести тип при наличии yield: "+ to.type.full_name);
+                    //to.type = from.type; // и без всякого real_type!
+                }
+                //else if (to.type is compiled_type_node)
+                //else if (to.type.name.StartsWith("IEnumerable<IEnumerableAutoType>")) // Сделать не сравнением строк!!!
+                else if (to.type is compiled_generic_instance_type_node && (to.type as compiled_generic_instance_type_node).instance_params[0] is ienumerable_auto_type)
+                {
+                    var tt = to.type;
+                    type_node elem_type = null;
+                    var b = FindIEnumerableElementType(from.type, ref elem_type);
+                    if (!b)
+                        AddError(null, "FindIEnumerableElementType returns false");
+
+                    var IEnumType = new template_type_reference(new named_type_reference("System.Collections.Generic.IEnumerable"), new template_param_list(new semantic_type_node(elem_type)));
+                    if (to is class_field_reference)
+                    {
+                        var cfr = to as class_field_reference;
+
+                        cfr.field.type = convert_strong(IEnumType);
+                        cfr.type = cfr.field.type;
+                    }
+                    else if (to is local_block_variable_reference)
+                    {
+                        var lvr = to as local_block_variable_reference;
+
+                        lvr.var.type = convert_strong(IEnumType); // замена типа у описания переменной
+                        lvr.type = lvr.var.type;                  // замена типа у переменной
+                    }
+                }
             }
             /// end
 
@@ -16300,7 +16344,7 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
-        public bool FindIEnumerableElementType(SyntaxTree.foreach_stmt _foreach_stmt, type_node tn, ref type_node elem_type)
+        public bool FindIEnumerableElementType(/*SyntaxTree.foreach_stmt _foreach_stmt, */type_node tn, ref type_node elem_type)
         {
             var IEnstring = "System.Collections.IEnumerable";
             compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(IEnstring));
@@ -16465,7 +16509,7 @@ namespace PascalABCCompiler.TreeConverter
                 in_what = tmp;
             //if (in_what.type.find_in_type("GetEnumerator") == null)
 
-            if (!FindIEnumerableElementType(_foreach_stmt, in_what.type, ref elem_type))
+            if (!FindIEnumerableElementType(/*_foreach_stmt, */in_what.type, ref elem_type))
             //if (!IsGetEnumerator(in_what.type, ref elem_type))
                 AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
 
@@ -19054,13 +19098,17 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.yield_unknown_expression_type _unk_expr)
         {
-            _unk_expr.MapHelper.vars_type_map[_unk_expr.Vds].visit(this);
+            // Отвечает за типизацию всех переменных с автовыведением типа
+            // Пробую сделать по-другому: перевести в auto_type и потом на присваивании перехватить
+            // _unk_expr.MapHelper.vars_type_map[_unk_expr.Vds].visit(this);
+            var t = new semantic_type_node(new auto_type(get_location(_unk_expr)));
+            t.visit(this);
         }
 
         // frninja - заполнение хелпера типов локальных переменных для yield
         public override void visit(SyntaxTree.yield_var_def_statement_with_unknown_type _vars)
         {
-            if ((object)_vars.vars.vars_type != null)
+            /*if ((object)_vars.vars.vars_type != null)
             {
                 // Visit stored vars
                 _vars.vars.visit(this);
@@ -19069,6 +19117,7 @@ namespace PascalABCCompiler.TreeConverter
             var t = convert_strong(_vars.vars.inital_value);
             _vars.map_helper.vars_type_map[_vars.vars] = new SyntaxTree.semantic_type_node(t.type);
 
+            */
             // Visit stored vars
             _vars.vars.visit(this);
         }
@@ -19076,7 +19125,7 @@ namespace PascalABCCompiler.TreeConverter
         // frninja - заполнение хелпера типов локальных переменных для yield// frninja - заполнение хелпера типов локальных переменных для yield
         public override void visit(SyntaxTree.yield_variable_definitions_with_unknown_type _vars)
         {
-            foreach (var vd in _vars.vars.list)
+            /*foreach (var vd in _vars.vars.list)
             {
                 if ((object)vd.vars_type != null)
                 {
@@ -19084,7 +19133,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
                 var t = convert_strong(vd.inital_value);
                 _vars.map_helper.vars_type_map[vd] = new SyntaxTree.semantic_type_node(t.type);
-            }
+            }*/
 
             // Visit stored vars
             _vars.vars.visit(this);
@@ -19096,7 +19145,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)
         {
             
-            var _foreach_stmt = _unk.unknown_foreach;
+            /*var _foreach_stmt = _unk.unknown_foreach;
 
             semantic_type_node t;
 
@@ -19115,8 +19164,10 @@ namespace PascalABCCompiler.TreeConverter
                 t = new SyntaxTree.semantic_type_node(elem_type);
                 // Add to map
                 _yieldForeachTypeMap.Add(_foreach_stmt.Guid, t);
-            }
+            }*/
             // Visit type
+
+            var t = new semantic_type_node(new ienumerable_auto_type(get_location(_unk)));
             t.visit(this);
         }
 

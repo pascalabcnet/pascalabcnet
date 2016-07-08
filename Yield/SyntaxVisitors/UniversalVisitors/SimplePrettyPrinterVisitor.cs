@@ -32,6 +32,8 @@ namespace SyntaxVisitors
             OnEnter = Enter;
             OnLeave = Exit;
             this.filename = filename;
+            if (filename != null)
+                System.IO.File.Delete(filename);
         }
 
         public void Println(string s)
@@ -44,6 +46,7 @@ namespace SyntaxVisitors
         }
         public void PrintNoOffset(string s)
         {
+            s = s.Replace("PascalABCCompiler.SyntaxTree.", "").Replace("System.Collections.Generic.", "");
             if (filename == null)
             {
                 Console.Write(s);
@@ -64,6 +67,8 @@ namespace SyntaxVisitors
                 PrintNoOffset(st.GetType().Name + ": ");
             Println(""+st);
         }
+
+
         public virtual void Enter(syntax_tree_node st)
         {
             if (st is statement_list)
@@ -101,10 +106,8 @@ namespace SyntaxVisitors
             {
                 var cd = st as class_definition;
                 PrintNoOffset("class");
-                if (cd.class_parents != null && cd.class_parents.types.Count > 0)
-                {
+                if (cd.class_parents?.types.Count > 0)
                     PrintlnNoOffset("(" + cd.class_parents.ToString() + ")");
-                }
                 else
                     PrintlnNoOffset("");
                 off += 2;
@@ -114,23 +117,36 @@ namespace SyntaxVisitors
             else if (st is access_modifer_node)
             {
                 var am = st as access_modifer_node;
-                Println(am.access_level.ToString());
-
+                Println(am.access_level.ToString().Replace("_modifier",""));
             }
             else if (st is variable_definitions)
             {
                 var vds = st as variable_definitions;
-                Println("var");
+                Print("var");
                 off += 2;
             }
             else if (st is var_def_statement)
             {
                 var vds = st as var_def_statement;
-                Println(vds.ToString());
+                Println (vds.ToString());
             }
-            else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members || st is case_variants || st is program_module)
+            else if (st is yield_var_def_statement_with_unknown_type)
+            {
+                var vds = st as yield_var_def_statement_with_unknown_type;
+                Println("var "+vds.ToString());
+                visitNode = false;
+            }
+            else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members 
+                || st is case_variants || st is program_module || st is no_type_foreach || st is template_param_list
+                || st is yield_unknown_foreach_type || st is yield_unknown_expression_type 
+                )
             {
             }
+           /* else if (st is array_type)
+            {
+                var vds = st as array_type;
+                Println ("array of "+vds.elements_type.ToString());
+            }*/
             else if (st is if_node)
             {
                 var ifn = st as if_node;
@@ -156,6 +172,13 @@ namespace SyntaxVisitors
                 Println("while " + wn.expr.ToString() + " do");
                 off += 2;
             }
+            else if (st is foreach_stmt)
+            {
+                var wn = st as foreach_stmt;
+
+                Println("foreach " + wn.identifier.ToString() + " in "+wn.in_what + " do");
+                off += 2;
+            }
             else if (st is case_node)
             {
                 var cn = st as case_node;
@@ -173,7 +196,10 @@ namespace SyntaxVisitors
             }
             else if (st is var_statement || st is procedure_header)
             {
-                Println(st.ToString());
+                var s = st.ToString();
+                s = s.Replace("PascalABCCompiler.SyntaxTree.", "").Replace("System.Collections.Generic.","");
+
+                Println(s);
                 visitNode = false;
             }
             else if (st is procedure_definition)
@@ -193,6 +219,13 @@ namespace SyntaxVisitors
                     return;
                 PrintlnNode(st);
             }
+            /*else if (st is named_type_reference)
+            {
+                var s = st.ToString();
+                s = s.Replace("PascalABCCompiler.SyntaxTree.", "").Replace("System.Collections.Generic.","");
+
+                PrintlnNoOffset(s);
+            }*/
             else
             {
                 var q = st.GetType().GetMethod("ToString", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly);

@@ -344,7 +344,16 @@ namespace PascalABCCompiler.TreeRealization
             }
 
             if (shouldAddToAllTypeInstances) //lroman// Если зашли сюда при выведении типов параметров лямбды, то тип инстанцироваться может с типом lambda_any_type_node. Поэтому, если выводим типы. То данную инстанцию не добавляем
-                generic_convertions.all_type_instances.Add(instance);
+            {
+                if (instance.instance_params[0] is ienumerable_auto_type)
+                {
+                    //instance = instance;
+                }
+                else
+                {
+                    generic_convertions.all_type_instances.Add(instance);
+                }
+            }
 
             internal_interface ii = original.get_internal_interface(internal_interface_kind.delegate_interface);
             if (ii != null)

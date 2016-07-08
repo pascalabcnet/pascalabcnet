@@ -363,6 +363,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public static string record_const_type_name = "RecordConst";
         public static string array_const_type_name = "ArrayConst";
+        public static string auto_type_name = "AutoType"; // SSM 25.06.16 - тип, который определяется на этапе компиляции при первом присваивании
+        public static string ienumerable_auto_type_name = "IEnumerableAutoType"; // SSM 05.07.16 - тип, который определяется на этапе компиляции при первом присваивании
         public static string recort_printable_name_template = "record{0}end";
         public static string set_name = "TypedSet";
 

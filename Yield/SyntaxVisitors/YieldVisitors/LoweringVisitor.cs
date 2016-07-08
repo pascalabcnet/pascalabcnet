@@ -34,6 +34,7 @@ namespace SyntaxVisitors
         }
 
         private int _varnum = 0;
+        private int _foreachCollectionNum = 0;
         private int _enumeratorNum = 0;
 
         private VarNames NewVarNames(ident name)
@@ -50,6 +51,12 @@ namespace SyntaxVisitors
         {
             ++_enumeratorNum;
             return "$enumerator$" + _enumeratorNum;
+        }
+
+        private ident NewForeachCollectionName()
+        {
+            ++_foreachCollectionNum;
+            return "$coll$" + _foreachCollectionNum;
         }
 
         public static void Accept(procedure_definition pd)
@@ -81,63 +88,99 @@ namespace SyntaxVisitors
         // frninja 21/05/16
         public override void visit(foreach_stmt frch)
         {
+            // Полный код Loweringа c yield_unknown_foreach_type = integer
+            //  var a: System.Collections.Generic.IEnumerable<integer>;
+            //  a := l;
+            //  var en := a.GetEnumerator();
+            //  while en.MoveNext do
+            //  begin
+            //    var curr := en.Current; // var не нужно ставить если curr была описана раньше
+            //    Print(curr);
+            //  end;
+            ///
+
+            // var a: System.Collections.Generic.IEnumerable<yield_unknown_foreach_type> := l;
+            var foreachCollIdent = this.NewForeachCollectionName();
+            var foreachCollType = new template_type_reference(new named_type_reference("System.Collections.Generic.IEnumerable"), new template_param_list(new yield_unknown_foreach_type(frch)));
+            var foreachCollVarDef = new var_statement(foreachCollIdent, foreachCollType);
+            
+            var ass = new assign(foreachCollIdent, frch.in_what);
+
+            //  var en := a.GetEnumerator();
             var enumeratorIdent = this.NewEnumeratorName();
+            var enumeratorVarDef = new var_statement(enumeratorIdent, new method_call(new dot_node(foreachCollIdent, new ident("GetEnumerator")), new expression_list()));
 
-            // Переменная цикла
+
+            //var curr := en.Current;
+            // Переменная цикла foreach. Есть три варианта:
+            // 1. foreach x in l do           ->    curr := en.Current;
+            // 2. foreach var x in l do       ->    var curr := en.Current;
+            // 3. foreach var x: T in l do    ->    var curr: T := en.Current;
             var currentIdent = frch.identifier;
-            type_definition currentIdentType = null;
+            statement st = null;
 
-            // Новое тело
-            var stl = new statement_list();
+            var curExpr = new dot_node(enumeratorIdent, "Current");
 
             // С типом
-            if (frch.type_name == null)
+            if (frch.type_name == null) // 1. foreach x in l do   ->   curr := en.Current;
             {
-                // Внешнее имя, создавать ниче не надо
+                st = new assign(currentIdent, curExpr);
             }
-            else
+            else if (frch.type_name is no_type_foreach) // 2. foreach var x in l do    ->    var curr := en.Current;
             {
-                // var имеет место быть
-                if (frch.type_name is no_type_foreach)
-                {
-                    // автовывод
-                    currentIdentType = new yield_unknown_foreach_type(frch);
-                }
-                else
-                {
-                    currentIdentType = frch.type_name;
-                }
-
                 // Получаем служебное имя с $ и заменяем его в теле цикла
                 currentIdent = this.NewVarNames(frch.identifier).VarName;
                 var replacerVis = new ReplaceVariableNameVisitor(frch.identifier, currentIdent);
                 frch.visit(replacerVis);
 
+                st = new var_statement(currentIdent, curExpr);
+            }
+            else // 3. foreach var x: T in l do    ->    var curr: T := en.Current;
+            {
+                // Получаем служебное имя с $ и заменяем его в теле цикла
+                currentIdent = this.NewVarNames(frch.identifier).VarName;
+                var replacerVis = new ReplaceVariableNameVisitor(frch.identifier, currentIdent);
+                frch.visit(replacerVis);
 
-                // Создаем переменную цикла и добавляем в stl
-                stl.Add(new var_statement(currentIdent, currentIdentType));
-
+                st = new var_statement(currentIdent, frch.type_name, curExpr);
             }
 
+            // Получаем служебное имя с $ и заменяем его в теле цикла
+            //currentIdent = this.NewVarNames(frch.identifier).VarName;
+            //var replacerVis = new ReplaceVariableNameVisitor(frch.identifier, currentIdent);
+            //frch.visit(replacerVis);
+
+            // Создаем переменную цикла и добавляем в stl
+            //stl.Add(new var_statement(currentIdent, currentIdentType));
+
+            // Новое тело
+
+            //stl.Add(st);
+            // SSM вернул всё назад 26.06.16
             // Добавляем $current$ = $enumerator$.Current
-            //stl.Add(new assign(currentIdent, new dot_node(enumeratorIdent, "Current")));
-            stl.Add(new assign(currentIdent, new method_call(new yield_unknown_foreach_type_ident(frch), new expression_list(new dot_node(enumeratorIdent, "Current")))));
+            //var curExpr = new dot_node(enumeratorIdent, "Current");
+            //stl.Add(new assign(currentIdent, new method_call(new yield_unknown_foreach_type_ident(frch), new expression_list(new dot_node(enumeratorIdent, "Current")))));
 
 
             // Добавляем тело цикла в stl
-            ProcessNode(frch.stmt);
+            var stl = new statement_list(st);
+            ProcessNode(frch.stmt); //?? - видимо, для обработки вложенных конструкций
             stl.Add(frch.stmt);
 
             var whileNode = new while_node(new method_call(new dot_node(enumeratorIdent, "MoveNext"), new expression_list()),
                 stl,
                 WhileCycleType.While);
 
-            ReplaceStatement(frch,
+            /*ReplaceStatement(frch,
                 SeqStatements(new var_statement(enumeratorIdent,
                                     new named_type_reference("System.Collections.IEnumerator"),
                 // НЕБЕЗОПАСНО!
                                     new method_call(new dot_node(frch.in_what as addressed_value, new ident("GetEnumerator")), new expression_list())),
                               whileNode));
+            */
+            ReplaceStatement(frch,
+                SeqStatements(foreachCollVarDef, ass, enumeratorVarDef, whileNode)
+            );
 
         }
 
