@@ -9081,7 +9081,9 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
                         //try_convert_typed_expression_to_function_call(ref en);
                         //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                            || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
+                            || si.sym_info is compiled_constructor_node)
                         {
                             //dot_node dnode = new dot_node(syntax_node, template_id_right);
                             template_id_right.name = new dot_node(syntax_node, id_right);
@@ -9125,7 +9127,9 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
                         //try_convert_typed_expression_to_function_call(ref en);
                         //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                            || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
+                            || si.sym_info is compiled_constructor_node)
                         {
                             dot_node dnode = new dot_node(syntax_node, id_right);
                             method_call mc = new method_call(dnode, new expression_list());
