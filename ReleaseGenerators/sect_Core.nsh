@@ -1,4 +1,4 @@
-﻿Section $(DESC_Core) Core
+﻿	Section $(DESC_Core) Core
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
     File ExecHide.exe
@@ -11,6 +11,8 @@
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
+    File "..\bin\SyntaxVisitors.dll"
+    File "..\bin\YieldConversionSyntax.dll"
     File "..\bin\YieldHelpers.dll"
 	File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
@@ -47,6 +49,8 @@
     ${AddFile} "SyntaxTree.dll"
     ${AddFile} "SyntaxTreeConverters.dll"
     ${AddFile} "YieldHelpers.dll"
+    ${AddFile} "SyntaxVisitors.dll"
+    ${AddFile} "YieldConversionSyntax.dll"
 	${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
