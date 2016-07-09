@@ -1439,9 +1439,13 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (icmn.is_constructor)
                     {
-                        ConstructorInfo cnstr = helper.GetConstructor(icmn).cnstr;
-                        ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
-                        helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
+                        MethInfo mi = helper.GetConstructor(icmn);
+                        if (mi != null)
+                        {
+                            ConstructorInfo cnstr = mi.cnstr;
+                            ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
+                            helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
+                        }
                         continue;
                     }
                     else

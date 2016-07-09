@@ -9056,6 +9056,21 @@ namespace PascalABCCompiler.TreeConverter
             throw new CompilerInternalError("Undefined expression to address reciving");
         }
 
+        private bool has_property(ref SymbolInfo si)
+        {
+            SymbolInfo tmp = si;
+            while (tmp != null)
+            {
+                if (tmp.sym_info is compiled_property_node || tmp.sym_info is common_property_node)
+                {
+                    si = tmp;
+                    return true;
+                }   
+                tmp = tmp.Next;
+            }
+            return false;
+        }
+
         private void dot_node_as_expression_dot_template_ident(expression_node en, SyntaxTree.ident_with_templateparams template_id_right, motivation mot, addressed_value syntax_node)
         {
             SyntaxTree.ident id_right = template_id_right.name as ident;
@@ -9081,7 +9096,9 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
                         //try_convert_typed_expression_to_function_call(ref en);
                         //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
+                            || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
+                            || si.sym_info is compiled_constructor_node)
                         {
                             //dot_node dnode = new dot_node(syntax_node, template_id_right);
                             template_id_right.name = new dot_node(syntax_node, id_right);
@@ -9125,7 +9142,9 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
                         //try_convert_typed_expression_to_function_call(ref en);
                         //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
+                            || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
+                            || si.sym_info is compiled_constructor_node)
                         {
                             dot_node dnode = new dot_node(syntax_node, id_right);
                             method_call mc = new method_call(dnode, new expression_list());
@@ -12106,7 +12125,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             context.top_function.is_overload = true;                                       // SSM 12/08/15
             context.last_created_function.symbol_kind = symbol_kind.sk_overload_function;
-
+            bool is_forward = false;
             for (int i = 0; i < _procedure_attributes_list.proc_attributes.Count; i++)
             {
                 convertion_data_and_alghoritms.check_node_parser_error(_procedure_attributes_list.proc_attributes[i]);
@@ -12134,7 +12153,13 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "ATTRIBUTES_IN_INTERFACE_MEMBER");
                             }
+                            common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
+                            if (top_function != null && top_function.ConnectedToType != null)
+                            {
+                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "FORWARD_EXTENSION_METHODS_NOT_ALLOWED");
+                            }
 
+                            is_forward = true;
                             break;
                         }
                     case SyntaxTree.proc_attribute.attr_virtual:
@@ -12284,6 +12309,8 @@ namespace PascalABCCompiler.TreeConverter
                 		}
                     case proc_attribute.attr_extension:
                         {
+                            if (is_forward)
+                                AddError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
                             if (context.converted_compiled_type != null)
                                 AddError(get_location(_procedure_attributes_list), "EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED");
                             if (in_interface_part)
