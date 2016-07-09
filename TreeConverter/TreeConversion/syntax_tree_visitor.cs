@@ -9056,6 +9056,21 @@ namespace PascalABCCompiler.TreeConverter
             throw new CompilerInternalError("Undefined expression to address reciving");
         }
 
+        private bool has_property(ref SymbolInfo si)
+        {
+            SymbolInfo tmp = si;
+            while (tmp != null)
+            {
+                if (tmp.sym_info is compiled_property_node || tmp.sym_info is common_property_node)
+                {
+                    si = tmp;
+                    return true;
+                }   
+                tmp = tmp.Next;
+            }
+            return false;
+        }
+
         private void dot_node_as_expression_dot_template_ident(expression_node en, SyntaxTree.ident_with_templateparams template_id_right, motivation mot, addressed_value syntax_node)
         {
             SyntaxTree.ident id_right = template_id_right.name as ident;
@@ -9081,7 +9096,7 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
                         //try_convert_typed_expression_to_function_call(ref en);
                         //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
                             || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
                             || si.sym_info is compiled_constructor_node)
                         {
@@ -9127,7 +9142,7 @@ namespace PascalABCCompiler.TreeConverter
                         //en = expression_value_reciving(id_right, si, en, true);
                         //try_convert_typed_expression_to_function_call(ref en);
                         //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
                             || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
                             || si.sym_info is compiled_constructor_node)
                         {
