@@ -437,7 +437,10 @@ namespace PascalABCCompiler.TreeConverter
                                         ccc._new_obj_awaited = false;
                                         if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
                                         {
-                                            throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
+                                            if (syntax_tree_visitor.inherited_ident_processing)
+                                                syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST"));
+                                            else
+                                                syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "CAN_NOT_CALL_CONSTRUCTOR_AS_PROCEDURE"));
                                         }
                                         cmc = ccc;
                                     }
