@@ -401,6 +401,8 @@ namespace PascalABCCompiler.NETGenerator
         private void AddTypeInstanceToFunction(ICommonFunctionNode func, IGenericTypeInstance gti)
         {
             List<IGenericTypeInstance> instances;
+            //if (func == null) // SSM 3.07.16 Это решает проблему с оставшимся после перевода в сем. дерево узлом IEnumerable<UnknownType>, но очень грубо - пробую найти ошибку раньше
+            //    return;
             bool found = instances_in_functions.TryGetValue(func, out instances);
             if (!found)
             {

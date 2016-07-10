@@ -470,7 +470,7 @@ namespace CodeCompletion
         	List<SymInfo> result_names = new List<SymInfo>();
         	if (elems == null) return null;
         	for (int i=0; i<elems.Length; i++)
-        		if (pattern != null || pattern != "")
+        		if (pattern != null && pattern != "")
         		{
         			if (!elems[i].name.StartsWith("$"))
         			if (all_names)

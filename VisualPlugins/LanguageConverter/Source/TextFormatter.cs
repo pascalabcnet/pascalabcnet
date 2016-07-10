@@ -378,7 +378,7 @@ namespace Converter
             {
                 if (_word.Contains(specSymbol))
                 {
-                    _word.Replace(specSymbol, "");
+                    _word = _word.Replace(specSymbol, "");
                     return getWordValue(_word, specSymbol);
                 }
                 else

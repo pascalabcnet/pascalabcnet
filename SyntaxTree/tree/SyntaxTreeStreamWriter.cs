@@ -6000,18 +6000,6 @@ namespace PascalABCCompiler.SyntaxTree
 			write_type_definition(_yield_unknown_foreach_type);
 		}
 
-
-		public void visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-			bw.Write((Int16)217);
-			write_yield_unknown_foreach_type_ident(_yield_unknown_foreach_type_ident);
-		}
-
-		public void write_yield_unknown_foreach_type_ident(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-			write_ident(_yield_unknown_foreach_type_ident);
-		}
-
 	}
 
 

@@ -1,4 +1,4 @@
-/// Модуль электронного задачника Programming Taskbook 4
+﻿/// Модуль электронного задачника Programming Taskbook 4
 unit PT4;
 
 //------------------------------------------------------------------------------
@@ -1255,6 +1255,7 @@ var __initialized := false;
 procedure __InitModule;
 begin
   CurrentIOSystem := new IOPT4System;
+  PrintDelimDefault := '';
   loadNodes := new ArrayList;  
   ExecuteBeforeProcessTerminateIn__Mode += PT4_ExecuteBeforeProcessTerminateIn__Mode;
   StartPT(512);    

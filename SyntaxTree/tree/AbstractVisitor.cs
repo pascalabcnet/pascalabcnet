@@ -1092,11 +1092,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_foreach_type);
 		}
-
-		public virtual void visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-			DefaultVisit(_yield_unknown_foreach_type_ident);
-		}
 	}
 
 

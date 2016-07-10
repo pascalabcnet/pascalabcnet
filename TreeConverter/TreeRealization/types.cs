@@ -4809,4 +4809,22 @@ namespace PascalABCCompiler.TreeRealization
         }
     }
 
+    // тип, который объявляется как auto и определяется при компиляции в момент первого присваивания
+    // На 04.07.16 нужен только для генерации кода yield
+    public class auto_type : undefined_type 
+    {
+        //public type_node real_type = null;
+        public auto_type(location loc)
+            : base(compiler_string_consts.auto_type_name, loc) { }
+    }
+
+    // тип, который объявляется как ienumerable_auto и определяется при компиляции в момент первого присваивания
+    // На 04.07.16 нужен только для генерации кода yield
+    public class ienumerable_auto_type : undefined_type 
+    {
+        //public type_node real_type = null;
+        public ienumerable_auto_type(location loc)
+            : base(compiler_string_consts.ienumerable_auto_type_name, loc) { }
+    }
+
 }
