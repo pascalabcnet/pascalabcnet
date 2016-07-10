@@ -80,11 +80,6 @@ namespace SyntaxVisitors
             // DO NOTHING
         }
 
-        public override void visit(yield_unknown_foreach_type_ident _unk)
-        {
-            // DO NOTHING
-        }
-
         // frninja 21/05/16
         public override void visit(foreach_stmt frch)
         {
@@ -101,7 +96,8 @@ namespace SyntaxVisitors
 
             // var a: System.Collections.Generic.IEnumerable<yield_unknown_foreach_type> := l;
             var foreachCollIdent = this.NewForeachCollectionName();
-            var foreachCollType = new template_type_reference(new named_type_reference("System.Collections.Generic.IEnumerable"), new template_param_list(new yield_unknown_foreach_type(frch)));
+            var foreachCollType = new template_type_reference(new named_type_reference("System.Collections.Generic.IEnumerable"), 
+                new template_param_list(new yield_unknown_foreach_type(frch)));
             var foreachCollVarDef = new var_statement(foreachCollIdent, foreachCollType);
             
             var ass = new assign(foreachCollIdent, frch.in_what);
@@ -164,20 +160,13 @@ namespace SyntaxVisitors
 
             // Добавляем тело цикла в stl
             var stl = new statement_list(st);
-            ProcessNode(frch.stmt); //?? - видимо, для обработки вложенных конструкций
+            ProcessNode(frch.stmt); // для обработки вложенных конструкций
             stl.Add(frch.stmt);
 
             var whileNode = new while_node(new method_call(new dot_node(enumeratorIdent, "MoveNext"), new expression_list()),
                 stl,
                 WhileCycleType.While);
 
-            /*ReplaceStatement(frch,
-                SeqStatements(new var_statement(enumeratorIdent,
-                                    new named_type_reference("System.Collections.IEnumerator"),
-                // НЕБЕЗОПАСНО!
-                                    new method_call(new dot_node(frch.in_what as addressed_value, new ident("GetEnumerator")), new expression_list())),
-                              whileNode));
-            */
             ReplaceStatement(frch,
                 SeqStatements(foreachCollVarDef, ass, enumeratorVarDef, whileNode)
             );

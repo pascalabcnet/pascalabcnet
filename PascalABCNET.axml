@@ -958,8 +958,8 @@
                 <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <Text>public ConstructFiniteAutomata1(block bl)</Text>
                 <OCtx>
-                  <i Type="Method">public ConstructFiniteAutomata1 ( block bl )</i>
-                  <i Type="ClassOrNamespace">class ConstructFiniteAutomata1</i>
+                  <i Type="Method">public ConstructFiniteAutomata ( block bl )</i>
+                  <i Type="ClassOrNamespace">class ConstructFiniteAutomata</i>
                   <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
                   <i Type="CS_TreeNode">
                   </i>

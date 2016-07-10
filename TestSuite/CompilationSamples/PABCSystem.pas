@@ -1698,6 +1698,8 @@ var
   ExitCode := 0; // TODO Сделать возврат в Main
   ///--
   DefaultEncoding: Encoding;
+  ///--
+  PrintDelimDefault: string := ' ';
 
 ///--
 var
@@ -7939,7 +7941,7 @@ end;
 /// Выводит последовательность на экран, используя пробел в качестве разделителя
 function Print<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.Print(' ');  
+  Result := Self.Print(PrintDelimDefault);  
 end;
 
 /// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
@@ -7953,7 +7955,7 @@ end;
 /// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
 function Println<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.Println(' ');  
+  Result := Self.Println(PrintDelimDefault);  
 end;
 
 /// Выводит последовательность строк в файл

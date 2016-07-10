@@ -1306,12 +1306,6 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_yield_unknown_foreach_type">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(yield_unknown_foreach_type _yield_unknown_foreach_type);
-		///<summary>
-		///Method to visit yield_unknown_foreach_type_ident.
-		///</summary>
-		///<param name="_yield_unknown_foreach_type_ident">Node to visit</param>
-		///<returns> Return value is void </returns>
-		void visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident);
 	}
 
 

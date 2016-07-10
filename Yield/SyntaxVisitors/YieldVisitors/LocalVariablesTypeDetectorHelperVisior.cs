@@ -16,11 +16,8 @@ namespace SyntaxVisitors
 
         public List<var_def_statement> LocalDeletedVS = new List<var_def_statement>(); // var_statement's, потом объединим с LocalDeletedVD для верного порядка
 
-        public yield_locals_type_map_helper VarTypeMap { get; private set; }
-
-        public LocalVariablesTypeDetectorHelperVisior(yield_locals_type_map_helper varTypeMap)
+        public LocalVariablesTypeDetectorHelperVisior()
         {
-            this.VarTypeMap = varTypeMap;
         }
 
         public override void visit(yield_variable_definitions_with_unknown_type yvds)
@@ -33,7 +30,7 @@ namespace SyntaxVisitors
 
             LocalDeletedVS.Insert(0, vs.var_def);
 
-            ReplaceStatement(vs, new yield_var_def_statement_with_unknown_type(vs.var_def, this.VarTypeMap));
+            ReplaceStatement(vs, new yield_var_def_statement_with_unknown_type(vs.var_def));
         }
 
         public override void visit(variable_definitions vd)
@@ -43,7 +40,7 @@ namespace SyntaxVisitors
                 LocalDeletedDefs.Insert(0, v); 
             }
 
-            Replace(vd, new yield_variable_definitions_with_unknown_type(vd, VarTypeMap));
+            Replace(vd, new yield_variable_definitions_with_unknown_type(vd));
 
             // еще - не заходить в лямбды
         }

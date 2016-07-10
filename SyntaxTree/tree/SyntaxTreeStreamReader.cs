@@ -454,8 +454,6 @@ namespace PascalABCCompiler.SyntaxTree
 					return new yield_variable_definitions_with_unknown_type();
 				case 216:
 					return new yield_unknown_foreach_type();
-				case 217:
-					return new yield_unknown_foreach_type_ident();
 			}
 			return null;
 		}
@@ -3832,17 +3830,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_foreach_type(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
 			read_type_definition(_yield_unknown_foreach_type);
-		}
-
-
-		public void visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-			read_yield_unknown_foreach_type_ident(_yield_unknown_foreach_type_ident);
-		}
-
-		public void read_yield_unknown_foreach_type_ident(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-			read_ident(_yield_unknown_foreach_type_ident);
 		}
 
 	}

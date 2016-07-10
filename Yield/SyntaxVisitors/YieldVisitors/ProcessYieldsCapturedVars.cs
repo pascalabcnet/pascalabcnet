@@ -82,8 +82,8 @@ namespace SyntaxVisitors
             IEnumerable<var_def_statement> fields, // локальные переменные
             IDictionary<string, string> localsMap, // отображение для захваченных имен локальных переменных
             IDictionary<string, string> formalParamsMap, // отображение для захваченных имен формальных параметров
-            IDictionary<var_def_statement, var_def_statement> localsCloneMap, // отображение для оберток локальных переменных 
-            yield_locals_type_map_helper localTypeMapHelper) // вспомогательный узел для типов локальных переменных
+            IDictionary<var_def_statement, var_def_statement> localsCloneMap // отображение для оберток локальных переменных 
+            ) 
         {
             var fh = (pd.proc_header as function_header);
             if (fh == null)
@@ -104,7 +104,7 @@ namespace SyntaxVisitors
                                             if (vds.inital_value != null)
                                             {
                                                 //return new var_def_statement(ids, new yield_unknown_expression_type(localsCloneMap[vds], varsTypeDetectorHelper), null);
-                                                return new var_def_statement(ids, new yield_unknown_expression_type(localsCloneMap[vds], localTypeMapHelper), null);
+                                                return new var_def_statement(ids, new yield_unknown_expression_type(localsCloneMap[vds]), null);
                                             }
                                             else
                                             {
@@ -606,7 +606,7 @@ namespace SyntaxVisitors
         /// </summary>
         /// <param className="pd">Объявление метода</param>
         /// <returns>Коллекция посещенных локальных переменных</returns>
-        private void CreateLocalVariablesTypeProxies(procedure_definition pd, out IEnumerable<var_def_statement> localsClonesCollection, out yield_locals_type_map_helper localsTypeMapHelper)
+        private void CreateLocalVariablesTypeProxies(procedure_definition pd, out IEnumerable<var_def_statement> localsClonesCollection)
         {
             // Выполняем определение типов локальных переменных с автовыводом типов
 
@@ -616,8 +616,7 @@ namespace SyntaxVisitors
             pdCloned.has_yield = false;
 
             // Заменяем локальные переменные с неизвестным типом на обертки-хелперы (откладываем до семантики)
-            localsTypeMapHelper = new yield_locals_type_map_helper();
-            LocalVariablesTypeDetectorHelperVisior localsTypeDetectorHelperVisitor = new LocalVariablesTypeDetectorHelperVisior(localsTypeMapHelper);
+            LocalVariablesTypeDetectorHelperVisior localsTypeDetectorHelperVisitor = new LocalVariablesTypeDetectorHelperVisior();
             pdCloned.visit(localsTypeDetectorHelperVisitor);
 
             // frninja 16/03/16 - строим список локальных переменных в правильном порядке
@@ -927,9 +926,8 @@ namespace SyntaxVisitors
             pd.visit(deleteBeginEndVisitor);
 
             // Обработка метода для корректного захвата локальных переменных и их типов
-            yield_locals_type_map_helper localsTypeMapHelper;
             IEnumerable<var_def_statement> localsClonesCollection;
-            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection, out localsTypeMapHelper);
+            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);
             
 
             // frninja 16/11/15: перенес ниже чтобы работал захват для lowered for
@@ -960,7 +958,7 @@ namespace SyntaxVisitors
             (pd.proc_body as block).program_code = cfa.res;
 
             // Конструируем определение класса
-            var cct = GenClassesForYield(pd, dld.LocalDeletedDefs, CapturedLocalsNamesMap, CapturedFormalParamsNamesMap, localsCloneMap, localsTypeMapHelper); // все удаленные описания переменных делаем описанием класса
+            var cct = GenClassesForYield(pd, dld.LocalDeletedDefs, CapturedLocalsNamesMap, CapturedFormalParamsNamesMap, localsCloneMap); // все удаленные описания переменных делаем описанием класса
 
             // Вставляем классы-хелперы
             InsertYieldHelpers(pd, cct);

@@ -1741,14 +1741,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-		}
-
-		public virtual void post_do_visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-		}
-
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3607,13 +3599,6 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_yield_unknown_foreach_type);
 			pre_do_visit(_yield_unknown_foreach_type);
 			post_do_visit(_yield_unknown_foreach_type);
-		}
-
-		public override void visit(yield_unknown_foreach_type_ident _yield_unknown_foreach_type_ident)
-		{
-			DefaultVisit(_yield_unknown_foreach_type_ident);
-			pre_do_visit(_yield_unknown_foreach_type_ident);
-			post_do_visit(_yield_unknown_foreach_type_ident);
 		}
 	}
 
