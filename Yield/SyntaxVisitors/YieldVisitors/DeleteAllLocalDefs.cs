@@ -18,7 +18,7 @@ namespace SyntaxVisitors
 
         public ISet<string> LocalDeletedDefsNames = new HashSet<string>();            // их имена - для быстрого поиска  
 
-        public ISet<ident> CollectedLocals = new HashSet<ident>();
+        public ISet<ident> CollectedLocals = new HashSet<ident>(); // SSM - не очень понимаю, зачем хранить строки, identы и 
 
         public IEnumerable<var_def_statement> LocalDeletedDefs
         {
@@ -44,6 +44,7 @@ namespace SyntaxVisitors
             }
             else
             {
+                // Нескольких переменных тут всё равно не будет - это ошибка
                 ReplaceStatement(vs, SeqStatements(vs.var_def.vars.idents.Select(id => new assign(id, vs.var_def.inital_value)).ToArray()));
             }
 
@@ -51,7 +52,7 @@ namespace SyntaxVisitors
             CollectedLocals.UnionWith(vs.var_def.vars.idents);
         }
 
-        public override void visit(variable_definitions vd)
+        public override void visit(variable_definitions vd) // описания до begin
         {
             foreach (var v in vd.list)
             {

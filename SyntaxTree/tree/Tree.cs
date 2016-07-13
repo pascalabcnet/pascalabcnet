@@ -2040,7 +2040,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Секция описания переменных
+	///Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end
 	///</summary>
 	[Serializable]
 	public partial class variable_definitions : declaration
@@ -2438,7 +2438,8 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Описание переменных
+	///Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).
+
 	///</summary>
 	[Serializable]
 	public partial class var_def_statement : declaration
@@ -22873,7 +22874,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Однострочное описание переменной внутри begin-end. Хранит внутри var_def_statement
 	///</summary>
 	[Serializable]
 	public partial class var_statement : statement
