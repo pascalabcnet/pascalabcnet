@@ -412,14 +412,6 @@ procedure WriteMatr<T>(a: array of array of T);
 
 procedure WriteMatr<T>(a: List<List<T>>);
 
-//2016.07.10
-
-procedure PrintMatr<T>(a: array[,] of T);
-
-procedure PrintMatr<T>(a: array of array of T);
-
-procedure PrintMatr<T>(a: List<List<T>>);
-
 // == Конец дополнений к версии 4.14 ==
 
 implementation
@@ -1700,59 +1692,34 @@ begin
     a.Add(ReadSeqString(m).ToList);
 end;
 
-//2016.17.10
-
-procedure PrintMatr<T>(a: array[,] of T);
+procedure WriteMatr<T>(a: array[,] of T);
 begin
   for var i := 0 to a.GetLength(0)-1 do
     for var j := 0 to a.GetLength(1)-1 do
       write(a[i,j]);
 end;
 
-procedure PrintMatr<T>(a: array of array of T);
+procedure WriteMatr<T>(a: array of array of T);
 begin
   for var i := 0 to a.Length-1 do
     for var j := 0 to a[i].Length-1 do
       write(a[i][j]);
 end;
 
-procedure PrintMatr<T>(a: List<List<T>>);
+procedure WriteMatr<T>(a: List<List<T>>);
 begin
   for var i := 0 to a.Count-1 do
     for var j := 0 to a[i].Count-1 do
       write(a[i][j]);
 end;
 
-
-procedure WriteMatr<T>(a: array[,] of T);
-begin
-  PrintMatr(a);
-end;
-
-procedure WriteMatr<T>(a: array of array of T);
-begin
-  PrintMatr(a);
-end;
-
-procedure WriteMatr<T>(a: List<List<T>>);
-begin
-  PrintMatr(a);
-end;
-
-
 /// Выводит размер и элементы последовательности
-procedure PrintAll<T>(self: sequence of T); extensionmethod;
+procedure WriteAll<T>(self: sequence of T); extensionmethod;
 begin
   var b := self.ToArray();
   PT4.Put(b.Length);
   foreach e : T in b do
     PT4.Put(e);
-end;
-
-/// Выводит размер и элементы последовательности
-procedure WriteAll<T>(self: sequence of T); extensionmethod;
-begin
-  self.PrintAll;
 end;
 
 /// Выводит элементы последовательности
@@ -1763,23 +1730,11 @@ begin
     PT4.Put(e);
 end;
 
-/// Выводит элементы последовательности
-procedure Writeln<T>(self: sequence of T); extensionmethod;
-begin
-  self.Write;
-end;
-
 /// Выводит элементы динамического массива
 procedure Write<T>(self: array of T); extensionmethod;
 begin
   for var i:=0 to self.Length-1 do
     PT4.Put(self[i]);
-end;
-
-/// Выводит элементы динамического массива
-procedure Writeln<T>(self: array of T); extensionmethod;
-begin
-  self.Write;
 end;
 
 /// Выводит элементы матрицы
@@ -1788,12 +1743,6 @@ begin
   for var i:=0 to self.GetLength(0)-1 do
   for var j:=0 to self.GetLength(1)-1 do
     PT4.Put(self[i,j]);
-end;
-
-/// Выводит элементы матрицы
-procedure Writeln<T>(self: array [,] of T); extensionmethod;
-begin
-  self.Write;
 end;
 
 /// Выводит в разделе отладки окна задачника 
