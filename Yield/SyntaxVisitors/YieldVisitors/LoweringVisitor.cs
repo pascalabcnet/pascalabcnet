@@ -106,7 +106,6 @@ namespace SyntaxVisitors
             var enumeratorIdent = this.NewEnumeratorName();
             var enumeratorVarDef = new var_statement(enumeratorIdent, new method_call(new dot_node(foreachCollIdent, new ident("GetEnumerator")), new expression_list()));
 
-
             //var curr := en.Current;
             // Переменная цикла foreach. Есть три варианта:
             // 1. foreach x in l do           ->    curr := en.Current;
@@ -140,23 +139,6 @@ namespace SyntaxVisitors
 
                 st = new var_statement(currentIdent, frch.type_name, curExpr);
             }
-
-            // Получаем служебное имя с $ и заменяем его в теле цикла
-            //currentIdent = this.NewVarNames(frch.identifier).VarName;
-            //var replacerVis = new ReplaceVariableNameVisitor(frch.identifier, currentIdent);
-            //frch.visit(replacerVis);
-
-            // Создаем переменную цикла и добавляем в stl
-            //stl.Add(new var_statement(currentIdent, currentIdentType));
-
-            // Новое тело
-
-            //stl.Add(st);
-            // SSM вернул всё назад 26.06.16
-            // Добавляем $current$ = $enumerator$.Current
-            //var curExpr = new dot_node(enumeratorIdent, "Current");
-            //stl.Add(new assign(currentIdent, new method_call(new yield_unknown_foreach_type_ident(frch), new expression_list(new dot_node(enumeratorIdent, "Current")))));
-
 
             // Добавляем тело цикла в stl
             var stl = new statement_list(st);

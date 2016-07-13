@@ -631,7 +631,7 @@ namespace SyntaxVisitors
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
             //pdCloned.is_yield_helper = true;
 
-            InsertHelperMethod(pd, pdCloned);
+            InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять?
         }
 
         /// <summary>
