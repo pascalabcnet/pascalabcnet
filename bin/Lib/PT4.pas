@@ -412,6 +412,16 @@ procedure WriteMatr<T>(a: array of array of T);
 
 procedure WriteMatr<T>(a: List<List<T>>);
 
+// == Дополнения 2016.07
+
+procedure PrintMatr<T>(a: array[,] of T);
+
+procedure PrintMatr<T>(a: array of array of T);
+
+procedure PrintMatr<T>(a: List<List<T>>);
+
+// == Конец дополнений 2016.07
+
 // == Конец дополнений к версии 4.14 ==
 
 implementation
@@ -1744,6 +1754,80 @@ begin
   for var j:=0 to self.GetLength(1)-1 do
     PT4.Put(self[i,j]);
 end;
+
+// == Дополнения 2016.07
+
+procedure PrintMatr<T>(a: array[,] of T);
+begin
+  for var i := 0 to a.GetLength(0)-1 do
+    for var j := 0 to a.GetLength(1)-1 do
+      write(a[i,j]);
+end;
+
+procedure PrintMatr<T>(a: array of array of T);
+begin
+  for var i := 0 to a.Length-1 do
+    for var j := 0 to a[i].Length-1 do
+      write(a[i][j]);
+end;
+
+procedure PrintMatr<T>(a: List<List<T>>);
+begin
+  for var i := 0 to a.Count-1 do
+    for var j := 0 to a[i].Count-1 do
+      write(a[i][j]);
+end;
+
+/// Выводит размер и элементы последовательности
+procedure PrintAll<T>(self: sequence of T); extensionmethod;
+begin
+  var b := self.ToArray();
+  PT4.Put(b.Length);
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит размер и элементы динамического массива
+procedure PrintAll<T>(self: array of T); extensionmethod;
+begin
+  PT4.Put(self.Length);
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит размер и элементы динамического массива
+procedure WriteAll<T>(self: array of T); extensionmethod;
+begin
+  PT4.Put(self.Length);
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит элементы последовательности
+procedure Writeln<T>(self: sequence of T); extensionmethod;
+begin
+  var b := self.ToArray();
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит элементы динамического массива
+procedure Writeln<T>(self: array of T); extensionmethod;
+begin
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит элементы матрицы
+procedure Writeln<T>(self: array [,] of T); extensionmethod;
+begin
+  for var i:=0 to self.GetLength(0)-1 do
+  for var j:=0 to self.GetLength(1)-1 do
+    PT4.Put(self[i,j]);
+end;
+
+// == Конец дополнений 2016.07
+
 
 /// Выводит в разделе отладки окна задачника 
 /// комментарий cmt, размер последовательности и значения, 
