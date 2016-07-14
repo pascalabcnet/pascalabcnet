@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit RobotField;
 
@@ -1116,7 +1116,8 @@ begin
   robField.SetSpeed(settings.Speed);
   //MainWindow.Bounds := new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height);
   MainForm.Invoke(SetWindowBounds, new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height));
-  MainForm.Invoke(MainForm.Show);
+  var del : procedure := MainForm.Show;
+  MainForm.Invoke(del);
 end;
 
 procedure __InitModule__;
