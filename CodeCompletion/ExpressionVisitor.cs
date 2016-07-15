@@ -732,15 +732,15 @@ namespace CodeCompletion
 			else if (returned_scope != null && returned_scope is ProcScope)
 			{
                 ProcScope ps = returned_scope as ProcScope;
-				if (ps.return_type == null) 
-				{
+                if (ps.return_type == null)
+                {
                     if (ps.is_constructor)
                         returned_scope = new ElementScope(ps.declaringType);
                     else
-					    returned_scope = null;
-				}
-				else 
-					returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
+                        returned_scope = null;
+                }
+                else
+                    returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
 			}
 			else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType)
 			{
@@ -767,17 +767,26 @@ namespace CodeCompletion
                                 returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
                             return;
                         }
-                        if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
+                        if (returned_scope != null && returned_scope is ProcScope)
                         {
-                            CompiledMethodScope tmp_sc = returned_scope as CompiledMethodScope;
-                            returned_scope = new ElementScope(returned_scope as ProcScope);
-                            if (tmp_sc != null)
-                                returned_scope.topScope = tmp_sc.topScope;
-                            if (left_scope is ElementScope)
-                                returned_scope = CheckForAccess(left_scope as ElementScope, returned_scope as ElementScope);
-                            else if (left_scope is TypeScope)
-                                returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
-                            return;
+                            if ((returned_scope as ProcScope).return_type == null)
+                            {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                mc.visit(this);
+                                return;
+                            }
+                            if ((returned_scope as ProcScope).return_type != null)
+                            {
+                                CompiledMethodScope tmp_sc = returned_scope as CompiledMethodScope;
+                                returned_scope = new ElementScope(returned_scope as ProcScope);
+                                if (tmp_sc != null)
+                                    returned_scope.topScope = tmp_sc.topScope;
+                                if (left_scope is ElementScope)
+                                    returned_scope = CheckForAccess(left_scope as ElementScope, returned_scope as ElementScope);
+                                else if (left_scope is TypeScope)
+                                    returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
+                                return;
+                            }
                         }
                         if (tmp_tn is ElementScope && stv != null)
                         {

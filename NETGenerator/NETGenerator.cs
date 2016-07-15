@@ -1316,8 +1316,16 @@ namespace PascalABCCompiler.NETGenerator
             {
                 ConvertTypeMemberHeaderAndRemoveFromList(ts[0], ts);
             }
-            //foreach (ICommonTypeNode t in types)
-            //    ConvertTypeMemberHeader(t);
+            foreach (ICommonTypeNode t in types)
+            {
+                foreach (ICommonMethodNode meth in t.methods)
+                {
+                    if (meth.is_generic_function)
+                    {
+                        ConvertTypeInstancesMembersInFunction(meth);
+                    }
+                }
+            }
         }
 
         private Dictionary<TypeBuilder, TypeBuilder> added_types = new Dictionary<TypeBuilder, TypeBuilder>();
@@ -1611,7 +1619,6 @@ namespace PascalABCCompiler.NETGenerator
         private void ConvertTypeMemberHeader(ICommonTypeNode value)
         {
             //если это оболочка над массивом переводим ее особым образом
-
             if (value.type_special_kind == type_special_kind.diap_type || value.type_special_kind == type_special_kind.array_kind) return;
             if (value.fields.Length == 1 && value.fields[0].type is ISimpleArrayNode)
             {
@@ -1658,13 +1665,13 @@ namespace PascalABCCompiler.NETGenerator
                     evnt.visit(this);
 
                 //(ssyy) 21.05.2008
-                foreach (ICommonMethodNode meth in value.methods)
+                /*foreach (ICommonMethodNode meth in value.methods)
                 {
                     if (meth.is_generic_function)
                     {
                         ConvertTypeInstancesMembersInFunction(meth);
                     }
-                }
+                }*/
                 //добавляем ритерны в специальные методы
                 //ti.init_meth.GetILGenerator().Emit(OpCodes.Ret);
                 //if (hndl_mb != null) hndl_mb.GetILGenerator().Emit(OpCodes.Ret);
@@ -1693,13 +1700,13 @@ namespace PascalABCCompiler.NETGenerator
                 foreach (ICommonEventNode evnt in value.events)
                     evnt.visit(this);
                 //(ssyy) 21.05.2008
-                foreach (ICommonMethodNode meth in value.methods)
+                /*foreach (ICommonMethodNode meth in value.methods)
                 {
                     if (meth.is_generic_function)
                     {
                         ConvertTypeInstancesMembersInFunction(meth);
                     }
-                }
+                }*/
 
             }
 
