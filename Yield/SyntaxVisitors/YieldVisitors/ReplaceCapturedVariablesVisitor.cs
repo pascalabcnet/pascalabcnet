@@ -69,7 +69,7 @@ namespace SyntaxVisitors
         // frninja 12/05/16 - фикс для yield_unknown_ident
         public override void visit(yield_unknown_ident unk)
         {
-            yield_var_def_statement_with_unknown_type x;
+            //yield_var_def_statement_with_unknown_type x;
             // Empty
         }
 

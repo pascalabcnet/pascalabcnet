@@ -81,8 +81,8 @@ namespace SyntaxVisitors
         type_declarations GenClassesForYield(procedure_definition pd,
             IEnumerable<var_def_statement> fields, // локальные переменные
             IDictionary<string, string> localsMap, // отображение для захваченных имен локальных переменных
-            IDictionary<string, string> formalParamsMap, // отображение для захваченных имен формальных параметров
-            IDictionary<var_def_statement, var_def_statement> localsCloneMap // отображение для оберток локальных переменных 
+            IDictionary<string, string> formalParamsMap//, // отображение для захваченных имен формальных параметров
+            //IDictionary<var_def_statement, var_def_statement> localsCloneMap // отображение для оберток локальных переменных 
             ) 
         {
             var fh = (pd.proc_header as function_header);
@@ -104,7 +104,7 @@ namespace SyntaxVisitors
                                             if (vds.inital_value != null)
                                             {
                                                 //return new var_def_statement(ids, new yield_unknown_expression_type(localsCloneMap[vds], varsTypeDetectorHelper), null);
-                                                return new var_def_statement(ids, new yield_unknown_expression_type(localsCloneMap[vds]), null);
+                                                return new var_def_statement(ids, new yield_unknown_expression_type(vds), null); // SSM - убрал localsCloneMap[vds] - заменил на vds - не знаю, зачем вообще это отображение делалось - всё равно оно было тождественным!!!
                                             }
                                             else
                                             {
@@ -606,7 +606,7 @@ namespace SyntaxVisitors
         /// </summary>
         /// <param className="pd">Объявление метода</param>
         /// <returns>Коллекция посещенных локальных переменных</returns>
-        private void CreateLocalVariablesTypeProxies(procedure_definition pd, out IEnumerable<var_def_statement> localsClonesCollection)
+        /*private void CreateLocalVariablesTypeProxies(procedure_definition pd, out IEnumerable<var_def_statement> localsClonesCollection)
         {
             // Выполняем определение типов локальных переменных с автовыводом типов
 
@@ -631,8 +631,8 @@ namespace SyntaxVisitors
                 // frninja 05/06/16 - фиксим source_context
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
 
-            //InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять
-        }
+            InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять
+        }*/
 
         /// <summary>
         /// Отображение локальных в клонированные локальные
@@ -640,7 +640,7 @@ namespace SyntaxVisitors
         /// <param className="from">Откуда</param>
         /// <param className="to">Куда</param>
         /// <returns>Отображение</returns>
-        private Dictionary<var_def_statement, var_def_statement> CreateLocalsClonesMap(IEnumerable<var_def_statement> from, IEnumerable<var_def_statement> to)
+        /*private Dictionary<var_def_statement, var_def_statement> CreateLocalsClonesMap(IEnumerable<var_def_statement> from, IEnumerable<var_def_statement> to)
         {
             // Нужно тк клонировали метод для создания хелпера-определителя типов локальных переменных - Eq не будет работать
 
@@ -657,7 +657,7 @@ namespace SyntaxVisitors
             }
 
             return localsClonesMap;
-        }
+        }*/
 
         
 
@@ -890,11 +890,12 @@ namespace SyntaxVisitors
             
             
             // frninja 05/06/16 - вставляем предописание если метод-итератор описан не в классе (обычная функция) чтоб работали рекурсивные вызовы
+            // SSM - это приводит к ошибке в случае метода расширения. Простое решение - не вызывать это если это - метод расширения.
+            // SSM - но лучше конечно выдавать более достойное сообщение об ошибке или решить эту проблему
             bool methodPredefCreated = InsertGlobalIteratorMethodPredefinition(pd);
 
             // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
-            AddBeginEndsVisitor addBeginEndsVis = new AddBeginEndsVisitor();
-            pd.visit(addBeginEndsVis);
+            AddBeginEndsVisitor.Accept(pd);
 
             /*
             // Проверяем проблемы имен для for
@@ -908,35 +909,32 @@ namespace SyntaxVisitors
             pd.visit(checkVarRedefVisitor);
             */
 
-            // Переименовываем одинаковые имена в мини-ПИ
-            RenameSameBlockLocalVarsVisitor renameLocalsVisitor = new RenameSameBlockLocalVarsVisitor();
-            pd.visit(renameLocalsVisitor);
-
-            ReplaceYieldWithLamdasVisitor replaceYieldWithLabdaVis = new ReplaceYieldWithLamdasVisitor();
-            pd.visit(replaceYieldWithLabdaVis);
-
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
-            CreateErrorCheckerHelper(pd);
+            CreateErrorCheckerHelper(pd); // SSM 14/07/16 - переставил до переименования переменных чтобы отлавливались ошибки одинаковых имен в разных пространствах имен
+            // SSM - можно сделать спец визитор, который бы отлавливал дубли имен - тогда этого не надо
+
+            // Переименовываем одинаковые имена в мини-ПИ: begin var a := 1 end; begin var a := 1 end; 
+            RenameSameBlockLocalVarsVisitor.Accept(pd);
+
+            // Выносим выражение с лямбдой из yield
+            ReplaceYieldWithLamdasVisitor.Accept(pd);
 
             // Теперь lowering
             LoweringVisitor.Accept(pd);
 
             // frninja 13/04/16 - убираем лишние begin..end
-            DeleteRedundantBeginEnds deleteBeginEndVisitor = new DeleteRedundantBeginEnds();
-            pd.visit(deleteBeginEndVisitor);
+            DeleteRedundantBeginEnds.Accept(pd);
 
             // Обработка метода для корректного захвата локальных переменных и их типов
-            IEnumerable<var_def_statement> localsClonesCollection;
-            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);
-            
+            //IEnumerable<var_def_statement> localsClonesCollection;
+            //CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
 
             // frninja 16/11/15: перенес ниже чтобы работал захват для lowered for
 
-            var dld = new DeleteAllLocalDefs(); // mids.vars - все захваченные переменные
-            pd.visit(dld); // Удалить в локальных и блочных описаниях этой процедуры все переменные и вынести их в отдельный список var_def_statement
+            var dld = MoveAllLocalDefsToLists.Accept(pd); // Удалить в локальных и блочных описаниях этой процедуры все переменные и вынести их в отдельный список var_def_statement
 
             // Строим отображение из локальных переменных клона оригинального метода в локальные переменные основного метода
-            Dictionary<var_def_statement, var_def_statement> localsCloneMap = CreateLocalsClonesMap(dld.LocalDeletedDefs, localsClonesCollection);
+            //Dictionary<var_def_statement, var_def_statement> localsCloneMap = CreateLocalsClonesMap(dld.LocalDeletedDefs, localsClonesCollection);
 
             // frninja 08/12/15
 
@@ -944,7 +942,6 @@ namespace SyntaxVisitors
             IDictionary<string, string> CapturedLocalsNamesMap;
             IDictionary<string, string> CapturedFormalParamsNamesMap;
             ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap);
-
 
             //mids.vars.Except(dld.LocalDeletedDefsNames); // параметры остались. Их тоже надо исключать - они и так будут обработаны
             // В результате работы в mids.vars что-то осталось. Это не локальные переменные и с ними непонятно что делать
@@ -958,7 +955,7 @@ namespace SyntaxVisitors
             (pd.proc_body as block).program_code = cfa.res;
 
             // Конструируем определение класса
-            var cct = GenClassesForYield(pd, dld.LocalDeletedDefs, CapturedLocalsNamesMap, CapturedFormalParamsNamesMap, localsCloneMap); // все удаленные описания переменных делаем описанием класса
+            var cct = GenClassesForYield(pd, dld.LocalDeletedDefs, CapturedLocalsNamesMap, CapturedFormalParamsNamesMap/*, localsCloneMap*/); // все удаленные описания переменных делаем описанием класса
 
             // Вставляем классы-хелперы
             InsertYieldHelpers(pd, cct);

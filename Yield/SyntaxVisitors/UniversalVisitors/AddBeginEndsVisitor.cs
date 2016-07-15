@@ -12,6 +12,16 @@ namespace SyntaxVisitors
 {
     public class AddBeginEndsVisitor : BaseChangeVisitor
     {
+        public static AddBeginEndsVisitor New
+        {
+            get { return new AddBeginEndsVisitor(); }
+        }
+
+        public static void Accept(procedure_definition pd)
+        {
+            New.ProcessNode(pd);
+        }
+
         public override void Exit(syntax_tree_node st)
         {
             var sts = st as statement;

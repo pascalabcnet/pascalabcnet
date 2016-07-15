@@ -28,6 +28,16 @@ namespace SyntaxVisitors
             this.BlockNamesCounter = new Dictionary<string, int>();
         }
 
+        public static RenameSameBlockLocalVarsVisitor New
+        {
+            get { return new RenameSameBlockLocalVarsVisitor(); }
+        }
+
+        public static void Accept(procedure_definition pd)
+        {
+            New.ProcessNode(pd);
+        }
+
         public override void visit(declarations decls)
         {
             // Для обхода в правильном порядке сверху вниз

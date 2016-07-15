@@ -20,6 +20,16 @@ namespace SyntaxVisitors
             return new ident("$lambdaVar$" + _lambdaNum);
         }
 
+        public static ReplaceYieldWithLamdasVisitor New
+        {
+            get { return new ReplaceYieldWithLamdasVisitor(); }
+        }
+
+        public static void Accept(procedure_definition pd)
+        {
+            New.ProcessNode(pd);
+        }
+
         public override void visit(yield_node yn)
         {
             var lambdaSearcher = new TreeConverter.LambdaExpressions.LambdaSearcher(yn);

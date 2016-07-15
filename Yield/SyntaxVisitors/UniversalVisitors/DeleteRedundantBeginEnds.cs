@@ -12,6 +12,18 @@ namespace SyntaxVisitors
 {
     public class DeleteRedundantBeginEnds : BaseChangeVisitor
     {
+        public static DeleteRedundantBeginEnds New
+        {
+            get { return new DeleteRedundantBeginEnds(); }
+        }
+
+        public static DeleteRedundantBeginEnds Accept(procedure_definition pd)
+        {
+            var n = New;
+            n.ProcessNode(pd);
+            return n;
+        }
+
         public override void Exit(syntax_tree_node st)
         {
             var stl = st as statement_list;

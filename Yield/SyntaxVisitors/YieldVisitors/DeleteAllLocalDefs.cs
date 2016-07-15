@@ -9,7 +9,7 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
-    public class DeleteAllLocalDefs : BaseChangeVisitor
+    public class MoveAllLocalDefsToLists : BaseChangeVisitor
     {
 
         private List<var_def_statement> LocalDeletedVD = new List<var_def_statement>(); // все локальные описания
@@ -28,8 +28,20 @@ namespace SyntaxVisitors
             }
         }
 
-        public DeleteAllLocalDefs() // надо запускать этот визитор начиная с корня подпрограммы
+        public MoveAllLocalDefsToLists() // надо запускать этот визитор начиная с корня подпрограммы
         {
+        }
+
+        public static MoveAllLocalDefsToLists New
+        {
+            get { return new MoveAllLocalDefsToLists(); }
+        }
+
+        public static MoveAllLocalDefsToLists Accept(procedure_definition pd)
+        {
+            var n = New;
+            n.ProcessNode(pd);
+            return n;
         }
 
         public override void visit(var_statement vs) // локальные описания внутри процедуры
