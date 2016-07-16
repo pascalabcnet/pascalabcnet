@@ -24,7 +24,7 @@ namespace SyntaxVisitors
                 throw new SyntaxError("Лямбда-выражения не могут содержать yield", "", ld.source_context, ld);
             }
 
-            base.visit(ld);
+            //base.visit(ld); // SSM 15/07/16 - незачем обходить внутренности лямбды - мы и так ищем внутри них yield - этого в этом визиторе достаточно
         }
 
         public override void visit(with_statement ws)
@@ -35,6 +35,7 @@ namespace SyntaxVisitors
             }
             base.visit(ws);
         }
+
 
         public override void visit(procedure_definition pd)
         {

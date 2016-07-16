@@ -36,8 +36,8 @@ namespace SyntaxVisitors
             if (lambdaSearcher.CheckIfContainsLambdas())
             {
                 var lambdaVarIdent = this.NewLamdaVarName();
-                var_statement lambdaVS = new var_statement(lambdaVarIdent, yn.ex) { source_context = yn.source_context };
-                ReplaceStatement(yn, SeqStatements(lambdaVS, new yield_node(lambdaVarIdent, yn.source_context)));
+                var_statement lambdaVS = new var_statement(lambdaVarIdent, yn.ex) { source_context = yn.ex.source_context };
+                ReplaceStatement(yn, SeqStatements(lambdaVS, new yield_node(lambdaVarIdent, yn.ex.source_context)));
             }
         }
     }

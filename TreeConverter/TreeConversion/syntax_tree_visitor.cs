@@ -19142,6 +19142,11 @@ namespace PascalABCCompiler.TreeConverter
             t.visit(this);
         }
 
+        public override void visit(SyntaxTree.yield_node yn)
+        {
+            // подузлы не обходим!
+        }
+
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
     {
         // Неверно работает. Пока не используется. Доделать

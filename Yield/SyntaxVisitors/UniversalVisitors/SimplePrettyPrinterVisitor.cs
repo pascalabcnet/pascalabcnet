@@ -68,6 +68,12 @@ namespace SyntaxVisitors
             Println(""+st);
         }
 
+        public void PrintNode(syntax_tree_node st)
+        {
+            if (printNodeType)
+                PrintNoOffset(st.GetType().Name + ": ");
+            Print(""+st);
+        }
 
         public virtual void Enter(syntax_tree_node st)
         {
@@ -172,6 +178,13 @@ namespace SyntaxVisitors
                 Println("while " + wn.expr.ToString() + " do");
                 off += 2;
             }
+            else if (st is for_node)
+            {
+                var fn = st as for_node;
+
+                Println("for var " + fn.loop_variable + " := "+fn.initial_value+" to "+fn.finish_value + " do ");
+                off += 2;
+            }
             else if (st is foreach_stmt)
             {
                 var wn = st as foreach_stmt;
@@ -208,7 +221,10 @@ namespace SyntaxVisitors
             }
             else if (st is statement || st is variable_definitions || st is label_definitions)
             {
-                PrintlnNode(st);
+                PrintNode(st);
+                if (st is statement)
+                    PrintlnNoOffset(";");
+                else PrintlnNoOffset("");
                 if (st is labeled_statement)
                     visitNode = false;                    
             }
@@ -218,6 +234,12 @@ namespace SyntaxVisitors
                 if (s == "begin" || s == "end")
                     return;
                 PrintlnNode(st);
+            }
+            else if (st is function_lambda_definition)
+            {
+                var f = st as function_lambda_definition;
+                //PrintNoOffset(f.ToString());
+                visitNode = false;                    
             }
             /*else if (st is named_type_reference)
             {

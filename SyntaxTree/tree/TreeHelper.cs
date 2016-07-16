@@ -1562,5 +1562,15 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+	public partial class function_lambda_definition
+    {
+        public override string ToString()
+        {
+            return "" + this._ident_list.ToString() + " -> lambda_body";
+        }
+    }
+
+    
+
 }
 

@@ -909,15 +909,15 @@ namespace SyntaxVisitors
             pd.visit(checkVarRedefVisitor);
             */
 
+            // Выносим выражение с лямбдой из yield
+            ReplaceYieldWithLamdasVisitor.Accept(pd);
+
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
             CreateErrorCheckerHelper(pd); // SSM 14/07/16 - переставил до переименования переменных чтобы отлавливались ошибки одинаковых имен в разных пространствах имен
             // SSM - можно сделать спец визитор, который бы отлавливал дубли имен - тогда этого не надо
 
             // Переименовываем одинаковые имена в мини-ПИ: begin var a := 1 end; begin var a := 1 end; 
             RenameSameBlockLocalVarsVisitor.Accept(pd);
-
-            // Выносим выражение с лямбдой из yield
-            ReplaceYieldWithLamdasVisitor.Accept(pd);
 
             // Теперь lowering
             LoweringVisitor.Accept(pd);
@@ -1100,7 +1100,7 @@ namespace SyntaxVisitors
                 var yn = st as yield_node;
                 curState += 1;
                 res.AddMany(
-                    new assign(YieldConsts.Current, yn.ex),
+                    new assign(YieldConsts.Current, yn.ex, yn.source_context),
                     new assign(YieldConsts.State, curState),
                     new assign("Result", true),
                     new procedure_call("exit"),
