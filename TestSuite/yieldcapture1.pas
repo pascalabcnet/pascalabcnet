@@ -15,7 +15,7 @@ begin
   
   var q := a1.f(Range(1,4));
   
-  var sq := Seq(4,5,6,7);  
+  var sq := Seq(4,5,6,7); 
   Assert(q.Println.SequenceEqual(sq));
   Assert(q.Println.SequenceEqual(sq));
 end.

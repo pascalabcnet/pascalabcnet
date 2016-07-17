@@ -14,12 +14,12 @@ namespace SyntaxVisitors
         private bool _rootAdded = false;
         public override void DefaultVisit(syntax_tree_node n)
         {
-            // frninja 07/12/15
-            if (!_rootAdded)
+            // frninja 07/12/15 - // SSM - это - идиотский код, приводивший к двойному обходу визитором всех узлов
+            /*if (!_rootAdded)
             {
                 _rootAdded = true;
                 ProcessNode(n);
-            }
+            }*/
 
             // Элементы списков - с конца в начало чтобы можно было эти элементы изменять по ходу (удалять/вставлять/заменять один несколькими)
             var Сount = n.subnodes_count;

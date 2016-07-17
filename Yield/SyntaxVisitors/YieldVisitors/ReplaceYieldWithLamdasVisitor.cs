@@ -30,6 +30,21 @@ namespace SyntaxVisitors
             New.ProcessNode(pd);
         }
 
+        public override void visit(procedure_definition pd)
+        {
+            DefaultVisit(pd);
+        }
+
+        public override void visit(statement_list st)
+        {
+            DefaultVisit(st);
+        }
+
+        public override void visit(for_node fn)
+        {
+            DefaultVisit(fn);
+        }
+
         public override void visit(yield_node yn)
         {
             var lambdaSearcher = new TreeConverter.LambdaExpressions.LambdaSearcher(yn);

@@ -606,7 +606,8 @@ namespace SyntaxVisitors
         /// </summary>
         /// <param className="pd">Объявление метода</param>
         /// <returns>Коллекция посещенных локальных переменных</returns>
-        /*private void CreateLocalVariablesTypeProxies(procedure_definition pd, out IEnumerable<var_def_statement> localsClonesCollection)
+        // SSM - Эта функция уже не нужна - я иногда использую ее чтобы посмотреть как выглядит функция после Loweringа
+        private void CreateLocalVariablesTypeProxies(procedure_definition pd, out IEnumerable<var_def_statement> localsClonesCollection)
         {
             // Выполняем определение типов локальных переменных с автовыводом типов
 
@@ -632,7 +633,7 @@ namespace SyntaxVisitors
                 pd.proc_header.name.meth_name.source_context); // = new method_name("<yield_helper_locals_type_detector>" + pd.proc_header.className.meth_name.className);
 
             InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять
-        }*/
+        }
 
         /// <summary>
         /// Отображение локальных в клонированные локальные
@@ -926,8 +927,9 @@ namespace SyntaxVisitors
             DeleteRedundantBeginEnds.Accept(pd);
 
             // Обработка метода для корректного захвата локальных переменных и их типов
-            //IEnumerable<var_def_statement> localsClonesCollection;
-            //CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
+            // - это уже не надо - иногда можно включать чтобы посмотреть, что собой представляет функция после Loweringа
+            IEnumerable<var_def_statement> localsClonesCollection;
+            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
 
             // frninja 16/11/15: перенес ниже чтобы работал захват для lowered for
 

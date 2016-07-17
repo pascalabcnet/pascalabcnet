@@ -149,10 +149,14 @@ namespace SyntaxVisitors
                 stl,
                 WhileCycleType.While);
 
-            ReplaceStatement(frch,
-                SeqStatements(foreachCollVarDef, ass, enumeratorVarDef, whileNode)
-            );
+            var sq = SeqStatements(foreachCollVarDef, ass, enumeratorVarDef, whileNode);
 
+            ReplaceStatement(frch,sq);
+
+            visit(whileNode); // Lowering оставшегося whileNode
+
+            //var sl = UpperNodeAs<statement_list>();
+            //ProcessNode(sl); // необходимо еще lowerить while - как это сделать лучше - пока не знаю
         }
 
         private expression CreateConditionFromCaseVariant(expression param, expression_list list)
@@ -224,6 +228,8 @@ namespace SyntaxVisitors
             if_node finalIfNode = currentIfNode;
 
             ReplaceStatement(csn, finalIfNode);
+
+            visit(finalIfNode);
         }
 
         public override void visit(if_node ifn)
