@@ -823,6 +823,11 @@ namespace SyntaxVisitors
         /// </summary>
         private bool InsertGlobalIteratorMethodPredefinition(procedure_definition pd)
         {
+            if (IsExtensionMethod(pd))  // SSM 17.07.16 - нельзя генерировать предописания для extension-методов!
+            {
+                return false;
+            }
+
             if (IsClassMethod(pd))
             {
                 return false;
