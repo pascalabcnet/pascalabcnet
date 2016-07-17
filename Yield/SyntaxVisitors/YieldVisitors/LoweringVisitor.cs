@@ -227,9 +227,15 @@ namespace SyntaxVisitors
 
             if_node finalIfNode = currentIfNode;
 
-            ReplaceStatement(csn, finalIfNode);
+            if (finalIfNode==null) // SSM - значит, в цикл мы не заходили и у case отсутствуют все ветви кроме else - поскольку yieldы в case есть
+            {
+                ReplaceStatement(csn, csn.else_statement);
+            }
+            else
+                ReplaceStatement(csn, finalIfNode);
 
-            visit(finalIfNode);
+            if (finalIfNode!=null)
+                visit(finalIfNode);
         }
 
         public override void visit(if_node ifn)

@@ -85,7 +85,10 @@ namespace SyntaxVisitors
         public override void visit(var_statement vs)
         {
             if (vs.var_def.vars.idents.Any(id => id.name.StartsWith("$")))
+            {
+                base.visit(vs); // SSM 17/07/16 исправление ошибки - не обходилось выражение-инициализатор
                 return;
+            }
 
             var newLocalNames = vs.var_def.vars.idents.Select(id => 
                 {

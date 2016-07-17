@@ -47,8 +47,8 @@ namespace SyntaxVisitors
 
         public override void visit(yield_node yn)
         {
-            var lambdaSearcher = new TreeConverter.LambdaExpressions.LambdaSearcher(yn);
-            if (lambdaSearcher.CheckIfContainsLambdas())
+            //var lambdaSearcher = new TreeConverter.LambdaExpressions.LambdaSearcher(yn);
+            //if (lambdaSearcher.CheckIfContainsLambdas())
             {
                 var lambdaVarIdent = this.NewLamdaVarName();
                 var_statement lambdaVS = new var_statement(lambdaVarIdent, yn.ex) { source_context = yn.ex.source_context };

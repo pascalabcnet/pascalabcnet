@@ -36,7 +36,11 @@ namespace SyntaxVisitors
                 var sttl = lst.to_statement as statement_list;
                 if (sttl != null)
                 {
-                    sttl.subnodes[0] = new labeled_statement(lst.label_name, sttl.subnodes[0]); // а если [0] элемента вообще нет?
+                    if (sttl.subnodes[0] is var_statement) // SSM - 17.07.16 - фикс - нельзя помечать меткой var_statement! 
+                    {
+                        sttl.AddFirst(empty_statement.New);
+                    }
+                    sttl.subnodes[0] = new labeled_statement(lst.label_name, sttl.subnodes[0]); // [0] элемент есть обязательно - в случае пустого begin end это empty_statement
                     ReplaceStatement(lst,sttl.subnodes);
                 }
             }
