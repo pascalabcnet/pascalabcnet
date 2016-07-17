@@ -928,8 +928,8 @@ namespace SyntaxVisitors
 
             // Обработка метода для корректного захвата локальных переменных и их типов
             // - это уже не надо - иногда можно включать чтобы посмотреть, что собой представляет функция после Loweringа
-            IEnumerable<var_def_statement> localsClonesCollection;
-            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
+            //IEnumerable<var_def_statement> localsClonesCollection;
+            //CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
 
             // frninja 16/11/15: перенес ниже чтобы работал захват для lowered for
 
