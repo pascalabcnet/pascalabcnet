@@ -770,6 +770,28 @@
       </Node>
       <Node Name="Yield">
         <Items>
+          <Node Name="visit(procedure_definition pd)">
+            <FileName>\Yield\SyntaxVisitors\YieldVisitors\ProcessYieldsCapturedVars.cs</FileName>
+            <Text>public override void visit(procedure_definition pd)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="root.visit(new ProcessYieldCapturedVarsVisitor());">
+            <FileName>\Yield\YieldConversionSyntax\YieldDesugarSyntaxTreeConverter.cs</FileName>
+            <Text>root.visit(new ProcessYieldCapturedVarsVisitor());</Text>
+            <OCtx>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+              <i Type="ClassOrNamespace">public class YieldDesugarSyntaxTreeConverter : ISyntaxTreeConverter</i>
+              <i Type="ClassOrNamespace">namespace YieldDesugarSyntaxTreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
           <Node Name="NewConstructFiniteAutomata">
             <Items>
               <Node Name="ConstructFiniteAutomata1">
@@ -787,7 +809,7 @@
                 <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <Text>type_declarations GenClassesForYield(procedure_definition pd,</Text>
                 <OCtx>
-                  <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap , IDictionary &lt; var_def_statement , var_def_statement &gt; localsCloneMap )</i>
+                  <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap )</i>
                   <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
                   <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
                   <i Type="CS_TreeNode">
@@ -795,17 +817,6 @@
                 </OCtx>
               </Node>
             </Items>
-          </Node>
-          <Node Name="root.visit(new ProcessYieldCapturedVarsVisitor());">
-            <FileName>\Yield\YieldConversionSyntax\YieldDesugarSyntaxTreeConverter.cs</FileName>
-            <Text>root.visit(new ProcessYieldCapturedVarsVisitor());</Text>
-            <OCtx>
-              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
-              <i Type="ClassOrNamespace">public class YieldDesugarSyntaxTreeConverter : ISyntaxTreeConverter</i>
-              <i Type="ClassOrNamespace">namespace YieldDesugarSyntaxTreeConverter</i>
-              <i Type="CS_TreeNode">
-              </i>
-            </OCtx>
           </Node>
           <Node Name="YieldHelpers">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
@@ -822,7 +833,7 @@
             <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>function_header nfh = ObjectCopier.Clone(fh);</Text>
             <OCtx>
-              <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap , IDictionary &lt; var_def_statement , var_def_statement &gt; localsCloneMap )</i>
+              <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap )</i>
               <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
               <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
               <i Type="CS_TreeNode">
@@ -844,7 +855,7 @@
             <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>//InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять</Text>
             <OCtx>
-              <i Type="Method">private void CreateLocalVariablesTypeProxies ( procedure_definition pd , out IEnumerable &lt; var_def_statement &gt; localsClonesCollection )</i>
+              <i Type="Method">private void CreateErrorCheckerHelper ( procedure_definition pd )</i>
               <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
               <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
               <i Type="CS_TreeNode">
@@ -1011,7 +1022,29 @@
               </i>
             </OCtx>
           </Node>
+          <Node Name="if (pd.has_yield) // SSM bug fix #219">
+            <FileName>\Yield\SyntaxVisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
+            <Text>if (pd.has_yield) // SSM bug fix #219</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class MarkMethodHasYieldAndCheckSomeErrorsVisitor : WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
         </Items>
+      </Node>
+      <Node Name="id.name.ToLower() == &quot;result&quot;">
+        <FileName>\Yield\SyntaxVisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
+        <Text>if (id.name.ToLower() == "result")</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( ident id )</i>
+          <i Type="ClassOrNamespace">public class MarkMethodHasYieldVisitor : WalkingVisitorNew</i>
+          <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
       </Node>
     </Items>
   </Node>

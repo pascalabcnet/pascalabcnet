@@ -1270,6 +1270,10 @@ procedure Str(s1: string; var s: string);
 function Pos(subs, s: string; from: integer := 1): integer;
 /// Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function PosEx(subs, s: string; from: integer := 1): integer;
+/// Возвращает позицию последнего вхождения подстроки subs в строке s. Если не найдена, возвращает 0 
+function LastPos(subs, s: string): integer;
+/// Возвращает позицию последнего вхождения подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
+function LastPos(subs, s: string; from: integer): integer;
 /// Возвращает длину строки 
 function Length(s: string): integer;
 /// Устанавливает длину строки s равной n
@@ -7178,6 +7182,21 @@ begin
   else Result := s.IndexOf(subs, from - 1) + 1;
 end;
 
+function LastPos(subs, s: string): integer;
+begin
+  if (subs = nil) or (subs.Length = 0) then
+    Result := 0
+  else Result := s.LastIndexOf(subs, s.Length - 1) + 1;
+end;
+
+function LastPos(subs, s: string; from: integer): integer;
+begin
+  if (subs = nil) or (subs.Length = 0) then
+    Result := 0
+  else Result := s.LastIndexOf(subs, from - 1) + 1;
+end;
+
+
 function Length(s: string): integer;
 begin
   if s <> nil then 
@@ -8448,10 +8467,10 @@ begin
 end;
 
 /// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
-function AdjacentFind<T>(Self: array of T): integer; extensionmethod;
+function AdjacentFind<T>(Self: array of T; start: integer := 0): integer; extensionmethod;
 begin
   Result := -1;
-  for var i:=0 to Self.Length-2 do
+  for var i:=start to Self.Length-2 do
     if Self[i]=Self[i+1] then 
     begin
       Result := i;
@@ -8459,12 +8478,24 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого минимального элемента
-function IndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+/// Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1
+function AdjacentFind<T>(Self: array of T; eq: (T,T)->boolean; start: integer := 0): integer; extensionmethod;
 begin
-  var min := Self[0];
-  Result := 0;
-  for var i:=1 to Self.Length-1 do
+  Result := -1;
+  for var i:=start to Self.Length-2 do
+    if eq(Self[i],Self[i+1]) then 
+    begin
+      Result := i;
+      exit;
+    end;
+end;
+
+/// Возвращает индекс первого минимального элемента начиная с позиции start
+function IndexMin<T>(Self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[start];
+  Result := start;
+  for var i:=start+1 to Self.Length-1 do
     if Self[i].CompareTo(min)<0 then 
     begin
       Result := i;
@@ -8482,6 +8513,45 @@ begin
     begin
       Result := i;
       max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс первого максимального элемента начиная с позиции start
+function IndexMax<T>(self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[start];
+  Result := start;
+  for var i:=start+1 to Self.Length-1 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[Self.Length-1];
+  Result := Self.Length-1;
+  for var i:=Self.Length-2 downto 0 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента начиная с позиции start
+function LastIndexMin<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[start];
+  Result := start;
+  for var i:=start-1 downto 0 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
     end;
 end;
 
@@ -8524,6 +8594,12 @@ begin
   Result := System.Array.FindIndex(self,p);  
 end;
 
+/// Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается -1
+function FindIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
+begin
+  Result := System.Array.FindIndex(self,start,p);  
+end;
+
 /// Возвращает в виде массива все элементы, удовлетворяющие предикату
 function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
 begin
@@ -8542,16 +8618,34 @@ begin
   Result := System.Array.FindLastIndex(self,p);  
 end;
 
+/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается нулевое значение соответствующего типа
+function FindLastIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
+begin
+  Result := System.Array.FindLastIndex(self,start,p);  
+end;
+
 /// Возвращает индекс первого вхождения элемента или -1 если элемент не найден
 function IndexOf<T>(self: array of T; x: T): integer; extensionmethod;
 begin
   Result := System.Array.IndexOf(self,x);  
 end;
 
+/// Возвращает индекс первого вхождения элемента начиная с индекса start или -1 если элемент не найден
+function IndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
+begin
+  Result := System.Array.IndexOf(self,x,start);  
+end;
+
 /// Возвращает индекс последнего вхождения элемента или -1 если элемент не найден
 function LastIndexOf<T>(self: array of T; x: T): integer; extensionmethod;
 begin
   Result := System.Array.LastIndexOf(self,x);  
+end;
+
+/// Возвращает индекс последнего вхождения элемента начиная с индекса start или -1 если элемент не найден
+function LastIndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
+begin
+  Result := System.Array.LastIndexOf(self,x,start);  
 end;
 
 /// Меняет размер массива

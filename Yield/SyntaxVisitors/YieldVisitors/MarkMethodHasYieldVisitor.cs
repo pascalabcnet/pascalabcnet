@@ -10,7 +10,7 @@ using PascalABCCompiler.Errors;
 
 namespace SyntaxVisitors
 {
-    public class MarkMethodHasYieldVisitor : WalkingVisitorNew
+    public class MarkMethodHasYieldAndCheckSomeErrorsVisitor : WalkingVisitorNew
     {
         private bool HasYields = false;
         private procedure_definition CurrentMethod = null;
@@ -47,6 +47,19 @@ namespace SyntaxVisitors
 
             base.visit(pd);
             pd.has_yield = HasYields;
+
+            if (pd.has_yield) // SSM bug fix #219
+            {
+                var ee = pd.proc_body as block;
+                if (ee != null)
+                {
+                    var FirstTypeDeclaration = ee.defs.DescendantNodes().OfType<type_declarations>().First();
+                    if (FirstTypeDeclaration != null)
+                    {
+                        throw new SyntaxError("Функции с yield не могут содержать локальные определения типов", "", FirstTypeDeclaration.source_context, FirstTypeDeclaration);
+                    }
+                }
+            }
 
             var innerPds = pd.DescendantNodes().OfType<procedure_definition>();
 

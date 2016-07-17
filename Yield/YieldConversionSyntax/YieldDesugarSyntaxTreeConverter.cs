@@ -24,7 +24,7 @@ namespace YieldDesugarSyntaxTreeConverter
         public ExecutionOrder ExecutionOrder { get; set; }
         public syntax_tree_node Convert(syntax_tree_node root)
         {
-            root.visit(new MarkMethodHasYieldVisitor());
+            root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());
             root.visit(new ProcessYieldCapturedVarsVisitor());
 
 #if DEBUG
