@@ -16,10 +16,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     }
     public interface ISyntaxTreeConverter
     {
-        string FileName { get; set; }
-
-        List<Error> ErrorsList { get; set; }
-
         string Name { get; }
         
         string Version { get; }
@@ -32,7 +28,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         ExecutionOrder ExecutionOrder { get; }
 
-        syntax_tree_node Convert(syntax_tree_node root, string FileName, List<Error> errorsList);
-
+        syntax_tree_node Convert(syntax_tree_node root);
     }
 }

@@ -21,7 +21,7 @@ namespace SyntaxVisitors
         {
             if (ld.DescendantNodes().OfType<yield_node>().Count() > 0)
             {
-                throw new SyntaxError("Лямбда-выражения не могут содержать yield", "", ld.source_context, ld);
+                throw new SyntaxVisitorError("LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD", ld.source_context);
             }
 
             //base.visit(ld); // SSM 15/07/16 - незачем обходить внутренности лямбды - мы и так ищем внутри них yield - этого в этом визиторе достаточно
@@ -31,7 +31,7 @@ namespace SyntaxVisitors
         {
             if (ws.DescendantNodes().OfType<yield_node>().Count() > 0)
             {
-                throw new SyntaxError("Yield запрещен внутри with", "", ws.source_context, ws);
+                throw new SyntaxVisitorError("YIELDS_INSIDE_WITH_ARE_ILLEGAL", ws.source_context);
             }
             base.visit(ws);
         }
@@ -53,10 +53,10 @@ namespace SyntaxVisitors
                 var ee = pd.proc_body as block;
                 if (ee != null)
                 {
-                    var FirstTypeDeclaration = ee.defs.DescendantNodes().OfType<type_declarations>().First();
-                    if (FirstTypeDeclaration != null)
+                    var FirstTypeDeclaration = ee.defs.DescendantNodes().OfType<type_declarations>();
+                    if (FirstTypeDeclaration.Count() > 0)
                     {
-                        throw new SyntaxError("Функции с yield не могут содержать локальные определения типов", "", FirstTypeDeclaration.source_context, FirstTypeDeclaration);
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS", FirstTypeDeclaration.First().source_context);
                     }
                 }
             }
@@ -68,17 +68,17 @@ namespace SyntaxVisitors
             {
                 // Есть yield и вложенные - плохо
                 // Или нет yield но есть вложенные с yield
-                throw new SyntaxError("Функции с yield не могут содержать вложенных подпрограмм result", "", pd.source_context, pd);
+                throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES", pd.source_context);
             }
 
             if (pd.has_yield && pd.DescendantNodes().OfType<try_stmt>().Count() > 0)
             {
-                throw new SyntaxError("Функции с yield не могут содержать блоков try..except..finally", "", pd.source_context, pd);
+                throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY", pd.source_context);
             }
 
             if (pd.has_yield && pd.DescendantNodes().OfType<lock_stmt>().Count() > 0)
             {
-                throw new SyntaxError("Функции с yield не могут содержать lock", "", pd.source_context, pd);
+                throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK", pd.source_context);
             }
 
             HasYields = false;
@@ -97,7 +97,7 @@ namespace SyntaxVisitors
             }
             if (id.name.ToLower() == "result")
             {
-                throw new SyntaxError("Функции с yield не могут использовать result", "", id.source_context, id);
+                throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT", id.source_context);
             }
         }
 
@@ -114,14 +114,13 @@ namespace SyntaxVisitors
             var pd = MethodsStack.Peek();
 
             if (pd == null)
-                throw new SyntaxError("Только функции могут содержать yield", "", yn.source_context, yn);
+                throw new SyntaxVisitorError("ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS", yn.source_context);
 
             var fh = (pd.proc_header as function_header);
             if (fh == null)
-                throw new SyntaxError("Только функции могут содержать yield", "", pd.proc_header.source_context, pd.proc_header);
+                throw new SyntaxVisitorError("ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS", pd.proc_header.source_context);
             var seqt = fh.return_type as sequence_type;
             if (seqt == null)
-                //throw new SyntaxError("Функции с yield должны возвращать последовательность", "", fh.source_context, fh);
                 throw new SyntaxVisitorError("YIELD_FUNC_MUST_RETURN_SEQUENCE", fh.source_context);
 
             var pars = fh.parameters;
@@ -129,9 +128,9 @@ namespace SyntaxVisitors
                 foreach (var ps in pars.params_list)
                 {
                     if (ps.param_kind != parametr_kind.none)
-                        throw new SyntaxError("В параметрах функции с yield не должно быть модификаторов 'var', 'const' или 'params'", "", pars.source_context, pars);
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS", pars.source_context);
                     if (ps.inital_value != null)
-                        throw new SyntaxError("Параметры функции с yield не должны иметь начальных значений", "", pars.source_context, pars);
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS", pars.source_context);
                 }
 
             HasYields = true;

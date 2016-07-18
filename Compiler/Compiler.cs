@@ -2902,7 +2902,7 @@ namespace PascalABCCompiler
 
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
-                    CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree,UnitName,errorsList) as SyntaxTree.compilation_unit;
+                    CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
                 }
 
                 if (errorsList.Count == 0 && need_gen_doc(CurrentUnit.SyntaxTree))

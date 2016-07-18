@@ -782,7 +782,7 @@
       <Node Name="Yield">
         <Items>
           <Node Name="visit(procedure_definition pd)">
-            <FileName>\Yield\SyntaxVisitors\YieldVisitors\ProcessYieldsCapturedVars.cs</FileName>
+            <FileName>\SyntaxVisitors\YieldVisitors\ProcessYieldsCapturedVars.cs</FileName>
             <Text>public override void visit(procedure_definition pd)</Text>
             <OCtx>
               <i Type="Method">public override void visit ( procedure_definition pd )</i>
@@ -806,7 +806,7 @@
           <Node Name="NewConstructFiniteAutomata">
             <Items>
               <Node Name="ConstructFiniteAutomata1">
-                <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <Text>public ConstructFiniteAutomata1(block bl)</Text>
                 <OCtx>
                   <i Type="Method">public ConstructFiniteAutomata ( block bl )</i>
@@ -841,7 +841,7 @@
             </OCtx>
           </Node>
           <Node Name="ObjectCopier.Clone">
-            <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>function_header nfh = ObjectCopier.Clone(fh);</Text>
             <OCtx>
               <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap )</i>
@@ -863,7 +863,7 @@
             </OCtx>
           </Node>
           <Node Name="InsertHelperMethod">
-            <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>//InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять</Text>
             <OCtx>
               <i Type="Method">private void CreateErrorCheckerHelper ( procedure_definition pd )</i>
@@ -924,7 +924,7 @@
                 </OCtx>
               </Node>
               <Node Name="stl.Add(new assign(currentIdent">
-                <FileName>\yield\syntaxvisitors\yieldvisitors\loweringvisitor.cs</FileName>
+                <FileName>\syntaxvisitors\yieldvisitors\loweringvisitor.cs</FileName>
                 <Text>stl.Add(new assign(currentIdent, new dot_node(enumeratorIdent, "Current")));</Text>
                 <OCtx>
                   <i Type="Method">public override void visit ( foreach_stmt frch )</i>
@@ -989,7 +989,7 @@
                 </OCtx>
               </Node>
               <Node Name="ConstructFiniteAutomata">
-                <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <OCtx>
                   <i Type="ClassOrNamespace">class ConstructFiniteAutomata</i>
                   <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
@@ -1012,7 +1012,7 @@
             </Items>
           </Node>
           <Node Name="ReplaceCapturedVariables">
-            <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap);</Text>
             <OCtx>
               <i Type="Method">public override void visit ( procedure_definition pd )</i>
@@ -1023,7 +1023,7 @@
             </OCtx>
           </Node>
           <Node Name="var pdCloned = ObjectCopier.Clone(pd);">
-            <FileName>\yield\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>var pdCloned = ObjectCopier.Clone(pd);</Text>
             <OCtx>
               <i Type="Method">private void CreateLocalVariablesTypeProxies ( procedure_definition pd , out IEnumerable &lt; var_def_statement &gt; localsClonesCollection )</i>
@@ -1034,7 +1034,7 @@
             </OCtx>
           </Node>
           <Node Name="if (pd.has_yield) // SSM bug fix #219">
-            <FileName>\Yield\SyntaxVisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
+            <FileName>\syntaxvisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
             <Text>if (pd.has_yield) // SSM bug fix #219</Text>
             <OCtx>
               <i Type="Method">public override void visit ( procedure_definition pd )</i>

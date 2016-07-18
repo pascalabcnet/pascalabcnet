@@ -108,7 +108,7 @@ namespace SyntaxVisitors
                                             }
                                             else
                                             {
-                                                throw new Exception("Variable defenition without type and value!");
+                                                throw new SyntaxVisitorError("Variable defenition without type and value!",vds.source_context); // SSM - быть такого не может - грамматика не пропустит
                                             }
                                         }
                                         else
@@ -129,9 +129,9 @@ namespace SyntaxVisitors
                 foreach (var ps in pars.params_list)
                 {
                     if (ps.param_kind != parametr_kind.none)
-                        throw new SyntaxError("Parameters of functions with yields must not have 'var', 'const' or 'params' modifier", "", pars.source_context, pars);
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS", pars.source_context);
                     if (ps.inital_value != null)
-                        throw new SyntaxError("Parameters of functions with yields must not have initial values", "", pars.source_context, pars);
+                        throw new SyntaxVisitorError("FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS", pars.source_context);
                     //var_def_statement vds = new var_def_statement(ps.idents, ps.vars_type);
                     ident_list ids = new ident_list(ps.idents.list.Select(id => new ident(formalParamsMap[id.name])).ToArray());
                     var_def_statement vds = new var_def_statement(ids, ps.vars_type);
@@ -807,10 +807,8 @@ namespace SyntaxVisitors
                 if (!tdecls.Any(td => td.type_name.name == pd.proc_header.name.class_name.name))
                 {
                     // Имя в модуле не найдено -> метод расширение описанный без extensionmethod. Ругаемся!!!
-                    throw new SyntaxError("Possible extension-method definintion without extensionmethod keyword. Please use extensionmethod syntax",
-                        "",
-                        pd.proc_header.source_context,
-                        pd.proc_header);
+                    throw new SyntaxVisitorError("Possible extension-method definintion without extensionmethod keyword. Please use extensionmethod syntax",
+                        pd.proc_header.source_context);
                 }
                 
             }

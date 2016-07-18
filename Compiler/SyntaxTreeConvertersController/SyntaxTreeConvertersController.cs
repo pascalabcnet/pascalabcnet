@@ -87,12 +87,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         }
 
-        public syntax_tree_node Convert(syntax_tree_node root, string FileName, List<Error> errorsList)
+        public syntax_tree_node Convert(syntax_tree_node root)
         {
             foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)
             {
                 ChangeState(State.Convert, SyntaxTreeConverter);
-                root = SyntaxTreeConverter.Convert(root,FileName,errorsList);
+                root = SyntaxTreeConverter.Convert(root);
             }
             return root;
         }

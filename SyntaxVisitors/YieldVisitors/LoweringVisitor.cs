@@ -67,7 +67,11 @@ namespace SyntaxVisitors
         public override void Enter(syntax_tree_node st)
         {
             base.Enter(st);
-            if (!(st is procedure_definition || st is block || st is statement_list || st is case_node || st is for_node || st is foreach_stmt || st is if_node || st is repeat_node || st is while_node || st is with_statement || st is try_stmt || st is lock_stmt))
+            if (!(st is procedure_definition || st is block || st is statement_list 
+                || st.GetType() == typeof(case_node) || st.GetType() == typeof(for_node) || st.GetType() == typeof(foreach_stmt) 
+                || st.GetType() == typeof(if_node) 
+                || st.GetType() == typeof(repeat_node) || st.GetType() == typeof(while_node) 
+                || st.GetType() == typeof(with_statement) || st is try_stmt || st.GetType() == typeof(lock_stmt)))
             {
                 //visitNode = false;
             }
@@ -154,9 +158,6 @@ namespace SyntaxVisitors
             ReplaceStatement(frch,sq);
 
             visit(whileNode); // Lowering оставшегося whileNode
-
-            //var sl = UpperNodeAs<statement_list>();
-            //ProcessNode(sl); // необходимо еще lowerить while - как это сделать лучше - пока не знаю
         }
 
         private expression CreateConditionFromCaseVariant(expression param, expression_list list)

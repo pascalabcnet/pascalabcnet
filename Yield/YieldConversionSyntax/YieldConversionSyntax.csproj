@@ -60,7 +60,7 @@
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
+    <ProjectReference Include="..\..\SyntaxVisitors\SyntaxVisitors.csproj">
       <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
       <Name>SyntaxVisitors</Name>
     </ProjectReference>

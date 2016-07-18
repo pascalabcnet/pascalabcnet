@@ -103,8 +103,6 @@ namespace SyntaxVisitors
             base.visit(vs);
         }
 
-        
-
         public override void visit(for_node fn)
         {
             if (fn.create_loop_variable)
@@ -141,7 +139,7 @@ namespace SyntaxVisitors
 
             if (IsVariableAlreadyDefined(name))
             {
-                throw new PascalABCCompiler.Errors.SyntaxError(string.Format("Var {0} is already defined", name), "", id.source_context, id);
+                throw new SyntaxVisitorError("Var_{0}_is_already_defined", id.source_context, name);
             }
         }
         

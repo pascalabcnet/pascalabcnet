@@ -19123,18 +19123,6 @@ namespace PascalABCCompiler.TreeConverter
             t.visit(this);
         }
 
-        // frninja - заполнение хелпера типов локальных переменных для yield
-        public override void visit(SyntaxTree.yield_var_def_statement_with_unknown_type _vars)
-        {
-            _vars.vars.visit(this);
-        }
-
-        // frninja - заполнение хелпера типов локальных переменных для yield
-        public override void visit(SyntaxTree.yield_variable_definitions_with_unknown_type _vars)
-        {
-            _vars.vars.visit(this);
-        }
-
         // frninja 29/05/16 - выявляем тип перемнной в foreach
         public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)
         {

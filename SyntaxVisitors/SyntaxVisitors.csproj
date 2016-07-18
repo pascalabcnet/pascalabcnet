@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -79,31 +79,31 @@
     <Compile Include="YieldVisitors\ReplaceYieldWithLamdasVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Compiler\Compiler.csproj">
+    <ProjectReference Include="..\Compiler\Compiler.csproj">
       <Project>{1e42361a-eda3-4872-88af-a3aaf600d36d}</Project>
       <Name>Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Errors\Errors.csproj">
+    <ProjectReference Include="..\Errors\Errors.csproj">
       <Project>{44a01f9e-dce7-470c-aae5-c3de0ccbee3b}</Project>
       <Name>Errors</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Localization\Localization.csproj">
+    <ProjectReference Include="..\Localization\Localization.csproj">
       <Project>{2de2842f-0912-4251-bc0f-480854c44a13}</Project>
       <Name>Localization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\ParserTools\ParserTools.csproj">
+    <ProjectReference Include="..\ParserTools\ParserTools.csproj">
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
       <Name>ParserTools</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SyntaxTree\SyntaxTree.csproj">
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
       <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
       <Name>SyntaxTree</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\TreeConverter\TreeConverter.csproj">
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
       <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
       <Name>TreeConverter</Name>
     </ProjectReference>
-    <ProjectReference Include="..\YieldHelpers\YieldHelpers.csproj">
+    <ProjectReference Include="..\Yield\YieldHelpers\YieldHelpers.csproj">
       <Project>{ce5c55c2-a11c-4e94-a9fa-3fc6ca3e4c09}</Project>
       <Name>YieldHelpers</Name>
     </ProjectReference>

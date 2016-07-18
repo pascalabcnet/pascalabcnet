@@ -1538,22 +1538,6 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    // frninja 18/06/16 - для foreach yield и клонов
-    public partial class foreach_stmt : statement
-    {
-        protected Guid _guid = Guid.NewGuid();
-        public Guid Guid { get { return _guid; } }
-        
-    }
-
-    // end frninja
-
-
-    // SSM 02/06/16 - пробуем добавить кеш для семантического выражения
-    public partial class expression
-    {
-    }
-
 	public partial class array_type
     {
         public override string ToString()
