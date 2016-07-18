@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.Errors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -87,12 +87,12 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
         }
 
-        public syntax_tree_node Convert(syntax_tree_node root)
+        public syntax_tree_node Convert(syntax_tree_node root, string FileName, List<Error> errorsList)
         {
             foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)
             {
                 ChangeState(State.Convert, SyntaxTreeConverter);
-                root = SyntaxTreeConverter.Convert(root);
+                root = SyntaxTreeConverter.Convert(root,FileName,errorsList);
             }
             return root;
         }

@@ -522,6 +522,17 @@
               </i>
             </OCtx>
           </Node>
+          <Node Name="foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)">
+            <FileName>\Compiler\SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs</FileName>
+            <Text>foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)</Text>
+            <OCtx>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root , string FileName , List &lt; Error &gt; errorsList )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="PVS Studio Detected">
@@ -1035,13 +1046,13 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="id.name.ToLower() == &quot;result&quot;">
-        <FileName>\Yield\SyntaxVisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
-        <Text>if (id.name.ToLower() == "result")</Text>
+      <Node Name="AddErrorFromResource">
+        <FileName>\Parsers\PascalABCParserNewSaushkin\ABCPascalParserTools.cs</FileName>
+        <Text>public void AddErrorFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)</Text>
         <OCtx>
-          <i Type="Method">public override void visit ( ident id )</i>
-          <i Type="ClassOrNamespace">public class MarkMethodHasYieldVisitor : WalkingVisitorNew</i>
-          <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+          <i Type="Method">public void AddErrorFromResource ( string res , PascalABCCompiler . SyntaxTree . SourceContext loc , params string [ ] pars )</i>
+          <i Type="ClassOrNamespace">public class PT</i>
+          <i Type="ClassOrNamespace">namespace PascalABCSavParser</i>
           <i Type="CS_TreeNode">
           </i>
         </OCtx>

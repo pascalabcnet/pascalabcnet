@@ -75,6 +75,7 @@
     <Compile Include="ParserTools\LanguageInformation.cs" />
     <Compile Include="ParserTools\ParserTools.cs" />
     <Compile Include="ParserTools\SourceContextMap.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SyntaxTreeVisitors\ConstantExpressionToConstantConvertor.cs" />
     <Compile Include="SyntaxTreeVisitors\SyntaxTreeComparer.cs" />
     <Compile Include="Tools.cs" />
@@ -96,9 +97,7 @@
       <Name>SyntaxTree</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>

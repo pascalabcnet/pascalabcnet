@@ -1,0 +1,4 @@
+// Syntax tree conversion errors
+%PREFIX%=SYNTAXTREEVISITORSERROR_
+
+YIELD_FUNC_MUST_RETURN_SEQUENCE=Функции с yield должны возвращать последовательность

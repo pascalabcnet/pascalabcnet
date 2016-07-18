@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.Errors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -81,14 +82,18 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
     public class SampleSyntaxTreeConverter: ISyntaxTreeConverter
     {
+        public string FileName { get; set; }
+        public List<Error> ErrorsList { get; set; }
         public string Name { get; set; }
         public string Version { get; set; }
         public string Description { get; set; }
         public string Copyright { get; set; }
         public ConverterType ConverterType { get; set; }
         public ExecutionOrder ExecutionOrder { get; set; }
-        public syntax_tree_node Convert(syntax_tree_node root)
+        public syntax_tree_node Convert(syntax_tree_node root, string FileName, List<Error> ErrorsList)
         {
+            this.FileName = FileName;
+            this.ErrorsList = ErrorsList;
             //var v = new SampleVisitor();
             //v.ProcessNode(root);
             return root;
