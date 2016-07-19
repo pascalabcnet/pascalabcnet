@@ -20,17 +20,10 @@ namespace SyntaxVisitors
         {
         }
 
-        public override void visit(yield_variable_definitions_with_unknown_type yvds)
-        {
-            // Empty
-        }
-
         public override void visit(var_statement vs) // локальные описания внутри процедуры
         {
 
             LocalDeletedVS.Insert(0, vs.var_def);
-
-            //ReplaceStatement(vs, new yield_var_def_statement_with_unknown_type(vs.var_def));
         }
 
         public override void visit(variable_definitions vd)
@@ -39,8 +32,6 @@ namespace SyntaxVisitors
             {
                 LocalDeletedDefs.Insert(0, v); 
             }
-
-            //Replace(vd, new yield_variable_definitions_with_unknown_type(vd));
 
             // еще - не заходить в лямбды
         }

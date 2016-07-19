@@ -136,12 +136,6 @@ namespace SyntaxVisitors
                 var vds = st as var_def_statement;
                 Println (vds.ToString());
             }
-            else if (st is yield_var_def_statement_with_unknown_type)
-            {
-                var vds = st as yield_var_def_statement_with_unknown_type;
-                Println("var "+vds.ToString());
-                visitNode = false;
-            }
             else if (st is empty_statement || st is declarations || st is block || st is class_body || st is class_members 
                 || st is case_variants || st is program_module || st is no_type_foreach || st is template_param_list
                 || st is yield_unknown_foreach_type || st is yield_unknown_expression_type 

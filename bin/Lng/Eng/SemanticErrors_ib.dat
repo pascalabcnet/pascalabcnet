@@ -1,6 +1,6 @@
 %PREFIX%=SEMANTICERROR_
 CIRCULARITY_IN_RECORD=Cycle in the struct layout
-CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}=foreach statement cannot operate on expression of type '{0}' 
+CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}='foreach' or 'yield sequence' statement cannot operate on expression of type '{0}' 
 FOREACH_LOOP_CONTROL_MUST_BE_SIMPLE_LOCAL_VARIABLE=Loop variable must be simple local variable
 TYPES_OF_VAR_AND_ELEMENTS_IN_FOREACH_MUST_BE_EQUAL_{0}_{1}=Type {0} of variable in foreach must be equal to a type {1} of elements in the iterable collection 
 CLASS_{0}_DOES_NOT_IMPLEMENT_MEMBER_{2}_OF_CLASS_{1}=Class '{0}' doesn't implement inherited abstract member '{2}' of class '{1}'

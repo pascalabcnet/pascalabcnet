@@ -10,19 +10,19 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
-    public class ReplaceYieldWithLamdasVisitor : BaseChangeVisitor
+    public class ReplaceYieldExprByVarVisitor : BaseChangeVisitor
     {
-        private int _lambdaNum = 0;
+        private int _Num = 0;
 
-        private ident NewLamdaVarName()
+        private ident NewVarName()
         {
-            ++_lambdaNum;
-            return new ident("$lambdaVar$" + _lambdaNum);
+            ++_Num;
+            return new ident("$yieldExprVar$" + _Num);
         }
 
-        public static ReplaceYieldWithLamdasVisitor New
+        public static ReplaceYieldExprByVarVisitor New
         {
-            get { return new ReplaceYieldWithLamdasVisitor(); }
+            get { return new ReplaceYieldExprByVarVisitor(); }
         }
 
         public static void Accept(procedure_definition pd)
@@ -30,30 +30,19 @@ namespace SyntaxVisitors
             New.ProcessNode(pd);
         }
 
-        public override void visit(procedure_definition pd)
-        {
-            DefaultVisit(pd);
-        }
-
-        public override void visit(statement_list st)
-        {
-            DefaultVisit(st);
-        }
-
-        public override void visit(for_node fn)
-        {
-            DefaultVisit(fn);
-        }
-
         public override void visit(yield_node yn)
         {
-            //var lambdaSearcher = new TreeConverter.LambdaExpressions.LambdaSearcher(yn);
-            //if (lambdaSearcher.CheckIfContainsLambdas())
-            {
-                var lambdaVarIdent = this.NewLamdaVarName();
-                var_statement lambdaVS = new var_statement(lambdaVarIdent, yn.ex) { source_context = yn.ex.source_context };
-                ReplaceStatement(yn, SeqStatements(lambdaVS, new yield_node(lambdaVarIdent, yn.ex.source_context)));
-            }
+            var VarIdent = this.NewVarName();
+            VarIdent.source_context = yn.ex.source_context;
+            var_statement VS = new var_statement(VarIdent, yn.ex) { source_context = yn.ex.source_context };
+            ReplaceStatement(yn, SeqStatements(VS, new yield_node(VarIdent, yn.ex.source_context)));
+        }
+        public override void visit(yield_sequence_node yn)
+        {
+            var VarIdent = this.NewVarName();
+            VarIdent.source_context = yn.ex.source_context;
+            var_statement VS = new var_statement(VarIdent, yn.ex) { source_context = yn.ex.source_context };
+            ReplaceStatement(yn, SeqStatements(VS, new yield_sequence_node(VarIdent, yn.ex.source_context)));
         }
     }
 }

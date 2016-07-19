@@ -2567,7 +2567,7 @@
         <FileName>\PABCSystem.pas</FileName>
         <Text>procedure Reset(f: Text; en: Encoding := Encoding.Default);</Text>
         <OCtx>
-          <i Type="MethodHeader">procedure Reset ( f : Text ; en : Encoding : = Encoding . Default )</i>
+          <i Type="MethodHeader">procedure Reset ( f : Text ; en : Encoding )</i>
           <i Type="PAS_TreeNode">
           </i>
         </OCtx>

@@ -2815,6 +2815,19 @@ namespace CodeFormatters
             }
             //sb.Append(")");
         }
+
+        public override void visit(yield_node yn)
+        {
+            sb.Append("yield ");
+            visit_node(yn.ex);
+        }
+
+        public override void visit(yield_sequence_node yn)
+        {
+            sb.Append("yield sequence ");
+            visit_node(yn.ex);
+        }
+
         #endregion
     }
 }

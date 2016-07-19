@@ -108,9 +108,8 @@ namespace SyntaxVisitors
                 ProcessNode(dn.right);
         }
 
-        public override void visit(yield_node yn)
+        public void visit_yield_helper(syntax_tree_node yn)
         {
-            //var pd = CurrentMethod;
             var pd = MethodsStack.Peek();
 
             if (pd == null)
@@ -134,7 +133,18 @@ namespace SyntaxVisitors
                 }
 
             HasYields = true;
+        }
 
+
+        public override void visit(yield_node yn)
+        {
+            visit_yield_helper(yn);
+            base.visit(yn);
+        }
+
+        public override void visit(yield_sequence_node yn)
+        {
+            visit_yield_helper(yn);
             base.visit(yn);
         }
     }

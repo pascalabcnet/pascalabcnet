@@ -69,6 +69,7 @@
     <Compile Include="YieldVisitors\CollectClassFieldsVisitor.cs" />
     <Compile Include="YieldVisitors\LoweringVisitor.cs" />
     <Compile Include="YieldVisitors\LocalVariablesTypeDetectorHelperVisior.cs" />
+    <Compile Include="YieldVisitors\LoweringYieldSequenceVisitor.cs" />
     <Compile Include="YieldVisitors\MarkMethodHasYieldVisitor.cs" />
     <Compile Include="YieldVisitors\ProcessYieldsCapturedVars.cs" />
     <Compile Include="YieldVisitors\RenameSameBlockLocalVarsVisitor.cs" />

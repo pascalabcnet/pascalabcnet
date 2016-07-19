@@ -62,7 +62,7 @@ namespace SyntaxVisitors
             countNodesVisited++;
 
             // сокращение обходимых узлов. Как сделать фильтр по тем узлам, которые необходимо обходить? Например, все операторы (без выражений и описаний), все описания (без операторов)
-            if (st is assign || st is var_def_statement || st is procedure_call || st is procedure_header || st is expression)
+            if (st.GetType()==typeof(assign) || st.GetType()==typeof(var_def_statement) || st is procedure_call || st is procedure_header || st is expression)
             {
                 visitNode = false; // фильтр - куда не заходить 
             }
@@ -875,27 +875,7 @@ namespace SyntaxVisitors
             if (!pd.has_yield)
                 return;
 
-            /*if (pd != null && pd.proc_header != null && pd.proc_header.name != null && pd.proc_header.name.meth_name != null && pd.proc_header.name.meth_name.name != null)
-                if (pd.proc_header.name.meth_name.name.StartsWith(YieldConsts.YieldHelperMethodPrefix))
-                    return;
-            */
-
-            //var isExtension = IsExtensionMethod(pd);
-
-            //hasYields = false;
-            //if (pd.proc_header is function_header)
-            //    mids = new FindMainIdentsVisitor();
-
-            //base.visit(pd);
-
-            //if (!hasYields) // т.е. мы разобрали функцию и уже выходим. Это значит, что пока yield будет обрабатываться только в функциях. Так это и надо.
-            //    return;
-
-            
-            
             // frninja 05/06/16 - вставляем предописание если метод-итератор описан не в классе (обычная функция) чтоб работали рекурсивные вызовы
-            // SSM - это приводит к ошибке в случае метода расширения. Простое решение - не вызывать это если это - метод расширения.
-            // SSM - но лучше конечно выдавать более достойное сообщение об ошибке или решить эту проблему
             bool methodPredefCreated = InsertGlobalIteratorMethodPredefinition(pd);
 
             // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
@@ -914,7 +894,10 @@ namespace SyntaxVisitors
             */
 
             // Выносим выражение с лямбдой из yield
-            ReplaceYieldWithLamdasVisitor.Accept(pd);
+            ReplaceYieldExprByVarVisitor.Accept(pd);
+
+            // Раскрываем операторы yield sequence. На семантике они не существуют
+            LoweringYieldSequenceVisitor.Accept(pd);
 
             // frninja 31/05/16 - добавляем метод-хелпер, возьмет на себя проверку разных ошибок уже существующим бэкендом
             CreateErrorCheckerHelper(pd); // SSM 14/07/16 - переставил до переименования переменных чтобы отлавливались ошибки одинаковых имен в разных пространствах имен
@@ -979,17 +962,6 @@ namespace SyntaxVisitors
 
         public override void visit(yield_node yn)
         {
-            //hasYields = true;
-            //if (mids != null) // если мы - внутри процедуры
-            //    yn.visit(mids);
-            //else throw new SyntaxError("Yield must be in functions only", "", yn.source_context, yn);
-            // mids.vars - надо установить, какие из них - локальные, какие - из этого класса, какие - являются параметрами функции, а какие - глобальные (все остальные)
-            // те, которые являются параметрами, надо скопировать в локальные переменные и переименовать использование везде по ходу данной функции 
-            // самое сложное - переменные-поля этого класса - они требуют в создаваемом классе, реализующем итератор, хранить Self текущего класса и добавлять это Self везде по ходу алгоритма
-            // вначале будем считать, что переменные-поля этого класса и переменные-параметры не захватываются yield
-            //base.visit(yn);
-
-
         }
     }
 

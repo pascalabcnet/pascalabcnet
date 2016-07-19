@@ -1421,18 +1421,6 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    public partial class yield_var_def_statement_with_unknown_type : statement
-    {
-        public override string ToString()
-        {
-            var sb = new System.Text.StringBuilder();
-            sb.Append(vars.ToString());
-
-            return sb.ToString();
-        }
-
-    }
-
     public partial class yield_unknown_ident : ident
     {
         protected ident _UnknownID;
@@ -1554,7 +1542,28 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class nil_const 
+    {
+        public override string ToString()
+        {
+            return "nil";
+        }
+    }
     
+	public partial class access_modifer_node
+    {
+        public override string ToString()
+        {
+            return this.access_level.ToString().Replace("_modifier","");
+        }
+    }
 
+	public partial class yield_unknown_ident
+    {
+        public override string ToString()
+        {
+            return this.UnknownID.ToString();
+        }
+    }
 }
 

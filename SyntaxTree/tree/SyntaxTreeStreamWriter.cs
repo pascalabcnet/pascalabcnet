@@ -5947,57 +5947,36 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
-		{
-			bw.Write((Int16)214);
-			write_yield_var_def_statement_with_unknown_type(_yield_var_def_statement_with_unknown_type);
-		}
-
-		public void write_yield_var_def_statement_with_unknown_type(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
-		{
-			write_statement(_yield_var_def_statement_with_unknown_type);
-			if (_yield_var_def_statement_with_unknown_type.vars == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_yield_var_def_statement_with_unknown_type.vars.visit(this);
-			}
-		}
-
-
-		public void visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
-		{
-			bw.Write((Int16)215);
-			write_yield_variable_definitions_with_unknown_type(_yield_variable_definitions_with_unknown_type);
-		}
-
-		public void write_yield_variable_definitions_with_unknown_type(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
-		{
-			write_declaration(_yield_variable_definitions_with_unknown_type);
-			if (_yield_variable_definitions_with_unknown_type.vars == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_yield_variable_definitions_with_unknown_type.vars.visit(this);
-			}
-		}
-
-
 		public void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
-			bw.Write((Int16)216);
+			bw.Write((Int16)214);
 			write_yield_unknown_foreach_type(_yield_unknown_foreach_type);
 		}
 
 		public void write_yield_unknown_foreach_type(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
 			write_type_definition(_yield_unknown_foreach_type);
+		}
+
+
+		public void visit(yield_sequence_node _yield_sequence_node)
+		{
+			bw.Write((Int16)215);
+			write_yield_sequence_node(_yield_sequence_node);
+		}
+
+		public void write_yield_sequence_node(yield_sequence_node _yield_sequence_node)
+		{
+			write_statement(_yield_sequence_node);
+			if (_yield_sequence_node.ex == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_sequence_node.ex.visit(this);
+			}
 		}
 
 	}

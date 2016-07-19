@@ -31706,228 +31706,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Узел-обертка для yield для определения типов локальных переменных в var_def_statement
-	///</summary>
-	[Serializable]
-	public partial class yield_var_def_statement_with_unknown_type : statement
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public yield_var_def_statement_with_unknown_type()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_var_def_statement_with_unknown_type(var_def_statement _vars)
-		{
-			this._vars=_vars;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_var_def_statement_with_unknown_type(var_def_statement _vars,SourceContext sc)
-		{
-			this._vars=_vars;
-			source_context = sc;
-		}
-
-		protected var_def_statement _vars;
-
-		///<summary>
-		///
-		///</summary>
-		public var_def_statement vars
-		{
-			get
-			{
-				return _vars;
-			}
-			set
-			{
-				_vars=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов без элементов поля типа List
-		///</summary>
-		public override Int32 subnodes_without_list_elements_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return vars;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						vars = (var_def_statement)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///Узел-обертка для yield для определения типов локальных переменных в variable_definitions
-	///</summary>
-	[Serializable]
-	public partial class yield_variable_definitions_with_unknown_type : declaration
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public yield_variable_definitions_with_unknown_type()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_variable_definitions_with_unknown_type(variable_definitions _vars)
-		{
-			this._vars=_vars;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_variable_definitions_with_unknown_type(variable_definitions _vars,SourceContext sc)
-		{
-			this._vars=_vars;
-			source_context = sc;
-		}
-
-		protected variable_definitions _vars;
-
-		///<summary>
-		///
-		///</summary>
-		public variable_definitions vars
-		{
-			get
-			{
-				return _vars;
-			}
-			set
-			{
-				_vars=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов без элементов поля типа List
-		///</summary>
-		public override Int32 subnodes_without_list_elements_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return vars;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						vars = (variable_definitions)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
 	///Узел для вычисления типа переменной используемой в теле foreach (с yield)
 	///</summary>
 	[Serializable]
@@ -32004,6 +31782,117 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						attr_list = (type_definition_attr_list)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class yield_sequence_node : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_sequence_node()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_sequence_node(expression _ex)
+		{
+			this._ex=_ex;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_sequence_node(expression _ex,SourceContext sc)
+		{
+			this._ex=_ex;
+			source_context = sc;
+		}
+
+		protected expression _ex;
+
+		///<summary>
+		///
+		///</summary>
+		public expression ex
+		{
+			get
+			{
+				return _ex;
+			}
+			set
+			{
+				_ex=value;
+			}
+		}
+
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return ex;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						ex = (expression)value;
 						break;
 				}
 			}

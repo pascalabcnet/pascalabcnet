@@ -1,6 +1,6 @@
 ﻿%PREFIX%=SEMANTICERROR_
 CIRCULARITY_IN_RECORD=Циклическая зависимость в записи
-CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}=Невозможно выполнить оператор foreach по выражению типа {0}
+CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}=Невозможно выполнить оператор foreach или yield sequence по выражению типа {0}
 FOREACH_LOOP_CONTROL_MUST_BE_SIMPLE_LOCAL_VARIABLE=Переменная цикла foreach должна быть только локальной
 TYPES_OF_VAR_AND_ELEMENTS_IN_FOREACH_MUST_BE_EQUAL_{0}_{1}=Тип {0} переменной цикла foreach должен в точности совпадать с типом {1} элементов коллекции 
 CLASS_{0}_DOES_NOT_IMPLEMENT_MEMBER_{2}_OF_CLASS_{1}=Класс {0} не реализует абстрактный метод {2} класса {1}
