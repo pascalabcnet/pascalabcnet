@@ -28,7 +28,15 @@ namespace YieldDesugarSyntaxTreeConverter
             root.visit(new ProcessYieldCapturedVarsVisitor());
 
 #if DEBUG
-            root.visit(new SimplePrettyPrinterVisitor(@"d:\zzz.txt"));
+            try
+            {
+                //root.visit(new SimplePrettyPrinterVisitor(@"zzz1.txt"));
+            }
+            catch 
+            {
+
+            }
+            
 #endif
 
             return root;
