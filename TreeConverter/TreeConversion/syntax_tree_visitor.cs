@@ -9102,6 +9102,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.semantic_node_reciving:
                     {
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                            has_property(ref si);
                         return_semantic_value(expression_value_reciving(id_right, si, en, true));
                         return;
                     }
@@ -9147,6 +9149,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.semantic_node_reciving:
                     {
+                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                            has_property(ref si);
                         return_semantic_value(expression_value_reciving(id_right, si, en, true));
                         return;
                     }
