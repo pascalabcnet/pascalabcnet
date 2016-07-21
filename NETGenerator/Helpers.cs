@@ -837,20 +837,13 @@ namespace PascalABCCompiler.NETGenerator {
                     MethodInfo mi = interf.GetGenericTypeDefinition().GetMethod("GetEnumerator");
                     if (generic_def != t)
                     {
+                        if (t.GetGenericArguments().Length != interf.GetGenericTypeDefinition().GetGenericArguments().Length)
+                            return null;
                         Type gt = interf.GetGenericTypeDefinition().MakeGenericType(t.GetGenericArguments());
                         if (IsConstructedGenericType(gt))
                             return TypeBuilder.GetMethod(gt, mi);
                         else
                             return interf.GetGenericTypeDefinition().MakeGenericType(t.GetGenericArguments()).GetMethod("GetEnumerator");
-                        /*try
-                        {
-                            return TypeBuilder.GetMethod(gt, mi);
-                        }
-                        catch
-                        {
-                            return interf.GetGenericTypeDefinition().MakeGenericType(t.GetGenericArguments()).GetMethod("GetEnumerator");
-                        }*/
-                        
                     }
                     else
                         return interf.GetMethod("GetEnumerator");

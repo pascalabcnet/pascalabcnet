@@ -10153,12 +10153,21 @@ namespace PascalABCCompiler.NETGenerator
             if (var_tp.IsValueType && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
             {
                 enumer_mi = helper.GetEnumeratorMethod(in_what_type);
-                is_generic = enumer_mi.ReturnType.IsGenericType;
-                return_type = enumer_mi.ReturnType;
-                if (in_what_type.IsGenericType && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
-                    return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
-                else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
-                    return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
+                if (enumer_mi == null)
+                {
+                    enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
+                    return_type = enumer_mi.ReturnType;
+                }
+                else
+                {
+                    is_generic = enumer_mi.ReturnType.IsGenericType;
+                    return_type = enumer_mi.ReturnType;
+                    if (in_what_type.IsGenericType && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
+                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
+                    else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
+                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
+                }
+                
             }
             else
             {
