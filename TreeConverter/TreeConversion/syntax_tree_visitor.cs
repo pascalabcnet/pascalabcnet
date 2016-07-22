@@ -3497,7 +3497,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         List<SyntaxTree.ident> names = new List<SyntaxTree.ident>();
                         List<SyntaxTree.type_definition> types = new List<SyntaxTree.type_definition>();
-                        if (((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == SyntaxTree.class_attribute.Auto))
+                        if (((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == class_attribute.Auto))
                         {
                             if (_class_definition.class_parents!=null)
                                 AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));

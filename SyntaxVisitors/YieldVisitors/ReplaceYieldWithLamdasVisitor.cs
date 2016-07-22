@@ -50,7 +50,7 @@ namespace SyntaxVisitors
 
             var_statement vs;
             if (yn.ex is nil_const)
-                vs = new var_statement(VarIdent, new named_type_reference("System.Object"), yn.ex);
+                vs = new var_statement(VarIdent, new named_type_reference("System.Object"), yn.ex); // bug fix #246
             else
                 vs = new var_statement(VarIdent, yn.ex);
 

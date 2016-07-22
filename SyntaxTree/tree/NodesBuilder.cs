@@ -145,8 +145,10 @@ namespace PascalABCCompiler.SyntaxTree
                             foreach (var v in mm.vars.idents)
                             {
                                 names.Add(v);
-                                types.Add(mm.vars_type);    // во внешний мир для определения pointerов
-                                //types.Add(BuildSameType(v)); // почему-то только так хочет работать с рекурсивным типом Node<T>
+                                if (mm.vars_type != null)
+                                    types.Add(mm.vars_type);    // во внешний мир для определения pointerов
+                                else 
+                                    types.Add(BuildSameType(mm.inital_value)); // почему-то только так хочет работать с рекурсивным типом Node<T>
                             }
                     }
                     else 
