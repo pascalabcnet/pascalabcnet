@@ -14738,7 +14738,15 @@ namespace PascalABCCompiler.TreeConverter
             if (_var_def_statement.vars_type != null)
             {
                 tn = convert_strong(_var_def_statement.vars_type);
-                LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
+                //LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//
+
+                var fld1 = _var_def_statement.inital_value as SyntaxTree.function_lambda_definition;
+                if (fld1 != null)
+                {
+                    MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
+                    LambdaHelper.InferTypesFromVarStmt(tn, fld1, this);  //lroman//
+                }
+
                 ref_type_node rt = tn as ref_type_node;
                 if (rt != null)
                 {
@@ -15719,7 +15727,7 @@ namespace PascalABCCompiler.TreeConverter
             if (fld1 != null)
             {
                 MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
-                LambdaHelper.InferTypesFromVarStmt(to.type, _assign.from as SyntaxTree.function_lambda_definition, this);  //lroman//
+                LambdaHelper.InferTypesFromVarStmt(to.type, fld1, this);  //lroman//
             }
             
             #endregion
