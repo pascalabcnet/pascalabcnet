@@ -2961,7 +2961,7 @@ function ArrNToString(a: System.Array; indexes: array of integer; i: integer): s
 function StructuredObjectToString(o: Object; n: integer := 0): string;
 const 
   nmax = 100;
-  nmax1 = 50;
+  nmax1 = 30;
 begin
   if o is System.Reflection.Pointer then
     Result := PointerToString(System.Reflection.Pointer.Unbox(o))

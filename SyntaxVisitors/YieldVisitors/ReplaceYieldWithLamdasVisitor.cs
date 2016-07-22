@@ -34,15 +34,29 @@ namespace SyntaxVisitors
         {
             var VarIdent = this.NewVarName();
             VarIdent.source_context = yn.ex.source_context;
-            var_statement VS = new var_statement(VarIdent, yn.ex) { source_context = yn.ex.source_context };
-            ReplaceStatement(yn, SeqStatements(VS, new yield_node(VarIdent, yn.ex.source_context)));
+            var_statement vs;
+            if (yn.ex is nil_const)
+                vs = new var_statement(VarIdent, new named_type_reference("System.Object"), yn.ex);
+            else
+                vs = new var_statement(VarIdent, yn.ex);
+            vs.source_context = yn.ex.source_context;
+            ReplaceStatement(yn, SeqStatements(vs, new yield_node(VarIdent, yn.ex.source_context)));
         }
+
         public override void visit(yield_sequence_node yn)
         {
             var VarIdent = this.NewVarName();
             VarIdent.source_context = yn.ex.source_context;
-            var_statement VS = new var_statement(VarIdent, yn.ex) { source_context = yn.ex.source_context };
-            ReplaceStatement(yn, SeqStatements(VS, new yield_sequence_node(VarIdent, yn.ex.source_context)));
+
+            var_statement vs;
+            if (yn.ex is nil_const)
+                vs = new var_statement(VarIdent, new named_type_reference("System.Object"), yn.ex);
+            else
+                vs = new var_statement(VarIdent, yn.ex);
+
+
+            //var_statement VS = new var_statement(VarIdent, yn.ex) { source_context = yn.ex.source_context };
+            ReplaceStatement(yn, SeqStatements(vs, new yield_sequence_node(VarIdent, yn.ex.source_context)));
         }
     }
 }

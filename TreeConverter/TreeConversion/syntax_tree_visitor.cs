@@ -16377,15 +16377,13 @@ namespace PascalABCCompiler.TreeConverter
             // FibGen = class(IEnumerable,IEnumerator): tn = common_type_node, en = compiled_type_node
             // array of Person: tn = common_type_node
             {
-                System.Type ct;
+                compiled_type_node orig;
+
                 if (tn is compiled_type_node)
-                    ct = (tn as compiled_type_node).compiled_type;
-                else
-                {
-                    var orig = (tn as compiled_generic_instance_type_node).original_generic as compiled_type_node;
-                    var pars = tn.instance_params;
-                    ct = orig.compiled_type;
-                }
+                    orig = tn as compiled_type_node;
+                else orig = (tn as compiled_generic_instance_type_node).original_generic as compiled_type_node;
+                    //var pars = tn.instance_params;
+                System.Type ct = orig.compiled_type;
                     
                 Type r;
                 var IEnTstring = "System.Collections.Generic.IEnumerable`1";

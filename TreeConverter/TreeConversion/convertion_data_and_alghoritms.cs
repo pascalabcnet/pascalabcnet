@@ -3,6 +3,7 @@
 //Некоторые алгоритмы . В основном выбор перегруженного метода. Сильно связан с syntax_tree_visitor.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.TreeRealization;
@@ -2016,7 +2017,8 @@ namespace PascalABCCompiler.TreeConverter
                 set_of_possible_functions.remove(fn);
             }
 
-            foreach (function_node fn in set_of_possible_functions)
+            // Формирование словаря списков функций с одинаковым значением расстояния
+            foreach (function_node fn in set_of_possible_functions) 
             {
                 int distance = 0;
                 for (int i = 0; i < parameters.Count; i++)
@@ -2025,6 +2027,8 @@ namespace PascalABCCompiler.TreeConverter
                     type_node to = fn.parameters[Math.Min(i,fn.parameters.Count-1)].type;
                     if (fn.parameters[Math.Min(i, fn.parameters.Count - 1)].is_params)
                         to = to.element_type;
+                    // ToDo: необходимо сделать более детальную get_type_distance. 
+                    // Сейчас для функциональных параметров она всегда возвращает 1000
                     distance += get_type_distance(from, to);
                 }
                 
@@ -2049,7 +2053,9 @@ namespace PascalABCCompiler.TreeConverter
                     distances[distance] = lst;
                 }
             }
-            foreach (int dist in distances.Keys)
+            foreach (int dist in distances.Keys) // Дистанции упорядочены по возрастанию. Логика тут немного странная: 
+                // если для какой-то минимальной дистанции найдется ровно одна функция, то она и выбирается
+                // если две и больше - то они пробрасываются и мы переходим к бОльшей дистанции
             {
                 List<function_node> funcs = distances[dist];
                 if (funcs.Count == 1)
@@ -2060,6 +2066,60 @@ namespace PascalABCCompiler.TreeConverter
                         return AddError<function_node>(err);
                     convert_function_call_expressions(funcs[0], parameters, tcl);
                     return funcs[0];
+                }
+                if (funcs.Count == 2) // SSM - это ужасный способ устранения бага #236 Range(1,10).Sum(e -> e); Для хорошего способа весь код выбора версий функций для делегатов надо переписывать
+                {
+                    var f1 = funcs[0];
+                    var f2 = funcs[1];
+
+                    if (f1.parameters.Count == f2.parameters.Count)
+                    {
+                        for (var i=0; i < f1.parameters.Count; i++)
+                        {
+                            var p1 = f1.parameters[i].type;
+                            var p2 = f2.parameters[i].type;
+                            // типы у них должны начинаться на Func, надо посмотреть тип последнего параметра,
+                            // и если это Nullable, то исключить его из рассмотрения
+                            // Напоминаю, что p1 и p2 если это Func, то могут быть 
+                            // либо compiled_type_node (List<int>) либо compiled_generic_instance_type_node (List<A>) 
+
+                            var ctn1 = p1 as compiled_type_node;
+                            if (ctn1 == null)
+                            {
+                                var cgn1 = p1 as compiled_generic_instance_type_node;
+                                if (cgn1 != null)
+                                    ctn1 = cgn1.original_generic as compiled_type_node;
+                            }
+
+                            var ctn2 = p1 as compiled_type_node;
+                            if (ctn2 == null)
+                            {
+                                var cgn2 = p2 as compiled_generic_instance_type_node;
+                                if (cgn2 != null)
+                                    ctn2 = cgn2.original_generic as compiled_type_node;
+                            }
+
+                            if (ctn1 == null || ctn2 == null)
+                                continue;
+
+                            System.Type ct1 = ctn1.compiled_type;
+                            if (ct1.IsGenericType && ct1.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct1.GetGenericArguments().Length;
+                                if (c != 0 && ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                    return f2;
+                            }
+
+                            System.Type ct2 = ctn2.compiled_type;
+                            if (ct2.IsGenericType && ct2.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct2.GetGenericArguments().Length;
+                                if (c != 0 && ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                    return f1;
+                            }
+                        }
+                    }
+                    
                 }
             }
             return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));

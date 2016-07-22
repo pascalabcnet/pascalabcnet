@@ -110,7 +110,9 @@ namespace SyntaxVisitors
 
         public void visit_yield_helper(syntax_tree_node yn)
         {
-            var pd = MethodsStack.Peek();
+            procedure_definition pd = null;
+            if (MethodsStack.Count > 0)
+                pd = MethodsStack.Peek();
 
             if (pd == null)
                 throw new SyntaxVisitorError("ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS", yn.source_context);
