@@ -485,6 +485,61 @@
               </i>
             </OCtx>
           </Node>
+          <Node Name="visit(SyntaxTree.var_def_statement">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.var_def_statement _var_def_statement)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . var_def_statement _var_def_statement )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="vardef  LambdaHelper.InferTypesFromVarStmt">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . var_def_statement _var_def_statement )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE">
+            <FileName>\TreeConverter\TreeConversion\LambdaHelper.cs</FileName>
+            <Text>//throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");</Text>
+            <OCtx>
+              <i Type="Method">public static void InferTypesFromVarStmt ( type_node leftType , function_lambda_definition lambdaDef , syntax_tree_visitor visitor )</i>
+              <i Type="ClassOrNamespace">public class LambdaHelper</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="AddError(loc, &quot;FUNCTION_EXPECTED_PROCEDURE_{0}_MEET&quot;">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn);</Text>
+            <OCtx>
+              <i Type="Method">private base_function_call create_not_static_method_call ( function_node fn , expression_node en , location loc , bool procedure_allowed )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="Преобразование синт дерева">
@@ -792,7 +847,7 @@
       </Node>
       <Node Name="Yield">
         <Items>
-          <Node Name="visit(procedure_definition pd)">
+          <Node Name="Осн. визитор visit(procedure_definition pd)">
             <FileName>\SyntaxVisitors\YieldVisitors\ProcessYieldsCapturedVars.cs</FileName>
             <Text>public override void visit(procedure_definition pd)</Text>
             <OCtx>

@@ -18242,9 +18242,10 @@ namespace PascalABCCompiler.TreeConverter
                             qq = convert_strong(ff.dereferencing_value);
                             dm = qq.type as delegated_methods;
                         }
-                        catch
+                        catch (Exception e)
                         {
                             // Погасить все исключения. Значит, не вывелось, и в правой части лямбды - не вызов процедуры, а скорее всего приведение типа T(x)
+                            // К сожалению, сюда попадает случай a->a.Print() где a до более позднего этапа не определяется
                             // Плохо, но лучше пока не получается
                         }
                         if (dm != null && dm.proper_methods != null && dm.proper_methods.Count > 0)
