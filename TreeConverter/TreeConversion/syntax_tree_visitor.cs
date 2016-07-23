@@ -12915,7 +12915,7 @@ namespace PascalABCCompiler.TreeConverter
             			tn = del;
             			expr = convertion_data_and_alghoritms.explicit_convert_type(expr, del);
             			expr.type = tn;
-            			constant = new common_constructor_call_as_constant(expr as common_constructor_call, null);
+            			constant = new common_constructor_call_as_constant(expr as common_constructor_call, loc);
             		}
             	}
             }

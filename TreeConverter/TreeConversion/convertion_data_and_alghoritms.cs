@@ -617,13 +617,17 @@ namespace PascalABCCompiler.TreeConverter
 
 			if (pct.second!=null)
 			{
-				throw new TwoTypeConversionsPossible(en,pct.first,pct.second);
+                AddError(new TwoTypeConversionsPossible(en,pct.first,pct.second));
 			}
 
 			if (pct.first==null)
 			{
+                if (to is delegated_methods && (to as delegated_methods).empty_param_method != null)
+                {
+                    return convert_type(en, (to as delegated_methods).empty_param_method.ret_type, loc);
+                }
                 en.location = loc;
-				throw new CanNotConvertTypes(en,en.type,to,loc);
+                AddError(new CanNotConvertTypes(en, en.type, to, loc));
 			}
 
 #if (DEBUG)
@@ -636,13 +640,7 @@ namespace PascalABCCompiler.TreeConverter
         public static function_node get_empty_conversion(type_node from_type, type_node to_type, bool with_compile_time_executor)
         {
             basic_function_node bfn = null;
-            /*if (to_type == SystemLibrary.SystemLibrary.object_type && from_type.is_value_type)
-            {
-                bfn = new basic_function_node(SemanticTree.basic_function_type.objtoobj, from_type, false);
-                with_compile_time_executor = false;
-            }
-            else*/
-                bfn = new basic_function_node(SemanticTree.basic_function_type.none, to_type, false);
+            bfn = new basic_function_node(SemanticTree.basic_function_type.none, to_type, false);
             bfn.parameters.AddElement(new basic_parameter("expr", from_type, SemanticTree.parameter_type.value, bfn));
             if (with_compile_time_executor)
                 bfn.compile_time_executor = SystemLibrary.SystemLibrary.delegated_empty_method;
