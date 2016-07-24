@@ -245,7 +245,10 @@
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
-	
+	Push "SyntaxVisitors.dll"
+    Call NGEN
+    Push "YieldConversionSyntax.dll"
+    Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"
 SectionEnd
