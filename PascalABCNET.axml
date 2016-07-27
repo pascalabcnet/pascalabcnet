@@ -540,6 +540,21 @@
               </i>
             </OCtx>
           </Node>
+          <Node Name="В параметрах">
+            <Items>
+              <Node Name="create_not_static_method_call">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Text>private base_function_call create_not_static_method_call(function_node fn, expression_node en, location loc, bool procedure_allowed)</Text>
+                <OCtx>
+                  <i Type="Method">private base_function_call create_not_static_method_call ( function_node fn , expression_node en , location loc , bool procedure_allowed )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
         </Items>
       </Node>
       <Node Name="Преобразование синт дерева">
@@ -1131,6 +1146,30 @@
             <OCtx>
               <i Type="Method">public function_node select_function ( expressions_list parameters , SymbolInfo functions , location loc , List &lt; SyntaxTree . expression &gt; syntax_nodes_parameters = null )</i>
               <i Type="ClassOrNamespace">public class convertion_data_and_alghoritms</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="a.Sort((row1, row2) -&gt; 1)">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>return;</Text>
+        <OCtx>
+          <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+        <Items>
+          <Node Name="visit_method_call">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>internal void visit_method_call(SyntaxTree.method_call _method_call)</Text>
+            <OCtx>
+              <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">
               </i>

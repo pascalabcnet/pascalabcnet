@@ -8864,7 +8864,7 @@ namespace PascalABCCompiler.TreeConverter
             try_convert_typed_expression_to_function_call(ref en);
             if ((!procedure_allowed) && (fn.return_value_type == null))
             {
-                AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn);
+                AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
             }
             if (fn.semantic_node_type == semantic_node_type.common_method_node)
             {
@@ -15726,7 +15726,7 @@ namespace PascalABCCompiler.TreeConverter
             var fld1 = _assign.from as SyntaxTree.function_lambda_definition;
             if (fld1 != null)
             {
-                MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
+                //MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
                 LambdaHelper.InferTypesFromVarStmt(to.type, fld1, this);  //lroman//
             }
             
@@ -18223,6 +18223,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public void MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(function_lambda_definition _function_lambda_definition)
         {
+            // SSM 23/07/16 - вроде сделал лучше в LambdaHelper.InferTypesFromVarStmt, но пока везде удалять вызов этой функции не решаюсь - лень тестировать
             // SSM 18/04/16 попытка разрешить x->Print(x)
             var stl = _function_lambda_definition.proc_body as SyntaxTree.statement_list;
             if (_function_lambda_definition.return_type is lambda_inferred_type && stl != null && stl.list.Count == 1 && _function_lambda_definition.usedkeyword == 0)

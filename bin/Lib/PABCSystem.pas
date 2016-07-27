@@ -8080,17 +8080,14 @@ end;
 /// Возвращает последние count элементов последовательности
 function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
-  var q := new Queue<T>;
-  foreach var x in Self do
-  begin
-    if q.Count = count then
-      q.Dequeue();
-    q.Enqueue(x);
-  end;
-  Result := q;
+  Result := Self.Reverse.Take(count).Reverse;
 end;
 
-// ToDo: SkipLast
+/// Возвращает последовательность без последних count элементов 
+function SkipLast<T>(self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Reverse.Skip(count).Reverse;
+end;
 
 /// Декартово произведение последовательностей
 function Cartesian<T,T1>(Self: sequence of T; b: sequence of T1): sequence of (T,T1); extensionmethod;
