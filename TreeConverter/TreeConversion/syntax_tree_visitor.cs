@@ -15726,7 +15726,7 @@ namespace PascalABCCompiler.TreeConverter
             var fld1 = _assign.from as SyntaxTree.function_lambda_definition;
             if (fld1 != null)
             {
-                //MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
+                //MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1); - вроде бы это делается внутри InferTypesFromVarStmt
                 LambdaHelper.InferTypesFromVarStmt(to.type, fld1, this);  //lroman//
             }
             

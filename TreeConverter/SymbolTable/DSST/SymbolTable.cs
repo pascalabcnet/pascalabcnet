@@ -575,8 +575,8 @@ namespace SymbolTable
             return ScopeTable[scope].TopScopeNum;
 		}
 
-		//Возвращает количество уровней на которые надо поднятся начиная с Down чтобы очюбтиться в Up
-		//Работает только для процедур.Модуль считает за одно Scope
+		//Возвращает количество уровней на которые надо поднятся начиная с Down чтобы очутиться в Up
+		//Работает только для процедур. Модуль считает за одно Scope
 		public int GetRelativeScopeDepth(Scope Up,Scope Down)
 		{
 			if (Up==Down) return 0;
