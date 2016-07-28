@@ -2982,7 +2982,7 @@ namespace CodeCompletion
             {
                 List<SymInfo> syms = new List<SymInfo>();
                 syms.AddRange(base.GetNamesAsInObject(ev));
-                if (implemented_interfaces != null)
+                if (!IsMultiDynArray && implemented_interfaces != null)
                 {
                     foreach (TypeScope ts in implemented_interfaces)
                         syms.AddRange(ts.GetNamesAsInObject(ev));
@@ -4170,7 +4170,7 @@ namespace CodeCompletion
             {
                 lst.AddRange(baseScope.GetNamesAsInObject(ev));
             }
-            if (implemented_interfaces != null)
+            if (implemented_interfaces != null && !(this is ArrayScope && (this as ArrayScope).IsMultiDynArray))
                 foreach (TypeScope ts in implemented_interfaces)
                     lst.AddRange(ts.GetNamesAsInObject(ev));
             return lst.ToArray();

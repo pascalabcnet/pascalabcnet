@@ -854,7 +854,9 @@ namespace SymbolTable
                 (((to.symbol_kind==symbol_kind.sk_none)&&(add.symbol_kind==symbol_kind.sk_none))&&(to.scope==add.scope))
                 ||
 				((to.symbol_kind==symbol_kind.sk_overload_function)&&(add.symbol_kind==symbol_kind.sk_overload_function))
-				);
+                ||
+                ((to.symbol_kind == symbol_kind.sk_overload_procedure) && (add.symbol_kind == symbol_kind.sk_overload_procedure))
+                );
 		}
 		
 		private bool AlreadyAdded(SymbolInfo si, SymbolInfo FirstInfo)
