@@ -9,6 +9,13 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public static SourceContext BuildGenSC = new SourceContext(0, 777777, 0, 0, 0, 0);
 
+        private static int GenIdNum = 0;
+        public static ident GenIdentName()
+        {
+            GenIdNum++;
+            return new ident("$GenId" + GenIdNum.ToString());
+        }
+
         public static type_definition BuildSimpleType(string name)
         {
             return new named_type_reference(name, null);

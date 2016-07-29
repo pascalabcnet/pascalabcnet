@@ -1154,21 +1154,38 @@
         </Items>
       </Node>
       <Node Name="a.Sort((row1, row2) -&gt; 1)">
-        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
-        <Text>return;</Text>
-        <OCtx>
-          <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
-          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
-          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
-          <i Type="CS_TreeNode">
-          </i>
-        </OCtx>
         <Items>
           <Node Name="visit_method_call">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>internal void visit_method_call(SyntaxTree.method_call _method_call)</Text>
             <OCtx>
               <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="foreach Arr -&gt; for">
+        <Items>
+          <Node Name="visit(SyntaxTree.foreach_stmt">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . foreach_stmt _foreach_stmt )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit(SyntaxTree.semantic_type_node">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.semantic_type_node stn)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . semantic_type_node stn )</i>
               <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">

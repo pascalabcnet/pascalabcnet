@@ -16524,19 +16524,77 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(new LambdasNotAllowedInForeachInWhatSatetement(get_location(lambdaSearcher.FoundLambda)));
             }
 
+            expression_node in_what = convert_strong(_foreach_stmt.in_what);
+
+            // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
+            var is1dimdynarr = false;
+            var comptn = in_what.type as compiled_type_node;
+            if (comptn != null && comptn.type_special_kind == SemanticTree.type_special_kind.array_kind && comptn.rank == 1)
+            {
+                is1dimdynarr = true;
+            }
+            if (!is1dimdynarr)
+            {
+                var comtn = in_what.type as common_type_node;
+                if (comtn != null && comtn.internal_type_special_kind == SemanticTree.type_special_kind.array_kind && comtn.rank == 1)
+                {
+                    is1dimdynarr = true;
+                }
+            }
+
+            if (is1dimdynarr) // Замена foreach на for для массива
+            {
+                // сгенерировать код для for и вызвать соответствующий visit
+                var sem_expr = new semantic_addr_value(in_what); // перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
+                var arrid = SyntaxTreeBuilder.GenIdentName();
+                var vdarr = new var_def_statement(arrid, null, sem_expr);
+                visit(vdarr);
+
+                statement_list newbody;
+                if (_foreach_stmt.stmt is statement_list)
+                    newbody = _foreach_stmt.stmt as statement_list;
+                else newbody = new statement_list(_foreach_stmt.stmt);
+                var i = SyntaxTreeBuilder.GenIdentName();
+
+                var x = _foreach_stmt.identifier;
+
+                // Возможны 3 случая:
+                // 1. _foreach_stmt.type_name = null - значит, переменная определена в другом месте
+                // 2. _foreach_stmt.type_name = no_type_foreach - значит, это for var x in a
+                // 3. _foreach_stmt.type_name = T - значит, это for var x: T in a
+
+                statement vd;
+                if (_foreach_stmt.type_name == null)
+                    vd = new assign(x, new indexer(arrid,new expression_list(i)));
+                else if (_foreach_stmt.type_name is no_type_foreach)
+                    vd = new var_statement(x, new indexer(arrid,new expression_list(i)));
+                else vd = new var_statement(x,_foreach_stmt.type_name, new indexer(arrid,new expression_list(i)));
+
+                newbody.AddFirst(vd);
+
+                var high = new bin_expr(new dot_node(arrid, new ident("Length")),new int32_const(1),Operators.Minus);
+
+                var fornode = new SyntaxTree.for_node(i, new int32_const(0), high, newbody, for_cycle_type.to, null, null, true);
+                visit(fornode);
+                return;
+            }
+            /// SSM 29.07.16 
+
             //throw new NotSupportedError(get_location(_foreach_stmt));
             definition_node dn = null;
             var_definition_node vdn = null;
             statements_list sl2 = new statements_list(get_location(_foreach_stmt));
             convertion_data_and_alghoritms.statement_list_stack_push(sl2);
 
-            expression_node in_what = convert_strong(_foreach_stmt.in_what);
             expression_node tmp = in_what;
             if (in_what is typed_expression) in_what = convert_typed_expression_to_function_call(in_what as typed_expression);
             type_node elem_type = null;
             if (in_what.type == null)
                 in_what = tmp;
             //if (in_what.type.find_in_type("GetEnumerator") == null)
+
+            //(in_what.type as common_type_node).internal_type_special_kind == SemanticTree.type_special_kind.array_kind
+            //in_what.type as compiled_type_node
 
             if (!FindIEnumerableElementType(/*_foreach_stmt, */in_what.type, ref elem_type))
             //if (!IsGetEnumerator(in_what.type, ref elem_type))

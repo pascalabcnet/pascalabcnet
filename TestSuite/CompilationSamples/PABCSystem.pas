@@ -8452,7 +8452,7 @@ end;
 
 // Дополнения февраль 2016: Shuffle, AdjacentFind, IndexMin, IndexMax, Replace, Transform
 //   Статические методы - в методы расширения: BinarySearch, ConvertAll, Find, FindIndex, FindAll,  
-//   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Resize, Sort
+//   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Sort
 
 /// Перемешивает элементы массива случайным образом
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
@@ -8643,12 +8643,6 @@ end;
 function LastIndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
 begin
   Result := System.Array.LastIndexOf(self,x,start);  
-end;
-
-/// Меняет размер массива
-procedure Resize<T>(self: array of T; x: integer); extensionmethod;
-begin
-  System.Array.Resize(self,x);  
 end;
 
 /// Сортирует массив по возрастанию
