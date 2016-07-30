@@ -8252,8 +8252,18 @@ end;
 /// Превращает последовательность в последовательность пар соседних элементов
 function Pairwise<T>(Self: sequence of T): sequence of (T,T); extensionmethod;
 begin
-  Result := Self.ZipTuple(Self.Skip(1));
+  var previous: T;
+  var it := Self.GetEnumerator();
+  if (it.MoveNext()) then
+      previous := it.Current;
+
+  while (it.MoveNext()) do
+  begin
+    yield (previous,it.Current);
+    previous := it.Current;
+  end
 end;
+
 
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
 function Pairwise<T,Res>(Self: sequence of T; func:(T,T)->Res): sequence of Res; extensionmethod;
