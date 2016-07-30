@@ -8524,21 +8524,8 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого максимального элемента
-function IndexMax<T>(self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var max := Self[0];
-  Result := 0;
-  for var i:=1 to Self.Length-1 do
-    if Self[i].CompareTo(max)>0 then 
-    begin
-      Result := i;
-      max := Self[i];
-    end;
-end;
-
 /// Возвращает индекс первого максимального элемента начиная с позиции start
-function IndexMax<T>(self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+function IndexMax<T>(self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[start];
   Result := start;
@@ -8573,6 +8560,32 @@ begin
     begin
       Result := i;
       min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[Self.Length-1];
+  Result := Self.Length-1;
+  for var i:=Self.Length-2 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента начиная с позиции start
+function LastIndexMax<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[start];
+  Result := start;
+  for var i:=start-1 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
     end;
 end;
 
