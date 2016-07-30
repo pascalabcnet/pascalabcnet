@@ -16545,17 +16545,11 @@ namespace PascalABCCompiler.TreeConverter
             if (is1dimdynarr) // Замена foreach на for для массива
             {
                 // сгенерировать код для for и вызвать соответствующий visit
-                var sem_expr = new semantic_addr_value(in_what); // перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
                 var arrid = SyntaxTreeBuilder.GenIdentName();
-                var vdarr = new var_def_statement(arrid, null, sem_expr);
+                var vdarr = new var_def_statement(arrid, new semantic_addr_value(in_what)); // semantic_addr_value - перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
                 visit(vdarr);
 
-                statement_list newbody;
-                if (_foreach_stmt.stmt is statement_list)
-                    newbody = _foreach_stmt.stmt as statement_list;
-                else newbody = new statement_list(_foreach_stmt.stmt);
                 var i = SyntaxTreeBuilder.GenIdentName();
-
                 var x = _foreach_stmt.identifier;
 
                 // Возможны 3 случая:
@@ -16564,17 +16558,20 @@ namespace PascalABCCompiler.TreeConverter
                 // 3. _foreach_stmt.type_name = T - значит, это for var x: T in a
 
                 statement vd;
-                if (_foreach_stmt.type_name == null)
-                    vd = new assign(x, new indexer(arrid,new expression_list(i)));
-                else if (_foreach_stmt.type_name is no_type_foreach)
-                    vd = new var_statement(x, new indexer(arrid,new expression_list(i)));
-                else vd = new var_statement(x,_foreach_stmt.type_name, new indexer(arrid,new expression_list(i)));
+                if (_foreach_stmt.type_name == null) // 1.
+                    vd = new assign(x, arrid.indexer(i));
+                else if (_foreach_stmt.type_name is no_type_foreach) // 2.
+                    vd = new var_statement(x, arrid.indexer(i));
+                else // 3.
+                    vd = new var_statement(x,_foreach_stmt.type_name, arrid.indexer(i));
 
+                // Превратить старое тело в statement_list и добавить к нему в начало x := a[i] или var x := a[i] 
+                var newbody = _foreach_stmt.stmt.ToStatementList();
                 newbody.AddFirst(vd);
 
-                var high = new bin_expr(new dot_node(arrid, new ident("Length")),new int32_const(1),Operators.Minus);
+                var high = arrid.dot_node("Length").Minus(1);
 
-                var fornode = new SyntaxTree.for_node(i, new int32_const(0), high, newbody, for_cycle_type.to, null, null, true);
+                var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
                 visit(fornode);
                 return;
             }

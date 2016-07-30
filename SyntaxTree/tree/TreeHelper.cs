@@ -465,6 +465,9 @@ namespace PascalABCCompiler.SyntaxTree
         public var_def_statement(ident id, type_definition type, expression iv) : this(new ident_list(id), type, iv)
         { }
 
+        public var_def_statement(ident id, expression iv) : this(new ident_list(id), null, iv)
+        { }
+
         public var_def_statement(ident id, string type) : this(new ident_list(id), new named_type_reference(type))
         { }
 
@@ -555,6 +558,14 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class indexer
     {
+        public indexer(addressed_value av, expression ex, SourceContext sc = null)
+        {
+            this.dereferencing_value = av;
+            this.indexes = new expression_list(ex);
+            this.source_context = sc;
+        }
+
+
         public override string ToString()
         {
             return base.ToString() + "[" + indexes.ToString() + "]";
@@ -881,12 +892,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class dot_node
     {
-        public dot_node(ident left, ident right)
-        {
-            this.left = left;
-            this.right = right;
-        }
-        public dot_node(ident left, ident right, SourceContext sc)
+        public dot_node(ident left, ident right, SourceContext sc = null)
         {
             this.left = left;
             this.right = right;
@@ -1565,5 +1571,45 @@ namespace PascalABCCompiler.SyntaxTree
             return this.UnknownID.ToString();
         }
     }
+
+    public partial class statement
+    {
+        public statement_list ToStatementList()
+        {
+            var stl = this as statement_list;
+            if (stl != null)
+                return stl;
+            else return new statement_list(this);
+        }
+    }
+
+    public partial class addressed_value
+    {
+        public indexer indexer(expression ex, SourceContext sc = null)
+        {
+            return new SyntaxTree.indexer(this, ex, sc);
+        }
+        public dot_node dot_node(ident id, SourceContext sc = null)
+        {
+            return new SyntaxTree.dot_node(this, id, sc);
+        }
+    }
+
+    public partial class expression
+    {
+        public expression Plus(expression e)
+        {
+            return new bin_expr(this, e, Operators.Plus);
+        }
+        public expression Minus(expression e)
+        {
+            return new bin_expr(this, e, Operators.Minus);
+        }
+        public static implicit operator expression(int i)
+        {
+            return new int32_const(i);
+        }
+    }
+
 }
 

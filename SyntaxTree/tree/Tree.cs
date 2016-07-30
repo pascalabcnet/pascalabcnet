@@ -2439,7 +2439,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 	///<summary>
 	///Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).
-
 	///</summary>
 	[Serializable]
 	public partial class var_def_statement : declaration
