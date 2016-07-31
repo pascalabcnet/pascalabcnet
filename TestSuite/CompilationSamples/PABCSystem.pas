@@ -8345,6 +8345,121 @@ begin
   Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count)
 end;
 
+// Дополнения июль 2016: Incremental
+///--
+{function IncrementalSeq(Self: sequence of integer): sequence of integer; 
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield nextItem - prevItem;
+      prevItem := nextItem;
+    end
+  end
+end;
+
+///--
+function IncrementalSeq(Self: sequence of real): sequence of real;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield nextItem - prevItem;
+      prevItem := nextItem;
+    end
+  end
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: sequence of integer): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: array of integer): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: List<integer>): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: LinkedList<integer>): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: sequence of real): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: array of real): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: List<real>): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: LinkedList<real>): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;}
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
+function Incremental<T,T1>(Self: sequence of T; func: (T,T)->T1): sequence of T1; extensionmethod;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield func(prevItem,nextItem);
+      prevItem := nextItem;
+    end
+  end
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
+function Incremental<T,T1>(Self: sequence of T; func: (T,T,integer)->T1): sequence of T1; extensionmethod;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var ind := 0;
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      ind += 1;
+      yield func(prevItem,nextItem,ind);
+      prevItem := nextItem;
+    end
+  end
+end;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа List<T> # Extension methods for List T
 // -----------------------------------------------------
