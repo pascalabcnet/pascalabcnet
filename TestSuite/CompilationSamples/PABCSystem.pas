@@ -3790,7 +3790,7 @@ end;
 
 type
 // Вспомогательный класс для генерации бесконечной последовательности целых, начиная с заданного значения
-  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
+{  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
   private
     first,cur: integer;
   public
@@ -3812,7 +3812,7 @@ type
     begin
       cur := first-1;
     end;
-  end;
+  end;}
 
 // Вспомогательный класс для генерации рекуррентных последовательностей
   IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
@@ -7911,34 +7911,60 @@ end;
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом 1
 function Step(Self: integer): sequence of integer; extensionmethod;
 begin
-  Result := IntNumbersClass.Create(Self);
+  //Result := IntNumbersClass.Create(Self);
+  var s := Self;
+  while True do
+  begin
+    yield s;
+    s += 1;
+  end;
 end;
 
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом step
 function Step(Self: integer; step: integer): sequence of integer; extensionmethod;
 begin
-  var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+  {var slf := Self;
+  Result := IntNumbersClass.Create().Select(x->x*step+slf);}
+  var s := Self;
+  while True do
+  begin
+    yield s;
+    s += step;
+  end;
 end;
 
 /// Возвращает бесконечную последовательность вещественных от текущего значения с шагом step
 function Step(Self: real; step: real): sequence of real; extensionmethod;
 begin
-  var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+  {var slf := Self;
+  Result := IntNumbersClass.Create().Select(x->x*step+slf);}
+  var s := Self;
+  while True do
+  begin
+    yield s;
+    s += step;
+  end;
 end;
 
 // Возвращает бесконечную последовательность элементов, совпадающих с данным
 ///--
 function &Repeat<T>(Self: T): sequence of T; extensionmethod;
 begin
-  Result := SeqFill(MaxInt,Self);
+  var s := Self;
+  while True do
+    yield s;
 end;
 
 /// Повторяет последовательность бесконечное число раз
 function Cycle<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
+  var s := Self;
+  while True do
+  begin
+    foreach var x in s do
+      yield x;
+  end;
+//  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
 end;
 
 //------------------------------------------------------------------------------
@@ -8053,7 +8079,7 @@ end;
 // Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
 //   Partition, ZipTuple, UnZipTuple, Interleave, Numerate, Tabulate, Pairwise, Batch 
 
-/// Возвращает элемент последовательности с минимальным значением ключа
+/// Возвращает первый элемент последовательности с минимальным значением ключа
 function MinBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
 begin
   if selector = nil then
@@ -8065,7 +8091,7 @@ begin
   Result := Self.Aggregate((min,x)-> comp.Compare(selector(x),selector(min))<0 ? x : min);
 end;
 
-/// Возвращает элемент последовательности с максимальным значением ключа
+/// Возвращает первый элемент последовательности с максимальным значением ключа
 function MaxBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
 begin
   if selector = nil then
@@ -8074,7 +8100,31 @@ begin
     raise new InvalidOperationException('Empty sequence');
  
   var comp := Comparer&<TKey>.Default;
-  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))<0 ? max : x);
+  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))>0 ? x : max);
+end;
+
+/// Возвращает последний элемент последовательности с минимальным значением ключа
+function LastMinBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
+begin
+  if selector = nil then
+    raise new ArgumentNullException('selector');
+  if not Self.Any() then
+    raise new InvalidOperationException('Empty sequence');
+
+  var comp := Comparer&<TKey>.Default;
+  Result := Self.Aggregate((min,x)-> comp.Compare(selector(x),selector(min))<=0 ? x : min);
+end;
+
+/// Возвращает последний элемент последовательности с максимальным значением ключа
+function LastMaxBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
+begin
+  if selector = nil then
+    raise new ArgumentNullException('selector');
+  if not Self.Any() then
+    raise new InvalidOperationException('Empty sequence');
+ 
+  var comp := Comparer&<TKey>.Default;
+  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))>=0 ? x : max);
 end;
 
 /// Возвращает последние count элементов последовательности
@@ -8228,8 +8278,18 @@ end;
 /// Превращает последовательность в последовательность пар соседних элементов
 function Pairwise<T>(Self: sequence of T): sequence of (T,T); extensionmethod;
 begin
-  Result := Self.ZipTuple(Self.Skip(1));
+  var previous: T;
+  var it := Self.GetEnumerator();
+  if (it.MoveNext()) then
+      previous := it.Current;
+
+  while (it.MoveNext()) do
+  begin
+    yield (previous,it.Current);
+    previous := it.Current;
+  end
 end;
+
 
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
 function Pairwise<T,Res>(Self: sequence of T; func:(T,T)->Res): sequence of Res; extensionmethod;
@@ -8500,21 +8560,8 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого максимального элемента
-function IndexMax<T>(self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
-begin
-  var max := Self[0];
-  Result := 0;
-  for var i:=1 to Self.Length-1 do
-    if Self[i].CompareTo(max)>0 then 
-    begin
-      Result := i;
-      max := Self[i];
-    end;
-end;
-
 /// Возвращает индекс первого максимального элемента начиная с позиции start
-function IndexMax<T>(self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+function IndexMax<T>(self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
   var max := Self[start];
   Result := start;
@@ -8549,6 +8596,32 @@ begin
     begin
       Result := i;
       min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[Self.Length-1];
+  Result := Self.Length-1;
+  for var i:=Self.Length-2 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента начиная с позиции start
+function LastIndexMax<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[start];
+  Result := start;
+  for var i:=start-1 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
     end;
 end;
 

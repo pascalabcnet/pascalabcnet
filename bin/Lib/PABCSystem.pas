@@ -3790,7 +3790,7 @@ end;
 
 type
 // Вспомогательный класс для генерации бесконечной последовательности целых, начиная с заданного значения
-  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
+{  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
   private
     first,cur: integer;
   public
@@ -3812,7 +3812,7 @@ type
     begin
       cur := first-1;
     end;
-  end;
+  end;}
 
 // Вспомогательный класс для генерации рекуррентных последовательностей
   IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
@@ -7911,34 +7911,60 @@ end;
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом 1
 function Step(Self: integer): sequence of integer; extensionmethod;
 begin
-  Result := IntNumbersClass.Create(Self);
+  //Result := IntNumbersClass.Create(Self);
+  var s := Self;
+  while True do
+  begin
+    yield s;
+    s += 1;
+  end;
 end;
 
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом step
 function Step(Self: integer; step: integer): sequence of integer; extensionmethod;
 begin
-  var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+  {var slf := Self;
+  Result := IntNumbersClass.Create().Select(x->x*step+slf);}
+  var s := Self;
+  while True do
+  begin
+    yield s;
+    s += step;
+  end;
 end;
 
 /// Возвращает бесконечную последовательность вещественных от текущего значения с шагом step
 function Step(Self: real; step: real): sequence of real; extensionmethod;
 begin
-  var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+  {var slf := Self;
+  Result := IntNumbersClass.Create().Select(x->x*step+slf);}
+  var s := Self;
+  while True do
+  begin
+    yield s;
+    s += step;
+  end;
 end;
 
 // Возвращает бесконечную последовательность элементов, совпадающих с данным
 ///--
 function &Repeat<T>(Self: T): sequence of T; extensionmethod;
 begin
-  Result := SeqFill(MaxInt,Self);
+  var s := Self;
+  while True do
+    yield s;
 end;
 
 /// Повторяет последовательность бесконечное число раз
 function Cycle<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
+  var s := Self;
+  while True do
+  begin
+    foreach var x in s do
+      yield x;
+  end;
+//  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
 end;
 
 //------------------------------------------------------------------------------
@@ -8317,6 +8343,121 @@ begin
     raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
 
   Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count)
+end;
+
+// Дополнения июль 2016: Incremental
+///--
+function IncrementalSeq(Self: sequence of integer): sequence of integer; 
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield nextItem - prevItem;
+      prevItem := nextItem;
+    end
+  end
+end;
+
+///--
+function IncrementalSeq(Self: sequence of real): sequence of real;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield nextItem - prevItem;
+      prevItem := nextItem;
+    end
+  end
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: sequence of integer): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: array of integer): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: List<integer>): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: LinkedList<integer>): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: sequence of real): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: array of real): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: List<real>): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: LinkedList<real>): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
+function Incremental<T,T1>(Self: sequence of T; func: (T,T)->T1): sequence of T1; extensionmethod;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield func(prevItem,nextItem);
+      prevItem := nextItem;
+    end
+  end
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
+function Incremental<T,T1>(Self: sequence of T; func: (T,T,integer)->T1): sequence of T1; extensionmethod;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var ind := 0;
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      ind += 1;
+      yield func(prevItem,nextItem,ind);
+      prevItem := nextItem;
+    end
+  end
 end;
 
 // -----------------------------------------------------
