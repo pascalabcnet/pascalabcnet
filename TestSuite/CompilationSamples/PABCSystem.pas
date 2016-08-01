@@ -3788,9 +3788,9 @@ begin
   Result := res;
 end;
 
-type
+{type
 // Вспомогательный класс для генерации бесконечной последовательности целых, начиная с заданного значения
-{  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
+  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
   private
     first,cur: integer;
   public
@@ -3815,7 +3815,7 @@ type
   end;}
 
 // Вспомогательный класс для генерации рекуррентных последовательностей
-  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
+{  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
   private
     first: T;
     cur: T;
@@ -3890,18 +3890,33 @@ type
       b := second;
       isfirst := true;
     end;
-  end;
+  end;}
 
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
 function Iterate<T>(first: T; next: T->T): sequence of T;
 begin
-  Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
+  yield first;
+  while True do
+  begin
+    first := next(first);
+    yield first;
+  end;
+  //Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
 end;
 
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальными элементами first, second и функцией next
 function Iterate<T>(first,second: T; next: (T,T)->T): sequence of T;
 begin
-  Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
+  yield first;
+  yield second;
+  while True do
+  begin
+    var nxt := next(first,second);
+    yield nxt;
+    first := second;
+    second := nxt;
+  end;
+//  Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
 end;
 
 function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
@@ -7911,38 +7926,30 @@ end;
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом 1
 function Step(Self: integer): sequence of integer; extensionmethod;
 begin
-  //Result := IntNumbersClass.Create(Self);
-  var s := Self;
   while True do
   begin
-    yield s;
-    s += 1;
+    yield Self;
+    Self += 1;
   end;
 end;
 
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом step
 function Step(Self: integer; step: integer): sequence of integer; extensionmethod;
 begin
-  {var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);}
-  var s := Self;
   while True do
   begin
-    yield s;
-    s += step;
+    yield Self;
+    Self += step;
   end;
 end;
 
 /// Возвращает бесконечную последовательность вещественных от текущего значения с шагом step
 function Step(Self: real; step: real): sequence of real; extensionmethod;
 begin
-  {var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);}
-  var s := Self;
   while True do
   begin
-    yield s;
-    s += step;
+    yield Self;
+    Self += step;
   end;
 end;
 
@@ -7950,21 +7957,18 @@ end;
 ///--
 function &Repeat<T>(Self: T): sequence of T; extensionmethod;
 begin
-  var s := Self;
   while True do
-    yield s;
+    yield Self;
 end;
 
 /// Повторяет последовательность бесконечное число раз
 function Cycle<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  var s := Self;
   while True do
   begin
-    foreach var x in s do
+    foreach var x in Self do
       yield x;
   end;
-//  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
 end;
 
 //------------------------------------------------------------------------------
@@ -7986,7 +7990,10 @@ end;
 /// Выводит последовательность на экран, используя пробел в качестве разделителя
 function Print<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.Print(PrintDelimDefault);  
+  if typeof(T)=typeof(char) then 
+    Result := Self.Print('')
+  else  
+    Result := Self.Print(PrintDelimDefault);  
 end;
 
 /// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
@@ -8000,7 +8007,10 @@ end;
 /// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
 function Println<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.Println(PrintDelimDefault);  
+  if typeof(T)=typeof(char) then 
+    Result := Self.Println('')
+  else  
+    Result := Self.Println(PrintDelimDefault);  
 end;
 
 /// Выводит последовательность строк в файл
@@ -8025,7 +8035,9 @@ end;
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
 function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
 begin
-  Result := Self.JoinIntoString(' ');  
+  if typeof(T) = typeof(char) then
+    Result := Self.JoinIntoString('') 
+  else Result := Self.JoinIntoString(' ');  
 end;
 
 /// Применяет действие к каждому элементу последовательности
@@ -8144,7 +8156,12 @@ function Cartesian<T,T1>(Self: sequence of T; b: sequence of T1): sequence of (T
 begin
   if b=nil then
     raise new System.ArgumentNullException('b');
-  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x);
+
+  foreach var x in Self do
+  foreach var y in b do
+    yield (x,y)
+  
+  //Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x);
 end;
 
 /// Декартово произведение последовательностей
@@ -8152,7 +8169,12 @@ function Cartesian<T,T1,T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)
 begin
   if b=nil then
     raise new System.ArgumentNullException('b');
-  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x).Select(x->func(x[0],x[1]));
+
+  foreach var x in Self do
+  foreach var y in b do
+    yield func(x,y)
+
+//  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x).Select(x->func(x[0],x[1]));
 end;
 
 /// Разбивает последовательности на две в позиции ind
@@ -8290,11 +8312,20 @@ begin
   end
 end;
 
-
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
 function Pairwise<T,Res>(Self: sequence of T; func:(T,T)->Res): sequence of Res; extensionmethod;
 begin
-  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
+  var previous: T;
+  var it := Self.GetEnumerator();
+  if (it.MoveNext()) then
+      previous := it.Current;
+
+  while (it.MoveNext()) do
+  begin
+    yield func(previous,it.Current);
+    previous := it.Current;
+  end
+//  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
 end;
 
 /// Разбивает последовательность на серии длины size

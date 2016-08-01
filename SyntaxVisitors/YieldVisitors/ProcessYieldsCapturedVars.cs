@@ -184,19 +184,19 @@ namespace SyntaxVisitors
             
 
             // frninja 20/04/16 - поддержка шаблонных классов
-            var stl = new statement_list(new var_statement("res", new new_expr(this.CreateClassReference(className), new expression_list())));
+            var stl = new statement_list(new var_statement("$res", new new_expr(this.CreateClassReference(className), new expression_list())));
             
 
-            //stl.AddMany(lid.Select(id => new assign(new dot_node("res", id), id)));
-            stl.AddMany(lid.Select(id => new assign(new dot_node("res", new ident(formalParamsMap[id.name])), id)));
+            //stl.AddMany(lid.Select(id => new assign(new dot_node("$res", id), id)));
+            stl.AddMany(lid.Select(id => new assign(new dot_node("$res", new ident(formalParamsMap[id.name])), id)));
 
             // frninja 08/12/15 - захват self
             if (iteratorClassName != null && !pd.proc_header.class_keyword)
             {
-                stl.Add(new assign(new dot_node("res", YieldConsts.Self), new ident("self")));
+                stl.Add(new assign(new dot_node("$res", YieldConsts.Self), new ident("self")));
             }
 
-            stl.Add(new assign("Result", "res"));
+            stl.Add(new assign("Result", "$res"));
 
             // New body
             pd.proc_body = new block(stl);
@@ -263,18 +263,18 @@ namespace SyntaxVisitors
             //SyntaxTreeBuilder.BuildClassDefinition(interfaces1, cm1));
 
 
-            var stl1 = new statement_list(new var_statement("res", new new_expr(this.CreateClassReference(className), new expression_list())));
+            var stl1 = new statement_list(new var_statement("$res", new new_expr(this.CreateClassReference(className), new expression_list())));
             
 
-            stl1.AddMany(lid.Select(id => new assign(new dot_node("res", new ident(formalParamsMap[id.name])), new ident(formalParamsMap[id.name]))));
+            stl1.AddMany(lid.Select(id => new assign(new dot_node("$res", new ident(formalParamsMap[id.name])), new ident(formalParamsMap[id.name]))));
 
             // Переприсваивание self 
             if (iteratorClassName != null && !pd.proc_header.class_keyword)
             {
-                stl1.Add(new assign(new dot_node("res", YieldConsts.Self), new ident(YieldConsts.Self)));
+                stl1.Add(new assign(new dot_node("$res", YieldConsts.Self), new ident(YieldConsts.Self)));
             }
 
-            stl1.Add(new assign("Result", "res"));
+            stl1.Add(new assign("Result", "$res"));
 
 
             GetEnumeratorBody.Add(new if_node(new bin_expr(new ident(YieldConsts.State), new int32_const(0), Operators.Equal),
@@ -928,8 +928,8 @@ namespace SyntaxVisitors
 
             // Обработка метода для корректного захвата локальных переменных и их типов
             // - это уже не надо - иногда можно включать чтобы посмотреть, что собой представляет функция после Loweringа
-            IEnumerable<var_def_statement> localsClonesCollection;
-            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
+            //IEnumerable<var_def_statement> localsClonesCollection;
+            //CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
 
             // frninja 16/11/15: перенес ниже чтобы работал захват для lowered for
 
