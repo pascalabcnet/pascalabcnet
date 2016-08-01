@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-16"?>
 <AspectFile Version="3">
-  <Node NL="0" NG="0">
+  <Node>
     <Items>
-      <Node Name="Добавляем t[1] где t - Tuple" NL="0" NG="0">
+      <Node Name="Добавляем t[1] где t - Tuple">
         <Items>
-          <Node Name="visit(SyntaxTree.indexer _indexer)" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.indexer _indexer)">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.indexer _indexer)</Text>
             <OCtx>
@@ -15,7 +15,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="indexer_as_expression_index" NL="0" NG="0">
+          <Node Name="indexer_as_expression_index">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>private void indexer_as_expression_index(expression_node expr, SyntaxTree.expression_list parameters,</Text>
             <OCtx>
@@ -26,7 +26,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name=" visit(SyntaxTree.semantic_expr_node" NL="0" NG="0">
+          <Node Name=" visit(SyntaxTree.semantic_expr_node">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.semantic_expr_node sen)</Text>
             <OCtx>
@@ -37,7 +37,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Автоопределение типа функции по первому Result" NL="0" NG="0">
+          <Node Name="Автоопределение типа функции по первому Result">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>var fh = (_procedure_definition.proc_header as SyntaxTree.function_header);</Text>
             <OCtx>
@@ -50,9 +50,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Реализуем (a,b) := (1,2)" NL="0" NG="0">
+      <Node Name="Реализуем (a,b) := (1,2)">
         <Items>
-          <Node Name="visit(assign_tuple" NL="0" NG="0">
+          <Node Name="visit(assign_tuple">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.assign_tuple _modern_proc_type)</Text>
             <OCtx>
@@ -63,7 +63,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="StartsWith(&quot;System.Tuple&quot;" NL="0" NG="0">
+          <Node Name="StartsWith(&quot;System.Tuple&quot;">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>if (t.FullName.StartsWith("System.Tuple"))</Text>
             <OCtx>
@@ -76,9 +76,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Реализуем тип (integer,integer)" NL="0" NG="0">
+      <Node Name="Реализуем тип (integer,integer)">
         <Items>
-          <Node Name="void visit(enum_type_definition" NL="0" NG="0">
+          <Node Name="void visit(enum_type_definition">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.enum_type_definition _enum_type_definition)</Text>
             <OCtx>
@@ -89,7 +89,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="if (!is_enum) " NL="0" NG="0">
+          <Node Name="if (!is_enum) ">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>if (!is_enum)</Text>
             <OCtx>
@@ -100,7 +100,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit(SyntaxTree.modern_proc_type" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.modern_proc_type">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)</Text>
             <OCtx>
@@ -113,9 +113,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Делаем ?System ищется только в .NET" NL="0" NG="0">
+      <Node Name="Делаем ?System ищется только в .NET">
         <Items>
-          <Node Name="int tn=HashTable.Find(Name);" NL="0" NG="0">
+          <Node Name="int tn=HashTable.Find(Name);">
             <FileName>\treeconverter\symboltable\dsst\symboltable.cs</FileName>
             <Text>int tn=HashTable.Find(Name);		//найдем имя в хеше</Text>
             <OCtx>
@@ -126,7 +126,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="modern_proc_type" NL="0" NG="0">
+          <Node Name="modern_proc_type">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)</Text>
             <OCtx>
@@ -139,9 +139,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="foreach" NL="0" NG="0">
+      <Node Name="foreach">
         <Items>
-          <Node Name="visit(foreach_stmt" NL="0" NG="0">
+          <Node Name="visit(foreach_stmt">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)</Text>
             <OCtx>
@@ -152,7 +152,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="FindIEnumerableElementType" NL="0" NG="0">
+          <Node Name="FindIEnumerableElementType">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public bool FindIEnumerableElementType(SyntaxTree.foreach_stmt _foreach_stmt, type_node tn, ref type_node elem_type)</Text>
             <OCtx>
@@ -163,7 +163,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="if (tn is compiled_type_node || tn is compiled_generic_instance_type_node)" NL="0" NG="0">
+          <Node Name="if (tn is compiled_type_node || tn is compiled_generic_instance_type_node)">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>if (tn is compiled_type_node || tn is compiled_generic_instance_type_node) // Если этот тип зашит в .NET</Text>
             <OCtx>
@@ -176,9 +176,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Result := " NL="0" NG="0">
+      <Node Name="Result := ">
         <Items>
-          <Node Name="GetMostCommonType" NL="0" NG="0">
+          <Node Name="GetMostCommonType">
             <FileName>\treeconverter\lambdaexpressions\lambdaresulttypeinferrer.cs</FileName>
             <Text>private type_node GetMostCommonType(int kind = 0)</Text>
             <OCtx>
@@ -189,7 +189,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Простой вывод типа Result в visit(procedure_definition" NL="0" NG="0">
+          <Node Name="Простой вывод типа Result в visit(procedure_definition">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>// SSM 20.07.13 если это - узел с коротким определением функции без типа возвращаемого значения, то вывести этот тип</Text>
             <OCtx>
@@ -200,7 +200,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="RealSemTypeOfResExpr" NL="0" NG="0">
+          <Node Name="RealSemTypeOfResExpr">
             <FileName>\SyntaxTree\tree\TreeHelper.cs</FileName>
             <Text>public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучщего выбора среди перегруженных методов с параметрами-лямбдами</Text>
             <OCtx>
@@ -211,7 +211,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="ExpressionVisitor (_assign.to as ident).name == &quot;result&quot;" NL="0" NG="0">
+          <Node Name="ExpressionVisitor (_assign.to as ident).name == &quot;result&quot;">
             <FileName>\codecompletion\expressionvisitor.cs</FileName>
             <OCtx>
               <i Type="Method">public override void visit ( assign _assign )</i>
@@ -221,7 +221,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="ResultNodesSearcher" NL="0" NG="0">
+          <Node Name="ResultNodesSearcher">
             <FileName>\treeconverter\treeconversion\lambdahelper.cs</FileName>
             <Text>public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew</Text>
             <OCtx>
@@ -237,7 +237,7 @@
               <i Type="Method">public override void visit ( assign value )</i>
             </ICtx>
           </Node>
-          <Node Name="LambdaResultTypeInferrer" NL="0" NG="0">
+          <Node Name="LambdaResultTypeInferrer">
             <FileName>\TreeConverter\LambdaExpressions\LambdaResultTypeInferrer.cs</FileName>
             <Text>internal class LambdaResultTypeInferrer : WalkingVisitorNew</Text>
             <OCtx>
@@ -259,7 +259,7 @@
               <i Type="Method">public override void visit ( var_def_statement varStmt )</i>
             </ICtx>
             <Items>
-              <Node Name=" new LambdaResultTypeInferrer" NL="0" NG="0">
+              <Node Name=" new LambdaResultTypeInferrer">
                 <FileName>\treeconverter\treeconversion\lambdahelper.cs</FileName>
                 <Text>retType.real_type = new LambdaResultTypeInferrer(funcHeader, procBody, visitor).InferResultType();</Text>
                 <OCtx>
@@ -272,7 +272,7 @@
               </Node>
             </Items>
           </Node>
-          <Node Name="visit_lambda_header" NL="0" NG="0">
+          <Node Name="visit_lambda_header">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>visit_lambda_header(_procedure_definition.proc_header as SyntaxTree.function_header, _procedure_definition.proc_body);</Text>
             <OCtx>
@@ -283,7 +283,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="hard_node_test_and_visit(_procedure_definition.proc_body)" NL="0" NG="0">
+          <Node Name="hard_node_test_and_visit(_procedure_definition.proc_body)">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>hard_node_test_and_visit(_procedure_definition.proc_body);</Text>
             <OCtx>
@@ -294,7 +294,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="hard_node_test_and_visit(_procedure_definition.proc_header)" NL="0" NG="0">
+          <Node Name="hard_node_test_and_visit(_procedure_definition.proc_header)">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>hard_node_test_and_visit(_procedure_definition.proc_header);</Text>
             <OCtx>
@@ -305,7 +305,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="context.top_function.return_value_type" NL="0" NG="0">
+          <Node Name="context.top_function.return_value_type">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>if (context.top_function.return_value_type == null)</Text>
             <OCtx>
@@ -316,7 +316,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name=" if (context.top_function.return_value_type == null)" NL="0" NG="0">
+          <Node Name=" if (context.top_function.return_value_type == null)">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>if (context.top_function.return_value_type == null)</Text>
             <OCtx>
@@ -329,9 +329,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="QuestionPoint - незаконченное" NL="0" NG="0">
+      <Node Name="QuestionPoint - незаконченное">
         <Items>
-          <Node Name="visit(SyntaxTree.question_colon_expression" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.question_colon_expression">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.question_colon_expression node)</Text>
             <OCtx>
@@ -342,7 +342,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="dot_node_as_expression_dot_ident" NL="0" NG="0">
+          <Node Name="dot_node_as_expression_dot_ident">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>private void dot_node_as_expression_dot_ident(expression_node en, SyntaxTree.ident id_right, motivation mot, addressed_value syntax_node)</Text>
             <OCtx>
@@ -353,7 +353,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit(SyntaxTree.indexer" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.indexer">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.indexer _indexer)</Text>
             <OCtx>
@@ -364,7 +364,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="NewVariable" NL="0" NG="0">
+          <Node Name="NewVariable">
             <FileName>\parsers\pascalabcparsernewsaushkin\semanticrules.cs</FileName>
             <Text>public expression NewVariable(addressed_value variable, expression var_specifiers, LexLocation loc)</Text>
             <OCtx>
@@ -377,9 +377,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Выбор перегруженного метода" NL="0" NG="0">
+      <Node Name="Выбор перегруженного метода">
         <Items>
-          <Node Name="select_function" NL="0" NG="0">
+          <Node Name="select_function">
             <FileName>\treeconverter\treeconversion\convertion_data_and_alghoritms.cs</FileName>
             <Text>public function_node select_function(expressions_list parameters, SymbolInfo functions, location loc, List&lt;SyntaxTree.expression&gt; syntax_nodes_parameters = null)</Text>
             <OCtx>
@@ -390,7 +390,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit_method_call" NL="0" NG="0">
+          <Node Name="visit_method_call">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>internal void visit_method_call(SyntaxTree.method_call _method_call)</Text>
             <OCtx>
@@ -401,7 +401,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="generic_convertions.DeduceFunction(func, parameters" NL="0" NG="0">
+          <Node Name="generic_convertions.DeduceFunction(func, parameters">
             <FileName>\treeconverter\treeconversion\convertion_data_and_alghoritms.cs</FileName>
             <Text>function_node inst = generic_convertions.DeduceFunction(func, parameters,</Text>
             <OCtx>
@@ -414,9 +414,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Короткое определение функции" NL="0" NG="0">
+      <Node Name="Короткое определение функции">
         <Items>
-          <Node Name="visit(SyntaxTree.procedure_definition" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.procedure_definition">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.procedure_definition _procedure_definition)</Text>
             <OCtx>
@@ -427,7 +427,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name=" if (ttt is undefined_type)" NL="0" NG="0">
+          <Node Name=" if (ttt is undefined_type)">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>if (ttt is undefined_type)</Text>
             <OCtx>
@@ -438,7 +438,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="calc return_value_type" NL="0" NG="0">
+          <Node Name="calc return_value_type">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>// SSM 12/04/16 - short func definitions - calc return_value_type</Text>
             <OCtx>
@@ -451,9 +451,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="x-&gt;Print(x)" NL="0" NG="0">
+      <Node Name="x-&gt;Print(x)">
         <Items>
-          <Node Name="visit(function_lambda_definition" NL="0" NG="0">
+          <Node Name="visit(function_lambda_definition">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <OCtx>
               <i Type="Method">public override void visit ( SyntaxTree . function_lambda_definition _function_lambda_definition )</i>
@@ -463,7 +463,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="InferTypesFromVarStmt" NL="0" NG="0">
+          <Node Name="InferTypesFromVarStmt">
             <FileName>\TreeConverter\TreeConversion\LambdaHelper.cs</FileName>
             <Text>public static void InferTypesFromVarStmt(type_node leftType, function_lambda_definition lambdaDef, syntax_tree_visitor visitor)</Text>
             <OCtx>
@@ -474,7 +474,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.assign">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.assign _assign)</Text>
             <OCtx>
@@ -485,7 +485,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit(SyntaxTree.var_def_statement" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.var_def_statement">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.var_def_statement _var_def_statement)</Text>
             <OCtx>
@@ -496,7 +496,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition" NL="0" NG="0">
+          <Node Name="MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);</Text>
             <OCtx>
@@ -507,7 +507,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="vardef  LambdaHelper.InferTypesFromVarStmt" NL="0" NG="0">
+          <Node Name="vardef  LambdaHelper.InferTypesFromVarStmt">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//</Text>
             <OCtx>
@@ -518,7 +518,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE" NL="0" NG="0">
+          <Node Name="UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE">
             <FileName>\TreeConverter\TreeConversion\LambdaHelper.cs</FileName>
             <Text>//throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");</Text>
             <OCtx>
@@ -529,7 +529,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="AddError(loc, &quot;FUNCTION_EXPECTED_PROCEDURE_{0}_MEET&quot;" NL="0" NG="0">
+          <Node Name="AddError(loc, &quot;FUNCTION_EXPECTED_PROCEDURE_{0}_MEET&quot;">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn);</Text>
             <OCtx>
@@ -540,9 +540,9 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="В параметрах" NL="0" NG="0">
+          <Node Name="В параметрах">
             <Items>
-              <Node Name="create_not_static_method_call" NL="0" NG="0">
+              <Node Name="create_not_static_method_call">
                 <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
                 <Text>private base_function_call create_not_static_method_call(function_node fn, expression_node en, location loc, bool procedure_allowed)</Text>
                 <OCtx>
@@ -557,9 +557,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Преобразование синт дерева" NL="0" NG="0">
+      <Node Name="Преобразование синт дерева">
         <Items>
-          <Node Name="Вызов Convert контроллера SyntaxTrees" NL="0" NG="0">
+          <Node Name="Вызов Convert контроллера SyntaxTrees">
             <FileName>\Compiler\Compiler.cs</FileName>
             <Text>CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;</Text>
             <OCtx>
@@ -570,7 +570,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="class SemanticTreeConvertersController" NL="0" NG="0">
+          <Node Name="class SemanticTreeConvertersController">
             <FileName>\Compiler\SemanticTreeConverters\SemanticTreeConvertersController.cs</FileName>
             <Text>public class SemanticTreeConvertersController</Text>
             <OCtx>
@@ -592,7 +592,7 @@
               <i Type="Method">public SemanticTree . IProgramNode Convert ( SemanticTree . IProgramNode ProgramNode )</i>
             </ICtx>
           </Node>
-          <Node Name="SyntaxTreeConvertersController в Compiler" NL="0" NG="0">
+          <Node Name="SyntaxTreeConvertersController в Compiler">
             <FileName>\Compiler\Compiler.cs</FileName>
             <Text>public SyntaxTreeConvertersController SyntaxTreeConvertersController</Text>
             <OCtx>
@@ -603,7 +603,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)" NL="0" NG="0">
+          <Node Name="foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)">
             <FileName>\Compiler\SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs</FileName>
             <Text>foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)</Text>
             <OCtx>
@@ -616,9 +616,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="PVS Studio Detected" NL="0" NG="0">
+      <Node Name="PVS Studio Detected">
         <Items>
-          <Node Name="Нужно использовать &amp;&amp; вместо ||" NL="0" NG="0">
+          <Node Name="Нужно использовать &amp;&amp; вместо ||">
             <FileName>\codecompletion\domconverter.cs</FileName>
             <Text>if (pattern != null || pattern != "")</Text>
             <OCtx>
@@ -629,7 +629,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Неиспользуемый результат Replace" NL="0" NG="0">
+          <Node Name="Неиспользуемый результат Replace">
             <FileName>\visualplugins\languageconverter\source\textformatter.cs</FileName>
             <Text>_word.Replace(specSymbol, "");</Text>
             <OCtx>
@@ -640,7 +640,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Неиспользуемый результат OrderBy" NL="0" NG="0">
+          <Node Name="Неиспользуемый результат OrderBy">
             <FileName>\visualpascalabcnet\formsdesignerbinding\dependecies\src\main\base\project\src\services\refactoringservice\refactoringservice.cs</FileName>
             <Text>result.OrderBy(node =&gt; node.Content.FullyQualifiedName);</Text>
             <OCtx>
@@ -651,9 +651,9 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Одинаковые подвыражения в условии" NL="0" NG="0">
+          <Node Name="Одинаковые подвыражения в условии">
             <Items>
-              <Node Name="1" NL="0" NG="0">
+              <Node Name="1">
                 <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
                 <Text>if (_pascal_set_constant.values != null &amp;&amp; _pascal_set_constant.values != null)</Text>
                 <OCtx>
@@ -664,7 +664,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="2" NL="0" NG="0">
+              <Node Name="2">
                 <FileName>\visualpascalabcnet\workbench\runnermanagerhandlers.cs</FileName>
                 <Text>if (File.Exists(pdbFileName) &amp;&amp; File.Exists(pdbFileName))</Text>
                 <OCtx>
@@ -675,7 +675,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="Самая интересная ошибка" NL="0" NG="0">
+              <Node Name="Самая интересная ошибка">
                 <FileName>\visualpascalabcnet\formsdesignerbinding\dependecies\src\main\base\project\src\editor\codecompletion\nrefactoryinsightwindowhandler.cs</FileName>
                 <Note>Вот здесь то место, где не учитывается один вариант открывающих скобок
 Вместо одного из openBracketToken нужно написать openBracesToken</Note>
@@ -690,9 +690,9 @@
               </Node>
             </Items>
           </Node>
-          <Node Name="Всегда истинные выражения" NL="0" NG="0">
+          <Node Name="Всегда истинные выражения">
             <Items>
-              <Node Name="1" NL="0" NG="0">
+              <Node Name="1">
                 <FileName>\treeconverter\systemlib\static_executors.cs</FileName>
                 <Text>if (value &gt;= int.MinValue &amp;&amp; value &lt;= int.MaxValue)</Text>
                 <OCtx>
@@ -703,7 +703,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="2" NL="0" NG="0">
+              <Node Name="2">
                 <FileName>\treeconverter\systemlib\static_executors.cs</FileName>
                 <Text>if (value &gt;= long.MinValue &amp;&amp; value &lt;= long.MaxValue)</Text>
                 <OCtx>
@@ -714,7 +714,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="3" NL="0" NG="0">
+              <Node Name="3">
                 <FileName>\NETGenerator\NETGenerator.cs</FileName>
                 <Text>if (pos &lt;= 255) il.Emit(OpCodes.Starg_S, pos);</Text>
                 <OCtx>
@@ -725,7 +725,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="4" NL="0" NG="0">
+              <Node Name="4">
                 <FileName>\NETGenerator\NETGenerator.cs</FileName>
                 <Text>if (pos &lt;= 255) il.Emit(OpCodes.Starg_S, pos);</Text>
                 <OCtx>
@@ -736,7 +736,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="5" NL="0" NG="0">
+              <Node Name="5">
                 <FileName>\NETGenerator\NETGenerator.cs</FileName>
                 <Text>if (pos &lt;= 255) il.Emit(OpCodes.Ldarga_S, pos);</Text>
                 <OCtx>
@@ -749,7 +749,7 @@
               </Node>
             </Items>
           </Node>
-          <Node Name="Повторная проверка условия" NL="0" NG="0">
+          <Node Name="Повторная проверка условия">
             <FileName>\codecompletion\findreferences.cs</FileName>
             <Note>Двумя строчками ниже
 (Здесь сказывается недостаток моего инструмента - если в методе есть две одинаковые строчки - переход осуществляется только на первую, а надо на вторую)</Note>
@@ -762,7 +762,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Дважды проверяется if (left is int64_const)" NL="0" NG="0">
+          <Node Name="Дважды проверяется if (left is int64_const)">
             <FileName>\parsertools\syntaxtreevisitors\syntaxtreecomparer.cs</FileName>
             <Note>597 и 631 строки в текущей версии</Note>
             <Text>else if (left is int64_const)</Text>
@@ -774,7 +774,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Трижды проверяется if (left is case_node)" NL="0" NG="0">
+          <Node Name="Трижды проверяется if (left is case_node)">
             <FileName>\parsertools\syntaxtreevisitors\syntaxtreecomparer.cs</FileName>
             <Note>1599
 1611
@@ -790,9 +790,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="Ошибка read(x,s)" NL="0" NG="0">
+      <Node Name="Ошибка read(x,s)">
         <Items>
-          <Node Name="make_read_call вызов" NL="0" NG="0">
+          <Node Name="make_read_call вызов">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>expression_node bfcint = make_read_call(si, _method_call.parameters, subloc2);</Text>
             <OCtx>
@@ -803,7 +803,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="make_read_call - описание" NL="0" NG="0">
+          <Node Name="make_read_call - описание">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <OCtx>
               <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
@@ -813,7 +813,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="readln_string_file = true;" NL="0" NG="0">
+          <Node Name="readln_string_file = true;">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Note>Это - непонятное место из-за которого происходит ошибка</Note>
             <Text>readln_string_file = true;</Text>
@@ -825,7 +825,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="!readln_string_file" NL="0" NG="0">
+          <Node Name="!readln_string_file">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>if (!readln_string_file)</Text>
             <OCtx>
@@ -838,7 +838,7 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="visit_program_code(_block.program_code)" NL="0" NG="0">
+      <Node Name="visit_program_code(_block.program_code)">
         <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
         <Text>visit_program_code(_block.program_code);</Text>
         <OCtx>
@@ -849,7 +849,7 @@
           </i>
         </OCtx>
       </Node>
-      <Node Name="lab.is_defined" NL="0" NG="0">
+      <Node Name="lab.is_defined">
         <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
         <Text>if (lab.is_defined)</Text>
         <OCtx>
@@ -860,9 +860,9 @@
           </i>
         </OCtx>
       </Node>
-      <Node Name="Yield" NL="0" NG="0">
+      <Node Name="Yield">
         <Items>
-          <Node Name="Осн. визитор visit(procedure_definition pd)" NL="0" NG="0">
+          <Node Name="Осн. визитор visit(procedure_definition pd)">
             <FileName>\SyntaxVisitors\YieldVisitors\ProcessYieldsCapturedVars.cs</FileName>
             <Text>public override void visit(procedure_definition pd)</Text>
             <OCtx>
@@ -873,7 +873,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="root.visit(new ProcessYieldCapturedVarsVisitor());" NL="0" NG="0">
+          <Node Name="root.visit(new ProcessYieldCapturedVarsVisitor());">
             <FileName>\Yield\YieldConversionSyntax\YieldDesugarSyntaxTreeConverter.cs</FileName>
             <Text>root.visit(new ProcessYieldCapturedVarsVisitor());</Text>
             <OCtx>
@@ -884,9 +884,9 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="NewConstructFiniteAutomata" NL="0" NG="0">
+          <Node Name="NewConstructFiniteAutomata">
             <Items>
-              <Node Name="ConstructFiniteAutomata1" NL="0" NG="0">
+              <Node Name="ConstructFiniteAutomata1">
                 <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <Text>public ConstructFiniteAutomata1(block bl)</Text>
                 <OCtx>
@@ -897,7 +897,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="GenClassesForYield" NL="0" NG="0">
+              <Node Name="GenClassesForYield">
                 <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <Text>type_declarations GenClassesForYield(procedure_definition pd,</Text>
                 <OCtx>
@@ -910,7 +910,7 @@
               </Node>
             </Items>
           </Node>
-          <Node Name="YieldHelpers" NL="0" NG="0">
+          <Node Name="YieldHelpers">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>string Consts__Self = YieldHelpers.YieldConsts.Self;</Text>
             <OCtx>
@@ -921,7 +921,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="ObjectCopier.Clone" NL="0" NG="0">
+          <Node Name="ObjectCopier.Clone">
             <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>function_header nfh = ObjectCopier.Clone(fh);</Text>
             <OCtx>
@@ -932,7 +932,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="private Dictionary&lt;Guid, semantic_type_node&gt;" NL="0" NG="0">
+          <Node Name="private Dictionary&lt;Guid, semantic_type_node&gt;">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>private Dictionary&lt;Guid, semantic_type_node&gt; _yieldForeachTypeMap = new Dictionary&lt;Guid, semantic_type_node&gt;();</Text>
             <OCtx>
@@ -943,7 +943,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="InsertHelperMethod" NL="0" NG="0">
+          <Node Name="InsertHelperMethod">
             <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>//InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять</Text>
             <OCtx>
@@ -954,9 +954,9 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="UnknownExprType" NL="0" NG="0">
+          <Node Name="UnknownExprType">
             <Items>
-              <Node Name=" visit(yield_unknown_expression_type" NL="0" NG="0">
+              <Node Name=" visit(yield_unknown_expression_type">
                 <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
                 <Text>public override void visit(SyntaxTree.yield_unknown_expression_type _unk_expr)</Text>
                 <OCtx>
@@ -967,7 +967,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+              <Node Name="visit(SyntaxTree.assign">
                 <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
                 <Text>public override void visit(SyntaxTree.assign _assign)</Text>
                 <OCtx>
@@ -978,7 +978,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name=" TypeInfo ti = helper.GetTypeReference(value.type);" NL="0" NG="0">
+              <Node Name=" TypeInfo ti = helper.GetTypeReference(value.type);">
                 <FileName>\netgenerator\netgenerator.cs</FileName>
                 <Text>TypeInfo ti = helper.GetTypeReference(value.type);</Text>
                 <OCtx>
@@ -991,9 +991,9 @@
               </Node>
             </Items>
           </Node>
-          <Node Name="UnknownForeachType" NL="0" NG="0">
+          <Node Name="UnknownForeachType">
             <Items>
-              <Node Name="visit(yield_unknown_foreach_type" NL="0" NG="0">
+              <Node Name="visit(yield_unknown_foreach_type">
                 <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
                 <Text>public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)</Text>
                 <OCtx>
@@ -1004,7 +1004,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="stl.Add(new assign(currentIdent" NL="0" NG="0">
+              <Node Name="stl.Add(new assign(currentIdent">
                 <FileName>\syntaxvisitors\yieldvisitors\loweringvisitor.cs</FileName>
                 <Text>stl.Add(new assign(currentIdent, new dot_node(enumeratorIdent, "Current")));</Text>
                 <OCtx>
@@ -1015,7 +1015,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+              <Node Name="visit(SyntaxTree.assign">
                 <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
                 <Text>public override void visit(SyntaxTree.assign _assign)</Text>
                 <OCtx>
@@ -1026,7 +1026,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="if (to.type is compiled_type_node)" NL="0" NG="0">
+              <Node Name="if (to.type is compiled_type_node)">
                 <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
                 <Text>else if (to.type is compiled_type_node)</Text>
                 <OCtx>
@@ -1037,7 +1037,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="FindIEnumerableElementType" NL="0" NG="0">
+              <Node Name="FindIEnumerableElementType">
                 <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
                 <OCtx>
                   <i Type="Method">public bool FindIEnumerableElementType ( type_node tn , ref type_node elem_type )</i>
@@ -1047,7 +1047,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="generic_convertions.all_type_instances.Add(instance);" NL="0" NG="0">
+              <Node Name="generic_convertions.all_type_instances.Add(instance);">
                 <FileName>\TreeConverter\TreeRealization\generics.cs</FileName>
                 <Text>generic_convertions.all_type_instances.Add(instance);</Text>
                 <OCtx>
@@ -1058,7 +1058,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="if (shouldAddToAllTypeInstances)" NL="0" NG="0">
+              <Node Name="if (shouldAddToAllTypeInstances)">
                 <FileName>\TreeConverter\TreeRealization\generics.cs</FileName>
                 <Text>if (shouldAddToAllTypeInstances) //lroman// Если зашли сюда при выведении типов параметров лямбды, то тип инстанцироваться может с типом lambda_any_type_node. Поэтому, если выводим типы. То данную инстанцию не добавляем</Text>
                 <OCtx>
@@ -1069,7 +1069,7 @@
                   </i>
                 </OCtx>
               </Node>
-              <Node Name="ConstructFiniteAutomata" NL="0" NG="0">
+              <Node Name="ConstructFiniteAutomata">
                 <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
                 <OCtx>
                   <i Type="ClassOrNamespace">class ConstructFiniteAutomata</i>
@@ -1092,7 +1092,7 @@
               </Node>
             </Items>
           </Node>
-          <Node Name="ReplaceCapturedVariables" NL="0" NG="0">
+          <Node Name="ReplaceCapturedVariables">
             <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap);</Text>
             <OCtx>
@@ -1103,7 +1103,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="var pdCloned = ObjectCopier.Clone(pd);" NL="0" NG="0">
+          <Node Name="var pdCloned = ObjectCopier.Clone(pd);">
             <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
             <Text>var pdCloned = ObjectCopier.Clone(pd);</Text>
             <OCtx>
@@ -1114,7 +1114,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="if (pd.has_yield) // SSM bug fix #219" NL="0" NG="0">
+          <Node Name="if (pd.has_yield) // SSM bug fix #219">
             <FileName>\syntaxvisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
             <Text>if (pd.has_yield) // SSM bug fix #219</Text>
             <OCtx>
@@ -1125,11 +1125,33 @@
               </i>
             </OCtx>
           </Node>
+          <Node Name="RenameSameBlockLocalVarsVisitor">
+            <FileName>\SyntaxVisitors\YieldVisitors\RenameSameBlockLocalVarsVisitor.cs</FileName>
+            <Text>public class RenameSameBlockLocalVarsVisitor : BaseChangeVisitor</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">public class RenameSameBlockLocalVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">private List &lt; Dictionary &lt; string , string &gt; &gt; BlockNamesStack</i>
+              <i Type="Method">private Dictionary &lt; string , int &gt; BlockNamesCounter</i>
+              <i Type="Field">private int CurrentLevel = - 1</i>
+              <i Type="Method">public RenameSameBlockLocalVarsVisitor ( )</i>
+              <i Type="Method">public static RenameSameBlockLocalVarsVisitor New</i>
+              <i Type="Method">public static void Accept ( procedure_definition pd )</i>
+              <i Type="Method">public override void visit ( declarations decls )</i>
+              <i Type="Method">public override void visit ( procedure_header pd )</i>
+              <i Type="Method">public override void visit ( function_header fh )</i>
+              <i Type="Method">public override void visit ( formal_parameters fp )</i>
+            </ICtx>
+          </Node>
         </Items>
       </Node>
-      <Node Name="Sum(e-&gt;e) ошибка" NL="0" NG="0">
+      <Node Name="Sum(e-&gt;e) ошибка">
         <Items>
-          <Node Name="new SeveralFunctionsCanBeCalled" NL="0" NG="0">
+          <Node Name="new SeveralFunctionsCanBeCalled">
             <FileName>\TreeConverter\TreeConversion\convertion_data_and_alghoritms.cs</FileName>
             <Text>return AddError&lt;function_node&gt;(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));</Text>
             <OCtx>
@@ -1140,7 +1162,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="if (funcs.Count == 2)" NL="0" NG="0">
+          <Node Name="if (funcs.Count == 2)">
             <FileName>\TreeConverter\TreeConversion\convertion_data_and_alghoritms.cs</FileName>
             <Text>if (funcs.Count == 2)</Text>
             <OCtx>
@@ -1153,9 +1175,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="a.Sort((row1, row2) -&gt; 1)" NL="0" NG="0">
+      <Node Name="a.Sort((row1, row2) -&gt; 1)">
         <Items>
-          <Node Name="visit_method_call" NL="0" NG="0">
+          <Node Name="visit_method_call">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>internal void visit_method_call(SyntaxTree.method_call _method_call)</Text>
             <OCtx>
@@ -1168,9 +1190,9 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="foreach Arr -&gt; for" NL="0" NG="0">
+      <Node Name="foreach Arr -&gt; for">
         <Items>
-          <Node Name="visit(SyntaxTree.foreach_stmt" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.foreach_stmt">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)</Text>
             <OCtx>
@@ -1181,7 +1203,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit(SyntaxTree.semantic_type_node" NL="0" NG="0">
+          <Node Name="visit(SyntaxTree.semantic_type_node">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.semantic_type_node stn)</Text>
             <OCtx>

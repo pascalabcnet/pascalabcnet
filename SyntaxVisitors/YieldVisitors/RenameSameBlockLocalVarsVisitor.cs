@@ -48,18 +48,36 @@ namespace SyntaxVisitors
             }
         }
 
-        public override void visit(procedure_header pd)
+        public override void visit(procedure_header proc_header)
         {
-            // DO NOTHING
+            // DO THIS THING!
         }
 
+        private bool first_time_visit_function_header = true;
         public override void visit(function_header fh)
         {
+            if (first_time_visit_function_header)
+            {
+                DefaultVisit(fh);
+                first_time_visit_function_header = false;
+            }
             // DO NOTHING
         }
 
         public override void visit(formal_parameters fp)
         {
+            if (!first_time_visit_function_header) // чтобы в лямбдах не заходить в формальные параметры. Во вложенных тоже не зайдёт
+                return;
+            ++CurrentLevel;
+            BlockNamesStack.Add(new Dictionary<string, string>());
+            if (fp != null)
+            {
+                var fpids = fp.params_list.SelectMany(tp => tp.idents.idents);
+                foreach (var v in fpids)
+                {
+                    BlockNamesStack[CurrentLevel].Add(v.name, "$fp_"+v.name);
+                }
+            }
             // DO NOTHING
         }
 

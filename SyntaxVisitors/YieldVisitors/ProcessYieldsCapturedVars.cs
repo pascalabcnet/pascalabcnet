@@ -745,6 +745,7 @@ namespace SyntaxVisitors
             // Collect formal params
             CollectFormalParams(pd, CollectedFormalParams);
             CollectFormalParamsNames(pd, CollectedFormalParamsNames);
+
             // Collect class fields
             CollectClassFieldsNames(pd, CollectedClassFieldsNames);
             // Collect class methods
@@ -893,7 +894,7 @@ namespace SyntaxVisitors
             pd.visit(checkVarRedefVisitor);
             */
 
-            // Выносим выражение с лямбдой из yield
+            // Выносим выражение из yield в отдельную переменную
             ReplaceYieldExprByVarVisitor.Accept(pd);
 
             // Раскрываем операторы yield sequence. На семантике они не существуют
@@ -906,6 +907,19 @@ namespace SyntaxVisitors
             // Переименовываем одинаковые имена в мини-ПИ: begin var a := 1 end; begin var a := 1 end; 
             RenameSameBlockLocalVarsVisitor.Accept(pd);
 
+            // SSM 01/08/16 - надо захватить и переименовать еще все формальные параметры. 
+            // Это решит проблему их изменения в pd при следующем вызове запроса.
+            var bb = pd.proc_body as block;
+            if (pd.proc_header.parameters != null)
+            {
+                var fpids = pd.proc_header.parameters.params_list.SelectMany(tp => tp.idents.idents);
+                foreach (var v in fpids)
+                {
+                    var vds = new var_statement(new ident("$fp_"+v.name, v.source_context), v);
+                    bb.program_code.AddFirst(vds);
+                }
+            }
+
             // Теперь lowering
             LoweringVisitor.Accept(pd);
 
@@ -914,8 +928,8 @@ namespace SyntaxVisitors
 
             // Обработка метода для корректного захвата локальных переменных и их типов
             // - это уже не надо - иногда можно включать чтобы посмотреть, что собой представляет функция после Loweringа
-            //IEnumerable<var_def_statement> localsClonesCollection;
-            //CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
+            IEnumerable<var_def_statement> localsClonesCollection;
+            CreateLocalVariablesTypeProxies(pd, out localsClonesCollection);         
 
             // frninja 16/11/15: перенес ниже чтобы работал захват для lowered for
 

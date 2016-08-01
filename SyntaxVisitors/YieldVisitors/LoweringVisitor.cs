@@ -321,7 +321,11 @@ namespace SyntaxVisitors
 
             ProcessNode(wn.statements);
 
-            var if0 = new if_node(un_expr.Not(wn.expr), gotoBreak);
+            statement if0;
+            //if (wn.expr is ident && (wn.expr as ident).name.ToLower() == "true")
+            //    if0 = gotoBreak;
+            //else
+                if0 = new if_node(un_expr.Not(wn.expr), gotoBreak);
             var lb2 = new labeled_statement(gotoContinue.label, if0); // continue
             var lb1 = new labeled_statement(gotoBreak.label); // break
 

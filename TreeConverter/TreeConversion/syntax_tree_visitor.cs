@@ -19199,7 +19199,11 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.yield_node yn)
         {
-            // подузлы не обходим!
+            // надо что то сгенерировать, иначе выдается ложное предупреждение о недостижимом коде и проч.
+            var ass = new assign("Result", new nil_const());
+            visit(ass);
+            var pc = new procedure_call("exit");
+            visit(pc);
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
