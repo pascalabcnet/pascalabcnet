@@ -121,6 +121,8 @@ IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=Operators
 EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED=extensionmethod is not allowed in this context
 CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Can not extend operators +,+=,-,-= for delegates
 FORWARD_EXTENSION_METHODS_NOT_ALLOWED=forward attribute can not be applied to extension methods
+WHERE_SECTION_NOT_ALLOWED=Can not apply 'where' to predefined class
+GENERIC_PARAMETERS_MISMATCH=Generic-parameters mismatch
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

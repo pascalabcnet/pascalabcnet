@@ -10482,11 +10482,19 @@ namespace PascalABCCompiler.TreeConverter
                 //Ошибка, т.к. нет списка шаблонных параметров.
                 AddError(get_location(_type_declaration.type_name), "TEMPLATE_PARAMS_EXPECTED");
             }
+            bool predefined_generic = false;
             if (is_generic)
             {
-                context.check_name_free(_type_declaration.type_name.name, get_location(_type_declaration.type_name));
+                SymbolInfo si = context.find_only_in_namespace(_type_declaration.type_name.name + compiler_string_consts.generic_params_infix +
+                        cl_def.template_args.idents.Count.ToString());
+                if (!(si != null && si.sym_info is common_type_node && context.types_predefined.IndexOf(si.sym_info as common_type_node) != -1))
+                {
+                    context.check_name_free(_type_declaration.type_name.name, get_location(_type_declaration.type_name));
+                }
+                else
+                    predefined_generic = true;
                 _type_declaration.type_name.name += compiler_string_consts.generic_params_infix +
-                    cl_def.template_args.idents.Count.ToString();
+                        cl_def.template_args.idents.Count.ToString();
             }
             if (cl_def.keyword == SyntaxTree.class_keyword.Record)
             {
@@ -10516,9 +10524,27 @@ namespace PascalABCCompiler.TreeConverter
             assign_doc_info(ctn,_type_declaration);
             if (is_generic)
             {
-                context.create_generic_indicator(ctn);
-                visit_generic_params(ctn, cl_def.template_args.idents);
+                if (predefined_generic)
+                {
+                    if (ctn.generic_params.Count != cl_def.template_args.idents.Count)
+                        AddError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
+                    foreach (ident id in cl_def.template_args.idents)
+                    {
+                        SymbolInfo si = ctn.find_in_type(id.name);
+                        if (si == null)
+                            AddError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
+                        if (!(si.sym_info is common_type_node && (si.sym_info as common_type_node).is_generic_parameter))
+                            AddError(get_location(cl_def.template_args), "GENERIC_PARAMETERS_MISMATCH");
+                    }
+                }
+                else
+                {
+                    context.create_generic_indicator(ctn);
+                    visit_generic_params(ctn, cl_def.template_args.idents);
+                }
             }
+            if (predefined_generic && cl_def.where_section != null && cl_def.where_section.defs.Count > 0)
+                AddError(get_location(cl_def.where_section), "WHERE_SECTION_NOT_ALLOWED");
             visit_where_list(cl_def.where_section);
             CheckWaitedRefTypes(ctn);
             is_direct_type_decl = true;
