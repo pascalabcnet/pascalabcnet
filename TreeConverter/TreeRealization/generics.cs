@@ -809,7 +809,10 @@ namespace PascalABCCompiler.TreeRealization
                     for (int i = formal_count - 1; i < fact_count; ++i)
                     {
                         //Проверяем фактические, попадающие под params...
-                        if (!DeduceInstanceTypes(last_params_type, fact[i].type, deduced, nils))
+                        type_node tn = fact[i].type;
+                        if (tn.element_type != null && tn.type_special_kind != SemanticTree.type_special_kind.array_wrapper)
+                            tn = tn.element_type;
+                        if (!DeduceInstanceTypes(last_params_type, tn, deduced, nils))
                         {
                             if (alone)
                                 throw new SimpleSemanticError(loc, "GENERIC_FUNCTION_{0}_CAN_NOT_BE_CALLED_WITH_THESE_PARAMETERS", func.name);
