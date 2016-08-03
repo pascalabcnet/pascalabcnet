@@ -260,6 +260,16 @@ namespace PascalABCCompiler
 
     }
 
+    public class MainResourceNotAllowed : CompilerCompilationError
+    {
+        public MainResourceNotAllowed(TreeRealization.location sl)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_MAINRESOURCE_NOT_ALLOWED")), sl.doc.file_name)
+        {
+            this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
+
+    }
+
     public class DuplicateUsesUnit : CompilerCompilationError
     {
         public string UnitName;
@@ -1852,6 +1862,13 @@ namespace PascalABCCompiler
                 }
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.main_resource_string, out cds))
                 {
+                    if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.product_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.version_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string))
+                    {
+                        ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
+                    }
                     cdo.MainResourceFileName = cds[0].directive;
                     if (!File.Exists(cdo.MainResourceFileName))
                     {
