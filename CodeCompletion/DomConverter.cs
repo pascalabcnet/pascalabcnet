@@ -111,6 +111,12 @@ namespace CodeCompletion
                     if (ext_syms != null)
                         lst.AddRange(ext_syms);
                     RestoreCurrentUsedAssemblies();
+                    List<SymInfo> lst_to_remove = new List<SymInfo>();
+                    foreach (SymInfo si2 in lst)
+                        if (si2.name.StartsWith("operator"))
+                            lst_to_remove.Add(si2);
+                    foreach (SymInfo si2 in lst_to_remove)
+                        lst.Remove(si2);
                     return lst.ToArray();
                 }
                 else
