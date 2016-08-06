@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit FormsABC;
 
@@ -70,7 +70,7 @@ type
   
   /// Кнопка
   Button = class
-  private 
+  protected 
     b := new System.Windows.Forms.Button;
     procedure BClick(sender: Object; e: EventArgs);
   public 
@@ -240,6 +240,11 @@ type
   private 
     function GetText: string;
     procedure SetText(s: string);
+    function GetDocumentStream: System.IO.Stream := (f as System.Windows.Forms.WebBrowser).DocumentStream;
+    procedure SetDocumentStream(s: System.IO.Stream);
+    begin
+      (f as System.Windows.Forms.WebBrowser).DocumentStream := s;
+    end;
     function GetAddress: string;
     procedure WBDocumentCompleted(sender: Object;	e: WebBrowserDocumentCompletedEventArgs);
   public 
@@ -251,6 +256,7 @@ type
     procedure GoForward;
     procedure GoHome;
     property Address: string read GetAddress;
+    property DocumentStream: System.IO.Stream read GetDocumentStream write SetDocumentStream;
   end;
   
   /// Окно для рисования
@@ -998,6 +1004,7 @@ end;
 constructor WebBrowser.Create();
 begin
   f := new System.Windows.Forms.WebBrowser;
+  (f as System.Windows.Forms.WebBrowser).ScriptErrorsSuppressed := True;
   ParentControl.Add(f);
   CurrentControl := f;
   (f as System.Windows.Forms.WebBrowser).DocumentCompleted += WBDocumentCompleted;

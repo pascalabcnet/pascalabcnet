@@ -23,24 +23,29 @@ namespace PascalABCCompiler.TreeConverter
             _mot = motivation.expression_evaluation;
         }
 
+        /// <summary>
+        /// синоним reset()
+        /// </summary>
+		public void set_motivation_to_expect_expression_evaluation() 
+		{
+			_mot=motivation.expression_evaluation;
+		}
+
 		public void set_motivation_to_expect_address()
 		{
 			_mot=motivation.address_reciving;
 		}
 
-		public void set_motivation_to_except_semantic_node()
+		public void set_motivation_to_expect_semantic_node()
 		{
 			_mot=motivation.semantic_node_reciving;
 		}
 
 		public motivation motivation
 		{
-            //(ssyy) Darkstar!!! Данный код провоцирует ложные переходы в режиме трассировки!
 			get
 			{
-				motivation temp=_mot;
-				_mot=motivation.expression_evaluation;
-				return temp;
+				return _mot;
 			}
 		}
 

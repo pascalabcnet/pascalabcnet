@@ -56,7 +56,7 @@ namespace SyntaxVisitors
             //PrintInfo = false; 
         }
 
-        public override void Enter(syntax_tree_node st)
+        /*public override void Enter(syntax_tree_node st)
         {
             base.Enter(st);
             countNodesVisited++;
@@ -66,7 +66,7 @@ namespace SyntaxVisitors
             {
                 visitNode = false; // фильтр - куда не заходить 
             }
-        }
+        }*/
 
         /*public override void visit(class_members cm)
         {
@@ -367,7 +367,7 @@ namespace SyntaxVisitors
             {
                 // Объявление функции в классе?
                 var classDef = UpperNode(3) as class_definition;
-                if ((UpperNode(3) as class_definition) != null)
+                if (classDef != null)
                 {
                     var td = UpperNode(4) as type_declaration;
                     if (td != null)

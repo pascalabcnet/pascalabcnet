@@ -68,6 +68,7 @@ namespace SyntaxVisitors
         {
             if (!first_time_visit_function_header) // чтобы в лямбдах не заходить в формальные параметры. Во вложенных тоже не зайдёт
                 return;
+            // SSM переименование формальных параметров (нужно если мы их изменяем внутри)
             ++CurrentLevel;
             BlockNamesStack.Add(new Dictionary<string, string>());
             if (fp != null)

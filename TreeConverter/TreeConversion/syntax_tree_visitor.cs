@@ -737,7 +737,7 @@ namespace PascalABCCompiler.TreeConverter
 #endif
 
             convertion_data_and_alghoritms.check_node_parser_error(tn);
-            motivation_keeper.set_motivation_to_except_semantic_node();
+            motivation_keeper.set_motivation_to_expect_semantic_node();
             return ret.visit(tn);
         }
 
@@ -1722,7 +1722,10 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.inherited_message _inherited_message)
         {
             //throw new NotSupportedError(get_location(_inherited_message));
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+
+            switch (mot)
             {
                 case motivation.expression_evaluation: return_value(inherited_message_value_reciving(_inherited_message)); break;
                 //case motivation.symbol_info_reciving: return_symbol_value(blocks.find(_ident.name));break;
@@ -1878,7 +1881,9 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (_known_type_ident.type == PascalABCCompiler.SyntaxTree.known_type.string_type)
             {
-                switch (motivation_keeper.motivation)
+                var mot = motivation_keeper.motivation;
+                motivation_keeper.reset();
+                switch (mot)
                 {
                     case motivation.address_reciving: return_value(SystemLibrary.SystemLibrary.string_type); break;
                     case motivation.expression_evaluation: return_value(SystemLibrary.SystemLibrary.string_type); break;
@@ -2384,7 +2389,9 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.inherited_ident _inherited_ident)
         {
             inherited_ident_processing = true;
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
                 case motivation.address_reciving: return_addressed_value(inherited_ident_address_reciving(_inherited_ident)); break;
                 case motivation.expression_evaluation: return_value(inherited_ident_value_reciving(_inherited_ident)); break;
@@ -4691,7 +4698,8 @@ namespace PascalABCCompiler.TreeConverter
             }
             //throw new ArgumentNullException("test");
 
-            motivation mot = motivation_keeper.motivation;
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
 
             expression_node expr_node = null;
             expressions_list exprs = new expressions_list();
@@ -8145,8 +8153,8 @@ namespace PascalABCCompiler.TreeConverter
             foreach (SyntaxTree.expression s_expr in _with_statement.do_with.expressions)
             {
             	//expression_node expr = ret.visit(s_expr);
-            	motivation mot = motivation_keeper.motivation;
-            	motivation_keeper.set_motivation_to_except_semantic_node();
+            	var mot = motivation_keeper.motivation;
+            	motivation_keeper.set_motivation_to_expect_semantic_node();
             	semantic_node sn = ret.visit(s_expr as SyntaxTree.syntax_tree_node);
             	motivation_keeper.reset();
             	expression_node expr = sn as expression_node;
@@ -9225,7 +9233,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.dot_node _dot_node)
         {
-            motivation mot = motivation_keeper.motivation;
+            var mot = motivation_keeper.motivation; 
             SyntaxTree.ident id_left = _dot_node.left as SyntaxTree.ident;
             SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
             if (_dot_node.right is ident_with_templateparams)
@@ -9238,6 +9246,7 @@ namespace PascalABCCompiler.TreeConverter
                 visit(dotNodeToVisit);
                 return;
             }
+            motivation_keeper.reset();
 
             if (id_left != null)
             {
@@ -14432,7 +14441,8 @@ namespace PascalABCCompiler.TreeConverter
                 return;
             }
 
-            motivation mot = motivation_keeper.motivation;
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
             SyntaxTree.ident idi = _indexer.dereferencing_value as SyntaxTree.ident;
             if (idi != null)
             {
@@ -14559,13 +14569,9 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.roof_dereference _roof_dereference)
         {
             expression_node exp = null;
-            motivation mot = motivation_keeper.motivation;
-            /*
-            if (mot == motivation.address_reciving)
-            {
-                tmp = motivation_keeper.motivation;
-            }
-            */
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+
             exp = convert_strong(_roof_dereference.dereferencing_value);
             if (exp is typed_expression) exp = convert_typed_expression_to_function_call(exp as typed_expression);
             //Check this expression
@@ -15472,7 +15478,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.ident _ident)
         {
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
                 case motivation.address_reciving: return_addressed_value(ident_address_reciving(_ident)); break;
                 case motivation.expression_evaluation: return_value(ident_value_reciving(_ident)); break;
@@ -15496,7 +15504,9 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.double_const _double_const)
         {
             expression_node en = new double_const_node(_double_const.val, get_location(_double_const));
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
                 case motivation.address_reciving: throw new CompilerInternalError("Addres reciving from constant"); break;
                 case motivation.expression_evaluation: return_value(en); break;
@@ -15535,7 +15545,9 @@ namespace PascalABCCompiler.TreeConverter
             }
             */
             en = SystemLibrary.static_executors.make_int_const(int32.val, get_location(int32));
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
                 case motivation.address_reciving: throw new CompilerInternalError("Addres reciving from constant"); break;
                 case motivation.expression_evaluation: return_value(en); break;
@@ -15548,7 +15560,9 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.int64_const int64)
         {
             expression_node en = new long_const_node(int64.val, get_location(int64));
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
                 case motivation.address_reciving: throw new CompilerInternalError("Addres reciving from constant"); break;
                 case motivation.expression_evaluation: return_value(en); break;
@@ -15564,7 +15578,9 @@ namespace PascalABCCompiler.TreeConverter
             // :-)
             //throw new CompilerInternalError("Числа UInt64 доступны только в PascalABC.NET Professional Edition");
             expression_node en = new ulong_const_node(uint64.val, get_location(uint64));
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
                 case motivation.address_reciving: throw new CompilerInternalError("Addres reciving from constant"); break;
                 case motivation.expression_evaluation: return_value(en); break;
@@ -15577,9 +15593,11 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.bool_const _bool_const)
         {
             expression_node en = new bool_const_node(_bool_const.val, get_location(_bool_const));
-            switch (motivation_keeper.motivation)
+            var mot = motivation_keeper.motivation;
+            motivation_keeper.reset();
+            switch (mot)
             {
-                case motivation.address_reciving: throw new CompilerInternalError("Address reciving from constant"); break;
+                case motivation.address_reciving: throw new CompilerInternalError("Address reciving from constant"); 
                 case motivation.expression_evaluation: return_value(en); break;
                 case motivation.semantic_node_reciving: return_semantic_value(en); break;
             }
