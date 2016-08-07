@@ -244,7 +244,37 @@ type
     end;
   end;
 
-  
+const dbname = 'countries.db';
+
+var coun: array of string := nil;
+
+function Страны: sequence of string;
+begin
+  if coun = nil then
+    coun := ReadLines(dbname).ToArray();
+  Result := coun;  
+end;
+
+function Выбрать<T>(Self: sequence of T; cond: T -> boolean): sequence of T; extensionmethod;
+begin
+  Result := Self.Where(cond);  
+end;
+
+procedure ДляВсех<T>(Self: sequence of T; act: T -> ()); extensionmethod;
+begin
+  Self.Foreach(act);  
+end;
+
+function НаБукву(c: char): string -> boolean;
+begin
+  Result := страна -> страна[1] = c;
+end;
+
+function НаБукву(s: string): string -> boolean;
+begin
+  Result := страна -> страна[1] = s[1];
+end;
+
 var 
   ///- Множество - это набор значений
   Множество: МножествоТип := new МножествоКласс;
