@@ -252,6 +252,32 @@
               </Node>
             </Items>
           </Node>
+          <Node Name="DockError">
+            <Items>
+              <Node Name="visit(SyntaxTree.assign">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.assign _assign)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="visit(function_lambda_definition">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . function_lambda_definition _function_lambda_definition )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
         </Items>
       </Node>
       <Node Name="Добавляем t[1] где t - Tuple">
@@ -1238,26 +1264,47 @@
           </Node>
         </Items>
       </Node>
-      <Node Name="DockError">
+      <Node Name="Ядро преобраз-я синт. деревьев">
         <Items>
-          <Node Name="visit(SyntaxTree.assign">
-            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
-            <Text>public override void visit(SyntaxTree.assign _assign)</Text>
+          <Node Name="SyntaxTree = Convert(SyntaxTree)">
+            <FileName>\Compiler\Compiler.cs</FileName>
+            <Text>CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;</Text>
             <OCtx>
-              <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
-              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
-              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="Method">public CompilationUnit CompileUnit ( PascalABCCompiler . TreeRealization . unit_node_list Units , SyntaxTree . unit_or_namespace SyntaxUsesUnit )</i>
+              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
               <i Type="CS_TreeNode">
               </i>
             </OCtx>
           </Node>
-          <Node Name="visit(function_lambda_definition">
-            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
-            <Text>public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)</Text>
+          <Node Name="AddConverters()">
+            <FileName>\Compiler\Compiler.cs</FileName>
+            <Text>syntaxTreeConvertersController.AddConverters();</Text>
             <OCtx>
-              <i Type="Method">public override void visit ( SyntaxTree . function_lambda_definition _function_lambda_definition )</i>
-              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
-              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="Method">public void Reload ( )</i>
+              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Convert">
+            <FileName>\Compiler\SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs</FileName>
+            <Text>public syntax_tree_node Convert(syntax_tree_node root)</Text>
+            <OCtx>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="AddStandardSyntaxConverters">
+            <FileName>\SyntaxTreeConverters\AddStandardSyntaxConverters.cs</FileName>
+            <Text>static class AddStandardSyntaxConverters</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">static class AddStandardSyntaxConverters</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
               <i Type="CS_TreeNode">
               </i>
             </OCtx>

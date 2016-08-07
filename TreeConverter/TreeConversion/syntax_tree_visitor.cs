@@ -9246,7 +9246,7 @@ namespace PascalABCCompiler.TreeConverter
                 visit(dotNodeToVisit);
                 return;
             }
-            motivation_keeper.reset();
+            motivation_keeper.reset(); // SSM перенес сюда сверху - bug fix #263
 
             if (id_left != null)
             {

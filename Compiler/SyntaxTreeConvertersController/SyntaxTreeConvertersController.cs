@@ -44,7 +44,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
             List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntax.dll").ToList();
-            dllfiles.Add(new FileInfo("SyntaxTreeConverters.dll"));
+            dllfiles.Insert(0,new FileInfo("StandardSyntaxTreeConverter.dll"));
 
             System.Reflection.Assembly assembly = null;
             ISyntaxTreeConverter Converter;

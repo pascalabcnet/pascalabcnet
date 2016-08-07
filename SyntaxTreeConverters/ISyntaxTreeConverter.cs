@@ -18,15 +18,15 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     {
         string Name { get; }
         
-        string Version { get; }
+        //string Version { get; }
 
-        string Description { get; }
+        //string Description { get; }
 
-        string Copyright { get; }
+        //string Copyright { get; }
 
-        ConverterType ConverterType { get; }
+        //ConverterType ConverterType { get; }
 
-        ExecutionOrder ExecutionOrder { get; }
+        //ExecutionOrder ExecutionOrder { get; }
 
         syntax_tree_node Convert(syntax_tree_node root);
     }

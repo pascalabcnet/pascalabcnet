@@ -11,6 +11,7 @@
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
+    File "..\bin\StandardSyntaxTreeConverter.dll"
     File "..\bin\SyntaxVisitors.dll"
     File "..\bin\YieldConversionSyntax.dll"
     File "..\bin\YieldHelpers.dll"
@@ -48,6 +49,7 @@
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
     ${AddFile} "SyntaxTreeConverters.dll"
+    ${AddFile} "StandardSyntaxTreeConverter.dll"
     ${AddFile} "YieldHelpers.dll"
     ${AddFile} "SyntaxVisitors.dll"
     ${AddFile} "YieldConversionSyntax.dll"
@@ -248,6 +250,8 @@
 	Push "SyntaxVisitors.dll"
     Call NGEN
     Push "YieldConversionSyntax.dll"
+    Call NGEN
+    Push "StandardSyntaxTreeConverter.dll"
     Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"

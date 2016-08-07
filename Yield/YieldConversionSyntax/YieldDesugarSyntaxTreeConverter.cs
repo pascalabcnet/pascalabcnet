@@ -15,7 +15,7 @@ namespace YieldDesugarSyntaxTreeConverter
 {
     public class YieldDesugarSyntaxTreeConverter : ISyntaxTreeConverter
     {
-        public string Name { get; set; }
+        public string Name { get; } = "YieldDesugar";
         public string Version { get; set; }
         public string Description { get; set; }
         public string Copyright { get; set; }

@@ -80,9 +80,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         }
     }
 
-    public class SampleSyntaxTreeConverter: ISyntaxTreeConverter
+    public class SampleSyntaxTreeConvIChangeNameToExcludeFromConvertersList: ISyntaxTreeConverter
     {
-        public string Name { get; set; }
+        public string Name { get; } = "Sample";
         public string Version { get; set; }
         public string Description { get; set; }
         public string Copyright { get; set; }

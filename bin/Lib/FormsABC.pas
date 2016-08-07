@@ -73,17 +73,35 @@ type
   protected 
     b := new System.Windows.Forms.Button;
     procedure BClick(sender: Object; e: EventArgs);
+    function GetW(): integer;
+    begin
+      Result := b.Width
+    end;
+    procedure SetW(w: integer);
+    begin
+      b.Width := w;
+    end;
   public 
     event Click: procedure;
     constructor Create(text: string);
+    property Width: integer read GetW write SetW;
   end;
   
   /// Текстовая метка
   TextLabel = class
-  private 
+  protected 
     l := new System.Windows.Forms.Label;
+    function GetT(): string;
+    begin
+      Result := l.Text
+    end;
+    procedure SetT(w: string);
+    begin
+      l.Text := w;
+    end;
   public 
     constructor(text: string);
+    property Text: string read GetT write SetT;
   end;
   
   /// Флажок
@@ -110,7 +128,7 @@ type
   
   /// Список
   ListBox = class
-  private 
+  protected 
     lb := new System.Windows.Forms.ListBox;
     function GetItems: System.Windows.Forms.ListBox.ObjectCollection;
     function GetSelectedIndex: integer;
@@ -123,7 +141,7 @@ type
   public 
     event Click: procedure;
     event SelectedIndexChanged: procedure;
-    constructor;
+    constructor Create;
     property Items: System.Windows.Forms.ListBox.ObjectCollection read GetItems;
     property SelectedIndex: integer read GetSelectedIndex write SetSelectedIndex;
     property SelectedItem: object read GetSelectedItem write SetSelectedItem;
@@ -722,7 +740,7 @@ end;
 
 constructor ListBox.Create;
 begin
-  lb.AutoSize := True;
+  //lb.AutoSize := True;
   ParentControl.Add(lb);
   CurrentControl := lb;
   lb.Click += LBClick;
