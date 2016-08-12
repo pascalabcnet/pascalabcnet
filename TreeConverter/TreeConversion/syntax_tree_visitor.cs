@@ -3748,21 +3748,30 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (SemanticRules.OrderIndependedMethodNames)
             {
-            	visit_class_member_realizations(_class_body);
-            }
-            if (!context.converted_type.is_value && !context.converted_type.IsInterface)
-            {
-                generate_inherit_constructors();
-            }
-            if (!context.converted_type.IsInterface && context.converted_type.static_constr == null)
-            {
-            	//generate_static_constructor();
-            }
-            if (!context.converted_type.IsInterface && !context.converted_type.has_default_constructor)
-            {
-                generate_default_constructor();
+                if (!context.converted_type.is_value && !context.converted_type.IsInterface)
+                {
+                    generate_inherit_constructors();
+                }
+                if (!context.converted_type.IsInterface && !context.converted_type.has_default_constructor)
+                {
+                    generate_default_constructor();
+                }
+                
+                visit_class_member_realizations(_class_body);
             }
             
+            if (!SemanticRules.OrderIndependedMethodNames)
+            {
+                if (!context.converted_type.is_value && !context.converted_type.IsInterface)
+                {
+                    generate_inherit_constructors();
+                }
+                if (!context.converted_type.IsInterface && !context.converted_type.has_default_constructor)
+                {
+                    generate_default_constructor();
+                }
+            }
+
         }
 		
         private bool disable_order_independ;
