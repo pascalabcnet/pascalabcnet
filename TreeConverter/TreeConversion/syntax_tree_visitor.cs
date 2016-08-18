@@ -9242,11 +9242,24 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.dot_node _dot_node)
         {
-            var mot = motivation_keeper.motivation; 
+            var mot = motivation_keeper.motivation;
+
             SyntaxTree.ident id_left = _dot_node.left as SyntaxTree.ident;
             SyntaxTree.ident id_right = _dot_node.right as SyntaxTree.ident;
             if (_dot_node.right is ident_with_templateparams)
                 id_right = (_dot_node.right as ident_with_templateparams).name as ident;
+
+            // SSM 18.08.16 - пробуем обработать захват enn.ii в yieldах где enn - поле класса и нуждается в переименовании
+            // Так же ниже делает lroman
+            if (_dot_node.left is yield_unknown_ident)
+            {
+                var yui = (yield_unknown_ident)_dot_node.left;
+                var av = ProcessUnknownIdent(yui);
+                var dn = new dot_node(av, _dot_node.right,yui.source_context);
+                visit(dn);
+                return;
+            }
+            
             //lroman
             if (_dot_node.left is closure_substituting_node)
             {
@@ -19221,7 +19234,8 @@ namespace PascalABCCompiler.TreeConverter
             bool isStaticIdent;
             if (CheckUnknownIdentNeedsClassCapture(unk, out isStaticIdent))
             {
-                return CaptureUnknownIdent(unk, isStaticIdent);
+                var uid = CaptureUnknownIdent(unk, isStaticIdent);
+                return uid;
             }
             else
             {

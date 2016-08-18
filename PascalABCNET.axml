@@ -1299,7 +1299,7 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="AddStandardSyntaxConverters">
+          <Node Name="StandardSyntaxConverters">
             <FileName>\SyntaxTreeConverters\AddStandardSyntaxConverters.cs</FileName>
             <Text>static class AddStandardSyntaxConverters</Text>
             <OCtx>
@@ -1308,6 +1308,21 @@
               <i Type="CS_TreeNode">
               </i>
             </OCtx>
+          </Node>
+          <Node Name="StandardSyntaxTreeConverter">
+            <FileName>\StandardSyntaxTreeConverter\StandardSyntaxConverters.cs</FileName>
+            <Text>class StandardSyntaxTreeConverter: ISyntaxTreeConverter</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">class StandardSyntaxTreeConverter : ISyntaxTreeConverter</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">public string Name</i>
+              <i Type="Field">=</i>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+            </ICtx>
           </Node>
         </Items>
       </Node>

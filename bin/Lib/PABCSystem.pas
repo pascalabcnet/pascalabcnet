@@ -1046,6 +1046,10 @@ function Sign(x: real): integer;
 /// Возвращает модуль числа x
 function Abs(x: integer): integer;
 ///--
+function Abs(x: shortint): shortint;
+///--
+function Abs(x: smallint): smallint;
+///--
 function Abs(x: BigInteger): BigInteger;
 ///--
 function Abs(x: longword): longword;
@@ -1089,6 +1093,10 @@ function Sqrt(x: real): real;
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
 function Sqr(x: integer): int64;
+///--
+function Sqr(x: shortint): integer;
+///--
+function Sqr(x: smallint): integer;
 ///--
 function Sqr(x: BigInteger): BigInteger;
 ///--
@@ -3995,7 +4003,10 @@ end;}
 
 function ArrFill<T>(count: integer; x: T): array of T;
 begin
-  Result := System.Linq.Enumerable.Repeat(x,count).ToArray();
+  Result := new T[count];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := x;
+  //Result := System.Linq.Enumerable.Repeat(x,count).ToArray();
 end;
 
 function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
@@ -6623,6 +6634,16 @@ begin
   Result := Math.Sign(x);
 end;
 
+function Abs(x: shortint): shortint;
+begin
+  Result := Math.Abs(x);
+end;
+
+function Abs(x: smallint): smallint;
+begin
+  Result := Math.Abs(x);
+end;
+
 function Abs(x: integer): integer;
 begin
   Result := Math.Abs(x);
@@ -6729,6 +6750,16 @@ begin
 end;
 
 function Sqr(x: integer): int64;
+begin
+  Result := x * x;
+end;
+
+function Sqr(x: shortint): integer;
+begin
+  Result := x * x;
+end;
+
+function Sqr(x: smallint): integer;
 begin
   Result := x * x;
 end;
@@ -8692,6 +8723,102 @@ begin
       exit;
     end;
 end;
+
+type
+  AdjGroupClass<T> = class
+  private
+    cur: T;
+    enm: IEnumerator<T>;
+    fin: boolean;
+  public
+    constructor Create(a: sequence of T);
+    begin
+      enm := a.GetEnumerator();
+      fin := enm.MoveNext;
+      if fin then
+        cur := enm.Current;
+    end;
+    
+    function TakeGroup: sequence of T;
+    begin
+      yield cur;
+      fin := enm.movenext;
+      while fin do
+      begin
+        if enm.current = cur then
+          yield enm.current
+        else
+        begin
+          cur := enm.Current;
+          break;
+        end;
+        fin := enm.movenext;
+      end;  
+    end;
+  end;
+
+/// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
+function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
+begin
+  var c := new AdjGroupClass<T>(Self);
+  while c.fin do
+    yield c.TakeGroup();
+end;
+
+/// Возвращает минимальный элемент 
+function Min<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i].CompareTo(Result)<0 then 
+      Result := Self[i];
+end;
+
+/// Возвращает максинимальный элемент 
+function Max<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i].CompareTo(Result)>0 then 
+      Result := Self[i];
+end;
+
+/// Возвращает минимальный элемент 
+function Min(Self: array of integer): integer; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] < Result then 
+      Result := Self[i];
+end;
+
+/// Возвращает минимальный элемент 
+function Min(Self: array of real): real; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] < Result then 
+      Result := Self[i];
+end;
+
+/// Возвращает максимальный элемент 
+function Max(Self: array of integer): integer; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] > Result then 
+      Result := Self[i];
+end;
+
+/// Возвращает максимальный элемент 
+function Max(Self: array of real): real; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] > Result then 
+      Result := Self[i];
+end;
+
 
 /// Возвращает индекс первого минимального элемента начиная с позиции start
 function IndexMin<T>(Self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;

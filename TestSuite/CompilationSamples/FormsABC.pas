@@ -73,18 +73,15 @@ type
   protected 
     b := new System.Windows.Forms.Button;
     procedure BClick(sender: Object; e: EventArgs);
-    function GetW(): integer;
-    begin
-      Result := b.Width
-    end;
-    procedure SetW(w: integer);
-    begin
-      b.Width := w;
-    end;
+    function GetW := b.Width;
+    procedure SetW(w: integer) := b.Width := w;
+    function GetText := b.Text;
+    procedure SetText(t: string) := b.Text := t;
   public 
     event Click: procedure;
     constructor Create(text: string);
     property Width: integer read GetW write SetW;
+    property Text: string read GetText write SetText;
   end;
   
   /// Текстовая метка
