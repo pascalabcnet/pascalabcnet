@@ -14454,6 +14454,17 @@ namespace PascalABCCompiler.TreeConverter
             }*/
             //end SSM 11/02/16
 
+            // SSM 18.08.16 - пробуем обработать захват enn[i] в yieldах где enn - поле класса и нуждается в переименовании
+            // Так же ниже делает lroman
+            if (_indexer.dereferencing_value is yield_unknown_ident)
+            {
+                var yui = (yield_unknown_ident)_indexer.dereferencing_value;
+                var av = ProcessUnknownIdent(yui);
+                var nodeToVisit = new indexer(av,_indexer.indexes);
+                visit(nodeToVisit);
+                return;
+            }
+
             //lroman
             if (_indexer.dereferencing_value is closure_substituting_node)
             {

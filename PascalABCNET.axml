@@ -1326,6 +1326,28 @@
           </Node>
         </Items>
       </Node>
+      <Node Name="visit(SyntaxTree.dot_node">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>public override void visit(SyntaxTree.dot_node _dot_node)</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . dot_node _dot_node )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name=" visit(SyntaxTree.indexer">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>public override void visit(SyntaxTree.indexer _indexer)</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . indexer _indexer )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>
