@@ -1564,6 +1564,17 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 
 /// Возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
 function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
+/// Возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqRealWhile(cond: real -> boolean): sequence of real;
+/// Возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqStringWhile(cond: string -> boolean): sequence of string;
+
+/// Выводит приглашение к вводу и возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqIntegerWhile(const prompt: string; cond: integer -> boolean): sequence of integer;
+/// Выводит приглашение к вводу и возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqRealWhile(const prompt: string; cond: real -> boolean): sequence of real;
+/// Выводит приглашение к вводу и возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqStringWhile(const prompt: string; cond: string -> boolean): sequence of string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation
@@ -4096,17 +4107,6 @@ begin
   Result := Range(1,n).Select(i->ReadInteger());
 end;
 
-function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
-begin
-  while True do
-  begin
-    var x := ReadInteger();
-    if not cond(x) then
-      break;
-    yield x;  
-  end;
-end;
-
 function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
 begin
   Print(prompt);
@@ -4133,6 +4133,57 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 begin
   Print(prompt);
   Result := ReadSeqString(n);
+end;
+
+function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
+begin
+  while True do
+  begin
+    var x := ReadInteger();
+    if not cond(x) then
+      break;
+    yield x;  
+  end;
+end;
+
+function ReadSeqRealWhile(cond: real -> boolean): sequence of real;
+begin
+  while True do
+  begin
+    var x := ReadReal();
+    if not cond(x) then
+      break;
+    yield x;  
+  end;
+end;
+
+function ReadSeqStringWhile(cond: string -> boolean): sequence of string;
+begin
+  while True do
+  begin
+    var x := ReadString();
+    if not cond(x) then
+      break;
+    yield x;  
+  end;
+end;
+
+function ReadSeqIntegerWhile(const prompt: string; cond: integer -> boolean): sequence of integer;
+begin
+  Print(prompt);
+  Result := ReadSeqIntegerWhile(cond);
+end;
+
+function ReadSeqRealWhile(const prompt: string; cond: real -> boolean): sequence of real;
+begin
+  Print(prompt);
+  Result := ReadSeqRealWhile(cond);
+end;
+
+function ReadSeqStringWhile(const prompt: string; cond: string -> boolean): sequence of string;
+begin
+  Print(prompt);
+  Result := ReadSeqStringWhile(cond);
 end;
 
 // -----------------------------------------------------------------------------
