@@ -25,12 +25,13 @@ namespace YieldDesugarSyntaxTreeConverter
         public syntax_tree_node Convert(syntax_tree_node root)
         {
             root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());
-            root.visit(new ProcessYieldCapturedVarsVisitor());
+            ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
+            //root.visit(py); - пропускал корень
 
 #if DEBUG
             try
             {
-               //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
+               root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
             }
             catch 
             {

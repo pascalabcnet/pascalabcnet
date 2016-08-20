@@ -1181,6 +1181,32 @@
               <i Type="Method">public override void visit ( formal_parameters fp )</i>
             </ICtx>
           </Node>
+          <Node Name="ForwardDefInUnitError">
+            <Items>
+              <Node Name="InsertGlobalIteratorMethodPredefinition">
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <Text>private bool InsertGlobalIteratorMethodPredefinition(procedure_definition pd)</Text>
+                <OCtx>
+                  <i Type="Method">private bool InsertGlobalIteratorMethodPredefinition ( procedure_definition pd )</i>
+                  <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+                  <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="check_unique_or_predefined(common_function_node fn)">
+                <FileName>\TreeConverter\TreeConversion\compilation_context.cs</FileName>
+                <Text>private bool check_unique_or_predefined(common_function_node fn)</Text>
+                <OCtx>
+                  <i Type="Method">private bool check_unique_or_predefined ( common_function_node fn )</i>
+                  <i Type="ClassOrNamespace">public class compilation_context</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
         </Items>
       </Node>
       <Node Name="a.Sort((row1, row2) -&gt; 1)">

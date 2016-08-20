@@ -1562,6 +1562,8 @@ function ReadSeqReal(const prompt: string; n: integer): sequence of real;
 /// Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры
 function ReadSeqString(const prompt: string; n: integer): sequence of string;
 
+/// Возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
+//function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation
@@ -4092,6 +4094,17 @@ end;
 function ReadSeqInteger(n: integer): sequence of integer;
 begin
   Result := Range(1,n).Select(i->ReadInteger());
+end;
+
+function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
+begin
+  while True do
+  begin
+    var x := ReadInteger();
+    if cond(x) then
+      break;
+    yield 1;  
+  end;
 end;
 
 function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
@@ -8764,6 +8777,8 @@ begin
   while c.fin do
     yield c.TakeGroup();
 end;
+
+//ToDo Сделать AdjacentGroup с функцией сравнения
 
 /// Возвращает минимальный элемент 
 function Min<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;

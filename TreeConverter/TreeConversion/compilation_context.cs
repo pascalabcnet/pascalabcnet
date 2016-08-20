@@ -3001,7 +3001,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(new FunctionDuplicateDefinition(compar, fn));
                             }
                             else
+                            { 
                                 AddError(new FunctionDuplicateDefinition(compar, fn));
+                            }
                         }
                     }
                     si = si.Next;
@@ -3279,7 +3281,9 @@ namespace PascalABCCompiler.TreeConverter
                     		AddError(new FunctionDuplicateDefinition(compar, fn));
                     }
                     else
+                    { 
 					    AddError(new FunctionDuplicateDefinition(compar,fn));
+                    }
 				}
                 si = si.Next;
 			}

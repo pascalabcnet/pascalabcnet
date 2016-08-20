@@ -832,6 +832,20 @@ namespace SyntaxVisitors
                 return false;
             }
 
+            // SSM и еще нельзя генерировать если это функция, описанная в interface и implementation модуля
+            var un = UpperNode(2) as implementation_node;
+            if (un != null)
+            {
+                var cu = UpperNode(3) as unit_module;
+                if (cu != null) // а это всегда так
+                {
+                    var fhh = cu.interface_part.interface_definitions.defs.OfType<function_header>().Where(fh => fh.name.meth_name.name.ToLower()==pd.proc_header.name.meth_name.name.ToLower());
+                    if (fhh.Any()) // если еть в разделе интерфейса такие же имена, то не генерировать предописание 
+                        return false;
+                    // вообще-то надо сравнивать заголовки - не только имена - но даже так устраняется основная масса ошибок
+                }
+            }
+
             var pdPredefs = UpperTo<declarations>().defs
                 .OfType<procedure_definition>()
                 .Where(lpd => lpd.proc_body == null
@@ -877,6 +891,8 @@ namespace SyntaxVisitors
                 return;
 
             // frninja 05/06/16 - вставляем предописание если метод-итератор описан не в классе (обычная функция) чтоб работали рекурсивные вызовы
+            // Нужен также для верной работы <yield_error> функции, проверяющей разные ошибки на этапе семантики
+            // Как только уберу <yield_error>-функцию, от этого тоже можно избавиться
             bool methodPredefCreated = InsertGlobalIteratorMethodPredefinition(pd);
 
             // frninja 24/05/16 - оборачиваем одиночные операторы в begin..end
@@ -966,10 +982,10 @@ namespace SyntaxVisitors
             pd.has_yield = false;
 
             // frninja 05/06/16 - убираем where-секцию у описания метода. Они уже скопированы куда надо
-            if (methodPredefCreated)
+            /*if (methodPredefCreated)
             {
                 pd.proc_header.where_defs = null;
-            }
+            }*/
 
             //mids = null; // вдруг мы выйдем из процедуры, не зайдем в другую, а там - оператор! Такого конечно не может быть
         }
