@@ -31,7 +31,7 @@ namespace YieldDesugarSyntaxTreeConverter
 #if DEBUG
             try
             {
-               root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
+               //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
             }
             catch 
             {

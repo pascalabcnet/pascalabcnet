@@ -45,10 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllVarsInProcYieldsProba.cs" />
-    <Compile Include="BaseVisitors\BaseChangeVisitor.cs" />
-    <Compile Include="BaseVisitors\BaseEnterExitVisitor.cs" />
     <Compile Include="BaseVisitors\CollectNamespaces.cs" />
-    <Compile Include="BaseVisitors\CollectUpperNodesVisitor.cs" />
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />

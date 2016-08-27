@@ -11,8 +11,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
         {
-            //var v = new SampleVisitor();
-            //v.ProcessNode(root);
+            //FillParentNodeVisitor.New.ProcessNode(root); // прошивание ссылками на Parent nodes
             return root;
         }
     }

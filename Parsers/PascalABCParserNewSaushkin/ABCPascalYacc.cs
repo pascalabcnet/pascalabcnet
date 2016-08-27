@@ -1,8 +1,8 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  SSM
-// DateTime: 19.07.2016 9:16:26
+// Machine:  DESKTOP-8EAQPI9
+// DateTime: 26.08.2016 12:48:27
 // UserName: ?????????
 // Input file <ABCPascal.y>
 

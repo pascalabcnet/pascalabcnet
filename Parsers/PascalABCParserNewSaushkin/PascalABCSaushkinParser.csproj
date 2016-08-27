@@ -102,6 +102,7 @@
     <Compile Include="ABCPascalYacc.cs" />
     <Compile Include="DocTagsParser\Parser.cs" />
     <Compile Include="Errors1.cs" />
+    <Compile Include="Keywords.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="ParserLambdaHelper.cs" />
     <Compile Include="Preprocessor3.cs" />

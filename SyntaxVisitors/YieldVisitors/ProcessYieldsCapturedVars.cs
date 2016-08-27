@@ -832,7 +832,7 @@ namespace SyntaxVisitors
                 return false;
             }
 
-            // SSM и еще нельзя генерировать если это функция, описанная в interface и implementation модуля
+            // SSM 20/08/16 и еще нельзя генерировать если это функция, описанная в interface и implementation модуля
             var un = UpperNode(2) as implementation_node;
             if (un != null)
             {
@@ -840,7 +840,7 @@ namespace SyntaxVisitors
                 if (cu != null) // а это всегда так
                 {
                     var fhh = cu.interface_part.interface_definitions.defs.OfType<function_header>().Where(fh => fh.name.meth_name.name.ToLower()==pd.proc_header.name.meth_name.name.ToLower());
-                    if (fhh.Any()) // если еть в разделе интерфейса такие же имена, то не генерировать предописание 
+                    if (fhh.Any()) // если еcть в разделе интерфейса такие же имена, то не генерировать предописание 
                         return false;
                     // вообще-то надо сравнивать заголовки - не только имена - но даже так устраняется основная масса ошибок
                 }

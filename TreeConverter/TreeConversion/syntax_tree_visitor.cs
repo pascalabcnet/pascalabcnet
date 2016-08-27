@@ -38,7 +38,7 @@ namespace PascalABCCompiler.TreeConverter
         }
     }*/
 
-    public class syntax_tree_visitor : SyntaxTree.AbstractVisitor
+    public class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew
     {
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
@@ -16593,6 +16593,13 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
+        private int GenIdNum = 0;
+        public ident GenIdentName()
+        {
+            GenIdNum++;
+            return new ident("$GenId" + GenIdNum.ToString());
+        }
+
         public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)
         {
             var lambdaSearcher = new LambdaSearcher(_foreach_stmt.in_what);
@@ -16619,14 +16626,16 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
 
-            if (is1dimdynarr) // Замена foreach на for для массива
+
+            /* SSM 23.08.16 Закомментировал оптимизацию. Не работает с лямбдами. Лямбды обходят старое дерево. А заменить foreach на for на этом этапе пока не получается - не развита инфраструктура
+             * 
+             * if (is1dimdynarr) // Замена foreach на for для массива
             {
                 // сгенерировать код для for и вызвать соответствующий visit
-                var arrid = SyntaxTreeBuilder.GenIdentName();
-                var vdarr = new var_def_statement(arrid, new semantic_addr_value(in_what)); // semantic_addr_value - перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
-                visit(vdarr);
+                var arrid = GenIdentName();
+                var vdarr = new var_statement(arrid, new semantic_addr_value(in_what)); // semantic_addr_value - перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
 
-                var i = SyntaxTreeBuilder.GenIdentName();
+                var i = GenIdentName();
                 var x = _foreach_stmt.identifier;
 
                 // Возможны 3 случая:
@@ -16649,9 +16658,15 @@ namespace PascalABCCompiler.TreeConverter
                 var high = arrid.dot_node("Length").Minus(1);
 
                 var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
+
+                //var stl = new SyntaxTree.statement_list(vdarr, fornode);
+                //Replace(_foreach_stmt, stl);
+
+                visit(vdarr);
                 visit(fornode);
+
                 return;
-            }
+            }*/
             /// SSM 29.07.16 
 
             //throw new NotSupportedError(get_location(_foreach_stmt));
