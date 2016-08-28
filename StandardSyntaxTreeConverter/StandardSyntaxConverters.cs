@@ -12,6 +12,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public syntax_tree_node Convert(syntax_tree_node root)
         {
             //FillParentNodeVisitor.New.ProcessNode(root); // прошивание ссылками на Parent nodes
+            // Пока нельзя вызывать - если это делать, то ObjectCopier.Clone провоцирует катастрофически долгое время работы!!!
             return root;
         }
     }

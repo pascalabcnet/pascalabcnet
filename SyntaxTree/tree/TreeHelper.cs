@@ -28,7 +28,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class syntax_tree_node
     {
-        public syntax_tree_node Parent;
+        public object Parent;
         public int FindIndex(syntax_tree_node node)
         {
             int ind = -1;
