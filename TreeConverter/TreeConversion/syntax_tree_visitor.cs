@@ -361,9 +361,6 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.CopyWithSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.CopyWithSizeFunction);
             SystemLibrary.SystemLibInitializer.ArrayCopyFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ArrayCopyFunction);
             SystemLibrary.SystemLibInitializer.ConfigVariable = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.config_variable_name);
-            SystemLibrary.SystemLibInitializer.GetCurrentLineFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetCurrentLineFunction);
-            SystemLibrary.SystemLibInitializer.GetCurrentFileFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetCurrentFileFunction);
-            //AddSpecialOperatorsToSetType();
             //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node,SystemLibrary.SystemLibrary.string_type,type_compare.less_type,SemanticTree.basic_function_type.none,true);
             //SystemLibrary.SystemLibrary.make_type_conversion(SystemLibrary.SystemLibrary.string_type,SystemLibrary.SystemLibInitializer.ShortStringType.sym_info as type_node,type_compare.greater_type,SemanticTree.basic_function_type.none,true);
             if (SystemLibrary.SystemLibInitializer.TextFileType.Found)
