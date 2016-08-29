@@ -300,8 +300,6 @@ namespace PascalABCCompiler.SystemLibrary
         public static UnitDefinitionItem StrProcedure;
 		public static UnitDefinitionItem ChrUnicodeFunction;
 		public static UnitDefinitionItem AssertProcedure;
-        public static UnitDefinitionItem GetCurrentLineFunction;
-        public static UnitDefinitionItem GetCurrentFileFunction;
         public static UnitDefinitionItem CheckRangeFunction;
 		public static UnitDefinitionItem CheckCharRangeFunction;
 		public static UnitDefinitionItem CopyWithSizeFunction;
