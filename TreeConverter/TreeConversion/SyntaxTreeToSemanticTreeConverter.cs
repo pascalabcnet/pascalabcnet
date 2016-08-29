@@ -70,7 +70,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
 
-        //TODO: Исправить коллкцию модулей.
+        //TODO: Исправить коллекцию модулей.
         public PascalABCCompiler.TreeRealization.common_unit_node CompileInterface(SyntaxTree.compilation_unit SyntaxUnit,
             PascalABCCompiler.TreeRealization.unit_node_list UsedUnits, List<Errors.Error> ErrorsList, List<Errors.CompilerWarning> WarningsList, PascalABCCompiler.Errors.SyntaxError parser_error,
             System.Collections.Hashtable bad_nodes, TreeRealization.using_namespace_list namespaces, Dictionary<SyntaxTree.syntax_tree_node,string> docs, bool debug, bool debugging)

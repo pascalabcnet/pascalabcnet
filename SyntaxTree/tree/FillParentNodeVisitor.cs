@@ -17,7 +17,7 @@ namespace PascalABCCompiler.SyntaxTree
         public override void Enter(syntax_tree_node st)
         {
             base.Enter(st);
-            st.Parent = UpperNode();
+            //st.Parent = UpperNode();
         }
     }
 }
