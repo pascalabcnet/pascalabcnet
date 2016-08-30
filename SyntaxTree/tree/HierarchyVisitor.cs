@@ -1685,6 +1685,54 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(slice_expr _slice_expr)
+		{
+		}
+
+		public virtual void post_do_visit(slice_expr _slice_expr)
+		{
+		}
+
+		public virtual void pre_do_visit(no_type _no_type)
+		{
+		}
+
+		public virtual void post_do_visit(no_type _no_type)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_unknown_ident _yield_unknown_ident)
+		{
+		}
+
+		public virtual void post_do_visit(yield_unknown_ident _yield_unknown_ident)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+		}
+
+		public virtual void post_do_visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+		}
+
+		public virtual void post_do_visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+		}
+
+		public virtual void pre_do_visit(yield_sequence_node _yield_sequence_node)
+		{
+		}
+
+		public virtual void post_do_visit(yield_sequence_node _yield_sequence_node)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3488,6 +3536,53 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(dot_question_node.left);
 			visit(dot_question_node.right);
 			post_do_visit(_dot_question_node);
+		}
+
+		public override void visit(slice_expr _slice_expr)
+		{
+			DefaultVisit(_slice_expr);
+			pre_do_visit(_slice_expr);
+			visit(slice_expr.v);
+			visit(slice_expr.from);
+			visit(slice_expr.to);
+			visit(slice_expr.step);
+			post_do_visit(_slice_expr);
+		}
+
+		public override void visit(no_type _no_type)
+		{
+			DefaultVisit(_no_type);
+			pre_do_visit(_no_type);
+			post_do_visit(_no_type);
+		}
+
+		public override void visit(yield_unknown_ident _yield_unknown_ident)
+		{
+			DefaultVisit(_yield_unknown_ident);
+			pre_do_visit(_yield_unknown_ident);
+			post_do_visit(_yield_unknown_ident);
+		}
+
+		public override void visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+			DefaultVisit(_yield_unknown_expression_type);
+			pre_do_visit(_yield_unknown_expression_type);
+			post_do_visit(_yield_unknown_expression_type);
+		}
+
+		public override void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+			DefaultVisit(_yield_unknown_foreach_type);
+			pre_do_visit(_yield_unknown_foreach_type);
+			post_do_visit(_yield_unknown_foreach_type);
+		}
+
+		public override void visit(yield_sequence_node _yield_sequence_node)
+		{
+			DefaultVisit(_yield_sequence_node);
+			pre_do_visit(_yield_sequence_node);
+			visit(yield_sequence_node.ex);
+			post_do_visit(_yield_sequence_node);
 		}
 	}
 

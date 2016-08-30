@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
 using System.Collections.Generic;
@@ -483,7 +483,15 @@ namespace PascalABCCompiler
         {
             throw new NotSupportedException();
         }
-        
+
+        public PascalABCCompiler.SyntaxTreeConverters.SyntaxTreeConvertersController SyntaxTreeConvertersController
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         public PascalABCCompiler.SemanticTreeConverters.SemanticTreeConvertersController SemanticTreeConvertersController
         {
             get

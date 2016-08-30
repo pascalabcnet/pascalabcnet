@@ -153,7 +153,6 @@ namespace PascalABCCompiler.Errors
             if (source_context != null && source_context.FileName != null)
                 base.fileName = source_context.FileName;
             bad_node = _bad_node;
-            //Console.WriteLine(ToString());
         }
         public override string ToString()
         {

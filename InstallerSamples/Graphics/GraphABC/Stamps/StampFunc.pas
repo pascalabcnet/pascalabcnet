@@ -62,18 +62,8 @@ type
     end;
   end;
   
-function f(x: real): real;
 begin
-  Result := x*sin(5*x);
-end;  
-  
-function g(x: real): real;
-begin
-  Result := sin(3*x)+sin(4*x);
-end;  
-  
-begin
-  var fs := new FuncStamp(10,10,310,230,0,-2*Pi,2*Pi,2*Pi,f);
+  var fs := new FuncStamp(10,10,310,230,0,-2*Pi,2*Pi,2*Pi,x->x*sin(5*x));
   fs.Stamp;
   fs.MoveOn(320,0);
   fs.SetFuncWindow(-Pi,-1,Pi,1);
@@ -84,6 +74,6 @@ begin
   fs.Stamp;
   fs.MoveOn(320,0);
   fs.SetFuncWindow(-2*Pi,-2,2*Pi,2);
-  fs.f := g;
+  fs.f := x->sin(3*x)+sin(4*x);
   fs.Stamp;
 end. 

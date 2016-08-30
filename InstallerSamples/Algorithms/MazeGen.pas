@@ -1,4 +1,4 @@
-// Программа генерации случайных лабиринтов
+﻿// Программа генерации случайных лабиринтов
 uses GraphABC;
 
 const
@@ -21,16 +21,15 @@ const
   dy: array [0..3] of integer = (-1, 1, 0, 0);
 
 procedure Init;
-var x,y,n,dd: integer;
 begin
-  for x:=0 to szw-1 do
-  for y:=0 to szh-1 do
+  for var x:=0 to szw-1 do
+  for var y:=0 to szh-1 do
     if (x=0) or (x=szw-1) or (y=0) or (y=szh-1) then
       maze[x][y]:=32
     else maze[x][y]:=63;
 
-  x := Random(szw-2)+1;
-  y := Random(szh-2)+1;
+  var x := Random(szw-2)+1;
+  var y := Random(szh-2)+1;
 
 // Пометить клетку как принадлежащую лабиринту
   maze[x][y]:= maze[x][y] and not 48;
@@ -49,7 +48,7 @@ begin
    while todonum > 0 do
    begin
      // Выбрать из списка todo произвольную клетку
-     n := Random(todonum);
+     var n := Random(todonum);
      x := todo[n].x;
      y := todo[n].y;
 
@@ -58,6 +57,7 @@ begin
      todo[n]:= todo[todonum];
 
      // Выбрать направление, которое ведет к лабиринту
+     var dd: integer;
      repeat
        dd:=Random (4);
      until not ((maze[x + dx[dd]][y + dy[dd]] and 32) <> 0);

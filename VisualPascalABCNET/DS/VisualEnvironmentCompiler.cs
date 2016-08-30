@@ -337,6 +337,8 @@ namespace VisualPascalABC
                 case PascalABCCompiler.CompilerState.PCUWritingError: RusName = VECStringResources.Get("STATE_PCUWRITINGERROR{0}"); break;
                 case PascalABCCompiler.CompilerState.SemanticTreeConversion: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERSION{0}"); break;
                 case PascalABCCompiler.CompilerState.SemanticTreeConverterConnected: RusName = VECStringResources.Get("STATE_SEMANTICTREECONVERTERCONNECTED{0}"); break;
+                case PascalABCCompiler.CompilerState.SyntaxTreeConversion: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERSION{0}"); break;
+                case PascalABCCompiler.CompilerState.SyntaxTreeConverterConnected: RusName = VECStringResources.Get("STATE_SYNTAXTREECONVERTERCONNECTED{0}"); break;
                 case PascalABCCompiler.CompilerState.ParserConnected:
                     FileName = Path.GetFileName(FileName);
                     if(sender.CompilerType== PascalABCCompiler.CompilerType.Standart)
@@ -414,6 +416,7 @@ namespace VisualPascalABC
             {
                 if (FileName != null)
                     RusName = string.Format(RusName, FileName);
+                else RusName = string.Format(RusName, "");
                 RusName += Environment.NewLine;
                 AddCompilerTextToCompilerMessages(sender, RusName);
             }

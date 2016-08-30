@@ -48,7 +48,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
@@ -790,6 +790,10 @@
     <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
       <Project>{1C9C945A-586D-42A2-A06B-65D84FA7FF78}</Project>
       <Name>TreeConverter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SyntaxVisitors\SyntaxVisitors.csproj">
+      <Project>{a9ab4282-83b4-41a7-86c3-e5bf6a45e7e2}</Project>
+      <Name>SyntaxVisitors</Name>
     </ProjectReference>
     <ProjectReference Include="FormsDesignerBinding\Dependecies\src\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>

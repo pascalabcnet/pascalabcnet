@@ -77,11 +77,11 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term typed_const typed_const_or_new expr const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference // var_question_colon
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
-%type <stn> for_stmt yield_stmt 
+%type <stn> for_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
 %type <td> file_type sequence_type 
 %type <stn> var_address  
@@ -1139,7 +1139,11 @@ template_param_list
     ;
 
 template_param
-    : simple_type_identifier
+    : simple_type
+		{ $$ = $1; }
+    | structured_type
+		{ $$ = $1; }
+    | procedural_type
 		{ $$ = $1; }
     | template_type
 		{ $$ = $1; }
@@ -1922,17 +1926,19 @@ proc_func_decl_noclass
         {
             $$ = new procedure_definition($1 as procedure_header, $2 as proc_block, @$);
         }
-	| tkFunction func_name fp_list tkColon fptype tkAssign relop_expr tkSemiColon
+	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign relop_expr tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, $5 as type_definition, $7, @1.Merge(@5));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@5));
 		}
-	| tkFunction func_name fp_list tkAssign relop_expr tkSemiColon
+	| tkFunction func_name fp_list optional_method_modificators1 tkAssign relop_expr tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, null, $5, @1.Merge(@3));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@3));
 		}
-	| tkProcedure proc_name fp_list tkAssign unlabelled_stmt tkSemiColon
+	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, new procedure_attributes_list(), $2 as method_name, $5 as statement, @1.Merge(@3));
+			if ($6 is empty_statement)
+				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
+			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@3));
 		}
 	| proc_func_header tkForward tkSemiColon
 		{
@@ -2252,6 +2258,8 @@ unlabelled_stmt
 		{ $$ = $1; }
 	| yield_stmt	
 		{ $$ = $1; }
+	| yield_sequence_stmt	
+		{ $$ = $1; }
     ;
     
 yield_stmt
@@ -2261,6 +2269,13 @@ yield_stmt
 		}
 	;
 	
+yield_sequence_stmt
+	: tkYield tkSequence expr_l1
+		{
+			$$ = new yield_sequence_node($3,@$);
+		}
+	;
+
 var_stmt
     : tkVar var_decl_part
         { 
@@ -2278,7 +2293,7 @@ assignment
 			if ($6.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
 			($4 as addressed_value_list).variables.Insert(0,$2 as addressed_value);
-			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@2,@3,@4);
+			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
     ;
@@ -2775,14 +2790,33 @@ relop_expr
 		}
     ;
 
+simple_expr_or_nothing
+	: simple_expr 
+	{
+		$$ = $1;
+	}
+	|
+	{
+		$$ = new int32_const(int.MaxValue);
+	}
+	;
+
 format_expr 
-    : simple_expr tkColon simple_expr                        
+    : simple_expr tkColon simple_expr_or_nothing                        
         { 
 			$$ = new format_expr($1, $3, null, @$); 
 		}
-    | simple_expr tkColon simple_expr tkColon simple_expr   
+    | tkColon simple_expr_or_nothing                        
+        { 
+			$$ = new format_expr(new int32_const(int.MaxValue), $2, null, @$); 
+		}
+    | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
 			$$ = new format_expr($1, $3, $5, @$); 
+		}
+    | tkColon simple_expr_or_nothing tkColon simple_expr   
+        { 
+			$$ = new format_expr(new int32_const(int.MaxValue), $2, $4, @$); 
 		}
     ;
 
@@ -3001,7 +3035,13 @@ variable
 		}
     | variable tkSquareOpen expr_list tkSquareClose                
         {
-			$$ = new indexer($1 as addressed_value,$3 as expression_list, @$);
+        	var el = $3 as expression_list; // SSM 10/03/16
+        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	{
+        		var fe = el.expressions[0] as format_expr;
+        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.source_context);
+			}   
+			else $$ = new indexer($1 as addressed_value,el, @$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
         {
@@ -3326,6 +3366,10 @@ keyword
 		{ $$ = $1; }
     | tkParams
 		{ $$ = $1; }
+	| tkEvent	
+		{ $$ = $1; }
+	| tkYield	
+		{ $$ = $1; }
     ;
 
 reserved_keyword
@@ -3535,27 +3579,27 @@ rem_lambda
 expl_func_decl_lambda
 	: tkFunction lambda_type_ref tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $2, $4 as statement_list, 1, @$);
 		}
 	| tkFunction tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $4, $6 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $4, $6 as statement_list, 1, @$);
 		}
 	| tkFunction tkRoundOpen full_lambda_fp_list tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, $5, $7 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, $5, $7 as statement_list, 1, @$);
 		}
 	| tkProcedure tkArrow lambda_procedure_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $3 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $3 as statement_list, 2, @$);
 		}
 	| tkProcedure tkRoundOpen tkRoundClose tkArrow lambda_procedure_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $5 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, null, $5 as statement_list, 2, @$);
 		}
 	| tkProcedure tkRoundOpen full_lambda_fp_list tkRoundClose tkArrow lambda_procedure_body
 		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, null, $6 as statement_list, @$);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), $3 as formal_parameters, null, $6 as statement_list, 2, @$);
 		}
 	;
 	
@@ -3623,6 +3667,42 @@ lambda_function_body
 		{
 			$$ = $1;
 		}
+    | if_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| while_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| repeat_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| for_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| foreach_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| case_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| try_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| lock_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
+	| yield_stmt
+		{
+			$$ = new statement_list($1 as statement, @$);
+		}
 	;	
 
 lambda_procedure_body
@@ -3634,7 +3714,7 @@ lambda_procedure_body
 		{
 			$$ = $1;
 		}
-	| if_stmt
+    | if_stmt
 		{
 			$$ = new statement_list($1 as statement, @$);
 		}

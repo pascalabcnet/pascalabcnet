@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using PascalABCCompiler.SemanticTreeConverters;
+using PascalABCCompiler.SyntaxTreeConverters;
 using PascalABCCompiler.Errors;
 
 ///В разработке DarkStar
@@ -13,6 +14,10 @@ namespace PascalABCCompiler
     public enum CompilerType { Standart, Remote }
     public interface ICompiler
     {
+        SyntaxTreeConvertersController SyntaxTreeConvertersController
+        {
+            get; 
+        }
         SemanticTreeConvertersController SemanticTreeConvertersController
         {
             get;

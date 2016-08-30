@@ -1,6 +1,9 @@
 function QuickSort(a: sequence of integer): sequence of integer;
 begin
-  Result := a.Count = 0 ? a : QuickSort(a.Skip(1).Where(x->x<=a.First())) + a.First() + QuickSort(a.Skip(1).Where(x->x>a.First()));
+  Result := a.Count = 0 ? a : 
+    QuickSort(a.Skip(1).Where(x -> x <= a.First))
+    + a.First + 
+    QuickSort(a.Skip(1).Where(x -> x > a.First));
 end;  
 
 begin

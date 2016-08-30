@@ -209,7 +209,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                     {
                         if (nodeWhereSubstitute[identSubnodesIndexes[i]] == id)
                         {
-                            nodeWhereSubstitute[identSubnodesIndexes[i]] = new closure_substituting_node(subst);
+                            closure_substituting_node csn = new closure_substituting_node(subst);
+                            if (subst.right is ident)
+                                csn.name = (subst.right as ident).name;
+                            nodeWhereSubstitute[identSubnodesIndexes[i]] = csn;
                         }
                     }
                 }

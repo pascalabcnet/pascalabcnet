@@ -115,13 +115,13 @@ namespace PascalABCCompiler.Parsers
         //        return p.Keywords;
         //    return null;
         //}
-        public SyntaxTree.syntax_tree_node Compile(string FileName, string Text, List<Error> Errors, ParseMode ParseMode)
+        public SyntaxTree.syntax_tree_node Compile(string FileName, string Text, List<Error> Errors, ParseMode ParseMode, List<string> DefinesList = null)
         {
             LastParser = selectParser(Path.GetExtension(FileName).ToLower());
             if (LastParser == null)
                 throw new ParserBadFileExtension(FileName);
             LastParser.Errors = Errors;
-            return LastParser.BuildTree(FileName, Text, ParseMode);
+            return LastParser.BuildTree(FileName, Text, ParseMode, DefinesList);
         }
         public SyntaxTree.compilation_unit GetCompilationUnitSpecial(string FileName, string Text, List<Error> Errors)
         {
@@ -134,9 +134,9 @@ namespace PascalABCCompiler.Parsers
             return null;
             //throw new Errors.CompilerInternalError("Parsers.Controller.GetComilationUnit", new Exception("bad node type"));
         }
-        public SyntaxTree.compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors)
+        public SyntaxTree.compilation_unit GetCompilationUnit(string FileName, string Text, List<Error> Errors, List<string> DefinesList = null)
         {
-            SyntaxTree.syntax_tree_node cu = Compile(FileName, Text, Errors, ParseMode.Normal);
+            SyntaxTree.syntax_tree_node cu = Compile(FileName, Text, Errors, ParseMode.Normal, DefinesList);
             if (cu == null)
                 return null;
             if (cu is SyntaxTree.compilation_unit)

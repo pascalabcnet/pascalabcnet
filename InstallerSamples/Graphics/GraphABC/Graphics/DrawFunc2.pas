@@ -15,15 +15,13 @@ begin
 end;
 
 begin
-  //Draw(-20,20,100,100,500,400,x->x*sin(x));
   var r := ClientRectangle;
   r := r.Scale(0.5);
   var r1 := r.Move(r.Width,0);
   var r2 := r.Move(0,r.Height);
   var r3 := r.Move(r.Width,r.Height);
-  Draw(-20,20,r,x->x*sin(x));
-  Draw(r1,sin);
-  Draw(r2,cos);
-  Draw(20,10,r3,exp);
-  //Draw(x->x*sin(x));
+  Draw(x->x*sin(x),-20,20,r);
+  Draw(sin,r1);
+  Draw(cos,r2);
+  Draw(exp,20,10,r3);
 end.

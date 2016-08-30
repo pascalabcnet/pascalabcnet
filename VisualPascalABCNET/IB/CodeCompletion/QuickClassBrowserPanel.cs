@@ -238,7 +238,7 @@ namespace VisualPascalABC
                             dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[textAreaControl.FileName];
                             if (dconv != null && dconv.is_compiled)
                             {
-                                currentCompilationUnit = dconv.stv.entry_scope;
+                                currentCompilationUnit = dconv.visitor.entry_scope;
                                 first_comp = true;
                             }
                             if (clicked || tmp)
@@ -253,7 +253,7 @@ namespace VisualPascalABC
                             dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[textAreaControl.FileName];
                             if (dconv != null && dconv.is_compiled)
                             {
-                                currentCompilationUnit = dconv.stv.entry_scope;
+                                currentCompilationUnit = dconv.visitor.entry_scope;
                                 FillClassComboBox(true);
                             }
 

@@ -50,6 +50,8 @@ ONE_OPERATOR=Expected operator
 ONE_STMT=Expected statement
 BAD_TUPLE=Badly formed Tuple
 TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Count of Tuple elements must be <=7
+EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Statement expected
+
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Duplicate field names in anonymous type
 BAD_ANON_TYPE=Bad field name in anonymous type

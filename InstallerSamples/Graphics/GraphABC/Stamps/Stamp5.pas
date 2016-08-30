@@ -1,14 +1,9 @@
-// Класс штампа треугольника
+﻿// Класс штампа треугольника
 uses GraphABC;
 
 type 
-  TriangleStamp = class
+  TriangleStamp = auto class
     x,y,w,orient: integer;
-    constructor (xx,yy,ww,o: integer);
-    begin
-      x := xx; y := yy;
-      w := ww; orient := o;
-    end;
     procedure Stamp;
     begin
       MoveTo(x,y);

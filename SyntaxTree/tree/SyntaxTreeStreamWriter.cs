@@ -127,6 +127,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_statement_list.right_logical_bracket.visit(this);
 			}
+			bw.Write(_statement_list.expr_lambda_body);
 		}
 
 
@@ -3414,7 +3415,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_format_expr(format_expr _format_expr)
 		{
-			write_addressed_value(_format_expr);
+			write_expression(_format_expr);
 			if (_format_expr.expr == null)
 			{
 				bw.Write((byte)0);
@@ -5268,6 +5269,7 @@ namespace PascalABCCompiler.SyntaxTree
 				bw.Write((byte)1);
 				_function_lambda_definition.substituting_node.visit(this);
 			}
+			bw.Write((byte)_function_lambda_definition.usedkeyword);
 		}
 
 
@@ -5857,6 +5859,123 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				bw.Write((byte)1);
 				_dot_question_node.right.visit(this);
+			}
+		}
+
+
+		public void visit(slice_expr _slice_expr)
+		{
+			bw.Write((Int16)210);
+			write_slice_expr(_slice_expr);
+		}
+
+		public void write_slice_expr(slice_expr _slice_expr)
+		{
+			write_dereference(_slice_expr);
+			if (_slice_expr.v == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.v.visit(this);
+			}
+			if (_slice_expr.from == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.from.visit(this);
+			}
+			if (_slice_expr.to == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.to.visit(this);
+			}
+			if (_slice_expr.step == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr.step.visit(this);
+			}
+		}
+
+
+		public void visit(no_type _no_type)
+		{
+			bw.Write((Int16)211);
+			write_no_type(_no_type);
+		}
+
+		public void write_no_type(no_type _no_type)
+		{
+			write_type_definition(_no_type);
+		}
+
+
+		public void visit(yield_unknown_ident _yield_unknown_ident)
+		{
+			bw.Write((Int16)212);
+			write_yield_unknown_ident(_yield_unknown_ident);
+		}
+
+		public void write_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
+		{
+			write_ident(_yield_unknown_ident);
+		}
+
+
+		public void visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+			bw.Write((Int16)213);
+			write_yield_unknown_expression_type(_yield_unknown_expression_type);
+		}
+
+		public void write_yield_unknown_expression_type(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+			write_type_definition(_yield_unknown_expression_type);
+		}
+
+
+		public void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+			bw.Write((Int16)214);
+			write_yield_unknown_foreach_type(_yield_unknown_foreach_type);
+		}
+
+		public void write_yield_unknown_foreach_type(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+			write_type_definition(_yield_unknown_foreach_type);
+		}
+
+
+		public void visit(yield_sequence_node _yield_sequence_node)
+		{
+			bw.Write((Int16)215);
+			write_yield_sequence_node(_yield_sequence_node);
+		}
+
+		public void write_yield_sequence_node(yield_sequence_node _yield_sequence_node)
+		{
+			write_statement(_yield_sequence_node);
+			if (_yield_sequence_node.ex == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_yield_sequence_node.ex.visit(this);
 			}
 		}
 

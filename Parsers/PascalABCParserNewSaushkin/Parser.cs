@@ -20,6 +20,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         private List<Errors.Error> Errs;
         private string FileName;
         public bool build_tree_for_formatter = false;
+        public List<string> DefinesList = null;
 
         public GPPGParserHelper(List<Errors.Error> Errs, string FileName)
         {
@@ -45,7 +46,8 @@ namespace PascalABCCompiler.PascalABCNewParser
             Scanner scanner = new Scanner();
             scanner.SetSource(Text, 0);
             scanner.parsertools = parsertools;// передали parsertools в объект сканера
-
+            if (DefinesList != null)
+                scanner.Defines.AddRange(DefinesList);
             GPPGParser parser = new GPPGParser(scanner);
             parsertools.build_tree_for_formatter = build_tree_for_formatter;
             parser.parsertools = parsertools; // передали parsertools в объект парсера
@@ -136,7 +138,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             //preprocessor2 = new Preprocessor2.Preprocessor2(SourceFilesProvider);
         }
 
-        public override PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode)
+        public override PascalABCCompiler.SyntaxTree.syntax_tree_node BuildTree(string FileName, string Text, ParseMode ParseMode, List<string> DefinesList = null)
         {
             syntax_tree_node root = null;
 
@@ -144,7 +146,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             switch (ParseMode)
             {
                 case ParseMode.Normal:
-                    root = BuildTreeInNormalMode(FileName, Text);
+                    root = BuildTreeInNormalMode(FileName, Text, DefinesList);
                     break;
                 case ParseMode.Expression:
                     root = BuildTreeInExprMode(FileName, Text);
@@ -178,7 +180,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         }
 
 
-        public override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text)
+        public override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
         {
             Errors.Clear();
 
@@ -194,7 +196,7 @@ namespace PascalABCCompiler.PascalABCNewParser
                 return null;
 
             localparserhelper = new GPPGParserHelper(Errors, FileName);
-
+            localparserhelper.DefinesList = DefinesList;
             syntax_tree_node root = localparserhelper.Parse(Text);
 
             if (Errors.Count > 0)

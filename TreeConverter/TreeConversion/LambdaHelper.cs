@@ -41,7 +41,8 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.var_statement defs)
         {
             indef = true;
-            ProcessNode(defs.var_def.vars); // исключаем типы - просматриваем только имена переменных
+            ProcessNode(defs.var_def.vars); // исключаем типы - 
+              // просматриваем только имена переменных
             indef = false;
         }
     }
@@ -102,7 +103,7 @@ namespace PascalABCCompiler.TreeConverter
                     context.converted_namespace.functions.remove_at(lastIndex);
                 }
             }
-            else
+            //else SSM 27/04/16 - грубое исправление ошибки #147
             {
                 // Если добавилась лямбда как метод класса, то удаляем оттуда
                 if (context.converted_type != null
@@ -205,6 +206,34 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         /// <summary>
+        /// Заменяет x -> begin result := x.Print end;  на  x -> begin x.Print end  в случае если это один оператор и вызов метода
+        ///
+        /// </summary>
+        public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef)
+        {
+            var stl = lambdaDef.proc_body as SyntaxTree.statement_list;
+            if (stl.expr_lambda_body)
+            {
+                // Очищаем от Result :=
+
+                var ass = stl.list[0] as assign;
+                if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
+                {
+                    var f = ass.from;
+                    if (f is method_call)
+                    {
+                        var ff = f as method_call;
+                        stl.list[0] = new procedure_call(ff, ff.source_context); // заменить result := Print(x) на Print(x)
+                        lambdaDef.return_type = null;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Вывод типа параметров лямбд и типа возвращаемого значения при присваивании лямбды переменной 
         /// </summary>
         public static void InferTypesFromVarStmt(type_node leftType, function_lambda_definition lambdaDef, syntax_tree_visitor visitor)
@@ -260,8 +289,12 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (dii_left.return_value_type != null)
                         (lambdaDef.return_type as lambda_inferred_type).real_type = dii_left.return_value_type;
-                    else
-                        throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
+                    else // SSM 23/07/16 - попытка бороться с var p: Shape->() := a->a.Print()
+                    {
+                        var b = TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(lambdaDef);
+                        if (!b)
+                            throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");
+                    }
                 }
             }
             else

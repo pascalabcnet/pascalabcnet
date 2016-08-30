@@ -83,10 +83,14 @@ namespace PascalABCCompiler.Parsers
     	/// Получить выражение в строке Text, до смещения off и возможно после смещения до конца идентификатора (используется при наведении мыши)
     	/// </summary>
     	string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets);
-    	/// <summary>
-    	/// Получить выражение в строке Text, до смещения off (используется при нажатии (, [, запятой)
+        /// <summary>
+    	/// Получить выражение в строке Text, до смещения off и возможно после смещения до конца идентификатора (используется при наведении мыши)
     	/// </summary>
-    	string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
+    	string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out string expr_without_brackets);
+        /// <summary>
+        /// Получить выражение в строке Text, до смещения off (используется при нажатии (, [, запятой)
+        /// </summary>
+        string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param);
     	/// <summary>
     	/// Получить идентификатор
     	/// </summary>
@@ -339,18 +343,18 @@ namespace PascalABCCompiler.Parsers
     {
         public string name;
         public string addit_name;
-        public string describe;
+        public string description;
         public SymbolKind kind;
         public bool IsUnitNamespace = false;
         public access_modifer acc_mod;
         public bool has_doc = false;
         public bool not_include = false;
 
-        public SymInfo(string name, SymbolKind kind, string describe)
+        public SymInfo(string name, SymbolKind kind, string description)
         {
             this.name = name;
             this.kind = kind;
-            this.describe = describe;
+            this.description = description;
         }
     }
 

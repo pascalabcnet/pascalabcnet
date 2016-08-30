@@ -1,0 +1,17 @@
+// Syntax tree conversion errors
+%PREFIX%=SYNTAXTREEVISITORSERROR_
+
+YIELD_FUNC_MUST_RETURN_SEQUENCE=Functions with yield must return sequences
+ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Only functions can contain yield
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=Functions with yield cannot contain 'var', 'const' or 'params' modifiers
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Functions with yield cannot have default parameters
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT=Functions with yield cannot contain Result variable
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Functions with yield cannot contain lock statement
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Functions with yield cannot contain try..except or try..finally statements
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Functions with yield cannot contain nested subrotines or be nested
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Functions with yield cannot contain local type definitions
+YIELDS_INSIDE_WITH_ARE_ILLEGAL=with statement cannot contain yields
+LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Lambda-expressions cannot contain yields
+
+Var_{0}_is_already_defined=Variable {0} is already defined
+

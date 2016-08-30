@@ -2,7 +2,6 @@
 // Copyright (c) Wayne Kelly, QUT 2005-2009
 // (see accompanying GPPGcopyright.rtf)
 #define EXPORT_GPPG
-
 using System;
 using System.Text;
 using System.Globalization;
@@ -244,8 +243,9 @@ namespace QUT.Gppg
 #if TRACE_ACTIONS
                         Console.Error.WriteLine("Next token is {0}", TerminalToString(NextToken));
 #endif
-                    if (FsaState.ParserTable.ContainsKey(NextToken))
-                        action = FsaState.ParserTable[NextToken];
+                    int tmpAction = 0;
+                    if (FsaState.ParserTable.TryGetValue(NextToken, out tmpAction))
+                        action = tmpAction;
                 }
 
                 if (action > 0)         // shift
@@ -357,9 +357,10 @@ namespace QUT.Gppg
 				DisplayStack();
 #endif
             FsaState = StateStack.TopElement();
+            int fsaState;
 
-            if (FsaState.Goto.ContainsKey(rule.LeftHandSide))
-                FsaState = states[FsaState.Goto[rule.LeftHandSide]];
+            if (FsaState.Goto.TryGetValue(rule.LeftHandSide, out fsaState))
+                FsaState = states[fsaState];
 
             StateStack.Push(FsaState);
             valueStack.Push(CurrentSemanticValue);
@@ -452,7 +453,7 @@ namespace QUT.Gppg
                     return true;
 
 #if TRACE_ACTIONS
-					Console.Error.WriteLine("Error: popping state {0}", StateStack.Top().number);
+					Console.Error.WriteLine("Error: popping state {0}", StateStack.TopElement().number);
 #endif
                 StateStack.Pop();
                 valueStack.Pop();

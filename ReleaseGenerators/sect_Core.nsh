@@ -1,4 +1,4 @@
-﻿Section $(DESC_Core) Core
+﻿	Section $(DESC_Core) Core
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
     File ExecHide.exe
@@ -10,6 +10,11 @@
     File "..\bin\ParserTools.dll"
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
+    File "..\bin\SyntaxTreeConverters.dll"
+    File "..\bin\StandardSyntaxTreeConverter.dll"
+    File "..\bin\SyntaxVisitors.dll"
+    File "..\bin\YieldConversionSyntax.dll"
+    File "..\bin\YieldHelpers.dll"
 	File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
     File "..\bin\OptimizerConversion.dll"
@@ -43,6 +48,11 @@
     ${AddFile} "ParserTools.dll"
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
+    ${AddFile} "SyntaxTreeConverters.dll"
+    ${AddFile} "StandardSyntaxTreeConverter.dll"
+    ${AddFile} "YieldHelpers.dll"
+    ${AddFile} "SyntaxVisitors.dll"
+    ${AddFile} "YieldConversionSyntax.dll"
 	${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
@@ -63,7 +73,6 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\Arrays.pcu
-    File ..\bin\Lib\BFSystem.pcu
     File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
     File ..\bin\Lib\DMCollect.pcu
@@ -74,7 +83,6 @@
     File ..\bin\Lib\Events.pcu
     File ..\bin\Lib\FilesOperations.pcu
     File ..\bin\Lib\FormsABC.pcu
-    File ..\bin\Lib\GOLDParserEngine.pcu
     File ..\bin\Lib\GraphABC.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
@@ -97,6 +105,7 @@
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
+    File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
@@ -141,6 +150,7 @@
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
+    ${AddFile} "OpenGL.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -154,7 +164,6 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\Arrays.pas
-    File ..\bin\Lib\BFSystem.pas
     File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
     File ..\bin\Lib\DMCollect.pas
@@ -165,7 +174,6 @@
     File ..\bin\Lib\Events.pas
     File ..\bin\Lib\FilesOperations.pas
     File ..\bin\Lib\FormsABC.pas
-    File ..\bin\Lib\GOLDParserEngine.pas
     File ..\bin\Lib\GraphABC.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
@@ -188,6 +196,7 @@
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
+    File ..\bin\Lib\OpenGL.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -199,7 +208,6 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "Arrays.pas"
-    ${AddFile} "BFSystem.pas"
     ${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
     ${AddFile} "DMCollect.pas"
@@ -210,7 +218,6 @@
     ${AddFile} "Events.pas"
     ${AddFile} "FilesOperations.pas"
     ${AddFile} "FormsABC.pas"
-    ${AddFile} "GOLDParserEngine.pas"
     ${AddFile} "GraphABC.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"
@@ -233,13 +240,19 @@
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
+    ${AddFile} "OpenGL.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
-	
+	Push "SyntaxVisitors.dll"
+    Call NGEN
+    Push "YieldConversionSyntax.dll"
+    Call NGEN
+    Push "StandardSyntaxTreeConverter.dll"
+    Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"
 SectionEnd

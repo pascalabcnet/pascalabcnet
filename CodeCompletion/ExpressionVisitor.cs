@@ -88,9 +88,13 @@ namespace CodeCompletion
 			}
 			else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcScope)
 			{
-				if (by_dot) 
-                    if (((returned_scope as ElementScope).sc as ProcScope).return_type != null) 
-                        returned_scope = new ElementScope(((returned_scope as ElementScope).sc as ProcScope).return_type);
+                ProcScope ps = (returned_scope as ElementScope).sc as ProcScope;
+                TypeScope return_type = ps.return_type;
+                if (ps.is_constructor)
+                    return_type = ps.declaringType;
+                if (by_dot) 
+                    if (return_type != null) 
+                        returned_scope = new ElementScope(return_type);
 					else 
                         returned_scope = null;
 			}
@@ -101,61 +105,67 @@ namespace CodeCompletion
                     returned_scope = new ElementScope(invoke_meth.return_type);
             }
             else if (returned_scope != null && returned_scope is ProcScope)
-                if ((returned_scope as ProcScope).return_type == null)
+            {
+                ProcScope ps = returned_scope as ProcScope;
+                TypeScope return_type = ps.return_type;
+                if (ps.is_constructor)
+                    return_type = ps.declaringType;
+                if (return_type == null)
                 {
                     if (by_dot) returned_scope = null;
                 }
-                else if (by_dot) 
-                    returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
-				
-				//else ret_scope = (ret_scope as ElementScope).sc as ProcScope;
+                else if (by_dot)
+                    returned_scope = new ElementScope(return_type);
+            }
 			return returned_scope;
 		}
 
-		public List<ProcScope> GetOverloadScopes()
-		{
-			if (expr is const_node && !(expr is string_const) && !(expr is char_const) && !(expr is bool_const))
-				return null;
-			this.search_all = true;
-			this.on_bracket = true;
-			List<ProcScope> proces = new List<ProcScope>();
-			try
-			{
-				expr.visit(this);
-			}
-			catch (Exception e)
-			{
-				returned_scope = null;
-			}
-			if (returned_scopes != null)
-			for (int i=0; i<returned_scopes.Count; i++)
-			{
-				if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcScope) 
-				{
-					ProcScope tmp = (returned_scopes[i] as ElementScope).sc as ProcScope;
-					if (tmp != null)
-						proces.Add(tmp);
-				}
-				else
-        		if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcType) 
-        		{
-        			ProcScope tmp = ((returned_scopes[i] as ElementScope).sc as ProcType).target;
-        			if (tmp != null)
-						proces.Add(tmp);
-        		}
-				else if (returned_scopes[i] is ProcScope)
-					proces.Add(returned_scopes[i] as ProcScope);
-                else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
+        public List<ProcScope> GetOverloadScopes()
+        {
+            if (expr is const_node && !(expr is string_const) && !(expr is char_const) && !(expr is bool_const))
+                return null;
+            this.search_all = true;
+            this.on_bracket = true;
+            List<ProcScope> proces = new List<ProcScope>();
+            try
+            {
+                expr.visit(this);
+            }
+            catch (Exception e)
+            {
+                returned_scope = null;
+            }
+            if (returned_scopes != null)
+                for (int i = 0; i < returned_scopes.Count; i++)
                 {
-                    //ProcType pt = new ProcType();
-                    CompiledScope cs = (returned_scopes[i] as ElementScope).sc as CompiledScope;
-                    ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
-                    if (ps != null)
-                        proces.Add(ps);
+                    if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcScope)
+                    {
+                        ProcScope tmp = (returned_scopes[i] as ElementScope).sc as ProcScope;
+                        if (tmp != null)
+                            proces.Add(tmp);
+                    }
+                    else
+                    if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is ProcType)
+                    {
+                        ProcScope tmp = ((returned_scopes[i] as ElementScope).sc as ProcType).target;
+                        if (tmp != null)
+                            proces.Add(tmp);
+                    }
+                    else if (returned_scopes[i] is ProcScope)
+                        proces.Add(returned_scopes[i] as ProcScope);
+                    else if (returned_scopes[i] is ElementScope && (returned_scopes[i] as ElementScope).sc is CompiledScope)
+                    {
+                        //ProcType pt = new ProcType();
+                        CompiledScope cs = (returned_scopes[i] as ElementScope).sc as CompiledScope;
+                        ProcScope ps = cs.FindNameOnlyInThisType("Invoke") as ProcScope;
+                        if (ps != null)
+                            proces.Add(ps);
+                    }
+                    else if (i == 0)
+                        return proces;
                 }
-			}
-			return proces;
-		}
+            return proces;
+        }
 		
         public override void visit(default_operator node)
         {
@@ -279,6 +289,13 @@ namespace CodeCompletion
                 returned_scope = null;
                 //if (any_order) ret_scope = entry_scope.FindNameInAnyOrder(_ident.name);
                 returned_scope = entry_scope.FindName(_ident.name);
+                if (returned_scope is ProcScope && (returned_scope as ProcScope).parameters.Count != 0)
+                {
+                    returned_scopes = entry_scope.FindOverloadNames(_ident.name);
+                    returned_scope = returned_scopes.Find(x => x is ProcScope && (x as ProcScope).parameters.Count == 0);
+                    if (returned_scope == null)
+                        returned_scope = returned_scopes[0];
+                }
                 if (returned_scope == null && entry_scope.topScope == null)
                 {
                     try
@@ -714,12 +731,16 @@ namespace CodeCompletion
 			}
 			else if (returned_scope != null && returned_scope is ProcScope)
 			{
-				if ((returned_scope as ProcScope).return_type == null) 
-				{
-					returned_scope = null;
-				}
-				else 
-					returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
+                ProcScope ps = returned_scope as ProcScope;
+                if (ps.return_type == null)
+                {
+                    if (ps.is_constructor)
+                        returned_scope = new ElementScope(ps.declaringType);
+                    else
+                        returned_scope = null;
+                }
+                else
+                    returned_scope = new ElementScope((returned_scope as ProcScope).return_type);
 			}
 			else if (returned_scope != null && returned_scope is ElementScope && (returned_scope as ElementScope).sc is ProcType)
 			{
@@ -746,17 +767,26 @@ namespace CodeCompletion
                                 returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
                             return;
                         }
-                        if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
+                        if (returned_scope != null && returned_scope is ProcScope)
                         {
-                            CompiledMethodScope tmp_sc = returned_scope as CompiledMethodScope;
-                            returned_scope = new ElementScope(returned_scope as ProcScope);
-                            if (tmp_sc != null)
-                                returned_scope.topScope = tmp_sc.topScope;
-                            if (left_scope is ElementScope)
-                                returned_scope = CheckForAccess(left_scope as ElementScope, returned_scope as ElementScope);
-                            else if (left_scope is TypeScope)
-                                returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
-                            return;
+                            if ((returned_scope as ProcScope).return_type == null)
+                            {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                mc.visit(this);
+                                return;
+                            }
+                            if ((returned_scope as ProcScope).return_type != null)
+                            {
+                                CompiledMethodScope tmp_sc = returned_scope as CompiledMethodScope;
+                                returned_scope = new ElementScope(returned_scope as ProcScope);
+                                if (tmp_sc != null)
+                                    returned_scope.topScope = tmp_sc.topScope;
+                                if (left_scope is ElementScope)
+                                    returned_scope = CheckForAccess(left_scope as ElementScope, returned_scope as ElementScope);
+                                else if (left_scope is TypeScope)
+                                    returned_scope = CheckForAccess(left_scope as TypeScope, returned_scope as ElementScope);
+                                return;
+                            }
                         }
                         if (tmp_tn is ElementScope && stv != null)
                         {
@@ -886,7 +916,12 @@ namespace CodeCompletion
 				returned_scope = names[0];
 				return;
 			}
-			ProcScope ps = select_method(names,_method_call.parameters!=null?_method_call.parameters.expressions.ToArray():null);
+            if (names.Length > 0 && names[0] is TypeScope)
+            {
+                returned_scope = names[0];
+                return;
+            }
+            ProcScope ps = select_method(names,_method_call.parameters!=null?_method_call.parameters.expressions.ToArray():null);
 			returned_scope = ps;
 			if (ps == null && names.Length > 0)
         	{
@@ -910,9 +945,12 @@ namespace CodeCompletion
 					ps = returned_scope as ProcScope;
 					if (by_dot)
 					{
-						if (ps.return_type != null)
-							returned_scope = new ElementScope(ps.return_type);
-						else returned_scope = null;
+                        if (ps.return_type != null)
+                            returned_scope = new ElementScope(ps.return_type);
+                        else if (ps.is_constructor)
+                            returned_scope = new ElementScope(ps.declaringType);
+                        else
+                            returned_scope = null;
 					}
 					else
 						returned_scope = new ElementScope(ps);

@@ -1,4 +1,4 @@
-// Игра в 15
+﻿// Игра в 15
 uses GraphABC,ABCObjects,ABCButtons;
 
 const

@@ -1,17 +1,12 @@
-// Штампы - это классы графических фигур, хранящие их параметры
+﻿// Штампы - это классы графических фигур, хранящие их параметры
 // В любой момент можно нарисовать графическую фигуру, вызвав метод Stamp.
 
 // Класс штампа прямоугольника
 uses GraphABC;
 
 type 
-  RectangleStamp = class
+  RectangleStamp = auto class
     x,y,w,h: integer;
-    constructor (xx,yy,ww,hh: integer);
-    begin
-      x := xx; y := yy;
-      w := ww; h := hh;
-    end;
     procedure Stamp;
     begin
       Rectangle(x,y,x+w,y+h);

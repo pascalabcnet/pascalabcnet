@@ -9,6 +9,13 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public static SourceContext BuildGenSC = new SourceContext(0, 777777, 0, 0, 0, 0);
 
+        private static int GenIdNum = 0;
+        public static ident GenIdentName()
+        {
+            GenIdNum++;
+            return new ident("$GenId" + GenIdNum.ToString());
+        }
+
         public static type_definition BuildSimpleType(string name)
         {
             return new named_type_reference(name, null);
@@ -115,6 +122,18 @@ namespace PascalABCCompiler.SyntaxTree
             return cd;
         }
 
+        // frninja 23/04/16 - для шаблонных классов в yield
+        public static class_definition BuildClassDefinition(named_type_reference_list parents, ident_list template_args, params class_members[] cms)
+        {
+            var cb = new class_body();
+            foreach (var cm in cms)
+                cb.Add(cm);
+
+            var cd = new class_definition(parents, cb, class_keyword.Class, template_args, null, class_attribute.None, false, null);
+            return cd;
+        }
+        // end frninja
+
         // names и types передаю во внешний мир на предмет анализа того, что они не указатели. Снаружи они инициализируются пустыми списками
         public static void AddMembersForAutoClass(class_definition cd, ref List<ident> names, ref List<type_definition> types) // SSM 24.03.14
         {
@@ -133,8 +152,10 @@ namespace PascalABCCompiler.SyntaxTree
                             foreach (var v in mm.vars.idents)
                             {
                                 names.Add(v);
-                                types.Add(mm.vars_type);    // во внешний мир для определения pointerов
-                                //types.Add(BuildSameType(v)); // почему-то только так хочет работать с рекурсивным типом Node<T>
+                                if (mm.vars_type != null)
+                                    types.Add(mm.vars_type);    // во внешний мир для определения pointerов
+                                else 
+                                    types.Add(BuildSameType(mm.inital_value)); // почему-то только так хочет работать с рекурсивным типом Node<T>
                             }
                     }
                     else 

@@ -83,8 +83,13 @@ namespace VisualPascalABCPlugins
 	        prepare_node(_assign.from,"from");
         }
 
+        public override void visit(assign_tuple _assign_tuple)
+        {
+            prepare_node(_assign_tuple.vars, "to");
+            prepare_node(_assign_tuple.expr, "from");
+        }
 
-		public override void visit(bin_expr _bin_expr)
+        public override void visit(bin_expr _bin_expr)
 		{
 			prepare_node(_bin_expr.left,"left");
 			prepare_node(_bin_expr.right,"right");

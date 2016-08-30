@@ -241,8 +241,12 @@ procedure LineTo(x,y: integer; c: Color);
 
 /// Рисует отрезок от точки (x1,y1) до точки (x2,y2)
 procedure Line(x1,y1,x2,y2: integer);
+/// Рисует отрезок от точки p1 до точки p2
+procedure Line(p1,p2: Point);
 /// Рисует отрезок от точки (x1,y1) до точки (x2,y2) цветом c
 procedure Line(x1,y1,x2,y2: integer; c: Color);
+/// Рисует отрезок от точки p1 до точки p2 цветом c
+procedure Line(p1,p2: Point; c: Color);
 
 /// Заполняет внутренность окружности с центром (x,y) и радиусом r
 procedure FillCircle(x,y,r: integer);
@@ -286,20 +290,36 @@ function Pnt(x,y: integer): Point;
 
 /// Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
 procedure DrawPolygon(points: array of Point);
+/// Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
+procedure DrawPolygon(params points: array of (integer,integer));
 /// Заполняет многоугольник, координаты вершин которого заданы в массиве points
 procedure FillPolygon(points: array of Point);
+/// Заполняет многоугольник, координаты вершин которого заданы в массиве points
+procedure FillPolygon(params points: array of (integer,integer));
 /// Рисует заполненный многоугольник, координаты вершин которого заданы в массиве points
 procedure Polygon(points: array of Point);
+/// Рисует заполненный многоугольник, координаты вершин которого заданы в массиве points
+procedure Polygon(params points: array of (integer,integer));
 /// Рисует ломаную по точкам, координаты которых заданы в массиве points
 procedure Polyline(points: array of Point);
+/// Рисует ломаную по точкам, координаты которых заданы в массиве points
+procedure Polyline(params points: array of (integer,integer));
 /// Рисует кривую по точкам, координаты которых заданы в массиве points
 procedure Curve(points: array of Point);
+/// Рисует кривую по точкам, координаты которых заданы в массиве points
+procedure Curve(params points: array of (integer,integer));
 /// Рисует замкнутую кривую по точкам, координаты которых заданы в массиве points
 procedure DrawClosedCurve(points: array of Point);
+/// Рисует замкнутую кривую по точкам, координаты которых заданы в массиве points
+procedure DrawClosedCurve(params points: array of (integer,integer));
 /// Заполняет замкнутую кривую по точкам, координаты которых заданы в массиве points
 procedure FillClosedCurve(points: array of Point);
+/// Заполняет замкнутую кривую по точкам, координаты которых заданы в массиве points
+procedure FillClosedCurve(params points: array of (integer,integer));
 /// Рисует заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
 procedure ClosedCurve(points: array of Point);
+/// Рисует заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
+procedure ClosedCurve(params points: array of (integer,integer));
 
 /// Выводит строку s в прямоугольник к координатами левого верхнего угла (x,y)
 procedure TextOut(x,y: integer; s: string); 
@@ -313,6 +333,12 @@ procedure DrawTextCentered(x,y,x1,y1: integer; s: string);
 procedure DrawTextCentered(x,y,x1,y1: integer; n: integer); 
 /// Выводит вещественное значение r, отцентрированное в прямоугольнике с координатами (x,y,x1,y1)
 procedure DrawTextCentered(x,y,x1,y1: integer; r: real); 
+/// Выводит строку s, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; s: string); 
+/// Выводит целое n, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; n: integer); 
+/// Выводит вещественное r, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; r: real); 
 /// Заливает область одного цвета цветом c, начиная с точки (x,y).
 procedure FloodFill(x,y: integer; c: Color);
 
@@ -738,6 +764,15 @@ type
     procedure SetMathematic;
     /// Устанавливает левую систему координат (ось OY направлена вниз, ось OX - вправо)
     procedure SetStandard;
+    
+    procedure ScaleOn(scale: real);
+
+    procedure Transform(x,y: real);
+
+    procedure Rotate(angle: real);
+    
+    procedure ClearMatrix;
+
     /// X-координата начала координат относительно левого верхнего угла окна
     property OriginX: integer read GetOriginX write SetOriginX;
     /// Y-координата начала координат относительно левого верхнего угла окна
@@ -817,7 +852,7 @@ type
 
 /// Тип рисунка GraphABC
   Picture = class
-  private
+  public
     bmp,savedbmp: Bitmap;
     gb: Graphics;
     istransp: boolean;
@@ -1282,6 +1317,42 @@ procedure GraphABCCoordinate.SetStandard;
 begin
   coef := 1;
   SetTransform(OriginX,OriginY,Angle,ScaleX,ScaleY);
+end;
+
+procedure GraphABCCoordinate.ScaleOn(scale: real);
+begin
+  lock f do
+  begin
+    gr.ScaleTransform(scale,scale);
+    gbmp.ScaleTransform(scale,scale);
+  end;
+end;
+
+procedure GraphABCCoordinate.Transform(x,y: real);
+begin
+  lock f do
+  begin
+    gr.TranslateTransform(x,y);
+    gbmp.TranslateTransform(x,y)
+  end;
+end;
+
+procedure GraphABCCoordinate.Rotate(angle: real);
+begin
+  lock f do
+  begin
+    gr.RotateTransform(angle);
+    gbmp.RotateTransform(angle);
+  end;
+end;
+
+procedure GraphABCCoordinate.ClearMatrix;
+begin
+  lock f do
+  begin
+    gr.Transform := new System.Drawing.Drawing2D.Matrix();
+    gbmp.Transform := new System.Drawing.Drawing2D.Matrix();
+  end;
 end;
 
 procedure GraphABCCoordinate.SetOriginX(x: integer);
@@ -2262,6 +2333,16 @@ begin
   Self.Y := y;
 end;
 
+function operator implicit(Self: Point): (integer,integer); extensionmethod;
+begin
+  Result := (Self.X,Self.Y)
+end;
+
+function operator implicit(Self: (integer,integer)): Point; extensionmethod;
+begin
+  Result := new Point(Self[0],Self[1])
+end;
+
 // Primitives
 procedure SetPixel(x,y: integer; c: Color);
 var b: boolean;
@@ -2331,6 +2412,11 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure Line(p1,p2: Point; c: Color);
+begin
+  Line(p1.X,p1.Y,p2.X,p2.Y,c)
+end;
+
 procedure Line(x1,y1,x2,y2: integer);
 begin
   Monitor.Enter(f);
@@ -2339,6 +2425,11 @@ begin
   if DrawInBuffer then   
     Line(x1,y1,x2,y2,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure Line(p1,p2: Point);
+begin
+  Line(p1.X,p1.Y,p2.X,p2.Y)
 end;
 
 procedure FillCircle(x,y,r: integer);
@@ -2531,6 +2622,30 @@ begin
   DrawTextCentered(x,y,x1,y1,r.ToString(nfi));  
 end;
 
+procedure DrawTextCentered(x,y: integer; s: string); 
+begin
+  Monitor.Enter(f);
+  if NotLockDrawing then
+    DrawTextCentered(x,y,s,gr);
+  if DrawInBuffer then   
+    DrawTextCentered(x,y,s,gbmp);
+  Monitor.Exit(f);
+end;
+
+procedure DrawTextCentered(x,y: integer; n: integer); 
+begin
+  DrawTextCentered(x,y,n.ToString);  
+end;
+
+procedure DrawTextCentered(x,y: integer; r: real); 
+begin
+  var nfi := new System.Globalization.NumberFormatInfo();
+  nfi.NumberGroupSeparator := '.';
+
+  DrawTextCentered(x,y,r.ToString(nfi));  
+end;
+
+
 function Pnt(x,y: integer): Point;
 begin
   Result := new Point(x,y);
@@ -2546,6 +2661,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure DrawPolygon(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  DrawPolygon(pnts.ToArray);
+end;
+
 procedure FillPolygon(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2556,12 +2677,24 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure FillPolygon(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  FillPolygon(pnts.ToArray);
+end;
+
 procedure Polygon(points: array of Point);
 begin
   if Brush.NETBrush <> nil then 
     FillPolygon(points);
   if Pen.NETPen.DashStyle <> DashStyle.Custom then
     DrawPolygon(points);
+end;
+
+procedure Polygon(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  Polygon(pnts.ToArray);
 end;
 
 procedure Polyline(points: array of Point);
@@ -2574,6 +2707,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure Polyline(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  Polyline(pnts.ToArray);
+end;
+
 procedure Curve(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2582,6 +2721,12 @@ begin
   if DrawInBuffer then   
     Curve(points,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure Curve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  Curve(pnts.ToArray);
 end;
 
 procedure DrawClosedCurve(points: array of Point);
@@ -2594,6 +2739,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure DrawClosedCurve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  DrawClosedCurve(pnts.ToArray);
+end;
+
 procedure FillClosedCurve(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2604,6 +2755,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure FillClosedCurve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  FillClosedCurve(pnts.ToArray);
+end;
+
 procedure ClosedCurve(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2612,6 +2769,12 @@ begin
   if DrawInBuffer then   
     ClosedCurve(points,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure ClosedCurve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  ClosedCurve(pnts.ToArray);
 end;
 
 // Fills

@@ -144,6 +144,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.common_namespace_function_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.namespace_constant_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_function_node ||
+                si.sym_info.semantic_node_type == semantic_node_type.common_method_node || // SSM bug fix  #167
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_namespace_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_variable_definition ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_type_node ||
@@ -415,7 +416,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             if (inWhat.type == null)
                 inWhat = tmp;
 
-            _visitor.FindIEnumerableElementType(_foreach_stmt, inWhat.type, ref elemType);
+            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType);
 
             if (_foreach_stmt.type_name == null)
             {

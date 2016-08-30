@@ -1,7 +1,7 @@
-// "Решето Эратосфена" - вычисление простых чисел
+﻿// "Решето Эратосфена" - вычисление простых чисел
 const n = 100000;
 
-var  primes: set of integer;
+var primes: set of integer;
 
 begin
   primes := [2..n];

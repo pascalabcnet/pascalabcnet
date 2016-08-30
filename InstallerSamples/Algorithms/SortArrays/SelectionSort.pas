@@ -1,6 +1,4 @@
-// Сортировка выбором
-uses ArrayLib;
-
+﻿// Сортировка выбором
 procedure SelectionSort(a: array of real);
 begin
   for var i:=0 to a.Length-2 do
@@ -18,20 +16,11 @@ begin
   end;
 end;
 
-function CreateRandomArr(n: integer): array of real; 
 begin
-  Result := new real[n];
-  for var i:=0 to Result.Length-1 do
-    Result[i] := Random(100);
-end;
-
-var a: array of real;
-
-begin
-  a := CreateRandomArr(20);
+  var a := ArrRandomReal(20);
   writeln('Содержимое массива: ');
-  Writeln(a);
+  a.Println;
   SelectionSort(a);
   writeln('После сортировки выбором: ');
-  Writeln(a);
+  a.Println;
 end.

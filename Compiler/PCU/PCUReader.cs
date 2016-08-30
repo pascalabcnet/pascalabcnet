@@ -287,7 +287,7 @@ namespace PascalABCCompiler.PCU
                 ChangeState(this, PCUReaderWriterState.EndReadTree, unit);
                 return unit;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 CloseUnit();
                 throw;
@@ -476,7 +476,11 @@ namespace PascalABCCompiler.PCU
                     
                     type_node tn = GetSpecialTypeReference(names[i].offset);
                     if (tn is compiled_type_node)
+                    {
+                        if ((tn as compiled_type_node).scope == null)
+                            (tn as compiled_type_node).init_scope();
                         (tn as compiled_type_node).scope.AddSymbol(names[i].name, si);
+                    }
                     else if (tn is generic_instance_type_node)
                         tn.Scope.AddSymbol(names[i].name, si);
                     else if (tn is common_type_node)
@@ -2804,6 +2808,8 @@ namespace PascalABCCompiler.PCU
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
                 cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
+                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             return cnfn;
 		}
 

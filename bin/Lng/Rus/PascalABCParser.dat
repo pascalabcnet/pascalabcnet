@@ -50,6 +50,7 @@ ONE_OPERATOR=Ожидался оператор
 ONE_STMT=Ожидался оператор
 BAD_TUPLE=Неправильно сформированный кортеж
 TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Количество элементов кортежа не должно быть больше 7 
+EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Ожидался оператор
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Анонимный тип не может содержать поля с одинаковыми именами
 BAD_ANON_TYPE=Неверное определение имени поля анонимного типа

@@ -82,6 +82,14 @@
       <Project>{af2efd7b-69dd-4b43-af65-b59b29349c23}</Project>
       <Name>ParserTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">
+      <Project>{c2cac65a-b2ae-4ccc-b067-e6b8e75df73a}</Project>
+      <Name>SyntaxTree</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TreeConverter\TreeConverter.csproj">
+      <Project>{1c9c945a-586d-42a2-a06b-65d84fa7ff78}</Project>
+      <Name>TreeConverter</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

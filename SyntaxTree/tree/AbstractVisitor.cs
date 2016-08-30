@@ -1057,6 +1057,36 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_dot_question_node);
 		}
+
+		public virtual void visit(slice_expr _slice_expr)
+		{
+			DefaultVisit(_slice_expr);
+		}
+
+		public virtual void visit(no_type _no_type)
+		{
+			DefaultVisit(_no_type);
+		}
+
+		public virtual void visit(yield_unknown_ident _yield_unknown_ident)
+		{
+			DefaultVisit(_yield_unknown_ident);
+		}
+
+		public virtual void visit(yield_unknown_expression_type _yield_unknown_expression_type)
+		{
+			DefaultVisit(_yield_unknown_expression_type);
+		}
+
+		public virtual void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
+		{
+			DefaultVisit(_yield_unknown_foreach_type);
+		}
+
+		public virtual void visit(yield_sequence_node _yield_sequence_node)
+		{
+			DefaultVisit(_yield_sequence_node);
+		}
 	}
 
 

@@ -1,0 +1,1401 @@
+<?xml version="1.0" encoding="utf-16"?>
+<AspectFile Version="3">
+  <Node NL="0" NG="0">
+    <Items>
+      <Node Name="!Исправленные ошибки" NL="0" NG="0">
+        <Items>
+          <Node Name="Sum(e-&gt;e) ошибка" NL="0" NG="0">
+            <Items>
+              <Node Name="new SeveralFunctionsCanBeCalled" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\convertion_data_and_alghoritms.cs</FileName>
+                <Text>return AddError&lt;function_node&gt;(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));</Text>
+                <OCtx>
+                  <i Type="Method">public function_node select_function ( expressions_list parameters , SymbolInfo functions , location loc , List &lt; SyntaxTree . expression &gt; syntax_nodes_parameters = null )</i>
+                  <i Type="ClassOrNamespace">public class convertion_data_and_alghoritms</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="if (funcs.Count == 2)" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\convertion_data_and_alghoritms.cs</FileName>
+                <Text>if (funcs.Count == 2)</Text>
+                <OCtx>
+                  <i Type="Method">public function_node select_function ( expressions_list parameters , SymbolInfo functions , location loc , List &lt; SyntaxTree . expression &gt; syntax_nodes_parameters = null )</i>
+                  <i Type="ClassOrNamespace">public class convertion_data_and_alghoritms</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="PVS Studio Detected" NL="0" NG="0">
+            <Items>
+              <Node Name="Нужно использовать &amp;&amp; вместо ||" NL="0" NG="0">
+                <FileName>\codecompletion\domconverter.cs</FileName>
+                <Text>if (pattern != null || pattern != "")</Text>
+                <OCtx>
+                  <i Type="Method">public SymInfo [ ] GetTypeByPattern ( string pattern , int line , int col , bool all_names , int nest_level )</i>
+                  <i Type="ClassOrNamespace">public class DomConverter</i>
+                  <i Type="ClassOrNamespace">namespace CodeCompletion</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Неиспользуемый результат Replace" NL="0" NG="0">
+                <FileName>\visualplugins\languageconverter\source\textformatter.cs</FileName>
+                <Text>_word.Replace(specSymbol, "");</Text>
+                <OCtx>
+                  <i Type="Method">public string FormatWordWithKeyWord ( string _word , object _node )</i>
+                  <i Type="ClassOrNamespace">public class TextFormatter</i>
+                  <i Type="ClassOrNamespace">namespace Converter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Неиспользуемый результат OrderBy" NL="0" NG="0">
+                <FileName>\visualpascalabcnet\formsdesignerbinding\dependecies\src\main\base\project\src\services\refactoringservice\refactoringservice.cs</FileName>
+                <Text>result.OrderBy(node =&gt; node.Content.FullyQualifiedName);</Text>
+                <OCtx>
+                  <i Type="Method">static IEnumerable &lt; ITreeNode &lt; IClass &gt; &gt; FindDerivedClassesTree ( IClass baseClass , IEnumerable &lt; IProjectContent &gt; projectContents , HashSet &lt; IClass &gt; seenClasses )</i>
+                  <i Type="ClassOrNamespace">public static class RefactoringService</i>
+                  <i Type="ClassOrNamespace">namespace ICSharpCode . SharpDevelop . Refactoring</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Одинаковые подвыражения в условии" NL="0" NG="0">
+                <Items>
+                  <Node Name="1" NL="0" NG="0">
+                    <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                    <Text>if (_pascal_set_constant.values != null &amp;&amp; _pascal_set_constant.values != null)</Text>
+                    <OCtx>
+                      <i Type="Method">public override void visit ( SyntaxTree . pascal_set_constant _pascal_set_constant )</i>
+                      <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                      <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                  <Node Name="2" NL="0" NG="0">
+                    <FileName>\visualpascalabcnet\workbench\runnermanagerhandlers.cs</FileName>
+                    <Text>if (File.Exists(pdbFileName) &amp;&amp; File.Exists(pdbFileName))</Text>
+                    <OCtx>
+                      <i Type="Method">void WaitCallback_DeleteEXEAndPDB ( object state )</i>
+                      <i Type="ClassOrNamespace">public partial class WorkbenchRunService : VisualPascalABCPlugins . IWorkbenchRunService</i>
+                      <i Type="ClassOrNamespace">namespace VisualPascalABC</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                  <Node Name="Самая интересная ошибка" NL="0" NG="0">
+                    <FileName>\visualpascalabcnet\formsdesignerbinding\dependecies\src\main\base\project\src\editor\codecompletion\nrefactoryinsightwindowhandler.cs</FileName>
+                    <Note>Вот здесь то место, где не учитывается один вариант открывающих скобок
+Вместо одного из openBracketToken нужно написать openBracesToken</Note>
+                    <Text>if (token.Kind == openParensToken || token.Kind == openBracketToken || token.Kind == openBracketToken) {</Text>
+                    <OCtx>
+                      <i Type="Method">public void InitializeOpenedInsightWindow ( ITextEditor editor , IInsightWindow insightWindow )</i>
+                      <i Type="ClassOrNamespace">public class NRefactoryInsightWindowHandler : IInsightWindowHandler</i>
+                      <i Type="ClassOrNamespace">namespace ICSharpCode . SharpDevelop . Editor . CodeCompletion</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                </Items>
+              </Node>
+              <Node Name="Всегда истинные выражения" NL="0" NG="0">
+                <Items>
+                  <Node Name="1" NL="0" NG="0">
+                    <FileName>\treeconverter\systemlib\static_executors.cs</FileName>
+                    <Text>if (value &gt;= int.MinValue &amp;&amp; value &lt;= int.MaxValue)</Text>
+                    <OCtx>
+                      <i Type="Method">private static int check_int_overflow ( location loc , int value )</i>
+                      <i Type="ClassOrNamespace">public static class static_executors</i>
+                      <i Type="ClassOrNamespace">namespace PascalABCCompiler . SystemLibrary</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                  <Node Name="2" NL="0" NG="0">
+                    <FileName>\treeconverter\systemlib\static_executors.cs</FileName>
+                    <Text>if (value &gt;= long.MinValue &amp;&amp; value &lt;= long.MaxValue)</Text>
+                    <OCtx>
+                      <i Type="Method">private static long check_long_overflow ( location loc , long value )</i>
+                      <i Type="ClassOrNamespace">public static class static_executors</i>
+                      <i Type="ClassOrNamespace">namespace PascalABCCompiler . SystemLibrary</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                  <Node Name="3" NL="0" NG="0">
+                    <FileName>\NETGenerator\NETGenerator.cs</FileName>
+                    <Text>if (pos &lt;= 255) il.Emit(OpCodes.Starg_S, pos);</Text>
+                    <OCtx>
+                      <i Type="Method">private void ConvertInc ( IExpressionNode e )</i>
+                      <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                      <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                  <Node Name="4" NL="0" NG="0">
+                    <FileName>\NETGenerator\NETGenerator.cs</FileName>
+                    <Text>if (pos &lt;= 255) il.Emit(OpCodes.Starg_S, pos);</Text>
+                    <OCtx>
+                      <i Type="Method">private void ConvertDec ( IExpressionNode e )</i>
+                      <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                      <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                  <Node Name="5" NL="0" NG="0">
+                    <FileName>\NETGenerator\NETGenerator.cs</FileName>
+                    <Text>if (pos &lt;= 255) il.Emit(OpCodes.Ldarga_S, pos);</Text>
+                    <OCtx>
+                      <i Type="Method">private void AddrOfParameterNode ( ICommonParameterReferenceNode value )</i>
+                      <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                      <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                      <i Type="CS_TreeNode">
+                      </i>
+                    </OCtx>
+                  </Node>
+                </Items>
+              </Node>
+              <Node Name="Повторная проверка условия" NL="0" NG="0">
+                <FileName>\codecompletion\findreferences.cs</FileName>
+                <Note>Двумя строчками ниже
+(Здесь сказывается недостаток моего инструмента - если в методе есть две одинаковые строчки - переход осуществляется только на первую, а надо на вторую)</Note>
+                <Text>if (ret_tn != null)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( indexer _indexer )</i>
+                  <i Type="ClassOrNamespace">public class ReferenceFinder : AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace CodeCompletion</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Дважды проверяется if (left is int64_const)" NL="0" NG="0">
+                <FileName>\parsertools\syntaxtreevisitors\syntaxtreecomparer.cs</FileName>
+                <Note>597 и 631 строки в текущей версии</Note>
+                <Text>else if (left is int64_const)</Text>
+                <OCtx>
+                  <i Type="Method">public void CompareInternal ( expression left , expression right )</i>
+                  <i Type="ClassOrNamespace">public class SyntaxTreeComparer</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTree</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Трижды проверяется if (left is case_node)" NL="0" NG="0">
+                <FileName>\parsertools\syntaxtreevisitors\syntaxtreecomparer.cs</FileName>
+                <Note>1599
+1611
+1615 строки</Note>
+                <Text>else if (left is case_node)</Text>
+                <OCtx>
+                  <i Type="Method">public void CompareInternal ( statement left , statement right )</i>
+                  <i Type="ClassOrNamespace">public class SyntaxTreeComparer</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTree</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="Ошибка read(x,s)" NL="0" NG="0">
+            <Items>
+              <Node Name="make_read_call вызов" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Text>expression_node bfcint = make_read_call(si, _method_call.parameters, subloc2);</Text>
+                <OCtx>
+                  <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="make_read_call - описание" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <OCtx>
+                  <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="readln_string_file = true;" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Note>Это - непонятное место из-за которого происходит ошибка</Note>
+                <Text>readln_string_file = true;</Text>
+                <OCtx>
+                  <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="!readln_string_file" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Text>if (!readln_string_file)</Text>
+                <OCtx>
+                  <i Type="Method">private expression_node make_read_call ( SymbolInfo si , SyntaxTree . expression_list parameters , location loc )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="DockError" NL="0" NG="0">
+            <Items>
+              <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.assign _assign)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="visit(function_lambda_definition" NL="0" NG="0">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.function_lambda_definition _function_lambda_definition)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . function_lambda_definition _function_lambda_definition )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Добавляем t[1] где t - Tuple" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(SyntaxTree.indexer _indexer)" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.indexer _indexer)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . indexer _indexer )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="indexer_as_expression_index" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>private void indexer_as_expression_index(expression_node expr, SyntaxTree.expression_list parameters,</Text>
+            <OCtx>
+              <i Type="Method">private void indexer_as_expression_index ( expression_node expr , SyntaxTree . expression_list parameters , motivation mot , location loc )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name=" visit(SyntaxTree.semantic_expr_node" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.semantic_expr_node sen)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . semantic_addr_value sav )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Автоопределение типа функции по первому Result" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>var fh = (_procedure_definition.proc_header as SyntaxTree.function_header);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Реализуем (a,b) := (1,2)" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(assign_tuple" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.assign_tuple _modern_proc_type)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . assign_tuple asstup )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="StartsWith(&quot;System.Tuple&quot;" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (t.FullName.StartsWith("System.Tuple"))</Text>
+            <OCtx>
+              <i Type="Method">private void indexer_as_expression_index ( expression_node expr , SyntaxTree . expression_list parameters , motivation mot , location loc )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Реализуем тип (integer,integer)" NL="0" NG="0">
+        <Items>
+          <Node Name="void visit(enum_type_definition" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.enum_type_definition _enum_type_definition)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . enum_type_definition _enum_type_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="if (!is_enum) " NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (!is_enum)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . enum_type_definition _enum_type_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit(SyntaxTree.modern_proc_type" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . modern_proc_type _modern_proc_type )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Делаем ?System ищется только в .NET" NL="0" NG="0">
+        <Items>
+          <Node Name="int tn=HashTable.Find(Name);" NL="0" NG="0">
+            <FileName>\treeconverter\symboltable\dsst\symboltable.cs</FileName>
+            <Text>int tn=HashTable.Find(Name);		//найдем имя в хеше</Text>
+            <OCtx>
+              <i Type="Method">private SymbolInfo FindAll ( Scope scope , string Name , bool OnlyInType , bool OnlyInThisClass , Scope FromScope )</i>
+              <i Type="ClassOrNamespace">public class DSSymbolTable</i>
+              <i Type="ClassOrNamespace">namespace SymbolTable</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="modern_proc_type" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . modern_proc_type _modern_proc_type )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="foreach" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(foreach_stmt" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . foreach_stmt _foreach_stmt )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="FindIEnumerableElementType" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public bool FindIEnumerableElementType(SyntaxTree.foreach_stmt _foreach_stmt, type_node tn, ref type_node elem_type)</Text>
+            <OCtx>
+              <i Type="Method">public bool FindIEnumerableElementType ( type_node tn , ref type_node elem_type )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="if (tn is compiled_type_node || tn is compiled_generic_instance_type_node)" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (tn is compiled_type_node || tn is compiled_generic_instance_type_node) // Если этот тип зашит в .NET</Text>
+            <OCtx>
+              <i Type="Method">public bool FindIEnumerableElementType ( type_node tn , ref type_node elem_type )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Result := " NL="0" NG="0">
+        <Items>
+          <Node Name="GetMostCommonType" NL="0" NG="0">
+            <FileName>\treeconverter\lambdaexpressions\lambdaresulttypeinferrer.cs</FileName>
+            <Text>private type_node GetMostCommonType(int kind = 0)</Text>
+            <OCtx>
+              <i Type="Method">private type_node GetMostCommonType ( int kind = 0 )</i>
+              <i Type="ClassOrNamespace">internal class LambdaResultTypeInferrer : WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace TreeConverter . LambdaExpressions</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Простой вывод типа Result в visit(procedure_definition" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>// SSM 20.07.13 если это - узел с коротким определением функции без типа возвращаемого значения, то вывести этот тип</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="RealSemTypeOfResExpr" NL="0" NG="0">
+            <FileName>\SyntaxTree\tree\TreeHelper.cs</FileName>
+            <Text>public object RealSemTypeOfResExpr = null; // Result := ex; - семантический тип ex - нужно для лучщего выбора среди перегруженных методов с параметрами-лямбдами</Text>
+            <OCtx>
+              <i Type="Field">public object RealSemTypeOfResExpr = null</i>
+              <i Type="ClassOrNamespace">public partial class function_lambda_definition</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTree</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="ExpressionVisitor (_assign.to as ident).name == &quot;result&quot;" NL="0" NG="0">
+            <FileName>\codecompletion\expressionvisitor.cs</FileName>
+            <OCtx>
+              <i Type="Method">public override void visit ( assign _assign )</i>
+              <i Type="ClassOrNamespace">public class ExpressionVisitor : PascalABCCompiler . SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace CodeCompletion</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="ResultNodesSearcher" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\lambdahelper.cs</FileName>
+            <Text>public class ResultNodesSearcher : SyntaxTree.WalkingVisitorNew</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">public class ResultNodesSearcher : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">public class LambdaHelper</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">public List &lt; expression &gt; exprList = new List &lt; expression &gt; ( )</i>
+              <i Type="Method">public ResultNodesSearcher ( syntax_tree_node root )</i>
+              <i Type="Method">public override void visit ( assign value )</i>
+            </ICtx>
+          </Node>
+          <Node Name="LambdaResultTypeInferrer" NL="0" NG="0">
+            <FileName>\TreeConverter\LambdaExpressions\LambdaResultTypeInferrer.cs</FileName>
+            <Text>internal class LambdaResultTypeInferrer : WalkingVisitorNew</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">internal class LambdaResultTypeInferrer : WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace TreeConverter . LambdaExpressions</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">private const string RESULT_KEY_WORD =</i>
+              <i Type="Field">private readonly List &lt; Tuple &lt; type_node , expression , expression_node &gt; &gt; resultExpressionsTypes</i>
+              <i Type="Field">private readonly syntax_tree_visitor syntaxTreeVisitor</i>
+              <i Type="Field">private readonly proc_block lambdaBody</i>
+              <i Type="Field">private readonly function_header lambdaHeader</i>
+              <i Type="Method">public LambdaResultTypeInferrer ( function_header lambdaHeader , proc_block lambdaBody , syntax_tree_visitor syntaxTreeVisitor )</i>
+              <i Type="Method">private type_node GetMostCommonType ( )</i>
+              <i Type="Method">public type_node InferResultType ( )</i>
+              <i Type="Method">public override void visit ( statement_list stmtList )</i>
+              <i Type="Method">public override void visit ( var_def_statement varStmt )</i>
+            </ICtx>
+            <Items>
+              <Node Name=" new LambdaResultTypeInferrer" NL="0" NG="0">
+                <FileName>\treeconverter\treeconversion\lambdahelper.cs</FileName>
+                <Text>retType.real_type = new LambdaResultTypeInferrer(funcHeader, procBody, visitor).InferResultType();</Text>
+                <OCtx>
+                  <i Type="Method">public static void InferResultType ( function_header funcHeader , proc_block procBody , syntax_tree_visitor visitor )</i>
+                  <i Type="ClassOrNamespace">public class LambdaHelper</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="visit_lambda_header" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>visit_lambda_header(_procedure_definition.proc_header as SyntaxTree.function_header, _procedure_definition.proc_body);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="hard_node_test_and_visit(_procedure_definition.proc_body)" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>hard_node_test_and_visit(_procedure_definition.proc_body);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="hard_node_test_and_visit(_procedure_definition.proc_header)" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>hard_node_test_and_visit(_procedure_definition.proc_header);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="context.top_function.return_value_type" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (context.top_function.return_value_type == null)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . function_header _function_header )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name=" if (context.top_function.return_value_type == null)" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (context.top_function.return_value_type == null)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . function_header _function_header )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="QuestionPoint - незаконченное" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(SyntaxTree.question_colon_expression" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.question_colon_expression node)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . question_colon_expression node )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="dot_node_as_expression_dot_ident" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>private void dot_node_as_expression_dot_ident(expression_node en, SyntaxTree.ident id_right, motivation mot, addressed_value syntax_node)</Text>
+            <OCtx>
+              <i Type="Method">private void dot_node_as_expression_dot_ident ( expression_node en , SyntaxTree . ident id_right , motivation mot , addressed_value syntax_node )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit(SyntaxTree.indexer" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.indexer _indexer)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . indexer _indexer )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="NewVariable" NL="0" NG="0">
+            <FileName>\parsers\pascalabcparsernewsaushkin\semanticrules.cs</FileName>
+            <Text>public expression NewVariable(addressed_value variable, expression var_specifiers, LexLocation loc)</Text>
+            <OCtx>
+              <i Type="Method">public expression NewVariable ( addressed_value variable , expression var_specifiers , LexLocation loc )</i>
+              <i Type="ClassOrNamespace">public partial class GPPGParser</i>
+              <i Type="ClassOrNamespace">namespace GPPGParserScanner</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Выбор перегруженного метода" NL="0" NG="0">
+        <Items>
+          <Node Name="select_function" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\convertion_data_and_alghoritms.cs</FileName>
+            <Text>public function_node select_function(expressions_list parameters, SymbolInfo functions, location loc, List&lt;SyntaxTree.expression&gt; syntax_nodes_parameters = null)</Text>
+            <OCtx>
+              <i Type="Method">public function_node select_function ( expressions_list parameters , SymbolInfo functions , location loc , List &lt; SyntaxTree . expression &gt; syntax_nodes_parameters = null )</i>
+              <i Type="ClassOrNamespace">public class convertion_data_and_alghoritms</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit_method_call" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>internal void visit_method_call(SyntaxTree.method_call _method_call)</Text>
+            <OCtx>
+              <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="generic_convertions.DeduceFunction(func, parameters" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\convertion_data_and_alghoritms.cs</FileName>
+            <Text>function_node inst = generic_convertions.DeduceFunction(func, parameters,</Text>
+            <OCtx>
+              <i Type="Method">public function_node select_function ( expressions_list parameters , SymbolInfo functions , location loc , List &lt; SyntaxTree . expression &gt; syntax_nodes_parameters = null )</i>
+              <i Type="ClassOrNamespace">public class convertion_data_and_alghoritms</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Короткое определение функции" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(SyntaxTree.procedure_definition" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.procedure_definition _procedure_definition)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name=" if (ttt is undefined_type)" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>if (ttt is undefined_type)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="calc return_value_type" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>// SSM 12/04/16 - short func definitions - calc return_value_type</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . procedure_definition _procedure_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="x-&gt;Print(x)" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(function_lambda_definition" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . function_lambda_definition _function_lambda_definition )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="InferTypesFromVarStmt" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\LambdaHelper.cs</FileName>
+            <Text>public static void InferTypesFromVarStmt(type_node leftType, function_lambda_definition lambdaDef, syntax_tree_visitor visitor)</Text>
+            <OCtx>
+              <i Type="Method">public static void InferTypesFromVarStmt ( type_node leftType , function_lambda_definition lambdaDef , syntax_tree_visitor visitor )</i>
+              <i Type="ClassOrNamespace">public class LambdaHelper</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.assign _assign)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit(SyntaxTree.var_def_statement" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.var_def_statement _var_def_statement)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . var_def_statement _var_def_statement )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="vardef  LambdaHelper.InferTypesFromVarStmt" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>LambdaHelper.InferTypesFromVarStmt(tn, _var_def_statement.inital_value as SyntaxTree.function_lambda_definition, this);  //lroman//</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . var_def_statement _var_def_statement )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\LambdaHelper.cs</FileName>
+            <Text>//throw new SimpleSemanticError(visitor.get_location(lambdaDef), "UNABLE_TO_CONVERT_FUNCTIONAL_TYPE_TO_PROCEDURAL_TYPE");</Text>
+            <OCtx>
+              <i Type="Method">public static void InferTypesFromVarStmt ( type_node leftType , function_lambda_definition lambdaDef , syntax_tree_visitor visitor )</i>
+              <i Type="ClassOrNamespace">public class LambdaHelper</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="AddError(loc, &quot;FUNCTION_EXPECTED_PROCEDURE_{0}_MEET&quot;" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>AddError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn);</Text>
+            <OCtx>
+              <i Type="Method">private base_function_call create_not_static_method_call ( function_node fn , expression_node en , location loc , bool procedure_allowed )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="В параметрах" NL="0" NG="0">
+            <Items>
+              <Node Name="create_not_static_method_call" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Text>private base_function_call create_not_static_method_call(function_node fn, expression_node en, location loc, bool procedure_allowed)</Text>
+                <OCtx>
+                  <i Type="Method">private base_function_call create_not_static_method_call ( function_node fn , expression_node en , location loc , bool procedure_allowed )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Преобразование синт дерева" NL="0" NG="0">
+        <Items>
+          <Node Name="Вызов Convert контроллера SyntaxTrees" NL="0" NG="0">
+            <FileName>\Compiler\Compiler.cs</FileName>
+            <Text>CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;</Text>
+            <OCtx>
+              <i Type="Method">public CompilationUnit CompileUnit ( PascalABCCompiler . TreeRealization . unit_node_list Units , SyntaxTree . unit_or_namespace SyntaxUsesUnit )</i>
+              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="class SemanticTreeConvertersController" NL="0" NG="0">
+            <FileName>\Compiler\SemanticTreeConverters\SemanticTreeConvertersController.cs</FileName>
+            <Text>public class SemanticTreeConvertersController</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">public class SemanticTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SemanticTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">public enum State</i>
+              <i Type="Field">ICompiler Compiler</i>
+              <i Type="Field">private List &lt; ISemanticTreeConverter &gt; semanticTreeConverters = new List &lt; ISemanticTreeConverter &gt; ( )</i>
+              <i Type="Method">public List &lt; ISemanticTreeConverter &gt; SemanticTreeConverters</i>
+              <i Type="Field">public delegate void ChangeStateDelegate ( State State , ISemanticTreeConverter SemanticTreeConverter )</i>
+              <i Type="Field">public event ChangeStateDelegate ChangeState</i>
+              <i Type="Method">public SemanticTreeConvertersController ( ICompiler Compiler )</i>
+              <i Type="Method">public void AddConverters ( )</i>
+              <i Type="Method">private void AddConverters ( string DirectoryName )</i>
+              <i Type="Method">public SemanticTree . IProgramNode Convert ( SemanticTree . IProgramNode ProgramNode )</i>
+            </ICtx>
+          </Node>
+          <Node Name="SyntaxTreeConvertersController в Compiler" NL="0" NG="0">
+            <FileName>\Compiler\Compiler.cs</FileName>
+            <Text>public SyntaxTreeConvertersController SyntaxTreeConvertersController</Text>
+            <OCtx>
+              <i Type="Method">public SyntaxTreeConvertersController SyntaxTreeConvertersController</i>
+              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)" NL="0" NG="0">
+            <FileName>\Compiler\SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs</FileName>
+            <Text>foreach (ISyntaxTreeConverter SyntaxTreeConverter in syntaxTreeConverters)</Text>
+            <OCtx>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root , string FileName , List &lt; Error &gt; errorsList )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Yield" NL="0" NG="0">
+        <Items>
+          <Node Name="root.visit(new ProcessYieldCapturedVarsVisitor());" NL="0" NG="0">
+            <FileName>\Yield\YieldConversionSyntax\YieldDesugarSyntaxTreeConverter.cs</FileName>
+            <Text>root.visit(new ProcessYieldCapturedVarsVisitor());</Text>
+            <OCtx>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+              <i Type="ClassOrNamespace">public class YieldDesugarSyntaxTreeConverter : ISyntaxTreeConverter</i>
+              <i Type="ClassOrNamespace">namespace YieldDesugarSyntaxTreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Осн. визитор visit(procedure_definition pd)" NL="0" NG="0">
+            <FileName>\SyntaxVisitors\YieldVisitors\ProcessYieldsCapturedVars.cs</FileName>
+            <Text>public override void visit(procedure_definition pd)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="NewConstructFiniteAutomata" NL="0" NG="0">
+            <Items>
+              <Node Name="ConstructFiniteAutomata1" NL="0" NG="0">
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <Text>public ConstructFiniteAutomata1(block bl)</Text>
+                <OCtx>
+                  <i Type="Method">public ConstructFiniteAutomata ( block bl )</i>
+                  <i Type="ClassOrNamespace">class ConstructFiniteAutomata</i>
+                  <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="GenClassesForYield" NL="0" NG="0">
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <Text>type_declarations GenClassesForYield(procedure_definition pd,</Text>
+                <OCtx>
+                  <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap )</i>
+                  <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+                  <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="YieldHelpers" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>string Consts__Self = YieldHelpers.YieldConsts.Self;</Text>
+            <OCtx>
+              <i Type="Method">private bool CheckUnknownIdentNeedsClassCapture ( SyntaxTree . yield_unknown_ident _unk , out bool isStaticIdent )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="ObjectCopier.Clone" NL="0" NG="0">
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <Text>function_header nfh = ObjectCopier.Clone(fh);</Text>
+            <OCtx>
+              <i Type="Method">type_declarations GenClassesForYield ( procedure_definition pd , IEnumerable &lt; var_def_statement &gt; fields , IDictionary &lt; string , string &gt; localsMap , IDictionary &lt; string , string &gt; formalParamsMap )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="private Dictionary&lt;Guid, semantic_type_node&gt;" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <Text>private Dictionary&lt;Guid, semantic_type_node&gt; _yieldForeachTypeMap = new Dictionary&lt;Guid, semantic_type_node&gt;();</Text>
+            <OCtx>
+              <i Type="Field">private Dictionary &lt; Guid , semantic_type_node &gt; _yieldForeachTypeMap = new Dictionary &lt; Guid , semantic_type_node &gt; ( )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="InsertHelperMethod" NL="0" NG="0">
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <Text>//InsertHelperMethod(pd, pdCloned); // SSM 13.07.16 - вызов этого метода можно не добавлять</Text>
+            <OCtx>
+              <i Type="Method">private void CreateErrorCheckerHelper ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="UnknownExprType" NL="0" NG="0">
+            <Items>
+              <Node Name=" visit(yield_unknown_expression_type" NL="0" NG="0">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.yield_unknown_expression_type _unk_expr)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . yield_unknown_expression_type _unk_expr )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.assign _assign)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name=" TypeInfo ti = helper.GetTypeReference(value.type);" NL="0" NG="0">
+                <FileName>\netgenerator\netgenerator.cs</FileName>
+                <Text>TypeInfo ti = helper.GetTypeReference(value.type);</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SemanticTree . ICommonClassFieldNode value )</i>
+                  <i Type="ClassOrNamespace">public class ILConverter : AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . NETGenerator</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="UnknownForeachType" NL="0" NG="0">
+            <Items>
+              <Node Name="visit(yield_unknown_foreach_type" NL="0" NG="0">
+                <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.yield_unknown_foreach_type _unk)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . yield_unknown_foreach_type _unk )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="stl.Add(new assign(currentIdent" NL="0" NG="0">
+                <FileName>\syntaxvisitors\yieldvisitors\loweringvisitor.cs</FileName>
+                <Text>stl.Add(new assign(currentIdent, new dot_node(enumeratorIdent, "Current")));</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( foreach_stmt frch )</i>
+                  <i Type="ClassOrNamespace">public class LoweringVisitor : BaseChangeVisitor</i>
+                  <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="visit(SyntaxTree.assign" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Text>public override void visit(SyntaxTree.assign _assign)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="if (to.type is compiled_type_node)" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <Text>else if (to.type is compiled_type_node)</Text>
+                <OCtx>
+                  <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="FindIEnumerableElementType" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+                <OCtx>
+                  <i Type="Method">public bool FindIEnumerableElementType ( type_node tn , ref type_node elem_type )</i>
+                  <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="generic_convertions.all_type_instances.Add(instance);" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeRealization\generics.cs</FileName>
+                <Text>generic_convertions.all_type_instances.Add(instance);</Text>
+                <OCtx>
+                  <i Type="Method">public static void init_generic_instance ( type_node original , generic_instance_type_node instance , List &lt; type_node &gt; param_types )</i>
+                  <i Type="ClassOrNamespace">public static class generic_convertions</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeRealization</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="if (shouldAddToAllTypeInstances)" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeRealization\generics.cs</FileName>
+                <Text>if (shouldAddToAllTypeInstances) //lroman// Если зашли сюда при выведении типов параметров лямбды, то тип инстанцироваться может с типом lambda_any_type_node. Поэтому, если выводим типы. То данную инстанцию не добавляем</Text>
+                <OCtx>
+                  <i Type="Method">public static void init_generic_instance ( type_node original , generic_instance_type_node instance , List &lt; type_node &gt; param_types )</i>
+                  <i Type="ClassOrNamespace">public static class generic_convertions</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeRealization</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="ConstructFiniteAutomata" NL="0" NG="0">
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <OCtx>
+                  <i Type="ClassOrNamespace">class ConstructFiniteAutomata</i>
+                  <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+                <ICtx>
+                  <i Type="Field">public statement_list res = new statement_list ( )</i>
+                  <i Type="Field">statement_list stl</i>
+                  <i Type="Field">int curState = 0</i>
+                  <i Type="Field">statement_list curStatList</i>
+                  <i Type="Field">statement_list StatListAfterCase = new statement_list ( )</i>
+                  <i Type="Field">case_node cas</i>
+                  <i Type="Field">private labeled_statement OuterLabeledStatement</i>
+                  <i Type="Field">private Dictionary &lt; int , labeled_statement &gt; Dispatches = new Dictionary &lt; int , labeled_statement &gt; ( )</i>
+                  <i Type="Method">public ConstructFiniteAutomata ( statement_list stl )</i>
+                  <i Type="Method">private void AddState ( out int stateNumber , out ident resumeLabel )</i>
+                </ICtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="ReplaceCapturedVariables" NL="0" NG="0">
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <Text>ReplaceCapturedVariables(pd, dld.LocalDeletedDefs, out CapturedLocalsNamesMap, out CapturedFormalParamsNamesMap);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="var pdCloned = ObjectCopier.Clone(pd);" NL="0" NG="0">
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <Text>var pdCloned = ObjectCopier.Clone(pd);</Text>
+            <OCtx>
+              <i Type="Method">private void CreateLocalVariablesTypeProxies ( procedure_definition pd , out IEnumerable &lt; var_def_statement &gt; localsClonesCollection )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="if (pd.has_yield) // SSM bug fix #219" NL="0" NG="0">
+            <FileName>\syntaxvisitors\YieldVisitors\MarkMethodHasYieldVisitor.cs</FileName>
+            <Text>if (pd.has_yield) // SSM bug fix #219</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class MarkMethodHasYieldAndCheckSomeErrorsVisitor : WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="RenameSameBlockLocalVarsVisitor" NL="0" NG="0">
+            <FileName>\SyntaxVisitors\YieldVisitors\RenameSameBlockLocalVarsVisitor.cs</FileName>
+            <Text>public class RenameSameBlockLocalVarsVisitor : BaseChangeVisitor</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">public class RenameSameBlockLocalVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">private List &lt; Dictionary &lt; string , string &gt; &gt; BlockNamesStack</i>
+              <i Type="Method">private Dictionary &lt; string , int &gt; BlockNamesCounter</i>
+              <i Type="Field">private int CurrentLevel = - 1</i>
+              <i Type="Method">public RenameSameBlockLocalVarsVisitor ( )</i>
+              <i Type="Method">public static RenameSameBlockLocalVarsVisitor New</i>
+              <i Type="Method">public static void Accept ( procedure_definition pd )</i>
+              <i Type="Method">public override void visit ( declarations decls )</i>
+              <i Type="Method">public override void visit ( procedure_header pd )</i>
+              <i Type="Method">public override void visit ( function_header fh )</i>
+              <i Type="Method">public override void visit ( formal_parameters fp )</i>
+            </ICtx>
+          </Node>
+          <Node Name="ForwardDefInUnitError" NL="0" NG="0">
+            <Items>
+              <Node Name="InsertGlobalIteratorMethodPredefinition" NL="0" NG="0">
+                <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+                <Text>private bool InsertGlobalIteratorMethodPredefinition(procedure_definition pd)</Text>
+                <OCtx>
+                  <i Type="Method">private bool InsertGlobalIteratorMethodPredefinition ( procedure_definition pd )</i>
+                  <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+                  <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="check_unique_or_predefined(common_function_node fn)" NL="0" NG="0">
+                <FileName>\TreeConverter\TreeConversion\compilation_context.cs</FileName>
+                <Text>private bool check_unique_or_predefined(common_function_node fn)</Text>
+                <OCtx>
+                  <i Type="Method">private bool check_unique_or_predefined ( common_function_node fn )</i>
+                  <i Type="ClassOrNamespace">public class compilation_context</i>
+                  <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+                  <i Type="CS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="a.Sort((row1, row2) -&gt; 1)" NL="0" NG="0">
+        <Items>
+          <Node Name="visit_method_call" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>internal void visit_method_call(SyntaxTree.method_call _method_call)</Text>
+            <OCtx>
+              <i Type="Method">internal void visit_method_call ( SyntaxTree . method_call _method_call )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="foreach Arr -&gt; for" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(SyntaxTree.foreach_stmt" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . foreach_stmt _foreach_stmt )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="visit(SyntaxTree.semantic_type_node" NL="0" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.semantic_type_node stn)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . semantic_type_node stn )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="[::]" NL="0" NG="0">
+        <Items>
+          <Node Name="visit(slice_expr" NL="0" NG="0">
+            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . slice_expr sl )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Таблица символов" NL="0" NG="0">
+        <Items>
+          <Node Name="class DSSymbolTable" NL="0" NG="0">
+            <FileName>\TreeConverter\SymbolTable\DSST\SymbolTable.cs</FileName>
+            <Text>public class DSSymbolTable</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">public class DSSymbolTable</i>
+              <i Type="ClassOrNamespace">namespace SymbolTable</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">public List &lt; Scope &gt; ScopeTable</i>
+              <i Type="Field">private DSHashTable HashTable</i>
+              <i Type="Field">internal bool CaseSensitive</i>
+              <i Type="Field">private Scope LastScope</i>
+              <i Type="Field">private Scope CurrentScope</i>
+              <i Type="Method">public DSSymbolTable ( int hash_size , bool case_sensitive )</i>
+              <i Type="Method">public void Clear ( )</i>
+              <i Type="Method">public LambdaScope CreateLambdaScope ( Scope TopScope )</i>
+              <i Type="Method">public Scope CreateScope ( Scope TopScope )</i>
+              <i Type="Method">public ClassScope CreateClassScope ( Scope TopScope , Scope BaseClass )</i>
+            </ICtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="Ядро преобраз-я синт. деревьев" NL="0" NG="0">
+        <Items>
+          <Node Name="SyntaxTree = Convert(SyntaxTree)" NL="0" NG="0">
+            <FileName>\Compiler\Compiler.cs</FileName>
+            <Text>CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;</Text>
+            <OCtx>
+              <i Type="Method">public CompilationUnit CompileUnit ( PascalABCCompiler . TreeRealization . unit_node_list Units , SyntaxTree . unit_or_namespace SyntaxUsesUnit )</i>
+              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="AddConverters()" NL="0" NG="0">
+            <FileName>\Compiler\Compiler.cs</FileName>
+            <Text>syntaxTreeConvertersController.AddConverters();</Text>
+            <OCtx>
+              <i Type="Method">public void Reload ( )</i>
+              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Convert" NL="0" NG="0">
+            <FileName>\Compiler\SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs</FileName>
+            <Text>public syntax_tree_node Convert(syntax_tree_node root)</Text>
+            <OCtx>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="StandardSyntaxConverters" NL="0" NG="0">
+            <FileName>\SyntaxTreeConverters\AddStandardSyntaxConverters.cs</FileName>
+            <Text>static class AddStandardSyntaxConverters</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">static class AddStandardSyntaxConverters</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="StandardSyntaxTreeConverter" NL="0" NG="0">
+            <FileName>\StandardSyntaxTreeConverter\StandardSyntaxConverters.cs</FileName>
+            <Text>class StandardSyntaxTreeConverter: ISyntaxTreeConverter</Text>
+            <OCtx>
+              <i Type="ClassOrNamespace">class StandardSyntaxTreeConverter : ISyntaxTreeConverter</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">public string Name</i>
+              <i Type="Field">=</i>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+            </ICtx>
+          </Node>
+        </Items>
+      </Node>
+      <Node Name="visit(SyntaxTree.dot_node" NL="0" NG="0">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>public override void visit(SyntaxTree.dot_node _dot_node)</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . dot_node _dot_node )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name=" visit(SyntaxTree.indexer" NL="0" NG="0">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>public override void visit(SyntaxTree.indexer _indexer)</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . indexer _indexer )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name="// Замена foreach на for для массива" NL="0,9033203" NG="0">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>if (is1dimdynarr) // Замена foreach на for для массива</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . foreach_stmt _foreach_stmt )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name="CapturedVariablesSubstitutionsManager.Substitute" NL="0,9042969" NG="0">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>CapturedVariablesSubstitutionsManager.Substitute(this, _block.defs, _block.program_code);</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . block _block )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+    </Items>
+  </Node>
+</AspectFile>
