@@ -118,6 +118,7 @@ CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Нельзя раширять оп
 FORWARD_EXTENSION_METHODS_NOT_ALLOWED=Атрибут forward недопустим для методов расширения
 WHERE_SECTION_NOT_ALLOWED=Секция where недопустима в данном контексте
 GENERIC_PARAMETERS_MISMATCH=Generic-параметры не совпадают с generic-параметрами в предописании типа
+EXPECTED_TYPE_AFTER_NEW=Ожидался тип после new
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

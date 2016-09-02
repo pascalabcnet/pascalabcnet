@@ -15125,6 +15125,11 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         //return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                         //	si,lloc,blocks.converted_type,blocks.top_function,false);
+                        
+                        if (si.sym_info == SystemLibrary.SystemLibInitializer.NewProcedure.sym_info)
+                        {
+                            AddError(lloc, "EXPECTED_TYPE_AFTER_NEW");
+                        }
                         if (si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor)
                             return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                             si, lloc, context.converted_type, context.top_function, false);
