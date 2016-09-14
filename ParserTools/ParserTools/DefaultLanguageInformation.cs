@@ -415,6 +415,8 @@ namespace PascalABCCompiler.Parsers
                     return getLambdaRepresentation(ctn, false, new List<string>());
                 else if (ctn.Name == "IEnumerable`1")
                     return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
+                else if (ctn.Name.Contains("Tuple`"))
+                    return get_tuple_string(ctn);
             }
 			if (ctn.Name.Contains("`"))
 			{
@@ -438,6 +440,35 @@ namespace PascalABCCompiler.Parsers
 				return ctn.Name;
 			return ctn.FullName;
 		}
+
+        private string get_tuple_string(ITypeScope[] generic_args)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("(");
+            for (int i = 0; i < generic_args.Length; i++)
+            {
+                sb.Append(GetSimpleDescriptionWithoutNamespace(generic_args[i]));
+                if (i < generic_args.Length - 1)
+                    sb.Append(",");
+            }
+            sb.Append(")");
+            return sb.ToString();
+        }
+
+        private string get_tuple_string(Type t)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("(");
+            Type[] generic_args = t.GetGenericArguments();
+            for (int i = 0; i<generic_args.Length; i++)
+            {
+                sb.Append(GetShortTypeName(generic_args[i], false));
+                if (i < generic_args.Length - 1)
+                    sb.Append(",");
+            }
+            sb.Append(")");
+            return sb.ToString();
+        }
 
         private string get_enum_constants(Type t)
         {
@@ -828,6 +859,8 @@ namespace PascalABCCompiler.Parsers
                         return getLambdaRepresentation(ctn, false, new List<string>());
                     else if (ctn.Name == "IEnumerable`1")
                         return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
+                    else if (ctn.Name.Contains("Tuple`"))
+                        return get_tuple_string(ctn);
                 }
 				int len = ctn.GetGenericArguments().Length;
 				System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -1133,7 +1166,7 @@ namespace PascalABCCompiler.Parsers
             {
                 return getLambdaRepresentation(scope, false);
             }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name == "IEnumerable`1")
+            else if (scope.CompiledType.Name == "IEnumerable`1")
             {
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
@@ -1142,6 +1175,16 @@ namespace PascalABCCompiler.Parsers
                 }
                 else
                     return "sequence of T";
+            }
+            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Tuple`"))
+            {
+                ITypeScope[] instances = scope.GenericInstances;
+                if (instances != null && instances.Length > 0)
+                {
+                    return get_tuple_string(instances);
+                }
+                else
+                    return "(T1,...)";
             }
             else
             {
@@ -1520,6 +1563,8 @@ namespace PascalABCCompiler.Parsers
                         return getLambdaRepresentation(t, true, generic_args, generic_param_args);
                     else if (t.Name.Contains("Action`") )
                         return getLambdaRepresentation(t, false, generic_args, generic_param_args);
+                    else if (t.Name.Contains("Tuple`"))
+                        return get_tuple_string(t);
                 }
                 string name = GetShortTypeName(t);
                 StringBuilder sb = new StringBuilder();
