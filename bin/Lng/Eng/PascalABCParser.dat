@@ -56,3 +56,5 @@ EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Statement expected
 DUPLICATE_NAMES_IN_ANON_TYPE=Duplicate field names in anonymous type
 BAD_ANON_TYPE=Bad field name in anonymous type
 ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=The alone typed parameter must be without parentheses
+
+USING_UNLOCAL_FOR_VARIABLE=Using non-local variable as cycle counter
