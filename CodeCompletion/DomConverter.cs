@@ -885,7 +885,8 @@ namespace CodeCompletion
         	if (!header && ss.IsInScope(ss.head_loc,line+1,col+1))
         	{
         		List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-        		expr = parser.GetExpression("test"+Path.GetExtension(FileName), expr_without_brackets, Errors);
+                List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
+        		expr = parser.GetExpression("test"+Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
         		if (expr == null || Errors.Count > 0)
         			return null;
         	}

@@ -105,7 +105,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors);
+                e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null /*|| Errors.Count > 0*/) return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return loc;
@@ -172,7 +172,7 @@ namespace VisualPascalABC
             PascalABCCompiler.SyntaxTree.expression e = null;
             List<PascalABCCompiler.Parsers.Position> loc = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors);
+                e = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null /*|| Errors.Count > 0*/) return loc;
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return loc;
@@ -213,7 +213,7 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             PascalABCCompiler.SyntaxTree.expression e = null;
             if (VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
-                e = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors);
+                e = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(fileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (e == null) return new List<SymbolsViewerSymbol>();
             CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
             if (dconv == null) return new List<SymbolsViewerSymbol>();
@@ -426,11 +426,11 @@ namespace VisualPascalABC
                 }
                 if (!ctrl_space && expr != null)
                 {
-                    e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetTypeAsExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors);
+                    e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetTypeAsExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                     if (e == null)
                     {
                         Errors.Clear();
-                        e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors);
+                        e = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + System.IO.Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                     }
                     if ((e == null || Errors.Count > 0) && !new_space) return null;
                 }

@@ -13518,25 +13518,10 @@ namespace PascalABCCompiler.TreeConverter
 
         public void AddErrorCheckPointersTypeForDotNetFramework(type_node tn, type_node ttn, location loc)
         {
-            /*if (IsBoudedArray(ttn) || IsUnsizedArray(ttn) || ttn == SystemLibrary.SystemLibrary.string_type)
-            {
-                if (tn == ttn)
-                    AddError(new CannotDeclarePointerToStringOrArrayType(loc));
-                else
-                    AddError(new CannotDeclarePointerToRecordContainsStringOrArrayFields(loc));
-            }*/
-//            if (IsBoudedArray(ttn) || ttn.type_special_kind == SemanticTree.type_special_kind.array_kind || ttn.type_special_kind == SemanticTree.type_special_kind.set_type
-//                || ttn.type_special_kind == SemanticTree.type_special_kind.short_string || ttn.type_special_kind == SemanticTree.type_special_kind.typed_file)
-//            {
-//            	
-//            }
-//            else
-            {
-                if (tn == ttn)
-                    AddError(loc, "CANNOT_DECLARED_POINTER_TO_REFERENCE_TYPE");
-                else
-                    AddError(loc, "CANNOT_DECLARED_POINTER_TO_RECORD_CONTAINS_REFERENCE_FIELDS");
-            }
+            if (tn == ttn)
+                AddError(loc, "CANNOT_DECLARED_POINTER_TO_REFERENCE_TYPE");
+            else
+                AddError(loc, "CANNOT_DECLARED_POINTER_TO_RECORD_CONTAINS_REFERENCE_FIELDS");
         }
         private List<type_node> __findBadTypeNodeForPointersPreparedTypes = new List<type_node>();
         private type_node FindBadTypeNodeForPointersInDotNetFramework(type_node tn)

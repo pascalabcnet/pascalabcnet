@@ -207,7 +207,21 @@ namespace PascalABCCompiler.DocTagsParser
             }
         }
 
-	}
+        List<CompilerWarning> warnings = new List<CompilerWarning>();
+
+        public List<CompilerWarning> Warnings
+        {
+            get
+            {
+                return warnings;
+            }
+
+            set
+            {
+                warnings = value;
+            }
+        }
+    }
 
 
 

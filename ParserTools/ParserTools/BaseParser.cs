@@ -34,6 +34,18 @@ namespace PascalABCCompiler.Parsers
             }
         }
 
+        List<CompilerWarning> warnings = new List<CompilerWarning>();
+        public virtual List<CompilerWarning> Warnings
+        {
+            get
+            {
+                return warnings;
+            }
+            set
+            {
+                warnings = value;
+            }
+        }
 
         List<compiler_directive> compilerDirectives = new List<compiler_directive>();
         public virtual List<compiler_directive> CompilerDirectives

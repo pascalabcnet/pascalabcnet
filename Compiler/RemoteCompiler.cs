@@ -474,7 +474,7 @@ namespace PascalABCCompiler
             }
         }
         
-        public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList)
+        public PascalABCCompiler.SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<PascalABCCompiler.Errors.Error> ErrorList, List<CompilerWarning> Warnings)
         {
             throw new NotSupportedException();
         }
