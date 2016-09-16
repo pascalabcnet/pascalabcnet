@@ -2040,7 +2040,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Секция описания переменных
+	///Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end
 	///</summary>
 	[Serializable]
 	public partial class variable_definitions : declaration
@@ -2438,7 +2438,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Описание переменных
+	///Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).
 	///</summary>
 	[Serializable]
 	public partial class var_def_statement : declaration
@@ -22873,7 +22873,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Однострочное описание переменной внутри begin-end. Хранит внутри var_def_statement
 	///</summary>
 	[Serializable]
 	public partial class var_statement : statement
@@ -31542,79 +31542,23 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_ident(ident _UnknownID,ident _ClassName)
-		{
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_ident(ident _UnknownID,ident _ClassName,SourceContext sc)
-		{
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName)
+		public yield_unknown_ident(string _name)
 		{
 			this._name=_name;
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_ident(string _name,ident _UnknownID,ident _ClassName,SourceContext sc)
+		public yield_unknown_ident(string _name,SourceContext sc)
 		{
 			this._name=_name;
-			this._UnknownID=_UnknownID;
-			this._ClassName=_ClassName;
 			source_context = sc;
 		}
-
-		protected ident _UnknownID;
-		protected ident _ClassName;
-
-		///<summary>
-		///
-		///</summary>
-		public ident UnknownID
-		{
-			get
-			{
-				return _UnknownID;
-			}
-			set
-			{
-				_UnknownID=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public ident ClassName
-		{
-			get
-			{
-				return _ClassName;
-			}
-			set
-			{
-				_ClassName=value;
-			}
-		}
-
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -31623,7 +31567,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
@@ -31633,7 +31577,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 0;
 			}
 		}
 		///<summary>
@@ -31645,28 +31589,12 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return UnknownID;
-					case 1:
-						return ClassName;
-				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						UnknownID = (ident)value;
-						break;
-					case 1:
-						ClassName = (ident)value;
-						break;
-				}
 			}
 		}
 		///<summary>
@@ -31697,59 +31625,23 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_expression_type(var_def_statement _Vds)
-		{
-			this._Vds=_Vds;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_expression_type(var_def_statement _Vds,SourceContext sc)
-		{
-			this._Vds=_Vds;
-			source_context = sc;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds)
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
-			this._Vds=_Vds;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_unknown_expression_type(type_definition_attr_list _attr_list,var_def_statement _Vds,SourceContext sc)
+		public yield_unknown_expression_type(type_definition_attr_list _attr_list,SourceContext sc)
 		{
 			this._attr_list=_attr_list;
-			this._Vds=_Vds;
 			source_context = sc;
 		}
-
-		protected var_def_statement _Vds;
-
-		///<summary>
-		///
-		///</summary>
-		public var_def_statement Vds
-		{
-			get
-			{
-				return _Vds;
-			}
-			set
-			{
-				_Vds=value;
-			}
-		}
-
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -31758,7 +31650,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -31768,7 +31660,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 2;
+				return 1;
 			}
 		}
 		///<summary>
@@ -31784,8 +31676,6 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						return attr_list;
-					case 1:
-						return Vds;
 				}
 				return null;
 			}
@@ -31798,8 +31688,99 @@ namespace PascalABCCompiler.SyntaxTree
 					case 0:
 						attr_list = (type_definition_attr_list)value;
 						break;
-					case 1:
-						Vds = (var_def_statement)value;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Узел для вычисления типа переменной используемой в теле foreach (с yield)
+	///</summary>
+	[Serializable]
+	public partial class yield_unknown_foreach_type : type_definition
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public yield_unknown_foreach_type()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type(type_definition_attr_list _attr_list)
+		{
+			this._attr_list=_attr_list;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public yield_unknown_foreach_type(type_definition_attr_list _attr_list,SourceContext sc)
+		{
+			this._attr_list=_attr_list;
+			source_context = sc;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return attr_list;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						attr_list = (type_definition_attr_list)value;
 						break;
 				}
 			}
@@ -31818,16 +31799,16 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Узел-обертка для yield для определения типов локальных переменных в var_def_statement
+	///
 	///</summary>
 	[Serializable]
-	public partial class yield_var_def_statement_with_unknown_type : statement
+	public partial class yield_sequence_node : statement
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public yield_var_def_statement_with_unknown_type()
+		public yield_sequence_node()
 		{
 
 		}
@@ -31835,34 +31816,34 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_var_def_statement_with_unknown_type(var_def_statement _vars)
+		public yield_sequence_node(expression _ex)
 		{
-			this._vars=_vars;
+			this._ex=_ex;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public yield_var_def_statement_with_unknown_type(var_def_statement _vars,SourceContext sc)
+		public yield_sequence_node(expression _ex,SourceContext sc)
 		{
-			this._vars=_vars;
+			this._ex=_ex;
 			source_context = sc;
 		}
 
-		protected var_def_statement _vars;
+		protected expression _ex;
 
 		///<summary>
 		///
 		///</summary>
-		public var_def_statement vars
+		public expression ex
 		{
 			get
 			{
-				return _vars;
+				return _ex;
 			}
 			set
 			{
-				_vars=value;
+				_ex=value;
 			}
 		}
 
@@ -31899,7 +31880,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return vars;
+						return ex;
 				}
 				return null;
 			}
@@ -31910,118 +31891,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (var_def_statement)value;
-						break;
-				}
-			}
-		}
-		///<summary>
-		///Метод для обхода дерева посетителем
-		///</summary>
-		///<param name="visitor">Объект-посетитель.</param>
-		///<returns>Return value is void</returns>
-		public override void visit(IVisitor visitor)
-		{
-			visitor.visit(this);
-		}
-
-	}
-
-
-	///<summary>
-	///Узел-обертка для yield для определения типов локальных переменных в variable_definitions
-	///</summary>
-	[Serializable]
-	public partial class yield_variable_definitions_with_unknown_type : declaration
-	{
-
-		///<summary>
-		///Конструктор без параметров.
-		///</summary>
-		public yield_variable_definitions_with_unknown_type()
-		{
-
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_variable_definitions_with_unknown_type(variable_definitions _vars)
-		{
-			this._vars=_vars;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public yield_variable_definitions_with_unknown_type(variable_definitions _vars,SourceContext sc)
-		{
-			this._vars=_vars;
-			source_context = sc;
-		}
-
-		protected variable_definitions _vars;
-
-		///<summary>
-		///
-		///</summary>
-		public variable_definitions vars
-		{
-			get
-			{
-				return _vars;
-			}
-			set
-			{
-				_vars=value;
-			}
-		}
-
-
-		///<summary>
-		///Свойство для получения количества всех подузлов без элементов поля типа List
-		///</summary>
-		public override Int32 subnodes_without_list_elements_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
-		///</summary>
-		public override Int32 subnodes_count
-		{
-			get
-			{
-				return 1;
-			}
-		}
-		///<summary>
-		///Индексатор для получения всех подузлов
-		///</summary>
-		public override syntax_tree_node this[Int32 ind]
-		{
-			get
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						return vars;
-				}
-				return null;
-			}
-			set
-			{
-				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
-					throw new IndexOutOfRangeException();
-				switch(ind)
-				{
-					case 0:
-						vars = (variable_definitions)value;
+						ex = (expression)value;
 						break;
 				}
 			}

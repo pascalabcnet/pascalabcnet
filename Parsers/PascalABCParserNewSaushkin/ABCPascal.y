@@ -81,7 +81,7 @@
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
-%type <stn> for_stmt yield_stmt 
+%type <stn> for_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
 %type <td> file_type sequence_type 
 %type <stn> var_address  
@@ -2258,6 +2258,8 @@ unlabelled_stmt
 		{ $$ = $1; }
 	| yield_stmt	
 		{ $$ = $1; }
+	| yield_sequence_stmt	
+		{ $$ = $1; }
     ;
     
 yield_stmt
@@ -2267,6 +2269,13 @@ yield_stmt
 		}
 	;
 	
+yield_sequence_stmt
+	: tkYield tkSequence expr_l1
+		{
+			$$ = new yield_sequence_node($3,@$);
+		}
+	;
+
 var_stmt
     : tkVar var_decl_part
         { 

@@ -5,7 +5,7 @@ begin
 end;
 
 begin
-  var q := Gen();
+  var q := Gen;
   foreach var x in q do
     Print(x);
 end.

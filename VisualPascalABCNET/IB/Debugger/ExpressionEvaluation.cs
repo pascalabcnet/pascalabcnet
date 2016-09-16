@@ -250,9 +250,9 @@ namespace VisualPascalABC
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             syntax_tree_node e = null;
             if (!stmt)
-                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors);
+                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             else
-                e = vec.StandartCompiler.ParsersController.GetStatement(fileName, expr, Errors);
+                e = vec.StandartCompiler.ParsersController.GetStatement(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             RetValue res = new RetValue(); res.syn_err = false;
             try
             {
@@ -341,7 +341,7 @@ namespace VisualPascalABC
             names.Clear();
             string fileName = "test" + System.IO.Path.GetExtension(this.FileName);
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            expression e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors);
+            expression e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             RetValue res = new RetValue(); res.syn_err = false;
             try
             {

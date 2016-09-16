@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
+using PascalABCCompiler.Errors;
 
 using SyntaxVisitors;
 
@@ -15,7 +15,7 @@ namespace YieldDesugarSyntaxTreeConverter
 {
     public class YieldDesugarSyntaxTreeConverter : ISyntaxTreeConverter
     {
-        public string Name { get; set; }
+        public string Name { get; } = "YieldDesugar";
         public string Version { get; set; }
         public string Description { get; set; }
         public string Copyright { get; set; }
@@ -24,19 +24,23 @@ namespace YieldDesugarSyntaxTreeConverter
         public ExecutionOrder ExecutionOrder { get; set; }
         public syntax_tree_node Convert(syntax_tree_node root)
         {
-            root.visit(new MarkMethodHasYieldVisitor());
-            root.visit(new ProcessYieldCapturedVarsVisitor());
+            root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());
+            ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
+            //root.visit(py); - пропускал корень
+
+#if DEBUG
+            try
+            {
+               //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
+            }
+            catch 
+            {
+
+            }
             
+#endif
+
             return root;
         }
-
-        /*public void Change(syntax_tree_node sn)
-        {
-            //sn.visit(new CalcConstExprs());
-            //sn.visit(new LoweringVisitor());
-            sn.visit(new ProcessYieldCapturedVarsVisitor());
-
-        }*/
-
     }
 }

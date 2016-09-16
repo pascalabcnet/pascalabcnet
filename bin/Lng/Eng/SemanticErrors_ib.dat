@@ -1,6 +1,6 @@
 %PREFIX%=SEMANTICERROR_
 CIRCULARITY_IN_RECORD=Cycle in the struct layout
-CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}=foreach statement cannot operate on expression of type '{0}' 
+CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}='foreach' or 'yield sequence' statement cannot operate on expression of type '{0}' 
 FOREACH_LOOP_CONTROL_MUST_BE_SIMPLE_LOCAL_VARIABLE=Loop variable must be simple local variable
 TYPES_OF_VAR_AND_ELEMENTS_IN_FOREACH_MUST_BE_EQUAL_{0}_{1}=Type {0} of variable in foreach must be equal to a type {1} of elements in the iterable collection 
 CLASS_{0}_DOES_NOT_IMPLEMENT_MEMBER_{2}_OF_CLASS_{1}=Class '{0}' doesn't implement inherited abstract member '{2}' of class '{1}'
@@ -120,6 +120,10 @@ INTERFACE_EXPECTED=Interface expected
 IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=Operators implicit and explicit can be extended only for classes from another .NET assemblies
 EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED=extensionmethod is not allowed in this context
 CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Can not extend operators +,+=,-,-= for delegates
+FORWARD_EXTENSION_METHODS_NOT_ALLOWED=forward attribute can not be applied to extension methods
+WHERE_SECTION_NOT_ALLOWED=Can not apply 'where' to predefined class
+GENERIC_PARAMETERS_MISMATCH=Generic-parameters mismatch
+EXPECTED_TYPE_AFTER_NEW=type after 'new' expected
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

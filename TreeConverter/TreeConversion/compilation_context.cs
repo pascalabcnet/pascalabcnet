@@ -2595,6 +2595,11 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (si.sym_info.general_node_type == general_node_type.function_node)
                 {
+                    if (si.sym_info is common_method_node && (si.sym_info as common_method_node).cont_type == interf)
+                    {
+                        si = si.Next;
+                        continue;
+                    }
                     fn = si.sym_info as function_node;
                     //Сверяем параметры и тип возвращаемого значения
                     if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
@@ -2996,7 +3001,9 @@ namespace PascalABCCompiler.TreeConverter
                                     AddError(new FunctionDuplicateDefinition(compar, fn));
                             }
                             else
+                            { 
                                 AddError(new FunctionDuplicateDefinition(compar, fn));
+                            }
                         }
                     }
                     si = si.Next;
@@ -3169,18 +3176,21 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     for (int i = 0; i < fn.generic_params.Count; ++i)
                     {
+                        fn.generic_params[i] = compar.generic_params[i] as common_type_node;
                         common_type_node t_fn = fn.generic_params[i] as common_type_node;
                         common_type_node t_compar = compar.generic_params[i] as common_type_node;
-                        t_fn.is_class = t_compar.is_class;
+                        /*t_fn.is_class = t_compar.is_class;
                         t_fn.internal_is_value = t_compar.internal_is_value;
                         t_fn.SetImplementingInterfaces(t_compar.ImplementingInterfaces);
                         (t_fn.Scope as SymbolTable.IInterfaceScope).TopInterfaceScopeArray =
                             (t_compar.Scope as SymbolTable.IInterfaceScope).TopInterfaceScopeArray;
-                        t_fn.SetBaseType(t_compar.base_type);
+                        t_fn.SetBaseType(t_compar.base_type);*/
                         if (t_compar.has_default_constructor)
                         {
                             generic_parameter_eliminations.add_default_ctor(t_fn);
                         }
+                        SymbolInfo par_sim_info = fn.scope.FindOnlyInScope(fn.generic_params[i].name);
+                        par_sim_info.sym_info = fn.generic_params[i] as common_type_node;
                         //t_fn.generic_function_container = compar;
                     }
                     //конверитируем параметры предописания в параметры описания.
@@ -3196,6 +3206,10 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             compar.return_variable.type = compar.return_value_type;
                         }
+                    }
+                    foreach (generic_parameter_eliminations gpe in compar.parameters_eliminations)
+                    {
+
                     }
                     compar.generic_params = fn.generic_params;
                     foreach (common_type_node tn in compar.generic_params)
@@ -3267,7 +3281,9 @@ namespace PascalABCCompiler.TreeConverter
                     		AddError(new FunctionDuplicateDefinition(compar, fn));
                     }
                     else
+                    { 
 					    AddError(new FunctionDuplicateDefinition(compar,fn));
+                    }
 				}
                 si = si.Next;
 			}

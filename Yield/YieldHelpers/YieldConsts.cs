@@ -10,6 +10,7 @@ namespace PascalABCCompiler.YieldHelpers
     {
         public static string Current = "<>2__current";
         public static string State = "<>1__state";
+        public static string LabelStatePrefix = "lbstate#";
 
         public static string Self = "<>4__self";
 

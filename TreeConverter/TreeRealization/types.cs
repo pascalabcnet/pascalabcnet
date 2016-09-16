@@ -1744,7 +1744,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return this.comprehensive_namespace.namespace_full_name + "." + name;
+                return (this.comprehensive_namespace != null?this.comprehensive_namespace.namespace_full_name + ".":"") + name;
             }
         }
 
@@ -2935,9 +2935,12 @@ namespace PascalABCCompiler.TreeRealization
             basic_function_node _int_and = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.and_name, ctn, SemanticTree.basic_function_type.iand);
             basic_function_node _int_or = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.or_name, ctn, SemanticTree.basic_function_type.ior);
             basic_function_node _int_xor = SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.xor_name, ctn, SemanticTree.basic_function_type.ixor);
-            ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));
-            ctn.scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfo(_int_or));
-            ctn.scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfo(_int_xor));
+            if (ctn.scope != null)
+            {
+                ctn.scope.AddSymbol(compiler_string_consts.and_name, new SymbolInfo(_int_and));
+                ctn.scope.AddSymbol(compiler_string_consts.or_name, new SymbolInfo(_int_or));
+                ctn.scope.AddSymbol(compiler_string_consts.xor_name, new SymbolInfo(_int_xor));
+            }
         }
 
         public void reinit_scope()
@@ -3005,6 +3008,7 @@ namespace PascalABCCompiler.TreeRealization
                 SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.greq_name, ctn, SemanticTree.basic_function_type.enumgreq, SystemLibrary.SystemLibrary.bool_type);
                 SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.sm_name, ctn, SemanticTree.basic_function_type.enumsm, SystemLibrary.SystemLibrary.bool_type);
                 SystemLibrary.SystemLibrary.make_binary_operator(compiler_string_consts.smeq_name, ctn, SemanticTree.basic_function_type.enumsmeq, SystemLibrary.SystemLibrary.bool_type);
+                InitEnumOperations(ctn);
             }
             //ctn.init_scope();
             //TODO: Тут надо подумать. Может как-то сделать по другому?
@@ -4807,6 +4811,24 @@ namespace PascalABCCompiler.TreeRealization
             : base(compiler_string_consts.record_const_type_name, loc)
         {
         }
+    }
+
+    // тип, который объявляется как auto и определяется при компиляции в момент первого присваивания
+    // На 04.07.16 нужен только для генерации кода yield
+    public class auto_type : undefined_type 
+    {
+        //public type_node real_type = null;
+        public auto_type(location loc)
+            : base(compiler_string_consts.auto_type_name, loc) { }
+    }
+
+    // тип, который объявляется как ienumerable_auto и определяется при компиляции в момент первого присваивания
+    // На 04.07.16 нужен только для генерации кода yield
+    public class ienumerable_auto_type : undefined_type 
+    {
+        //public type_node real_type = null;
+        public ienumerable_auto_type(location loc)
+            : base(compiler_string_consts.ienumerable_auto_type_name, loc) { }
     }
 
 }

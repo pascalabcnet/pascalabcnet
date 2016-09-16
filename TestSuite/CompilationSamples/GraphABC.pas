@@ -333,6 +333,12 @@ procedure DrawTextCentered(x,y,x1,y1: integer; s: string);
 procedure DrawTextCentered(x,y,x1,y1: integer; n: integer); 
 /// Выводит вещественное значение r, отцентрированное в прямоугольнике с координатами (x,y,x1,y1)
 procedure DrawTextCentered(x,y,x1,y1: integer; r: real); 
+/// Выводит строку s, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; s: string); 
+/// Выводит целое n, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; n: integer); 
+/// Выводит вещественное r, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; r: real); 
 /// Заливает область одного цвета цветом c, начиная с точки (x,y).
 procedure FloodFill(x,y: integer; c: Color);
 
@@ -758,6 +764,15 @@ type
     procedure SetMathematic;
     /// Устанавливает левую систему координат (ось OY направлена вниз, ось OX - вправо)
     procedure SetStandard;
+    
+    procedure ScaleOn(scale: real);
+
+    procedure Transform(x,y: real);
+
+    procedure Rotate(angle: real);
+    
+    procedure ClearMatrix;
+
     /// X-координата начала координат относительно левого верхнего угла окна
     property OriginX: integer read GetOriginX write SetOriginX;
     /// Y-координата начала координат относительно левого верхнего угла окна
@@ -837,7 +852,7 @@ type
 
 /// Тип рисунка GraphABC
   Picture = class
-  private
+  public
     bmp,savedbmp: Bitmap;
     gb: Graphics;
     istransp: boolean;
@@ -1302,6 +1317,42 @@ procedure GraphABCCoordinate.SetStandard;
 begin
   coef := 1;
   SetTransform(OriginX,OriginY,Angle,ScaleX,ScaleY);
+end;
+
+procedure GraphABCCoordinate.ScaleOn(scale: real);
+begin
+  lock f do
+  begin
+    gr.ScaleTransform(scale,scale);
+    gbmp.ScaleTransform(scale,scale);
+  end;
+end;
+
+procedure GraphABCCoordinate.Transform(x,y: real);
+begin
+  lock f do
+  begin
+    gr.TranslateTransform(x,y);
+    gbmp.TranslateTransform(x,y)
+  end;
+end;
+
+procedure GraphABCCoordinate.Rotate(angle: real);
+begin
+  lock f do
+  begin
+    gr.RotateTransform(angle);
+    gbmp.RotateTransform(angle);
+  end;
+end;
+
+procedure GraphABCCoordinate.ClearMatrix;
+begin
+  lock f do
+  begin
+    gr.Transform := new System.Drawing.Drawing2D.Matrix();
+    gbmp.Transform := new System.Drawing.Drawing2D.Matrix();
+  end;
 end;
 
 procedure GraphABCCoordinate.SetOriginX(x: integer);
@@ -2570,6 +2621,30 @@ begin
 
   DrawTextCentered(x,y,x1,y1,r.ToString(nfi));  
 end;
+
+procedure DrawTextCentered(x,y: integer; s: string); 
+begin
+  Monitor.Enter(f);
+  if NotLockDrawing then
+    DrawTextCentered(x,y,s,gr);
+  if DrawInBuffer then   
+    DrawTextCentered(x,y,s,gbmp);
+  Monitor.Exit(f);
+end;
+
+procedure DrawTextCentered(x,y: integer; n: integer); 
+begin
+  DrawTextCentered(x,y,n.ToString);  
+end;
+
+procedure DrawTextCentered(x,y: integer; r: real); 
+begin
+  var nfi := new System.Globalization.NumberFormatInfo();
+  nfi.NumberGroupSeparator := '.';
+
+  DrawTextCentered(x,y,r.ToString(nfi));  
+end;
+
 
 function Pnt(x,y: integer): Point;
 begin

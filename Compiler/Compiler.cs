@@ -260,6 +260,16 @@ namespace PascalABCCompiler
 
     }
 
+    public class MainResourceNotAllowed : CompilerCompilationError
+    {
+        public MainResourceNotAllowed(TreeRealization.location sl)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_MAINRESOURCE_NOT_ALLOWED")), sl.doc.file_name)
+        {
+            this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
+
+    }
+
     public class DuplicateUsesUnit : CompilerCompilationError
     {
         public string UnitName;
@@ -1852,6 +1862,13 @@ namespace PascalABCCompiler
                 }
                 if (compilerDirectives.TryGetValue(TreeConverter.compiler_string_consts.main_resource_string, out cds))
                 {
+                    if (compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.product_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.version_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.company_string) ||
+                        compilerDirectives.ContainsKey(TreeConverter.compiler_string_consts.trademark_string))
+                    {
+                        ErrorsList.Add(new MainResourceNotAllowed(cds[0].location));
+                    }
                     cdo.MainResourceFileName = cds[0].directive;
                     if (!File.Exists(cdo.MainResourceFileName))
                     {
@@ -2734,19 +2751,19 @@ namespace PascalABCCompiler
         }
 
 
-        public SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<Error> ErrorList)
+        public SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings)
         {
             Reset();
             OnChangeCompilerState(this, CompilerState.CompilationStarting, FileName);
-            SyntaxTree.compilation_unit cu = InternalParseText(FileName, Text, ErrorsList);
+            SyntaxTree.compilation_unit cu = InternalParseText(FileName, Text, ErrorsList, Warnings);
             OnChangeCompilerState(this, CompilerState.Ready, FileName);
             return cu;
         }
 
-        private SyntaxTree.compilation_unit InternalParseText(string FileName, string Text, List<Error> ErrorList, List<string> DefinesList = null)
+        private SyntaxTree.compilation_unit InternalParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings, List<string> DefinesList = null)
         {
             OnChangeCompilerState(this, CompilerState.BeginParsingFile, FileName);
-            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, DefinesList);
+            SyntaxTree.compilation_unit cu = ParsersController.GetCompilationUnit(FileName, Text, ErrorsList, Warnings, DefinesList);
             OnChangeCompilerState(this, CompilerState.EndParsingFile, FileName);
             //Вычисляем сколько строк скомпилировали
             if (ErrorList.Count == 0 && cu != null && cu.source_context!=null)
@@ -2898,7 +2915,7 @@ namespace PascalABCCompiler
                     DefinesList.Add("RELEASE");
                 else
                     DefinesList.Add("DEBUG");
-                CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList, DefinesList);
+                CurrentUnit.SyntaxTree = InternalParseText(UnitName, SourceText, errorsList, warnings, DefinesList);
 
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
@@ -3162,8 +3179,9 @@ namespace PascalABCCompiler
         private Dictionary<SyntaxTree.syntax_tree_node,string> AddDocumentationToNodes(SyntaxTree.compilation_unit cu, string Text)
         {
         	List<PascalABCCompiler.Errors.Error> errors = new List<PascalABCCompiler.Errors.Error>();
+            List<PascalABCCompiler.Errors.CompilerWarning> warnings = new List<CompilerWarning>();
         	string doctagsParserExtension = Path.GetExtension(cu.file_name)+"dt"+PascalABCCompiler.Parsers.Controller.HideParserExtensionPostfixChar;
-        	PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParsersController.Compile(System.IO.Path.ChangeExtension(cu.file_name, doctagsParserExtension), Text, errors, PascalABCCompiler.Parsers.ParseMode.Normal) as PascalABCCompiler.SyntaxTree.documentation_comment_list;
+        	PascalABCCompiler.SyntaxTree.documentation_comment_list dt = ParsersController.Compile(System.IO.Path.ChangeExtension(cu.file_name, doctagsParserExtension), Text, errors, warnings, PascalABCCompiler.Parsers.ParseMode.Normal) as PascalABCCompiler.SyntaxTree.documentation_comment_list;
         	if (errors.Count > 0) return null;
         	PascalABCCompiler.DocumentationConstructor docconst = new PascalABCCompiler.DocumentationConstructor();
             return docconst.Construct(cu, dt);

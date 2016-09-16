@@ -416,7 +416,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             if (inWhat.type == null)
                 inWhat = tmp;
 
-            _visitor.FindIEnumerableElementType(_foreach_stmt, inWhat.type, ref elemType);
+            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType);
 
             if (_foreach_stmt.type_name == null)
             {

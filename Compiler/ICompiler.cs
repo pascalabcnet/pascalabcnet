@@ -107,7 +107,7 @@ namespace PascalABCCompiler
 
         void AddWarnings(List<CompilerWarning> WarningList);
 
-        SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<Error> ErrorList);
+        SyntaxTree.compilation_unit ParseText(string FileName, string Text, List<Error> ErrorList, List<CompilerWarning> Warnings);
 
         string GetSourceFileText(string FileName);
 

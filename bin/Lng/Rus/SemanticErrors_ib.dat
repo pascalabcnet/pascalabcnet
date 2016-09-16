@@ -1,6 +1,6 @@
 ﻿%PREFIX%=SEMANTICERROR_
 CIRCULARITY_IN_RECORD=Циклическая зависимость в записи
-CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}=Невозможно выполнить оператор foreach по выражению типа {0}
+CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}=Невозможно выполнить оператор foreach или yield sequence по выражению типа {0}
 FOREACH_LOOP_CONTROL_MUST_BE_SIMPLE_LOCAL_VARIABLE=Переменная цикла foreach должна быть только локальной
 TYPES_OF_VAR_AND_ELEMENTS_IN_FOREACH_MUST_BE_EQUAL_{0}_{1}=Тип {0} переменной цикла foreach должен в точности совпадать с типом {1} элементов коллекции 
 CLASS_{0}_DOES_NOT_IMPLEMENT_MEMBER_{2}_OF_CLASS_{1}=Класс {0} не реализует абстрактный метод {2} класса {1}
@@ -115,6 +115,10 @@ INTERFACE_EXPECTED=Ожидался интерфейс
 IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=extension-операторы преобразования типов допустимы только для классов из других сборок .NET
 EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED=Атрибут extensionmethod недопустим в данном контексте
 CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Нельзя раширять операции +,+=,-,-= для делегатов
+FORWARD_EXTENSION_METHODS_NOT_ALLOWED=Атрибут forward недопустим для методов расширения
+WHERE_SECTION_NOT_ALLOWED=Секция where недопустима в данном контексте
+GENERIC_PARAMETERS_MISMATCH=Generic-параметры не совпадают с generic-параметрами в предописании типа
+EXPECTED_TYPE_AFTER_NEW=Ожидался тип после new
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

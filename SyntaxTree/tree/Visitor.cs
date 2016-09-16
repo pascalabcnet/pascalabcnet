@@ -1289,17 +1289,17 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(yield_unknown_expression_type _yield_unknown_expression_type);
 		///<summary>
-		///Method to visit yield_var_def_statement_with_unknown_type.
+		///Method to visit yield_unknown_foreach_type.
 		///</summary>
-		///<param name="_yield_var_def_statement_with_unknown_type">Node to visit</param>
+		///<param name="_yield_unknown_foreach_type">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type);
+		void visit(yield_unknown_foreach_type _yield_unknown_foreach_type);
 		///<summary>
-		///Method to visit yield_variable_definitions_with_unknown_type.
+		///Method to visit yield_sequence_node.
 		///</summary>
-		///<param name="_yield_variable_definitions_with_unknown_type">Node to visit</param>
+		///<param name="_yield_sequence_node">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type);
+		void visit(yield_sequence_node _yield_sequence_node);
 	}
 
 

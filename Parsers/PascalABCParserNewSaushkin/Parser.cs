@@ -18,13 +18,15 @@ namespace PascalABCCompiler.PascalABCNewParser
     public class GPPGParserHelper
     {
         private List<Errors.Error> Errs;
+        private List<Errors.CompilerWarning> Warnings;
         private string FileName;
         public bool build_tree_for_formatter = false;
         public List<string> DefinesList = null;
 
-        public GPPGParserHelper(List<Errors.Error> Errs, string FileName)
+        public GPPGParserHelper(List<Errors.Error> Errs, List<Errors.CompilerWarning> Warnings, string FileName)
         {
             this.Errs = Errs;
+            this.Warnings = Warnings;
             this.FileName = FileName;
         }
 
@@ -40,6 +42,7 @@ namespace PascalABCCompiler.PascalABCNewParser
 #endif
             PT parsertools = new PT(); // контекст сканера и парсера
             parsertools.errors = Errs;
+            parsertools.warnings = Warnings;
             parsertools.CurrentFileName = Path.GetFullPath(FileName);
 
 
@@ -183,7 +186,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         public override syntax_tree_node BuildTreeInNormalMode(string FileName, string Text, List<string> DefinesList = null)
         {
             Errors.Clear();
-
+            Warnings.Clear();
             /*string[] file_names = new string[1];
             file_names[0] = FileName;
 
@@ -195,7 +198,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             if (Errors.Count > 0)
                 return null;
 
-            localparserhelper = new GPPGParserHelper(Errors, FileName);
+            localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             localparserhelper.DefinesList = DefinesList;
             syntax_tree_node root = localparserhelper.Parse(Text);
 
@@ -218,7 +221,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         {
             // LineCorrection = -1 не забыть
             Text = String.Concat("<<expression>>", Environment.NewLine, Text);
-            localparserhelper = new GPPGParserHelper(Errors, FileName);
+            localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             // localparser.parsertools.LineCorrection = -1;
             syntax_tree_node root = localparserhelper.Parse(Text);
             return root as expression;
@@ -228,7 +231,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         {
             // LineCorrection = -1 не забыть
             Text = String.Concat("<<type>>", Environment.NewLine, Text);
-            localparserhelper = new GPPGParserHelper(Errors, FileName);
+            localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             // localparser.parsertools.LineCorrection = -1;
             syntax_tree_node root = localparserhelper.Parse(Text);
             return root as expression;
@@ -237,7 +240,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         public override syntax_tree_node BuildTreeInStatementMode(string FileName, string Text)
         {
             Text = String.Concat("<<statement>>", Environment.NewLine, Text);
-            localparserhelper = new GPPGParserHelper(Errors, FileName);
+            localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             // localparser.parsertools.LineCorrection = -1;
             syntax_tree_node root = localparserhelper.Parse(Text);
             return root as expression;
@@ -246,7 +249,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         public override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
         {
             Errors.Clear();
-            localparserhelper = new GPPGParserHelper(Errors, FileName);
+            localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             syntax_tree_node root = localparserhelper.Parse(Text);
             return root;
         }
@@ -254,7 +257,7 @@ namespace PascalABCCompiler.PascalABCNewParser
         public override syntax_tree_node BuildTreeInFormatterMode(string FileName, string Text)
         {
             Errors.Clear();
-            localparserhelper = new GPPGParserHelper(Errors, FileName);
+            localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             localparserhelper.build_tree_for_formatter = true;
             syntax_tree_node root = localparserhelper.Parse(Text);
             return root;

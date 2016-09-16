@@ -449,9 +449,9 @@ namespace PascalABCCompiler.SyntaxTree
 				case 213:
 					return new yield_unknown_expression_type();
 				case 214:
-					return new yield_var_def_statement_with_unknown_type();
+					return new yield_unknown_foreach_type();
 				case 215:
-					return new yield_variable_definitions_with_unknown_type();
+					return new yield_sequence_node();
 			}
 			return null;
 		}
@@ -3782,8 +3782,6 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_ident(yield_unknown_ident _yield_unknown_ident)
 		{
 			read_ident(_yield_unknown_ident);
-			_yield_unknown_ident.UnknownID = _read_node() as ident;
-			_yield_unknown_ident.ClassName = _read_node() as ident;
 		}
 
 
@@ -3795,31 +3793,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_yield_unknown_expression_type(yield_unknown_expression_type _yield_unknown_expression_type)
 		{
 			read_type_definition(_yield_unknown_expression_type);
-			_yield_unknown_expression_type.Vds = _read_node() as var_def_statement;
 		}
 
 
-		public void visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		public void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
-			read_yield_var_def_statement_with_unknown_type(_yield_var_def_statement_with_unknown_type);
+			read_yield_unknown_foreach_type(_yield_unknown_foreach_type);
 		}
 
-		public void read_yield_var_def_statement_with_unknown_type(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		public void read_yield_unknown_foreach_type(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
-			read_statement(_yield_var_def_statement_with_unknown_type);
-			_yield_var_def_statement_with_unknown_type.vars = _read_node() as var_def_statement;
+			read_type_definition(_yield_unknown_foreach_type);
 		}
 
 
-		public void visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		public void visit(yield_sequence_node _yield_sequence_node)
 		{
-			read_yield_variable_definitions_with_unknown_type(_yield_variable_definitions_with_unknown_type);
+			read_yield_sequence_node(_yield_sequence_node);
 		}
 
-		public void read_yield_variable_definitions_with_unknown_type(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		public void read_yield_sequence_node(yield_sequence_node _yield_sequence_node)
 		{
-			read_declaration(_yield_variable_definitions_with_unknown_type);
-			_yield_variable_definitions_with_unknown_type.vars = _read_node() as variable_definitions;
+			read_statement(_yield_sequence_node);
+			_yield_sequence_node.ex = _read_node() as expression;
 		}
 
 	}

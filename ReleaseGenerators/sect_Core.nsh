@@ -1,4 +1,4 @@
-﻿Section $(DESC_Core) Core
+﻿	Section $(DESC_Core) Core
     SectionIn 1 2 RO
     SetOutPath "$INSTDIR"
     File ExecHide.exe
@@ -11,6 +11,9 @@
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
+    File "..\bin\StandardSyntaxTreeConverter.dll"
+    File "..\bin\SyntaxVisitors.dll"
+    File "..\bin\YieldConversionSyntax.dll"
     File "..\bin\YieldHelpers.dll"
 	File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
@@ -46,7 +49,10 @@
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
     ${AddFile} "SyntaxTreeConverters.dll"
+    ${AddFile} "StandardSyntaxTreeConverter.dll"
     ${AddFile} "YieldHelpers.dll"
+    ${AddFile} "SyntaxVisitors.dll"
+    ${AddFile} "YieldConversionSyntax.dll"
 	${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
@@ -99,6 +105,7 @@
     File ..\bin\Lib\Core.pcu
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
+    File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
@@ -143,6 +150,7 @@
     ${AddFile} "Core.pcu"
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
+    ${AddFile} "OpenGL.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -188,6 +196,7 @@
     File ..\bin\Lib\Core.pas
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
+    File ..\bin\Lib\OpenGL.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -231,13 +240,19 @@
     ${AddFile} "Core.pas"
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
+    ${AddFile} "OpenGL.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
     CreateDirectory "$SMPROGRAMS\PascalABC.NET"
     Push "OptimizerConversion.dll"
     Call NGEN
-	
+	Push "SyntaxVisitors.dll"
+    Call NGEN
+    Push "YieldConversionSyntax.dll"
+    Call NGEN
+    Push "StandardSyntaxTreeConverter.dll"
+    Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"
 SectionEnd

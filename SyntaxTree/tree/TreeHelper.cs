@@ -5,8 +5,30 @@ using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTree
 {
+    /// <summary>
+    /// Тип обхода дерева
+    /// </summary>
+    public enum TraversalType
+    {
+        /// <summary>
+        /// Обход в ширину
+        /// </summary>
+        LevelOrder,
+
+        /// <summary>
+        /// Постфиксный обход
+        /// </summary>
+        PostOrder,
+
+        /// <summary>
+        /// Префиксный обход
+        /// </summary>
+        PreOrder
+    }
+
     public partial class syntax_tree_node
     {
+        public object Parent;
         public int FindIndex(syntax_tree_node node)
         {
             int ind = -1;
@@ -44,13 +66,39 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
+        /// Получает коллекцию узлов поддерева, в котором корнем является текущий узел. 
+        /// </summary>
+        /// <param name="traversalType">Тип обхода дерева. Определяет порядок добавления узлов в коллекцию</param>
+        /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
+        /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
+        /// <returns>Коллекция узлов поддерева</returns>
+        /// <exception cref="NotImplementedException">Выбрасывается при отсутствии реализации для заданного обхода</exception>
+        public IEnumerable<syntax_tree_node> DescendantNodes(
+            TraversalType traversalType = TraversalType.PostOrder, 
+            Func<syntax_tree_node, bool> descendIntoChildren = null, 
+            bool includeSelf = false)
+        {
+            switch (traversalType)
+            {
+                case TraversalType.LevelOrder:
+                    return DescendantNodesLevelOrder(descendIntoChildren, includeSelf);
+                case TraversalType.PostOrder:
+                    return DescendantNodesPostOrder(descendIntoChildren, includeSelf);
+                case TraversalType.PreOrder:
+                    return DescendantNodesPreOrder(descendIntoChildren, includeSelf);
+                default:
+                    throw new NotImplementedException("Данный вид обхода не поддерживается");
+            }
+        }
+
+        /// <summary>
         /// Получает список узлов поддерева, в котором корнем является текущий узел. 
         /// Порядок добавления в список: родитель, затем потомки.
         /// </summary>
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodesPreOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        private IEnumerable<syntax_tree_node> DescendantNodesPreOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var stack = new Stack<syntax_tree_node>();
 
@@ -87,7 +135,7 @@ namespace PascalABCCompiler.SyntaxTree
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodesPostOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        private IEnumerable<syntax_tree_node> DescendantNodesPostOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var stack = new Stack<syntax_tree_node>();
 
@@ -136,7 +184,7 @@ namespace PascalABCCompiler.SyntaxTree
         /// <param name="descendIntoChildren">Опциональная функция, позволяющая указать, нужно ли посещать потомков конкретного узла</param>
         /// <param name="includeSelf">Позволяет включить текущий узел в список</param>
         /// <returns>Список узлов поддерева</returns>
-        public IEnumerable<syntax_tree_node> DescendantNodesLevelOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
+        private IEnumerable<syntax_tree_node> DescendantNodesLevelOrder(Func<syntax_tree_node, bool> descendIntoChildren, bool includeSelf)
         {
             var queue = new Queue<syntax_tree_node>();
 
@@ -418,6 +466,9 @@ namespace PascalABCCompiler.SyntaxTree
         public var_def_statement(ident id, type_definition type, expression iv) : this(new ident_list(id), type, iv)
         { }
 
+        public var_def_statement(ident id, expression iv) : this(new ident_list(id), null, iv)
+        { }
+
         public var_def_statement(ident id, string type) : this(new ident_list(id), new named_type_reference(type))
         { }
 
@@ -508,6 +559,14 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class indexer
     {
+        public indexer(addressed_value av, expression ex, SourceContext sc = null)
+        {
+            this.dereferencing_value = av;
+            this.indexes = new expression_list(ex);
+            this.source_context = sc;
+        }
+
+
         public override string ToString()
         {
             return base.ToString() + "[" + indexes.ToString() + "]";
@@ -573,6 +632,10 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class procedure_header
     {
+        // frninja 20/05/16 - для методов хелперов yield
+        public bool is_yield_helper = false;
+        // end frninja
+
         public procedure_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, SourceContext sc)
         {
             this._parameters = _parameters;
@@ -611,7 +674,10 @@ namespace PascalABCCompiler.SyntaxTree
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("procedure ");
-            sb.Append(name.ToString());
+            if (name != null)
+                sb.Append(name.ToString());
+            else
+                sb.Append("NONAME");
 
             if (template_args != null)
                 sb.Append("<" + template_args.ToString() + ">");
@@ -654,7 +720,8 @@ namespace PascalABCCompiler.SyntaxTree
             sb.Remove(0, 9);
             sb.Remove(sb.Length - 1, 1);
             sb.Insert(0, "function");
-            sb.Append(": " + return_type.ToString() + ";");
+            if (return_type!=null)
+                sb.Append(": " + return_type.ToString() + ";");
             return sb.ToString();
         }
     }
@@ -662,9 +729,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class procedure_definition
     {
         public bool has_yield = false;
-        // frninja 20/05/16 - для методов хелперов yield
-        public bool is_yield_helper = false;
-        // end frninja
+        
 
         public procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)
         {
@@ -828,12 +893,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class dot_node
     {
-        public dot_node(ident left, ident right)
-        {
-            this.left = left;
-            this.right = right;
-        }
-        public dot_node(ident left, ident right, SourceContext sc)
+        public dot_node(ident left, ident right, SourceContext sc = null)
         {
             this.left = left;
             this.right = right;
@@ -1126,7 +1186,7 @@ namespace PascalABCCompiler.SyntaxTree
         { }
         public override string ToString()
         {
-            return "new "+this.type.ToString()+"("+this.params_list.ToString()+")";
+            return "new "+ (this.type != null ? this.type.ToString() : "NOTYPE") + "(" +(this.params_list != null ? this.params_list.ToString() : "NOPARAMS") + ")";
         }
     }
 
@@ -1351,55 +1411,206 @@ namespace PascalABCCompiler.SyntaxTree
 
     }
 
-    // frninja 12/05/16 - хелпер для yield. Хранит типы локальных переменных метода-итератора
-    [Serializable]
-    public class yield_locals_type_map_helper
-    {
-        public Dictionary<var_def_statement, semantic_type_node> vars_type_map { get; private set; }
-
-        public yield_locals_type_map_helper()
-        {
-            vars_type_map = new Dictionary<var_def_statement, semantic_type_node>();
-        }
-    }
-    // end frninja
-
     // frninja 12/05/16 - хелперы для yield
     public partial class yield_unknown_expression_type : type_definition
     {
-        public yield_locals_type_map_helper MapHelper { get; private set; }
+        protected var_def_statement _Vds;
 
-        public yield_unknown_expression_type(var_def_statement vds, yield_locals_type_map_helper map_helper)
+        public var_def_statement Vds
+        {
+            get { return _Vds; }
+            set { _Vds = value; }
+        }
+
+        public yield_unknown_expression_type(var_def_statement vds)
         {
             this.Vds = vds;
-            this.MapHelper = map_helper;
         }
     }
 
-    public partial class yield_var_def_statement_with_unknown_type : statement
+    public partial class yield_unknown_ident : ident
     {
-        public yield_locals_type_map_helper map_helper { get; private set; }
+        protected ident _UnknownID;
+        protected ident _ClassName;
+        protected bool _IsYieldInStaticMethod;
 
-        public yield_var_def_statement_with_unknown_type(var_def_statement vds, yield_locals_type_map_helper map_helper)
+        public ident UnknownID
         {
-            this.vars = vds;
-            this.map_helper = map_helper;
+            get { return _UnknownID; }
+            set { _UnknownID = value; }
+        }
+
+        public ident ClassName
+        {
+            get { return _ClassName; }
+            set { _ClassName = value; }
+        }
+
+        public bool IsYieldInStaticMethod
+        {
+            get { return _IsYieldInStaticMethod; }
+            set { _IsYieldInStaticMethod = value; }
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_ident(ident _UnknownID, ident _ClassName, bool isYieldInStaticMethod = false)
+        {
+            this._name = _UnknownID.name;
+            this._UnknownID = _UnknownID;
+            this._ClassName = _ClassName;
+            this._IsYieldInStaticMethod = isYieldInStaticMethod;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_ident(ident _UnknownID, ident _ClassName, bool isYieldInStaticMethod, SourceContext sc)
+        {
+            this._name = _UnknownID.name;
+            this._UnknownID = _UnknownID;
+            this._ClassName = _ClassName;
+            this._IsYieldInStaticMethod = isYieldInStaticMethod;
+            source_context = sc;
         }
     }
 
-    public partial class yield_variable_definitions_with_unknown_type : declaration
+    public partial class yield_unknown_foreach_type : type_definition
     {
-        public yield_locals_type_map_helper map_helper { get; private set; }
+        protected foreach_stmt _unknown_foreach;
 
-        public yield_variable_definitions_with_unknown_type(variable_definitions vd, yield_locals_type_map_helper map_helper)
+        public foreach_stmt unknown_foreach
         {
-            this.vars = vd;
-            this.map_helper = map_helper;
+            get { return _unknown_foreach; }
+            set { _unknown_foreach = value; }
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type(foreach_stmt _unknown_foreach)
+        {
+            this._unknown_foreach = _unknown_foreach;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type(foreach_stmt _unknown_foreach, SourceContext sc)
+        {
+            this._unknown_foreach = _unknown_foreach;
+            source_context = sc;
+        }
+
+    }
+
+    public partial class yield_unknown_foreach_type_ident : ident
+    {
+        protected foreach_stmt _unknown_foreach;
+
+        public foreach_stmt unknown_foreach
+        {
+            get { return _unknown_foreach; }
+            set { _unknown_foreach = value; }
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach)
+        {
+            this._unknown_foreach = _unknown_foreach;
+        }
+
+        ///<summary>
+        ///Конструктор с параметрами.
+        ///</summary>
+        public yield_unknown_foreach_type_ident(foreach_stmt _unknown_foreach, SourceContext sc)
+        {
+            this._unknown_foreach = _unknown_foreach;
+            source_context = sc;
         }
     }
 
-    // end frninja
+	public partial class array_type
+    {
+        public override string ToString()
+        {
+            return "array of " + this.elements_type.ToString();
+        }
+    }
 
+	public partial class function_lambda_definition
+    {
+        public override string ToString()
+        {
+            return "" + this._ident_list.ToString() + " -> lambda_body";
+        }
+    }
+
+    public partial class nil_const 
+    {
+        public override string ToString()
+        {
+            return "nil";
+        }
+    }
+    
+	public partial class access_modifer_node
+    {
+        public override string ToString()
+        {
+            return this.access_level.ToString().Replace("_modifier","");
+        }
+    }
+
+	public partial class yield_unknown_ident
+    {
+        public override string ToString()
+        {
+            return this.UnknownID.ToString();
+        }
+    }
+
+    public partial class statement
+    {
+        public statement_list ToStatementList()
+        {
+            var stl = this as statement_list;
+            if (stl != null)
+                return stl;
+            else return new statement_list(this);
+        }
+    }
+
+    public partial class addressed_value
+    {
+        public indexer indexer(expression ex, SourceContext sc = null)
+        {
+            return new SyntaxTree.indexer(this, ex, sc);
+        }
+        public dot_node dot_node(ident id, SourceContext sc = null)
+        {
+            return new SyntaxTree.dot_node(this, id, sc);
+        }
+    }
+
+    public partial class expression
+    {
+        public expression Plus(expression e)
+        {
+            return new bin_expr(this, e, Operators.Plus);
+        }
+        public expression Minus(expression e)
+        {
+            return new bin_expr(this, e, Operators.Minus);
+        }
+        public static implicit operator expression(int i)
+        {
+            return new int32_const(i);
+        }
+    }
 
 }
 

@@ -577,7 +577,8 @@ namespace VisualPascalABC
                 CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
-                Errors);
+                Errors,
+                new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (Errors.Count == 0)
             {
                 string formattedText = cf.FormatTree(text, cu, textArea.Caret.Line + 1, textArea.Caret.Column + 1);

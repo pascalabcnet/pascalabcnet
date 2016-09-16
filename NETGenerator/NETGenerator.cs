@@ -401,6 +401,8 @@ namespace PascalABCCompiler.NETGenerator
         private void AddTypeInstanceToFunction(ICommonFunctionNode func, IGenericTypeInstance gti)
         {
             List<IGenericTypeInstance> instances;
+            //if (func == null) // SSM 3.07.16 Это решает проблему с оставшимся после перевода в сем. дерево узлом IEnumerable<UnknownType>, но очень грубо - пробую найти ошибку раньше
+            //    return;
             bool found = instances_in_functions.TryGetValue(func, out instances);
             if (!found)
             {
@@ -1314,8 +1316,16 @@ namespace PascalABCCompiler.NETGenerator
             {
                 ConvertTypeMemberHeaderAndRemoveFromList(ts[0], ts);
             }
-            //foreach (ICommonTypeNode t in types)
-            //    ConvertTypeMemberHeader(t);
+            foreach (ICommonTypeNode t in types)
+            {
+                foreach (ICommonMethodNode meth in t.methods)
+                {
+                    if (meth.is_generic_function)
+                    {
+                        ConvertTypeInstancesMembersInFunction(meth);
+                    }
+                }
+            }
         }
 
         private Dictionary<TypeBuilder, TypeBuilder> added_types = new Dictionary<TypeBuilder, TypeBuilder>();
@@ -1437,9 +1447,13 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (icmn.is_constructor)
                     {
-                        ConstructorInfo cnstr = helper.GetConstructor(icmn).cnstr;
-                        ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
-                        helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
+                        MethInfo mi = helper.GetConstructor(icmn);
+                        if (mi != null)
+                        {
+                            ConstructorInfo cnstr = mi.cnstr;
+                            ConstructorInfo ci = TypeBuilder.GetConstructor(t, cnstr);
+                            helper.AddConstructor(value.used_members[dn] as IFunctionNode, ci);
+                        }
                         continue;
                     }
                     else
@@ -1605,7 +1619,6 @@ namespace PascalABCCompiler.NETGenerator
         private void ConvertTypeMemberHeader(ICommonTypeNode value)
         {
             //если это оболочка над массивом переводим ее особым образом
-
             if (value.type_special_kind == type_special_kind.diap_type || value.type_special_kind == type_special_kind.array_kind) return;
             if (value.fields.Length == 1 && value.fields[0].type is ISimpleArrayNode)
             {
@@ -1652,13 +1665,13 @@ namespace PascalABCCompiler.NETGenerator
                     evnt.visit(this);
 
                 //(ssyy) 21.05.2008
-                foreach (ICommonMethodNode meth in value.methods)
+                /*foreach (ICommonMethodNode meth in value.methods)
                 {
                     if (meth.is_generic_function)
                     {
                         ConvertTypeInstancesMembersInFunction(meth);
                     }
-                }
+                }*/
                 //добавляем ритерны в специальные методы
                 //ti.init_meth.GetILGenerator().Emit(OpCodes.Ret);
                 //if (hndl_mb != null) hndl_mb.GetILGenerator().Emit(OpCodes.Ret);
@@ -1687,13 +1700,13 @@ namespace PascalABCCompiler.NETGenerator
                 foreach (ICommonEventNode evnt in value.events)
                     evnt.visit(this);
                 //(ssyy) 21.05.2008
-                foreach (ICommonMethodNode meth in value.methods)
+                /*foreach (ICommonMethodNode meth in value.methods)
                 {
                     if (meth.is_generic_function)
                     {
                         ConvertTypeInstancesMembersInFunction(meth);
                     }
-                }
+                }*/
 
             }
 
@@ -10137,17 +10150,26 @@ namespace PascalABCCompiler.NETGenerator
             Type return_type = null;
             bool is_generic = false;
             MethodInfo enumer_mi = null; //typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
-            /*if (var_tp.IsValueType)
+            if (var_tp.IsValueType && !(in_what_type.IsArray && in_what_type.GetArrayRank() > 1))
             {
                 enumer_mi = helper.GetEnumeratorMethod(in_what_type);
-                is_generic = enumer_mi.ReturnType.IsGenericType;
-                return_type = enumer_mi.ReturnType;
-                if (in_what_type.IsGenericType && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
-                    return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
-                else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
-                    return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
+                if (enumer_mi == null)
+                {
+                    enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
+                    return_type = enumer_mi.ReturnType;
+                }
+                else
+                {
+                    is_generic = enumer_mi.ReturnType.IsGenericType;
+                    return_type = enumer_mi.ReturnType;
+                    if (in_what_type.IsGenericType && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
+                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetGenericArguments());
+                    else if (in_what_type.IsArray && return_type.IsGenericType && !return_type.IsGenericTypeDefinition)
+                        return_type = return_type.GetGenericTypeDefinition().MakeGenericType(in_what_type.GetElementType());
+                }
+                
             }
-            else*/
+            else
             {
                 enumer_mi = typeof(System.Collections.IEnumerable).GetMethod("GetEnumerator", Type.EmptyTypes);
                 return_type = enumer_mi.ReturnType;

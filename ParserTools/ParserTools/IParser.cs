@@ -16,7 +16,13 @@ namespace PascalABCCompiler.Parsers
             get;
             set;
         }
-        
+
+        List<CompilerWarning> Warnings
+        {
+            get;
+            set;
+        }
+
         List<compiler_directive> CompilerDirectives
         {
             get;

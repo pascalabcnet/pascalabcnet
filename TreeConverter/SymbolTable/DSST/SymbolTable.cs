@@ -575,8 +575,8 @@ namespace SymbolTable
             return ScopeTable[scope].TopScopeNum;
 		}
 
-		//Возвращает количество уровней на которые надо поднятся начиная с Down чтобы очюбтиться в Up
-		//Работает только для процедур.Модуль считает за одно Scope
+		//Возвращает количество уровней на которые надо поднятся начиная с Down чтобы очутиться в Up
+		//Работает только для процедур. Модуль считает за одно Scope
 		public int GetRelativeScopeDepth(Scope Up,Scope Down)
 		{
 			if (Up==Down) return 0;
@@ -854,7 +854,9 @@ namespace SymbolTable
                 (((to.symbol_kind==symbol_kind.sk_none)&&(add.symbol_kind==symbol_kind.sk_none))&&(to.scope==add.scope))
                 ||
 				((to.symbol_kind==symbol_kind.sk_overload_function)&&(add.symbol_kind==symbol_kind.sk_overload_function))
-				);
+                ||
+                ((to.symbol_kind == symbol_kind.sk_overload_procedure) && (add.symbol_kind == symbol_kind.sk_overload_procedure))
+                );
 		}
 		
 		private bool AlreadyAdded(SymbolInfo si, SymbolInfo FirstInfo)

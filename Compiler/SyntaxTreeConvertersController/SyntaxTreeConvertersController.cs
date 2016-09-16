@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using PascalABCCompiler.SyntaxTree;
-using PascalABCCompiler.SyntaxTreeConverters;
+using PascalABCCompiler.Errors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -44,7 +44,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
             List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntax.dll").ToList();
-            dllfiles.Add(new FileInfo("SyntaxTreeConverters.dll"));
+            dllfiles.Insert(0,new FileInfo("StandardSyntaxTreeConverter.dll"));
 
             System.Reflection.Assembly assembly = null;
             ISyntaxTreeConverter Converter;

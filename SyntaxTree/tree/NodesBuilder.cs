@@ -9,6 +9,13 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public static SourceContext BuildGenSC = new SourceContext(0, 777777, 0, 0, 0, 0);
 
+        private static int GenIdNum = 0;
+        public static ident GenIdentName()
+        {
+            GenIdNum++;
+            return new ident("$GenId" + GenIdNum.ToString());
+        }
+
         public static type_definition BuildSimpleType(string name)
         {
             return new named_type_reference(name, null);
@@ -145,8 +152,10 @@ namespace PascalABCCompiler.SyntaxTree
                             foreach (var v in mm.vars.idents)
                             {
                                 names.Add(v);
-                                types.Add(mm.vars_type);    // во внешний мир для определения pointerов
-                                //types.Add(BuildSameType(v)); // почему-то только так хочет работать с рекурсивным типом Node<T>
+                                if (mm.vars_type != null)
+                                    types.Add(mm.vars_type);    // во внешний мир для определения pointerов
+                                else 
+                                    types.Add(BuildSameType(mm.inital_value)); // почему-то только так хочет работать с рекурсивным типом Node<T>
                             }
                     }
                     else 

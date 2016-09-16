@@ -121,7 +121,7 @@ type
   /// Представляет базовый класс для реализации интерфейса IComparer
   Comparer<T> = System.Collections.Generic.Comparer<T>;
   
-  IComparable<T> = System.Collections.Generic.IComparable<T>;
+  IComparable<T> = System.IComparable<T>;
 
   /// Представляет множество значений, реализованное на базе хеш-таблицы
   HashSet<T> = System.Collections.Generic.HashSet<T>;
@@ -950,9 +950,9 @@ function ChangeFileNameExtension(name, newext: string): string;
 function FileExists(name: string): boolean;
 
 /// Выводит в специальном окне стек вызовов подпрограмм если условие не выполняется
-procedure Assert(cond: boolean);
+procedure Assert(cond: boolean; sourceFile: string := ''; line: integer := 0);
 /// Выводит в специальном окне диагностическое сообщение и стек вызовов подпрограмм если условие не выполняется
-procedure Assert(cond: boolean; message: string);
+procedure Assert(cond: boolean; message: string; sourceFile: string := ''; line: integer := 0);
 
 /// Возвращает свободное место в байтах на диске с именем diskname
 function DiskFree(diskname: string): int64;
@@ -1046,6 +1046,10 @@ function Sign(x: real): integer;
 /// Возвращает модуль числа x
 function Abs(x: integer): integer;
 ///--
+function Abs(x: shortint): shortint;
+///--
+function Abs(x: smallint): smallint;
+///--
 function Abs(x: BigInteger): BigInteger;
 ///--
 function Abs(x: longword): longword;
@@ -1089,6 +1093,10 @@ function Sqrt(x: real): real;
 ///-function Sqr(x: число): число;
 /// Возвращает квадрат числа x
 function Sqr(x: integer): int64;
+///--
+function Sqr(x: shortint): integer;
+///--
+function Sqr(x: smallint): integer;
 ///--
 function Sqr(x: BigInteger): BigInteger;
 ///--
@@ -1270,6 +1278,10 @@ procedure Str(s1: string; var s: string);
 function Pos(subs, s: string; from: integer := 1): integer;
 /// Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function PosEx(subs, s: string; from: integer := 1): integer;
+/// Возвращает позицию последнего вхождения подстроки subs в строке s. Если не найдена, возвращает 0 
+function LastPos(subs, s: string): integer;
+/// Возвращает позицию последнего вхождения подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
+function LastPos(subs, s: string; from: integer): integer;
 /// Возвращает длину строки 
 function Length(s: string): integer;
 /// Устанавливает длину строки s равной n
@@ -1550,6 +1562,19 @@ function ReadSeqReal(const prompt: string; n: integer): sequence of real;
 /// Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры
 function ReadSeqString(const prompt: string; n: integer): sequence of string;
 
+/// Возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
+/// Возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqRealWhile(cond: real -> boolean): sequence of real;
+/// Возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqStringWhile(cond: string -> boolean): sequence of string;
+
+/// Выводит приглашение к вводу и возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqIntegerWhile(const prompt: string; cond: integer -> boolean): sequence of integer;
+/// Выводит приглашение к вводу и возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqRealWhile(const prompt: string; cond: real -> boolean): sequence of real;
+/// Выводит приглашение к вводу и возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие
+function ReadSeqStringWhile(const prompt: string; cond: string -> boolean): sequence of string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation
@@ -1698,6 +1723,8 @@ var
   ExitCode := 0; // TODO Сделать возврат в Main
   ///--
   DefaultEncoding: Encoding;
+  ///--
+  PrintDelimDefault: string := ' ';
 
 ///--
 var
@@ -2944,7 +2971,7 @@ function ArrNToString(a: System.Array; indexes: array of integer; i: integer): s
 function StructuredObjectToString(o: Object; n: integer := 0): string;
 const 
   nmax = 100;
-  nmax1 = 50;
+  nmax1 = 30;
 begin
   if o is System.Reflection.Pointer then
     Result := PointerToString(System.Reflection.Pointer.Unbox(o))
@@ -3771,7 +3798,7 @@ begin
   Result := res;
 end;
 
-type
+{type
 // Вспомогательный класс для генерации бесконечной последовательности целых, начиная с заданного значения
   IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
   private
@@ -3795,10 +3822,10 @@ type
     begin
       cur := first-1;
     end;
-  end;
+  end;}
 
 // Вспомогательный класс для генерации рекуррентных последовательностей
-  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
+{  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
   private
     first: T;
     cur: T;
@@ -3873,18 +3900,33 @@ type
       b := second;
       isfirst := true;
     end;
-  end;
+  end;}
 
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
 function Iterate<T>(first: T; next: T->T): sequence of T;
 begin
-  Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
+  yield first;
+  while True do
+  begin
+    first := next(first);
+    yield first;
+  end;
+  //Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
 end;
 
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальными элементами first, second и функцией next
 function Iterate<T>(first,second: T; next: (T,T)->T): sequence of T;
 begin
-  Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
+  yield first;
+  yield second;
+  while True do
+  begin
+    var nxt := next(first,second);
+    yield nxt;
+    first := second;
+    second := nxt;
+  end;
+//  Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
 end;
 
 function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
@@ -3963,7 +4005,10 @@ end;}
 
 function ArrFill<T>(count: integer; x: T): array of T;
 begin
-  Result := System.Linq.Enumerable.Repeat(x,count).ToArray();
+  Result := new T[count];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := x;
+  //Result := System.Linq.Enumerable.Repeat(x,count).ToArray();
 end;
 
 function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
@@ -4077,6 +4122,57 @@ function ReadSeqString(const prompt: string; n: integer): sequence of string;
 begin
   Print(prompt);
   Result := ReadSeqString(n);
+end;
+
+function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
+begin
+  while True do
+  begin
+    var x := ReadInteger();
+    if not cond(x) then
+      break;
+    yield x;  
+  end;
+end;
+
+function ReadSeqRealWhile(cond: real -> boolean): sequence of real;
+begin
+  while True do
+  begin
+    var x := ReadReal();
+    if not cond(x) then
+      break;
+    yield x;  
+  end;
+end;
+
+function ReadSeqStringWhile(cond: string -> boolean): sequence of string;
+begin
+  while True do
+  begin
+    var x := ReadString();
+    if not cond(x) then
+      break;
+    yield x;  
+  end;
+end;
+
+function ReadSeqIntegerWhile(const prompt: string; cond: integer -> boolean): sequence of integer;
+begin
+  Print(prompt);
+  Result := ReadSeqIntegerWhile(cond);
+end;
+
+function ReadSeqRealWhile(const prompt: string; cond: real -> boolean): sequence of real;
+begin
+  Print(prompt);
+  Result := ReadSeqRealWhile(cond);
+end;
+
+function ReadSeqStringWhile(const prompt: string; cond: string -> boolean): sequence of string;
+begin
+  Print(prompt);
+  Result := ReadSeqStringWhile(cond);
 end;
 
 // -----------------------------------------------------------------------------
@@ -6312,21 +6408,21 @@ begin
   Result := System.IO.File.Exists(name);
 end;
 
-procedure Assert(cond: boolean);
+procedure Assert(cond: boolean; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
-    var stackTrace := new System.Diagnostics.StackTrace(true);
-    var ind := 1;
-    if stackTrace.GetFrame(0).GetMethod().Name <> 'Assert' then
-      ind := 0;
-    var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
-    var currentFile := stackTrace.GetFrame(ind).GetFileName();
+    //var stackTrace := new System.Diagnostics.StackTrace(true);
+    //var ind := 1;
+    //if stackTrace.GetFrame(0).GetMethod().Name <> 'Assert' then
+      //ind := 0;
+    //var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
+    //var currentFile := stackTrace.GetFrame(ind).GetFileName();
     if not IsWDE then
-      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString())
+      System.Diagnostics.Debug.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
     else if not cond then
     begin
-      var err := 'Сбой подтверждения: '+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      var err := 'Сбой подтверждения: '+Environment.NewLine+'Файл '+sourceFile+', строка '+line.ToString();
       writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
@@ -6336,21 +6432,21 @@ begin
     System.Diagnostics.Debug.Assert(cond);
 end;
 
-procedure Assert(cond: boolean; message: string);
+procedure Assert(cond: boolean; message: string; sourceFile: string; line: integer);
 begin
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) or IsWDE then
   begin
-    var stackTrace := new System.Diagnostics.StackTrace(true);
-    var ind := 1;
-    if stackTrace.GetFrame(0).GetMethod().Name <> 'Assert' then
-      ind := 0;
-    var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
-    var currentFile := stackTrace.GetFrame(ind).GetFileName();
+    //var stackTrace := new System.Diagnostics.StackTrace(true);
+    //var ind := 1;
+    //if stackTrace.GetFrame(0).GetMethod().Name <> 'Assert' then
+    //  ind := 0;
+    //var currentLine := stackTrace.GetFrame(ind).GetFileLineNumber();
+    //var currentFile := stackTrace.GetFrame(ind).GetFileName();
     if not IsWDE then
-      System.Diagnostics.Debug.Assert(cond,'Файл '+currentFile+', строка '+currentLine.ToString()+': '+message)
+      System.Diagnostics.Debug.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString()+': '+message)
     else if not cond then
     begin
-      var err := 'Сбой подтверждения: '+message+Environment.NewLine+'Файл '+currentFile+', строка '+currentLine.ToString();
+      var err := 'Сбой подтверждения: '+message+Environment.NewLine+'Файл '+sourceFile+', строка '+line.ToString();
       writeln(err);
       System.Threading.Thread.Sleep(500);
       raise new Exception();
@@ -6591,6 +6687,16 @@ begin
   Result := Math.Sign(x);
 end;
 
+function Abs(x: shortint): shortint;
+begin
+  Result := Math.Abs(x);
+end;
+
+function Abs(x: smallint): smallint;
+begin
+  Result := Math.Abs(x);
+end;
+
 function Abs(x: integer): integer;
 begin
   Result := Math.Abs(x);
@@ -6697,6 +6803,16 @@ begin
 end;
 
 function Sqr(x: integer): int64;
+begin
+  Result := x * x;
+end;
+
+function Sqr(x: shortint): integer;
+begin
+  Result := x * x;
+end;
+
+function Sqr(x: smallint): integer;
 begin
   Result := x * x;
 end;
@@ -7164,6 +7280,21 @@ begin
     Result := 0
   else Result := s.IndexOf(subs, from - 1) + 1;
 end;
+
+function LastPos(subs, s: string): integer;
+begin
+  if (subs = nil) or (subs.Length = 0) then
+    Result := 0
+  else Result := s.LastIndexOf(subs, s.Length - 1) + 1;
+end;
+
+function LastPos(subs, s: string; from: integer): integer;
+begin
+  if (subs = nil) or (subs.Length = 0) then
+    Result := 0
+  else Result := s.LastIndexOf(subs, from - 1) + 1;
+end;
+
 
 function Length(s: string): integer;
 begin
@@ -7879,34 +8010,49 @@ end;
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом 1
 function Step(Self: integer): sequence of integer; extensionmethod;
 begin
-  Result := IntNumbersClass.Create(Self);
+  while True do
+  begin
+    yield Self;
+    Self += 1;
+  end;
 end;
 
 /// Возвращает бесконечную последовательность целых от текущего значения с шагом step
 function Step(Self: integer; step: integer): sequence of integer; extensionmethod;
 begin
-  var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+  while True do
+  begin
+    yield Self;
+    Self += step;
+  end;
 end;
 
 /// Возвращает бесконечную последовательность вещественных от текущего значения с шагом step
 function Step(Self: real; step: real): sequence of real; extensionmethod;
 begin
-  var slf := Self;
-  Result := IntNumbersClass.Create().Select(x->x*step+slf);
+  while True do
+  begin
+    yield Self;
+    Self += step;
+  end;
 end;
 
 // Возвращает бесконечную последовательность элементов, совпадающих с данным
 ///--
 function &Repeat<T>(Self: T): sequence of T; extensionmethod;
 begin
-  Result := SeqFill(MaxInt,Self);
+  while True do
+    yield Self;
 end;
 
 /// Повторяет последовательность бесконечное число раз
 function Cycle<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := SeqFill(MaxInt,Self).SelectMany(x->x);
+  while True do
+  begin
+    foreach var x in Self do
+      yield x;
+  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -7928,7 +8074,10 @@ end;
 /// Выводит последовательность на экран, используя пробел в качестве разделителя
 function Print<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.Print(' ');  
+  if typeof(T)=typeof(char) then 
+    Result := Self.Print('')
+  else  
+    Result := Self.Print(PrintDelimDefault);  
 end;
 
 /// Выводит последовательность на экран, используя delim в качестве разделителя, и переходит на новую строку
@@ -7942,7 +8091,10 @@ end;
 /// Выводит последовательность на экран, используя пробел качестве разделителя, и переходит на новую строку
 function Println<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Result := Self.Println(' ');  
+  if typeof(T)=typeof(char) then 
+    Result := Self.Println('')
+  else  
+    Result := Self.Println(PrintDelimDefault);  
 end;
 
 /// Выводит последовательность строк в файл
@@ -7967,7 +8119,9 @@ end;
 /// Преобразует элементы последовательности в строковое представление, после чего объединяет их в строку, используя пробел в качестве разделителя
 function JoinIntoString<T>(Self: sequence of T): string; extensionmethod;
 begin
-  Result := Self.JoinIntoString(' ');  
+  if typeof(T) = typeof(char) then
+    Result := Self.JoinIntoString('') 
+  else Result := Self.JoinIntoString(' ');  
 end;
 
 /// Применяет действие к каждому элементу последовательности
@@ -8021,7 +8175,7 @@ end;
 // Дополнения февраль 2016: MinBy, MaxBy, TakeLast, Slice, Cartesian, SplitAt, 
 //   Partition, ZipTuple, UnZipTuple, Interleave, Numerate, Tabulate, Pairwise, Batch 
 
-/// Возвращает элемент последовательности с минимальным значением ключа
+/// Возвращает первый элемент последовательности с минимальным значением ключа
 function MinBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
 begin
   if selector = nil then
@@ -8033,7 +8187,7 @@ begin
   Result := Self.Aggregate((min,x)-> comp.Compare(selector(x),selector(min))<0 ? x : min);
 end;
 
-/// Возвращает элемент последовательности с максимальным значением ключа
+/// Возвращает первый элемент последовательности с максимальным значением ключа
 function MaxBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
 begin
   if selector = nil then
@@ -8042,30 +8196,56 @@ begin
     raise new InvalidOperationException('Empty sequence');
  
   var comp := Comparer&<TKey>.Default;
-  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))<0 ? max : x);
+  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))>0 ? x : max);
+end;
+
+/// Возвращает последний элемент последовательности с минимальным значением ключа
+function LastMinBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
+begin
+  if selector = nil then
+    raise new ArgumentNullException('selector');
+  if not Self.Any() then
+    raise new InvalidOperationException('Empty sequence');
+
+  var comp := Comparer&<TKey>.Default;
+  Result := Self.Aggregate((min,x)-> comp.Compare(selector(x),selector(min))<=0 ? x : min);
+end;
+
+/// Возвращает последний элемент последовательности с максимальным значением ключа
+function LastMaxBy<T, TKey>(Self: sequence of T; selector: T -> TKey): T; extensionmethod;
+begin
+  if selector = nil then
+    raise new ArgumentNullException('selector');
+  if not Self.Any() then
+    raise new InvalidOperationException('Empty sequence');
+ 
+  var comp := Comparer&<TKey>.Default;
+  Result := Self.Aggregate((max,x)-> comp.Compare(selector(x),selector(max))>=0 ? x : max);
 end;
 
 /// Возвращает последние count элементов последовательности
 function TakeLast<T>(Self: sequence of T; count: integer): sequence of T; extensionmethod;
 begin
-  var q := new Queue<T>;
-  foreach var x in Self do
-  begin
-    if q.Count = count then
-      q.Dequeue();
-    q.Enqueue(x);
-  end;
-  Result := q;
+  Result := Self.Reverse.Take(count).Reverse;
 end;
 
-// ToDo: SkipLast
+/// Возвращает последовательность без последних count элементов 
+function SkipLast<T>(self: sequence of T; count: integer): sequence of T; extensionmethod;
+begin
+  Result := Self.Reverse.Skip(count).Reverse;
+end;
 
 /// Декартово произведение последовательностей
 function Cartesian<T,T1>(Self: sequence of T; b: sequence of T1): sequence of (T,T1); extensionmethod;
 begin
   if b=nil then
     raise new System.ArgumentNullException('b');
-  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x);
+
+  foreach var x in Self do
+  foreach var y in b do
+    yield (x,y)
+  
+  //Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x);
 end;
 
 /// Декартово произведение последовательностей
@@ -8073,7 +8253,12 @@ function Cartesian<T,T1,T2>(Self: sequence of T; b: sequence of T1; func: (T,T1)
 begin
   if b=nil then
     raise new System.ArgumentNullException('b');
-  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x).Select(x->func(x[0],x[1]));
+
+  foreach var x in Self do
+  foreach var y in b do
+    yield func(x,y)
+
+//  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x).Select(x->func(x[0],x[1]));
 end;
 
 /// Разбивает последовательности на две в позиции ind
@@ -8199,13 +8384,32 @@ end;
 /// Превращает последовательность в последовательность пар соседних элементов
 function Pairwise<T>(Self: sequence of T): sequence of (T,T); extensionmethod;
 begin
-  Result := Self.ZipTuple(Self.Skip(1));
+  var previous: T;
+  var it := Self.GetEnumerator();
+  if (it.MoveNext()) then
+      previous := it.Current;
+
+  while (it.MoveNext()) do
+  begin
+    yield (previous,it.Current);
+    previous := it.Current;
+  end
 end;
 
 /// Превращает последовательность в последовательность пар соседних элементов, применяет func к каждой паре полученных элементов и получает новую последовательность 
 function Pairwise<T,Res>(Self: sequence of T; func:(T,T)->Res): sequence of Res; extensionmethod;
 begin
-  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
+  var previous: T;
+  var it := Self.GetEnumerator();
+  if (it.MoveNext()) then
+      previous := it.Current;
+
+  while (it.MoveNext()) do
+  begin
+    yield func(previous,it.Current);
+    previous := it.Current;
+  end
+//  Result := Self.ZipTuple(Self.Skip(1)).Select(x->func(x[0],x[1]));
 end;
 
 /// Разбивает последовательность на серии длины size
@@ -8254,6 +8458,121 @@ begin
     raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
 
   Result := Self.Skip(from).Where((x,i)->i mod step = 0).Take(count)
+end;
+
+// Дополнения июль 2016: Incremental
+///--
+{function IncrementalSeq(Self: sequence of integer): sequence of integer; 
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield nextItem - prevItem;
+      prevItem := nextItem;
+    end
+  end
+end;
+
+///--
+function IncrementalSeq(Self: sequence of real): sequence of real;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield nextItem - prevItem;
+      prevItem := nextItem;
+    end
+  end
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: sequence of integer): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: array of integer): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: List<integer>): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: LinkedList<integer>): sequence of integer; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: sequence of real): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: array of real): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: List<real>): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности
+function Incremental(Self: LinkedList<real>): sequence of real; extensionmethod;
+begin
+  Result := IncrementalSeq(Self);
+end;}
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
+function Incremental<T,T1>(Self: sequence of T; func: (T,T)->T1): sequence of T1; extensionmethod;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      yield func(prevItem,nextItem);
+      prevItem := nextItem;
+    end
+  end
+end;
+
+/// Возвращает последовательность разностей соседних элементов исходной последовательности. В качестве функции разности используется func
+function Incremental<T,T1>(Self: sequence of T; func: (T,T,integer)->T1): sequence of T1; extensionmethod;
+begin
+  var iter := Self.GetEnumerator();
+  if iter.MoveNext() then
+  begin
+    var ind := 0;
+    var prevItem := iter.Current;
+    while iter.MoveNext() do
+    begin
+      var nextItem := iter.Current;
+      ind += 1;
+      yield func(prevItem,nextItem,ind);
+      prevItem := nextItem;
+    end
+  end
 end;
 
 // -----------------------------------------------------
@@ -8423,7 +8742,7 @@ end;
 
 // Дополнения февраль 2016: Shuffle, AdjacentFind, IndexMin, IndexMax, Replace, Transform
 //   Статические методы - в методы расширения: BinarySearch, ConvertAll, Find, FindIndex, FindAll,  
-//   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Resize, Sort
+//   FindLast, FindLastIndex, IndexOf, Contains, LastIndexOf, Reverse, Sort
 
 /// Перемешивает элементы массива случайным образом
 function Shuffle<T>(Self: array of T): array of T; extensionmethod;
@@ -8435,10 +8754,10 @@ begin
 end;
 
 /// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
-function AdjacentFind<T>(Self: array of T): integer; extensionmethod;
+function AdjacentFind<T>(Self: array of T; start: integer := 0): integer; extensionmethod;
 begin
   Result := -1;
-  for var i:=0 to Self.Length-2 do
+  for var i:=start to Self.Length-2 do
     if Self[i]=Self[i+1] then 
     begin
       Result := i;
@@ -8446,12 +8765,122 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого минимального элемента
-function IndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+/// Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1
+function AdjacentFind<T>(Self: array of T; eq: (T,T)->boolean; start: integer := 0): integer; extensionmethod;
 begin
-  var min := Self[0];
-  Result := 0;
+  Result := -1;
+  for var i:=start to Self.Length-2 do
+    if eq(Self[i],Self[i+1]) then 
+    begin
+      Result := i;
+      exit;
+    end;
+end;
+
+type
+  AdjGroupClass<T> = class
+  private
+    cur: T;
+    enm: IEnumerator<T>;
+    fin: boolean;
+  public
+    constructor Create(a: sequence of T);
+    begin
+      enm := a.GetEnumerator();
+      fin := enm.MoveNext;
+      if fin then
+        cur := enm.Current;
+    end;
+    
+    function TakeGroup: sequence of T;
+    begin
+      yield cur;
+      fin := enm.movenext;
+      while fin do
+      begin
+        if enm.current = cur then
+          yield enm.current
+        else
+        begin
+          cur := enm.Current;
+          break;
+        end;
+        fin := enm.movenext;
+      end;  
+    end;
+  end;
+
+/// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
+function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
+begin
+  var c := new AdjGroupClass<T>(Self);
+  while c.fin do
+    yield c.TakeGroup();
+end;
+
+//ToDo Сделать AdjacentGroup с функцией сравнения
+
+/// Возвращает минимальный элемент 
+function Min<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self[0];
   for var i:=1 to Self.Length-1 do
+    if Self[i].CompareTo(Result)<0 then 
+      Result := Self[i];
+end;
+
+/// Возвращает максинимальный элемент 
+function Max<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i].CompareTo(Result)>0 then 
+      Result := Self[i];
+end;
+
+/// Возвращает минимальный элемент 
+function Min(Self: array of integer): integer; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] < Result then 
+      Result := Self[i];
+end;
+
+/// Возвращает минимальный элемент 
+function Min(Self: array of real): real; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] < Result then 
+      Result := Self[i];
+end;
+
+/// Возвращает максимальный элемент 
+function Max(Self: array of integer): integer; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] > Result then 
+      Result := Self[i];
+end;
+
+/// Возвращает максимальный элемент 
+function Max(Self: array of real): real; extensionmethod; 
+begin
+  Result := Self[0];
+  for var i:=1 to Self.Length-1 do
+    if Self[i] > Result then 
+      Result := Self[i];
+end;
+
+
+/// Возвращает индекс первого минимального элемента начиная с позиции start
+function IndexMin<T>(Self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[start];
+  Result := start;
+  for var i:=start+1 to Self.Length-1 do
     if Self[i].CompareTo(min)<0 then 
     begin
       Result := i;
@@ -8459,12 +8888,64 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого максимального элемента
-function IndexMax<T>(self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс первого максимального элемента начиная с позиции start
+function IndexMax<T>(self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var max := Self[0];
-  Result := 0;
-  for var i:=1 to Self.Length-1 do
+  var max := Self[start];
+  Result := start;
+  for var i:=start+1 to Self.Length-1 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMin<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[Self.Length-1];
+  Result := Self.Length-1;
+  for var i:=Self.Length-2 downto 0 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента начиная с позиции start
+function LastIndexMin<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[start];
+  Result := start;
+  for var i:=start-1 downto 0 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMax<T>(Self: array of T): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[Self.Length-1];
+  Result := Self.Length-1;
+  for var i:=Self.Length-2 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента начиная с позиции start
+function LastIndexMax<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[start];
+  Result := start;
+  for var i:=start-1 downto 0 do
     if Self[i].CompareTo(max)>0 then 
     begin
       Result := i;
@@ -8511,6 +8992,12 @@ begin
   Result := System.Array.FindIndex(self,p);  
 end;
 
+/// Выполняет поиск индекса первого элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается -1
+function FindIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
+begin
+  Result := System.Array.FindIndex(self,start,p);  
+end;
+
 /// Возвращает в виде массива все элементы, удовлетворяющие предикату
 function FindAll<T>(self: array of T; p: T->boolean): array of T; extensionmethod;
 begin
@@ -8529,10 +9016,22 @@ begin
   Result := System.Array.FindLastIndex(self,p);  
 end;
 
+/// Выполняет поиск индекса последнего элемента в массиве, удовлетворяющего предикату, начиная с индекса start. Если не найден, возвращается нулевое значение соответствующего типа
+function FindLastIndex<T>(self: array of T; start: integer; p: T->boolean): integer; extensionmethod;
+begin
+  Result := System.Array.FindLastIndex(self,start,p);  
+end;
+
 /// Возвращает индекс первого вхождения элемента или -1 если элемент не найден
 function IndexOf<T>(self: array of T; x: T): integer; extensionmethod;
 begin
   Result := System.Array.IndexOf(self,x);  
+end;
+
+/// Возвращает индекс первого вхождения элемента начиная с индекса start или -1 если элемент не найден
+function IndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
+begin
+  Result := System.Array.IndexOf(self,x,start);  
 end;
 
 /// Возвращает индекс последнего вхождения элемента или -1 если элемент не найден
@@ -8541,10 +9040,10 @@ begin
   Result := System.Array.LastIndexOf(self,x);  
 end;
 
-/// Меняет размер массива
-procedure Resize<T>(self: array of T; x: integer); extensionmethod;
+/// Возвращает индекс последнего вхождения элемента начиная с индекса start или -1 если элемент не найден
+function LastIndexOf<T>(self: array of T; x: T; start: integer): integer; extensionmethod;
 begin
-  System.Array.Resize(self,x);  
+  Result := System.Array.LastIndexOf(self,x,start);  
 end;
 
 /// Сортирует массив по возрастанию
@@ -8558,6 +9057,12 @@ procedure Sort<T>(self: array of T; cmp: (T,T) -> integer); extensionmethod;
 begin
   System.Array.Sort(self,cmp);  
 end;
+
+/// Возвращает индекс последнего элемента массива
+function High(self: System.Array); extensionmethod := High(Self);
+
+/// Возвращает индекс первого элемента массива
+function Low(self: System.Array); extensionmethod := Low(Self);
 
 ///-- 
 function CreateSliceFromArrayInternal<T>(Self: array of T; from,step,count: integer): array of T;

@@ -111,6 +111,12 @@ namespace CodeCompletion
                     if (ext_syms != null)
                         lst.AddRange(ext_syms);
                     RestoreCurrentUsedAssemblies();
+                    List<SymInfo> lst_to_remove = new List<SymInfo>();
+                    foreach (SymInfo si2 in lst)
+                        if (si2.name.StartsWith("operator"))
+                            lst_to_remove.Add(si2);
+                    foreach (SymInfo si2 in lst_to_remove)
+                        lst.Remove(si2);
                     return lst.ToArray();
                 }
                 else
@@ -470,7 +476,7 @@ namespace CodeCompletion
         	List<SymInfo> result_names = new List<SymInfo>();
         	if (elems == null) return null;
         	for (int i=0; i<elems.Length; i++)
-        		if (pattern != null || pattern != "")
+        		if (pattern != null && pattern != "")
         		{
         			if (!elems[i].name.StartsWith("$"))
         			if (all_names)
@@ -879,7 +885,8 @@ namespace CodeCompletion
         	if (!header && ss.IsInScope(ss.head_loc,line+1,col+1))
         	{
         		List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-        		expr = parser.GetExpression("test"+Path.GetExtension(FileName), expr_without_brackets, Errors);
+                List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
+        		expr = parser.GetExpression("test"+Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
         		if (expr == null || Errors.Count > 0)
         			return null;
         	}

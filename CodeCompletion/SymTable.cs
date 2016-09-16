@@ -305,6 +305,10 @@ namespace CodeCompletion
             if (extension_methods == null)
                 extension_methods = new Dictionary<TypeScope, List<ProcScope>>();
             List<ProcScope> meth_list = null;
+            if (ts is CompiledScope && (ts as CompiledScope).CompiledType.IsGenericType && !(ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
+                ts = TypeTable.get_compiled_type((ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+            if (ts.original_type != null)
+                ts = ts.original_type;
             if (!extension_methods.TryGetValue(ts, out meth_list))
             {
                 meth_list = new List<ProcScope>();
@@ -315,6 +319,8 @@ namespace CodeCompletion
 
         public SymInfo[] GetSymInfosForExtensionMethods(TypeScope ts)
         {
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new SymInfo[0];
             List<SymInfo> lst = new List<SymInfo>();
             List<ProcScope> meth_list = GetExtensionMethods(ts);
             for (int i = 0; i < meth_list.Count; i++)
@@ -324,6 +330,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(string name, TypeScope ts)
         {
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new List<ProcScope>();
             List<ProcScope> meths = GetExtensionMethods(ts);
             List<ProcScope> lst = new List<ProcScope>();
             for (int i = 0; i < meths.Count; i++)
@@ -338,6 +346,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(TypeScope ts)
         {
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new List<ProcScope>();
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -347,7 +357,7 @@ namespace CodeCompletion
                 {
                     TypeScope tmp_ts2 = tmp_ts;
                     if (tmp_ts is CompiledScope && (tmp_ts as CompiledScope).CompiledType.IsGenericType && !(tmp_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
-                        tmp_ts2 = TypeTable.get_compiled_type(new SymInfo("", SymbolKind.Class, ""), (tmp_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+                        tmp_ts2 = TypeTable.get_compiled_type((tmp_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
                     if (extension_methods.TryGetValue(tmp_ts2, out meths))
                     {
                         lst.AddRange(meths);
@@ -369,7 +379,7 @@ namespace CodeCompletion
                 {
                     TypeScope int_ts2 = int_ts;
                     if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
-                        int_ts2 = TypeTable.get_compiled_type(new SymInfo("", SymbolKind.Class, ""), (int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+                        int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
                     if (extension_methods.TryGetValue(int_ts2, out meths))
                     {
                         lst.AddRange(meths);
@@ -2972,7 +2982,7 @@ namespace CodeCompletion
             {
                 List<SymInfo> syms = new List<SymInfo>();
                 syms.AddRange(base.GetNamesAsInObject(ev));
-                if (implemented_interfaces != null)
+                if (!IsMultiDynArray && implemented_interfaces != null)
                 {
                     foreach (TypeScope ts in implemented_interfaces)
                         syms.AddRange(ts.GetNamesAsInObject(ev));
@@ -2984,6 +2994,8 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
         {
+            if (!is_dynamic_arr)
+                return new List<SymScope>();
             List<SymScope> syms = base.FindOverloadNamesOnlyInType(name);
             if (implemented_interfaces != null)
             {
@@ -3001,6 +3013,8 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
+            if (!is_dynamic_arr)
+                return null;
             SymScope sc = null;
             if (baseScope != null && is_dynamic_arr) sc = baseScope.FindNameOnlyInType(name);
             if (sc != null) return sc;
@@ -3011,6 +3025,8 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> names = new List<SymScope>();
+            if (!is_dynamic_arr)
+                return names;
             if (baseScope != null && is_dynamic_arr) names.AddRange(baseScope.FindOverloadNamesOnlyInType(name));
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
@@ -3019,6 +3035,8 @@ namespace CodeCompletion
 
         public override SymScope FindNameInAnyOrder(string name)
         {
+            if (!is_dynamic_arr)
+                return null;
             SymScope sc = null;
             if (baseScope != null && is_dynamic_arr) sc = baseScope.FindNameOnlyInType(name);
             if (sc != null) return sc;
@@ -4152,7 +4170,7 @@ namespace CodeCompletion
             {
                 lst.AddRange(baseScope.GetNamesAsInObject(ev));
             }
-            if (implemented_interfaces != null)
+            if (implemented_interfaces != null && !(this is ArrayScope && (this as ArrayScope).IsMultiDynArray))
                 foreach (TypeScope ts in implemented_interfaces)
                     lst.AddRange(ts.GetNamesAsInObject(ev));
             return lst.ToArray();
@@ -4767,6 +4785,8 @@ namespace CodeCompletion
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
             Type t = this.ctn;
+            if (!ctn.IsGenericType)
+                return this;
             if (!ctn.IsGenericTypeDefinition)
                 t = PascalABCCompiler.NetHelper.NetHelper.FindType(this.ctn.Namespace + "." + this.ctn.Name);
             else if (this.instances != null && this.instances.Count > 0)

@@ -1717,19 +1717,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		public virtual void pre_do_visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
 		}
 
-		public virtual void post_do_visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		public virtual void post_do_visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
 		}
 
-		public virtual void pre_do_visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		public virtual void pre_do_visit(yield_sequence_node _yield_sequence_node)
 		{
 		}
 
-		public virtual void post_do_visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		public virtual void post_do_visit(yield_sequence_node _yield_sequence_node)
 		{
 		}
 
@@ -3560,8 +3560,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_ident);
 			pre_do_visit(_yield_unknown_ident);
-			visit(yield_unknown_ident.UnknownID);
-			visit(yield_unknown_ident.ClassName);
 			post_do_visit(_yield_unknown_ident);
 		}
 
@@ -3569,24 +3567,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_unknown_expression_type);
 			pre_do_visit(_yield_unknown_expression_type);
-			visit(yield_unknown_expression_type.Vds);
 			post_do_visit(_yield_unknown_expression_type);
 		}
 
-		public override void visit(yield_var_def_statement_with_unknown_type _yield_var_def_statement_with_unknown_type)
+		public override void visit(yield_unknown_foreach_type _yield_unknown_foreach_type)
 		{
-			DefaultVisit(_yield_var_def_statement_with_unknown_type);
-			pre_do_visit(_yield_var_def_statement_with_unknown_type);
-			visit(yield_var_def_statement_with_unknown_type.vars);
-			post_do_visit(_yield_var_def_statement_with_unknown_type);
+			DefaultVisit(_yield_unknown_foreach_type);
+			pre_do_visit(_yield_unknown_foreach_type);
+			post_do_visit(_yield_unknown_foreach_type);
 		}
 
-		public override void visit(yield_variable_definitions_with_unknown_type _yield_variable_definitions_with_unknown_type)
+		public override void visit(yield_sequence_node _yield_sequence_node)
 		{
-			DefaultVisit(_yield_variable_definitions_with_unknown_type);
-			pre_do_visit(_yield_variable_definitions_with_unknown_type);
-			visit(yield_variable_definitions_with_unknown_type.vars);
-			post_do_visit(_yield_variable_definitions_with_unknown_type);
+			DefaultVisit(_yield_sequence_node);
+			pre_do_visit(_yield_sequence_node);
+			visit(yield_sequence_node.ex);
+			post_do_visit(_yield_sequence_node);
 		}
 	}
 

@@ -83,6 +83,18 @@ namespace CodeCompletion
             _assign.from.visit(this);
         }
 
+        public override void visit(assign_tuple _assign_tuple)
+        {
+            _assign_tuple.vars.visit(this);
+            _assign_tuple.expr.visit(this);
+        }
+
+        public override void visit(addressed_value_list _addressed_value_list)
+        {
+            foreach (addressed_value av in _addressed_value_list.variables)
+                av.visit(this);
+        }
+
         public override void visit(bin_expr _bin_expr)
         {
             //throw new NotImplementedException();
@@ -1531,6 +1543,10 @@ namespace CodeCompletion
         public override void visit(sequence_type _sequence_type)
         {
             _sequence_type.elements_type.visit(this);
+        }
+        public override void visit(yield_node _yield_node)
+        {
+            _yield_node.ex.visit(this);
         }
         public override void visit(modern_proc_type _modern_proc_type)
         {
