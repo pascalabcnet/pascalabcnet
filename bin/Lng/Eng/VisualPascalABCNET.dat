@@ -330,7 +330,12 @@ PRJ_COMPANY=Company
 PRJ_TRADEMARK=Trademark
 PRJ_COPYRIGHT=Copyright
 PRJ_GENERATE_XML_DOC=Generate XML doc
-
+VERSION_IS_UP_DO_DATE=PascalABC.NET is up to date
+UPDATE_AVAILABLE=New version of PascalABC.NET is available. Do you want to visit the download page?
+UPDATE_CHECK_ERROR=An error occurred while checking for updates
+UPDATE_CHECK=Checking for updates
+PABC_DOWNLOAD_PAGE=http://pascalabc.net/en/download
+M_CHECKUPDATES=Check for updates
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=General

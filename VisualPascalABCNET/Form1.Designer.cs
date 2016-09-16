@@ -256,6 +256,7 @@ namespace VisualPascalABC
             this.cmiSendToBack = new System.Windows.Forms.ToolStripMenuItem();
             this.cmiTabOrder = new System.Windows.Forms.ToolStripMenuItem();
             this.cmiProperties = new System.Windows.Forms.ToolStripMenuItem();
+            this.miCheckUpdates = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -557,7 +558,7 @@ namespace VisualPascalABC
             this.tsatConsoleApplication.Image = ((System.Drawing.Image)(resources.GetObject("tsatConsoleApplication.Image")));
             this.tsatConsoleApplication.ImageTransparentColor = System.Drawing.Color.Red;
             this.tsatConsoleApplication.Name = "tsatConsoleApplication";
-            this.tsatConsoleApplication.Size = new System.Drawing.Size(176, 22);
+            this.tsatConsoleApplication.Size = new System.Drawing.Size(151, 22);
             this.tsatConsoleApplication.Text = "AT_CONSOLE";
             this.tsatConsoleApplication.Click += new System.EventHandler(this.tsat_Click);
             // 
@@ -566,7 +567,7 @@ namespace VisualPascalABC
             this.tsatWindowsApplication.Image = ((System.Drawing.Image)(resources.GetObject("tsatWindowsApplication.Image")));
             this.tsatWindowsApplication.ImageTransparentColor = System.Drawing.Color.Red;
             this.tsatWindowsApplication.Name = "tsatWindowsApplication";
-            this.tsatWindowsApplication.Size = new System.Drawing.Size(176, 22);
+            this.tsatWindowsApplication.Size = new System.Drawing.Size(151, 22);
             this.tsatWindowsApplication.Text = "AT_WINDOWS";
             this.tsatWindowsApplication.Click += new System.EventHandler(this.tsat_Click);
             // 
@@ -575,7 +576,7 @@ namespace VisualPascalABC
             this.tsatDll.Image = ((System.Drawing.Image)(resources.GetObject("tsatDll.Image")));
             this.tsatDll.ImageTransparentColor = System.Drawing.Color.Red;
             this.tsatDll.Name = "tsatDll";
-            this.tsatDll.Size = new System.Drawing.Size(176, 22);
+            this.tsatDll.Size = new System.Drawing.Size(151, 22);
             this.tsatDll.Text = "AT_DLL";
             this.tsatDll.Click += new System.EventHandler(this.tsat_Click);
             // 
@@ -660,7 +661,7 @@ namespace VisualPascalABC
             this.miRecentProjects,
             this.miExit});
             this.mrFile.Name = "mrFile";
-            this.mrFile.Size = new System.Drawing.Size(73, 24);
+            this.mrFile.Size = new System.Drawing.Size(61, 24);
             this.mrFile.Text = "MR_FILE";
             // 
             // miNew
@@ -669,14 +670,14 @@ namespace VisualPascalABC
             this.miNew.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miNew.Name = "miNew";
             this.miNew.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.miNew.Size = new System.Drawing.Size(226, 22);
+            this.miNew.Size = new System.Drawing.Size(194, 22);
             this.miNew.Text = "M_NEW";
             this.miNew.Click += new System.EventHandler(this.miNew_Click);
             // 
             // miNewProject
             // 
             this.miNewProject.Name = "miNewProject";
-            this.miNewProject.Size = new System.Drawing.Size(226, 22);
+            this.miNewProject.Size = new System.Drawing.Size(194, 22);
             this.miNewProject.Text = "M_NEW_PROJECT";
             this.miNewProject.Visible = false;
             this.miNewProject.Click += new System.EventHandler(this.miNewProject_Click);
@@ -687,28 +688,28 @@ namespace VisualPascalABC
             this.miUnitWithForm,
             this.miFormProgram});
             this.miNewAdv.Name = "miNewAdv";
-            this.miNewAdv.Size = new System.Drawing.Size(226, 22);
+            this.miNewAdv.Size = new System.Drawing.Size(194, 22);
             this.miNewAdv.Text = "M_NEW_ADV";
             this.miNewAdv.Visible = false;
             // 
             // miUnitWithForm
             // 
             this.miUnitWithForm.Name = "miUnitWithForm";
-            this.miUnitWithForm.Size = new System.Drawing.Size(211, 22);
+            this.miUnitWithForm.Size = new System.Drawing.Size(180, 22);
             this.miUnitWithForm.Text = "M_UNIT_WITH_FORM";
             this.miUnitWithForm.Click += new System.EventHandler(this.miUnitWithForm_Click);
             // 
             // miFormProgram
             // 
             this.miFormProgram.Name = "miFormProgram";
-            this.miFormProgram.Size = new System.Drawing.Size(211, 22);
+            this.miFormProgram.Size = new System.Drawing.Size(180, 22);
             this.miFormProgram.Text = "M_FORM_PROGRAM";
             this.miFormProgram.Click += new System.EventHandler(this.miFormProgram_Click);
             // 
             // toolStripMenuItem9
             // 
             this.toolStripMenuItem9.Name = "toolStripMenuItem9";
-            this.toolStripMenuItem9.Size = new System.Drawing.Size(223, 6);
+            this.toolStripMenuItem9.Size = new System.Drawing.Size(191, 6);
             // 
             // miOpen
             // 
@@ -716,14 +717,14 @@ namespace VisualPascalABC
             this.miOpen.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miOpen.Name = "miOpen";
             this.miOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.miOpen.Size = new System.Drawing.Size(226, 22);
+            this.miOpen.Size = new System.Drawing.Size(194, 22);
             this.miOpen.Text = "M_OPEN";
             this.miOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem1_Click_1);
             // 
             // miOpenProject
             // 
             this.miOpenProject.Name = "miOpenProject";
-            this.miOpenProject.Size = new System.Drawing.Size(226, 22);
+            this.miOpenProject.Size = new System.Drawing.Size(194, 22);
             this.miOpenProject.Text = "M_OPEN_PROJECT";
             this.miOpenProject.Visible = false;
             this.miOpenProject.Click += new System.EventHandler(this.miOpenProject_Click);
@@ -731,7 +732,7 @@ namespace VisualPascalABC
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
-            this.toolStripMenuItem10.Size = new System.Drawing.Size(223, 6);
+            this.toolStripMenuItem10.Size = new System.Drawing.Size(191, 6);
             // 
             // miSave
             // 
@@ -740,7 +741,7 @@ namespace VisualPascalABC
             this.miSave.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miSave.Name = "miSave";
             this.miSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.miSave.Size = new System.Drawing.Size(226, 22);
+            this.miSave.Size = new System.Drawing.Size(194, 22);
             this.miSave.Text = "M_SAVE";
             this.miSave.Click += new System.EventHandler(this.miSave_Click);
             // 
@@ -749,7 +750,7 @@ namespace VisualPascalABC
             this.miSaveAs.Name = "miSaveAs";
             this.miSaveAs.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.miSaveAs.Size = new System.Drawing.Size(226, 22);
+            this.miSaveAs.Size = new System.Drawing.Size(194, 22);
             this.miSaveAs.Text = "M_SAVEAS";
             this.miSaveAs.Click += new System.EventHandler(this.miSaveAs_Click);
             // 
@@ -759,27 +760,27 @@ namespace VisualPascalABC
             this.miSaveAll.Image = global::VisualPascalABC.Properties.Resources.save_all;
             this.miSaveAll.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miSaveAll.Name = "miSaveAll";
-            this.miSaveAll.Size = new System.Drawing.Size(226, 22);
+            this.miSaveAll.Size = new System.Drawing.Size(194, 22);
             this.miSaveAll.Text = "M_SAVEALL";
             this.miSaveAll.Click += new System.EventHandler(this.miSaveAll_Click_1);
             // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
-            this.toolStripMenuItem11.Size = new System.Drawing.Size(223, 6);
+            this.toolStripMenuItem11.Size = new System.Drawing.Size(191, 6);
             // 
             // miClose
             // 
             this.miClose.Enabled = false;
             this.miClose.Name = "miClose";
-            this.miClose.Size = new System.Drawing.Size(226, 22);
+            this.miClose.Size = new System.Drawing.Size(194, 22);
             this.miClose.Text = "M_CLOSE";
             this.miClose.Click += new System.EventHandler(this.miClose_Click);
             // 
             // miCloseProject
             // 
             this.miCloseProject.Name = "miCloseProject";
-            this.miCloseProject.Size = new System.Drawing.Size(226, 22);
+            this.miCloseProject.Size = new System.Drawing.Size(194, 22);
             this.miCloseProject.Text = "M_CLOSE_PROJECT";
             this.miCloseProject.Visible = false;
             this.miCloseProject.Click += new System.EventHandler(this.miCloseProject_Click);
@@ -788,39 +789,39 @@ namespace VisualPascalABC
             // 
             this.miCloseAllButThis.Enabled = false;
             this.miCloseAllButThis.Name = "miCloseAllButThis";
-            this.miCloseAllButThis.Size = new System.Drawing.Size(226, 22);
+            this.miCloseAllButThis.Size = new System.Drawing.Size(194, 22);
             this.miCloseAllButThis.Text = "M_CLOSEALLBUTTHIS";
             this.miCloseAllButThis.Click += new System.EventHandler(this.miCloseNonActive_Click);
             // 
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(223, 6);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(191, 6);
             // 
             // miPrint
             // 
             this.miPrint.Image = global::VisualPascalABC.Properties.Resources.PrintHS;
             this.miPrint.Name = "miPrint";
             this.miPrint.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.miPrint.Size = new System.Drawing.Size(226, 22);
+            this.miPrint.Size = new System.Drawing.Size(194, 22);
             this.miPrint.Text = "M_PRINT";
             this.miPrint.Click += new System.EventHandler(this.miPrint_Click);
             // 
             // toolStripSeparator14
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(223, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(191, 6);
             // 
             // miRecentFiles
             // 
             this.miRecentFiles.Name = "miRecentFiles";
-            this.miRecentFiles.Size = new System.Drawing.Size(226, 22);
+            this.miRecentFiles.Size = new System.Drawing.Size(194, 22);
             this.miRecentFiles.Text = "M_RECENTFILES";
             // 
             // miRecentProjects
             // 
             this.miRecentProjects.Name = "miRecentProjects";
-            this.miRecentProjects.Size = new System.Drawing.Size(226, 22);
+            this.miRecentProjects.Size = new System.Drawing.Size(194, 22);
             this.miRecentProjects.Text = "M_RECENTPROJECTS";
             this.miRecentProjects.Visible = false;
             // 
@@ -829,7 +830,7 @@ namespace VisualPascalABC
             this.miExit.Image = ((System.Drawing.Image)(resources.GetObject("miExit.Image")));
             this.miExit.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miExit.Name = "miExit";
-            this.miExit.Size = new System.Drawing.Size(226, 22);
+            this.miExit.Size = new System.Drawing.Size(194, 22);
             this.miExit.Text = "M_EXIT";
             this.miExit.Click += new System.EventHandler(this.ExitToolStripMenuItem_Click);
             // 
@@ -854,7 +855,7 @@ namespace VisualPascalABC
             this.toolStripMenuItem7});
             this.mrEdit.Name = "mrEdit";
             this.mrEdit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.mrEdit.Size = new System.Drawing.Size(77, 24);
+            this.mrEdit.Size = new System.Drawing.Size(63, 24);
             this.mrEdit.Text = "MR_EDIT";
             // 
             // miUndo
@@ -863,7 +864,7 @@ namespace VisualPascalABC
             this.miUndo.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miUndo.Name = "miUndo";
             this.miUndo.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Z)));
-            this.miUndo.Size = new System.Drawing.Size(219, 22);
+            this.miUndo.Size = new System.Drawing.Size(186, 22);
             this.miUndo.Text = "M_UNDO";
             this.miUndo.Click += new System.EventHandler(this.UndoToolStripMenuItem_Click);
             // 
@@ -874,14 +875,14 @@ namespace VisualPascalABC
             this.miRedo.Name = "miRedo";
             this.miRedo.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-            this.miRedo.Size = new System.Drawing.Size(219, 22);
+            this.miRedo.Size = new System.Drawing.Size(186, 22);
             this.miRedo.Text = "M_REDO";
             this.miRedo.Click += new System.EventHandler(this.RedoToolStripMenuItem_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(216, 6);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(183, 6);
             // 
             // miCut
             // 
@@ -889,7 +890,7 @@ namespace VisualPascalABC
             this.miCut.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miCut.Name = "miCut";
             this.miCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.miCut.Size = new System.Drawing.Size(219, 22);
+            this.miCut.Size = new System.Drawing.Size(186, 22);
             this.miCut.Text = "M_CUT";
             this.miCut.Click += new System.EventHandler(this.miCurt_Click);
             // 
@@ -899,7 +900,7 @@ namespace VisualPascalABC
             this.miCopy.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miCopy.Name = "miCopy";
             this.miCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.miCopy.Size = new System.Drawing.Size(219, 22);
+            this.miCopy.Size = new System.Drawing.Size(186, 22);
             this.miCopy.Text = "M_COPY";
             this.miCopy.Click += new System.EventHandler(this.miCopy_Click);
             // 
@@ -909,7 +910,7 @@ namespace VisualPascalABC
             this.miPaste.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miPaste.Name = "miPaste";
             this.miPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.miPaste.Size = new System.Drawing.Size(219, 22);
+            this.miPaste.Size = new System.Drawing.Size(186, 22);
             this.miPaste.Text = "M_PASTE";
             this.miPaste.Click += new System.EventHandler(this.miPaste_Click);
             // 
@@ -919,7 +920,7 @@ namespace VisualPascalABC
             this.miDelete.Image = global::VisualPascalABC.Properties.Resources.Delete3;
             this.miDelete.ImageTransparentColor = System.Drawing.Color.White;
             this.miDelete.Name = "miDelete";
-            this.miDelete.Size = new System.Drawing.Size(219, 22);
+            this.miDelete.Size = new System.Drawing.Size(186, 22);
             this.miDelete.Text = "M_DELETE";
             this.miDelete.Visible = false;
             this.miDelete.Click += new System.EventHandler(this.miDelete_Click);
@@ -927,7 +928,7 @@ namespace VisualPascalABC
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(216, 6);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(183, 6);
             // 
             // miFind
             // 
@@ -935,7 +936,7 @@ namespace VisualPascalABC
             this.miFind.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miFind.Name = "miFind";
             this.miFind.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.miFind.Size = new System.Drawing.Size(219, 22);
+            this.miFind.Size = new System.Drawing.Size(186, 22);
             this.miFind.Text = "M_FIND";
             this.miFind.Click += new System.EventHandler(this.miFind_Click);
             // 
@@ -945,7 +946,7 @@ namespace VisualPascalABC
             this.miFindNext.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miFindNext.Name = "miFindNext";
             this.miFindNext.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.miFindNext.Size = new System.Drawing.Size(219, 22);
+            this.miFindNext.Size = new System.Drawing.Size(186, 22);
             this.miFindNext.Text = "M_FINDNEXT";
             this.miFindNext.Click += new System.EventHandler(this.miFindNext_Click);
             // 
@@ -955,7 +956,7 @@ namespace VisualPascalABC
             this.miReplace.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miReplace.Name = "miReplace";
             this.miReplace.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.R)));
-            this.miReplace.Size = new System.Drawing.Size(219, 22);
+            this.miReplace.Size = new System.Drawing.Size(186, 22);
             this.miReplace.Text = "M_REPLACE";
             this.miReplace.Click += new System.EventHandler(this.miReplace_Click);
             // 
@@ -963,27 +964,27 @@ namespace VisualPascalABC
             // 
             this.tsGotoLine.Name = "tsGotoLine";
             this.tsGotoLine.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
-            this.tsGotoLine.Size = new System.Drawing.Size(219, 22);
+            this.tsGotoLine.Size = new System.Drawing.Size(186, 22);
             this.tsGotoLine.Text = "M_GOTO_LINE";
             this.tsGotoLine.Click += new System.EventHandler(this.tsGotoLine_Click);
             // 
             // toolStripSeparator8
             // 
             this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(216, 6);
+            this.toolStripSeparator8.Size = new System.Drawing.Size(183, 6);
             // 
             // tsSelectAll
             // 
             this.tsSelectAll.Name = "tsSelectAll";
             this.tsSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.tsSelectAll.Size = new System.Drawing.Size(219, 22);
+            this.tsSelectAll.Size = new System.Drawing.Size(186, 22);
             this.tsSelectAll.Text = "M_SELECT_ALL";
             this.tsSelectAll.Click += new System.EventHandler(this.tsSelectAll_Click);
             // 
             // toolStripSeparator9
             // 
             this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(216, 6);
+            this.toolStripSeparator9.Size = new System.Drawing.Size(183, 6);
             // 
             // toolStripMenuItem7
             // 
@@ -993,7 +994,7 @@ namespace VisualPascalABC
             this.mGOTOPREVBOOKMARKToolStripMenuItem,
             this.mCLEARBOOKMARKSToolStripMenuItem});
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
-            this.toolStripMenuItem7.Size = new System.Drawing.Size(219, 22);
+            this.toolStripMenuItem7.Size = new System.Drawing.Size(186, 22);
             this.toolStripMenuItem7.Text = "M_BOOKMARS";
             // 
             // toolStripMenuItem8
@@ -1001,7 +1002,7 @@ namespace VisualPascalABC
             this.toolStripMenuItem8.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem8.Image")));
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
             this.toolStripMenuItem8.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F2)));
-            this.toolStripMenuItem8.Size = new System.Drawing.Size(283, 22);
+            this.toolStripMenuItem8.Size = new System.Drawing.Size(238, 22);
             this.toolStripMenuItem8.Text = "M_TOGGLEBOOKMARK";
             this.toolStripMenuItem8.Click += new System.EventHandler(this.toolStripMenuItem8_Click);
             // 
@@ -1010,7 +1011,7 @@ namespace VisualPascalABC
             this.mGOTONEXTBOOKMARKToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("mGOTONEXTBOOKMARKToolStripMenuItem.Image")));
             this.mGOTONEXTBOOKMARKToolStripMenuItem.Name = "mGOTONEXTBOOKMARKToolStripMenuItem";
             this.mGOTONEXTBOOKMARKToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.mGOTONEXTBOOKMARKToolStripMenuItem.Size = new System.Drawing.Size(283, 22);
+            this.mGOTONEXTBOOKMARKToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.mGOTONEXTBOOKMARKToolStripMenuItem.Text = "M_GOTONEXTBOOKMARK";
             this.mGOTONEXTBOOKMARKToolStripMenuItem.Click += new System.EventHandler(this.mGOTONEXTBOOKMARKToolStripMenuItem_Click);
             // 
@@ -1019,7 +1020,7 @@ namespace VisualPascalABC
             this.mGOTOPREVBOOKMARKToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("mGOTOPREVBOOKMARKToolStripMenuItem.Image")));
             this.mGOTOPREVBOOKMARKToolStripMenuItem.Name = "mGOTOPREVBOOKMARKToolStripMenuItem";
             this.mGOTOPREVBOOKMARKToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F2)));
-            this.mGOTOPREVBOOKMARKToolStripMenuItem.Size = new System.Drawing.Size(283, 22);
+            this.mGOTOPREVBOOKMARKToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.mGOTOPREVBOOKMARKToolStripMenuItem.Text = "M_GOTOPREVBOOKMARK";
             this.mGOTOPREVBOOKMARKToolStripMenuItem.Click += new System.EventHandler(this.mGOTOPREVBOOKMARKToolStripMenuItem_Click);
             // 
@@ -1027,7 +1028,7 @@ namespace VisualPascalABC
             // 
             this.mCLEARBOOKMARKSToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("mCLEARBOOKMARKSToolStripMenuItem.Image")));
             this.mCLEARBOOKMARKSToolStripMenuItem.Name = "mCLEARBOOKMARKSToolStripMenuItem";
-            this.mCLEARBOOKMARKSToolStripMenuItem.Size = new System.Drawing.Size(283, 22);
+            this.mCLEARBOOKMARKSToolStripMenuItem.Size = new System.Drawing.Size(238, 22);
             this.mCLEARBOOKMARKSToolStripMenuItem.Text = "M_CLEARBOOKMARKS";
             this.mCLEARBOOKMARKSToolStripMenuItem.Click += new System.EventHandler(this.mCLEARBOOKMARKSToolStripMenuItem_Click);
             // 
@@ -1054,7 +1055,7 @@ namespace VisualPascalABC
             this.miNavigForw});
             this.mrView.Name = "mrView";
             this.mrView.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.mrView.Size = new System.Drawing.Size(81, 24);
+            this.mrView.Size = new System.Drawing.Size(66, 24);
             this.mrView.Text = "MR_VIEW";
             // 
             // miClearOutput
@@ -1062,14 +1063,14 @@ namespace VisualPascalABC
             this.miClearOutput.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miClearOutput.Name = "miClearOutput";
             this.miClearOutput.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Delete)));
-            this.miClearOutput.Size = new System.Drawing.Size(254, 22);
+            this.miClearOutput.Size = new System.Drawing.Size(216, 22);
             this.miClearOutput.Text = "M_CLEAROUTPUT";
             this.miClearOutput.Click += new System.EventHandler(this.miClearOutputWindow_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(251, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(213, 6);
             // 
             // miOutputWindow
             // 
@@ -1080,7 +1081,7 @@ namespace VisualPascalABC
             this.miOutputWindow.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miOutputWindow.Name = "miOutputWindow";
             this.miOutputWindow.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.miOutputWindow.Size = new System.Drawing.Size(254, 22);
+            this.miOutputWindow.Size = new System.Drawing.Size(216, 22);
             this.miOutputWindow.Text = "M_BOTTOMPANEL";
             this.miOutputWindow.Click += new System.EventHandler(this.miOutputWindow_Click);
             // 
@@ -1088,7 +1089,7 @@ namespace VisualPascalABC
             // 
             this.tsShowOutputWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_Output;
             this.tsShowOutputWindow.Name = "tsShowOutputWindow";
-            this.tsShowOutputWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsShowOutputWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowOutputWindow.Text = "M_OUTPUTWINDOW";
             this.tsShowOutputWindow.Click += new System.EventHandler(this.tsShowOutputWindow_Click);
             // 
@@ -1096,7 +1097,7 @@ namespace VisualPascalABC
             // 
             this.tsShowErrorsListWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_ErrorList;
             this.tsShowErrorsListWindow.Name = "tsShowErrorsListWindow";
-            this.tsShowErrorsListWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsShowErrorsListWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowErrorsListWindow.Text = "TP_ERRORSLIST";
             this.tsShowErrorsListWindow.Click += new System.EventHandler(this.tsShowErrorsListWindow_Click);
             // 
@@ -1104,7 +1105,7 @@ namespace VisualPascalABC
             // 
             this.tsShowCompilerConsoleWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_CompilerConsole;
             this.tsShowCompilerConsoleWindow.Name = "tsShowCompilerConsoleWindow";
-            this.tsShowCompilerConsoleWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsShowCompilerConsoleWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowCompilerConsoleWindow.Text = "TP_COMPILERMESSAGES";
             this.tsShowCompilerConsoleWindow.Click += new System.EventHandler(this.tsShowCompilerConsoleWindow_Click);
             // 
@@ -1112,7 +1113,7 @@ namespace VisualPascalABC
             // 
             this.tsShowFindSymbolsResultWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_FindSymbolResult;
             this.tsShowFindSymbolsResultWindow.Name = "tsShowFindSymbolsResultWindow";
-            this.tsShowFindSymbolsResultWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsShowFindSymbolsResultWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowFindSymbolsResultWindow.Text = "TP_FIND_SYMBOL_RESULTS";
             this.tsShowFindSymbolsResultWindow.Click += new System.EventHandler(this.tsShowFindSymbolsResultWindow_Click);
             // 
@@ -1120,7 +1121,7 @@ namespace VisualPascalABC
             // 
             this.tsShowDebugVariablesListWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_DebugVariablesList;
             this.tsShowDebugVariablesListWindow.Name = "tsShowDebugVariablesListWindow";
-            this.tsShowDebugVariablesListWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsShowDebugVariablesListWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowDebugVariablesListWindow.Text = "TP_VARLIST";
             this.tsShowDebugVariablesListWindow.Click += new System.EventHandler(this.tsShowDebugVariablesListWindow_Click);
             // 
@@ -1128,7 +1129,7 @@ namespace VisualPascalABC
             // 
             this.tsShowDebugWatchListWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_DebugWatches;
             this.tsShowDebugWatchListWindow.Name = "tsShowDebugWatchListWindow";
-            this.tsShowDebugWatchListWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsShowDebugWatchListWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowDebugWatchListWindow.Text = "TP_WATCHLIST";
             this.tsShowDebugWatchListWindow.Click += new System.EventHandler(this.tsShowDebugWatchListWindow_Click);
             // 
@@ -1136,27 +1137,27 @@ namespace VisualPascalABC
             // 
             this.tsImmediateWindow.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Window_Immediate;
             this.tsImmediateWindow.Name = "tsImmediateWindow";
-            this.tsImmediateWindow.Size = new System.Drawing.Size(254, 22);
+            this.tsImmediateWindow.Size = new System.Drawing.Size(216, 22);
             this.tsImmediateWindow.Text = "TP_IMMEDIATE_WINDOW";
             this.tsImmediateWindow.Click += new System.EventHandler(this.TsImmediateWindowClick);
             // 
             // toolStripMenuItem12
             // 
             this.toolStripMenuItem12.Name = "toolStripMenuItem12";
-            this.toolStripMenuItem12.Size = new System.Drawing.Size(251, 6);
+            this.toolStripMenuItem12.Size = new System.Drawing.Size(213, 6);
             // 
             // tsViewIntellisensePanel
             // 
             this.tsViewIntellisensePanel.CheckOnClick = true;
             this.tsViewIntellisensePanel.Name = "tsViewIntellisensePanel";
-            this.tsViewIntellisensePanel.Size = new System.Drawing.Size(254, 22);
+            this.tsViewIntellisensePanel.Size = new System.Drawing.Size(216, 22);
             this.tsViewIntellisensePanel.Text = "M_INTELLISENSEPANEL";
             this.tsViewIntellisensePanel.CheckedChanged += new System.EventHandler(this.tsViewIntellisensePanel_CheckedChanged);
             // 
             // miProjectExplorer
             // 
             this.miProjectExplorer.Name = "miProjectExplorer";
-            this.miProjectExplorer.Size = new System.Drawing.Size(254, 22);
+            this.miProjectExplorer.Size = new System.Drawing.Size(216, 22);
             this.miProjectExplorer.Text = "M_PROJECTEXPLORER";
             this.miProjectExplorer.Visible = false;
             this.miProjectExplorer.Click += new System.EventHandler(this.miProjectExplorer_Click);
@@ -1164,7 +1165,7 @@ namespace VisualPascalABC
             // miToolBox
             // 
             this.miToolBox.Name = "miToolBox";
-            this.miToolBox.Size = new System.Drawing.Size(254, 22);
+            this.miToolBox.Size = new System.Drawing.Size(216, 22);
             this.miToolBox.Text = "M_TOOLBOX";
             this.miToolBox.Visible = false;
             this.miToolBox.Click += new System.EventHandler(this.miToolBox_Click);
@@ -1172,7 +1173,7 @@ namespace VisualPascalABC
             // miProperties
             // 
             this.miProperties.Name = "miProperties";
-            this.miProperties.Size = new System.Drawing.Size(254, 22);
+            this.miProperties.Size = new System.Drawing.Size(216, 22);
             this.miProperties.Text = "M_PROPERTIES";
             this.miProperties.Visible = false;
             this.miProperties.Click += new System.EventHandler(this.miProperties_Click);
@@ -1180,7 +1181,7 @@ namespace VisualPascalABC
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(251, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(213, 6);
             // 
             // miNavigBack
             // 
@@ -1189,7 +1190,7 @@ namespace VisualPascalABC
             this.miNavigBack.Name = "miNavigBack";
             this.miNavigBack.ShortcutKeyDisplayString = "Ctrl+-";
             this.miNavigBack.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.OemMinus)));
-            this.miNavigBack.Size = new System.Drawing.Size(254, 22);
+            this.miNavigBack.Size = new System.Drawing.Size(216, 22);
             this.miNavigBack.Text = "M_NAVIGBACK";
             this.miNavigBack.Click += new System.EventHandler(this.tsNavigBack_Click);
             // 
@@ -1201,7 +1202,7 @@ namespace VisualPascalABC
             this.miNavigForw.ShortcutKeyDisplayString = "Ctrl+Shift+-";
             this.miNavigForw.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.OemMinus)));
-            this.miNavigForw.Size = new System.Drawing.Size(254, 22);
+            this.miNavigForw.Size = new System.Drawing.Size(216, 22);
             this.miNavigForw.Text = "M_NAVIGFORW";
             this.miNavigForw.Click += new System.EventHandler(this.tsNavigForw_Click);
             // 
@@ -1215,46 +1216,46 @@ namespace VisualPascalABC
             this.mADDREFERENCEToolStripMenuItem,
             this.mPROPERTIESToolStripMenuItem});
             this.mRPROJECTToolStripMenuItem.Name = "mRPROJECTToolStripMenuItem";
-            this.mRPROJECTToolStripMenuItem.Size = new System.Drawing.Size(105, 24);
+            this.mRPROJECTToolStripMenuItem.Size = new System.Drawing.Size(85, 24);
             this.mRPROJECTToolStripMenuItem.Text = "MR_PROJECT";
             // 
             // mADDFILEToolStripMenuItem
             // 
             this.mADDFILEToolStripMenuItem.Name = "mADDFILEToolStripMenuItem";
-            this.mADDFILEToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.mADDFILEToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.mADDFILEToolStripMenuItem.Text = "M_ADD_NEW_FILE";
             this.mADDFILEToolStripMenuItem.Click += new System.EventHandler(this.mADDFILEToolStripMenuItem_Click);
             // 
             // mADDEXISTFILEToolStripMenuItem
             // 
             this.mADDEXISTFILEToolStripMenuItem.Name = "mADDEXISTFILEToolStripMenuItem";
-            this.mADDEXISTFILEToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.mADDEXISTFILEToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.mADDEXISTFILEToolStripMenuItem.Text = "M_ADD_EXIST_FILE";
             this.mADDEXISTFILEToolStripMenuItem.Click += new System.EventHandler(this.mADDEXISTFILEToolStripMenuItem_Click);
             // 
             // mADDFORMToolStripMenuItem
             // 
             this.mADDFORMToolStripMenuItem.Name = "mADDFORMToolStripMenuItem";
-            this.mADDFORMToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.mADDFORMToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.mADDFORMToolStripMenuItem.Text = "M_ADD_FORM";
             this.mADDFORMToolStripMenuItem.Click += new System.EventHandler(this.mADDFORMToolStripMenuItem_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(237, 6);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(198, 6);
             // 
             // mADDREFERENCEToolStripMenuItem
             // 
             this.mADDREFERENCEToolStripMenuItem.Name = "mADDREFERENCEToolStripMenuItem";
-            this.mADDREFERENCEToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.mADDREFERENCEToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.mADDREFERENCEToolStripMenuItem.Text = "M_ADD_REFERENCE";
             this.mADDREFERENCEToolStripMenuItem.Click += new System.EventHandler(this.mADDREFERENCEToolStripMenuItem_Click);
             // 
             // mPROPERTIESToolStripMenuItem
             // 
             this.mPROPERTIESToolStripMenuItem.Name = "mPROPERTIESToolStripMenuItem";
-            this.mPROPERTIESToolStripMenuItem.Size = new System.Drawing.Size(240, 22);
+            this.mPROPERTIESToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
             this.mPROPERTIESToolStripMenuItem.Text = "M_PROJECT_PROPERTIES";
             this.mPROPERTIESToolStripMenuItem.Click += new System.EventHandler(this.mPROPERTIESToolStripMenuItem_Click);
             // 
@@ -1271,7 +1272,7 @@ namespace VisualPascalABC
             this.miAddExpr});
             this.mrProgram.Name = "mrProgram";
             this.mrProgram.ShortcutKeys = System.Windows.Forms.Keys.F8;
-            this.mrProgram.Size = new System.Drawing.Size(110, 24);
+            this.mrProgram.Size = new System.Drawing.Size(90, 24);
             this.mrProgram.Text = "MR_PROGRAM";
             // 
             // miRun
@@ -1280,7 +1281,7 @@ namespace VisualPascalABC
             this.miRun.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miRun.Name = "miRun";
             this.miRun.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.miRun.Size = new System.Drawing.Size(252, 22);
+            this.miRun.Size = new System.Drawing.Size(212, 22);
             this.miRun.Text = "M_RUN_DEBUG";
             this.miRun.Click += new System.EventHandler(this.StartMenuItem_Click);
             // 
@@ -1290,14 +1291,14 @@ namespace VisualPascalABC
             this.miRunNoDebug.ImageTransparentColor = System.Drawing.Color.Fuchsia;
             this.miRunNoDebug.Name = "miRunNoDebug";
             this.miRunNoDebug.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F9)));
-            this.miRunNoDebug.Size = new System.Drawing.Size(252, 22);
+            this.miRunNoDebug.Size = new System.Drawing.Size(212, 22);
             this.miRunNoDebug.Text = "M_RUN_NODEBUG";
             this.miRunNoDebug.Click += new System.EventHandler(this.miRunNoDebug_Click);
             // 
             // mRUNPARAMETERSToolStripMenuItem1
             // 
             this.mRUNPARAMETERSToolStripMenuItem1.Name = "mRUNPARAMETERSToolStripMenuItem1";
-            this.mRUNPARAMETERSToolStripMenuItem1.Size = new System.Drawing.Size(252, 22);
+            this.mRUNPARAMETERSToolStripMenuItem1.Size = new System.Drawing.Size(212, 22);
             this.mRUNPARAMETERSToolStripMenuItem1.Text = "M_RUN_PARAMETERS";
             this.mRUNPARAMETERSToolStripMenuItem1.Click += new System.EventHandler(this.mRUNPARAMETERSToolStripMenuItem1_Click);
             // 
@@ -1307,14 +1308,14 @@ namespace VisualPascalABC
             this.miStop.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.miStop.Name = "miStop";
             this.miStop.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F2)));
-            this.miStop.Size = new System.Drawing.Size(252, 22);
+            this.miStop.Size = new System.Drawing.Size(212, 22);
             this.miStop.Text = "M_STOP";
             this.miStop.Click += new System.EventHandler(this.miStop_Click);
             // 
             // toolStripMenuItem13
             // 
             this.toolStripMenuItem13.Name = "toolStripMenuItem13";
-            this.toolStripMenuItem13.Size = new System.Drawing.Size(249, 6);
+            this.toolStripMenuItem13.Size = new System.Drawing.Size(209, 6);
             // 
             // miBuild
             // 
@@ -1322,7 +1323,7 @@ namespace VisualPascalABC
             this.miBuild.ImageTransparentColor = System.Drawing.Color.Red;
             this.miBuild.Name = "miBuild";
             this.miBuild.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F9)));
-            this.miBuild.Size = new System.Drawing.Size(252, 22);
+            this.miBuild.Size = new System.Drawing.Size(212, 22);
             this.miBuild.Text = "M_BUILD";
             this.miBuild.Click += new System.EventHandler(this.toolStripButton10_Click);
             // 
@@ -1333,7 +1334,7 @@ namespace VisualPascalABC
             this.miRebuild.Name = "miRebuild";
             this.miRebuild.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.F9)));
-            this.miRebuild.Size = new System.Drawing.Size(252, 22);
+            this.miRebuild.Size = new System.Drawing.Size(212, 22);
             this.miRebuild.Text = "M_REBUILD";
             this.miRebuild.Click += new System.EventHandler(this.toolStripButton12_Click);
             // 
@@ -1341,7 +1342,7 @@ namespace VisualPascalABC
             // 
             this.miAddExpr.Name = "miAddExpr";
             this.miAddExpr.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F5)));
-            this.miAddExpr.Size = new System.Drawing.Size(252, 22);
+            this.miAddExpr.Size = new System.Drawing.Size(212, 22);
             this.miAddExpr.Text = "M_ADD_EXPR";
             this.miAddExpr.Visible = false;
             this.miAddExpr.Click += new System.EventHandler(this.miAddExpr_Click);
@@ -1357,14 +1358,14 @@ namespace VisualPascalABC
             this.miZOrder,
             this.miTabOrder});
             this.mrDesigner.Name = "mrDesigner";
-            this.mrDesigner.Size = new System.Drawing.Size(112, 24);
+            this.mrDesigner.Size = new System.Drawing.Size(90, 24);
             this.mrDesigner.Text = "MR_DESIGNER";
             this.mrDesigner.Visible = false;
             // 
             // miShowGrid
             // 
             this.miShowGrid.Name = "miShowGrid";
-            this.miShowGrid.Size = new System.Drawing.Size(193, 22);
+            this.miShowGrid.Size = new System.Drawing.Size(165, 22);
             this.miShowGrid.Text = "M_SHOW_GRID";
             this.miShowGrid.Visible = false;
             this.miShowGrid.Click += new System.EventHandler(this.miShowGrid_Click);
@@ -1372,7 +1373,7 @@ namespace VisualPascalABC
             // miSnapToGrid
             // 
             this.miSnapToGrid.Name = "miSnapToGrid";
-            this.miSnapToGrid.Size = new System.Drawing.Size(193, 22);
+            this.miSnapToGrid.Size = new System.Drawing.Size(165, 22);
             this.miSnapToGrid.Text = "M_SNAP_TO_GRID";
             this.miSnapToGrid.Visible = false;
             this.miSnapToGrid.Click += new System.EventHandler(this.miSnapToGrid_Click);
@@ -1388,55 +1389,55 @@ namespace VisualPascalABC
             this.miAlignCenters,
             this.miAlignToGrid});
             this.miAlign.Name = "miAlign";
-            this.miAlign.Size = new System.Drawing.Size(193, 22);
+            this.miAlign.Size = new System.Drawing.Size(165, 22);
             this.miAlign.Text = "M_ALIGN";
             // 
             // miAlignLefts
             // 
             this.miAlignLefts.Name = "miAlignLefts";
-            this.miAlignLefts.Size = new System.Drawing.Size(201, 22);
+            this.miAlignLefts.Size = new System.Drawing.Size(172, 22);
             this.miAlignLefts.Text = "M_ALIGN_LEFTS";
             this.miAlignLefts.Click += new System.EventHandler(this.miAlignLefts_Click);
             // 
             // miAlignRights
             // 
             this.miAlignRights.Name = "miAlignRights";
-            this.miAlignRights.Size = new System.Drawing.Size(201, 22);
+            this.miAlignRights.Size = new System.Drawing.Size(172, 22);
             this.miAlignRights.Text = "M_ALIGN_RIGHTS";
             this.miAlignRights.Click += new System.EventHandler(this.miAlignRights_Click);
             // 
             // miAlignTops
             // 
             this.miAlignTops.Name = "miAlignTops";
-            this.miAlignTops.Size = new System.Drawing.Size(201, 22);
+            this.miAlignTops.Size = new System.Drawing.Size(172, 22);
             this.miAlignTops.Text = "M_ALIGN_TOPS";
             this.miAlignTops.Click += new System.EventHandler(this.miAlignTops_Click);
             // 
             // miAlignBottoms
             // 
             this.miAlignBottoms.Name = "miAlignBottoms";
-            this.miAlignBottoms.Size = new System.Drawing.Size(201, 22);
+            this.miAlignBottoms.Size = new System.Drawing.Size(172, 22);
             this.miAlignBottoms.Text = "M_ALIGN_BOTTOMS";
             this.miAlignBottoms.Click += new System.EventHandler(this.miAlignBottoms_Click);
             // 
             // miAlignMiddles
             // 
             this.miAlignMiddles.Name = "miAlignMiddles";
-            this.miAlignMiddles.Size = new System.Drawing.Size(201, 22);
+            this.miAlignMiddles.Size = new System.Drawing.Size(172, 22);
             this.miAlignMiddles.Text = "M_ALIGN_MIDDLES";
             this.miAlignMiddles.Click += new System.EventHandler(this.miAlignMiddles_Click);
             // 
             // miAlignCenters
             // 
             this.miAlignCenters.Name = "miAlignCenters";
-            this.miAlignCenters.Size = new System.Drawing.Size(201, 22);
+            this.miAlignCenters.Size = new System.Drawing.Size(172, 22);
             this.miAlignCenters.Text = "M_ALIGN_CENTERS";
             this.miAlignCenters.Click += new System.EventHandler(this.miAlignCenters_Click);
             // 
             // miAlignToGrid
             // 
             this.miAlignToGrid.Name = "miAlignToGrid";
-            this.miAlignToGrid.Size = new System.Drawing.Size(201, 22);
+            this.miAlignToGrid.Size = new System.Drawing.Size(172, 22);
             this.miAlignToGrid.Text = "M_ALIGN_TO_GRID";
             this.miAlignToGrid.Click += new System.EventHandler(this.miAlignToGrid_Click);
             // 
@@ -1446,20 +1447,20 @@ namespace VisualPascalABC
             this.miCenterHorizontally,
             this.miCenterVertically});
             this.miCenter.Name = "miCenter";
-            this.miCenter.Size = new System.Drawing.Size(193, 22);
+            this.miCenter.Size = new System.Drawing.Size(165, 22);
             this.miCenter.Text = "M_CENTER";
             // 
             // miCenterHorizontally
             // 
             this.miCenterHorizontally.Name = "miCenterHorizontally";
-            this.miCenterHorizontally.Size = new System.Drawing.Size(250, 22);
+            this.miCenterHorizontally.Size = new System.Drawing.Size(209, 22);
             this.miCenterHorizontally.Text = "M_CENTER_HORIZONTALLY";
             this.miCenterHorizontally.Click += new System.EventHandler(this.miCenterHorizontally_Click);
             // 
             // miCenterVertically
             // 
             this.miCenterVertically.Name = "miCenterVertically";
-            this.miCenterVertically.Size = new System.Drawing.Size(250, 22);
+            this.miCenterVertically.Size = new System.Drawing.Size(209, 22);
             this.miCenterVertically.Text = "M_CENTER_VERTICALLY";
             this.miCenterVertically.Click += new System.EventHandler(this.miCenterVertically_Click);
             // 
@@ -1471,34 +1472,34 @@ namespace VisualPascalABC
             this.miSizeToControlHeight,
             this.miSizeToGrid});
             this.miSizeTo.Name = "miSizeTo";
-            this.miSizeTo.Size = new System.Drawing.Size(193, 22);
+            this.miSizeTo.Size = new System.Drawing.Size(165, 22);
             this.miSizeTo.Text = "M_SIZE_TO";
             // 
             // miSizeToControl
             // 
             this.miSizeToControl.Name = "miSizeToControl";
-            this.miSizeToControl.Size = new System.Drawing.Size(273, 22);
+            this.miSizeToControl.Size = new System.Drawing.Size(227, 22);
             this.miSizeToControl.Text = "M_SIZE_TO_CONTROL";
             this.miSizeToControl.Click += new System.EventHandler(this.miSizeToControl_Click);
             // 
             // miSizeToControlWidth
             // 
             this.miSizeToControlWidth.Name = "miSizeToControlWidth";
-            this.miSizeToControlWidth.Size = new System.Drawing.Size(273, 22);
+            this.miSizeToControlWidth.Size = new System.Drawing.Size(227, 22);
             this.miSizeToControlWidth.Text = "M_SIZE_TO_CONTROL_WIDTH";
             this.miSizeToControlWidth.Click += new System.EventHandler(this.miSizeToControlWidth_Click);
             // 
             // miSizeToControlHeight
             // 
             this.miSizeToControlHeight.Name = "miSizeToControlHeight";
-            this.miSizeToControlHeight.Size = new System.Drawing.Size(273, 22);
+            this.miSizeToControlHeight.Size = new System.Drawing.Size(227, 22);
             this.miSizeToControlHeight.Text = "M_SIZE_TO_CONTROL_HEIGHT";
             this.miSizeToControlHeight.Click += new System.EventHandler(this.miSizeToControlHeight_Click);
             // 
             // miSizeToGrid
             // 
             this.miSizeToGrid.Name = "miSizeToGrid";
-            this.miSizeToGrid.Size = new System.Drawing.Size(273, 22);
+            this.miSizeToGrid.Size = new System.Drawing.Size(227, 22);
             this.miSizeToGrid.Text = "M_SIZE_TO_GRID";
             this.miSizeToGrid.Click += new System.EventHandler(this.miSizeToGrid_Click);
             // 
@@ -1508,27 +1509,27 @@ namespace VisualPascalABC
             this.miBringToFront,
             this.miSendToBack});
             this.miZOrder.Name = "miZOrder";
-            this.miZOrder.Size = new System.Drawing.Size(193, 22);
+            this.miZOrder.Size = new System.Drawing.Size(165, 22);
             this.miZOrder.Text = "M_Z_ORDER";
             // 
             // miBringToFront
             // 
             this.miBringToFront.Name = "miBringToFront";
-            this.miBringToFront.Size = new System.Drawing.Size(210, 22);
+            this.miBringToFront.Size = new System.Drawing.Size(179, 22);
             this.miBringToFront.Text = "M_BRING_TO_FRONT";
             this.miBringToFront.Click += new System.EventHandler(this.miBringToFront_Click);
             // 
             // miSendToBack
             // 
             this.miSendToBack.Name = "miSendToBack";
-            this.miSendToBack.Size = new System.Drawing.Size(210, 22);
+            this.miSendToBack.Size = new System.Drawing.Size(179, 22);
             this.miSendToBack.Text = "M_SEND_TO_BACK";
             this.miSendToBack.Click += new System.EventHandler(this.miSendToBack_Click);
             // 
             // miTabOrder
             // 
             this.miTabOrder.Name = "miTabOrder";
-            this.miTabOrder.Size = new System.Drawing.Size(193, 22);
+            this.miTabOrder.Size = new System.Drawing.Size(165, 22);
             this.miTabOrder.Text = "M_TAB_ORDER";
             this.miTabOrder.Click += new System.EventHandler(this.miTabOrder_Click);
             // 
@@ -1545,21 +1546,21 @@ namespace VisualPascalABC
             this.mrService.Name = "mrService";
             this.mrService.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.D)));
-            this.mrService.Size = new System.Drawing.Size(101, 24);
+            this.mrService.Size = new System.Drawing.Size(82, 24);
             this.mrService.Text = "MR_SERVICE";
             // 
             // mOPTIONSToolStripMenuItem
             // 
             this.mOPTIONSToolStripMenuItem.Image = global::VisualPascalABC.Properties.Resources.Icons_16x16_Options;
             this.mOPTIONSToolStripMenuItem.Name = "mOPTIONSToolStripMenuItem";
-            this.mOPTIONSToolStripMenuItem.Size = new System.Drawing.Size(337, 22);
+            this.mOPTIONSToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
             this.mOPTIONSToolStripMenuItem.Text = "M_OPTIONS";
             this.mOPTIONSToolStripMenuItem.Click += new System.EventHandler(this.mOPTIONSToolStripMenuItem_Click);
             // 
             // tssmIntellisence
             // 
             this.tssmIntellisence.Name = "tssmIntellisence";
-            this.tssmIntellisence.Size = new System.Drawing.Size(334, 6);
+            this.tssmIntellisence.Size = new System.Drawing.Size(279, 6);
             // 
             // tsGotoDefinition
             // 
@@ -1567,7 +1568,7 @@ namespace VisualPascalABC
             this.tsGotoDefinition.Image = ((System.Drawing.Image)(resources.GetObject("tsGotoDefinition.Image")));
             this.tsGotoDefinition.Name = "tsGotoDefinition";
             this.tsGotoDefinition.ShortcutKeyDisplayString = "Ctrl+Enter";
-            this.tsGotoDefinition.Size = new System.Drawing.Size(337, 22);
+            this.tsGotoDefinition.Size = new System.Drawing.Size(282, 22);
             this.tsGotoDefinition.Text = "M_GOTO_DEFINITION";
             // 
             // tsGotoRealization
@@ -1575,13 +1576,13 @@ namespace VisualPascalABC
             this.tsGotoRealization.Enabled = false;
             this.tsGotoRealization.Image = ((System.Drawing.Image)(resources.GetObject("tsGotoRealization.Image")));
             this.tsGotoRealization.Name = "tsGotoRealization";
-            this.tsGotoRealization.Size = new System.Drawing.Size(337, 22);
+            this.tsGotoRealization.Size = new System.Drawing.Size(282, 22);
             this.tsGotoRealization.Text = "M_GOTO_REALIZATION";
             // 
             // tsFindAllReferences
             // 
             this.tsFindAllReferences.Name = "tsFindAllReferences";
-            this.tsFindAllReferences.Size = new System.Drawing.Size(337, 22);
+            this.tsFindAllReferences.Size = new System.Drawing.Size(282, 22);
             this.tsFindAllReferences.Text = "M_FIND_ALL_REFERENCES";
             this.tsFindAllReferences.Click += new System.EventHandler(this.tsFindAllReferences_Click);
             // 
@@ -1590,7 +1591,7 @@ namespace VisualPascalABC
             this.miGenerateRealization.Image = ((System.Drawing.Image)(resources.GetObject("miGenerateRealization.Image")));
             this.miGenerateRealization.Name = "miGenerateRealization";
             this.miGenerateRealization.ShortcutKeyDisplayString = "Shift+Ctrl+C";
-            this.miGenerateRealization.Size = new System.Drawing.Size(337, 22);
+            this.miGenerateRealization.Size = new System.Drawing.Size(282, 22);
             this.miGenerateRealization.Text = "M_GENERATE_REALIZATION";
             // 
             // mFORMATToolStripMenuItem
@@ -1599,14 +1600,14 @@ namespace VisualPascalABC
             this.mFORMATToolStripMenuItem.Name = "mFORMATToolStripMenuItem";
             this.mFORMATToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.F)));
-            this.mFORMATToolStripMenuItem.Size = new System.Drawing.Size(337, 22);
+            this.mFORMATToolStripMenuItem.Size = new System.Drawing.Size(282, 22);
             this.mFORMATToolStripMenuItem.Text = "M_FORMAT";
             this.mFORMATToolStripMenuItem.Click += new System.EventHandler(this.mFORMATToolStripMenuItem_Click);
             // 
             // miPlugins
             // 
             this.miPlugins.Name = "miPlugins";
-            this.miPlugins.Size = new System.Drawing.Size(101, 24);
+            this.miPlugins.Size = new System.Drawing.Size(82, 24);
             this.miPlugins.Text = "MR_PLUGINS";
             this.miPlugins.Visible = false;
             // 
@@ -1619,56 +1620,57 @@ namespace VisualPascalABC
             this.toolStripMenuItem1,
             this.toolStripMenuItem5,
             this.toolStripSeparator6,
+            this.miCheckUpdates,
             this.miAbout});
             this.mrHelp.Name = "mrHelp";
-            this.mrHelp.Size = new System.Drawing.Size(79, 24);
+            this.mrHelp.Size = new System.Drawing.Size(64, 24);
             this.mrHelp.Text = "MR_HELP";
             // 
             // tsHelp
             // 
             this.tsHelp.Name = "tsHelp";
             this.tsHelp.ShortcutKeyDisplayString = "F1";
-            this.tsHelp.Size = new System.Drawing.Size(192, 22);
+            this.tsHelp.Size = new System.Drawing.Size(166, 22);
             this.tsHelp.Text = "M_HELP";
             this.tsHelp.Click += new System.EventHandler(this.tsHelp_Click);
             // 
             // mDOTNETHELPToolStripMenuItem
             // 
             this.mDOTNETHELPToolStripMenuItem.Name = "mDOTNETHELPToolStripMenuItem";
-            this.mDOTNETHELPToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.mDOTNETHELPToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.mDOTNETHELPToolStripMenuItem.Text = "M_DOTNET_HELP";
             this.mDOTNETHELPToolStripMenuItem.Click += new System.EventHandler(this.mDOTNETHELPToolStripMenuItem_Click);
             // 
             // mMAINFEATURESToolStripMenuItem
             // 
             this.mMAINFEATURESToolStripMenuItem.Name = "mMAINFEATURESToolStripMenuItem";
-            this.mMAINFEATURESToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.mMAINFEATURESToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.mMAINFEATURESToolStripMenuItem.Text = "M_MAINFEATURES";
             this.mMAINFEATURESToolStripMenuItem.Click += new System.EventHandler(this.mMAINFEATURESToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(192, 22);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(166, 22);
             this.toolStripMenuItem1.Text = "M_OPENSAMPLES";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click_1);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(192, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(166, 22);
             this.toolStripMenuItem5.Text = "M_OPENTUTORIAL";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.toolStripMenuItem5_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(163, 6);
             // 
             // miAbout
             // 
             this.miAbout.Name = "miAbout";
-            this.miAbout.Size = new System.Drawing.Size(192, 22);
+            this.miAbout.Size = new System.Drawing.Size(166, 22);
             this.miAbout.Text = "M_ABOUT";
             this.miAbout.Click += new System.EventHandler(this.miAboutToolStripMenuItem_Click);
             // 
@@ -1690,27 +1692,27 @@ namespace VisualPascalABC
             // toolStripStatusLabel5
             // 
             this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
-            this.toolStripStatusLabel5.Size = new System.Drawing.Size(865, 25);
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(964, 19);
             this.toolStripStatusLabel5.Spring = true;
             this.toolStripStatusLabel5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(50, 25);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(40, 19);
             this.toolStripStatusLabel1.Text = "SB_LN";
             // 
             // slLine
             // 
             this.slLine.Name = "slLine";
-            this.slLine.Size = new System.Drawing.Size(50, 19);
+            this.slLine.Size = new System.Drawing.Size(42, 19);
             this.slLine.Text = " numb";
             this.slLine.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(60, 25);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(48, 19);
             this.toolStripStatusLabel2.Text = "SB_COL";
             // 
             // slCol
@@ -1718,7 +1720,7 @@ namespace VisualPascalABC
             this.slCol.AutoSize = false;
             this.slCol.AutoToolTip = true;
             this.slCol.Name = "slCol";
-            this.slCol.Size = new System.Drawing.Size(40, 25);
+            this.slCol.Size = new System.Drawing.Size(40, 19);
             this.slCol.Text = " numb";
             this.slCol.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1765,14 +1767,14 @@ namespace VisualPascalABC
             // cmClose
             // 
             this.cmClose.Name = "cmClose";
-            this.cmClose.Size = new System.Drawing.Size(225, 22);
+            this.cmClose.Size = new System.Drawing.Size(192, 22);
             this.cmClose.Text = "M_CLOSE";
             this.cmClose.Click += new System.EventHandler(this.miClose_Click);
             // 
             // cmCloseAllButThis
             // 
             this.cmCloseAllButThis.Name = "cmCloseAllButThis";
-            this.cmCloseAllButThis.Size = new System.Drawing.Size(225, 22);
+            this.cmCloseAllButThis.Size = new System.Drawing.Size(192, 22);
             this.cmCloseAllButThis.Text = "M_CLOSEALLBUTTHIS";
             this.cmCloseAllButThis.Click += new System.EventHandler(this.miCloseNonActive_Click);
             // 
@@ -1784,7 +1786,7 @@ namespace VisualPascalABC
             this.cmSave,
             this.cmSetActive});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(226, 92);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(193, 92);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // cmSave
@@ -1793,14 +1795,14 @@ namespace VisualPascalABC
             this.cmSave.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmSave.Name = "cmSave";
             this.cmSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.cmSave.Size = new System.Drawing.Size(225, 22);
+            this.cmSave.Size = new System.Drawing.Size(192, 22);
             this.cmSave.Text = "M_SAVE";
             this.cmSave.Click += new System.EventHandler(this.miSave_Click);
             // 
             // cmSetActive
             // 
             this.cmSetActive.Name = "cmSetActive";
-            this.cmSetActive.Size = new System.Drawing.Size(225, 22);
+            this.cmSetActive.Size = new System.Drawing.Size(192, 22);
             this.cmSetActive.Text = "M_SET_ACTIVE";
             this.cmSetActive.ToolTipText = "M_SET_ACTIVE";
             this.cmSetActive.Click += new System.EventHandler(this.cmSetActive_Click);
@@ -1826,7 +1828,7 @@ namespace VisualPascalABC
             this.cmHelp,
             this.cmSamples});
             this.cmEditor.Name = "cmEditor";
-            this.cmEditor.Size = new System.Drawing.Size(270, 314);
+            this.cmEditor.Size = new System.Drawing.Size(226, 314);
             this.cmEditor.Opening += new System.ComponentModel.CancelEventHandler(this.cmEditor_Opening);
             // 
             // cmGotoDefinition
@@ -1834,7 +1836,7 @@ namespace VisualPascalABC
             this.cmGotoDefinition.Enabled = false;
             this.cmGotoDefinition.Image = ((System.Drawing.Image)(resources.GetObject("cmGotoDefinition.Image")));
             this.cmGotoDefinition.Name = "cmGotoDefinition";
-            this.cmGotoDefinition.Size = new System.Drawing.Size(269, 22);
+            this.cmGotoDefinition.Size = new System.Drawing.Size(225, 22);
             this.cmGotoDefinition.Text = "M_GOTO_DEFINITION";
             // 
             // cmGotoRealization
@@ -1842,14 +1844,14 @@ namespace VisualPascalABC
             this.cmGotoRealization.Enabled = false;
             this.cmGotoRealization.Image = ((System.Drawing.Image)(resources.GetObject("cmGotoRealization.Image")));
             this.cmGotoRealization.Name = "cmGotoRealization";
-            this.cmGotoRealization.Size = new System.Drawing.Size(269, 22);
+            this.cmGotoRealization.Size = new System.Drawing.Size(225, 22);
             this.cmGotoRealization.Text = "M_GOTO_REALIZATION";
             // 
             // cmFindAllReferences
             // 
             this.cmFindAllReferences.Enabled = false;
             this.cmFindAllReferences.Name = "cmFindAllReferences";
-            this.cmFindAllReferences.Size = new System.Drawing.Size(269, 22);
+            this.cmFindAllReferences.Size = new System.Drawing.Size(225, 22);
             this.cmFindAllReferences.Text = "M_FIND_ALL_REFERENCES";
             this.cmFindAllReferences.Click += new System.EventHandler(this.cmFindAllReferences_Click);
             // 
@@ -1857,7 +1859,7 @@ namespace VisualPascalABC
             // 
             this.cmGenerateRealization.Image = ((System.Drawing.Image)(resources.GetObject("cmGenerateRealization.Image")));
             this.cmGenerateRealization.Name = "cmGenerateRealization";
-            this.cmGenerateRealization.Size = new System.Drawing.Size(269, 22);
+            this.cmGenerateRealization.Size = new System.Drawing.Size(225, 22);
             this.cmGenerateRealization.Text = "M_GENERATE_REALIZATION";
             this.cmGenerateRealization.Visible = false;
             this.cmGenerateRealization.Click += new System.EventHandler(this.mGENERATEREALIZATIONToolStripMenuItem_Click);
@@ -1866,7 +1868,7 @@ namespace VisualPascalABC
             // 
             this.cmFormat.Image = ((System.Drawing.Image)(resources.GetObject("cmFormat.Image")));
             this.cmFormat.Name = "cmFormat";
-            this.cmFormat.Size = new System.Drawing.Size(269, 22);
+            this.cmFormat.Size = new System.Drawing.Size(225, 22);
             this.cmFormat.Text = "M_FORMAT";
             this.cmFormat.Click += new System.EventHandler(this.cmFormat_Click);
             // 
@@ -1874,7 +1876,7 @@ namespace VisualPascalABC
             // 
             this.mNEWASPToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("mNEWASPToolStripMenuItem.Image")));
             this.mNEWASPToolStripMenuItem.Name = "mNEWASPToolStripMenuItem";
-            this.mNEWASPToolStripMenuItem.Size = new System.Drawing.Size(269, 22);
+            this.mNEWASPToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.mNEWASPToolStripMenuItem.Text = "M_NEW_ASP";
             this.mNEWASPToolStripMenuItem.ToolTipText = "M_NEW_ASP";
             this.mNEWASPToolStripMenuItem.Click += new System.EventHandler(this.mNEWASPToolStripMenuItem_Click);
@@ -1882,7 +1884,7 @@ namespace VisualPascalABC
             // cmsCodeCompletion
             // 
             this.cmsCodeCompletion.Name = "cmsCodeCompletion";
-            this.cmsCodeCompletion.Size = new System.Drawing.Size(266, 6);
+            this.cmsCodeCompletion.Size = new System.Drawing.Size(222, 6);
             // 
             // cmCut
             // 
@@ -1890,7 +1892,7 @@ namespace VisualPascalABC
             this.cmCut.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmCut.Name = "cmCut";
             this.cmCut.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.X)));
-            this.cmCut.Size = new System.Drawing.Size(269, 22);
+            this.cmCut.Size = new System.Drawing.Size(225, 22);
             this.cmCut.Text = "M_CUT";
             this.cmCut.Click += new System.EventHandler(this.miCurt_Click);
             // 
@@ -1900,7 +1902,7 @@ namespace VisualPascalABC
             this.cmCopy.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmCopy.Name = "cmCopy";
             this.cmCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.cmCopy.Size = new System.Drawing.Size(269, 22);
+            this.cmCopy.Size = new System.Drawing.Size(225, 22);
             this.cmCopy.Text = "M_COPY";
             this.cmCopy.Click += new System.EventHandler(this.miCopy_Click);
             // 
@@ -1910,14 +1912,14 @@ namespace VisualPascalABC
             this.cmPaste.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmPaste.Name = "cmPaste";
             this.cmPaste.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.V)));
-            this.cmPaste.Size = new System.Drawing.Size(269, 22);
+            this.cmPaste.Size = new System.Drawing.Size(225, 22);
             this.cmPaste.Text = "M_PASTE";
             this.cmPaste.Click += new System.EventHandler(this.miPaste_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(266, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(222, 6);
             // 
             // cmRun
             // 
@@ -1925,39 +1927,39 @@ namespace VisualPascalABC
             this.cmRun.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmRun.Name = "cmRun";
             this.cmRun.ShortcutKeys = System.Windows.Forms.Keys.F9;
-            this.cmRun.Size = new System.Drawing.Size(269, 22);
+            this.cmRun.Size = new System.Drawing.Size(225, 22);
             this.cmRun.Text = "M_RUN_DEBUG";
             this.cmRun.Click += new System.EventHandler(this.StartMenuItem_Click);
             // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(266, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(222, 6);
             // 
             // cntxt_miAddExpr
             // 
             this.cntxt_miAddExpr.Name = "cntxt_miAddExpr";
             this.cntxt_miAddExpr.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F5)));
-            this.cntxt_miAddExpr.Size = new System.Drawing.Size(269, 22);
+            this.cntxt_miAddExpr.Size = new System.Drawing.Size(225, 22);
             this.cntxt_miAddExpr.Text = "M_ADD_EXPR";
             this.cntxt_miAddExpr.Click += new System.EventHandler(this.miAddExpr_Click);
             // 
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(266, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(222, 6);
             // 
             // cmHelp
             // 
             this.cmHelp.Name = "cmHelp";
-            this.cmHelp.Size = new System.Drawing.Size(269, 22);
+            this.cmHelp.Size = new System.Drawing.Size(225, 22);
             this.cmHelp.Text = "M_HELP";
             this.cmHelp.Click += new System.EventHandler(this.cmHelp_Click);
             // 
             // cmSamples
             // 
             this.cmSamples.Name = "cmSamples";
-            this.cmSamples.Size = new System.Drawing.Size(269, 22);
+            this.cmSamples.Size = new System.Drawing.Size(225, 22);
             this.cmSamples.Text = "M_SAMPLES";
             this.cmSamples.Click += new System.EventHandler(this.cmSamples_Click);
             // 
@@ -2017,19 +2019,19 @@ namespace VisualPascalABC
             this.mDELETEBREAKPOINTToolStripMenuItem,
             this.mBREAKPOINTCONDITIONToolStripMenuItem1});
             this.cmBreakpointCondition.Name = "cmBreakpointCondition";
-            this.cmBreakpointCondition.Size = new System.Drawing.Size(277, 48);
+            this.cmBreakpointCondition.Size = new System.Drawing.Size(231, 48);
             // 
             // mDELETEBREAKPOINTToolStripMenuItem
             // 
             this.mDELETEBREAKPOINTToolStripMenuItem.Name = "mDELETEBREAKPOINTToolStripMenuItem";
-            this.mDELETEBREAKPOINTToolStripMenuItem.Size = new System.Drawing.Size(276, 22);
+            this.mDELETEBREAKPOINTToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
             this.mDELETEBREAKPOINTToolStripMenuItem.Text = "M_DELETE_BREAKPOINT";
             this.mDELETEBREAKPOINTToolStripMenuItem.Click += new System.EventHandler(this.mDELETEBREAKPOINTToolStripMenuItem_Click);
             // 
             // mBREAKPOINTCONDITIONToolStripMenuItem1
             // 
             this.mBREAKPOINTCONDITIONToolStripMenuItem1.Name = "mBREAKPOINTCONDITIONToolStripMenuItem1";
-            this.mBREAKPOINTCONDITIONToolStripMenuItem1.Size = new System.Drawing.Size(276, 22);
+            this.mBREAKPOINTCONDITIONToolStripMenuItem1.Size = new System.Drawing.Size(230, 22);
             this.mBREAKPOINTCONDITIONToolStripMenuItem1.Text = "M_BREAKPOINT_CONDITION";
             this.mBREAKPOINTCONDITIONToolStripMenuItem1.Click += new System.EventHandler(this.mBREAKPOINTCONDITIONToolStripMenuItem1_Click);
             // 
@@ -2058,13 +2060,13 @@ namespace VisualPascalABC
             this.cmiTabOrder,
             this.cmiProperties});
             this.cm_Designer.Name = "cm_Designer";
-            this.cm_Designer.Size = new System.Drawing.Size(233, 246);
+            this.cm_Designer.Size = new System.Drawing.Size(196, 246);
             // 
             // cmViewCode
             // 
             this.cmViewCode.Image = ((System.Drawing.Image)(resources.GetObject("cmViewCode.Image")));
             this.cmViewCode.Name = "cmViewCode";
-            this.cmViewCode.Size = new System.Drawing.Size(232, 22);
+            this.cmViewCode.Size = new System.Drawing.Size(195, 22);
             this.cmViewCode.Text = "M_VIEW_CODE";
             this.cmViewCode.Click += new System.EventHandler(this.cmViewCode_Click);
             // 
@@ -2073,7 +2075,7 @@ namespace VisualPascalABC
             this.cmiDelete.Image = global::VisualPascalABC.Properties.Resources.Delete3;
             this.cmiDelete.ImageTransparentColor = System.Drawing.Color.White;
             this.cmiDelete.Name = "cmiDelete";
-            this.cmiDelete.Size = new System.Drawing.Size(232, 22);
+            this.cmiDelete.Size = new System.Drawing.Size(195, 22);
             this.cmiDelete.Text = "M_DELETE";
             this.cmiDelete.Click += new System.EventHandler(this.cmiDelete_Click);
             // 
@@ -2082,7 +2084,7 @@ namespace VisualPascalABC
             this.cmiCopy.Image = global::VisualPascalABC.Properties.Resources.copy;
             this.cmiCopy.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmiCopy.Name = "cmiCopy";
-            this.cmiCopy.Size = new System.Drawing.Size(232, 22);
+            this.cmiCopy.Size = new System.Drawing.Size(195, 22);
             this.cmiCopy.Text = "M_COPY";
             this.cmiCopy.Click += new System.EventHandler(this.cmiCopy_Click);
             // 
@@ -2091,7 +2093,7 @@ namespace VisualPascalABC
             this.cmiCut.Image = global::VisualPascalABC.Properties.Resources.cut;
             this.cmiCut.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmiCut.Name = "cmiCut";
-            this.cmiCut.Size = new System.Drawing.Size(232, 22);
+            this.cmiCut.Size = new System.Drawing.Size(195, 22);
             this.cmiCut.Text = "M_CUT";
             this.cmiCut.Click += new System.EventHandler(this.cmiCut_Click);
             // 
@@ -2100,7 +2102,7 @@ namespace VisualPascalABC
             this.cmiPaste.Image = global::VisualPascalABC.Properties.Resources.paste;
             this.cmiPaste.ImageTransparentColor = System.Drawing.Color.Maroon;
             this.cmiPaste.Name = "cmiPaste";
-            this.cmiPaste.Size = new System.Drawing.Size(232, 22);
+            this.cmiPaste.Size = new System.Drawing.Size(195, 22);
             this.cmiPaste.Text = "M_PASTE";
             this.cmiPaste.Click += new System.EventHandler(this.cmiPaste_Click);
             // 
@@ -2115,14 +2117,14 @@ namespace VisualPascalABC
             this.cmiAlignCenters,
             this.cmiAlignToGrid});
             this.cmiAlign.Name = "cmiAlign";
-            this.cmiAlign.Size = new System.Drawing.Size(232, 22);
+            this.cmiAlign.Size = new System.Drawing.Size(195, 22);
             this.cmiAlign.Text = "M_ALIGN";
             // 
             // cmiAlignLefts
             // 
             this.cmiAlignLefts.Image = global::VisualPascalABC.Properties.Resources.AlignObjectsLeftHS;
             this.cmiAlignLefts.Name = "cmiAlignLefts";
-            this.cmiAlignLefts.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignLefts.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignLefts.Text = "M_ALIGN_LEFTS";
             this.cmiAlignLefts.Click += new System.EventHandler(this.cmiAlignLefts_Click);
             // 
@@ -2130,7 +2132,7 @@ namespace VisualPascalABC
             // 
             this.cmiAlignRights.Image = global::VisualPascalABC.Properties.Resources.AlignObjectsRightHS;
             this.cmiAlignRights.Name = "cmiAlignRights";
-            this.cmiAlignRights.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignRights.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignRights.Text = "M_ALIGN_RIGHTS";
             this.cmiAlignRights.Click += new System.EventHandler(this.cmiAlignRights_Click);
             // 
@@ -2138,7 +2140,7 @@ namespace VisualPascalABC
             // 
             this.cmiAlignTops.Image = global::VisualPascalABC.Properties.Resources.AlignObjectsTopHS;
             this.cmiAlignTops.Name = "cmiAlignTops";
-            this.cmiAlignTops.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignTops.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignTops.Text = "M_ALIGN_TOPS";
             this.cmiAlignTops.Click += new System.EventHandler(this.cmiAlignTops_Click);
             // 
@@ -2146,7 +2148,7 @@ namespace VisualPascalABC
             // 
             this.cmiAlignBottoms.Image = global::VisualPascalABC.Properties.Resources.AlignObjectsBottomHS;
             this.cmiAlignBottoms.Name = "cmiAlignBottoms";
-            this.cmiAlignBottoms.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignBottoms.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignBottoms.Text = "M_ALIGN_BOTTOMS";
             this.cmiAlignBottoms.Click += new System.EventHandler(this.cmiAlignBottoms_Click);
             // 
@@ -2154,7 +2156,7 @@ namespace VisualPascalABC
             // 
             this.cmiAlignMiddles.Image = global::VisualPascalABC.Properties.Resources.AlignObjectsCenteredHorizontalHS;
             this.cmiAlignMiddles.Name = "cmiAlignMiddles";
-            this.cmiAlignMiddles.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignMiddles.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignMiddles.Text = "M_ALIGN_MIDDLES";
             this.cmiAlignMiddles.Click += new System.EventHandler(this.cmiAlignMiddles_Click);
             // 
@@ -2162,7 +2164,7 @@ namespace VisualPascalABC
             // 
             this.cmiAlignCenters.Image = global::VisualPascalABC.Properties.Resources.AlignObjectsCenteredVerticalHS;
             this.cmiAlignCenters.Name = "cmiAlignCenters";
-            this.cmiAlignCenters.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignCenters.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignCenters.Text = "M_ALIGN_CENTERS";
             this.cmiAlignCenters.Click += new System.EventHandler(this.cmiAlignCenters_Click);
             // 
@@ -2170,7 +2172,7 @@ namespace VisualPascalABC
             // 
             this.cmiAlignToGrid.Image = global::VisualPascalABC.Properties.Resources.AlignToGridHS;
             this.cmiAlignToGrid.Name = "cmiAlignToGrid";
-            this.cmiAlignToGrid.Size = new System.Drawing.Size(217, 22);
+            this.cmiAlignToGrid.Size = new System.Drawing.Size(185, 22);
             this.cmiAlignToGrid.Text = "M_ALIGN_TO_GRID";
             this.cmiAlignToGrid.Click += new System.EventHandler(this.cmiAlignToGrid_Click);
             // 
@@ -2180,20 +2182,20 @@ namespace VisualPascalABC
             this.cmiCenterHorizontally,
             this.cmiCenterVertically});
             this.cmiCenter.Name = "cmiCenter";
-            this.cmiCenter.Size = new System.Drawing.Size(232, 22);
+            this.cmiCenter.Size = new System.Drawing.Size(195, 22);
             this.cmiCenter.Text = "M_CENTER";
             // 
             // cmiCenterHorizontally
             // 
             this.cmiCenterHorizontally.Name = "cmiCenterHorizontally";
-            this.cmiCenterHorizontally.Size = new System.Drawing.Size(266, 22);
+            this.cmiCenterHorizontally.Size = new System.Drawing.Size(225, 22);
             this.cmiCenterHorizontally.Text = "M_CENTER_HORIZONTALLY";
             this.cmiCenterHorizontally.Click += new System.EventHandler(this.cmiCenterHorizontally_Click);
             // 
             // cmiCenterVertically
             // 
             this.cmiCenterVertically.Name = "cmiCenterVertically";
-            this.cmiCenterVertically.Size = new System.Drawing.Size(266, 22);
+            this.cmiCenterVertically.Size = new System.Drawing.Size(225, 22);
             this.cmiCenterVertically.Text = "M_CENTER_VERTICALLY";
             this.cmiCenterVertically.Click += new System.EventHandler(this.cmiCenterVertically_Click);
             // 
@@ -2205,34 +2207,34 @@ namespace VisualPascalABC
             this.cmiSizeToControlHeight,
             this.cmiSizeToGrid});
             this.cmiSizeTo.Name = "cmiSizeTo";
-            this.cmiSizeTo.Size = new System.Drawing.Size(232, 22);
+            this.cmiSizeTo.Size = new System.Drawing.Size(195, 22);
             this.cmiSizeTo.Text = "M_SIZE_TO";
             // 
             // cmiSizeToControl
             // 
             this.cmiSizeToControl.Name = "cmiSizeToControl";
-            this.cmiSizeToControl.Size = new System.Drawing.Size(292, 22);
+            this.cmiSizeToControl.Size = new System.Drawing.Size(240, 22);
             this.cmiSizeToControl.Text = "M_SIZE_TO_CONTROL";
             this.cmiSizeToControl.Click += new System.EventHandler(this.cmiSizeToControl_Click);
             // 
             // cmiSizeToControlWidth
             // 
             this.cmiSizeToControlWidth.Name = "cmiSizeToControlWidth";
-            this.cmiSizeToControlWidth.Size = new System.Drawing.Size(292, 22);
+            this.cmiSizeToControlWidth.Size = new System.Drawing.Size(240, 22);
             this.cmiSizeToControlWidth.Text = "M_SIZE_TO_CONTROL_WIDTH";
             this.cmiSizeToControlWidth.Click += new System.EventHandler(this.cmiSizeToControlWidth_Click);
             // 
             // cmiSizeToControlHeight
             // 
             this.cmiSizeToControlHeight.Name = "cmiSizeToControlHeight";
-            this.cmiSizeToControlHeight.Size = new System.Drawing.Size(292, 22);
+            this.cmiSizeToControlHeight.Size = new System.Drawing.Size(240, 22);
             this.cmiSizeToControlHeight.Text = "M_SIZE_TO_CONTROL_HEIGHT";
             this.cmiSizeToControlHeight.Click += new System.EventHandler(this.cmiSizeToControlHeight_Click);
             // 
             // cmiSizeToGrid
             // 
             this.cmiSizeToGrid.Name = "cmiSizeToGrid";
-            this.cmiSizeToGrid.Size = new System.Drawing.Size(292, 22);
+            this.cmiSizeToGrid.Size = new System.Drawing.Size(240, 22);
             this.cmiSizeToGrid.Text = "M_SIZE_TO_GRID";
             // 
             // cmiZOrder
@@ -2241,14 +2243,14 @@ namespace VisualPascalABC
             this.cmiBringToFront,
             this.cmiSendToBack});
             this.cmiZOrder.Name = "cmiZOrder";
-            this.cmiZOrder.Size = new System.Drawing.Size(232, 22);
+            this.cmiZOrder.Size = new System.Drawing.Size(195, 22);
             this.cmiZOrder.Text = "M_Z_ORDER";
             // 
             // cmiBringToFront
             // 
             this.cmiBringToFront.Image = global::VisualPascalABC.Properties.Resources.BringToFrontHS;
             this.cmiBringToFront.Name = "cmiBringToFront";
-            this.cmiBringToFront.Size = new System.Drawing.Size(225, 22);
+            this.cmiBringToFront.Size = new System.Drawing.Size(188, 22);
             this.cmiBringToFront.Text = "M_BRING_TO_FRONT";
             this.cmiBringToFront.Click += new System.EventHandler(this.cmiBringToFront_Click);
             // 
@@ -2256,14 +2258,14 @@ namespace VisualPascalABC
             // 
             this.cmiSendToBack.Image = global::VisualPascalABC.Properties.Resources.SendToBackHS;
             this.cmiSendToBack.Name = "cmiSendToBack";
-            this.cmiSendToBack.Size = new System.Drawing.Size(225, 22);
+            this.cmiSendToBack.Size = new System.Drawing.Size(188, 22);
             this.cmiSendToBack.Text = "M_SEND_TO_BACK";
             this.cmiSendToBack.Click += new System.EventHandler(this.cmiSendToBack_Click);
             // 
             // cmiTabOrder
             // 
             this.cmiTabOrder.Name = "cmiTabOrder";
-            this.cmiTabOrder.Size = new System.Drawing.Size(232, 22);
+            this.cmiTabOrder.Size = new System.Drawing.Size(195, 22);
             this.cmiTabOrder.Text = "M_TAB_ORDER";
             this.cmiTabOrder.Click += new System.EventHandler(this.cmiTabOrder_Click);
             // 
@@ -2271,9 +2273,16 @@ namespace VisualPascalABC
             // 
             this.cmiProperties.Image = ((System.Drawing.Image)(resources.GetObject("cmiProperties.Image")));
             this.cmiProperties.Name = "cmiProperties";
-            this.cmiProperties.Size = new System.Drawing.Size(232, 22);
+            this.cmiProperties.Size = new System.Drawing.Size(195, 22);
             this.cmiProperties.Text = "M_SHOW_PROPERTIES";
             this.cmiProperties.Click += new System.EventHandler(this.cmiProperties_Click);
+            // 
+            // miCheckUpdates
+            // 
+            this.miCheckUpdates.Name = "miCheckUpdates";
+            this.miCheckUpdates.Size = new System.Drawing.Size(166, 22);
+            this.miCheckUpdates.Text = "M_CHECKUPDATES";
+            this.miCheckUpdates.Click += new System.EventHandler(this.miCheckUpdates_Click);
             // 
             // Form1
             // 
@@ -2545,6 +2554,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator15;
         private System.Windows.Forms.ToolStripMenuItem cmHelp;
         private System.Windows.Forms.ToolStripMenuItem cmSamples;
+        private System.Windows.Forms.ToolStripMenuItem miCheckUpdates;
     }
 }
 
