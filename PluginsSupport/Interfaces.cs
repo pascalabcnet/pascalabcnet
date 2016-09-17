@@ -306,6 +306,11 @@ namespace VisualPascalABCPlugins
         void KillAll();
     }
 
+    public interface IWorkbenchUpdateService
+    {
+        void CheckForUpdates();
+    }
+
     public interface IWorkbenchBuildService
     {
         string Compile(string FileName, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment);
@@ -386,6 +391,7 @@ namespace VisualPascalABCPlugins
         void AddTextToOutputWindowSync(string fileName, string text);
         void WriteToOutputBox(string message, bool is_exc);
         void ClearOutputTextBoxForTabPage(ICodeFileDocument tabPage);
+        void AddTabWithUrl(string title, string url);
     }
 
     public interface IWorkbenchOptionService
@@ -420,6 +426,7 @@ namespace VisualPascalABCPlugins
         IWorkbenchRunService RunService { get; }
         IWorkbenchDesignerService DesignerService { get; }
         IWorkbenchOperationsService OperationsService { get; }
+        IWorkbenchUpdateService UpdateService { get;  }
     }
 
     public interface IWorkbench

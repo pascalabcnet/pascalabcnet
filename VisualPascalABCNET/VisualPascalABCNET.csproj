@@ -391,6 +391,7 @@
     </Compile>
     <Compile Include="Workbench\RunnerManagerHandlers.cs" />
     <Compile Include="Workbench\RunService.cs" />
+    <Compile Include="Workbench\UpdateService.cs" />
     <Compile Include="Workbench\VisibilityService.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -23,6 +23,11 @@ namespace VisualPascalABC
             get { return WorkbenchServiceFactory.OptionsService; }
         }
 
+        public IWorkbenchUpdateService UpdateService
+        {
+            get { return WorkbenchServiceFactory.UpdateService; }
+        }
+
         public IEditorService EditorService
         {
             get { return WorkbenchServiceFactory.EditorService; }
@@ -73,6 +78,7 @@ namespace VisualPascalABC
     {
         static IWorkbenchBuildService _buildService;
         static IWorkbenchRunService _runService;
+        static IWorkbenchUpdateService _updateService;
         static CodeCompletionParserController _codeCompletionParserController;
         static DebugHelper _debuggerManager;
 
@@ -93,6 +99,16 @@ namespace VisualPascalABC
                 if (_runService == null)
                     _runService = new WorkbenchRunService();
                 return _runService;
+            }
+        }
+
+        public static IWorkbenchUpdateService UpdateService
+        {
+            get
+            {
+                if (_updateService == null)
+                    _updateService = new WorkbenchUpdateService();
+                return _updateService;
             }
         }
 

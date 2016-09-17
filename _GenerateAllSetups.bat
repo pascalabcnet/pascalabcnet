@@ -14,6 +14,7 @@ cd ..\..
 Utils\IncrementVresion\IncrementVresion.exe Configuration\Version.defs REVISION 1
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\GlobalAssemblyInfo.cs.tmpl Configuration\GlobalAssemblyInfo.cs
 Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs ReleaseGenerators\PascalABCNET_version.nsh.tmpl ReleaseGenerators\PascalABCNET_version.nsh
+Utils\ReplaceInFiles\ReplaceInFiles.exe Configuration\Version.defs Configuration\pabcversion.txt.tmpl Release\pabcversion.txt
 
 "%ProgramFiles(x86)%\MSBuild\14.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release PascalABCNET.sln
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
@@ -46,6 +47,7 @@ ExecHide.exe gacutil.exe /i ..\bin\Lib\PABCRtl.dll
 cd ..\bin
 REM MPGORunner.exe
 TestRunner.exe
+
 cd ..\ReleaseGenerators
 PascalABCNET_ALL.bat
 GOTO EXIT
