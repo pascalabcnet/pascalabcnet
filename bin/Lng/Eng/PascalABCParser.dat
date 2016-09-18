@@ -58,3 +58,4 @@ BAD_ANON_TYPE=Bad field name in anonymous type
 ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=The alone typed parameter must be without parentheses
 
 USING_UNLOCAL_FOR_VARIABLE=Cycle counter variable should be declared in for cycle
+USING_UNLOCAL_FOREACH_VARIABLE=Cycle counter variable should be declared in foreach cycle

@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  IVAN-PC
-// DateTime: 15.09.2016 19:42:32
+// DateTime: 18.09.2016 12:27:40
 // UserName: Ivan
 // Input file <ABCPascal.y>
 
@@ -4399,7 +4399,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 494: // foreach_stmt -> tkForeach, identifier, foreach_stmt_ident_dype_opt, tkIn, 
                 //                 expr_l1, tkDo, unlabelled_stmt
 { 
-			CurrentSemanticValue.stn = new foreach_stmt(ValueStack[ValueStack.Depth-6].id, ValueStack[ValueStack.Depth-5].td, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan); 
+			CurrentSemanticValue.stn = new foreach_stmt(ValueStack[ValueStack.Depth-6].id, ValueStack[ValueStack.Depth-5].td, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].stn as statement, CurrentLocationSpan);
+            if (ValueStack[ValueStack.Depth-5].td == null)
+                parsertools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", ValueStack[ValueStack.Depth-6].id.source_context);
         }
         break;
       case 495: // foreach_stmt -> tkForeach, tkVar, identifier, tkColon, type_ref, tkIn, expr_l1, 
