@@ -16796,7 +16796,23 @@ namespace PascalABCCompiler.TreeConverter
             else left = convertion_data_and_alghoritms.convert_type(left, right.type);*/
             if (left is null_const_node)
                 left = convertion_data_and_alghoritms.convert_type(left, right.type);
-            else right = convertion_data_and_alghoritms.convert_type(right, left.type); 
+            else
+            {
+                delegated_methods del_left = left.type as delegated_methods;
+                delegated_methods del_right = right.type as delegated_methods;
+                if (del_left != null && del_right != null && del_left.empty_param_method == null && del_right.empty_param_method == null)
+                {
+                    base_function_call bfc = del_left.proper_methods[0];
+                    common_type_node del =
+                        convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
+                    context.converted_namespace.types.AddElement(del);
+                    right = convertion_data_and_alghoritms.explicit_convert_type(right, del);
+                    left = convertion_data_and_alghoritms.explicit_convert_type(left, del);
+                }
+                else
+                    right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            }
+                
 
             //right = convertion_data_and_alghoritms.convert_type(right, left.type);
             return_value(new question_colon_expression(condition, left, right, get_location(node)));
