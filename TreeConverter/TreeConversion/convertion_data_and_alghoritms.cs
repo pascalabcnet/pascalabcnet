@@ -883,7 +883,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (syntax_tree_visitor.context.converted_func_stack.size > 0)
                     {
                         common_function_node cfn = syntax_tree_visitor.context.converted_func_stack.first();
-                        if (cfn.is_generic_function)
+                        if (cfn.is_generic_function || !syntax_tree_visitor.context.has_nested_functions && syntax_tree_visitor.context.converted_func_stack.size == 1)
                         {
                             vdn = syntax_tree_visitor.context.add_var_definition(get_temp_arr_name(), loc);
                         }

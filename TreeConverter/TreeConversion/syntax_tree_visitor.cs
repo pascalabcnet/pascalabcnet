@@ -2500,9 +2500,21 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-
+            if (context.converting_block() == block_type.function_block && context.converted_func_stack.size == 1)
+            {
+                if (_block.defs != null)
+                    foreach (declaration decl in _block.defs.defs)
+                    {
+                        if (decl is procedure_definition)
+                        {
+                            context.has_nested_functions = true;
+                            break;
+                        }
+                    }
+            }
             weak_node_test_and_visit(_block.defs);
-
+            if (context.converting_block() == block_type.function_block && context.converted_func_stack.size == 1)
+                context.has_nested_functions = false;
             //ssyy добавил генерацию вызова конструктора предка без параметров
             if (context.converting_block() == block_type.function_block)
             {

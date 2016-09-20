@@ -231,7 +231,7 @@ namespace PascalABCCompiler.TreeConverter
         internal convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
 		private SemanticTree.field_access_level _fal;
-
+        private bool _has_nested_functions;
         internal syntax_tree_visitor syntax_tree_visitor;
 		
         private static compilation_context _instance;
@@ -301,7 +301,7 @@ namespace PascalABCCompiler.TreeConverter
             _last_created_function = null;
             in_parameters_block = false;
             is_order_independed_method_description = false;
-            
+            _has_nested_functions = false;
         }
         
         public bool inStaticArea()
@@ -618,6 +618,18 @@ namespace PascalABCCompiler.TreeConverter
             }
             //\ssyy
 		}
+
+        public bool has_nested_functions
+        {
+            get
+            {
+                return _has_nested_functions;
+            }
+            set
+            {
+                _has_nested_functions = value;
+            }
+        }
 
         //ssyy
         public common_function_node_stack converted_func_stack

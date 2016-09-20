@@ -243,7 +243,7 @@ namespace PascalABCCompiler.PascalABCNewParser
             localparserhelper = new GPPGParserHelper(Errors, Warnings, FileName);
             // localparser.parsertools.LineCorrection = -1;
             syntax_tree_node root = localparserhelper.Parse(Text);
-            return root as expression;
+            return root as statement;
         }
 
         public override syntax_tree_node BuildTreeInSpecialMode(string FileName, string Text)
