@@ -3197,7 +3197,10 @@ meth_modificator
     : tkAbstract
 		{ $$ = $1; }
     | tkOverload
-		{ $$ = $1; }
+		{ 
+            $$ = $1;
+            parsertools.AddWarningFromResource("OVERLOAD_IS_NOT_USED", $1.source_context);
+        }
     | tkReintroduce
 		{ $$ = $1; }
     | tkOverride

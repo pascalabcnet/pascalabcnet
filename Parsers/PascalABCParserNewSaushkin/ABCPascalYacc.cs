@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  IVAN-PC
-// DateTime: 18.09.2016 12:27:40
+// DateTime: 22.09.2016 21:51:41
 // UserName: Ivan
 // Input file <ABCPascal.y>
 
@@ -5105,7 +5105,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
         break;
       case 652: // meth_modificator -> tkOverload
-{ CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
+{ 
+            CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id;
+            parsertools.AddWarningFromResource("OVERLOAD_IS_NOT_USED", ValueStack[ValueStack.Depth-1].id.source_context);
+        }
         break;
       case 653: // meth_modificator -> tkReintroduce
 { CurrentSemanticValue.id = ValueStack[ValueStack.Depth-1].id; }
