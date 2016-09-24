@@ -2500,9 +2500,21 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-
+            if (context.converting_block() == block_type.function_block && context.converted_func_stack.size == 1)
+            {
+                if (_block.defs != null)
+                    foreach (declaration decl in _block.defs.defs)
+                    {
+                        if (decl is procedure_definition)
+                        {
+                            context.has_nested_functions = true;
+                            break;
+                        }
+                    }
+            }
             weak_node_test_and_visit(_block.defs);
-
+            if (context.converting_block() == block_type.function_block && context.converted_func_stack.size == 1)
+                context.has_nested_functions = false;
             //ssyy добавил генерацию вызова конструктора предка без параметров
             if (context.converting_block() == block_type.function_block)
             {
@@ -16796,7 +16808,23 @@ namespace PascalABCCompiler.TreeConverter
             else left = convertion_data_and_alghoritms.convert_type(left, right.type);*/
             if (left is null_const_node)
                 left = convertion_data_and_alghoritms.convert_type(left, right.type);
-            else right = convertion_data_and_alghoritms.convert_type(right, left.type); 
+            else
+            {
+                delegated_methods del_left = left.type as delegated_methods;
+                delegated_methods del_right = right.type as delegated_methods;
+                if (del_left != null && del_right != null && del_left.empty_param_method == null && del_right.empty_param_method == null)
+                {
+                    base_function_call bfc = del_left.proper_methods[0];
+                    common_type_node del =
+                        convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
+                    context.converted_namespace.types.AddElement(del);
+                    right = convertion_data_and_alghoritms.explicit_convert_type(right, del);
+                    left = convertion_data_and_alghoritms.explicit_convert_type(left, del);
+                }
+                else
+                    right = convertion_data_and_alghoritms.convert_type(right, left.type);
+            }
+                
 
             //right = convertion_data_and_alghoritms.convert_type(right, left.type);
             return_value(new question_colon_expression(condition, left, right, get_location(node)));

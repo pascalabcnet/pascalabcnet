@@ -17,6 +17,7 @@ namespace VisualPascalABC
     public static class DebugUtils
     {
         private static Hashtable ht = new Hashtable();
+        private static Dictionary<Type, DebugType> type_cache = new Dictionary<Type, DebugType>();
 
         static DebugUtils()
         {
@@ -69,7 +70,8 @@ namespace VisualPascalABC
                 name = "mscorlib.dll";
             else
                 name = t.Assembly.ManifestModule.ScopeName;
-            return DebugType.Create(p.GetModule(name), (uint)t.MetadataToken);
+            DebugType dt = DebugType.Create(p.GetModule(name), (uint)t.MetadataToken);
+            return dt;
         }
 
         public static DebugType GetDebugType(Type t, List<DebugType> gen_args)

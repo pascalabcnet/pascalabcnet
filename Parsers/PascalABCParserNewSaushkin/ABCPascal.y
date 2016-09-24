@@ -2445,7 +2445,9 @@ lock_stmt
 foreach_stmt
     : tkForeach identifier foreach_stmt_ident_dype_opt tkIn expr_l1 tkDo unlabelled_stmt
         { 
-			$$ = new foreach_stmt($2, $3, $5, $7 as statement, @$); 
+			$$ = new foreach_stmt($2, $3, $5, $7 as statement, @$);
+            if ($3 == null)
+                parsertools.AddWarningFromResource("USING_UNLOCAL_FOREACH_VARIABLE", $2.source_context);
         }
     | tkForeach tkVar identifier tkColon type_ref tkIn expr_l1 tkDo unlabelled_stmt
         { 
@@ -3195,7 +3197,10 @@ meth_modificator
     : tkAbstract
 		{ $$ = $1; }
     | tkOverload
-		{ $$ = $1; }
+		{ 
+            $$ = $1;
+            parsertools.AddWarningFromResource("OVERLOAD_IS_NOT_USED", $1.source_context);
+        }
     | tkReintroduce
 		{ $$ = $1; }
     | tkOverride

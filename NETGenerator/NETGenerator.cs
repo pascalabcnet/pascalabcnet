@@ -786,7 +786,6 @@ namespace PascalABCCompiler.NETGenerator
             cur_type = entry_type;
 
             CloseTypes();//закрываем типы
-
             entry_type.CreateType();
             switch (comp_opt.target)
             {

@@ -239,20 +239,28 @@ namespace VisualPascalABC
         /// Вычисляет значение выражения expr
         /// </summary>
         [HandleProcessCorruptedStateExceptionsAttribute]
-        public RetValue Evaluate(string expr, bool stmt)
+        public RetValue Evaluate(string expr, bool for_immediate=false)
         {
             //VisualEnvironmentCompilerCompiler.ParsersController.GetExpression
             declaringType = null;
             names.Clear();
             ret_val = default(RetValue);
-            for_immediate = stmt;
+            this.for_immediate = for_immediate;
             string fileName = "test" + System.IO.Path.GetExtension(this.FileName);
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+            List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
             syntax_tree_node e = null;
-            if (!stmt)
-                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+            if (for_immediate)
+            {
+                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, Warnings);
+                if (e == null)
+                {
+                    Errors.Clear();
+                    e = vec.StandartCompiler.ParsersController.GetStatement(fileName, expr, Errors, Warnings);
+                }
+            }
             else
-                e = vec.StandartCompiler.ParsersController.GetStatement(fileName, expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
+                e = vec.StandartCompiler.ParsersController.GetExpression(fileName, expr, Errors, Warnings);
             RetValue res = new RetValue(); res.syn_err = false;
             try
             {
@@ -5059,7 +5067,7 @@ namespace VisualPascalABC
             //throw new UnknownName(var);
         }
 
-        private MethodInfo[] GetMethod(string name)
+        private MethodInfo[] GetMethods(string name)
         {
             List<MethodInfo> meths = new List<MethodInfo>();
             IList<MemberInfo> mis = debuggedProcess.SelectedFunction.DeclaringType.GetMember(name, BindingFlags.All);
@@ -5068,7 +5076,17 @@ namespace VisualPascalABC
                 if (mi is MethodInfo)
                     meths.Add(mi as MethodInfo);
             }
-
+            DebugType pabc_system_type = AssemblyHelper.GetPABCSystemType();
+            if (pabc_system_type != null)
+            {
+                mis = pabc_system_type.GetMember(name, BindingFlags.All);
+                foreach (MemberInfo mi in mis)
+                {
+                    if (mi is MethodInfo)
+                        meths.Add(mi as MethodInfo);
+                }
+            }
+            
             return meths.ToArray();
         }
 
@@ -5079,13 +5097,45 @@ namespace VisualPascalABC
             if (av is ident)
             {
                 ident e = av as ident;
-                meths = GetMethod(e.name);
+                meths = GetMethods(e.name);
                 obj_val = null;
             }
             else if (av is dot_node)
             {
                 dot_node e = av as dot_node;
+                string name = build_name(e.left);
+                ident id = e.right as ident;
+                if (name != null && id != null)
+                {
+                    Type t = AssemblyHelper.GetType(name);
+                    if (t != null)
+                    {
+                        //DebugType dt = DebugType.Create(this.debuggedProcess.GetModule(name),(uint)t.MetadataToken);
+                        DebugType dt = DebugUtils.GetDebugType(t);
+                        IList<MemberInfo> mis = new List<MemberInfo>();
+                        DebugType tmp = dt;
+                        while (tmp != null && mis.Count == 0)
+                        {
+                            try
+                            {
+                                mis = tmp.GetMember(id.name, BindingFlags.All);
+                                tmp = tmp.BaseType;
+                            }
+                            catch
+                            {
 
+                            }
+                        }
+                        List<MethodInfo> meth_list = new List<MethodInfo>();
+
+                        foreach (MemberInfo mi in mis)
+                        {
+                            if (mi is MethodInfo)
+                                meth_list.Add(mi as MethodInfo);
+                        }
+                        meths = meth_list.ToArray();
+                    }
+                }
             }
             return meths;
         }
