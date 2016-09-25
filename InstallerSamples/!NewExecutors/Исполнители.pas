@@ -9,10 +9,9 @@ procedure Вывести(params args: array of object) := Println(args);
 procedure ВывестиПустуюСтроку := Println;
 
 ///- Метод Вывести
-procedure integer.Вывести := Println(Self);
-procedure real.Вывести := Println(Self);
-procedure string.Вывести := Println(Self);
-
+procedure Вывести(Self: integer); extensionmethod := Println(Self);
+procedure Вывести(Self: real); extensionmethod := Println(Self);
+procedure Вывести(Self: string); extensionmethod := Println(Self);
 
 type
   целое = integer;
@@ -395,12 +394,14 @@ end;
 
 function Вывести<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Self.Println
+  Self.Println;
+  Result := Self;
 end;
 
 function ВывестиПострочно<T>(Self: sequence of T): sequence of T; extensionmethod;
 begin
-  Self.Println(NewLine)
+  Self.Println(NewLine);
+  Result := Self;
 end;
 
 function Выбрать<T>(Self: sequence of T; cond: T -> boolean): sequence of T; extensionmethod;
@@ -413,21 +414,51 @@ begin
   Result := Self.Take(n);  
 end;
 
-function Количество<T>(Self: sequence of T; cond: T -> boolean): integer; extensionmethod;
+function Количество<T>(Self: sequence of T; cond: T -> boolean := nil): integer; extensionmethod;
 begin
-  Result := Self.Count(cond)
+  if cond = nil then
+    Result := Self.Count()
+  else Result := Self.Count(cond)
 end;
 
-function Сумма(Self: sequence of integer): integer; extensionmethod := Self.Sum();  
+function Сумма(Self: sequence of integer): integer; extensionmethod;
+begin
+  Result := Self.Sum();  
+end;  
+
+function Среднее(Self: sequence of integer): real; extensionmethod;
+begin
+  Result := Self.Average;  
+end;  
+
+function Минимум(Self: sequence of integer): integer; extensionmethod;
+begin
+  Result := Self.Min;  
+end;  
+
+function Максимум(Self: sequence of integer): integer; extensionmethod;
+begin
+  Result := Self.Max;
+end;  
 
 function Преобразовать<T,Key>(Self: sequence of T; conv: T -> Key): sequence of Key; extensionmethod;
 begin
   Result := Self.Select(conv);  
 end;
 
+function Четное(x: integer): boolean;
+begin
+  Result := x mod 2 = 0;
+end;
+
 function ОтсортироватьПо<T,Key>(Self: sequence of T; cond: T -> Key): sequence of T; extensionmethod;
 begin
   Result := Self.OrderBy(cond);  
+end;
+
+function Отсортировать<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Result := Self.OrderBy(x->x);  
 end;
 
 function ОтсортироватьПоУбыванию<T,Key>(Self: sequence of T; cond: T -> Key): sequence of T; extensionmethod;
@@ -472,6 +503,7 @@ public
 end;
 
 type 
+  ///!#
   Country = auto class
     nm,cap: string;
     inh: integer;
@@ -512,6 +544,11 @@ end;
 function ГеометическаяПрогрессия(a,d: real; n: integer := 10): sequence of real;
 begin
   Result := SeqGen(n,a,a->a*d)
+end;
+
+function СлучайнаяПоследовательность(n: integer := 10; a: integer := 0; b: integer := 10): sequence of integer;
+begin
+  Result := ArrRandom(n,a,b)
 end;
 
 function НовыйФайл: ФайлТип;
