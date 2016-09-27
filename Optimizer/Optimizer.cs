@@ -13,7 +13,8 @@ namespace PascalABCCompiler
     {
         private List<Errors.CompilerWarning> warns = new List<Errors.CompilerWarning>();
         private OptimizerHelper helper = new OptimizerHelper();
-        private bool extended_mode = false;
+        private bool extended_mode = true;
+        private common_type_node current_type;
 
         public Optimizer()
         {
@@ -60,7 +61,10 @@ namespace PascalABCCompiler
             if (!cnn.from_pcu)
             {
                 foreach (namespace_variable vdn in cnn.variables)
+                {
                     helper.AddVariable(vdn);
+                    CheckType(vdn.type, vdn.inital_value, vdn.loc);
+                }
             }
         }
 
@@ -167,9 +171,15 @@ namespace PascalABCCompiler
 
         private void VisitCommonTypeHeader(common_type_node ctn)
         {
-            if (ctn.base_type != null && ctn.base_type is common_type_node) VisitCommonTypeHeader(ctn.base_type as common_type_node);
+            if (ctn.base_type != null && ctn.base_type is common_type_node)
+                VisitCommonTypeHeader(ctn.base_type as common_type_node);
+            current_type = ctn;
             foreach (class_field fld in ctn.fields)
+            {
                 helper.AddField(fld);
+                CheckType(fld.type, fld.inital_value, fld.loc);
+            }
+            current_type = null;    
         }
 
         private void CollectInfoFields(common_type_node ctn)
@@ -186,17 +196,17 @@ namespace PascalABCCompiler
 
         private void CheckType(type_node type, expression_node initial_value, location loc)
         {
-            if (type.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
-            {
-                AddHint("DO_NOT_USE_STATIC_ARRAYS", loc);
-            }
-            else if (type.IsPointer && type.element_type.is_value_type && type.element_type is common_type_node)
+            /*if (type.IsPointer && type.element_type.is_value_type && type.element_type is common_type_node)
             {
                 AddHint("DO_NOT_USE_POINTERS_TO_RECORDS", loc);
-            }
-            else if (type.type_special_kind == SemanticTree.type_special_kind.short_string)
+            }*/
+            if (type.type_special_kind == SemanticTree.type_special_kind.short_string && !(current_type != null && current_type.is_value))
             {
                 AddHint("DO_NOT_USE_SHORT_STRINGS", loc);
+            }
+            else if (type.type_special_kind == SemanticTree.type_special_kind.array_kind || type.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
+            {
+                CheckType(type.element_type, initial_value, loc);
             }
         }
 
@@ -405,21 +415,6 @@ namespace PascalABCCompiler
 
         private void VisitFor(for_node stmt)
         {
-            if (extended_mode)
-            {
-                if (stmt.init_while_expr is basic_function_call)
-                {
-                    basic_function_call bfc = stmt.init_while_expr as basic_function_call;
-                    if (!(bfc.real_parameters[0] is local_block_variable_reference))
-                        AddHint("USE_LOCAL_BLOCK_VARIABLES_FOR_CYCLE_COUNTER", stmt.location);
-                    else
-                    {
-                        local_block_variable lbv = (bfc.real_parameters[0] as local_block_variable_reference).var;
-                        if (lbv.loc.begin_line_num < stmt.location.begin_line_num || lbv.loc.begin_column_num < stmt.location.end_column_num)
-                            AddHint("USE_LOCAL_BLOCK_VARIABLES_CYCLE_COUNTER", stmt.location);
-                    }
-                }
-            }
             VisitStatement(stmt.init_while_expr);
             VisitStatement(stmt.initialization_statement);
             VisitStatement(stmt.increment_statement);
@@ -432,11 +427,13 @@ namespace PascalABCCompiler
         private void VisitStatementList(statements_list stmt)
         {
             statement_node sn = null;
+            
             foreach (local_block_variable lbv in stmt.local_variables)
             {
             	helper.AddVariable(lbv);
                 if(lbv.inital_value!=null)
             	    VisitExpression(lbv.inital_value);
+                CheckType(lbv.type, lbv.inital_value, lbv.loc);
             }
             for (int i = 0; i < stmt.statements.Count; i++)
             {
@@ -898,58 +895,6 @@ namespace PascalABCCompiler
 
         private void VisitCommonNamespaceFunctionCall(common_namespace_function_call en)
         {
-            if (extended_mode)
-            {
-                string func_name = en.function_node.name.ToLower();
-                if ((func_name == "readln" || func_name == "read") && en.function_node.namespace_node.namespace_name == "PABCSystem")
-                {
-                    if (en.parameters.Count == 1)
-                    {
-                        if (func_name == "readln")
-                            func_name = "Readln";
-                        else
-                            func_name = "Read";
-                        compiled_type_node ctn = en.parameters[0].type as compiled_type_node;
-                        if (ctn != null)
-                        {
-                            if (ctn == SystemLibrary.SystemLibrary.integer_type)
-                            {
-                                AddHint(string.Format("USE_FUNCTION_{0}_INSTEAD", func_name + "Integer"), en.location);
-                            }
-                            else if (ctn == SystemLibrary.SystemLibrary.double_type)
-                            {
-                                AddHint(string.Format("USE_FUNCTION_{0}_INSTEAD", func_name + "Real"), en.location);
-                            }
-                            else if (ctn == SystemLibrary.SystemLibrary.char_type)
-                            {
-                                AddHint(string.Format("USE_FUNCTION_{0}_INSTEAD", func_name + "Char"), en.location);
-                            }
-                            else if (ctn == SystemLibrary.SystemLibrary.string_type)
-                            {
-                                AddHint(string.Format("USE_FUNCTION_{0}_INSTEAD", func_name + "String"), en.location);
-                            }
-                            else if (ctn == SystemLibrary.SystemLibrary.bool_type)
-                            {
-                                AddHint(string.Format("USE_FUNCTION_{0}_INSTEAD", func_name + "Boolean"), en.location);
-                            }
-                        }
-                    }
-                }
-                else if (func_name == "writeln")
-                {
-                    if (en.parameters.Count >= 3)
-                    {
-                        foreach (expression_node prm in en.parameters)
-                        {
-                            if (prm is string_const_node || prm is char_const_node)
-                            {
-                                AddHint(string.Format("USE_FUNCTION_{0}_INSTEAD", "WritelnFormat"), en.location);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
             for (int i = 0; i < en.parameters.Count; i++)
                 VisitExpression(en.parameters[i]);
         }
