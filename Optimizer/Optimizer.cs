@@ -139,22 +139,42 @@ namespace PascalABCCompiler
             	{
             		local_variable vdn = vdn2 as local_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                	else if (vi.num_ass == 0 && vdn.is_ret_value && !cmn.name.StartsWith("<>") && !cmn.cont_type.IsInterface && cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract
-                    && cmn.return_value_type != null && !cmn.return_value_type.IsPointer && !cmn.is_constructor && cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
-                     && !helper.IsExternal(cmn)) warns.Add(new UndefinedReturnValue(cmn.name, cmn.function_code.location));
-                //if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.name.Contains("$")) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
+                	if (vi.num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                	else if (vi.num_ass == 0 && 
+                            vdn.is_ret_value && 
+                            !cmn.name.StartsWith("<") && 
+                            !cmn.cont_type.IsInterface && 
+                            cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract &&
+                            cmn.return_value_type != null && 
+                            !cmn.return_value_type.IsPointer && 
+                            !cmn.is_constructor && 
+                            cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && 
+                            cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
+                            && !helper.IsExternal(cmn))
+                        warns.Add(new UndefinedReturnValue(cmn.name, cmn.function_code.location));
             	}
             	else if (vdn2 is local_block_variable)
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                    else if (vi.num_ass == 0 && vdn.is_ret_value && !cmn.name.StartsWith("<>") && !cmn.cont_type.IsInterface && cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract
-                    && cmn.return_value_type != null && !cmn.return_value_type.IsPointer && !cmn.is_constructor && cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
-                     && !helper.IsExternal(cmn)) warns.Add(new UndefinedReturnValue(cmn.name, cmn.function_code.location));
+                	if (vi.num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                    else if (vi.num_ass == 0 && 
+                            vdn.is_ret_value && 
+                            !cmn.name.StartsWith("<") && 
+                            !cmn.cont_type.IsInterface && 
+                            cmn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract && 
+                            cmn.return_value_type != null && 
+                            !cmn.return_value_type.IsPointer && 
+                            !cmn.is_constructor && 
+                            cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && 
+                            cmn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
+                            && !helper.IsExternal(cmn))
+                        warns.Add(new UndefinedReturnValue(cmn.name, cmn.function_code.location));
             	}
-            	if (vdn2.inital_value != null) VisitExpression(vdn2.inital_value);
+            	if (vdn2.inital_value != null)
+                    VisitExpression(vdn2.inital_value);
             }
             foreach (common_parameter prm in cmn.parameters)
             {
@@ -236,34 +256,53 @@ namespace PascalABCCompiler
             	{
             		local_variable vdn = vdn2 as local_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                    else if (vi.num_ass == 0 && vdn.is_ret_value && !cnfn.name.StartsWith("<>") && cnfn.return_value_type != null && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && !cnfn.return_value_type.IsPointer && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
-                     && !helper.IsExternal(cnfn)) warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
-                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
-                //if (vi.num_ass == 0 && vi.act_num_use > 0) helper.AddRealWarning(vdn, warns);
+                	if (vi.num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                    else if (vi.num_ass == 0 && 
+                            vdn.is_ret_value && 
+                            !cnfn.name.StartsWith("<") && 
+                            cnfn.return_value_type != null && 
+                            cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && 
+                            !cnfn.return_value_type.IsPointer && 
+                            cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper && 
+                            !helper.IsExternal(cnfn))
+                        warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
+                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
             	}
             	else if (vdn2 is local_block_variable)
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                    else if (vi.num_ass == 0 && vdn.is_ret_value && !cnfn.name.StartsWith("<>") && cnfn.return_value_type != null && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && !cnfn.return_value_type.IsPointer && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
-                     && !helper.IsExternal(cnfn)) warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
-                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
-                //if (vi.num_ass == 0 && vi.act_num_use > 0) helper.AddRealWarning(vdn, warns);
+                	if (vi.num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                    else if (vi.num_ass == 0 && 
+                             vdn.is_ret_value && 
+                             !cnfn.name.StartsWith("<") && 
+                             cnfn.return_value_type != null && 
+                             cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && 
+                             !cnfn.return_value_type.IsPointer && 
+                             cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper && 
+                             !helper.IsExternal(cnfn))
+                        warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
+                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
             	}
-            	if (vdn2.inital_value != null) VisitExpression(vdn2.inital_value);
+            	if (vdn2.inital_value != null)
+                    VisitExpression(vdn2.inital_value);
             }
             foreach (common_parameter prm in cnfn.parameters)
             {
                 ParamInfo vi = helper.GetParameter(prm);
-                if (prm.inital_value != null) VisitExpression(prm.inital_value);
+                if (prm.inital_value != null)
+                    VisitExpression(prm.inital_value);
                 //if (vi.num_use == 0 && !prm.name.Contains("$")) warns.Add(new UnusedParameter(prm.name, prm.loc));
             }
             foreach (var_definition_node vdn in cnfn.var_definition_nodes_list)
             {
             	VarInfo vi = helper.GetVariable(vdn);
-            	if (vdn.inital_value != null) VisitExpression(vdn.inital_value);
+            	if (vdn.inital_value != null)
+                    VisitExpression(vdn.inital_value);
             }
         }
 
@@ -285,34 +324,51 @@ namespace PascalABCCompiler
             	{
             		local_variable vdn = vdn2 as local_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                    else if (vi.num_ass == 0 && vdn.is_ret_value && !cnfn.name.StartsWith("<>") && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && !cnfn.return_value_type.IsPointer && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
-                    && !helper.IsExternal(cnfn)) warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
-                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
-                //if (vi.num_ass == 0 && vi.act_num_use > 0) helper.AddRealWarning(vdn, warns);
+                	if (vi.num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                    else if (vi.num_ass == 0 && 
+                             vdn.is_ret_value && 
+                             !cnfn.name.StartsWith("<") && 
+                             cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && 
+                             !cnfn.return_value_type.IsPointer && 
+                             cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper && 
+                             !helper.IsExternal(cnfn))
+                        warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
+                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
             	}
             	else if (vdn2 is local_block_variable)
             	{
             		local_block_variable vdn = vdn2 as local_block_variable;
             		VarInfo vi = helper.GetVariable(vdn);
-                	if (vi.num_use == 0 && !vdn.is_special_name) warns.Add(new UnusedVariable(vdn.name, vdn.loc));
-                    else if (vi.num_ass == 0 && vdn.is_ret_value && !cnfn.name.StartsWith("<>") && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && !cnfn.return_value_type.IsPointer && cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper
-                    && !helper.IsExternal(cnfn)) warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
-                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name) warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
-                //if (vi.num_ass == 0 && vi.act_num_use > 0) helper.AddRealWarning(vdn, warns);
+                	if (vi.num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new UnusedVariable(vdn.name, vdn.loc));
+                    else if (vi.num_ass == 0 && 
+                             vdn.is_ret_value && 
+                             !cnfn.name.StartsWith("<") && 
+                             cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.record && 
+                             !cnfn.return_value_type.IsPointer && 
+                             cnfn.return_value_type.type_special_kind != SemanticTree.type_special_kind.array_wrapper && 
+                             !helper.IsExternal(cnfn))
+                        warns.Add(new UndefinedReturnValue(cnfn.name, cnfn.function_code.location));
+                	if (vi.num_ass > 0 && vi.act_num_use == 0 && !vdn.is_special_name)
+                        warns.Add(new AssignWithoutUsing(vdn.name, vi.last_ass_loc));
             	}
-            	if (vdn2.inital_value != null) VisitExpression(vdn2.inital_value);
+            	if (vdn2.inital_value != null)
+                    VisitExpression(vdn2.inital_value);
             }
             foreach (common_parameter prm in cnfn.parameters)
             {
                 ParamInfo vi = helper.GetParameter(prm);
-                if (prm.inital_value != null) VisitExpression(prm.inital_value);
+                if (prm.inital_value != null)
+                    VisitExpression(prm.inital_value);
                 //if (vi.num_use == 0 && !prm.name.Contains("$")) warns.Add(new UnusedParameter(prm.name, prm.loc));
             }
             foreach (var_definition_node vdn in cnfn.var_definition_nodes_list)
             {
             	VarInfo vi = helper.GetVariable(vdn);
-            	if (vdn.inital_value != null) VisitExpression(vdn.inital_value);
+            	if (vdn.inital_value != null)
+                    VisitExpression(vdn.inital_value);
             }
         }
 
