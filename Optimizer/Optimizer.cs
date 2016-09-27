@@ -516,8 +516,6 @@ namespace PascalABCCompiler
 
         private void VisitGoto(goto_statement stmt)
         {
-            if (extended_mode)
-                AddHint("DO_NOT_USE_GOTO", stmt.location);
         }
 		
         private void IncreaseNumUseVar(var_definition_node lvr)
