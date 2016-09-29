@@ -57,3 +57,5 @@ BAD_ANON_TYPE=Неверное определение имени поля ано
 ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=Одинокий типовой параметр не должен заключаться в скобки
 
 USING_UNLOCAL_FOR_VARIABLE=Параметр цикла for в PascalABC.NET должен описываться в заголовке цикла
+USING_UNLOCAL_FOREACH_VARIABLE=Параметр цикла foreach должен описываться в заголовке цикла
+OVERLOAD_IS_NOT_USED=overload не используется в PascalABC.NET

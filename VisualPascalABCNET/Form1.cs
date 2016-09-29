@@ -1448,6 +1448,11 @@ namespace VisualPascalABC
             __showhelpinqueue();
         }
 
+        private void miCheckUpdates_Click(object sender, EventArgs e)
+        {
+            WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+        }
+
         private void tsHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();

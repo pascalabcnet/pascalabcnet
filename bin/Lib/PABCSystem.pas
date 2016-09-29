@@ -2350,8 +2350,6 @@ end;
 procedure TypedSet.IncludeElement(elem: object);
 var
   diap: Diapason;
-  i: integer;
-  c: char;
 begin
   if elem = nil then exit;
   elem := convert_elem(elem);
@@ -2374,7 +2372,7 @@ begin
     diap := Diapason(elem);
     if diap.clow = nil then
     begin
-      for i := diap.low to diap.high do
+      for var i := diap.low to diap.high do
       begin
         ht[i] := i;
         //if copy_ht <> nil then
@@ -2385,7 +2383,7 @@ begin
     begin
       if diap.clow is char then
       begin
-        for c := char(diap.clow) to char(diap.chigh) do
+        for var c := char(diap.clow) to char(diap.chigh) do
         begin
           ht[c] := c;
           //if copy_ht <> nil then
@@ -2399,7 +2397,7 @@ begin
       end
       else if diap.clow.GetType().IsEnum then
       begin
-        for i := integer(diap.clow) to integer(diap.chigh) do
+        for var i := integer(diap.clow) to integer(diap.chigh) do
         begin
           var obj := Enum.ToObject(diap.clow.GetType(), i);
           ht[obj] := obj;
@@ -2416,15 +2414,11 @@ begin
   if elem.GetType().IsEnum then
   begin
     ht.Remove(elem);
-    //if copy_ht <> nil then
-    //  copy_ht.Remove(elem);
   end
   else
   begin
     elem := convert_elem(elem);
     ht.Remove(elem);
-    //if copy_ht <> nil then
-    //  copy_ht.Remove(elem);
   end
 end;
 
@@ -2609,11 +2603,9 @@ end;
 
 [System.Diagnostics.DebuggerStepThrough]
 function CreateSet(params elems: array of object): TypedSet;
-var
-  i: integer;
 begin
   Result := new TypedSet();
-  for i := 0 to elems.Length - 1 do
+  for var i := 0 to elems.Length - 1 do
     Result.IncludeElement(elems[i]);
 end;
 
@@ -5981,7 +5973,6 @@ var
   elem: object;
   fa: array of System.Reflection.FieldInfo;
   NullBasedArray: System.Array;
-  i: integer;
 begin
   if t.IsPrimitive then 
   begin
@@ -6002,38 +5993,13 @@ begin
         TypeCode.Single:  Result := ReadSingle;
       
       end;
-    {
-    if t = typeof(integer) then
-    Result := f.br.ReadInt32
-    else if t = typeof(real) then
-    Result := f.br.ReadDouble
-    else if t = typeof(boolean) then
-    Result := f.br.ReadBoolean
-    else if t = typeof(char) then
-    Result := f.br.ReadChar
-    else if t = typeof(byte) then
-    Result := f.br.ReadByte
-    else if t = typeof(shortint) then // sizeof(shortint)=1
-    Result := f.br.ReadSByte
-    else if t = typeof(smallint) then // sizeof(smallint)=2
-    Result := f.br.ReadInt16
-    else if t = typeof(word) then
-    Result := f.br.ReadUInt16
-    else if t = typeof(longword) then
-    Result := f.br.ReadUInt32
-    else if t = typeof(int64) then
-    Result := f.br.ReadInt64
-    else if t = typeof(uint64) then
-    Result := f.br.ReadUInt64
-    else if t = typeof(single) then
-    Result := f.br.ReadSingle{}
   end 
   else if t.IsEnum then Result := f.br.ReadInt32
   else if t.IsValueType then
   begin
     elem := Activator.CreateInstance(t);
     fa := t.GetFields;
-    for i := 0 to fa.Length - 1 do
+    for var i := 0 to fa.Length - 1 do
       if not fa[i].IsStatic then
         fa[i].SetValue(elem, AbstractBinaryFileReadT(f, fa[i].FieldType, ind, in_arr));
     Result := elem;
@@ -6066,7 +6032,7 @@ begin
       t1 := NullBasedArray.GetType.GetElementType;
       var tmp := ind;
       var tmp2 := 0;
-      for i := 0 to NullBasedArray.Length - 1 do
+      for var i := 0 to NullBasedArray.Length - 1 do
       begin
         NullBasedArray.SetValue(AbstractBinaryFileReadT(f, t1, ind, i = 0 ? false : true), i);
         if i = 0 then
@@ -6083,7 +6049,6 @@ procedure Write(f: AbstractBinaryFile; val: object; arr: boolean; var ind: integ
 var
   t: System.Type;
   fa: array of System.Reflection.FieldInfo;
-  i: integer;
   NullBasedArray: System.Array;
 begin
   t := val.GetType;
@@ -6123,7 +6088,7 @@ begin
   else if t.IsValueType then
   begin
     fa := t.GetFields;
-    for i := 0 to fa.Length - 1 do
+    for var i := 0 to fa.Length - 1 do
     begin
       if not fa[i].IsStatic then
         Write(f, fa[i].GetValue(val), true, ind, in_arr);
@@ -6152,7 +6117,7 @@ begin
     begin
       var tmp := ind;
       var tmp2 := 0;
-      for i := 0 to NullBasedArray.Length - 1 do
+      for var i := 0 to NullBasedArray.Length - 1 do
       begin
         Write(f, NullBasedArray.GetValue(i), true, ind, i = 0 ? false : true);
         if i = 0 then
@@ -6165,18 +6130,14 @@ begin
 end;
 
 procedure Write(f: AbstractBinaryFile; params vals: array of object);
-var
-  i: integer;
 begin
   if f.fi = nil then raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
   if f.fs = nil then raise new System.IO.IOException(GetTranslation(FILE_NOT_OPENED));
-  for i := 0 to vals.Length - 1 do
+  for var i := 0 to vals.Length - 1 do
   begin
     var NullBasedArray := GetNullBasedArray(vals[i]);
     var ind := 0;
     Write(f, vals[i], NullBasedArray <> nil, ind, false);
-    //if (f is TypedFile) and ((f as TypedFile).offset > 0) then
-    //f.bw.Write(new byte[tmp+(f as TypedFile).ElementSize-f.fs.Position]);
   end;
 end;
 
@@ -9669,7 +9630,6 @@ var
   elem: object;
   fa: array of System.Reflection.FieldInfo;
   NullBasedArray: System.Array;
-  i: integer;
   fi: System.Reflection.FieldInfo;
 begin
   if t.IsPrimitive or t.IsEnum then 
@@ -9697,7 +9657,7 @@ begin
     //elem := Activator.CreateInstance(t); //ssyy commented
     fa := t.GetFields;
     Result := 0;
-    for i := 0 to fa.Length - 1 do
+    for var i := 0 to fa.Length - 1 do
       if not fa[i].IsStatic then 
         Result := Result + RunTimeSizeOf(fa[i].FieldType)
   end
@@ -9855,7 +9815,6 @@ end;
 procedure CheckCanUsePointerOnType(T: System.Type);
 var
   fields: array of System.Reflection.FieldInfo;
-  fi: System.Reflection.FieldInfo;
 begin
   if T.IsPointer then
   begin
@@ -9865,7 +9824,7 @@ begin
   if T.IsValueType then
   begin
     fields := T.GetFields();
-    foreach fi in fields do
+    foreach var fi in fields do
       if not fi.IsStatic then
         CheckCanUsePointerOnType(fi.FieldType);
     exit;
@@ -9876,7 +9835,6 @@ end;
 procedure CheckCanUseTypeForFiles(T: System.Type; FileIsBinary: boolean);
 var
   fields: array of System.Reflection.FieldInfo;
-  fi: System.Reflection.FieldInfo;
 begin
   if T.IsPrimitive or T.IsEnum then
     exit;
@@ -9893,7 +9851,7 @@ begin
   if T.IsValueType then
   begin
     fields := T.GetFields();
-    foreach fi in fields do
+    foreach var fi in fields do
       if not fi.IsStatic then
         CheckCanUseTypeForFiles(fi.FieldType, FileIsBinary);
     exit;

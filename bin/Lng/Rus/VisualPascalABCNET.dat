@@ -330,7 +330,12 @@ PRJ_COMPANY=Компания
 PRJ_TRADEMARK=Торговая марка
 PRJ_COPYRIGHT=Copyright
 PRJ_GENERATE_XML_DOC=Генерировать XML документацию
-
+VERSION_IS_UP_DO_DATE=Вы используете актуальную версию PascalABC.NET
+UPDATE_AVAILABLE=Доступна новая версия PascalABC.NET. Перейти на страницу скачивания?
+UPDATE_CHECK_ERROR=Ошибка при проверке обновлений
+UPDATE_CHECK=Проверка обновлений
+PABC_DOWNLOAD_PAGE=http://pascalabc.net/ssyilki-dlya-skachivaniya
+M_CHECKUPDATES=Проверить обновления
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=Общие
