@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Модуль реализует векторные графические объекты с возможностью масштабирования, наложения друг на друга, 
@@ -671,7 +671,6 @@ procedure drawRect(r: GRectangle);
 // Низкоуровневая процедура (не вызывается пользователем). Вызывает безусловную перерисовку прямоугольника.
 var
 ///  b: Picture;
-  i: integer;
   g: ObjectABC;
   gb: System.Drawing.Graphics;
   db: boolean;
@@ -706,14 +705,14 @@ begin
   bmp1.Dispose;
   bmp1 := nil;
 
-  for i:=0 to __l.Count-1 do
+  for var i:=0 to __l.Count-1 do
   begin
     g := ObjectABC(__l[i]);
     if g.Visible and g.IntersectRect(r) then
       g.Draw(g.Left-r.Left,g.Top-r.Top,gb);
   end;
   
-  for i:=0 to __lUI.Count-1 do
+  for var i:=0 to __lUI.Count-1 do
   begin
     g := ObjectABC(__lUI[i]);
     if g.Visible and g.IntersectRect(r) then
@@ -794,14 +793,11 @@ begin
 end;
 
 function ObjectUnderPoint(x,y: integer): ObjectABC;
-var
-  i: integer;
-  g: ObjectABC;
 begin
   Result:=nil;
-  for i := Objects.Count-1 downto 0 do
+  for var i := Objects.Count-1 downto 0 do
   begin
-    g := Objects[i];
+    var g := Objects[i];
     if g.PtInside(x,y) then
     begin
       Result:=g;
@@ -824,14 +820,11 @@ begin
 end;
 
 function UIElementUnderPoint(x,y: integer): UIElementABC;
-var
-  i: integer;
-  g: UIElementABC;
 begin
   Result:=nil;
-  for i:=__lUI.Count-1 downto 0 do
+  for var i:=__lUI.Count-1 downto 0 do
   begin
-    g := UIElementABC(__lUI[i]);
+    var g := UIElementABC(__lUI[i]);
     if g.PtInside(x,y) then
     begin
       Result := g;
@@ -1746,18 +1739,15 @@ begin
 end;
 
 procedure RegularPolygonABC.Draw(x,y: integer; g: Graphics);
-var
-  i,r,z,x0,y0: integer;
-  phi: real;
 begin
   SetDrawSettings;
-  phi := -90 + Angle;
-  z := BorderWidth div 2;
-  r := Width div 2;
+  var phi := -90 + Angle;
+  var z := BorderWidth div 2;
+  var r := Width div 2;
   r := r - z;
-  x0 := x + Width div 2;
-  y0 := y + Width div 2;
-  for i:=0 to n-1 do
+  var x0 := x + Width div 2;
+  var y0 := y + Width div 2;
+  for var i:=0 to n-1 do
   begin
     a[i].x := round(r*cos(phi*Pi/180)) + x0;
     a[i].y := round(r*sin(phi*Pi/180)) + y0;
@@ -1940,7 +1930,7 @@ end;
 
 procedure StarABC.Draw(x,y: integer; g: Graphics);
 var
-  i,r,rr,z,x0,y0: integer;
+  r,rr,z,x0,y0: integer;
   phi: real;
 begin
   SetDrawSettings;
@@ -1951,7 +1941,7 @@ begin
   x0 := x + Width div 2;
   y0 := y + Width div 2;
   rr := round(r/r_rr);
-  for i:=0 to Count*2-1 do
+  for var i:=0 to Count*2-1 do
   begin
     if i mod 2 = 0 then
     begin
@@ -2351,15 +2341,12 @@ begin
 end;
 
 procedure ContainerABC.InitBy(g: ContainerABC); 
-var
-  i: integer;
-  ob: ObjectABC;
 begin
   l := new System.Collections.ArrayList; 
   inherited InitBy(g);
-  for i:=0 to g.Count-1 do
+  for var i:=0 to g.Count-1 do
   begin
-    ob := g[i].Clone0;
+    var ob := g[i].Clone0;
     ob.Owner := Self;
   end;
 end;
@@ -2406,14 +2393,11 @@ begin
 end;
 
 procedure ContainerABC.Draw(x,y: integer; g: Graphics);
-var
-  i: integer;
-  ob: ObjectABC;
 begin
   LockGraphics;
-  for i:=0 to l.Count-1 do
+  for var i:=0 to l.Count-1 do
   begin
-    ob := ObjectABC(l[i]);
+    var ob := ObjectABC(l[i]);
     if ob.Visible then
       ob.Draw(x+ob.Left,y+ob.Top,g);
   end;
@@ -2421,14 +2405,11 @@ begin
 end;
 
 function ContainerABC.PtInside(x,y:integer): boolean;
-var
-  i: integer;
-  g: ObjectABC;
 begin
   Result:=False;
-  for i:=0 to l.Count-1 do
+  for var i:=0 to l.Count-1 do
   begin
-    g := ObjectABC(l[i]);
+    var g := ObjectABC(l[i]);
     if g.PtInside(x-Left,y-Top) then
     begin
       Result := True;
@@ -2438,17 +2419,13 @@ begin
 end;
 
 procedure ContainerABC.SetWidth(Width: integer);
-var
-  i: integer;
-  scale: real;
-  g: ObjectABC;
 begin
   if Self.Width = 0 then 
     Exit;
-  scale := Width/Self.Width;
-  for i:=0 to l.Count-1 do
+  var scale := Width/Self.Width;
+  for var i:=0 to l.Count-1 do
   begin
-    g := ObjectABC(l[i]);
+    var g := ObjectABC(l[i]);
     g.Left := round(g.Left*scale);
     g.Width := round(g.Width*scale);
   end;
@@ -2456,16 +2433,12 @@ begin
 end;
 
 procedure ContainerABC.SetHeight(Height: integer);
-var
-  i: integer;
-  scale: real;
-  g: ObjectABC;
 begin
   if Self.Height=0 then Exit;
-  scale:=Height/Self.Height;
-  for i:=1 to l.Count do
+  var scale:=Height/Self.Height;
+  for var i:=1 to l.Count do
   begin
-    g := ObjectABC(l[i]);
+    var g := ObjectABC(l[i]);
     g.Top := round(g.Top*scale);
     g.Height := round(g.Height*scale);
   end;
@@ -2473,19 +2446,16 @@ begin
 end;
 
 procedure ContainerABC.RecalcBounds;
-var
-  i: integer;
-  r: GRectangle;
 begin
   if Count=0 then Exit;
-  r := ObjectABC(l[0]).Bounds;
-  for i:=1 to l.Count-1 do
+  var r := ObjectABC(l[0]).Bounds;
+  for var i:=1 to l.Count-1 do
     r := GRectangle.Union(r,ObjectABC(l[i]).Bounds);
   fx := fx + r.Left;
   fy := fy + r.Top;
   fw := r.Right - r.Left;
   fh := r.Bottom - r.Top;
-  for i:=0 to l.Count-1 do
+  for var i:=0 to l.Count-1 do
     ObjectABC(l[i]).SetCoords(ObjectABC(l[i]).Left-r.Left,ObjectABC(l[i]).Top-r.Top);
 end;
 
@@ -2586,14 +2556,13 @@ begin
 end;
 
 procedure BoardABC.Draw(x,y: integer; g: Graphics); 
-var i: integer;
 begin
   SetDrawSettings;
   LockGraphics;
   FillRectangle(x,y,x+Width,y+Height,g);
-  for i:=0 to nx do
+  for var i:=0 to nx do
     Line(x+i*szx,y,x+i*szx,y+Height-1,g);
-  for i:=0 to ny do
+  for var i:=0 to ny do
     Line(x,y+i*szy,x+Width-1,y+i*szy,g);
   UnLockGraphics;  
 end;
@@ -2610,20 +2579,18 @@ end;
 
 //------ ObjectBoardABC ------
 procedure ObjectBoardABC.Init(x,y,nn,mm,sszx,sszy: integer; cl: GColor);
-var i: integer;
 begin
   inherited Init(x,y,nn,mm,sszx,sszy,cl);
   SetLength(ar,nn*mm);
-  for i:=0 to nn*mm-1 do
+  for var i:=0 to nn*mm-1 do
     ar[i] := nil;
 end;
 
 procedure ObjectBoardABC.InitBy(g: ObjectBoardABC);
-var i: integer;
 begin 
   inherited InitBy(g);
   SetLength(ar,g.ar.Length);
-  for i:=0 to g.ar.Length-1 do
+  for var i:=0 to g.ar.Length-1 do
     ar[i] := g.ar[i].Clone;
 end;
 
