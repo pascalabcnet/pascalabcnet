@@ -765,6 +765,16 @@ namespace NodeGenerator
         }
         //\ssyy
 
+        /// <summary>
+        /// Генерирует код, копирующий значение поля в заданную переменную 
+        /// </summary>
+        /// <returns></returns>
+        public virtual string generate_clone_code(string destination, string indent)
+        {
+            string cast = field_type_name == text_consts.base_tree_node_name ? "" : "(" + field_type_name + ")";
+            return indent + $"{destination} = {cast}{field_name}.Clone();";
+        }
+
 	}
     //miks 31.05.10
     [Serializable]
@@ -895,7 +905,24 @@ namespace NodeGenerator
 				_create_var=value;
 			}
 		}
-	}
+
+        public override string generate_clone_code(string destination, string indent)
+        {
+            if (field_type_name == "SourceContext")
+                return indent + $"{destination} = new SourceContext(source_context);";
+            else
+            if (list_type != "")
+            {
+                string cast = list_type == text_consts.base_tree_node_name ? "" : "(" + list_type + ")";
+                return
+                    indent + $"foreach ({list_type} elem in {field_name})" + Environment.NewLine 
+                    + indent + '\t' +
+                    $"{destination}.Add({cast}elem.Clone());";
+            }
+            else
+                return indent + $"{destination} = {field_name};";
+        }
+    }
 
 
 	[Serializable]
@@ -1013,7 +1040,7 @@ namespace NodeGenerator
             return subnode.field_type_name + text_consts.space + subnode.field_code_name;
         }
 
-        public List<node_field_info> collect_subnodes(bool WithBaseClasses = false)
+        public List<node_field_info> collect_subnodes(bool WithBaseClasses = false, bool ignoreSyntaxTreeNode = true, bool ignoreDeclaration = true)
         {
             var ni = this;
             var l = new List<node_field_info>();
@@ -1023,7 +1050,8 @@ namespace NodeGenerator
                 while (ni.base_class != null)
                 {
                     ni = ni.base_class;
-                    if (ni.node_name.Equals("syntax_tree_node") || ni.node_name.Equals("declaration"))
+                    if (ignoreSyntaxTreeNode && ni.node_name.Equals("syntax_tree_node") ||
+                        ignoreDeclaration && ni.node_name.Equals("declaration"))
                         break;
                     ll.Clear();
                     ll.AddRange(ni.subnodes);
@@ -3186,6 +3214,33 @@ namespace NodeGenerator
 
         // !Генерация кода для узлов, содержащих список
 
+
+        /// <summary>
+        /// Генерирует метод глубокого клонирования узла
+        /// </summary>
+        /// <param name="sw"></param>
+        private void generate_clone_method(StreamWriter sw)
+        {
+            List<node_field_info> allFields = collect_subnodes(
+                WithBaseClasses: true, 
+                ignoreSyntaxTreeNode: false,
+                ignoreDeclaration: false);
+            string tab2 = text_consts.tab2;
+            string tab3 = text_consts.tab3;
+
+            string inheritModifier = node_name == "syntax_tree_node" ? "virtual" : "override";
+            sw.WriteLine(tab2 + $"public {inheritModifier} syntax_tree_node Clone()");
+            sw.WriteLine(tab2 + '{');
+
+            sw.WriteLine(tab3 + $"{node_name} copy = new {node_name}();");
+
+            foreach (var field in allFields)
+                sw.WriteLine(field.generate_clone_code("copy." + field.field_name, tab3));
+
+            sw.WriteLine(tab3 + "return copy;");
+            sw.WriteLine(tab2 + '}');
+        }
+
         public void generate_code(StreamWriter sw,HelpStorage hst)
 		{
 			//sw.WriteLine();
@@ -3257,6 +3312,9 @@ namespace NodeGenerator
                 sw.WriteLine();
 
             generate_list_methods(sw);
+
+            generate_clone_method(sw);
+            sw.WriteLine();
 
             generate_subnodes_number_property(sw);
             generate_indexer(sw);

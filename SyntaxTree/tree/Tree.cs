@@ -55,6 +55,13 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public virtual syntax_tree_node Clone()
+		{
+			syntax_tree_node copy = new syntax_tree_node();
+			copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -121,6 +128,14 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			expression copy = new expression();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -186,6 +201,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			statement copy = new statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -423,6 +446,19 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			statement_list copy = new statement_list();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			foreach (statement elem in subnodes)
+				copy.subnodes.Add((statement)elem.Clone());
+			copy.left_logical_bracket = (token_info)left_logical_bracket.Clone();
+			copy.right_logical_bracket = (token_info)right_logical_bracket.Clone();
+			copy.expr_lambda_body = expr_lambda_body;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -555,6 +591,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			ident copy = new ident();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -691,6 +736,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			assign copy = new assign();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.to = (addressed_value)to.Clone();
+			copy.from = (expression)from.Clone();
+			copy.operator_type = operator_type;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -844,6 +900,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			bin_expr copy = new bin_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.left = (expression)left.Clone();
+			copy.right = (expression)right.Clone();
+			copy.operation_type = operation_type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -978,6 +1045,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			un_expr copy = new un_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.subnode = (expression)subnode.Clone();
+			copy.operation_type = operation_type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1054,6 +1131,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			const_node copy = new const_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -1155,6 +1240,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			bool_const copy = new bool_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.val = val;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1255,6 +1349,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			int32_const copy = new int32_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.val = val;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1354,6 +1457,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			double_const copy = new double_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.val = val;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -1473,6 +1585,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			subprogram_body copy = new subprogram_body();
+			copy.source_context = new SourceContext(source_context);
+			copy.subprogram_code = (statement_list)subprogram_code.Clone();
+			copy.subprogram_defs = (declarations)subprogram_defs.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1554,6 +1675,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			addressed_value copy = new addressed_value();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -1655,6 +1784,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			type_definition copy = new type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1747,6 +1885,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			roof_dereference copy = new roof_dereference();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -1961,6 +2108,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			named_type_reference copy = new named_type_reference();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			foreach (ident elem in names)
+				copy.names.Add((ident)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -2171,6 +2329,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			variable_definitions copy = new variable_definitions();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			foreach (var_def_statement elem in var_definitions)
+				copy.var_definitions.Add((var_def_statement)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -2370,6 +2538,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			ident_list copy = new ident_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (ident elem in idents)
+				copy.idents.Add((ident)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -2439,6 +2616,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 	///<summary>
 	///Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).
+
 	///</summary>
 	[Serializable]
 	public partial class var_def_statement : declaration
@@ -2558,6 +2736,19 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			var_def_statement copy = new var_def_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.vars = (ident_list)vars.Clone();
+			copy.vars_type = (type_definition)vars_type.Clone();
+			copy.inital_value = (expression)inital_value.Clone();
+			copy.var_attr = var_attr;
+			copy.is_event = is_event;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -2679,6 +2870,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			declaration copy = new declaration();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -2873,6 +3072,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			declarations copy = new declarations();
+			copy.source_context = new SourceContext(source_context);
+			foreach (declaration elem in defs)
+				copy.defs.Add((declaration)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3072,6 +3280,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			program_tree copy = new program_tree();
+			copy.source_context = new SourceContext(source_context);
+			foreach (compilation_unit elem in compilation_units)
+				copy.compilation_units.Add((compilation_unit)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3189,6 +3406,14 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			program_name copy = new program_name();
+			copy.source_context = new SourceContext(source_context);
+			copy.prog_name = (ident)prog_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3299,6 +3524,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			string_const copy = new string_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.Value = Value;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -3482,6 +3716,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			expression_list copy = new expression_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (expression elem in expressions)
+				copy.expressions.Add((expression)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3598,6 +3841,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			dereference copy = new dereference();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -3728,6 +3980,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			indexer copy = new indexer();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.indexes = (expression_list)indexes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -3971,6 +4233,22 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			for_node copy = new for_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.loop_variable = (ident)loop_variable.Clone();
+			copy.initial_value = (expression)initial_value.Clone();
+			copy.finish_value = (expression)finish_value.Clone();
+			copy.statements = (statement)statements.Clone();
+			copy.cycle_type = cycle_type;
+			copy.increment_value = (expression)increment_value.Clone();
+			copy.type_name = (type_definition)type_name.Clone();
+			copy.create_loop_variable = create_loop_variable;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -4125,6 +4403,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			repeat_node copy = new repeat_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.statements = (statement)statements.Clone();
+			copy.expr = (expression)expr.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -4276,6 +4564,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			while_node copy = new while_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (expression)expr.Clone();
+			copy.statements = (statement)statements.Clone();
+			copy.CycleType = CycleType;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -4429,6 +4728,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			if_node copy = new if_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.condition = (expression)condition.Clone();
+			copy.then_body = (statement)then_body.Clone();
+			copy.else_body = (statement)else_body.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -4568,6 +4878,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			ref_type copy = new ref_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.pointed_to = (type_definition)pointed_to.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -4723,6 +5043,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			diapason copy = new diapason();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.left = (expression)left.Clone();
+			copy.right = (expression)right.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -4946,6 +5277,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			indexers_types copy = new indexers_types();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			foreach (type_definition elem in indexers)
+				copy.indexers.Add((type_definition)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -5113,6 +5455,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			array_type copy = new array_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.indexers = (indexers_types)indexers.Clone();
+			copy.elements_type = (type_definition)elements_type.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -5233,6 +5586,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			label_definitions copy = new label_definitions();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.labels = (ident_list)labels.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -5363,6 +5725,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			procedure_attribute copy = new procedure_attribute();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			copy.attribute_type = attribute_type;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -5517,6 +5889,18 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			typed_parameters copy = new typed_parameters();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.idents = (ident_list)idents.Clone();
+			copy.vars_type = (type_definition)vars_type.Clone();
+			copy.param_kind = param_kind;
+			copy.inital_value = (expression)inital_value.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -5721,6 +6105,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			formal_parameters copy = new formal_parameters();
+			copy.source_context = new SourceContext(source_context);
+			foreach (typed_parameters elem in params_list)
+				copy.params_list.Add((typed_parameters)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -5920,6 +6313,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			procedure_attributes_list copy = new procedure_attributes_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (procedure_attribute elem in proc_attributes)
+				copy.proc_attributes.Add((procedure_attribute)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6176,6 +6578,22 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			procedure_header copy = new procedure_header();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.name = (method_name)name.Clone();
+			copy.of_object = of_object;
+			copy.class_keyword = class_keyword;
+			copy.template_args = (ident_list)template_args.Clone();
+			copy.where_defs = (where_definition_list)where_defs.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6344,6 +6762,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			function_header copy = new function_header();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.name = (method_name)name.Clone();
+			copy.of_object = of_object;
+			copy.class_keyword = class_keyword;
+			copy.template_args = (ident_list)template_args.Clone();
+			copy.where_defs = (where_definition_list)where_defs.Clone();
+			copy.return_type = (type_definition)return_type.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -6522,6 +6957,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			procedure_definition copy = new procedure_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.proc_header = (procedure_header)proc_header.Clone();
+			copy.proc_body = (proc_block)proc_body.Clone();
+			copy.is_short_definition = is_short_definition;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6655,6 +7101,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			type_declaration copy = new type_declaration();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.type_name = (ident)type_name.Clone();
+			copy.type_def = (type_definition)type_def.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -6854,6 +7310,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			type_declarations copy = new type_declarations();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			foreach (type_declaration elem in types_decl)
+				copy.types_decl.Add((type_declaration)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6954,6 +7420,16 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_name=_const_name;
 			this._const_value=_const_value;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			simple_const_definition copy = new simple_const_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.const_name = (ident)const_name.Clone();
+			copy.const_value = (expression)const_value.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -7093,6 +7569,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			typed_const_definition copy = new typed_const_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.const_name = (ident)const_name.Clone();
+			copy.const_value = (expression)const_value.Clone();
+			copy.const_type = (type_definition)const_type.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -7231,6 +7718,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			const_definition copy = new const_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.const_name = (ident)const_name.Clone();
+			copy.const_value = (expression)const_value.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -7430,6 +7927,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			consts_definitions_list copy = new consts_definitions_list();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			foreach (const_definition elem in const_defs)
+				copy.const_defs.Add((const_definition)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -7565,6 +8072,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			unit_name copy = new unit_name();
+			copy.source_context = new SourceContext(source_context);
+			copy.idunit_name = (ident)idunit_name.Clone();
+			copy.HeaderKeyword = HeaderKeyword;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -7675,6 +8191,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			unit_or_namespace copy = new unit_or_namespace();
+			copy.source_context = new SourceContext(source_context);
+			copy.name = (ident_list)name.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -7805,6 +8329,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			uses_unit_in copy = new uses_unit_in();
+			copy.source_context = new SourceContext(source_context);
+			copy.name = (ident_list)name.Clone();
+			copy.in_file = (string_const)in_file.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -8004,6 +8537,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			uses_list copy = new uses_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (unit_or_namespace elem in units)
+				copy.units.Add((unit_or_namespace)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -8174,6 +8716,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			program_body copy = new program_body();
+			copy.source_context = new SourceContext(source_context);
+			copy.used_units = (uses_list)used_units.Clone();
+			copy.program_definitions = (declarations)program_definitions.Clone();
+			copy.program_code = (statement_list)program_code.Clone();
+			copy.using_list = (using_list)using_list.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -8419,6 +8972,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			compilation_unit copy = new compilation_unit();
+			copy.source_context = new SourceContext(source_context);
+			copy.file_name = file_name;
+			foreach (compiler_directive elem in compiler_directives)
+				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			copy.Language = Language;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -8659,6 +9223,23 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			unit_module copy = new unit_module();
+			copy.source_context = new SourceContext(source_context);
+			copy.file_name = file_name;
+			foreach (compiler_directive elem in compiler_directives)
+				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			copy.Language = Language;
+			copy.unit_name = (unit_name)unit_name.Clone();
+			copy.interface_part = (interface_node)interface_part.Clone();
+			copy.implementation_part = (implementation_node)implementation_part.Clone();
+			copy.initialization_part = (statement_list)initialization_part.Clone();
+			copy.finalization_part = (statement_list)finalization_part.Clone();
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -8895,6 +9476,21 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			program_module copy = new program_module();
+			copy.source_context = new SourceContext(source_context);
+			copy.file_name = file_name;
+			foreach (compiler_directive elem in compiler_directives)
+				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			copy.Language = Language;
+			copy.program_name = (program_name)program_name.Clone();
+			copy.used_units = (uses_list)used_units.Clone();
+			copy.program_block = (block)program_block.Clone();
+			copy.using_namespaces = (using_list)using_namespaces.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9021,6 +9617,15 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		public override syntax_tree_node Clone()
+		{
+			hex_constant copy = new hex_constant();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.val = val;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9120,6 +9725,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			get_address copy = new get_address();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.address_of = (addressed_value)address_of.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -9249,6 +9863,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			case_variant copy = new case_variant();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.conditions = (expression_list)conditions.Clone();
+			copy.exec_if_true = (statement)exec_if_true.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -9401,6 +10025,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			case_node copy = new case_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.param = (expression)param.Clone();
+			copy.conditions = (case_variants)conditions.Clone();
+			copy.else_statement = (statement)else_statement.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -9659,6 +10294,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			method_name copy = new method_name();
+			copy.source_context = new SourceContext(source_context);
+			foreach (ident elem in ln)
+				copy.ln.Add((ident)elem.Clone());
+			copy.class_name = (ident)class_name.Clone();
+			copy.meth_name = (ident)meth_name.Clone();
+			copy.explicit_interface_name = (ident)explicit_interface_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9815,6 +10462,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			dot_node copy = new dot_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.left = (addressed_value)left.Clone();
+			copy.right = (addressed_value)right.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9896,6 +10553,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			empty_statement copy = new empty_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -9996,6 +10661,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			goto_statement copy = new goto_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.label = (ident)label.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -10125,6 +10799,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			labeled_statement copy = new labeled_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.label_name = (ident)label_name.Clone();
+			copy.to_statement = (statement)to_statement.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -10259,6 +10943,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			with_statement copy = new with_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.what_do = (statement)what_do.Clone();
+			copy.do_with = (expression_list)do_with.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -10395,6 +11089,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			method_call copy = new method_call();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.parameters = (expression_list)parameters.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -10511,6 +11215,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			pascal_set_constant copy = new pascal_set_constant();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.values = (expression_list)values.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -10621,6 +11334,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			array_const copy = new array_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.elements = (expression_list)elements.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -10733,6 +11455,14 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			write_accessor_name copy = new write_accessor_name();
+			copy.source_context = new SourceContext(source_context);
+			copy.accessor_name = (ident)accessor_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -10843,6 +11573,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			read_accessor_name copy = new read_accessor_name();
+			copy.source_context = new SourceContext(source_context);
+			copy.accessor_name = (ident)accessor_name.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -10972,6 +11710,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			property_accessors copy = new property_accessors();
+			copy.source_context = new SourceContext(source_context);
+			copy.read_accessor = (read_accessor_name)read_accessor.Clone();
+			copy.write_accessor = (write_accessor_name)write_accessor.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -11197,6 +11944,21 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			simple_property copy = new simple_property();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.property_name = (ident)property_name.Clone();
+			copy.property_type = (type_definition)property_type.Clone();
+			copy.index_expression = (expression)index_expression.Clone();
+			copy.accessors = (property_accessors)accessors.Clone();
+			copy.array_default = (property_array_default)array_default.Clone();
+			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+			copy.attr = attr;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -11383,6 +12145,23 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			index_property copy = new index_property();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.property_name = (ident)property_name.Clone();
+			copy.property_type = (type_definition)property_type.Clone();
+			copy.index_expression = (expression)index_expression.Clone();
+			copy.accessors = (property_accessors)accessors.Clone();
+			copy.array_default = (property_array_default)array_default.Clone();
+			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+			copy.attr = attr;
+			copy.property_parametres = (formal_parameters)property_parametres.Clone();
+			copy.is_default = (default_indexer_property_node)is_default.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -11630,6 +12409,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			class_members copy = new class_members();
+			copy.source_context = new SourceContext(source_context);
+			foreach (declaration elem in members)
+				copy.members.Add((declaration)elem.Clone());
+			copy.access_mod = (access_modifer_node)access_mod.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -11757,6 +12546,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			access_modifer_node copy = new access_modifer_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.access_level = access_level;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -11940,6 +12737,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			class_body copy = new class_body();
+			copy.source_context = new SourceContext(source_context);
+			foreach (class_members elem in class_def_blocks)
+				copy.class_def_blocks.Add((class_members)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -12196,6 +13002,22 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			class_definition copy = new class_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.class_parents = (named_type_reference_list)class_parents.Clone();
+			copy.body = (class_body)body.Clone();
+			copy.keyword = keyword;
+			copy.template_args = (ident_list)template_args.Clone();
+			copy.where_section = (where_definition_list)where_section.Clone();
+			copy.attribute = attribute;
+			copy.is_auto = is_auto;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -12292,6 +13114,13 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			default_indexer_property_node copy = new default_indexer_property_node();
+			copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -12432,6 +13261,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			known_type_definition copy = new known_type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.tp = tp;
+			copy.unit_name = (ident)unit_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -12567,6 +13407,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			set_type_definition copy = new set_type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.of_type = (type_definition)of_type.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -12700,6 +13550,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			record_const_definition copy = new record_const_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = (ident)name.Clone();
+			copy.val = (expression)val.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -12899,6 +13759,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			record_const copy = new record_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			foreach (record_const_definition elem in rec_consts)
+				copy.rec_consts.Add((record_const_definition)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13055,6 +13925,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			record_type copy = new record_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.parts = (record_type_parts)parts.Clone();
+			copy.base_type = (type_definition)base_type.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13195,6 +14076,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			enum_type_definition copy = new enum_type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.enumerators = (enumerator_list)enumerators.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13311,6 +14202,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			char_const copy = new char_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.cconst = cconst;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13410,6 +14310,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			raise_statement copy = new raise_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.excep = (expression)excep.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -13521,6 +14430,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			sharp_char_const copy = new sharp_char_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.char_num = char_num;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -13704,6 +14622,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			literal_const_line copy = new literal_const_line();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			foreach (literal elem in literals)
+				copy.literals.Add((literal)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13860,6 +14788,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			string_num_definition copy = new string_num_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.num_of_symbols = (expression)num_of_symbols.Clone();
+			copy.name = (ident)name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13998,6 +14937,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			variant copy = new variant();
+			copy.source_context = new SourceContext(source_context);
+			copy.vars = (ident_list)vars.Clone();
+			copy.vars_type = (type_definition)vars_type.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -14197,6 +15145,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			variant_list copy = new variant_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (variant elem in vars)
+				copy.vars.Add((variant)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14331,6 +15288,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			variant_type copy = new variant_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.case_exprs = (expression_list)case_exprs.Clone();
+			copy.parts = (record_type_parts)parts.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -14530,6 +15496,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			variant_types copy = new variant_types();
+			copy.source_context = new SourceContext(source_context);
+			foreach (variant_type elem in vars)
+				copy.vars.Add((variant_type)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14683,6 +15658,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			variant_record_type copy = new variant_record_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.var_name = (ident)var_name.Clone();
+			copy.var_type = (type_definition)var_type.Clone();
+			copy.vars = (variant_types)vars.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14803,6 +15788,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			procedure_call copy = new procedure_call();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.func_name = (addressed_value)func_name.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -14936,6 +15930,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			class_predefinition copy = new class_predefinition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.type_name = (ident)type_name.Clone();
+			copy.type_def = (type_definition)type_def.Clone();
+			copy.class_name = (ident)class_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -15022,6 +16027,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			nil_const copy = new nil_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -15142,6 +16155,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			file_type_definition copy = new file_type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.elem_type = (type_definition)elem_type.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -15253,6 +16276,22 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			constructor copy = new constructor();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.name = (method_name)name.Clone();
+			copy.of_object = of_object;
+			copy.class_keyword = class_keyword;
+			copy.template_args = (ident_list)template_args.Clone();
+			copy.where_defs = (where_definition_list)where_defs.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -15386,6 +16425,22 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			destructor copy = new destructor();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.name = (method_name)name.Clone();
+			copy.of_object = of_object;
+			copy.class_keyword = class_keyword;
+			copy.template_args = (ident_list)template_args.Clone();
+			copy.where_defs = (where_definition_list)where_defs.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -15542,6 +16597,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			inherited_method_call copy = new inherited_method_call();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.method_name = (ident)method_name.Clone();
+			copy.exprs = (expression_list)exprs.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -15694,6 +16759,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			typecast_node copy = new typecast_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (addressed_value)expr.Clone();
+			copy.type_def = (type_definition)type_def.Clone();
+			copy.cast_op = cast_op;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -15845,6 +16921,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			interface_node copy = new interface_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.interface_definitions = (declarations)interface_definitions.Clone();
+			copy.uses_modules = (uses_list)uses_modules.Clone();
+			copy.using_namespaces = (using_list)using_namespaces.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -16003,6 +17089,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			implementation_node copy = new implementation_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.uses_modules = (uses_list)uses_modules.Clone();
+			copy.implementation_definitions = (declarations)implementation_definitions.Clone();
+			copy.using_namespaces = (using_list)using_namespaces.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16142,6 +17238,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			diap_expr copy = new diap_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.left = (expression)left.Clone();
+			copy.right = (expression)right.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16276,6 +17382,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			block copy = new block();
+			copy.source_context = new SourceContext(source_context);
+			copy.defs = (declarations)defs.Clone();
+			copy.program_code = (statement_list)program_code.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16357,6 +17472,13 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			proc_block copy = new proc_block();
+			copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -16477,6 +17599,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			array_of_named_type_definition copy = new array_of_named_type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.type_name = (named_type_reference)type_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16576,6 +17708,15 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		public override syntax_tree_node Clone()
+		{
+			array_of_const_type_definition copy = new array_of_const_type_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16652,6 +17793,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			literal copy = new literal();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -16835,6 +17984,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			case_variants copy = new case_variants();
+			copy.source_context = new SourceContext(source_context);
+			foreach (case_variant elem in variants)
+				copy.variants.Add((case_variant)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16969,6 +18127,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			diapason_expr copy = new diapason_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.left = (expression)left.Clone();
+			copy.right = (expression)right.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -17168,6 +18336,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			var_def_list_for_record copy = new var_def_list_for_record();
+			copy.source_context = new SourceContext(source_context);
+			foreach (var_def_statement elem in vars)
+				copy.vars.Add((var_def_statement)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -17303,6 +18480,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			record_type_parts copy = new record_type_parts();
+			copy.source_context = new SourceContext(source_context);
+			copy.fixed_part = (var_def_list_for_record)fixed_part.Clone();
+			copy.variant_part = (variant_record_type)variant_part.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -17384,6 +18570,13 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			property_array_default copy = new property_array_default();
+			copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -17520,6 +18713,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			property_interface copy = new property_interface();
+			copy.source_context = new SourceContext(source_context);
+			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+			copy.property_type = (type_definition)property_type.Clone();
+			copy.index_expression = (expression)index_expression.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -17659,6 +18862,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			property_parameter copy = new property_parameter();
+			copy.source_context = new SourceContext(source_context);
+			copy.names = (ident_list)names.Clone();
+			copy.type = (type_definition)type.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -17858,6 +19070,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			property_parameter_list copy = new property_parameter_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (property_parameter elem in parameters)
+				copy.parameters.Add((property_parameter)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -17956,6 +19177,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			inherited_ident copy = new inherited_ident();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			return copy;
 		}
 
 		///<summary>
@@ -18093,6 +19323,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			format_expr copy = new format_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (expression)expr.Clone();
+			copy.format1 = (expression)format1.Clone();
+			copy.format2 = (expression)format2.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -18233,6 +19474,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			initfinal_part copy = new initfinal_part();
+			copy.source_context = new SourceContext(source_context);
+			copy.initialization_sect = (statement_list)initialization_sect.Clone();
+			copy.finalization_sect = (statement_list)finalization_sect.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -18348,6 +19598,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			token_info copy = new token_info();
+			copy.source_context = new SourceContext(source_context);
+			copy.text = text;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -18466,6 +19724,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			raise_stmt copy = new raise_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (expression)expr.Clone();
+			copy.address = (expression)address.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -18602,6 +19870,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			op_type_node copy = new op_type_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.text = text;
+			copy.type = type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -18720,6 +19997,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			file_type copy = new file_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.file_of_type = (type_definition)file_of_type.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -18856,6 +20143,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			known_type_ident copy = new known_type_ident();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			copy.type = type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -18991,6 +20288,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			exception_handler copy = new exception_handler();
+			copy.source_context = new SourceContext(source_context);
+			copy.variable = (ident)variable.Clone();
+			copy.type_name = (named_type_reference)type_name.Clone();
+			copy.statements = (statement)statements.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -19130,6 +20437,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			exception_ident copy = new exception_ident();
+			copy.source_context = new SourceContext(source_context);
+			copy.variable = (ident)variable.Clone();
+			copy.type_name = (named_type_reference)type_name.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -19329,6 +20645,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			exception_handler_list copy = new exception_handler_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (exception_handler elem in handlers)
+				copy.handlers.Add((exception_handler)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -19482,6 +20807,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			exception_block copy = new exception_block();
+			copy.source_context = new SourceContext(source_context);
+			copy.stmt_list = (statement_list)stmt_list.Clone();
+			copy.handlers = (exception_handler_list)handlers.Clone();
+			copy.else_stmt_list = (statement_list)else_stmt_list.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -19568,6 +20903,13 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			try_handler copy = new try_handler();
+			copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -19668,6 +21010,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			try_handler_finally copy = new try_handler_finally();
+			copy.source_context = new SourceContext(source_context);
+			copy.stmt_list = (statement_list)stmt_list.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -19779,6 +21129,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			try_handler_except copy = new try_handler_except();
+			copy.source_context = new SourceContext(source_context);
+			copy.except_block = (exception_block)except_block.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -19909,6 +21267,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			try_stmt copy = new try_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.stmt_list = (statement_list)stmt_list.Clone();
+			copy.handler = (try_handler)handler.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -19990,6 +21358,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			inherited_message copy = new inherited_message();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -20108,6 +21484,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			external_directive copy = new external_directive();
+			copy.source_context = new SourceContext(source_context);
+			copy.modulename = (expression)modulename.Clone();
+			copy.name = (expression)name.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -20307,6 +21692,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			using_list copy = new using_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (unit_or_namespace elem in namespaces)
+				copy.namespaces.Add((unit_or_namespace)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20442,6 +21836,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			jump_stmt copy = new jump_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (expression)expr.Clone();
+			copy.JumpType = JumpType;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20552,6 +21956,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			loop_stmt copy = new loop_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.stmt = (statement)stmt.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -20718,6 +22131,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			foreach_stmt copy = new foreach_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.identifier = (ident)identifier.Clone();
+			copy.type_name = (type_definition)type_name.Clone();
+			copy.in_what = (expression)in_what.Clone();
+			copy.stmt = (statement)stmt.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20809,6 +22234,14 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			addressed_value_funcname copy = new addressed_value_funcname();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -20992,6 +22425,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			named_type_reference_list copy = new named_type_reference_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (named_type_reference elem in types)
+				copy.types.Add((named_type_reference)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -21210,6 +22652,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			template_param_list copy = new template_param_list();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			foreach (type_definition elem in params_list)
+				copy.params_list.Add((type_definition)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -21379,6 +22832,19 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			template_type_reference copy = new template_type_reference();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			foreach (ident elem in names)
+				copy.names.Add((ident)elem.Clone());
+			copy.name = (named_type_reference)name.Clone();
+			copy.params_list = (template_param_list)params_list.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -21517,6 +22983,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			int64_const copy = new int64_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.val = val;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -21616,6 +23091,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			uint64_const copy = new uint64_const();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.val = val;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -21770,6 +23254,18 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			new_expr copy = new new_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.type = (type_definition)type.Clone();
+			copy.params_list = (expression_list)params_list.Clone();
+			copy.new_array = new_array;
+			copy.array_init_expr = (array_const)array_init_expr.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -21974,6 +23470,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			where_type_specificator_list copy = new where_type_specificator_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (type_definition elem in defs)
+				copy.defs.Add((type_definition)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -22108,6 +23613,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			where_definition copy = new where_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.names = (ident_list)names.Clone();
+			copy.types = (where_type_specificator_list)types.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -22307,6 +23821,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			where_definition_list copy = new where_definition_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (where_definition elem in defs)
+				copy.defs.Add((where_definition)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -22442,6 +23965,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			sizeof_operator copy = new sizeof_operator();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.type_def = (type_definition)type_def.Clone();
+			copy.expr = (expression)expr.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -22557,6 +24090,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			typeof_operator copy = new typeof_operator();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.type_name = (named_type_reference)type_name.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -22686,6 +24228,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			compiler_directive copy = new compiler_directive();
+			copy.source_context = new SourceContext(source_context);
+			copy.Name = (token_info)Name.Clone();
+			copy.Directive = (token_info)Directive.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -22822,6 +24373,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			operator_name_ident copy = new operator_name_ident();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			copy.operator_type = operator_type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -22921,6 +24482,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			var_statement copy = new var_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.var_def = (var_def_statement)var_def.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -23069,6 +24639,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			question_colon_expression copy = new question_colon_expression();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.condition = (expression)condition.Clone();
+			copy.ret_if_true = (expression)ret_if_true.Clone();
+			copy.ret_if_false = (expression)ret_if_false.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -23189,6 +24770,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			expression_as_statement copy = new expression_as_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (expression)expr.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -23339,6 +24929,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			c_scalar_type copy = new c_scalar_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.scalar_name = scalar_name;
+			copy.sign = sign;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -23494,6 +25095,19 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			c_module copy = new c_module();
+			copy.source_context = new SourceContext(source_context);
+			copy.file_name = file_name;
+			foreach (compiler_directive elem in compiler_directives)
+				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			copy.Language = Language;
+			copy.defs = (declarations)defs.Clone();
+			copy.used_units = (uses_list)used_units.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -23627,6 +25241,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			declarations_as_statement copy = new declarations_as_statement();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.defs = (declarations)defs.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -23756,6 +25379,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			array_size copy = new array_size();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.max_value = (expression)max_value.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -23890,6 +25523,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			enumerator copy = new enumerator();
+			copy.source_context = new SourceContext(source_context);
+			copy.name = (type_definition)name.Clone();
+			copy.value = (expression)value.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -24089,6 +25731,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			enumerator_list copy = new enumerator_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (enumerator elem in enumerators)
+				copy.enumerators.Add((enumerator)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -24260,6 +25911,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			c_for_cycle copy = new c_for_cycle();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr1 = (statement)expr1.Clone();
+			copy.expr2 = (expression)expr2.Clone();
+			copy.expr3 = (expression)expr3.Clone();
+			copy.stmt = (statement)stmt.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -24421,6 +26084,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			switch_stmt copy = new switch_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.condition = (expression)condition.Clone();
+			copy.stmt = (statement)stmt.Clone();
+			copy.Part = Part;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -24620,6 +26294,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			type_definition_attr_list copy = new type_definition_attr_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (type_definition_attr elem in attributes)
+				copy.attributes.Add((type_definition_attr)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -24756,6 +26439,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			type_definition_attr copy = new type_definition_attr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr = attr;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -24884,6 +26577,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			lock_stmt copy = new lock_stmt();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.lock_object = (expression)lock_object.Clone();
+			copy.stmt = (statement)stmt.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -25104,6 +26807,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			compiler_directive_list copy = new compiler_directive_list();
+			copy.source_context = new SourceContext(source_context);
+			copy.Name = (token_info)Name.Clone();
+			copy.Directive = (token_info)Directive.Clone();
+			foreach (compiler_directive elem in directives)
+				copy.directives.Add((compiler_directive)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -25277,6 +26991,17 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			compiler_directive_if copy = new compiler_directive_if();
+			copy.source_context = new SourceContext(source_context);
+			copy.Name = (token_info)Name.Clone();
+			copy.Directive = (token_info)Directive.Clone();
+			copy.if_part = (compiler_directive)if_part.Clone();
+			copy.elseif_part = (compiler_directive)elseif_part.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -25486,6 +27211,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			documentation_comment_list copy = new documentation_comment_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (documentation_comment_section elem in sections)
+				copy.sections.Add((documentation_comment_section)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -25721,6 +27455,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			documentation_comment_tag copy = new documentation_comment_tag();
+			copy.source_context = new SourceContext(source_context);
+			copy.name = name;
+			foreach (documentation_comment_tag_param elem in parameters)
+				copy.parameters.Add((documentation_comment_tag_param)elem.Clone());
+			copy.text = text;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -25855,6 +27600,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			documentation_comment_tag_param copy = new documentation_comment_tag_param();
+			copy.source_context = new SourceContext(source_context);
+			copy.name = name;
+			copy.value = value;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -26056,6 +27810,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			documentation_comment_section copy = new documentation_comment_section();
+			copy.source_context = new SourceContext(source_context);
+			foreach (documentation_comment_tag elem in tags)
+				copy.tags.Add((documentation_comment_tag)elem.Clone());
+			copy.text = text;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26191,6 +27955,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			token_taginfo copy = new token_taginfo();
+			copy.source_context = new SourceContext(source_context);
+			copy.text = text;
+			copy.tag = tag;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -26331,6 +28104,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			declaration_specificator copy = new declaration_specificator();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.specificator = specificator;
+			copy.name = name;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26459,6 +28243,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			ident_with_templateparams copy = new ident_with_templateparams();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = (addressed_value)name.Clone();
+			copy.template_params = (template_param_list)template_params.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -26595,6 +28389,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			template_type_name copy = new template_type_name();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			copy.template_args = (ident_list)template_args.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26706,6 +28510,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			default_operator copy = new default_operator();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.type_name = (named_type_reference)type_name.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26816,6 +28629,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			bracket_expr copy = new bracket_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = (expression)expr.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -26963,6 +28785,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			attribute copy = new attribute();
+			copy.source_context = new SourceContext(source_context);
+			copy.qualifier = (ident)qualifier.Clone();
+			copy.type = (named_type_reference)type.Clone();
+			copy.arguments = (expression_list)arguments.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -27167,6 +28999,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			simple_attribute_list copy = new simple_attribute_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (attribute elem in attributes)
+				copy.attributes.Add((attribute)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -27366,6 +29207,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			attribute_list copy = new attribute_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (simple_attribute_list elem in attributes)
+				copy.attributes.Add((simple_attribute_list)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -27745,6 +29595,26 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			function_lambda_definition copy = new function_lambda_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.ident_list = (ident_list)ident_list.Clone();
+			copy.return_type = (type_definition)return_type.Clone();
+			copy.formal_parameters = (formal_parameters)formal_parameters.Clone();
+			copy.proc_body = (statement)proc_body.Clone();
+			copy.proc_definition = (procedure_definition)proc_definition.Clone();
+			copy.parameters = (expression_list)parameters.Clone();
+			copy.lambda_name = lambda_name;
+			foreach (declaration elem in defs)
+				copy.defs.Add((declaration)elem.Clone());
+			copy.lambda_visit_mode = lambda_visit_mode;
+			copy.substituting_node = substituting_node.Clone();
+			copy.usedkeyword = usedkeyword;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -27920,6 +29790,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			function_lambda_call copy = new function_lambda_call();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.f_lambda_def = (function_lambda_definition)f_lambda_def.Clone();
+			copy.parameters = (expression_list)parameters.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -28155,6 +30035,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			semantic_check copy = new semantic_check();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.CheckName = CheckName;
+			foreach (syntax_tree_node elem in param)
+				copy.param.Add(elem.Clone());
+			copy.fictive = fictive;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -28291,6 +30183,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			lambda_inferred_type copy = new lambda_inferred_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.real_type = real_type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -28420,6 +30322,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			same_type_node copy = new same_type_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.ex = (expression)ex.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -28554,6 +30466,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			name_assign_expr copy = new name_assign_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.name = (ident)name.Clone();
+			copy.expr = (expression)expr.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -28753,6 +30674,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			name_assign_expr_list copy = new name_assign_expr_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (name_assign_expr elem in name_expr)
+				copy.name_expr.Add((name_assign_expr)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -28908,6 +30838,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			unnamed_type_object copy = new unnamed_type_object();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.ne_list = (name_assign_expr_list)ne_list.Clone();
+			copy.is_class = is_class;
+			copy.new_ex = (new_expr)new_ex.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29043,6 +30984,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			semantic_type_node copy = new semantic_type_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.type = type;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29177,6 +31128,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			short_func_definition copy = new short_func_definition();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.proc_header = (procedure_header)proc_header.Clone();
+			copy.proc_body = (proc_block)proc_body.Clone();
+			copy.is_short_definition = is_short_definition;
+			copy.procdef = (procedure_definition)procdef.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29279,6 +31242,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			no_type_foreach copy = new no_type_foreach();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -29409,6 +31381,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			matching_expression copy = new matching_expression();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.left = (expression)left.Clone();
+			copy.right = (expression)right.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -29545,6 +31527,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			closure_substituting_node copy = new closure_substituting_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			copy.substitution = (dot_node)substitution.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29674,6 +31666,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			sequence_type copy = new sequence_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.elements_type = (type_definition)elements_type.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -29850,6 +31852,18 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			modern_proc_type copy = new modern_proc_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.aloneparam = (type_definition)aloneparam.Clone();
+			copy.el = (enumerator_list)el.Clone();
+			copy.res = (type_definition)res.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29975,6 +31989,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			yield_node copy = new yield_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.ex = (expression)ex.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -30108,6 +32131,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			template_operator_name copy = new template_operator_name();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			copy.template_args = (ident_list)template_args.Clone();
+			copy.opname = (operator_name_ident)opname.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -30223,6 +32257,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			semantic_addr_value copy = new semantic_addr_value();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.expr = expr;
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -30341,6 +32384,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			pair_type_stlist copy = new pair_type_stlist();
+			copy.source_context = new SourceContext(source_context);
+			copy.tn = (type_definition)tn.Clone();
+			copy.exprs = (statement_list)exprs.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -30475,6 +32527,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			assign_tuple copy = new assign_tuple();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.vars = (addressed_value_list)vars.Clone();
+			copy.expr = (expression)expr.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -30674,6 +32736,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			addressed_value_list copy = new addressed_value_list();
+			copy.source_context = new SourceContext(source_context);
+			foreach (addressed_value elem in variables)
+				copy.variables.Add((addressed_value)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -30790,6 +32861,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			tuple_node_for_formatter copy = new tuple_node_for_formatter();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.el = (expression_list)el.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -31003,6 +33083,17 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		public override syntax_tree_node Clone()
+		{
+			uses_closure copy = new uses_closure();
+			copy.source_context = new SourceContext(source_context);
+			foreach (unit_or_namespace elem in units)
+				copy.units.Add((unit_or_namespace)elem.Clone());
+			foreach (uses_list elem in listunitsections)
+				copy.listunitsections.Add((uses_list)elem.Clone());
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -31156,6 +33247,16 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			dot_question_node copy = new dot_question_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.left = (addressed_value)left.Clone();
+			copy.right = (addressed_value)right.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
@@ -31352,6 +33453,19 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		public override syntax_tree_node Clone()
+		{
+			slice_expr copy = new slice_expr();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.v = (addressed_value)v.Clone();
+			copy.from = (expression)from.Clone();
+			copy.to = (expression)to.Clone();
+			copy.step = (expression)step.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -31466,6 +33580,15 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		public override syntax_tree_node Clone()
+		{
+			no_type copy = new no_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -31560,6 +33683,15 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		public override syntax_tree_node Clone()
+		{
+			yield_unknown_ident copy = new yield_unknown_ident();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.name = name;
+			return copy;
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -31641,6 +33773,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			yield_unknown_expression_type copy = new yield_unknown_expression_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -31735,6 +33876,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+		}
+
+		public override syntax_tree_node Clone()
+		{
+			yield_unknown_foreach_type copy = new yield_unknown_foreach_type();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			return copy;
 		}
 
 		///<summary>
@@ -31847,6 +33997,15 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public override syntax_tree_node Clone()
+		{
+			yield_sequence_node copy = new yield_sequence_node();
+			copy.source_context = new SourceContext(source_context);
+			copy.attributes = (attribute_list)attributes.Clone();
+			copy.ex = (expression)ex.Clone();
+			return copy;
+		}
 
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
