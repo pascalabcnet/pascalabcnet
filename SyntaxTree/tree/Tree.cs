@@ -58,8 +58,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual syntax_tree_node Clone()
 		{
 			syntax_tree_node copy = new syntax_tree_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public virtual syntax_tree_node TypedClone()
+		{
+			return Clone() as syntax_tree_node;
 		}
 
 		///<summary>
@@ -131,9 +138,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			expression copy = new expression();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new expression TypedClone()
+		{
+			return Clone() as expression;
 		}
 
 		///<summary>
@@ -205,9 +220,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			statement copy = new statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new statement TypedClone()
+		{
+			return Clone() as statement;
 		}
 
 		///<summary>
@@ -445,18 +468,36 @@ namespace PascalABCCompiler.SyntaxTree
 			return subnodes.RemoveAll(match);
 		}
 
+		public statement Last()
+		{
+			return subnodes[subnodes.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			statement_list copy = new statement_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			foreach (statement elem in subnodes)
-				copy.subnodes.Add((statement)elem.Clone());
+			{
+				copy.Add((statement)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.left_logical_bracket = (token_info)left_logical_bracket.Clone();
+			copy.left_logical_bracket.Parent = copy;
 			copy.right_logical_bracket = (token_info)right_logical_bracket.Clone();
+			copy.right_logical_bracket.Parent = copy;
 			copy.expr_lambda_body = expr_lambda_body;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new statement_list TypedClone()
+		{
+			return Clone() as statement_list;
 		}
 
 		///<summary>
@@ -595,10 +636,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			ident copy = new ident();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new ident TypedClone()
+		{
+			return Clone() as ident;
 		}
 
 		///<summary>
@@ -740,12 +789,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			assign copy = new assign();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.to = (addressed_value)to.Clone();
+			copy.to.Parent = copy;
 			copy.from = (expression)from.Clone();
+			copy.from.Parent = copy;
 			copy.operator_type = operator_type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new assign TypedClone()
+		{
+			return Clone() as assign;
 		}
 
 		///<summary>
@@ -903,12 +962,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			bin_expr copy = new bin_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.left = (expression)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (expression)right.Clone();
+			copy.right.Parent = copy;
 			copy.operation_type = operation_type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new bin_expr TypedClone()
+		{
+			return Clone() as bin_expr;
 		}
 
 		///<summary>
@@ -1048,11 +1117,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			un_expr copy = new un_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.subnode = (expression)subnode.Clone();
+			copy.subnode.Parent = copy;
 			copy.operation_type = operation_type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new un_expr TypedClone()
+		{
+			return Clone() as un_expr;
 		}
 
 		///<summary>
@@ -1135,9 +1213,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			const_node copy = new const_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new const_node TypedClone()
+		{
+			return Clone() as const_node;
 		}
 
 		///<summary>
@@ -1243,10 +1329,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			bool_const copy = new bool_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.val = val;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new bool_const TypedClone()
+		{
+			return Clone() as bool_const;
 		}
 
 		///<summary>
@@ -1352,10 +1446,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			int32_const copy = new int32_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.val = val;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new int32_const TypedClone()
+		{
+			return Clone() as int32_const;
 		}
 
 		///<summary>
@@ -1461,10 +1563,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			double_const copy = new double_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.val = val;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new double_const TypedClone()
+		{
+			return Clone() as double_const;
 		}
 
 		///<summary>
@@ -1588,10 +1698,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			subprogram_body copy = new subprogram_body();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.subprogram_code = (statement_list)subprogram_code.Clone();
+			copy.subprogram_code.Parent = copy;
 			copy.subprogram_defs = (declarations)subprogram_defs.Clone();
+			copy.subprogram_defs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new subprogram_body TypedClone()
+		{
+			return Clone() as subprogram_body;
 		}
 
 		///<summary>
@@ -1679,9 +1798,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			addressed_value copy = new addressed_value();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new addressed_value TypedClone()
+		{
+			return Clone() as addressed_value;
 		}
 
 		///<summary>
@@ -1787,10 +1914,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			type_definition copy = new type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_definition TypedClone()
+		{
+			return Clone() as type_definition;
 		}
 
 		///<summary>
@@ -1890,10 +2026,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			roof_dereference copy = new roof_dereference();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.dereferencing_value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new roof_dereference TypedClone()
+		{
+			return Clone() as roof_dereference;
 		}
 
 		///<summary>
@@ -2107,16 +2252,33 @@ namespace PascalABCCompiler.SyntaxTree
 			return names.RemoveAll(match);
 		}
 
+		public ident Last()
+		{
+			return names[names.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			named_type_reference copy = new named_type_reference();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			foreach (ident elem in names)
-				copy.names.Add((ident)elem.Clone());
+			{
+				copy.Add((ident)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new named_type_reference TypedClone()
+		{
+			return Clone() as named_type_reference;
 		}
 
 		///<summary>
@@ -2328,15 +2490,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return var_definitions.RemoveAll(match);
 		}
 
+		public var_def_statement Last()
+		{
+			return var_definitions[var_definitions.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			variable_definitions copy = new variable_definitions();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			foreach (var_def_statement elem in var_definitions)
-				copy.var_definitions.Add((var_def_statement)elem.Clone());
+			{
+				copy.Add((var_def_statement)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new variable_definitions TypedClone()
+		{
+			return Clone() as variable_definitions;
 		}
 
 		///<summary>
@@ -2537,14 +2715,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return idents.RemoveAll(match);
 		}
 
+		public ident Last()
+		{
+			return idents[idents.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			ident_list copy = new ident_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (ident elem in idents)
-				copy.idents.Add((ident)elem.Clone());
+			{
+				copy.Add((ident)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new ident_list TypedClone()
+		{
+			return Clone() as ident_list;
 		}
 
 		///<summary>
@@ -2740,14 +2933,25 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			var_def_statement copy = new var_def_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.vars = (ident_list)vars.Clone();
+			copy.vars.Parent = copy;
 			copy.vars_type = (type_definition)vars_type.Clone();
+			copy.vars_type.Parent = copy;
 			copy.inital_value = (expression)inital_value.Clone();
+			copy.inital_value.Parent = copy;
 			copy.var_attr = var_attr;
 			copy.is_event = is_event;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new var_def_statement TypedClone()
+		{
+			return Clone() as var_def_statement;
 		}
 
 		///<summary>
@@ -2874,9 +3078,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			declaration copy = new declaration();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new declaration TypedClone()
+		{
+			return Clone() as declaration;
 		}
 
 		///<summary>
@@ -3071,14 +3283,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.RemoveAll(match);
 		}
 
+		public declaration Last()
+		{
+			return defs[defs.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			declarations copy = new declarations();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (declaration elem in defs)
-				copy.defs.Add((declaration)elem.Clone());
+			{
+				copy.Add((declaration)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new declarations TypedClone()
+		{
+			return Clone() as declarations;
 		}
 
 		///<summary>
@@ -3279,14 +3506,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return compilation_units.RemoveAll(match);
 		}
 
+		public compilation_unit Last()
+		{
+			return compilation_units[compilation_units.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			program_tree copy = new program_tree();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (compilation_unit elem in compilation_units)
-				copy.compilation_units.Add((compilation_unit)elem.Clone());
+			{
+				copy.Add((compilation_unit)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new program_tree TypedClone()
+		{
+			return Clone() as program_tree;
 		}
 
 		///<summary>
@@ -3409,9 +3651,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			program_name copy = new program_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.prog_name = (ident)prog_name.Clone();
+			copy.prog_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new program_name TypedClone()
+		{
+			return Clone() as program_name;
 		}
 
 		///<summary>
@@ -3528,10 +3778,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			string_const copy = new string_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.Value = Value;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new string_const TypedClone()
+		{
+			return Clone() as string_const;
 		}
 
 		///<summary>
@@ -3715,14 +3973,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return expressions.RemoveAll(match);
 		}
 
+		public expression Last()
+		{
+			return expressions[expressions.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			expression_list copy = new expression_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (expression elem in expressions)
-				copy.expressions.Add((expression)elem.Clone());
+			{
+				copy.Add((expression)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new expression_list TypedClone()
+		{
+			return Clone() as expression_list;
 		}
 
 		///<summary>
@@ -3845,10 +4118,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			dereference copy = new dereference();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.dereferencing_value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new dereference TypedClone()
+		{
+			return Clone() as dereference;
 		}
 
 		///<summary>
@@ -3984,11 +4266,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			indexer copy = new indexer();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.dereferencing_value.Parent = copy;
 			copy.indexes = (expression_list)indexes.Clone();
+			copy.indexes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new indexer TypedClone()
+		{
+			return Clone() as indexer;
 		}
 
 		///<summary>
@@ -4236,17 +4528,31 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			for_node copy = new for_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.loop_variable = (ident)loop_variable.Clone();
+			copy.loop_variable.Parent = copy;
 			copy.initial_value = (expression)initial_value.Clone();
+			copy.initial_value.Parent = copy;
 			copy.finish_value = (expression)finish_value.Clone();
+			copy.finish_value.Parent = copy;
 			copy.statements = (statement)statements.Clone();
+			copy.statements.Parent = copy;
 			copy.cycle_type = cycle_type;
 			copy.increment_value = (expression)increment_value.Clone();
+			copy.increment_value.Parent = copy;
 			copy.type_name = (type_definition)type_name.Clone();
+			copy.type_name.Parent = copy;
 			copy.create_loop_variable = create_loop_variable;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new for_node TypedClone()
+		{
+			return Clone() as for_node;
 		}
 
 		///<summary>
@@ -4406,11 +4712,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			repeat_node copy = new repeat_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.statements = (statement)statements.Clone();
+			copy.statements.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new repeat_node TypedClone()
+		{
+			return Clone() as repeat_node;
 		}
 
 		///<summary>
@@ -4568,12 +4884,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			while_node copy = new while_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			copy.statements = (statement)statements.Clone();
+			copy.statements.Parent = copy;
 			copy.CycleType = CycleType;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new while_node TypedClone()
+		{
+			return Clone() as while_node;
 		}
 
 		///<summary>
@@ -4731,12 +5057,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			if_node copy = new if_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.condition = (expression)condition.Clone();
+			copy.condition.Parent = copy;
 			copy.then_body = (statement)then_body.Clone();
+			copy.then_body.Parent = copy;
 			copy.else_body = (statement)else_body.Clone();
+			copy.else_body.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new if_node TypedClone()
+		{
+			return Clone() as if_node;
 		}
 
 		///<summary>
@@ -4882,11 +5219,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			ref_type copy = new ref_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.pointed_to = (type_definition)pointed_to.Clone();
+			copy.pointed_to.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new ref_type TypedClone()
+		{
+			return Clone() as ref_type;
 		}
 
 		///<summary>
@@ -5047,12 +5394,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			diapason copy = new diapason();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.left = (expression)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (expression)right.Clone();
+			copy.right.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new diapason TypedClone()
+		{
+			return Clone() as diapason;
 		}
 
 		///<summary>
@@ -5276,16 +5634,33 @@ namespace PascalABCCompiler.SyntaxTree
 			return indexers.RemoveAll(match);
 		}
 
+		public type_definition Last()
+		{
+			return indexers[indexers.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			indexers_types copy = new indexers_types();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			foreach (type_definition elem in indexers)
-				copy.indexers.Add((type_definition)elem.Clone());
+			{
+				copy.Add((type_definition)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new indexers_types TypedClone()
+		{
+			return Clone() as indexers_types;
 		}
 
 		///<summary>
@@ -5458,12 +5833,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			array_type copy = new array_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.indexers = (indexers_types)indexers.Clone();
+			copy.indexers.Parent = copy;
 			copy.elements_type = (type_definition)elements_type.Clone();
+			copy.elements_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new array_type TypedClone()
+		{
+			return Clone() as array_type;
 		}
 
 		///<summary>
@@ -5590,10 +5976,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			label_definitions copy = new label_definitions();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.labels = (ident_list)labels.Clone();
+			copy.labels.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new label_definitions TypedClone()
+		{
+			return Clone() as label_definitions;
 		}
 
 		///<summary>
@@ -5729,11 +6124,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			procedure_attribute copy = new procedure_attribute();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			copy.attribute_type = attribute_type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new procedure_attribute TypedClone()
+		{
+			return Clone() as procedure_attribute;
 		}
 
 		///<summary>
@@ -5893,13 +6296,24 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			typed_parameters copy = new typed_parameters();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.idents = (ident_list)idents.Clone();
+			copy.idents.Parent = copy;
 			copy.vars_type = (type_definition)vars_type.Clone();
+			copy.vars_type.Parent = copy;
 			copy.param_kind = param_kind;
 			copy.inital_value = (expression)inital_value.Clone();
+			copy.inital_value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typed_parameters TypedClone()
+		{
+			return Clone() as typed_parameters;
 		}
 
 		///<summary>
@@ -6104,14 +6518,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return params_list.RemoveAll(match);
 		}
 
+		public typed_parameters Last()
+		{
+			return params_list[params_list.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			formal_parameters copy = new formal_parameters();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (typed_parameters elem in params_list)
-				copy.params_list.Add((typed_parameters)elem.Clone());
+			{
+				copy.Add((typed_parameters)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new formal_parameters TypedClone()
+		{
+			return Clone() as formal_parameters;
 		}
 
 		///<summary>
@@ -6312,14 +6741,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return proc_attributes.RemoveAll(match);
 		}
 
+		public procedure_attribute Last()
+		{
+			return proc_attributes[proc_attributes.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			procedure_attributes_list copy = new procedure_attributes_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (procedure_attribute elem in proc_attributes)
-				copy.proc_attributes.Add((procedure_attribute)elem.Clone());
+			{
+				copy.Add((procedure_attribute)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new procedure_attributes_list TypedClone()
+		{
+			return Clone() as procedure_attributes_list;
 		}
 
 		///<summary>
@@ -6581,17 +7025,31 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			procedure_header copy = new procedure_header();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.parameters.Parent = copy;
 			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.proc_attributes.Parent = copy;
 			copy.name = (method_name)name.Clone();
+			copy.name.Parent = copy;
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			copy.where_defs = (where_definition_list)where_defs.Clone();
+			copy.where_defs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new procedure_header TypedClone()
+		{
+			return Clone() as procedure_header;
 		}
 
 		///<summary>
@@ -6766,18 +7224,33 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			function_header copy = new function_header();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.parameters.Parent = copy;
 			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.proc_attributes.Parent = copy;
 			copy.name = (method_name)name.Clone();
+			copy.name.Parent = copy;
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			copy.where_defs = (where_definition_list)where_defs.Clone();
+			copy.where_defs.Parent = copy;
 			copy.return_type = (type_definition)return_type.Clone();
+			copy.return_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new function_header TypedClone()
+		{
+			return Clone() as function_header;
 		}
 
 		///<summary>
@@ -6960,12 +7433,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			procedure_definition copy = new procedure_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.proc_header = (procedure_header)proc_header.Clone();
+			copy.proc_header.Parent = copy;
 			copy.proc_body = (proc_block)proc_body.Clone();
+			copy.proc_body.Parent = copy;
 			copy.is_short_definition = is_short_definition;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new procedure_definition TypedClone()
+		{
+			return Clone() as procedure_definition;
 		}
 
 		///<summary>
@@ -7105,11 +7588,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			type_declaration copy = new type_declaration();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.type_name = (ident)type_name.Clone();
+			copy.type_name.Parent = copy;
 			copy.type_def = (type_definition)type_def.Clone();
+			copy.type_def.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_declaration TypedClone()
+		{
+			return Clone() as type_declaration;
 		}
 
 		///<summary>
@@ -7309,15 +7802,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return types_decl.RemoveAll(match);
 		}
 
+		public type_declaration Last()
+		{
+			return types_decl[types_decl.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			type_declarations copy = new type_declarations();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			foreach (type_declaration elem in types_decl)
-				copy.types_decl.Add((type_declaration)elem.Clone());
+			{
+				copy.Add((type_declaration)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_declarations TypedClone()
+		{
+			return Clone() as type_declarations;
 		}
 
 		///<summary>
@@ -7425,11 +7934,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			simple_const_definition copy = new simple_const_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.const_name = (ident)const_name.Clone();
+			copy.const_name.Parent = copy;
 			copy.const_value = (expression)const_value.Clone();
+			copy.const_value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new simple_const_definition TypedClone()
+		{
+			return Clone() as simple_const_definition;
 		}
 
 		///<summary>
@@ -7572,12 +8091,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			typed_const_definition copy = new typed_const_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.const_name = (ident)const_name.Clone();
+			copy.const_name.Parent = copy;
 			copy.const_value = (expression)const_value.Clone();
+			copy.const_value.Parent = copy;
 			copy.const_type = (type_definition)const_type.Clone();
+			copy.const_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typed_const_definition TypedClone()
+		{
+			return Clone() as typed_const_definition;
 		}
 
 		///<summary>
@@ -7722,11 +8252,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			const_definition copy = new const_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.const_name = (ident)const_name.Clone();
+			copy.const_name.Parent = copy;
 			copy.const_value = (expression)const_value.Clone();
+			copy.const_value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new const_definition TypedClone()
+		{
+			return Clone() as const_definition;
 		}
 
 		///<summary>
@@ -7926,15 +8466,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return const_defs.RemoveAll(match);
 		}
 
+		public const_definition Last()
+		{
+			return const_defs[const_defs.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			consts_definitions_list copy = new consts_definitions_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			foreach (const_definition elem in const_defs)
-				copy.const_defs.Add((const_definition)elem.Clone());
+			{
+				copy.Add((const_definition)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new consts_definitions_list TypedClone()
+		{
+			return Clone() as consts_definitions_list;
 		}
 
 		///<summary>
@@ -8075,10 +8631,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			unit_name copy = new unit_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.idunit_name = (ident)idunit_name.Clone();
+			copy.idunit_name.Parent = copy;
 			copy.HeaderKeyword = HeaderKeyword;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new unit_name TypedClone()
+		{
+			return Clone() as unit_name;
 		}
 
 		///<summary>
@@ -8195,9 +8759,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			unit_or_namespace copy = new unit_or_namespace();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.name = (ident_list)name.Clone();
+			copy.name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new unit_or_namespace TypedClone()
+		{
+			return Clone() as unit_or_namespace;
 		}
 
 		///<summary>
@@ -8333,10 +8905,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			uses_unit_in copy = new uses_unit_in();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.name = (ident_list)name.Clone();
+			copy.name.Parent = copy;
 			copy.in_file = (string_const)in_file.Clone();
+			copy.in_file.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new uses_unit_in TypedClone()
+		{
+			return Clone() as uses_unit_in;
 		}
 
 		///<summary>
@@ -8536,14 +9117,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return units.RemoveAll(match);
 		}
 
+		public unit_or_namespace Last()
+		{
+			return units[units.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			uses_list copy = new uses_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (unit_or_namespace elem in units)
-				copy.units.Add((unit_or_namespace)elem.Clone());
+			{
+				copy.Add((unit_or_namespace)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new uses_list TypedClone()
+		{
+			return Clone() as uses_list;
 		}
 
 		///<summary>
@@ -8720,12 +9316,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			program_body copy = new program_body();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.used_units = (uses_list)used_units.Clone();
+			copy.used_units.Parent = copy;
 			copy.program_definitions = (declarations)program_definitions.Clone();
+			copy.program_definitions.Parent = copy;
 			copy.program_code = (statement_list)program_code.Clone();
+			copy.program_code.Parent = copy;
 			copy.using_list = (using_list)using_list.Clone();
+			copy.using_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new program_body TypedClone()
+		{
+			return Clone() as program_body;
 		}
 
 		///<summary>
@@ -8971,16 +9578,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return compiler_directives.RemoveAll(match);
 		}
 
+		public compiler_directive Last()
+		{
+			return compiler_directives[compiler_directives.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			compilation_unit copy = new compilation_unit();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
 			foreach (compiler_directive elem in compiler_directives)
-				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			{
+				copy.Add((compiler_directive)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.Language = Language;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new compilation_unit TypedClone()
+		{
+			return Clone() as compilation_unit;
 		}
 
 		///<summary>
@@ -9226,18 +9848,34 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			unit_module copy = new unit_module();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
 			foreach (compiler_directive elem in compiler_directives)
-				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			{
+				copy.Add((compiler_directive)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.Language = Language;
 			copy.unit_name = (unit_name)unit_name.Clone();
+			copy.unit_name.Parent = copy;
 			copy.interface_part = (interface_node)interface_part.Clone();
+			copy.interface_part.Parent = copy;
 			copy.implementation_part = (implementation_node)implementation_part.Clone();
+			copy.implementation_part.Parent = copy;
 			copy.initialization_part = (statement_list)initialization_part.Clone();
+			copy.initialization_part.Parent = copy;
 			copy.finalization_part = (statement_list)finalization_part.Clone();
+			copy.finalization_part.Parent = copy;
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new unit_module TypedClone()
+		{
+			return Clone() as unit_module;
 		}
 
 		///<summary>
@@ -9479,16 +10117,30 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			program_module copy = new program_module();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
 			foreach (compiler_directive elem in compiler_directives)
-				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			{
+				copy.Add((compiler_directive)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.Language = Language;
 			copy.program_name = (program_name)program_name.Clone();
+			copy.program_name.Parent = copy;
 			copy.used_units = (uses_list)used_units.Clone();
+			copy.used_units.Parent = copy;
 			copy.program_block = (block)program_block.Clone();
+			copy.program_block.Parent = copy;
 			copy.using_namespaces = (using_list)using_namespaces.Clone();
+			copy.using_namespaces.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new program_module TypedClone()
+		{
+			return Clone() as program_module;
 		}
 
 		///<summary>
@@ -9620,10 +10272,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			hex_constant copy = new hex_constant();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.val = val;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new hex_constant TypedClone()
+		{
+			return Clone() as hex_constant;
 		}
 
 		///<summary>
@@ -9729,10 +10389,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			get_address copy = new get_address();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.address_of = (addressed_value)address_of.Clone();
+			copy.address_of.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new get_address TypedClone()
+		{
+			return Clone() as get_address;
 		}
 
 		///<summary>
@@ -9867,11 +10536,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			case_variant copy = new case_variant();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.conditions = (expression_list)conditions.Clone();
+			copy.conditions.Parent = copy;
 			copy.exec_if_true = (statement)exec_if_true.Clone();
+			copy.exec_if_true.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new case_variant TypedClone()
+		{
+			return Clone() as case_variant;
 		}
 
 		///<summary>
@@ -10029,12 +10708,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			case_node copy = new case_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.param = (expression)param.Clone();
+			copy.param.Parent = copy;
 			copy.conditions = (case_variants)conditions.Clone();
+			copy.conditions.Parent = copy;
 			copy.else_statement = (statement)else_statement.Clone();
+			copy.else_statement.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new case_node TypedClone()
+		{
+			return Clone() as case_node;
 		}
 
 		///<summary>
@@ -10293,17 +10983,35 @@ namespace PascalABCCompiler.SyntaxTree
 			return ln.RemoveAll(match);
 		}
 
+		public ident Last()
+		{
+			return ln[ln.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			method_name copy = new method_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (ident elem in ln)
-				copy.ln.Add((ident)elem.Clone());
+			{
+				copy.Add((ident)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.class_name = (ident)class_name.Clone();
+			copy.class_name.Parent = copy;
 			copy.meth_name = (ident)meth_name.Clone();
+			copy.meth_name.Parent = copy;
 			copy.explicit_interface_name = (ident)explicit_interface_name.Clone();
+			copy.explicit_interface_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new method_name TypedClone()
+		{
+			return Clone() as method_name;
 		}
 
 		///<summary>
@@ -10465,11 +11173,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			dot_node copy = new dot_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.left = (addressed_value)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (addressed_value)right.Clone();
+			copy.right.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new dot_node TypedClone()
+		{
+			return Clone() as dot_node;
 		}
 
 		///<summary>
@@ -10557,9 +11275,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			empty_statement copy = new empty_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new empty_statement TypedClone()
+		{
+			return Clone() as empty_statement;
 		}
 
 		///<summary>
@@ -10665,10 +11391,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			goto_statement copy = new goto_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.label = (ident)label.Clone();
+			copy.label.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new goto_statement TypedClone()
+		{
+			return Clone() as goto_statement;
 		}
 
 		///<summary>
@@ -10803,11 +11538,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			labeled_statement copy = new labeled_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.label_name = (ident)label_name.Clone();
+			copy.label_name.Parent = copy;
 			copy.to_statement = (statement)to_statement.Clone();
+			copy.to_statement.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new labeled_statement TypedClone()
+		{
+			return Clone() as labeled_statement;
 		}
 
 		///<summary>
@@ -10947,11 +11692,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			with_statement copy = new with_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.what_do = (statement)what_do.Clone();
+			copy.what_do.Parent = copy;
 			copy.do_with = (expression_list)do_with.Clone();
+			copy.do_with.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new with_statement TypedClone()
+		{
+			return Clone() as with_statement;
 		}
 
 		///<summary>
@@ -11092,11 +11847,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			method_call copy = new method_call();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.dereferencing_value.Parent = copy;
 			copy.parameters = (expression_list)parameters.Clone();
+			copy.parameters.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new method_call TypedClone()
+		{
+			return Clone() as method_call;
 		}
 
 		///<summary>
@@ -11218,10 +11983,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			pascal_set_constant copy = new pascal_set_constant();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.values = (expression_list)values.Clone();
+			copy.values.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pascal_set_constant TypedClone()
+		{
+			return Clone() as pascal_set_constant;
 		}
 
 		///<summary>
@@ -11338,10 +12112,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			array_const copy = new array_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.elements = (expression_list)elements.Clone();
+			copy.elements.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new array_const TypedClone()
+		{
+			return Clone() as array_const;
 		}
 
 		///<summary>
@@ -11458,9 +12241,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			write_accessor_name copy = new write_accessor_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.accessor_name = (ident)accessor_name.Clone();
+			copy.accessor_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new write_accessor_name TypedClone()
+		{
+			return Clone() as write_accessor_name;
 		}
 
 		///<summary>
@@ -11577,9 +12368,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			read_accessor_name copy = new read_accessor_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.accessor_name = (ident)accessor_name.Clone();
+			copy.accessor_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new read_accessor_name TypedClone()
+		{
+			return Clone() as read_accessor_name;
 		}
 
 		///<summary>
@@ -11714,10 +12513,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			property_accessors copy = new property_accessors();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.read_accessor = (read_accessor_name)read_accessor.Clone();
+			copy.read_accessor.Parent = copy;
 			copy.write_accessor = (write_accessor_name)write_accessor.Clone();
+			copy.write_accessor.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new property_accessors TypedClone()
+		{
+			return Clone() as property_accessors;
 		}
 
 		///<summary>
@@ -11947,16 +12755,30 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			simple_property copy = new simple_property();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.property_name = (ident)property_name.Clone();
+			copy.property_name.Parent = copy;
 			copy.property_type = (type_definition)property_type.Clone();
+			copy.property_type.Parent = copy;
 			copy.index_expression = (expression)index_expression.Clone();
+			copy.index_expression.Parent = copy;
 			copy.accessors = (property_accessors)accessors.Clone();
+			copy.accessors.Parent = copy;
 			copy.array_default = (property_array_default)array_default.Clone();
+			copy.array_default.Parent = copy;
 			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+			copy.parameter_list.Parent = copy;
 			copy.attr = attr;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new simple_property TypedClone()
+		{
+			return Clone() as simple_property;
 		}
 
 		///<summary>
@@ -12149,18 +12971,34 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			index_property copy = new index_property();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.property_name = (ident)property_name.Clone();
+			copy.property_name.Parent = copy;
 			copy.property_type = (type_definition)property_type.Clone();
+			copy.property_type.Parent = copy;
 			copy.index_expression = (expression)index_expression.Clone();
+			copy.index_expression.Parent = copy;
 			copy.accessors = (property_accessors)accessors.Clone();
+			copy.accessors.Parent = copy;
 			copy.array_default = (property_array_default)array_default.Clone();
+			copy.array_default.Parent = copy;
 			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+			copy.parameter_list.Parent = copy;
 			copy.attr = attr;
 			copy.property_parametres = (formal_parameters)property_parametres.Clone();
+			copy.property_parametres.Parent = copy;
 			copy.is_default = (default_indexer_property_node)is_default.Clone();
+			copy.is_default.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new index_property TypedClone()
+		{
+			return Clone() as index_property;
 		}
 
 		///<summary>
@@ -12408,15 +13246,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return members.RemoveAll(match);
 		}
 
+		public declaration Last()
+		{
+			return members[members.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			class_members copy = new class_members();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (declaration elem in members)
-				copy.members.Add((declaration)elem.Clone());
+			{
+				copy.Add((declaration)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.access_mod = (access_modifer_node)access_mod.Clone();
+			copy.access_mod.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new class_members TypedClone()
+		{
+			return Clone() as class_members;
 		}
 
 		///<summary>
@@ -12550,9 +13404,16 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			access_modifer_node copy = new access_modifer_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.access_level = access_level;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new access_modifer_node TypedClone()
+		{
+			return Clone() as access_modifer_node;
 		}
 
 		///<summary>
@@ -12736,14 +13597,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return class_def_blocks.RemoveAll(match);
 		}
 
+		public class_members Last()
+		{
+			return class_def_blocks[class_def_blocks.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			class_body copy = new class_body();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (class_members elem in class_def_blocks)
-				copy.class_def_blocks.Add((class_members)elem.Clone());
+			{
+				copy.Add((class_members)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new class_body TypedClone()
+		{
+			return Clone() as class_body;
 		}
 
 		///<summary>
@@ -13005,17 +13881,30 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			class_definition copy = new class_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.class_parents = (named_type_reference_list)class_parents.Clone();
+			copy.class_parents.Parent = copy;
 			copy.body = (class_body)body.Clone();
+			copy.body.Parent = copy;
 			copy.keyword = keyword;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			copy.where_section = (where_definition_list)where_section.Clone();
+			copy.where_section.Parent = copy;
 			copy.attribute = attribute;
 			copy.is_auto = is_auto;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new class_definition TypedClone()
+		{
+			return Clone() as class_definition;
 		}
 
 		///<summary>
@@ -13118,8 +14007,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			default_indexer_property_node copy = new default_indexer_property_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new default_indexer_property_node TypedClone()
+		{
+			return Clone() as default_indexer_property_node;
 		}
 
 		///<summary>
@@ -13264,12 +14160,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			known_type_definition copy = new known_type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.tp = tp;
 			copy.unit_name = (ident)unit_name.Clone();
+			copy.unit_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new known_type_definition TypedClone()
+		{
+			return Clone() as known_type_definition;
 		}
 
 		///<summary>
@@ -13410,11 +14316,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			set_type_definition copy = new set_type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.of_type = (type_definition)of_type.Clone();
+			copy.of_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new set_type_definition TypedClone()
+		{
+			return Clone() as set_type_definition;
 		}
 
 		///<summary>
@@ -13554,11 +14470,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			record_const_definition copy = new record_const_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = (ident)name.Clone();
+			copy.name.Parent = copy;
 			copy.val = (expression)val.Clone();
+			copy.val.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new record_const_definition TypedClone()
+		{
+			return Clone() as record_const_definition;
 		}
 
 		///<summary>
@@ -13758,15 +14684,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return rec_consts.RemoveAll(match);
 		}
 
+		public record_const_definition Last()
+		{
+			return rec_consts[rec_consts.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			record_const copy = new record_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			foreach (record_const_definition elem in rec_consts)
-				copy.rec_consts.Add((record_const_definition)elem.Clone());
+			{
+				copy.Add((record_const_definition)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new record_const TypedClone()
+		{
+			return Clone() as record_const;
 		}
 
 		///<summary>
@@ -13928,12 +14870,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			record_type copy = new record_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.parts = (record_type_parts)parts.Clone();
+			copy.parts.Parent = copy;
 			copy.base_type = (type_definition)base_type.Clone();
+			copy.base_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new record_type TypedClone()
+		{
+			return Clone() as record_type;
 		}
 
 		///<summary>
@@ -14079,11 +15032,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			enum_type_definition copy = new enum_type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.enumerators = (enumerator_list)enumerators.Clone();
+			copy.enumerators.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new enum_type_definition TypedClone()
+		{
+			return Clone() as enum_type_definition;
 		}
 
 		///<summary>
@@ -14205,10 +15168,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			char_const copy = new char_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.cconst = cconst;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new char_const TypedClone()
+		{
+			return Clone() as char_const;
 		}
 
 		///<summary>
@@ -14314,10 +15285,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			raise_statement copy = new raise_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.excep = (expression)excep.Clone();
+			copy.excep.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new raise_statement TypedClone()
+		{
+			return Clone() as raise_statement;
 		}
 
 		///<summary>
@@ -14434,10 +15414,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			sharp_char_const copy = new sharp_char_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.char_num = char_num;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new sharp_char_const TypedClone()
+		{
+			return Clone() as sharp_char_const;
 		}
 
 		///<summary>
@@ -14621,15 +15609,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return literals.RemoveAll(match);
 		}
 
+		public literal Last()
+		{
+			return literals[literals.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			literal_const_line copy = new literal_const_line();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			foreach (literal elem in literals)
-				copy.literals.Add((literal)elem.Clone());
+			{
+				copy.Add((literal)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new literal_const_line TypedClone()
+		{
+			return Clone() as literal_const_line;
 		}
 
 		///<summary>
@@ -14791,12 +15795,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			string_num_definition copy = new string_num_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.num_of_symbols = (expression)num_of_symbols.Clone();
+			copy.num_of_symbols.Parent = copy;
 			copy.name = (ident)name.Clone();
+			copy.name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new string_num_definition TypedClone()
+		{
+			return Clone() as string_num_definition;
 		}
 
 		///<summary>
@@ -14941,10 +15956,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			variant copy = new variant();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.vars = (ident_list)vars.Clone();
+			copy.vars.Parent = copy;
 			copy.vars_type = (type_definition)vars_type.Clone();
+			copy.vars_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new variant TypedClone()
+		{
+			return Clone() as variant;
 		}
 
 		///<summary>
@@ -15144,14 +16168,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars.RemoveAll(match);
 		}
 
+		public variant Last()
+		{
+			return vars[vars.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			variant_list copy = new variant_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (variant elem in vars)
-				copy.vars.Add((variant)elem.Clone());
+			{
+				copy.Add((variant)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new variant_list TypedClone()
+		{
+			return Clone() as variant_list;
 		}
 
 		///<summary>
@@ -15292,10 +16331,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			variant_type copy = new variant_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.case_exprs = (expression_list)case_exprs.Clone();
+			copy.case_exprs.Parent = copy;
 			copy.parts = (record_type_parts)parts.Clone();
+			copy.parts.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new variant_type TypedClone()
+		{
+			return Clone() as variant_type;
 		}
 
 		///<summary>
@@ -15495,14 +16543,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars.RemoveAll(match);
 		}
 
+		public variant_type Last()
+		{
+			return vars[vars.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			variant_types copy = new variant_types();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (variant_type elem in vars)
-				copy.vars.Add((variant_type)elem.Clone());
+			{
+				copy.Add((variant_type)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new variant_types TypedClone()
+		{
+			return Clone() as variant_types;
 		}
 
 		///<summary>
@@ -15661,11 +16724,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			variant_record_type copy = new variant_record_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.var_name = (ident)var_name.Clone();
+			copy.var_name.Parent = copy;
 			copy.var_type = (type_definition)var_type.Clone();
+			copy.var_type.Parent = copy;
 			copy.vars = (variant_types)vars.Clone();
+			copy.vars.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new variant_record_type TypedClone()
+		{
+			return Clone() as variant_record_type;
 		}
 
 		///<summary>
@@ -15792,10 +16865,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			procedure_call copy = new procedure_call();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.func_name = (addressed_value)func_name.Clone();
+			copy.func_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new procedure_call TypedClone()
+		{
+			return Clone() as procedure_call;
 		}
 
 		///<summary>
@@ -15933,12 +17015,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			class_predefinition copy = new class_predefinition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.type_name = (ident)type_name.Clone();
+			copy.type_name.Parent = copy;
 			copy.type_def = (type_definition)type_def.Clone();
+			copy.type_def.Parent = copy;
 			copy.class_name = (ident)class_name.Clone();
+			copy.class_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new class_predefinition TypedClone()
+		{
+			return Clone() as class_predefinition;
 		}
 
 		///<summary>
@@ -16031,9 +17124,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			nil_const copy = new nil_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new nil_const TypedClone()
+		{
+			return Clone() as nil_const;
 		}
 
 		///<summary>
@@ -16158,11 +17259,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			file_type_definition copy = new file_type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.elem_type = (type_definition)elem_type.Clone();
+			copy.elem_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new file_type_definition TypedClone()
+		{
+			return Clone() as file_type_definition;
 		}
 
 		///<summary>
@@ -16281,17 +17392,31 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			constructor copy = new constructor();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.parameters.Parent = copy;
 			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.proc_attributes.Parent = copy;
 			copy.name = (method_name)name.Clone();
+			copy.name.Parent = copy;
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			copy.where_defs = (where_definition_list)where_defs.Clone();
+			copy.where_defs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new constructor TypedClone()
+		{
+			return Clone() as constructor;
 		}
 
 		///<summary>
@@ -16430,17 +17555,31 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			destructor copy = new destructor();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.parameters = (formal_parameters)parameters.Clone();
+			copy.parameters.Parent = copy;
 			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+			copy.proc_attributes.Parent = copy;
 			copy.name = (method_name)name.Clone();
+			copy.name.Parent = copy;
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			copy.where_defs = (where_definition_list)where_defs.Clone();
+			copy.where_defs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new destructor TypedClone()
+		{
+			return Clone() as destructor;
 		}
 
 		///<summary>
@@ -16600,11 +17739,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			inherited_method_call copy = new inherited_method_call();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.method_name = (ident)method_name.Clone();
+			copy.method_name.Parent = copy;
 			copy.exprs = (expression_list)exprs.Clone();
+			copy.exprs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new inherited_method_call TypedClone()
+		{
+			return Clone() as inherited_method_call;
 		}
 
 		///<summary>
@@ -16762,12 +17911,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			typecast_node copy = new typecast_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (addressed_value)expr.Clone();
+			copy.expr.Parent = copy;
 			copy.type_def = (type_definition)type_def.Clone();
+			copy.type_def.Parent = copy;
 			copy.cast_op = cast_op;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typecast_node TypedClone()
+		{
+			return Clone() as typecast_node;
 		}
 
 		///<summary>
@@ -16925,11 +18084,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			interface_node copy = new interface_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.interface_definitions = (declarations)interface_definitions.Clone();
+			copy.interface_definitions.Parent = copy;
 			copy.uses_modules = (uses_list)uses_modules.Clone();
+			copy.uses_modules.Parent = copy;
 			copy.using_namespaces = (using_list)using_namespaces.Clone();
+			copy.using_namespaces.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new interface_node TypedClone()
+		{
+			return Clone() as interface_node;
 		}
 
 		///<summary>
@@ -17092,11 +18261,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			implementation_node copy = new implementation_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.uses_modules = (uses_list)uses_modules.Clone();
+			copy.uses_modules.Parent = copy;
 			copy.implementation_definitions = (declarations)implementation_definitions.Clone();
+			copy.implementation_definitions.Parent = copy;
 			copy.using_namespaces = (using_list)using_namespaces.Clone();
+			copy.using_namespaces.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new implementation_node TypedClone()
+		{
+			return Clone() as implementation_node;
 		}
 
 		///<summary>
@@ -17241,11 +18420,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			diap_expr copy = new diap_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.left = (expression)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (expression)right.Clone();
+			copy.right.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new diap_expr TypedClone()
+		{
+			return Clone() as diap_expr;
 		}
 
 		///<summary>
@@ -17385,10 +18574,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			block copy = new block();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.defs = (declarations)defs.Clone();
+			copy.defs.Parent = copy;
 			copy.program_code = (statement_list)program_code.Clone();
+			copy.program_code.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new block TypedClone()
+		{
+			return Clone() as block;
 		}
 
 		///<summary>
@@ -17476,8 +18674,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			proc_block copy = new proc_block();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new proc_block TypedClone()
+		{
+			return Clone() as proc_block;
 		}
 
 		///<summary>
@@ -17602,11 +18807,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			array_of_named_type_definition copy = new array_of_named_type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.type_name = (named_type_reference)type_name.Clone();
+			copy.type_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new array_of_named_type_definition TypedClone()
+		{
+			return Clone() as array_of_named_type_definition;
 		}
 
 		///<summary>
@@ -17711,10 +18926,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			array_of_const_type_definition copy = new array_of_const_type_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new array_of_const_type_definition TypedClone()
+		{
+			return Clone() as array_of_const_type_definition;
 		}
 
 		///<summary>
@@ -17797,9 +19021,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			literal copy = new literal();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new literal TypedClone()
+		{
+			return Clone() as literal;
 		}
 
 		///<summary>
@@ -17983,14 +19215,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return variants.RemoveAll(match);
 		}
 
+		public case_variant Last()
+		{
+			return variants[variants.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			case_variants copy = new case_variants();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (case_variant elem in variants)
-				copy.variants.Add((case_variant)elem.Clone());
+			{
+				copy.Add((case_variant)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new case_variants TypedClone()
+		{
+			return Clone() as case_variants;
 		}
 
 		///<summary>
@@ -18131,11 +19378,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			diapason_expr copy = new diapason_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.left = (expression)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (expression)right.Clone();
+			copy.right.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new diapason_expr TypedClone()
+		{
+			return Clone() as diapason_expr;
 		}
 
 		///<summary>
@@ -18335,14 +19592,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars.RemoveAll(match);
 		}
 
+		public var_def_statement Last()
+		{
+			return vars[vars.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			var_def_list_for_record copy = new var_def_list_for_record();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (var_def_statement elem in vars)
-				copy.vars.Add((var_def_statement)elem.Clone());
+			{
+				copy.Add((var_def_statement)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new var_def_list_for_record TypedClone()
+		{
+			return Clone() as var_def_list_for_record;
 		}
 
 		///<summary>
@@ -18483,10 +19755,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			record_type_parts copy = new record_type_parts();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.fixed_part = (var_def_list_for_record)fixed_part.Clone();
+			copy.fixed_part.Parent = copy;
 			copy.variant_part = (variant_record_type)variant_part.Clone();
+			copy.variant_part.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new record_type_parts TypedClone()
+		{
+			return Clone() as record_type_parts;
 		}
 
 		///<summary>
@@ -18574,8 +19855,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			property_array_default copy = new property_array_default();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new property_array_default TypedClone()
+		{
+			return Clone() as property_array_default;
 		}
 
 		///<summary>
@@ -18717,11 +20005,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			property_interface copy = new property_interface();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+			copy.parameter_list.Parent = copy;
 			copy.property_type = (type_definition)property_type.Clone();
+			copy.property_type.Parent = copy;
 			copy.index_expression = (expression)index_expression.Clone();
+			copy.index_expression.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new property_interface TypedClone()
+		{
+			return Clone() as property_interface;
 		}
 
 		///<summary>
@@ -18866,10 +20164,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			property_parameter copy = new property_parameter();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.names = (ident_list)names.Clone();
+			copy.names.Parent = copy;
 			copy.type = (type_definition)type.Clone();
+			copy.type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new property_parameter TypedClone()
+		{
+			return Clone() as property_parameter;
 		}
 
 		///<summary>
@@ -19069,14 +20376,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return parameters.RemoveAll(match);
 		}
 
+		public property_parameter Last()
+		{
+			return parameters[parameters.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			property_parameter_list copy = new property_parameter_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (property_parameter elem in parameters)
-				copy.parameters.Add((property_parameter)elem.Clone());
+			{
+				copy.Add((property_parameter)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new property_parameter_list TypedClone()
+		{
+			return Clone() as property_parameter_list;
 		}
 
 		///<summary>
@@ -19182,10 +20504,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			inherited_ident copy = new inherited_ident();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new inherited_ident TypedClone()
+		{
+			return Clone() as inherited_ident;
 		}
 
 		///<summary>
@@ -19327,12 +20657,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			format_expr copy = new format_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			copy.format1 = (expression)format1.Clone();
+			copy.format1.Parent = copy;
 			copy.format2 = (expression)format2.Clone();
+			copy.format2.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new format_expr TypedClone()
+		{
+			return Clone() as format_expr;
 		}
 
 		///<summary>
@@ -19477,10 +20818,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			initfinal_part copy = new initfinal_part();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.initialization_sect = (statement_list)initialization_sect.Clone();
+			copy.initialization_sect.Parent = copy;
 			copy.finalization_sect = (statement_list)finalization_sect.Clone();
+			copy.finalization_sect.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new initfinal_part TypedClone()
+		{
+			return Clone() as initfinal_part;
 		}
 
 		///<summary>
@@ -19602,9 +20952,16 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			token_info copy = new token_info();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.text = text;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new token_info TypedClone()
+		{
+			return Clone() as token_info;
 		}
 
 		///<summary>
@@ -19728,11 +21085,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			raise_stmt copy = new raise_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			copy.address = (expression)address.Clone();
+			copy.address.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new raise_stmt TypedClone()
+		{
+			return Clone() as raise_stmt;
 		}
 
 		///<summary>
@@ -19873,10 +21240,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			op_type_node copy = new op_type_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.text = text;
 			copy.type = type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new op_type_node TypedClone()
+		{
+			return Clone() as op_type_node;
 		}
 
 		///<summary>
@@ -20001,11 +21375,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			file_type copy = new file_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.file_of_type = (type_definition)file_of_type.Clone();
+			copy.file_of_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new file_type TypedClone()
+		{
+			return Clone() as file_type;
 		}
 
 		///<summary>
@@ -20146,11 +21530,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			known_type_ident copy = new known_type_ident();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			copy.type = type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new known_type_ident TypedClone()
+		{
+			return Clone() as known_type_ident;
 		}
 
 		///<summary>
@@ -20292,11 +21684,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			exception_handler copy = new exception_handler();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.variable = (ident)variable.Clone();
+			copy.variable.Parent = copy;
 			copy.type_name = (named_type_reference)type_name.Clone();
+			copy.type_name.Parent = copy;
 			copy.statements = (statement)statements.Clone();
+			copy.statements.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new exception_handler TypedClone()
+		{
+			return Clone() as exception_handler;
 		}
 
 		///<summary>
@@ -20441,10 +21843,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			exception_ident copy = new exception_ident();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.variable = (ident)variable.Clone();
+			copy.variable.Parent = copy;
 			copy.type_name = (named_type_reference)type_name.Clone();
+			copy.type_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new exception_ident TypedClone()
+		{
+			return Clone() as exception_ident;
 		}
 
 		///<summary>
@@ -20644,14 +22055,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return handlers.RemoveAll(match);
 		}
 
+		public exception_handler Last()
+		{
+			return handlers[handlers.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			exception_handler_list copy = new exception_handler_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (exception_handler elem in handlers)
-				copy.handlers.Add((exception_handler)elem.Clone());
+			{
+				copy.Add((exception_handler)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new exception_handler_list TypedClone()
+		{
+			return Clone() as exception_handler_list;
 		}
 
 		///<summary>
@@ -20810,11 +22236,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			exception_block copy = new exception_block();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.stmt_list = (statement_list)stmt_list.Clone();
+			copy.stmt_list.Parent = copy;
 			copy.handlers = (exception_handler_list)handlers.Clone();
+			copy.handlers.Parent = copy;
 			copy.else_stmt_list = (statement_list)else_stmt_list.Clone();
+			copy.else_stmt_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new exception_block TypedClone()
+		{
+			return Clone() as exception_block;
 		}
 
 		///<summary>
@@ -20907,8 +22343,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			try_handler copy = new try_handler();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new try_handler TypedClone()
+		{
+			return Clone() as try_handler;
 		}
 
 		///<summary>
@@ -21014,9 +22457,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			try_handler_finally copy = new try_handler_finally();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.stmt_list = (statement_list)stmt_list.Clone();
+			copy.stmt_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new try_handler_finally TypedClone()
+		{
+			return Clone() as try_handler_finally;
 		}
 
 		///<summary>
@@ -21133,9 +22584,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			try_handler_except copy = new try_handler_except();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.except_block = (exception_block)except_block.Clone();
+			copy.except_block.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new try_handler_except TypedClone()
+		{
+			return Clone() as try_handler_except;
 		}
 
 		///<summary>
@@ -21270,11 +22729,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			try_stmt copy = new try_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.stmt_list = (statement_list)stmt_list.Clone();
+			copy.stmt_list.Parent = copy;
 			copy.handler = (try_handler)handler.Clone();
+			copy.handler.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new try_stmt TypedClone()
+		{
+			return Clone() as try_stmt;
 		}
 
 		///<summary>
@@ -21362,9 +22831,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			inherited_message copy = new inherited_message();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new inherited_message TypedClone()
+		{
+			return Clone() as inherited_message;
 		}
 
 		///<summary>
@@ -21488,10 +22965,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			external_directive copy = new external_directive();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.modulename = (expression)modulename.Clone();
+			copy.modulename.Parent = copy;
 			copy.name = (expression)name.Clone();
+			copy.name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new external_directive TypedClone()
+		{
+			return Clone() as external_directive;
 		}
 
 		///<summary>
@@ -21691,14 +23177,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return namespaces.RemoveAll(match);
 		}
 
+		public unit_or_namespace Last()
+		{
+			return namespaces[namespaces.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			using_list copy = new using_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (unit_or_namespace elem in namespaces)
-				copy.namespaces.Add((unit_or_namespace)elem.Clone());
+			{
+				copy.Add((unit_or_namespace)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new using_list TypedClone()
+		{
+			return Clone() as using_list;
 		}
 
 		///<summary>
@@ -21839,11 +23340,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			jump_stmt copy = new jump_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			copy.JumpType = JumpType;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new jump_stmt TypedClone()
+		{
+			return Clone() as jump_stmt;
 		}
 
 		///<summary>
@@ -21960,10 +23470,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			loop_stmt copy = new loop_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.stmt = (statement)stmt.Clone();
+			copy.stmt.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new loop_stmt TypedClone()
+		{
+			return Clone() as loop_stmt;
 		}
 
 		///<summary>
@@ -22134,13 +23653,25 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			foreach_stmt copy = new foreach_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.identifier = (ident)identifier.Clone();
+			copy.identifier.Parent = copy;
 			copy.type_name = (type_definition)type_name.Clone();
+			copy.type_name.Parent = copy;
 			copy.in_what = (expression)in_what.Clone();
+			copy.in_what.Parent = copy;
 			copy.stmt = (statement)stmt.Clone();
+			copy.stmt.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new foreach_stmt TypedClone()
+		{
+			return Clone() as foreach_stmt;
 		}
 
 		///<summary>
@@ -22238,9 +23769,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			addressed_value_funcname copy = new addressed_value_funcname();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new addressed_value_funcname TypedClone()
+		{
+			return Clone() as addressed_value_funcname;
 		}
 
 		///<summary>
@@ -22424,14 +23963,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return types.RemoveAll(match);
 		}
 
+		public named_type_reference Last()
+		{
+			return types[types.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			named_type_reference_list copy = new named_type_reference_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (named_type_reference elem in types)
-				copy.types.Add((named_type_reference)elem.Clone());
+			{
+				copy.Add((named_type_reference)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new named_type_reference_list TypedClone()
+		{
+			return Clone() as named_type_reference_list;
 		}
 
 		///<summary>
@@ -22651,16 +24205,33 @@ namespace PascalABCCompiler.SyntaxTree
 			return params_list.RemoveAll(match);
 		}
 
+		public type_definition Last()
+		{
+			return params_list[params_list.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			template_param_list copy = new template_param_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.dereferencing_value.Parent = copy;
 			foreach (type_definition elem in params_list)
-				copy.params_list.Add((type_definition)elem.Clone());
+			{
+				copy.Add((type_definition)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new template_param_list TypedClone()
+		{
+			return Clone() as template_param_list;
 		}
 
 		///<summary>
@@ -22835,14 +24406,28 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			template_type_reference copy = new template_type_reference();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			foreach (ident elem in names)
-				copy.names.Add((ident)elem.Clone());
+			{
+				copy.Add((ident)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.name = (named_type_reference)name.Clone();
+			copy.name.Parent = copy;
 			copy.params_list = (template_param_list)params_list.Clone();
+			copy.params_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new template_type_reference TypedClone()
+		{
+			return Clone() as template_type_reference;
 		}
 
 		///<summary>
@@ -22986,10 +24571,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			int64_const copy = new int64_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.val = val;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new int64_const TypedClone()
+		{
+			return Clone() as int64_const;
 		}
 
 		///<summary>
@@ -23095,10 +24688,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			uint64_const copy = new uint64_const();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.val = val;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new uint64_const TypedClone()
+		{
+			return Clone() as uint64_const;
 		}
 
 		///<summary>
@@ -23258,13 +24859,24 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			new_expr copy = new new_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.type = (type_definition)type.Clone();
+			copy.type.Parent = copy;
 			copy.params_list = (expression_list)params_list.Clone();
+			copy.params_list.Parent = copy;
 			copy.new_array = new_array;
 			copy.array_init_expr = (array_const)array_init_expr.Clone();
+			copy.array_init_expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new new_expr TypedClone()
+		{
+			return Clone() as new_expr;
 		}
 
 		///<summary>
@@ -23469,14 +25081,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.RemoveAll(match);
 		}
 
+		public type_definition Last()
+		{
+			return defs[defs.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			where_type_specificator_list copy = new where_type_specificator_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (type_definition elem in defs)
-				copy.defs.Add((type_definition)elem.Clone());
+			{
+				copy.Add((type_definition)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new where_type_specificator_list TypedClone()
+		{
+			return Clone() as where_type_specificator_list;
 		}
 
 		///<summary>
@@ -23617,10 +25244,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			where_definition copy = new where_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.names = (ident_list)names.Clone();
+			copy.names.Parent = copy;
 			copy.types = (where_type_specificator_list)types.Clone();
+			copy.types.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new where_definition TypedClone()
+		{
+			return Clone() as where_definition;
 		}
 
 		///<summary>
@@ -23820,14 +25456,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.RemoveAll(match);
 		}
 
+		public where_definition Last()
+		{
+			return defs[defs.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			where_definition_list copy = new where_definition_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (where_definition elem in defs)
-				copy.defs.Add((where_definition)elem.Clone());
+			{
+				copy.Add((where_definition)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new where_definition_list TypedClone()
+		{
+			return Clone() as where_definition_list;
 		}
 
 		///<summary>
@@ -23968,11 +25619,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			sizeof_operator copy = new sizeof_operator();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.type_def = (type_definition)type_def.Clone();
+			copy.type_def.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new sizeof_operator TypedClone()
+		{
+			return Clone() as sizeof_operator;
 		}
 
 		///<summary>
@@ -24094,10 +25755,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			typeof_operator copy = new typeof_operator();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.type_name = (named_type_reference)type_name.Clone();
+			copy.type_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new typeof_operator TypedClone()
+		{
+			return Clone() as typeof_operator;
 		}
 
 		///<summary>
@@ -24232,10 +25902,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			compiler_directive copy = new compiler_directive();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.Name = (token_info)Name.Clone();
+			copy.Name.Parent = copy;
 			copy.Directive = (token_info)Directive.Clone();
+			copy.Directive.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new compiler_directive TypedClone()
+		{
+			return Clone() as compiler_directive;
 		}
 
 		///<summary>
@@ -24376,11 +26055,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			operator_name_ident copy = new operator_name_ident();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			copy.operator_type = operator_type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new operator_name_ident TypedClone()
+		{
+			return Clone() as operator_name_ident;
 		}
 
 		///<summary>
@@ -24486,10 +26173,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			var_statement copy = new var_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.var_def = (var_def_statement)var_def.Clone();
+			copy.var_def.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new var_statement TypedClone()
+		{
+			return Clone() as var_statement;
 		}
 
 		///<summary>
@@ -24642,12 +26338,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			question_colon_expression copy = new question_colon_expression();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.condition = (expression)condition.Clone();
+			copy.condition.Parent = copy;
 			copy.ret_if_true = (expression)ret_if_true.Clone();
+			copy.ret_if_true.Parent = copy;
 			copy.ret_if_false = (expression)ret_if_false.Clone();
+			copy.ret_if_false.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new question_colon_expression TypedClone()
+		{
+			return Clone() as question_colon_expression;
 		}
 
 		///<summary>
@@ -24774,10 +26481,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			expression_as_statement copy = new expression_as_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new expression_as_statement TypedClone()
+		{
+			return Clone() as expression_as_statement;
 		}
 
 		///<summary>
@@ -24933,12 +26649,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			c_scalar_type copy = new c_scalar_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.scalar_name = scalar_name;
 			copy.sign = sign;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new c_scalar_type TypedClone()
+		{
+			return Clone() as c_scalar_type;
 		}
 
 		///<summary>
@@ -25098,14 +26823,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			c_module copy = new c_module();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
 			foreach (compiler_directive elem in compiler_directives)
-				copy.compiler_directives.Add((compiler_directive)elem.Clone());
+			{
+				copy.Add((compiler_directive)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.Language = Language;
 			copy.defs = (declarations)defs.Clone();
+			copy.defs.Parent = copy;
 			copy.used_units = (uses_list)used_units.Clone();
+			copy.used_units.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new c_module TypedClone()
+		{
+			return Clone() as c_module;
 		}
 
 		///<summary>
@@ -25244,10 +26981,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			declarations_as_statement copy = new declarations_as_statement();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.defs = (declarations)defs.Clone();
+			copy.defs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new declarations_as_statement TypedClone()
+		{
+			return Clone() as declarations_as_statement;
 		}
 
 		///<summary>
@@ -25383,11 +27129,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			array_size copy = new array_size();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.max_value = (expression)max_value.Clone();
+			copy.max_value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new array_size TypedClone()
+		{
+			return Clone() as array_size;
 		}
 
 		///<summary>
@@ -25527,10 +27283,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			enumerator copy = new enumerator();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.name = (type_definition)name.Clone();
+			copy.name.Parent = copy;
 			copy.value = (expression)value.Clone();
+			copy.value.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new enumerator TypedClone()
+		{
+			return Clone() as enumerator;
 		}
 
 		///<summary>
@@ -25730,14 +27495,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return enumerators.RemoveAll(match);
 		}
 
+		public enumerator Last()
+		{
+			return enumerators[enumerators.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			enumerator_list copy = new enumerator_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (enumerator elem in enumerators)
-				copy.enumerators.Add((enumerator)elem.Clone());
+			{
+				copy.Add((enumerator)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new enumerator_list TypedClone()
+		{
+			return Clone() as enumerator_list;
 		}
 
 		///<summary>
@@ -25914,13 +27694,25 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			c_for_cycle copy = new c_for_cycle();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr1 = (statement)expr1.Clone();
+			copy.expr1.Parent = copy;
 			copy.expr2 = (expression)expr2.Clone();
+			copy.expr2.Parent = copy;
 			copy.expr3 = (expression)expr3.Clone();
+			copy.expr3.Parent = copy;
 			copy.stmt = (statement)stmt.Clone();
+			copy.stmt.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new c_for_cycle TypedClone()
+		{
+			return Clone() as c_for_cycle;
 		}
 
 		///<summary>
@@ -26088,12 +27880,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			switch_stmt copy = new switch_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.condition = (expression)condition.Clone();
+			copy.condition.Parent = copy;
 			copy.stmt = (statement)stmt.Clone();
+			copy.stmt.Parent = copy;
 			copy.Part = Part;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new switch_stmt TypedClone()
+		{
+			return Clone() as switch_stmt;
 		}
 
 		///<summary>
@@ -26293,14 +28095,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes.RemoveAll(match);
 		}
 
+		public type_definition_attr Last()
+		{
+			return attributes[attributes.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			type_definition_attr_list copy = new type_definition_attr_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (type_definition_attr elem in attributes)
-				copy.attributes.Add((type_definition_attr)elem.Clone());
+			{
+				copy.Add((type_definition_attr)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_definition_attr_list TypedClone()
+		{
+			return Clone() as type_definition_attr_list;
 		}
 
 		///<summary>
@@ -26442,11 +28259,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			type_definition_attr copy = new type_definition_attr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.attr = attr;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_definition_attr TypedClone()
+		{
+			return Clone() as type_definition_attr;
 		}
 
 		///<summary>
@@ -26581,11 +28407,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			lock_stmt copy = new lock_stmt();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.lock_object = (expression)lock_object.Clone();
+			copy.lock_object.Parent = copy;
 			copy.stmt = (statement)stmt.Clone();
+			copy.stmt.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new lock_stmt TypedClone()
+		{
+			return Clone() as lock_stmt;
 		}
 
 		///<summary>
@@ -26806,16 +28642,33 @@ namespace PascalABCCompiler.SyntaxTree
 			return directives.RemoveAll(match);
 		}
 
+		public compiler_directive Last()
+		{
+			return directives[directives.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			compiler_directive_list copy = new compiler_directive_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.Name = (token_info)Name.Clone();
+			copy.Name.Parent = copy;
 			copy.Directive = (token_info)Directive.Clone();
+			copy.Directive.Parent = copy;
 			foreach (compiler_directive elem in directives)
-				copy.directives.Add((compiler_directive)elem.Clone());
+			{
+				copy.Add((compiler_directive)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new compiler_directive_list TypedClone()
+		{
+			return Clone() as compiler_directive_list;
 		}
 
 		///<summary>
@@ -26995,12 +28848,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			compiler_directive_if copy = new compiler_directive_if();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.Name = (token_info)Name.Clone();
+			copy.Name.Parent = copy;
 			copy.Directive = (token_info)Directive.Clone();
+			copy.Directive.Parent = copy;
 			copy.if_part = (compiler_directive)if_part.Clone();
+			copy.if_part.Parent = copy;
 			copy.elseif_part = (compiler_directive)elseif_part.Clone();
+			copy.elseif_part.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new compiler_directive_if TypedClone()
+		{
+			return Clone() as compiler_directive_if;
 		}
 
 		///<summary>
@@ -27210,14 +29074,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return sections.RemoveAll(match);
 		}
 
+		public documentation_comment_section Last()
+		{
+			return sections[sections.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_list copy = new documentation_comment_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (documentation_comment_section elem in sections)
-				copy.sections.Add((documentation_comment_section)elem.Clone());
+			{
+				copy.Add((documentation_comment_section)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new documentation_comment_list TypedClone()
+		{
+			return Clone() as documentation_comment_list;
 		}
 
 		///<summary>
@@ -27454,16 +29333,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return parameters.RemoveAll(match);
 		}
 
+		public documentation_comment_tag_param Last()
+		{
+			return parameters[parameters.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_tag copy = new documentation_comment_tag();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.name = name;
 			foreach (documentation_comment_tag_param elem in parameters)
-				copy.parameters.Add((documentation_comment_tag_param)elem.Clone());
+			{
+				copy.Add((documentation_comment_tag_param)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.text = text;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new documentation_comment_tag TypedClone()
+		{
+			return Clone() as documentation_comment_tag;
 		}
 
 		///<summary>
@@ -27604,10 +29498,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_tag_param copy = new documentation_comment_tag_param();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.name = name;
 			copy.value = value;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new documentation_comment_tag_param TypedClone()
+		{
+			return Clone() as documentation_comment_tag_param;
 		}
 
 		///<summary>
@@ -27809,15 +29710,30 @@ namespace PascalABCCompiler.SyntaxTree
 			return tags.RemoveAll(match);
 		}
 
+		public documentation_comment_tag Last()
+		{
+			return tags[tags.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_section copy = new documentation_comment_section();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (documentation_comment_tag elem in tags)
-				copy.tags.Add((documentation_comment_tag)elem.Clone());
+			{
+				copy.Add((documentation_comment_tag)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.text = text;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new documentation_comment_section TypedClone()
+		{
+			return Clone() as documentation_comment_section;
 		}
 
 		///<summary>
@@ -27959,10 +29875,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			token_taginfo copy = new token_taginfo();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.text = text;
 			copy.tag = tag;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new token_taginfo TypedClone()
+		{
+			return Clone() as token_taginfo;
 		}
 
 		///<summary>
@@ -28107,12 +30030,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			declaration_specificator copy = new declaration_specificator();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.specificator = specificator;
 			copy.name = name;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new declaration_specificator TypedClone()
+		{
+			return Clone() as declaration_specificator;
 		}
 
 		///<summary>
@@ -28247,11 +30179,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			ident_with_templateparams copy = new ident_with_templateparams();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = (addressed_value)name.Clone();
+			copy.name.Parent = copy;
 			copy.template_params = (template_param_list)template_params.Clone();
+			copy.template_params.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new ident_with_templateparams TypedClone()
+		{
+			return Clone() as ident_with_templateparams;
 		}
 
 		///<summary>
@@ -28392,11 +30334,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			template_type_name copy = new template_type_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new template_type_name TypedClone()
+		{
+			return Clone() as template_type_name;
 		}
 
 		///<summary>
@@ -28513,10 +30464,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			default_operator copy = new default_operator();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.type_name = (named_type_reference)type_name.Clone();
+			copy.type_name.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new default_operator TypedClone()
+		{
+			return Clone() as default_operator;
 		}
 
 		///<summary>
@@ -28633,10 +30593,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			bracket_expr copy = new bracket_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new bracket_expr TypedClone()
+		{
+			return Clone() as bracket_expr;
 		}
 
 		///<summary>
@@ -28789,11 +30758,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			attribute copy = new attribute();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.qualifier = (ident)qualifier.Clone();
+			copy.qualifier.Parent = copy;
 			copy.type = (named_type_reference)type.Clone();
+			copy.type.Parent = copy;
 			copy.arguments = (expression_list)arguments.Clone();
+			copy.arguments.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new attribute TypedClone()
+		{
+			return Clone() as attribute;
 		}
 
 		///<summary>
@@ -28998,14 +30977,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes.RemoveAll(match);
 		}
 
+		public attribute Last()
+		{
+			return attributes[attributes.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			simple_attribute_list copy = new simple_attribute_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (attribute elem in attributes)
-				copy.attributes.Add((attribute)elem.Clone());
+			{
+				copy.Add((attribute)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new simple_attribute_list TypedClone()
+		{
+			return Clone() as simple_attribute_list;
 		}
 
 		///<summary>
@@ -29206,14 +31200,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes.RemoveAll(match);
 		}
 
+		public simple_attribute_list Last()
+		{
+			return attributes[attributes.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			attribute_list copy = new attribute_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (simple_attribute_list elem in attributes)
-				copy.attributes.Add((simple_attribute_list)elem.Clone());
+			{
+				copy.Add((simple_attribute_list)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new attribute_list TypedClone()
+		{
+			return Clone() as attribute_list;
 		}
 
 		///<summary>
@@ -29594,25 +31603,48 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs.RemoveAll(match);
 		}
 
+		public declaration Last()
+		{
+			return defs[defs.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			function_lambda_definition copy = new function_lambda_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.ident_list = (ident_list)ident_list.Clone();
+			copy.ident_list.Parent = copy;
 			copy.return_type = (type_definition)return_type.Clone();
+			copy.return_type.Parent = copy;
 			copy.formal_parameters = (formal_parameters)formal_parameters.Clone();
+			copy.formal_parameters.Parent = copy;
 			copy.proc_body = (statement)proc_body.Clone();
+			copy.proc_body.Parent = copy;
 			copy.proc_definition = (procedure_definition)proc_definition.Clone();
+			copy.proc_definition.Parent = copy;
 			copy.parameters = (expression_list)parameters.Clone();
+			copy.parameters.Parent = copy;
 			copy.lambda_name = lambda_name;
 			foreach (declaration elem in defs)
-				copy.defs.Add((declaration)elem.Clone());
+			{
+				copy.Add((declaration)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.lambda_visit_mode = lambda_visit_mode;
 			copy.substituting_node = substituting_node.Clone();
+			copy.substituting_node.Parent = copy;
 			copy.usedkeyword = usedkeyword;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new function_lambda_definition TypedClone()
+		{
+			return Clone() as function_lambda_definition;
 		}
 
 		///<summary>
@@ -29794,11 +31826,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			function_lambda_call copy = new function_lambda_call();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.f_lambda_def = (function_lambda_definition)f_lambda_def.Clone();
+			copy.f_lambda_def.Parent = copy;
 			copy.parameters = (expression_list)parameters.Clone();
+			copy.parameters.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new function_lambda_call TypedClone()
+		{
+			return Clone() as function_lambda_call;
 		}
 
 		///<summary>
@@ -30034,17 +32076,33 @@ namespace PascalABCCompiler.SyntaxTree
 			return param.RemoveAll(match);
 		}
 
+		public syntax_tree_node Last()
+		{
+			return param[param.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			semantic_check copy = new semantic_check();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.CheckName = CheckName;
 			foreach (syntax_tree_node elem in param)
-				copy.param.Add(elem.Clone());
+			{
+				copy.Add(elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			copy.fictive = fictive;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new semantic_check TypedClone()
+		{
+			return Clone() as semantic_check;
 		}
 
 		///<summary>
@@ -30186,11 +32244,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			lambda_inferred_type copy = new lambda_inferred_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.real_type = real_type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new lambda_inferred_type TypedClone()
+		{
+			return Clone() as lambda_inferred_type;
 		}
 
 		///<summary>
@@ -30326,11 +32393,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			same_type_node copy = new same_type_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.ex = (expression)ex.Clone();
+			copy.ex.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new same_type_node TypedClone()
+		{
+			return Clone() as same_type_node;
 		}
 
 		///<summary>
@@ -30470,10 +32547,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			name_assign_expr copy = new name_assign_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.name = (ident)name.Clone();
+			copy.name.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new name_assign_expr TypedClone()
+		{
+			return Clone() as name_assign_expr;
 		}
 
 		///<summary>
@@ -30673,14 +32759,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return name_expr.RemoveAll(match);
 		}
 
+		public name_assign_expr Last()
+		{
+			return name_expr[name_expr.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			name_assign_expr_list copy = new name_assign_expr_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (name_assign_expr elem in name_expr)
-				copy.name_expr.Add((name_assign_expr)elem.Clone());
+			{
+				copy.Add((name_assign_expr)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new name_assign_expr_list TypedClone()
+		{
+			return Clone() as name_assign_expr_list;
 		}
 
 		///<summary>
@@ -30841,12 +32942,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			unnamed_type_object copy = new unnamed_type_object();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.ne_list = (name_assign_expr_list)ne_list.Clone();
+			copy.ne_list.Parent = copy;
 			copy.is_class = is_class;
 			copy.new_ex = (new_expr)new_ex.Clone();
+			copy.new_ex.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new unnamed_type_object TypedClone()
+		{
+			return Clone() as unnamed_type_object;
 		}
 
 		///<summary>
@@ -30987,11 +33098,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			semantic_type_node copy = new semantic_type_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.type = type;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new semantic_type_node TypedClone()
+		{
+			return Clone() as semantic_type_node;
 		}
 
 		///<summary>
@@ -31131,13 +33251,24 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			short_func_definition copy = new short_func_definition();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.proc_header = (procedure_header)proc_header.Clone();
+			copy.proc_header.Parent = copy;
 			copy.proc_body = (proc_block)proc_body.Clone();
+			copy.proc_body.Parent = copy;
 			copy.is_short_definition = is_short_definition;
 			copy.procdef = (procedure_definition)procdef.Clone();
+			copy.procdef.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new short_func_definition TypedClone()
+		{
+			return Clone() as short_func_definition;
 		}
 
 		///<summary>
@@ -31247,10 +33378,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			no_type_foreach copy = new no_type_foreach();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new no_type_foreach TypedClone()
+		{
+			return Clone() as no_type_foreach;
 		}
 
 		///<summary>
@@ -31385,11 +33525,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			matching_expression copy = new matching_expression();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.left = (expression)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (expression)right.Clone();
+			copy.right.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new matching_expression TypedClone()
+		{
+			return Clone() as matching_expression;
 		}
 
 		///<summary>
@@ -31530,11 +33680,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			closure_substituting_node copy = new closure_substituting_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			copy.substitution = (dot_node)substitution.Clone();
+			copy.substitution.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new closure_substituting_node TypedClone()
+		{
+			return Clone() as closure_substituting_node;
 		}
 
 		///<summary>
@@ -31670,11 +33829,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			sequence_type copy = new sequence_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.elements_type = (type_definition)elements_type.Clone();
+			copy.elements_type.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new sequence_type TypedClone()
+		{
+			return Clone() as sequence_type;
 		}
 
 		///<summary>
@@ -31855,13 +34024,25 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			modern_proc_type copy = new modern_proc_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			copy.aloneparam = (type_definition)aloneparam.Clone();
+			copy.aloneparam.Parent = copy;
 			copy.el = (enumerator_list)el.Clone();
+			copy.el.Parent = copy;
 			copy.res = (type_definition)res.Clone();
+			copy.res.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new modern_proc_type TypedClone()
+		{
+			return Clone() as modern_proc_type;
 		}
 
 		///<summary>
@@ -31993,10 +34174,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			yield_node copy = new yield_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.ex = (expression)ex.Clone();
+			copy.ex.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new yield_node TypedClone()
+		{
+			return Clone() as yield_node;
 		}
 
 		///<summary>
@@ -32134,12 +34324,22 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			template_operator_name copy = new template_operator_name();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			copy.template_args = (ident_list)template_args.Clone();
+			copy.template_args.Parent = copy;
 			copy.opname = (operator_name_ident)opname.Clone();
+			copy.opname.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new template_operator_name TypedClone()
+		{
+			return Clone() as template_operator_name;
 		}
 
 		///<summary>
@@ -32261,10 +34461,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			semantic_addr_value copy = new semantic_addr_value();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.expr = expr;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new semantic_addr_value TypedClone()
+		{
+			return Clone() as semantic_addr_value;
 		}
 
 		///<summary>
@@ -32388,10 +34596,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			pair_type_stlist copy = new pair_type_stlist();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.tn = (type_definition)tn.Clone();
+			copy.tn.Parent = copy;
 			copy.exprs = (statement_list)exprs.Clone();
+			copy.exprs.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pair_type_stlist TypedClone()
+		{
+			return Clone() as pair_type_stlist;
 		}
 
 		///<summary>
@@ -32531,11 +34748,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			assign_tuple copy = new assign_tuple();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.vars = (addressed_value_list)vars.Clone();
+			copy.vars.Parent = copy;
 			copy.expr = (expression)expr.Clone();
+			copy.expr.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new assign_tuple TypedClone()
+		{
+			return Clone() as assign_tuple;
 		}
 
 		///<summary>
@@ -32735,14 +34962,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return variables.RemoveAll(match);
 		}
 
+		public addressed_value Last()
+		{
+			return variables[variables.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			addressed_value_list copy = new addressed_value_list();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (addressed_value elem in variables)
-				copy.variables.Add((addressed_value)elem.Clone());
+			{
+				copy.Add((addressed_value)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new addressed_value_list TypedClone()
+		{
+			return Clone() as addressed_value_list;
 		}
 
 		///<summary>
@@ -32865,10 +35107,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			tuple_node_for_formatter copy = new tuple_node_for_formatter();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.el = (expression_list)el.Clone();
+			copy.el.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new tuple_node_for_formatter TypedClone()
+		{
+			return Clone() as tuple_node_for_formatter;
 		}
 
 		///<summary>
@@ -33082,16 +35333,34 @@ namespace PascalABCCompiler.SyntaxTree
 			return listunitsections.RemoveAll(match);
 		}
 
+		public uses_list Last()
+		{
+			return listunitsections[listunitsections.Count - 1];
+		}
+
 		// Окончание методов списка
 		public override syntax_tree_node Clone()
 		{
 			uses_closure copy = new uses_closure();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			foreach (unit_or_namespace elem in units)
-				copy.units.Add((unit_or_namespace)elem.Clone());
+			{
+				copy.Add((unit_or_namespace)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			foreach (uses_list elem in listunitsections)
-				copy.listunitsections.Add((uses_list)elem.Clone());
+			{
+				copy.Add((uses_list)elem.Clone());
+				copy.Last().Parent = copy;
+			}
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new uses_closure TypedClone()
+		{
+			return Clone() as uses_closure;
 		}
 
 		///<summary>
@@ -33251,11 +35520,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			dot_question_node copy = new dot_question_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.left = (addressed_value)left.Clone();
+			copy.left.Parent = copy;
 			copy.right = (addressed_value)right.Clone();
+			copy.right.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new dot_question_node TypedClone()
+		{
+			return Clone() as dot_question_node;
 		}
 
 		///<summary>
@@ -33456,14 +35735,27 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			slice_expr copy = new slice_expr();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+			copy.dereferencing_value.Parent = copy;
 			copy.v = (addressed_value)v.Clone();
+			copy.v.Parent = copy;
 			copy.from = (expression)from.Clone();
+			copy.from.Parent = copy;
 			copy.to = (expression)to.Clone();
+			copy.to.Parent = copy;
 			copy.step = (expression)step.Clone();
+			copy.step.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new slice_expr TypedClone()
+		{
+			return Clone() as slice_expr;
 		}
 
 		///<summary>
@@ -33583,10 +35875,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			no_type copy = new no_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new no_type TypedClone()
+		{
+			return Clone() as no_type;
 		}
 
 		///<summary>
@@ -33686,10 +35987,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			yield_unknown_ident copy = new yield_unknown_ident();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.name = name;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new yield_unknown_ident TypedClone()
+		{
+			return Clone() as yield_unknown_ident;
 		}
 
 		///<summary>
@@ -33778,10 +36087,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			yield_unknown_expression_type copy = new yield_unknown_expression_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new yield_unknown_expression_type TypedClone()
+		{
+			return Clone() as yield_unknown_expression_type;
 		}
 
 		///<summary>
@@ -33881,10 +36199,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			yield_unknown_foreach_type copy = new yield_unknown_foreach_type();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+			copy.attr_list.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new yield_unknown_foreach_type TypedClone()
+		{
+			return Clone() as yield_unknown_foreach_type;
 		}
 
 		///<summary>
@@ -34001,10 +36328,19 @@ namespace PascalABCCompiler.SyntaxTree
 		public override syntax_tree_node Clone()
 		{
 			yield_sequence_node copy = new yield_sequence_node();
+			copy.Parent = this.Parent;
 			copy.source_context = new SourceContext(source_context);
 			copy.attributes = (attribute_list)attributes.Clone();
+			copy.attributes.Parent = copy;
 			copy.ex = (expression)ex.Clone();
+			copy.ex.Parent = copy;
 			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new yield_sequence_node TypedClone()
+		{
+			return Clone() as yield_sequence_node;
 		}
 
 		///<summary>
