@@ -519,7 +519,7 @@ namespace NodeGenerator
 
         public NodeWriter(StreamWriter writer, int indent = 0) 
         {
-            _indent = indent;
+            Indent = indent;
             _streamWriter = writer;
         }
 
@@ -3319,33 +3319,34 @@ namespace NodeGenerator
                 WithBaseClasses: true, 
                 ignoreSyntaxTreeNode: false,
                 ignoreDeclaration: false);
-            NodeWriter nodeWriter = new NodeWriter(sw, 2);
+            NodeWriter writer = new NodeWriter(sw, 2);
 
             string inheritModifier = node_name == "syntax_tree_node" ? "virtual" : "override";
-            nodeWriter.WriteLine($"public {inheritModifier} syntax_tree_node Clone()");
-            nodeWriter.WriteLine('{');
+            writer.WriteLine("/// <summary> Создает копию узла </summary>");
+            writer.WriteLine($"public {inheritModifier} syntax_tree_node Clone()");
+            writer.WriteLine('{');
 
-            nodeWriter.Indent++;
-            nodeWriter.WriteLine($"{node_name} copy = new {node_name}();");
-            nodeWriter.WriteLine($"copy.Parent = this.Parent;");
+            writer.Indent++;
+            writer.WriteLine($"{node_name} copy = new {node_name}();");
+            writer.WriteLine($"copy.Parent = this.Parent;");
 
             foreach (var field in allFields)
-                field.generate_clone_code(nodeWriter, "copy");
+                field.generate_clone_code(writer, "copy");
 
-            nodeWriter.WriteLine("return copy;");
-            nodeWriter.Indent--;
-            nodeWriter.WriteLine('}');
+            writer.WriteLine("return copy;");
+            writer.Indent--;
+            writer.WriteLine('}');
 
-            nodeWriter.WriteLine();
+            writer.WriteLine();
 
             inheritModifier = node_name == "syntax_tree_node" ? "virtual" : "new";
-            nodeWriter.WriteLine("/// <summary> Получает копию данного узла корректного типа </summary>");
-            nodeWriter.WriteLine($"public {inheritModifier} {node_name} TypedClone()");
-            nodeWriter.WriteLine('{');
-            nodeWriter.Indent++;
-            nodeWriter.WriteLine($"return Clone() as {node_name};");
-            nodeWriter.Indent--;
-            nodeWriter.WriteLine('}');
+            writer.WriteLine("/// <summary> Получает копию данного узла корректного типа </summary>");
+            writer.WriteLine($"public {inheritModifier} {node_name} TypedClone()");
+            writer.WriteLine('{');
+            writer.Indent++;
+            writer.WriteLine($"return Clone() as {node_name};");
+            writer.Indent--;
+            writer.WriteLine('}');
         }
 
         /// <summary>
@@ -3355,10 +3356,21 @@ namespace NodeGenerator
         private void generate_with_methods(StreamWriter sw)
         {
             List<node_field_info> selfFields = collect_subnodes();
-            var writer = new NodeWriter(sw);
+            var writer = new NodeWriter(sw, 2);
 
             foreach (node_field_info field in selfFields)
-
+            {
+                var newFieldName = "new_" + field.field_name;
+                var comment = $"/// <summary> Создает копию объекта с новым {field.field_name} </summary>";
+                writer.WriteLine(comment);
+                writer.WriteLine($"public {node_name} with_{field.field_name}({field.field_type_name} {newFieldName})");
+                writer.OpenBlock();
+                writer.WriteLine($"{node_name} copy = this.TypedClone();");
+                writer.WriteLine($"copy._{field.field_name} = {newFieldName};");
+                writer.WriteLine($"return copy;");
+                writer.CloseBlock();
+                writer.WriteLine();
+            }
         }
 
         public void generate_code(StreamWriter sw,HelpStorage hst)
@@ -3435,6 +3447,8 @@ namespace NodeGenerator
 
             generate_clone_method(sw);
             sw.WriteLine();
+
+            //generate_with_methods(sw);
 
             generate_subnodes_number_property(sw);
             generate_indexer(sw);

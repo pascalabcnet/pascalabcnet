@@ -55,6 +55,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public virtual syntax_tree_node Clone()
 		{
 			syntax_tree_node copy = new syntax_tree_node();
@@ -136,6 +137,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			expression copy = new expression();
@@ -222,6 +224,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			statement copy = new statement();
@@ -483,6 +486,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			statement_list copy = new statement_list();
@@ -654,6 +658,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			ident copy = new ident();
@@ -811,6 +816,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			assign copy = new assign();
@@ -994,6 +1000,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			bin_expr copy = new bin_expr();
@@ -1159,6 +1166,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			un_expr copy = new un_expr();
@@ -1262,6 +1270,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			const_node copy = new const_node();
@@ -1382,6 +1391,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			bool_const copy = new bool_const();
@@ -1503,6 +1513,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			int32_const copy = new int32_const();
@@ -1624,6 +1635,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			double_const copy = new double_const();
@@ -1763,6 +1775,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			subprogram_body copy = new subprogram_body();
@@ -1870,6 +1883,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			addressed_value copy = new addressed_value();
@@ -1990,6 +2004,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			type_definition copy = new type_definition();
@@ -2109,6 +2124,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			roof_dereference copy = new roof_dereference();
@@ -2351,6 +2367,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			named_type_reference copy = new named_type_reference();
@@ -2598,6 +2615,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			variable_definitions copy = new variable_definitions();
@@ -2829,6 +2847,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			ident_list copy = new ident_list();
@@ -3041,6 +3060,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			var_def_statement copy = new var_def_statement();
@@ -3199,6 +3219,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			declaration copy = new declaration();
@@ -3417,6 +3438,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			declarations copy = new declarations();
@@ -3643,6 +3665,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			program_tree copy = new program_tree();
@@ -3782,6 +3805,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			program_name copy = new program_name();
@@ -3913,6 +3937,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			string_const copy = new string_const();
@@ -4121,6 +4146,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			expression_list copy = new expression_list();
@@ -4260,6 +4286,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			dereference copy = new dereference();
@@ -4415,6 +4442,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			indexer copy = new indexer();
@@ -4687,6 +4715,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			for_node copy = new for_node();
@@ -4893,6 +4922,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			repeat_node copy = new repeat_node();
@@ -5075,6 +5105,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			while_node copy = new while_node();
@@ -5258,6 +5289,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			if_node copy = new if_node();
@@ -5433,6 +5465,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			ref_type copy = new ref_type();
@@ -5618,6 +5651,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			diapason copy = new diapason();
@@ -5880,6 +5914,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			indexers_types copy = new indexers_types();
@@ -6079,6 +6114,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			array_type copy = new array_type();
@@ -6235,6 +6271,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			label_definitions copy = new label_definitions();
@@ -6390,6 +6427,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			procedure_attribute copy = new procedure_attribute();
@@ -6566,6 +6604,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			typed_parameters copy = new typed_parameters();
@@ -6810,6 +6849,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			formal_parameters copy = new formal_parameters();
@@ -7036,6 +7076,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			procedure_attributes_list copy = new procedure_attributes_list();
@@ -7314,6 +7355,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			procedure_header copy = new procedure_header();
@@ -7535,6 +7577,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			function_header copy = new function_header();
@@ -7769,6 +7812,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			procedure_definition copy = new procedure_definition();
@@ -7934,6 +7978,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			type_declaration copy = new type_declaration();
@@ -8167,6 +8212,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			type_declarations copy = new type_declarations();
@@ -8296,6 +8342,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			simple_const_definition copy = new simple_const_definition();
@@ -8463,6 +8510,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			typed_const_definition copy = new typed_const_definition();
@@ -8637,6 +8685,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			const_definition copy = new const_definition();
@@ -8870,6 +8919,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			consts_definitions_list copy = new consts_definitions_list();
@@ -9032,6 +9082,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			unit_name copy = new unit_name();
@@ -9164,6 +9215,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			unit_or_namespace copy = new unit_or_namespace();
@@ -9314,6 +9366,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			uses_unit_in copy = new uses_unit_in();
@@ -9542,6 +9595,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			uses_list copy = new uses_list();
@@ -9735,6 +9789,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			program_body copy = new program_body();
@@ -10019,6 +10074,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			compilation_unit copy = new compilation_unit();
@@ -10283,6 +10339,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			unit_module copy = new unit_module();
@@ -10573,6 +10630,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			program_module copy = new program_module();
@@ -10743,6 +10801,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			hex_constant copy = new hex_constant();
@@ -10864,6 +10923,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			get_address copy = new get_address();
@@ -11018,6 +11078,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			case_variant copy = new case_variant();
@@ -11200,6 +11261,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			case_node copy = new case_node();
@@ -11497,6 +11559,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			method_name copy = new method_name();
@@ -11690,6 +11753,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			dot_node copy = new dot_node();
@@ -11802,6 +11866,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			empty_statement copy = new empty_statement();
@@ -11922,6 +11987,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			goto_statement copy = new goto_statement();
@@ -12076,6 +12142,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			labeled_statement copy = new labeled_statement();
@@ -12240,6 +12307,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			with_statement copy = new with_statement();
@@ -12405,6 +12473,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			method_call copy = new method_call();
@@ -12551,6 +12620,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			pascal_set_constant copy = new pascal_set_constant();
@@ -12687,6 +12757,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			array_const copy = new array_const();
@@ -12823,6 +12894,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			write_accessor_name copy = new write_accessor_name();
@@ -12954,6 +13026,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			read_accessor_name copy = new read_accessor_name();
@@ -13103,6 +13176,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			property_accessors copy = new property_accessors();
@@ -13352,6 +13426,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			simple_property copy = new simple_property();
@@ -13590,6 +13665,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			index_property copy = new index_property();
@@ -13902,6 +13978,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			class_members copy = new class_members();
@@ -14057,6 +14134,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			access_modifer_node copy = new access_modifer_node();
@@ -14260,6 +14338,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			class_body copy = new class_body();
@@ -14538,6 +14617,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			class_definition copy = new class_definition();
@@ -14683,6 +14763,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			default_indexer_property_node copy = new default_indexer_property_node();
@@ -14837,6 +14918,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			known_type_definition copy = new known_type_definition();
@@ -15003,6 +15085,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			set_type_definition copy = new set_type_definition();
@@ -15167,6 +15250,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			record_const_definition copy = new record_const_definition();
@@ -15400,6 +15484,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			record_const copy = new record_const();
@@ -15583,6 +15668,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			record_type copy = new record_type();
@@ -15758,6 +15844,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			enum_type_definition copy = new enum_type_definition();
@@ -15904,6 +15991,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			char_const copy = new char_const();
@@ -16025,6 +16113,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			raise_statement copy = new raise_statement();
@@ -16161,6 +16250,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			sharp_char_const copy = new sharp_char_const();
@@ -16369,6 +16459,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			literal_const_line copy = new literal_const_line();
@@ -16552,6 +16643,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			string_num_definition copy = new string_num_definition();
@@ -16726,6 +16818,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			variant copy = new variant();
@@ -16954,6 +17047,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			variant_list copy = new variant_list();
@@ -17111,6 +17205,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			variant_type copy = new variant_type();
@@ -17339,6 +17434,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			variant_types copy = new variant_types();
@@ -17514,6 +17610,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			variant_record_type copy = new variant_record_type();
@@ -17665,6 +17762,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			procedure_call copy = new procedure_call();
@@ -17822,6 +17920,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			class_predefinition copy = new class_predefinition();
@@ -17944,6 +18043,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			nil_const copy = new nil_const();
@@ -18083,6 +18183,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			file_type_definition copy = new file_type_definition();
@@ -18226,6 +18327,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			constructor copy = new constructor();
@@ -18411,6 +18513,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			destructor copy = new destructor();
@@ -18617,6 +18720,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			inherited_method_call copy = new inherited_method_call();
@@ -18799,6 +18903,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			typecast_node copy = new typecast_node();
@@ -18982,6 +19087,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			interface_node copy = new interface_node();
@@ -19169,6 +19275,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			implementation_node copy = new implementation_node();
@@ -19338,6 +19445,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			diap_expr copy = new diap_expr();
@@ -19502,6 +19610,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			block copy = new block();
@@ -19609,6 +19718,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			proc_block copy = new proc_block();
@@ -19743,6 +19853,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			array_of_named_type_definition copy = new array_of_named_type_definition();
@@ -19872,6 +19983,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			array_of_const_type_definition copy = new array_of_const_type_definition();
@@ -19974,6 +20086,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			literal copy = new literal();
@@ -20181,6 +20294,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			case_variants copy = new case_variants();
@@ -20338,6 +20452,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			diapason_expr copy = new diapason_expr();
@@ -20571,6 +20686,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			var_def_list_for_record copy = new var_def_list_for_record();
@@ -20728,6 +20844,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			record_type_parts copy = new record_type_parts();
@@ -20835,6 +20952,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			property_array_default copy = new property_array_default();
@@ -20986,6 +21104,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			property_interface copy = new property_interface();
@@ -21155,6 +21274,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			property_parameter copy = new property_parameter();
@@ -21383,6 +21503,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			property_parameter_list copy = new property_parameter_list();
@@ -21505,6 +21626,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			inherited_ident copy = new inherited_ident();
@@ -21662,6 +21784,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			format_expr copy = new format_expr();
@@ -21836,6 +21959,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			initfinal_part copy = new initfinal_part();
@@ -21977,6 +22101,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			token_info copy = new token_info();
@@ -22111,6 +22236,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			raise_stmt copy = new raise_stmt();
@@ -22276,6 +22402,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			op_type_node copy = new op_type_node();
@@ -22412,6 +22539,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			file_type copy = new file_type();
@@ -22577,6 +22705,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			known_type_ident copy = new known_type_ident();
@@ -22735,6 +22864,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			exception_handler copy = new exception_handler();
@@ -22904,6 +23034,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			exception_ident copy = new exception_ident();
@@ -23132,6 +23263,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			exception_handler_list copy = new exception_handler_list();
@@ -23307,6 +23439,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			exception_block copy = new exception_block();
@@ -23424,6 +23557,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			try_handler copy = new try_handler();
@@ -23539,6 +23673,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			try_handler_finally copy = new try_handler_finally();
@@ -23670,6 +23805,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			try_handler_except copy = new try_handler_except();
@@ -23819,6 +23955,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			try_stmt copy = new try_stmt();
@@ -23931,6 +24068,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			inherited_message copy = new inherited_message();
@@ -24069,6 +24207,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			external_directive copy = new external_directive();
@@ -24297,6 +24436,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			using_list copy = new using_list();
@@ -24454,6 +24594,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			jump_stmt copy = new jump_stmt();
@@ -24591,6 +24732,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			loop_stmt copy = new loop_stmt();
@@ -24781,6 +24923,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			foreach_stmt copy = new foreach_stmt();
@@ -24913,6 +25056,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			addressed_value_funcname copy = new addressed_value_funcname();
@@ -25120,6 +25264,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			named_type_reference_list copy = new named_type_reference_list();
@@ -25365,6 +25510,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			template_param_list copy = new template_param_list();
@@ -25566,6 +25712,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			template_type_reference copy = new template_type_reference();
@@ -25746,6 +25893,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			int64_const copy = new int64_const();
@@ -25867,6 +26015,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			uint64_const copy = new uint64_const();
@@ -26042,6 +26191,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			new_expr copy = new new_expr();
@@ -26286,6 +26436,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			where_type_specificator_list copy = new where_type_specificator_list();
@@ -26443,6 +26594,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			where_definition copy = new where_definition();
@@ -26671,6 +26823,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			where_definition_list copy = new where_definition_list();
@@ -26828,6 +26981,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			sizeof_operator copy = new sizeof_operator();
@@ -26974,6 +27128,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			typeof_operator copy = new typeof_operator();
@@ -27128,6 +27283,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			compiler_directive copy = new compiler_directive();
@@ -27288,6 +27444,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			operator_name_ident copy = new operator_name_ident();
@@ -27410,6 +27567,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			var_statement copy = new var_statement();
@@ -27582,6 +27740,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			question_colon_expression copy = new question_colon_expression();
@@ -27738,6 +27897,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			expression_as_statement copy = new expression_as_statement();
@@ -27913,6 +28073,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			c_scalar_type copy = new c_scalar_type();
@@ -28094,6 +28255,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			c_module copy = new c_module();
@@ -28261,6 +28423,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			declarations_as_statement copy = new declarations_as_statement();
@@ -28416,6 +28579,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			array_size copy = new array_size();
@@ -28580,6 +28744,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			enumerator copy = new enumerator();
@@ -28808,6 +28973,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			enumerator_list copy = new enumerator_list();
@@ -29001,6 +29167,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			c_for_cycle copy = new c_for_cycle();
@@ -29203,6 +29370,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			switch_stmt copy = new switch_stmt();
@@ -29437,6 +29605,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			type_definition_attr_list copy = new type_definition_attr_list();
@@ -29595,6 +29764,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			type_definition_attr copy = new type_definition_attr();
@@ -29750,6 +29920,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			lock_stmt copy = new lock_stmt();
@@ -30004,6 +30175,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			compiler_directive_list copy = new compiler_directive_list();
@@ -30210,6 +30382,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			compiler_directive_if copy = new compiler_directive_if();
@@ -30458,6 +30631,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_list copy = new documentation_comment_list();
@@ -30720,6 +30894,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_tag copy = new documentation_comment_tag();
@@ -30879,6 +31054,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_tag_param copy = new documentation_comment_tag_param();
@@ -31101,6 +31277,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			documentation_comment_section copy = new documentation_comment_section();
@@ -31260,6 +31437,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			token_taginfo copy = new token_taginfo();
@@ -31416,6 +31594,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			declaration_specificator copy = new declaration_specificator();
@@ -31572,6 +31751,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			ident_with_templateparams copy = new ident_with_templateparams();
@@ -31737,6 +31917,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			template_type_name copy = new template_type_name();
@@ -31874,6 +32055,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			default_operator copy = new default_operator();
@@ -32010,6 +32192,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			bracket_expr copy = new bracket_expr();
@@ -32182,6 +32365,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			attribute copy = new attribute();
@@ -32420,6 +32604,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			simple_attribute_list copy = new simple_attribute_list();
@@ -32646,6 +32831,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			attribute_list copy = new attribute_list();
@@ -33052,6 +33238,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			function_lambda_definition copy = new function_lambda_definition();
@@ -33293,6 +33480,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			function_lambda_call copy = new function_lambda_call();
@@ -33562,6 +33750,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			semantic_check copy = new semantic_check();
@@ -33727,6 +33916,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			lambda_inferred_type copy = new lambda_inferred_type();
@@ -33883,6 +34073,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			same_type_node copy = new same_type_node();
@@ -34047,6 +34238,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			name_assign_expr copy = new name_assign_expr();
@@ -34275,6 +34467,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			name_assign_expr_list copy = new name_assign_expr_list();
@@ -34452,6 +34645,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			unnamed_type_object copy = new unnamed_type_object();
@@ -34618,6 +34812,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			semantic_type_node copy = new semantic_type_node();
@@ -34778,6 +34973,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			short_func_definition copy = new short_func_definition();
@@ -34918,6 +35114,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			no_type_foreach copy = new no_type_foreach();
@@ -35072,6 +35269,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			matching_expression copy = new matching_expression();
@@ -35237,6 +35435,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			closure_substituting_node copy = new closure_substituting_node();
@@ -35393,6 +35592,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			sequence_type copy = new sequence_type();
@@ -35598,6 +35798,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			modern_proc_type copy = new modern_proc_type();
@@ -35764,6 +35965,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			yield_node copy = new yield_node();
@@ -35921,6 +36123,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			template_operator_name copy = new template_operator_name();
@@ -36068,6 +36271,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			semantic_addr_value copy = new semantic_addr_value();
@@ -36207,6 +36411,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			pair_type_stlist copy = new pair_type_stlist();
@@ -36366,6 +36571,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			assign_tuple copy = new assign_tuple();
@@ -36599,6 +36805,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			addressed_value_list copy = new addressed_value_list();
@@ -36738,6 +36945,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			tuple_node_for_formatter copy = new tuple_node_for_formatter();
@@ -36980,6 +37188,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		// Окончание методов списка
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			uses_closure copy = new uses_closure();
@@ -37163,6 +37372,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			dot_question_node copy = new dot_question_node();
@@ -37388,6 +37598,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			slice_expr copy = new slice_expr();
@@ -37547,6 +37758,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			no_type copy = new no_type();
@@ -37666,6 +37878,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			yield_unknown_ident copy = new yield_unknown_ident();
@@ -37770,6 +37983,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			yield_unknown_expression_type copy = new yield_unknown_expression_type();
@@ -37889,6 +38103,7 @@ namespace PascalABCCompiler.SyntaxTree
 			source_context = sc;
 		}
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			yield_unknown_foreach_type copy = new yield_unknown_foreach_type();
@@ -38025,6 +38240,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
+		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
 			yield_sequence_node copy = new yield_sequence_node();
