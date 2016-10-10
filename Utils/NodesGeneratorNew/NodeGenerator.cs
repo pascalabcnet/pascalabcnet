@@ -523,6 +523,18 @@ namespace NodeGenerator
             _streamWriter = writer;
         }
 
+        public void OpenBlock()
+        {
+            WriteLine('{');
+            Indent++;
+        }
+
+        public void CloseBlock()
+        {
+            Indent--;
+            WriteLine('}');
+        }
+
         public void Write(string text)
         {
             _streamWriter.Write(IndentString);
@@ -830,8 +842,11 @@ namespace NodeGenerator
         {
             var destination = variableName + "." + field_name;
             string cast = field_type_name == text_consts.base_tree_node_name ? "" : "(" + field_type_name + ")";
+            writer.WriteLine($"if ({field_name} != null)");
+            writer.OpenBlock();
             writer.WriteLine($"{destination} = {cast}{field_name}.Clone();");
             writer.WriteLine($"{destination}.Parent = {variableName};");
+            writer.CloseBlock();
         }
 
 	}
@@ -969,18 +984,27 @@ namespace NodeGenerator
         {
             var destination = variableName + "." + field_name;
             if (field_type_name == "SourceContext")
+            {
+                writer.WriteLine($"if ({field_name} != null)");
+                writer.Indent++;
                 writer.WriteLine($"{destination} = new SourceContext(source_context);");
+                writer.Indent--;
+            }
             else
             if (list_type != "")
             {
                 string cast = list_type == text_consts.base_tree_node_name ? "" : "(" + list_type + ")";
-                writer.WriteLine($"foreach ({list_type} elem in {field_name})");
-                writer.WriteLine('{');
+
+                writer.WriteLine($"if ({field_name} != null)");
                 writer.Indent++;
+                writer.WriteLine($"foreach ({list_type} elem in {field_name})");
+                writer.Indent++;
+                writer.WriteLine($"if (elem != null)");
+                writer.OpenBlock();
                 writer.WriteLine($"{variableName}.Add({cast}elem.Clone());");
                 writer.WriteLine($"{variableName}.Last().Parent = {variableName};");
-                writer.Indent--;
-                writer.WriteLine('}');
+                writer.CloseBlock();
+                writer.Indent -= 2;
             }
             else
                 writer.WriteLine($"{destination} = {field_name};");
@@ -1103,6 +1127,13 @@ namespace NodeGenerator
             return subnode.field_type_name + text_consts.space + subnode.field_code_name;
         }
 
+        /// <summary>
+        /// Получает список подузлов. Всегда включает в список собственные поля.
+        /// </summary>
+        /// <param name="WithBaseClasses">Включить в список поля базовых классов</param>
+        /// <param name="ignoreSyntaxTreeNode">Игнорировать поля базового класса синтаксических узлов</param>
+        /// <param name="ignoreDeclaration">Игнорировать поля класса declatation</param>
+        /// <returns></returns>
         public List<node_field_info> collect_subnodes(bool WithBaseClasses = false, bool ignoreSyntaxTreeNode = true, bool ignoreDeclaration = true)
         {
             var ni = this;
@@ -3288,8 +3319,7 @@ namespace NodeGenerator
                 WithBaseClasses: true, 
                 ignoreSyntaxTreeNode: false,
                 ignoreDeclaration: false);
-            NodeWriter nodeWriter = new NodeWriter(sw);
-            nodeWriter.Indent = 2;
+            NodeWriter nodeWriter = new NodeWriter(sw, 2);
 
             string inheritModifier = node_name == "syntax_tree_node" ? "virtual" : "override";
             nodeWriter.WriteLine($"public {inheritModifier} syntax_tree_node Clone()");
@@ -3316,6 +3346,19 @@ namespace NodeGenerator
             nodeWriter.WriteLine($"return Clone() as {node_name};");
             nodeWriter.Indent--;
             nodeWriter.WriteLine('}');
+        }
+
+        /// <summary>
+        /// Генерирует методы with замены отдельных дочерних элементов узла
+        /// </summary>
+        /// <param name="sw"></param>
+        private void generate_with_methods(StreamWriter sw)
+        {
+            List<node_field_info> selfFields = collect_subnodes();
+            var writer = new NodeWriter(sw);
+
+            foreach (node_field_info field in selfFields)
+
         }
 
         public void generate_code(StreamWriter sw,HelpStorage hst)

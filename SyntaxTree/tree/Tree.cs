@@ -59,7 +59,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			syntax_tree_node copy = new syntax_tree_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			return copy;
 		}
 
@@ -139,9 +140,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			expression copy = new expression();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -221,9 +226,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			statement copy = new statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -478,18 +487,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			statement_list copy = new statement_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			foreach (statement elem in subnodes)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((statement)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
-			copy.left_logical_bracket = (token_info)left_logical_bracket.Clone();
-			copy.left_logical_bracket.Parent = copy;
-			copy.right_logical_bracket = (token_info)right_logical_bracket.Clone();
-			copy.right_logical_bracket.Parent = copy;
+			if (subnodes != null)
+				foreach (statement elem in subnodes)
+					if (elem != null)
+					{
+						copy.Add((statement)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+			if (left_logical_bracket != null)
+			{
+				copy.left_logical_bracket = (token_info)left_logical_bracket.Clone();
+				copy.left_logical_bracket.Parent = copy;
+			}
+			if (right_logical_bracket != null)
+			{
+				copy.right_logical_bracket = (token_info)right_logical_bracket.Clone();
+				copy.right_logical_bracket.Parent = copy;
+			}
 			copy.expr_lambda_body = expr_lambda_body;
 			return copy;
 		}
@@ -637,9 +658,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			ident copy = new ident();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
 			return copy;
 		}
@@ -790,13 +815,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			assign copy = new assign();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.to = (addressed_value)to.Clone();
-			copy.to.Parent = copy;
-			copy.from = (expression)from.Clone();
-			copy.from.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (to != null)
+			{
+				copy.to = (addressed_value)to.Clone();
+				copy.to.Parent = copy;
+			}
+			if (from != null)
+			{
+				copy.from = (expression)from.Clone();
+				copy.from.Parent = copy;
+			}
 			copy.operator_type = operator_type;
 			return copy;
 		}
@@ -963,13 +998,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			bin_expr copy = new bin_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.left = (expression)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (expression)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (expression)right.Clone();
+				copy.right.Parent = copy;
+			}
 			copy.operation_type = operation_type;
 			return copy;
 		}
@@ -1118,11 +1163,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			un_expr copy = new un_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.subnode = (expression)subnode.Clone();
-			copy.subnode.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (subnode != null)
+			{
+				copy.subnode = (expression)subnode.Clone();
+				copy.subnode.Parent = copy;
+			}
 			copy.operation_type = operation_type;
 			return copy;
 		}
@@ -1214,9 +1266,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			const_node copy = new const_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -1330,9 +1386,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			bool_const copy = new bool_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.val = val;
 			return copy;
 		}
@@ -1447,9 +1507,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			int32_const copy = new int32_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.val = val;
 			return copy;
 		}
@@ -1564,9 +1628,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			double_const copy = new double_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.val = val;
 			return copy;
 		}
@@ -1699,11 +1767,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			subprogram_body copy = new subprogram_body();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.subprogram_code = (statement_list)subprogram_code.Clone();
-			copy.subprogram_code.Parent = copy;
-			copy.subprogram_defs = (declarations)subprogram_defs.Clone();
-			copy.subprogram_defs.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (subprogram_code != null)
+			{
+				copy.subprogram_code = (statement_list)subprogram_code.Clone();
+				copy.subprogram_code.Parent = copy;
+			}
+			if (subprogram_defs != null)
+			{
+				copy.subprogram_defs = (declarations)subprogram_defs.Clone();
+				copy.subprogram_defs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -1799,9 +1874,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			addressed_value copy = new addressed_value();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -1915,11 +1994,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			type_definition copy = new type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -2027,11 +2113,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			roof_dereference copy = new roof_dereference();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
-			copy.dereferencing_value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -2262,16 +2355,25 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			named_type_reference copy = new named_type_reference();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			foreach (ident elem in names)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((ident)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (names != null)
+				foreach (ident elem in names)
+					if (elem != null)
+					{
+						copy.Add((ident)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -2500,14 +2602,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variable_definitions copy = new variable_definitions();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			foreach (var_def_statement elem in var_definitions)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((var_def_statement)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (var_definitions != null)
+				foreach (var_def_statement elem in var_definitions)
+					if (elem != null)
+					{
+						copy.Add((var_def_statement)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -2725,12 +2833,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			ident_list copy = new ident_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (ident elem in idents)
-			{
-				copy.Add((ident)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (idents != null)
+				foreach (ident elem in idents)
+					if (elem != null)
+					{
+						copy.Add((ident)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -2934,15 +3045,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			var_def_statement copy = new var_def_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.vars = (ident_list)vars.Clone();
-			copy.vars.Parent = copy;
-			copy.vars_type = (type_definition)vars_type.Clone();
-			copy.vars_type.Parent = copy;
-			copy.inital_value = (expression)inital_value.Clone();
-			copy.inital_value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (vars != null)
+			{
+				copy.vars = (ident_list)vars.Clone();
+				copy.vars.Parent = copy;
+			}
+			if (vars_type != null)
+			{
+				copy.vars_type = (type_definition)vars_type.Clone();
+				copy.vars_type.Parent = copy;
+			}
+			if (inital_value != null)
+			{
+				copy.inital_value = (expression)inital_value.Clone();
+				copy.inital_value.Parent = copy;
+			}
 			copy.var_attr = var_attr;
 			copy.is_event = is_event;
 			return copy;
@@ -3079,9 +3203,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			declaration copy = new declaration();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -3293,12 +3421,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			declarations copy = new declarations();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (declaration elem in defs)
-			{
-				copy.Add((declaration)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (defs != null)
+				foreach (declaration elem in defs)
+					if (elem != null)
+					{
+						copy.Add((declaration)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -3516,12 +3647,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			program_tree copy = new program_tree();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (compilation_unit elem in compilation_units)
-			{
-				copy.Add((compilation_unit)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (compilation_units != null)
+				foreach (compilation_unit elem in compilation_units)
+					if (elem != null)
+					{
+						copy.Add((compilation_unit)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -3652,9 +3786,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			program_name copy = new program_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.prog_name = (ident)prog_name.Clone();
-			copy.prog_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (prog_name != null)
+			{
+				copy.prog_name = (ident)prog_name.Clone();
+				copy.prog_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -3779,9 +3917,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			string_const copy = new string_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.Value = Value;
 			return copy;
 		}
@@ -3983,12 +4125,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			expression_list copy = new expression_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (expression elem in expressions)
-			{
-				copy.Add((expression)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (expressions != null)
+				foreach (expression elem in expressions)
+					if (elem != null)
+					{
+						copy.Add((expression)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -4119,11 +4264,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			dereference copy = new dereference();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
-			copy.dereferencing_value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -4267,13 +4419,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			indexer copy = new indexer();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
-			copy.dereferencing_value.Parent = copy;
-			copy.indexes = (expression_list)indexes.Clone();
-			copy.indexes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
+			if (indexes != null)
+			{
+				copy.indexes = (expression_list)indexes.Clone();
+				copy.indexes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -4529,22 +4691,44 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			for_node copy = new for_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.loop_variable = (ident)loop_variable.Clone();
-			copy.loop_variable.Parent = copy;
-			copy.initial_value = (expression)initial_value.Clone();
-			copy.initial_value.Parent = copy;
-			copy.finish_value = (expression)finish_value.Clone();
-			copy.finish_value.Parent = copy;
-			copy.statements = (statement)statements.Clone();
-			copy.statements.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (loop_variable != null)
+			{
+				copy.loop_variable = (ident)loop_variable.Clone();
+				copy.loop_variable.Parent = copy;
+			}
+			if (initial_value != null)
+			{
+				copy.initial_value = (expression)initial_value.Clone();
+				copy.initial_value.Parent = copy;
+			}
+			if (finish_value != null)
+			{
+				copy.finish_value = (expression)finish_value.Clone();
+				copy.finish_value.Parent = copy;
+			}
+			if (statements != null)
+			{
+				copy.statements = (statement)statements.Clone();
+				copy.statements.Parent = copy;
+			}
 			copy.cycle_type = cycle_type;
-			copy.increment_value = (expression)increment_value.Clone();
-			copy.increment_value.Parent = copy;
-			copy.type_name = (type_definition)type_name.Clone();
-			copy.type_name.Parent = copy;
+			if (increment_value != null)
+			{
+				copy.increment_value = (expression)increment_value.Clone();
+				copy.increment_value.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (type_definition)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
 			copy.create_loop_variable = create_loop_variable;
 			return copy;
 		}
@@ -4713,13 +4897,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			repeat_node copy = new repeat_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.statements = (statement)statements.Clone();
-			copy.statements.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (statements != null)
+			{
+				copy.statements = (statement)statements.Clone();
+				copy.statements.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -4885,13 +5079,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			while_node copy = new while_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
-			copy.statements = (statement)statements.Clone();
-			copy.statements.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			if (statements != null)
+			{
+				copy.statements = (statement)statements.Clone();
+				copy.statements.Parent = copy;
+			}
 			copy.CycleType = CycleType;
 			return copy;
 		}
@@ -5058,15 +5262,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if_node copy = new if_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.condition = (expression)condition.Clone();
-			copy.condition.Parent = copy;
-			copy.then_body = (statement)then_body.Clone();
-			copy.then_body.Parent = copy;
-			copy.else_body = (statement)else_body.Clone();
-			copy.else_body.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (condition != null)
+			{
+				copy.condition = (expression)condition.Clone();
+				copy.condition.Parent = copy;
+			}
+			if (then_body != null)
+			{
+				copy.then_body = (statement)then_body.Clone();
+				copy.then_body.Parent = copy;
+			}
+			if (else_body != null)
+			{
+				copy.else_body = (statement)else_body.Clone();
+				copy.else_body.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -5220,13 +5437,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			ref_type copy = new ref_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.pointed_to = (type_definition)pointed_to.Clone();
-			copy.pointed_to.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (pointed_to != null)
+			{
+				copy.pointed_to = (type_definition)pointed_to.Clone();
+				copy.pointed_to.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -5395,15 +5622,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			diapason copy = new diapason();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.left = (expression)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (expression)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (expression)right.Clone();
+				copy.right.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -5644,16 +5884,25 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			indexers_types copy = new indexers_types();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			foreach (type_definition elem in indexers)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((type_definition)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (indexers != null)
+				foreach (type_definition elem in indexers)
+					if (elem != null)
+					{
+						copy.Add((type_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -5834,15 +6083,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			array_type copy = new array_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.indexers = (indexers_types)indexers.Clone();
-			copy.indexers.Parent = copy;
-			copy.elements_type = (type_definition)elements_type.Clone();
-			copy.elements_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (indexers != null)
+			{
+				copy.indexers = (indexers_types)indexers.Clone();
+				copy.indexers.Parent = copy;
+			}
+			if (elements_type != null)
+			{
+				copy.elements_type = (type_definition)elements_type.Clone();
+				copy.elements_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -5977,11 +6239,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			label_definitions copy = new label_definitions();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.labels = (ident_list)labels.Clone();
-			copy.labels.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (labels != null)
+			{
+				copy.labels = (ident_list)labels.Clone();
+				copy.labels.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -6125,9 +6394,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			procedure_attribute copy = new procedure_attribute();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
 			copy.attribute_type = attribute_type;
 			return copy;
@@ -6297,16 +6570,29 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			typed_parameters copy = new typed_parameters();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.idents = (ident_list)idents.Clone();
-			copy.idents.Parent = copy;
-			copy.vars_type = (type_definition)vars_type.Clone();
-			copy.vars_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (idents != null)
+			{
+				copy.idents = (ident_list)idents.Clone();
+				copy.idents.Parent = copy;
+			}
+			if (vars_type != null)
+			{
+				copy.vars_type = (type_definition)vars_type.Clone();
+				copy.vars_type.Parent = copy;
+			}
 			copy.param_kind = param_kind;
-			copy.inital_value = (expression)inital_value.Clone();
-			copy.inital_value.Parent = copy;
+			if (inital_value != null)
+			{
+				copy.inital_value = (expression)inital_value.Clone();
+				copy.inital_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -6528,12 +6814,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			formal_parameters copy = new formal_parameters();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (typed_parameters elem in params_list)
-			{
-				copy.Add((typed_parameters)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (params_list != null)
+				foreach (typed_parameters elem in params_list)
+					if (elem != null)
+					{
+						copy.Add((typed_parameters)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -6751,12 +7040,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			procedure_attributes_list copy = new procedure_attributes_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (procedure_attribute elem in proc_attributes)
-			{
-				copy.Add((procedure_attribute)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (proc_attributes != null)
+				foreach (procedure_attribute elem in proc_attributes)
+					if (elem != null)
+					{
+						copy.Add((procedure_attribute)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -7026,23 +7318,45 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			procedure_header copy = new procedure_header();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.parameters = (formal_parameters)parameters.Clone();
-			copy.parameters.Parent = copy;
-			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
-			copy.proc_attributes.Parent = copy;
-			copy.name = (method_name)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (formal_parameters)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
+			if (proc_attributes != null)
+			{
+				copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+				copy.proc_attributes.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (method_name)name.Clone();
+				copy.name.Parent = copy;
+			}
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
-			copy.where_defs = (where_definition_list)where_defs.Clone();
-			copy.where_defs.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
+			if (where_defs != null)
+			{
+				copy.where_defs = (where_definition_list)where_defs.Clone();
+				copy.where_defs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -7225,25 +7539,50 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			function_header copy = new function_header();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.parameters = (formal_parameters)parameters.Clone();
-			copy.parameters.Parent = copy;
-			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
-			copy.proc_attributes.Parent = copy;
-			copy.name = (method_name)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (formal_parameters)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
+			if (proc_attributes != null)
+			{
+				copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+				copy.proc_attributes.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (method_name)name.Clone();
+				copy.name.Parent = copy;
+			}
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
-			copy.where_defs = (where_definition_list)where_defs.Clone();
-			copy.where_defs.Parent = copy;
-			copy.return_type = (type_definition)return_type.Clone();
-			copy.return_type.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
+			if (where_defs != null)
+			{
+				copy.where_defs = (where_definition_list)where_defs.Clone();
+				copy.where_defs.Parent = copy;
+			}
+			if (return_type != null)
+			{
+				copy.return_type = (type_definition)return_type.Clone();
+				copy.return_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -7434,13 +7773,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			procedure_definition copy = new procedure_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.proc_header = (procedure_header)proc_header.Clone();
-			copy.proc_header.Parent = copy;
-			copy.proc_body = (proc_block)proc_body.Clone();
-			copy.proc_body.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (proc_header != null)
+			{
+				copy.proc_header = (procedure_header)proc_header.Clone();
+				copy.proc_header.Parent = copy;
+			}
+			if (proc_body != null)
+			{
+				copy.proc_body = (proc_block)proc_body.Clone();
+				copy.proc_body.Parent = copy;
+			}
 			copy.is_short_definition = is_short_definition;
 			return copy;
 		}
@@ -7589,13 +7938,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			type_declaration copy = new type_declaration();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.type_name = (ident)type_name.Clone();
-			copy.type_name.Parent = copy;
-			copy.type_def = (type_definition)type_def.Clone();
-			copy.type_def.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (ident)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
+			if (type_def != null)
+			{
+				copy.type_def = (type_definition)type_def.Clone();
+				copy.type_def.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -7812,14 +8171,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			type_declarations copy = new type_declarations();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			foreach (type_declaration elem in types_decl)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((type_declaration)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (types_decl != null)
+				foreach (type_declaration elem in types_decl)
+					if (elem != null)
+					{
+						copy.Add((type_declaration)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -7935,13 +8300,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			simple_const_definition copy = new simple_const_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.const_name = (ident)const_name.Clone();
-			copy.const_name.Parent = copy;
-			copy.const_value = (expression)const_value.Clone();
-			copy.const_value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (const_name != null)
+			{
+				copy.const_name = (ident)const_name.Clone();
+				copy.const_name.Parent = copy;
+			}
+			if (const_value != null)
+			{
+				copy.const_value = (expression)const_value.Clone();
+				copy.const_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -8092,15 +8467,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			typed_const_definition copy = new typed_const_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.const_name = (ident)const_name.Clone();
-			copy.const_name.Parent = copy;
-			copy.const_value = (expression)const_value.Clone();
-			copy.const_value.Parent = copy;
-			copy.const_type = (type_definition)const_type.Clone();
-			copy.const_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (const_name != null)
+			{
+				copy.const_name = (ident)const_name.Clone();
+				copy.const_name.Parent = copy;
+			}
+			if (const_value != null)
+			{
+				copy.const_value = (expression)const_value.Clone();
+				copy.const_value.Parent = copy;
+			}
+			if (const_type != null)
+			{
+				copy.const_type = (type_definition)const_type.Clone();
+				copy.const_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -8253,13 +8641,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			const_definition copy = new const_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.const_name = (ident)const_name.Clone();
-			copy.const_name.Parent = copy;
-			copy.const_value = (expression)const_value.Clone();
-			copy.const_value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (const_name != null)
+			{
+				copy.const_name = (ident)const_name.Clone();
+				copy.const_name.Parent = copy;
+			}
+			if (const_value != null)
+			{
+				copy.const_value = (expression)const_value.Clone();
+				copy.const_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -8476,14 +8874,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			consts_definitions_list copy = new consts_definitions_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			foreach (const_definition elem in const_defs)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((const_definition)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (const_defs != null)
+				foreach (const_definition elem in const_defs)
+					if (elem != null)
+					{
+						copy.Add((const_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -8632,9 +9036,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			unit_name copy = new unit_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.idunit_name = (ident)idunit_name.Clone();
-			copy.idunit_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (idunit_name != null)
+			{
+				copy.idunit_name = (ident)idunit_name.Clone();
+				copy.idunit_name.Parent = copy;
+			}
 			copy.HeaderKeyword = HeaderKeyword;
 			return copy;
 		}
@@ -8760,9 +9168,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			unit_or_namespace copy = new unit_or_namespace();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.name = (ident_list)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (name != null)
+			{
+				copy.name = (ident_list)name.Clone();
+				copy.name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -8906,11 +9318,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			uses_unit_in copy = new uses_unit_in();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.name = (ident_list)name.Clone();
-			copy.name.Parent = copy;
-			copy.in_file = (string_const)in_file.Clone();
-			copy.in_file.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (name != null)
+			{
+				copy.name = (ident_list)name.Clone();
+				copy.name.Parent = copy;
+			}
+			if (in_file != null)
+			{
+				copy.in_file = (string_const)in_file.Clone();
+				copy.in_file.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -9127,12 +9546,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			uses_list copy = new uses_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (unit_or_namespace elem in units)
-			{
-				copy.Add((unit_or_namespace)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (units != null)
+				foreach (unit_or_namespace elem in units)
+					if (elem != null)
+					{
+						copy.Add((unit_or_namespace)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -9317,15 +9739,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			program_body copy = new program_body();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.used_units = (uses_list)used_units.Clone();
-			copy.used_units.Parent = copy;
-			copy.program_definitions = (declarations)program_definitions.Clone();
-			copy.program_definitions.Parent = copy;
-			copy.program_code = (statement_list)program_code.Clone();
-			copy.program_code.Parent = copy;
-			copy.using_list = (using_list)using_list.Clone();
-			copy.using_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (used_units != null)
+			{
+				copy.used_units = (uses_list)used_units.Clone();
+				copy.used_units.Parent = copy;
+			}
+			if (program_definitions != null)
+			{
+				copy.program_definitions = (declarations)program_definitions.Clone();
+				copy.program_definitions.Parent = copy;
+			}
+			if (program_code != null)
+			{
+				copy.program_code = (statement_list)program_code.Clone();
+				copy.program_code.Parent = copy;
+			}
+			if (using_list != null)
+			{
+				copy.using_list = (using_list)using_list.Clone();
+				copy.using_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -9588,13 +10023,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compilation_unit copy = new compilation_unit();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
-			foreach (compiler_directive elem in compiler_directives)
-			{
-				copy.Add((compiler_directive)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (compiler_directives != null)
+				foreach (compiler_directive elem in compiler_directives)
+					if (elem != null)
+					{
+						copy.Add((compiler_directive)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.Language = Language;
 			return copy;
 		}
@@ -9849,26 +10287,47 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			unit_module copy = new unit_module();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
-			foreach (compiler_directive elem in compiler_directives)
-			{
-				copy.Add((compiler_directive)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (compiler_directives != null)
+				foreach (compiler_directive elem in compiler_directives)
+					if (elem != null)
+					{
+						copy.Add((compiler_directive)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.Language = Language;
-			copy.unit_name = (unit_name)unit_name.Clone();
-			copy.unit_name.Parent = copy;
-			copy.interface_part = (interface_node)interface_part.Clone();
-			copy.interface_part.Parent = copy;
-			copy.implementation_part = (implementation_node)implementation_part.Clone();
-			copy.implementation_part.Parent = copy;
-			copy.initialization_part = (statement_list)initialization_part.Clone();
-			copy.initialization_part.Parent = copy;
-			copy.finalization_part = (statement_list)finalization_part.Clone();
-			copy.finalization_part.Parent = copy;
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (unit_name != null)
+			{
+				copy.unit_name = (unit_name)unit_name.Clone();
+				copy.unit_name.Parent = copy;
+			}
+			if (interface_part != null)
+			{
+				copy.interface_part = (interface_node)interface_part.Clone();
+				copy.interface_part.Parent = copy;
+			}
+			if (implementation_part != null)
+			{
+				copy.implementation_part = (implementation_node)implementation_part.Clone();
+				copy.implementation_part.Parent = copy;
+			}
+			if (initialization_part != null)
+			{
+				copy.initialization_part = (statement_list)initialization_part.Clone();
+				copy.initialization_part.Parent = copy;
+			}
+			if (finalization_part != null)
+			{
+				copy.finalization_part = (statement_list)finalization_part.Clone();
+				copy.finalization_part.Parent = copy;
+			}
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -10118,22 +10577,37 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			program_module copy = new program_module();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
-			foreach (compiler_directive elem in compiler_directives)
-			{
-				copy.Add((compiler_directive)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (compiler_directives != null)
+				foreach (compiler_directive elem in compiler_directives)
+					if (elem != null)
+					{
+						copy.Add((compiler_directive)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.Language = Language;
-			copy.program_name = (program_name)program_name.Clone();
-			copy.program_name.Parent = copy;
-			copy.used_units = (uses_list)used_units.Clone();
-			copy.used_units.Parent = copy;
-			copy.program_block = (block)program_block.Clone();
-			copy.program_block.Parent = copy;
-			copy.using_namespaces = (using_list)using_namespaces.Clone();
-			copy.using_namespaces.Parent = copy;
+			if (program_name != null)
+			{
+				copy.program_name = (program_name)program_name.Clone();
+				copy.program_name.Parent = copy;
+			}
+			if (used_units != null)
+			{
+				copy.used_units = (uses_list)used_units.Clone();
+				copy.used_units.Parent = copy;
+			}
+			if (program_block != null)
+			{
+				copy.program_block = (block)program_block.Clone();
+				copy.program_block.Parent = copy;
+			}
+			if (using_namespaces != null)
+			{
+				copy.using_namespaces = (using_list)using_namespaces.Clone();
+				copy.using_namespaces.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -10273,9 +10747,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			hex_constant copy = new hex_constant();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.val = val;
 			return copy;
 		}
@@ -10390,11 +10868,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get_address copy = new get_address();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.address_of = (addressed_value)address_of.Clone();
-			copy.address_of.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (address_of != null)
+			{
+				copy.address_of = (addressed_value)address_of.Clone();
+				copy.address_of.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -10537,13 +11022,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			case_variant copy = new case_variant();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.conditions = (expression_list)conditions.Clone();
-			copy.conditions.Parent = copy;
-			copy.exec_if_true = (statement)exec_if_true.Clone();
-			copy.exec_if_true.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (conditions != null)
+			{
+				copy.conditions = (expression_list)conditions.Clone();
+				copy.conditions.Parent = copy;
+			}
+			if (exec_if_true != null)
+			{
+				copy.exec_if_true = (statement)exec_if_true.Clone();
+				copy.exec_if_true.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -10709,15 +11204,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			case_node copy = new case_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.param = (expression)param.Clone();
-			copy.param.Parent = copy;
-			copy.conditions = (case_variants)conditions.Clone();
-			copy.conditions.Parent = copy;
-			copy.else_statement = (statement)else_statement.Clone();
-			copy.else_statement.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (param != null)
+			{
+				copy.param = (expression)param.Clone();
+				copy.param.Parent = copy;
+			}
+			if (conditions != null)
+			{
+				copy.conditions = (case_variants)conditions.Clone();
+				copy.conditions.Parent = copy;
+			}
+			if (else_statement != null)
+			{
+				copy.else_statement = (statement)else_statement.Clone();
+				copy.else_statement.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -10993,18 +11501,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			method_name copy = new method_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (ident elem in ln)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (ln != null)
+				foreach (ident elem in ln)
+					if (elem != null)
+					{
+						copy.Add((ident)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+			if (class_name != null)
 			{
-				copy.Add((ident)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.class_name = (ident)class_name.Clone();
+				copy.class_name.Parent = copy;
 			}
-			copy.class_name = (ident)class_name.Clone();
-			copy.class_name.Parent = copy;
-			copy.meth_name = (ident)meth_name.Clone();
-			copy.meth_name.Parent = copy;
-			copy.explicit_interface_name = (ident)explicit_interface_name.Clone();
-			copy.explicit_interface_name.Parent = copy;
+			if (meth_name != null)
+			{
+				copy.meth_name = (ident)meth_name.Clone();
+				copy.meth_name.Parent = copy;
+			}
+			if (explicit_interface_name != null)
+			{
+				copy.explicit_interface_name = (ident)explicit_interface_name.Clone();
+				copy.explicit_interface_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11174,13 +11694,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			dot_node copy = new dot_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.left = (addressed_value)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (addressed_value)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (addressed_value)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (addressed_value)right.Clone();
+				copy.right.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11276,9 +11806,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			empty_statement copy = new empty_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11392,11 +11926,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			goto_statement copy = new goto_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.label = (ident)label.Clone();
-			copy.label.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (label != null)
+			{
+				copy.label = (ident)label.Clone();
+				copy.label.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11539,13 +12080,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			labeled_statement copy = new labeled_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.label_name = (ident)label_name.Clone();
-			copy.label_name.Parent = copy;
-			copy.to_statement = (statement)to_statement.Clone();
-			copy.to_statement.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (label_name != null)
+			{
+				copy.label_name = (ident)label_name.Clone();
+				copy.label_name.Parent = copy;
+			}
+			if (to_statement != null)
+			{
+				copy.to_statement = (statement)to_statement.Clone();
+				copy.to_statement.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11693,13 +12244,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			with_statement copy = new with_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.what_do = (statement)what_do.Clone();
-			copy.what_do.Parent = copy;
-			copy.do_with = (expression_list)do_with.Clone();
-			copy.do_with.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (what_do != null)
+			{
+				copy.what_do = (statement)what_do.Clone();
+				copy.what_do.Parent = copy;
+			}
+			if (do_with != null)
+			{
+				copy.do_with = (expression_list)do_with.Clone();
+				copy.do_with.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11848,13 +12409,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			method_call copy = new method_call();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
-			copy.dereferencing_value.Parent = copy;
-			copy.parameters = (expression_list)parameters.Clone();
-			copy.parameters.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (expression_list)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -11984,11 +12555,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			pascal_set_constant copy = new pascal_set_constant();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.values = (expression_list)values.Clone();
-			copy.values.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (values != null)
+			{
+				copy.values = (expression_list)values.Clone();
+				copy.values.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -12113,11 +12691,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			array_const copy = new array_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.elements = (expression_list)elements.Clone();
-			copy.elements.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (elements != null)
+			{
+				copy.elements = (expression_list)elements.Clone();
+				copy.elements.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -12242,9 +12827,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			write_accessor_name copy = new write_accessor_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.accessor_name = (ident)accessor_name.Clone();
-			copy.accessor_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (accessor_name != null)
+			{
+				copy.accessor_name = (ident)accessor_name.Clone();
+				copy.accessor_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -12369,9 +12958,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_accessor_name copy = new read_accessor_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.accessor_name = (ident)accessor_name.Clone();
-			copy.accessor_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (accessor_name != null)
+			{
+				copy.accessor_name = (ident)accessor_name.Clone();
+				copy.accessor_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -12514,11 +13107,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			property_accessors copy = new property_accessors();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.read_accessor = (read_accessor_name)read_accessor.Clone();
-			copy.read_accessor.Parent = copy;
-			copy.write_accessor = (write_accessor_name)write_accessor.Clone();
-			copy.write_accessor.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (read_accessor != null)
+			{
+				copy.read_accessor = (read_accessor_name)read_accessor.Clone();
+				copy.read_accessor.Parent = copy;
+			}
+			if (write_accessor != null)
+			{
+				copy.write_accessor = (write_accessor_name)write_accessor.Clone();
+				copy.write_accessor.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -12756,21 +13356,43 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			simple_property copy = new simple_property();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.property_name = (ident)property_name.Clone();
-			copy.property_name.Parent = copy;
-			copy.property_type = (type_definition)property_type.Clone();
-			copy.property_type.Parent = copy;
-			copy.index_expression = (expression)index_expression.Clone();
-			copy.index_expression.Parent = copy;
-			copy.accessors = (property_accessors)accessors.Clone();
-			copy.accessors.Parent = copy;
-			copy.array_default = (property_array_default)array_default.Clone();
-			copy.array_default.Parent = copy;
-			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
-			copy.parameter_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (property_name != null)
+			{
+				copy.property_name = (ident)property_name.Clone();
+				copy.property_name.Parent = copy;
+			}
+			if (property_type != null)
+			{
+				copy.property_type = (type_definition)property_type.Clone();
+				copy.property_type.Parent = copy;
+			}
+			if (index_expression != null)
+			{
+				copy.index_expression = (expression)index_expression.Clone();
+				copy.index_expression.Parent = copy;
+			}
+			if (accessors != null)
+			{
+				copy.accessors = (property_accessors)accessors.Clone();
+				copy.accessors.Parent = copy;
+			}
+			if (array_default != null)
+			{
+				copy.array_default = (property_array_default)array_default.Clone();
+				copy.array_default.Parent = copy;
+			}
+			if (parameter_list != null)
+			{
+				copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+				copy.parameter_list.Parent = copy;
+			}
 			copy.attr = attr;
 			return copy;
 		}
@@ -12972,26 +13594,54 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			index_property copy = new index_property();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.property_name = (ident)property_name.Clone();
-			copy.property_name.Parent = copy;
-			copy.property_type = (type_definition)property_type.Clone();
-			copy.property_type.Parent = copy;
-			copy.index_expression = (expression)index_expression.Clone();
-			copy.index_expression.Parent = copy;
-			copy.accessors = (property_accessors)accessors.Clone();
-			copy.accessors.Parent = copy;
-			copy.array_default = (property_array_default)array_default.Clone();
-			copy.array_default.Parent = copy;
-			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
-			copy.parameter_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (property_name != null)
+			{
+				copy.property_name = (ident)property_name.Clone();
+				copy.property_name.Parent = copy;
+			}
+			if (property_type != null)
+			{
+				copy.property_type = (type_definition)property_type.Clone();
+				copy.property_type.Parent = copy;
+			}
+			if (index_expression != null)
+			{
+				copy.index_expression = (expression)index_expression.Clone();
+				copy.index_expression.Parent = copy;
+			}
+			if (accessors != null)
+			{
+				copy.accessors = (property_accessors)accessors.Clone();
+				copy.accessors.Parent = copy;
+			}
+			if (array_default != null)
+			{
+				copy.array_default = (property_array_default)array_default.Clone();
+				copy.array_default.Parent = copy;
+			}
+			if (parameter_list != null)
+			{
+				copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+				copy.parameter_list.Parent = copy;
+			}
 			copy.attr = attr;
-			copy.property_parametres = (formal_parameters)property_parametres.Clone();
-			copy.property_parametres.Parent = copy;
-			copy.is_default = (default_indexer_property_node)is_default.Clone();
-			copy.is_default.Parent = copy;
+			if (property_parametres != null)
+			{
+				copy.property_parametres = (formal_parameters)property_parametres.Clone();
+				copy.property_parametres.Parent = copy;
+			}
+			if (is_default != null)
+			{
+				copy.is_default = (default_indexer_property_node)is_default.Clone();
+				copy.is_default.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -13256,14 +13906,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			class_members copy = new class_members();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (declaration elem in members)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (members != null)
+				foreach (declaration elem in members)
+					if (elem != null)
+					{
+						copy.Add((declaration)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+			if (access_mod != null)
 			{
-				copy.Add((declaration)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.access_mod = (access_modifer_node)access_mod.Clone();
+				copy.access_mod.Parent = copy;
 			}
-			copy.access_mod = (access_modifer_node)access_mod.Clone();
-			copy.access_mod.Parent = copy;
 			return copy;
 		}
 
@@ -13405,7 +14061,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			access_modifer_node copy = new access_modifer_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.access_level = access_level;
 			return copy;
 		}
@@ -13607,12 +14264,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			class_body copy = new class_body();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (class_members elem in class_def_blocks)
-			{
-				copy.Add((class_members)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (class_def_blocks != null)
+				foreach (class_members elem in class_def_blocks)
+					if (elem != null)
+					{
+						copy.Add((class_members)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -13882,20 +14542,39 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			class_definition copy = new class_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.class_parents = (named_type_reference_list)class_parents.Clone();
-			copy.class_parents.Parent = copy;
-			copy.body = (class_body)body.Clone();
-			copy.body.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (class_parents != null)
+			{
+				copy.class_parents = (named_type_reference_list)class_parents.Clone();
+				copy.class_parents.Parent = copy;
+			}
+			if (body != null)
+			{
+				copy.body = (class_body)body.Clone();
+				copy.body.Parent = copy;
+			}
 			copy.keyword = keyword;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
-			copy.where_section = (where_definition_list)where_section.Clone();
-			copy.where_section.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
+			if (where_section != null)
+			{
+				copy.where_section = (where_definition_list)where_section.Clone();
+				copy.where_section.Parent = copy;
+			}
 			copy.attribute = attribute;
 			copy.is_auto = is_auto;
 			return copy;
@@ -14008,7 +14687,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			default_indexer_property_node copy = new default_indexer_property_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			return copy;
 		}
 
@@ -14161,14 +14841,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			known_type_definition copy = new known_type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			copy.tp = tp;
-			copy.unit_name = (ident)unit_name.Clone();
-			copy.unit_name.Parent = copy;
+			if (unit_name != null)
+			{
+				copy.unit_name = (ident)unit_name.Clone();
+				copy.unit_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -14317,13 +15007,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			set_type_definition copy = new set_type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.of_type = (type_definition)of_type.Clone();
-			copy.of_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (of_type != null)
+			{
+				copy.of_type = (type_definition)of_type.Clone();
+				copy.of_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -14471,13 +15171,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			record_const_definition copy = new record_const_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.name = (ident)name.Clone();
-			copy.name.Parent = copy;
-			copy.val = (expression)val.Clone();
-			copy.val.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (ident)name.Clone();
+				copy.name.Parent = copy;
+			}
+			if (val != null)
+			{
+				copy.val = (expression)val.Clone();
+				copy.val.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -14694,14 +15404,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			record_const copy = new record_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			foreach (record_const_definition elem in rec_consts)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((record_const_definition)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (rec_consts != null)
+				foreach (record_const_definition elem in rec_consts)
+					if (elem != null)
+					{
+						copy.Add((record_const_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -14871,15 +15587,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			record_type copy = new record_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.parts = (record_type_parts)parts.Clone();
-			copy.parts.Parent = copy;
-			copy.base_type = (type_definition)base_type.Clone();
-			copy.base_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (parts != null)
+			{
+				copy.parts = (record_type_parts)parts.Clone();
+				copy.parts.Parent = copy;
+			}
+			if (base_type != null)
+			{
+				copy.base_type = (type_definition)base_type.Clone();
+				copy.base_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -15033,13 +15762,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			enum_type_definition copy = new enum_type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.enumerators = (enumerator_list)enumerators.Clone();
-			copy.enumerators.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (enumerators != null)
+			{
+				copy.enumerators = (enumerator_list)enumerators.Clone();
+				copy.enumerators.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -15169,9 +15908,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			char_const copy = new char_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.cconst = cconst;
 			return copy;
 		}
@@ -15286,11 +16029,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			raise_statement copy = new raise_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.excep = (expression)excep.Clone();
-			copy.excep.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (excep != null)
+			{
+				copy.excep = (expression)excep.Clone();
+				copy.excep.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -15415,9 +16165,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			sharp_char_const copy = new sharp_char_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.char_num = char_num;
 			return copy;
 		}
@@ -15619,14 +16373,20 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			literal_const_line copy = new literal_const_line();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			foreach (literal elem in literals)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((literal)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (literals != null)
+				foreach (literal elem in literals)
+					if (elem != null)
+					{
+						copy.Add((literal)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -15796,15 +16556,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			string_num_definition copy = new string_num_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.num_of_symbols = (expression)num_of_symbols.Clone();
-			copy.num_of_symbols.Parent = copy;
-			copy.name = (ident)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (num_of_symbols != null)
+			{
+				copy.num_of_symbols = (expression)num_of_symbols.Clone();
+				copy.num_of_symbols.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (ident)name.Clone();
+				copy.name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -15957,11 +16730,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variant copy = new variant();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.vars = (ident_list)vars.Clone();
-			copy.vars.Parent = copy;
-			copy.vars_type = (type_definition)vars_type.Clone();
-			copy.vars_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (vars != null)
+			{
+				copy.vars = (ident_list)vars.Clone();
+				copy.vars.Parent = copy;
+			}
+			if (vars_type != null)
+			{
+				copy.vars_type = (type_definition)vars_type.Clone();
+				copy.vars_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -16178,12 +16958,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variant_list copy = new variant_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (variant elem in vars)
-			{
-				copy.Add((variant)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (vars != null)
+				foreach (variant elem in vars)
+					if (elem != null)
+					{
+						copy.Add((variant)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -16332,11 +17115,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variant_type copy = new variant_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.case_exprs = (expression_list)case_exprs.Clone();
-			copy.case_exprs.Parent = copy;
-			copy.parts = (record_type_parts)parts.Clone();
-			copy.parts.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (case_exprs != null)
+			{
+				copy.case_exprs = (expression_list)case_exprs.Clone();
+				copy.case_exprs.Parent = copy;
+			}
+			if (parts != null)
+			{
+				copy.parts = (record_type_parts)parts.Clone();
+				copy.parts.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -16553,12 +17343,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variant_types copy = new variant_types();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (variant_type elem in vars)
-			{
-				copy.Add((variant_type)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (vars != null)
+				foreach (variant_type elem in vars)
+					if (elem != null)
+					{
+						copy.Add((variant_type)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -16725,13 +17518,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variant_record_type copy = new variant_record_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.var_name = (ident)var_name.Clone();
-			copy.var_name.Parent = copy;
-			copy.var_type = (type_definition)var_type.Clone();
-			copy.var_type.Parent = copy;
-			copy.vars = (variant_types)vars.Clone();
-			copy.vars.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (var_name != null)
+			{
+				copy.var_name = (ident)var_name.Clone();
+				copy.var_name.Parent = copy;
+			}
+			if (var_type != null)
+			{
+				copy.var_type = (type_definition)var_type.Clone();
+				copy.var_type.Parent = copy;
+			}
+			if (vars != null)
+			{
+				copy.vars = (variant_types)vars.Clone();
+				copy.vars.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -16866,11 +17669,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			procedure_call copy = new procedure_call();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.func_name = (addressed_value)func_name.Clone();
-			copy.func_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (func_name != null)
+			{
+				copy.func_name = (addressed_value)func_name.Clone();
+				copy.func_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17016,15 +17826,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			class_predefinition copy = new class_predefinition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.type_name = (ident)type_name.Clone();
-			copy.type_name.Parent = copy;
-			copy.type_def = (type_definition)type_def.Clone();
-			copy.type_def.Parent = copy;
-			copy.class_name = (ident)class_name.Clone();
-			copy.class_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (ident)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
+			if (type_def != null)
+			{
+				copy.type_def = (type_definition)type_def.Clone();
+				copy.type_def.Parent = copy;
+			}
+			if (class_name != null)
+			{
+				copy.class_name = (ident)class_name.Clone();
+				copy.class_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17125,9 +17948,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			nil_const copy = new nil_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17260,13 +18087,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			file_type_definition copy = new file_type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.elem_type = (type_definition)elem_type.Clone();
-			copy.elem_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (elem_type != null)
+			{
+				copy.elem_type = (type_definition)elem_type.Clone();
+				copy.elem_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17393,23 +18230,45 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			constructor copy = new constructor();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.parameters = (formal_parameters)parameters.Clone();
-			copy.parameters.Parent = copy;
-			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
-			copy.proc_attributes.Parent = copy;
-			copy.name = (method_name)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (formal_parameters)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
+			if (proc_attributes != null)
+			{
+				copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+				copy.proc_attributes.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (method_name)name.Clone();
+				copy.name.Parent = copy;
+			}
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
-			copy.where_defs = (where_definition_list)where_defs.Clone();
-			copy.where_defs.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
+			if (where_defs != null)
+			{
+				copy.where_defs = (where_definition_list)where_defs.Clone();
+				copy.where_defs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17556,23 +18415,45 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			destructor copy = new destructor();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.parameters = (formal_parameters)parameters.Clone();
-			copy.parameters.Parent = copy;
-			copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
-			copy.proc_attributes.Parent = copy;
-			copy.name = (method_name)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (formal_parameters)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
+			if (proc_attributes != null)
+			{
+				copy.proc_attributes = (procedure_attributes_list)proc_attributes.Clone();
+				copy.proc_attributes.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (method_name)name.Clone();
+				copy.name.Parent = copy;
+			}
 			copy.of_object = of_object;
 			copy.class_keyword = class_keyword;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
-			copy.where_defs = (where_definition_list)where_defs.Clone();
-			copy.where_defs.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
+			if (where_defs != null)
+			{
+				copy.where_defs = (where_definition_list)where_defs.Clone();
+				copy.where_defs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17740,13 +18621,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			inherited_method_call copy = new inherited_method_call();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.method_name = (ident)method_name.Clone();
-			copy.method_name.Parent = copy;
-			copy.exprs = (expression_list)exprs.Clone();
-			copy.exprs.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (method_name != null)
+			{
+				copy.method_name = (ident)method_name.Clone();
+				copy.method_name.Parent = copy;
+			}
+			if (exprs != null)
+			{
+				copy.exprs = (expression_list)exprs.Clone();
+				copy.exprs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -17912,13 +18803,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			typecast_node copy = new typecast_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (addressed_value)expr.Clone();
-			copy.expr.Parent = copy;
-			copy.type_def = (type_definition)type_def.Clone();
-			copy.type_def.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (addressed_value)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			if (type_def != null)
+			{
+				copy.type_def = (type_definition)type_def.Clone();
+				copy.type_def.Parent = copy;
+			}
 			copy.cast_op = cast_op;
 			return copy;
 		}
@@ -18085,13 +18986,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			interface_node copy = new interface_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.interface_definitions = (declarations)interface_definitions.Clone();
-			copy.interface_definitions.Parent = copy;
-			copy.uses_modules = (uses_list)uses_modules.Clone();
-			copy.uses_modules.Parent = copy;
-			copy.using_namespaces = (using_list)using_namespaces.Clone();
-			copy.using_namespaces.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (interface_definitions != null)
+			{
+				copy.interface_definitions = (declarations)interface_definitions.Clone();
+				copy.interface_definitions.Parent = copy;
+			}
+			if (uses_modules != null)
+			{
+				copy.uses_modules = (uses_list)uses_modules.Clone();
+				copy.uses_modules.Parent = copy;
+			}
+			if (using_namespaces != null)
+			{
+				copy.using_namespaces = (using_list)using_namespaces.Clone();
+				copy.using_namespaces.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -18262,13 +19173,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			implementation_node copy = new implementation_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.uses_modules = (uses_list)uses_modules.Clone();
-			copy.uses_modules.Parent = copy;
-			copy.implementation_definitions = (declarations)implementation_definitions.Clone();
-			copy.implementation_definitions.Parent = copy;
-			copy.using_namespaces = (using_list)using_namespaces.Clone();
-			copy.using_namespaces.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (uses_modules != null)
+			{
+				copy.uses_modules = (uses_list)uses_modules.Clone();
+				copy.uses_modules.Parent = copy;
+			}
+			if (implementation_definitions != null)
+			{
+				copy.implementation_definitions = (declarations)implementation_definitions.Clone();
+				copy.implementation_definitions.Parent = copy;
+			}
+			if (using_namespaces != null)
+			{
+				copy.using_namespaces = (using_list)using_namespaces.Clone();
+				copy.using_namespaces.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -18421,13 +19342,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			diap_expr copy = new diap_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.left = (expression)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (expression)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (expression)right.Clone();
+				copy.right.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -18575,11 +19506,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			block copy = new block();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.defs = (declarations)defs.Clone();
-			copy.defs.Parent = copy;
-			copy.program_code = (statement_list)program_code.Clone();
-			copy.program_code.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (defs != null)
+			{
+				copy.defs = (declarations)defs.Clone();
+				copy.defs.Parent = copy;
+			}
+			if (program_code != null)
+			{
+				copy.program_code = (statement_list)program_code.Clone();
+				copy.program_code.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -18675,7 +19613,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			proc_block copy = new proc_block();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			return copy;
 		}
 
@@ -18808,13 +19747,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			array_of_named_type_definition copy = new array_of_named_type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.type_name = (named_type_reference)type_name.Clone();
-			copy.type_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (named_type_reference)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -18927,11 +19876,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			array_of_const_type_definition copy = new array_of_const_type_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -19022,9 +19978,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			literal copy = new literal();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -19225,12 +20185,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			case_variants copy = new case_variants();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (case_variant elem in variants)
-			{
-				copy.Add((case_variant)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (variants != null)
+				foreach (case_variant elem in variants)
+					if (elem != null)
+					{
+						copy.Add((case_variant)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -19379,13 +20342,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			diapason_expr copy = new diapason_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.left = (expression)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (expression)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (expression)right.Clone();
+				copy.right.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -19602,12 +20575,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			var_def_list_for_record copy = new var_def_list_for_record();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (var_def_statement elem in vars)
-			{
-				copy.Add((var_def_statement)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (vars != null)
+				foreach (var_def_statement elem in vars)
+					if (elem != null)
+					{
+						copy.Add((var_def_statement)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -19756,11 +20732,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			record_type_parts copy = new record_type_parts();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.fixed_part = (var_def_list_for_record)fixed_part.Clone();
-			copy.fixed_part.Parent = copy;
-			copy.variant_part = (variant_record_type)variant_part.Clone();
-			copy.variant_part.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (fixed_part != null)
+			{
+				copy.fixed_part = (var_def_list_for_record)fixed_part.Clone();
+				copy.fixed_part.Parent = copy;
+			}
+			if (variant_part != null)
+			{
+				copy.variant_part = (variant_record_type)variant_part.Clone();
+				copy.variant_part.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -19856,7 +20839,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			property_array_default copy = new property_array_default();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			return copy;
 		}
 
@@ -20006,13 +20990,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			property_interface copy = new property_interface();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.parameter_list = (property_parameter_list)parameter_list.Clone();
-			copy.parameter_list.Parent = copy;
-			copy.property_type = (type_definition)property_type.Clone();
-			copy.property_type.Parent = copy;
-			copy.index_expression = (expression)index_expression.Clone();
-			copy.index_expression.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (parameter_list != null)
+			{
+				copy.parameter_list = (property_parameter_list)parameter_list.Clone();
+				copy.parameter_list.Parent = copy;
+			}
+			if (property_type != null)
+			{
+				copy.property_type = (type_definition)property_type.Clone();
+				copy.property_type.Parent = copy;
+			}
+			if (index_expression != null)
+			{
+				copy.index_expression = (expression)index_expression.Clone();
+				copy.index_expression.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -20165,11 +21159,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			property_parameter copy = new property_parameter();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.names = (ident_list)names.Clone();
-			copy.names.Parent = copy;
-			copy.type = (type_definition)type.Clone();
-			copy.type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (names != null)
+			{
+				copy.names = (ident_list)names.Clone();
+				copy.names.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -20386,12 +21387,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			property_parameter_list copy = new property_parameter_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (property_parameter elem in parameters)
-			{
-				copy.Add((property_parameter)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (parameters != null)
+				foreach (property_parameter elem in parameters)
+					if (elem != null)
+					{
+						copy.Add((property_parameter)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -20505,9 +21509,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			inherited_ident copy = new inherited_ident();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
 			return copy;
 		}
@@ -20658,15 +21666,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			format_expr copy = new format_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
-			copy.format1 = (expression)format1.Clone();
-			copy.format1.Parent = copy;
-			copy.format2 = (expression)format2.Clone();
-			copy.format2.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			if (format1 != null)
+			{
+				copy.format1 = (expression)format1.Clone();
+				copy.format1.Parent = copy;
+			}
+			if (format2 != null)
+			{
+				copy.format2 = (expression)format2.Clone();
+				copy.format2.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -20819,11 +21840,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			initfinal_part copy = new initfinal_part();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.initialization_sect = (statement_list)initialization_sect.Clone();
-			copy.initialization_sect.Parent = copy;
-			copy.finalization_sect = (statement_list)finalization_sect.Clone();
-			copy.finalization_sect.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (initialization_sect != null)
+			{
+				copy.initialization_sect = (statement_list)initialization_sect.Clone();
+				copy.initialization_sect.Parent = copy;
+			}
+			if (finalization_sect != null)
+			{
+				copy.finalization_sect = (statement_list)finalization_sect.Clone();
+				copy.finalization_sect.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -20953,7 +21981,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			token_info copy = new token_info();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.text = text;
 			return copy;
 		}
@@ -21086,13 +22115,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			raise_stmt copy = new raise_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
-			copy.address = (expression)address.Clone();
-			copy.address.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			if (address != null)
+			{
+				copy.address = (expression)address.Clone();
+				copy.address.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -21241,7 +22280,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			op_type_node copy = new op_type_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.text = text;
 			copy.type = type;
 			return copy;
@@ -21376,13 +22416,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			file_type copy = new file_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.file_of_type = (type_definition)file_of_type.Clone();
-			copy.file_of_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (file_of_type != null)
+			{
+				copy.file_of_type = (type_definition)file_of_type.Clone();
+				copy.file_of_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -21531,9 +22581,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			known_type_ident copy = new known_type_ident();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
 			copy.type = type;
 			return copy;
@@ -21685,13 +22739,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			exception_handler copy = new exception_handler();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.variable = (ident)variable.Clone();
-			copy.variable.Parent = copy;
-			copy.type_name = (named_type_reference)type_name.Clone();
-			copy.type_name.Parent = copy;
-			copy.statements = (statement)statements.Clone();
-			copy.statements.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (variable != null)
+			{
+				copy.variable = (ident)variable.Clone();
+				copy.variable.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (named_type_reference)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
+			if (statements != null)
+			{
+				copy.statements = (statement)statements.Clone();
+				copy.statements.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -21844,11 +22908,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			exception_ident copy = new exception_ident();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.variable = (ident)variable.Clone();
-			copy.variable.Parent = copy;
-			copy.type_name = (named_type_reference)type_name.Clone();
-			copy.type_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (variable != null)
+			{
+				copy.variable = (ident)variable.Clone();
+				copy.variable.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (named_type_reference)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -22065,12 +23136,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			exception_handler_list copy = new exception_handler_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (exception_handler elem in handlers)
-			{
-				copy.Add((exception_handler)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (handlers != null)
+				foreach (exception_handler elem in handlers)
+					if (elem != null)
+					{
+						copy.Add((exception_handler)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -22237,13 +23311,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			exception_block copy = new exception_block();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.stmt_list = (statement_list)stmt_list.Clone();
-			copy.stmt_list.Parent = copy;
-			copy.handlers = (exception_handler_list)handlers.Clone();
-			copy.handlers.Parent = copy;
-			copy.else_stmt_list = (statement_list)else_stmt_list.Clone();
-			copy.else_stmt_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (stmt_list != null)
+			{
+				copy.stmt_list = (statement_list)stmt_list.Clone();
+				copy.stmt_list.Parent = copy;
+			}
+			if (handlers != null)
+			{
+				copy.handlers = (exception_handler_list)handlers.Clone();
+				copy.handlers.Parent = copy;
+			}
+			if (else_stmt_list != null)
+			{
+				copy.else_stmt_list = (statement_list)else_stmt_list.Clone();
+				copy.else_stmt_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -22344,7 +23428,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			try_handler copy = new try_handler();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			return copy;
 		}
 
@@ -22458,9 +23543,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			try_handler_finally copy = new try_handler_finally();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.stmt_list = (statement_list)stmt_list.Clone();
-			copy.stmt_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (stmt_list != null)
+			{
+				copy.stmt_list = (statement_list)stmt_list.Clone();
+				copy.stmt_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -22585,9 +23674,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			try_handler_except copy = new try_handler_except();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.except_block = (exception_block)except_block.Clone();
-			copy.except_block.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (except_block != null)
+			{
+				copy.except_block = (exception_block)except_block.Clone();
+				copy.except_block.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -22730,13 +23823,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			try_stmt copy = new try_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.stmt_list = (statement_list)stmt_list.Clone();
-			copy.stmt_list.Parent = copy;
-			copy.handler = (try_handler)handler.Clone();
-			copy.handler.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (stmt_list != null)
+			{
+				copy.stmt_list = (statement_list)stmt_list.Clone();
+				copy.stmt_list.Parent = copy;
+			}
+			if (handler != null)
+			{
+				copy.handler = (try_handler)handler.Clone();
+				copy.handler.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -22832,9 +23935,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			inherited_message copy = new inherited_message();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -22966,11 +24073,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			external_directive copy = new external_directive();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.modulename = (expression)modulename.Clone();
-			copy.modulename.Parent = copy;
-			copy.name = (expression)name.Clone();
-			copy.name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (modulename != null)
+			{
+				copy.modulename = (expression)modulename.Clone();
+				copy.modulename.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (expression)name.Clone();
+				copy.name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -23187,12 +24301,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			using_list copy = new using_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (unit_or_namespace elem in namespaces)
-			{
-				copy.Add((unit_or_namespace)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (namespaces != null)
+				foreach (unit_or_namespace elem in namespaces)
+					if (elem != null)
+					{
+						copy.Add((unit_or_namespace)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -23341,11 +24458,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			jump_stmt copy = new jump_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			copy.JumpType = JumpType;
 			return copy;
 		}
@@ -23471,11 +24595,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			loop_stmt copy = new loop_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.stmt = (statement)stmt.Clone();
-			copy.stmt.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -23654,17 +24785,33 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			foreach_stmt copy = new foreach_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.identifier = (ident)identifier.Clone();
-			copy.identifier.Parent = copy;
-			copy.type_name = (type_definition)type_name.Clone();
-			copy.type_name.Parent = copy;
-			copy.in_what = (expression)in_what.Clone();
-			copy.in_what.Parent = copy;
-			copy.stmt = (statement)stmt.Clone();
-			copy.stmt.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (identifier != null)
+			{
+				copy.identifier = (ident)identifier.Clone();
+				copy.identifier.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (type_definition)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
+			if (in_what != null)
+			{
+				copy.in_what = (expression)in_what.Clone();
+				copy.in_what.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -23770,9 +24917,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			addressed_value_funcname copy = new addressed_value_funcname();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -23973,12 +25124,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			named_type_reference_list copy = new named_type_reference_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (named_type_reference elem in types)
-			{
-				copy.Add((named_type_reference)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (types != null)
+				foreach (named_type_reference elem in types)
+					if (elem != null)
+					{
+						copy.Add((named_type_reference)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -24215,16 +25369,25 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			template_param_list copy = new template_param_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
-			copy.dereferencing_value.Parent = copy;
-			foreach (type_definition elem in params_list)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((type_definition)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
+			if (params_list != null)
+				foreach (type_definition elem in params_list)
+					if (elem != null)
+					{
+						copy.Add((type_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -24407,20 +25570,35 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			template_type_reference copy = new template_type_reference();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			foreach (ident elem in names)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((ident)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
-			copy.name = (named_type_reference)name.Clone();
-			copy.name.Parent = copy;
-			copy.params_list = (template_param_list)params_list.Clone();
-			copy.params_list.Parent = copy;
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (names != null)
+				foreach (ident elem in names)
+					if (elem != null)
+					{
+						copy.Add((ident)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+			if (name != null)
+			{
+				copy.name = (named_type_reference)name.Clone();
+				copy.name.Parent = copy;
+			}
+			if (params_list != null)
+			{
+				copy.params_list = (template_param_list)params_list.Clone();
+				copy.params_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -24572,9 +25750,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			int64_const copy = new int64_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.val = val;
 			return copy;
 		}
@@ -24689,9 +25871,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			uint64_const copy = new uint64_const();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.val = val;
 			return copy;
 		}
@@ -24860,16 +26046,29 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			new_expr copy = new new_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.type = (type_definition)type.Clone();
-			copy.type.Parent = copy;
-			copy.params_list = (expression_list)params_list.Clone();
-			copy.params_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
+			if (params_list != null)
+			{
+				copy.params_list = (expression_list)params_list.Clone();
+				copy.params_list.Parent = copy;
+			}
 			copy.new_array = new_array;
-			copy.array_init_expr = (array_const)array_init_expr.Clone();
-			copy.array_init_expr.Parent = copy;
+			if (array_init_expr != null)
+			{
+				copy.array_init_expr = (array_const)array_init_expr.Clone();
+				copy.array_init_expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -25091,12 +26290,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			where_type_specificator_list copy = new where_type_specificator_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (type_definition elem in defs)
-			{
-				copy.Add((type_definition)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (defs != null)
+				foreach (type_definition elem in defs)
+					if (elem != null)
+					{
+						copy.Add((type_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -25245,11 +26447,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			where_definition copy = new where_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.names = (ident_list)names.Clone();
-			copy.names.Parent = copy;
-			copy.types = (where_type_specificator_list)types.Clone();
-			copy.types.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (names != null)
+			{
+				copy.names = (ident_list)names.Clone();
+				copy.names.Parent = copy;
+			}
+			if (types != null)
+			{
+				copy.types = (where_type_specificator_list)types.Clone();
+				copy.types.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -25466,12 +26675,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			where_definition_list copy = new where_definition_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (where_definition elem in defs)
-			{
-				copy.Add((where_definition)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (defs != null)
+				foreach (where_definition elem in defs)
+					if (elem != null)
+					{
+						copy.Add((where_definition)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -25620,13 +26832,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			sizeof_operator copy = new sizeof_operator();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.type_def = (type_definition)type_def.Clone();
-			copy.type_def.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (type_def != null)
+			{
+				copy.type_def = (type_definition)type_def.Clone();
+				copy.type_def.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -25756,11 +26978,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			typeof_operator copy = new typeof_operator();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.type_name = (named_type_reference)type_name.Clone();
-			copy.type_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (named_type_reference)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -25903,11 +27132,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compiler_directive copy = new compiler_directive();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.Name = (token_info)Name.Clone();
-			copy.Name.Parent = copy;
-			copy.Directive = (token_info)Directive.Clone();
-			copy.Directive.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (Name != null)
+			{
+				copy.Name = (token_info)Name.Clone();
+				copy.Name.Parent = copy;
+			}
+			if (Directive != null)
+			{
+				copy.Directive = (token_info)Directive.Clone();
+				copy.Directive.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -26056,9 +27292,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			operator_name_ident copy = new operator_name_ident();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
 			copy.operator_type = operator_type;
 			return copy;
@@ -26174,11 +27414,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			var_statement copy = new var_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.var_def = (var_def_statement)var_def.Clone();
-			copy.var_def.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (var_def != null)
+			{
+				copy.var_def = (var_def_statement)var_def.Clone();
+				copy.var_def.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -26339,15 +27586,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			question_colon_expression copy = new question_colon_expression();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.condition = (expression)condition.Clone();
-			copy.condition.Parent = copy;
-			copy.ret_if_true = (expression)ret_if_true.Clone();
-			copy.ret_if_true.Parent = copy;
-			copy.ret_if_false = (expression)ret_if_false.Clone();
-			copy.ret_if_false.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (condition != null)
+			{
+				copy.condition = (expression)condition.Clone();
+				copy.condition.Parent = copy;
+			}
+			if (ret_if_true != null)
+			{
+				copy.ret_if_true = (expression)ret_if_true.Clone();
+				copy.ret_if_true.Parent = copy;
+			}
+			if (ret_if_false != null)
+			{
+				copy.ret_if_false = (expression)ret_if_false.Clone();
+				copy.ret_if_false.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -26482,11 +27742,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			expression_as_statement copy = new expression_as_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -26650,11 +27917,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			c_scalar_type copy = new c_scalar_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			copy.scalar_name = scalar_name;
 			copy.sign = sign;
 			return copy;
@@ -26824,18 +28098,27 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			c_module copy = new c_module();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.file_name = file_name;
-			foreach (compiler_directive elem in compiler_directives)
-			{
-				copy.Add((compiler_directive)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (compiler_directives != null)
+				foreach (compiler_directive elem in compiler_directives)
+					if (elem != null)
+					{
+						copy.Add((compiler_directive)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.Language = Language;
-			copy.defs = (declarations)defs.Clone();
-			copy.defs.Parent = copy;
-			copy.used_units = (uses_list)used_units.Clone();
-			copy.used_units.Parent = copy;
+			if (defs != null)
+			{
+				copy.defs = (declarations)defs.Clone();
+				copy.defs.Parent = copy;
+			}
+			if (used_units != null)
+			{
+				copy.used_units = (uses_list)used_units.Clone();
+				copy.used_units.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -26982,11 +28265,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			declarations_as_statement copy = new declarations_as_statement();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.defs = (declarations)defs.Clone();
-			copy.defs.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (defs != null)
+			{
+				copy.defs = (declarations)defs.Clone();
+				copy.defs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -27130,13 +28420,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			array_size copy = new array_size();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.max_value = (expression)max_value.Clone();
-			copy.max_value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (max_value != null)
+			{
+				copy.max_value = (expression)max_value.Clone();
+				copy.max_value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -27284,11 +28584,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			enumerator copy = new enumerator();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.name = (type_definition)name.Clone();
-			copy.name.Parent = copy;
-			copy.value = (expression)value.Clone();
-			copy.value.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (name != null)
+			{
+				copy.name = (type_definition)name.Clone();
+				copy.name.Parent = copy;
+			}
+			if (value != null)
+			{
+				copy.value = (expression)value.Clone();
+				copy.value.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -27505,12 +28812,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			enumerator_list copy = new enumerator_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (enumerator elem in enumerators)
-			{
-				copy.Add((enumerator)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (enumerators != null)
+				foreach (enumerator elem in enumerators)
+					if (elem != null)
+					{
+						copy.Add((enumerator)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -27695,17 +29005,33 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			c_for_cycle copy = new c_for_cycle();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr1 = (statement)expr1.Clone();
-			copy.expr1.Parent = copy;
-			copy.expr2 = (expression)expr2.Clone();
-			copy.expr2.Parent = copy;
-			copy.expr3 = (expression)expr3.Clone();
-			copy.expr3.Parent = copy;
-			copy.stmt = (statement)stmt.Clone();
-			copy.stmt.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr1 != null)
+			{
+				copy.expr1 = (statement)expr1.Clone();
+				copy.expr1.Parent = copy;
+			}
+			if (expr2 != null)
+			{
+				copy.expr2 = (expression)expr2.Clone();
+				copy.expr2.Parent = copy;
+			}
+			if (expr3 != null)
+			{
+				copy.expr3 = (expression)expr3.Clone();
+				copy.expr3.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -27881,13 +29207,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			switch_stmt copy = new switch_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.condition = (expression)condition.Clone();
-			copy.condition.Parent = copy;
-			copy.stmt = (statement)stmt.Clone();
-			copy.stmt.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (condition != null)
+			{
+				copy.condition = (expression)condition.Clone();
+				copy.condition.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
 			copy.Part = Part;
 			return copy;
 		}
@@ -28105,12 +29441,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			type_definition_attr_list copy = new type_definition_attr_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (type_definition_attr elem in attributes)
-			{
-				copy.Add((type_definition_attr)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+				foreach (type_definition_attr elem in attributes)
+					if (elem != null)
+					{
+						copy.Add((type_definition_attr)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -28260,11 +29599,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			type_definition_attr copy = new type_definition_attr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			copy.attr = attr;
 			return copy;
 		}
@@ -28408,13 +29754,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			lock_stmt copy = new lock_stmt();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.lock_object = (expression)lock_object.Clone();
-			copy.lock_object.Parent = copy;
-			copy.stmt = (statement)stmt.Clone();
-			copy.stmt.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (lock_object != null)
+			{
+				copy.lock_object = (expression)lock_object.Clone();
+				copy.lock_object.Parent = copy;
+			}
+			if (stmt != null)
+			{
+				copy.stmt = (statement)stmt.Clone();
+				copy.stmt.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -28652,16 +30008,25 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compiler_directive_list copy = new compiler_directive_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.Name = (token_info)Name.Clone();
-			copy.Name.Parent = copy;
-			copy.Directive = (token_info)Directive.Clone();
-			copy.Directive.Parent = copy;
-			foreach (compiler_directive elem in directives)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (Name != null)
 			{
-				copy.Add((compiler_directive)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.Name = (token_info)Name.Clone();
+				copy.Name.Parent = copy;
 			}
+			if (Directive != null)
+			{
+				copy.Directive = (token_info)Directive.Clone();
+				copy.Directive.Parent = copy;
+			}
+			if (directives != null)
+				foreach (compiler_directive elem in directives)
+					if (elem != null)
+					{
+						copy.Add((compiler_directive)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -28849,15 +30214,28 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compiler_directive_if copy = new compiler_directive_if();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.Name = (token_info)Name.Clone();
-			copy.Name.Parent = copy;
-			copy.Directive = (token_info)Directive.Clone();
-			copy.Directive.Parent = copy;
-			copy.if_part = (compiler_directive)if_part.Clone();
-			copy.if_part.Parent = copy;
-			copy.elseif_part = (compiler_directive)elseif_part.Clone();
-			copy.elseif_part.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (Name != null)
+			{
+				copy.Name = (token_info)Name.Clone();
+				copy.Name.Parent = copy;
+			}
+			if (Directive != null)
+			{
+				copy.Directive = (token_info)Directive.Clone();
+				copy.Directive.Parent = copy;
+			}
+			if (if_part != null)
+			{
+				copy.if_part = (compiler_directive)if_part.Clone();
+				copy.if_part.Parent = copy;
+			}
+			if (elseif_part != null)
+			{
+				copy.elseif_part = (compiler_directive)elseif_part.Clone();
+				copy.elseif_part.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -29084,12 +30462,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			documentation_comment_list copy = new documentation_comment_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (documentation_comment_section elem in sections)
-			{
-				copy.Add((documentation_comment_section)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (sections != null)
+				foreach (documentation_comment_section elem in sections)
+					if (elem != null)
+					{
+						copy.Add((documentation_comment_section)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -29343,13 +30724,16 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			documentation_comment_tag copy = new documentation_comment_tag();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.name = name;
-			foreach (documentation_comment_tag_param elem in parameters)
-			{
-				copy.Add((documentation_comment_tag_param)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (parameters != null)
+				foreach (documentation_comment_tag_param elem in parameters)
+					if (elem != null)
+					{
+						copy.Add((documentation_comment_tag_param)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.text = text;
 			return copy;
 		}
@@ -29499,7 +30883,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			documentation_comment_tag_param copy = new documentation_comment_tag_param();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.name = name;
 			copy.value = value;
 			return copy;
@@ -29720,12 +31105,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			documentation_comment_section copy = new documentation_comment_section();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (documentation_comment_tag elem in tags)
-			{
-				copy.Add((documentation_comment_tag)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (tags != null)
+				foreach (documentation_comment_tag elem in tags)
+					if (elem != null)
+					{
+						copy.Add((documentation_comment_tag)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.text = text;
 			return copy;
 		}
@@ -29876,7 +31264,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			token_taginfo copy = new token_taginfo();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
 			copy.text = text;
 			copy.tag = tag;
 			return copy;
@@ -30031,11 +31420,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			declaration_specificator copy = new declaration_specificator();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			copy.specificator = specificator;
 			copy.name = name;
 			return copy;
@@ -30180,13 +31576,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			ident_with_templateparams copy = new ident_with_templateparams();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.name = (addressed_value)name.Clone();
-			copy.name.Parent = copy;
-			copy.template_params = (template_param_list)template_params.Clone();
-			copy.template_params.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (name != null)
+			{
+				copy.name = (addressed_value)name.Clone();
+				copy.name.Parent = copy;
+			}
+			if (template_params != null)
+			{
+				copy.template_params = (template_param_list)template_params.Clone();
+				copy.template_params.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -30335,12 +31741,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			template_type_name copy = new template_type_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -30465,11 +31878,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			default_operator copy = new default_operator();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.type_name = (named_type_reference)type_name.Clone();
-			copy.type_name.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (type_name != null)
+			{
+				copy.type_name = (named_type_reference)type_name.Clone();
+				copy.type_name.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -30594,11 +32014,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			bracket_expr copy = new bracket_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -30759,13 +32186,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attribute copy = new attribute();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.qualifier = (ident)qualifier.Clone();
-			copy.qualifier.Parent = copy;
-			copy.type = (named_type_reference)type.Clone();
-			copy.type.Parent = copy;
-			copy.arguments = (expression_list)arguments.Clone();
-			copy.arguments.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (qualifier != null)
+			{
+				copy.qualifier = (ident)qualifier.Clone();
+				copy.qualifier.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (named_type_reference)type.Clone();
+				copy.type.Parent = copy;
+			}
+			if (arguments != null)
+			{
+				copy.arguments = (expression_list)arguments.Clone();
+				copy.arguments.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -30987,12 +32424,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			simple_attribute_list copy = new simple_attribute_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (attribute elem in attributes)
-			{
-				copy.Add((attribute)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+				foreach (attribute elem in attributes)
+					if (elem != null)
+					{
+						copy.Add((attribute)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -31210,12 +32650,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attribute_list copy = new attribute_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (simple_attribute_list elem in attributes)
-			{
-				copy.Add((simple_attribute_list)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+				foreach (simple_attribute_list elem in attributes)
+					if (elem != null)
+					{
+						copy.Add((simple_attribute_list)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -31613,30 +33056,57 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			function_lambda_definition copy = new function_lambda_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.ident_list = (ident_list)ident_list.Clone();
-			copy.ident_list.Parent = copy;
-			copy.return_type = (type_definition)return_type.Clone();
-			copy.return_type.Parent = copy;
-			copy.formal_parameters = (formal_parameters)formal_parameters.Clone();
-			copy.formal_parameters.Parent = copy;
-			copy.proc_body = (statement)proc_body.Clone();
-			copy.proc_body.Parent = copy;
-			copy.proc_definition = (procedure_definition)proc_definition.Clone();
-			copy.proc_definition.Parent = copy;
-			copy.parameters = (expression_list)parameters.Clone();
-			copy.parameters.Parent = copy;
-			copy.lambda_name = lambda_name;
-			foreach (declaration elem in defs)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add((declaration)elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			if (ident_list != null)
+			{
+				copy.ident_list = (ident_list)ident_list.Clone();
+				copy.ident_list.Parent = copy;
+			}
+			if (return_type != null)
+			{
+				copy.return_type = (type_definition)return_type.Clone();
+				copy.return_type.Parent = copy;
+			}
+			if (formal_parameters != null)
+			{
+				copy.formal_parameters = (formal_parameters)formal_parameters.Clone();
+				copy.formal_parameters.Parent = copy;
+			}
+			if (proc_body != null)
+			{
+				copy.proc_body = (statement)proc_body.Clone();
+				copy.proc_body.Parent = copy;
+			}
+			if (proc_definition != null)
+			{
+				copy.proc_definition = (procedure_definition)proc_definition.Clone();
+				copy.proc_definition.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (expression_list)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
+			copy.lambda_name = lambda_name;
+			if (defs != null)
+				foreach (declaration elem in defs)
+					if (elem != null)
+					{
+						copy.Add((declaration)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.lambda_visit_mode = lambda_visit_mode;
-			copy.substituting_node = substituting_node.Clone();
-			copy.substituting_node.Parent = copy;
+			if (substituting_node != null)
+			{
+				copy.substituting_node = substituting_node.Clone();
+				copy.substituting_node.Parent = copy;
+			}
 			copy.usedkeyword = usedkeyword;
 			return copy;
 		}
@@ -31827,13 +33297,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			function_lambda_call copy = new function_lambda_call();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.f_lambda_def = (function_lambda_definition)f_lambda_def.Clone();
-			copy.f_lambda_def.Parent = copy;
-			copy.parameters = (expression_list)parameters.Clone();
-			copy.parameters.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (f_lambda_def != null)
+			{
+				copy.f_lambda_def = (function_lambda_definition)f_lambda_def.Clone();
+				copy.f_lambda_def.Parent = copy;
+			}
+			if (parameters != null)
+			{
+				copy.parameters = (expression_list)parameters.Clone();
+				copy.parameters.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -32086,15 +33566,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			semantic_check copy = new semantic_check();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.CheckName = CheckName;
-			foreach (syntax_tree_node elem in param)
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
 			{
-				copy.Add(elem.Clone());
-				copy.Last().Parent = copy;
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
 			}
+			copy.CheckName = CheckName;
+			if (param != null)
+				foreach (syntax_tree_node elem in param)
+					if (elem != null)
+					{
+						copy.Add(elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			copy.fictive = fictive;
 			return copy;
 		}
@@ -32245,11 +33731,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			lambda_inferred_type copy = new lambda_inferred_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			copy.real_type = real_type;
 			return copy;
 		}
@@ -32394,13 +33887,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			same_type_node copy = new same_type_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.ex = (expression)ex.Clone();
-			copy.ex.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (ex != null)
+			{
+				copy.ex = (expression)ex.Clone();
+				copy.ex.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -32548,11 +34051,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			name_assign_expr copy = new name_assign_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.name = (ident)name.Clone();
-			copy.name.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (name != null)
+			{
+				copy.name = (ident)name.Clone();
+				copy.name.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -32769,12 +34279,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			name_assign_expr_list copy = new name_assign_expr_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (name_assign_expr elem in name_expr)
-			{
-				copy.Add((name_assign_expr)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (name_expr != null)
+				foreach (name_assign_expr elem in name_expr)
+					if (elem != null)
+					{
+						copy.Add((name_assign_expr)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -32943,14 +34456,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			unnamed_type_object copy = new unnamed_type_object();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.ne_list = (name_assign_expr_list)ne_list.Clone();
-			copy.ne_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (ne_list != null)
+			{
+				copy.ne_list = (name_assign_expr_list)ne_list.Clone();
+				copy.ne_list.Parent = copy;
+			}
 			copy.is_class = is_class;
-			copy.new_ex = (new_expr)new_ex.Clone();
-			copy.new_ex.Parent = copy;
+			if (new_ex != null)
+			{
+				copy.new_ex = (new_expr)new_ex.Clone();
+				copy.new_ex.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -33099,11 +34622,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			semantic_type_node copy = new semantic_type_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			copy.type = type;
 			return copy;
 		}
@@ -33252,16 +34782,29 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			short_func_definition copy = new short_func_definition();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.proc_header = (procedure_header)proc_header.Clone();
-			copy.proc_header.Parent = copy;
-			copy.proc_body = (proc_block)proc_body.Clone();
-			copy.proc_body.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (proc_header != null)
+			{
+				copy.proc_header = (procedure_header)proc_header.Clone();
+				copy.proc_header.Parent = copy;
+			}
+			if (proc_body != null)
+			{
+				copy.proc_body = (proc_block)proc_body.Clone();
+				copy.proc_body.Parent = copy;
+			}
 			copy.is_short_definition = is_short_definition;
-			copy.procdef = (procedure_definition)procdef.Clone();
-			copy.procdef.Parent = copy;
+			if (procdef != null)
+			{
+				copy.procdef = (procedure_definition)procdef.Clone();
+				copy.procdef.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -33379,11 +34922,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			no_type_foreach copy = new no_type_foreach();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -33526,13 +35076,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			matching_expression copy = new matching_expression();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.left = (expression)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (expression)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (expression)right.Clone();
+				copy.right.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -33681,12 +35241,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			closure_substituting_node copy = new closure_substituting_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
-			copy.substitution = (dot_node)substitution.Clone();
-			copy.substitution.Parent = copy;
+			if (substitution != null)
+			{
+				copy.substitution = (dot_node)substitution.Clone();
+				copy.substitution.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -33830,13 +35397,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			sequence_type copy = new sequence_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.elements_type = (type_definition)elements_type.Clone();
-			copy.elements_type.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (elements_type != null)
+			{
+				copy.elements_type = (type_definition)elements_type.Clone();
+				copy.elements_type.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -34025,17 +35602,33 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			modern_proc_type copy = new modern_proc_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
-			copy.aloneparam = (type_definition)aloneparam.Clone();
-			copy.aloneparam.Parent = copy;
-			copy.el = (enumerator_list)el.Clone();
-			copy.el.Parent = copy;
-			copy.res = (type_definition)res.Clone();
-			copy.res.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
+			if (aloneparam != null)
+			{
+				copy.aloneparam = (type_definition)aloneparam.Clone();
+				copy.aloneparam.Parent = copy;
+			}
+			if (el != null)
+			{
+				copy.el = (enumerator_list)el.Clone();
+				copy.el.Parent = copy;
+			}
+			if (res != null)
+			{
+				copy.res = (type_definition)res.Clone();
+				copy.res.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -34175,11 +35768,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			yield_node copy = new yield_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.ex = (expression)ex.Clone();
-			copy.ex.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (ex != null)
+			{
+				copy.ex = (expression)ex.Clone();
+				copy.ex.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -34325,14 +35925,24 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			template_operator_name copy = new template_operator_name();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
-			copy.template_args = (ident_list)template_args.Clone();
-			copy.template_args.Parent = copy;
-			copy.opname = (operator_name_ident)opname.Clone();
-			copy.opname.Parent = copy;
+			if (template_args != null)
+			{
+				copy.template_args = (ident_list)template_args.Clone();
+				copy.template_args.Parent = copy;
+			}
+			if (opname != null)
+			{
+				copy.opname = (operator_name_ident)opname.Clone();
+				copy.opname.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -34462,9 +36072,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			semantic_addr_value copy = new semantic_addr_value();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.expr = expr;
 			return copy;
 		}
@@ -34597,11 +36211,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			pair_type_stlist copy = new pair_type_stlist();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.tn = (type_definition)tn.Clone();
-			copy.tn.Parent = copy;
-			copy.exprs = (statement_list)exprs.Clone();
-			copy.exprs.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (tn != null)
+			{
+				copy.tn = (type_definition)tn.Clone();
+				copy.tn.Parent = copy;
+			}
+			if (exprs != null)
+			{
+				copy.exprs = (statement_list)exprs.Clone();
+				copy.exprs.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -34749,13 +36370,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			assign_tuple copy = new assign_tuple();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.vars = (addressed_value_list)vars.Clone();
-			copy.vars.Parent = copy;
-			copy.expr = (expression)expr.Clone();
-			copy.expr.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (vars != null)
+			{
+				copy.vars = (addressed_value_list)vars.Clone();
+				copy.vars.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -34972,12 +36603,15 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			addressed_value_list copy = new addressed_value_list();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (addressed_value elem in variables)
-			{
-				copy.Add((addressed_value)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (variables != null)
+				foreach (addressed_value elem in variables)
+					if (elem != null)
+					{
+						copy.Add((addressed_value)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -35108,11 +36742,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			tuple_node_for_formatter copy = new tuple_node_for_formatter();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.el = (expression_list)el.Clone();
-			copy.el.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (el != null)
+			{
+				copy.el = (expression_list)el.Clone();
+				copy.el.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -35343,17 +36984,22 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			uses_closure copy = new uses_closure();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			foreach (unit_or_namespace elem in units)
-			{
-				copy.Add((unit_or_namespace)elem.Clone());
-				copy.Last().Parent = copy;
-			}
-			foreach (uses_list elem in listunitsections)
-			{
-				copy.Add((uses_list)elem.Clone());
-				copy.Last().Parent = copy;
-			}
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (units != null)
+				foreach (unit_or_namespace elem in units)
+					if (elem != null)
+					{
+						copy.Add((unit_or_namespace)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+			if (listunitsections != null)
+				foreach (uses_list elem in listunitsections)
+					if (elem != null)
+					{
+						copy.Add((uses_list)elem.Clone());
+						copy.Last().Parent = copy;
+					}
 			return copy;
 		}
 
@@ -35521,13 +37167,23 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			dot_question_node copy = new dot_question_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.left = (addressed_value)left.Clone();
-			copy.left.Parent = copy;
-			copy.right = (addressed_value)right.Clone();
-			copy.right.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (addressed_value)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (addressed_value)right.Clone();
+				copy.right.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -35736,19 +37392,38 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			slice_expr copy = new slice_expr();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
-			copy.dereferencing_value.Parent = copy;
-			copy.v = (addressed_value)v.Clone();
-			copy.v.Parent = copy;
-			copy.from = (expression)from.Clone();
-			copy.from.Parent = copy;
-			copy.to = (expression)to.Clone();
-			copy.to.Parent = copy;
-			copy.step = (expression)step.Clone();
-			copy.step.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (dereferencing_value != null)
+			{
+				copy.dereferencing_value = (addressed_value)dereferencing_value.Clone();
+				copy.dereferencing_value.Parent = copy;
+			}
+			if (v != null)
+			{
+				copy.v = (addressed_value)v.Clone();
+				copy.v.Parent = copy;
+			}
+			if (from != null)
+			{
+				copy.from = (expression)from.Clone();
+				copy.from.Parent = copy;
+			}
+			if (to != null)
+			{
+				copy.to = (expression)to.Clone();
+				copy.to.Parent = copy;
+			}
+			if (step != null)
+			{
+				copy.step = (expression)step.Clone();
+				copy.step.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -35876,11 +37551,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			no_type copy = new no_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -35988,9 +37670,13 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			yield_unknown_ident copy = new yield_unknown_ident();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
 			copy.name = name;
 			return copy;
 		}
@@ -36088,11 +37774,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			yield_unknown_expression_type copy = new yield_unknown_expression_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -36200,11 +37893,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			yield_unknown_foreach_type copy = new yield_unknown_foreach_type();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.attr_list = (type_definition_attr_list)attr_list.Clone();
-			copy.attr_list.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (attr_list != null)
+			{
+				copy.attr_list = (type_definition_attr_list)attr_list.Clone();
+				copy.attr_list.Parent = copy;
+			}
 			return copy;
 		}
 
@@ -36329,11 +38029,18 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			yield_sequence_node copy = new yield_sequence_node();
 			copy.Parent = this.Parent;
-			copy.source_context = new SourceContext(source_context);
-			copy.attributes = (attribute_list)attributes.Clone();
-			copy.attributes.Parent = copy;
-			copy.ex = (expression)ex.Clone();
-			copy.ex.Parent = copy;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (ex != null)
+			{
+				copy.ex = (expression)ex.Clone();
+				copy.ex.Parent = copy;
+			}
 			return copy;
 		}
 
