@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors
 {
@@ -25,16 +26,16 @@ namespace SyntaxVisitors
         /// <param className="source">The object instance to copy.</param>
         /// <returns>The copied object.</returns>
         public static T Clone<T>(T source)
+            where T: syntax_tree_node
         {
-            if (!typeof(T).IsSerializable)
-            {
-                throw new ArgumentException("The type must be serializable.", "source");
-            }
-
-            // Don't serialize a null object, simply return the default for that object
             if (Object.ReferenceEquals(source, null))
             {
                 return default(T);
+            }
+
+            /*if (!typeof(T).IsSerializable)
+            {
+                throw new ArgumentException("The type must be serializable.", "source");
             }
 
             IFormatter formatter = new BinaryFormatter();
@@ -44,7 +45,8 @@ namespace SyntaxVisitors
                 formatter.Serialize(stream, source);
                 stream.Seek(0, SeekOrigin.Begin);
                 return (T)formatter.Deserialize(stream);
-            }
+            }*/
+            return (T)source.Clone();
         }
     }
 }

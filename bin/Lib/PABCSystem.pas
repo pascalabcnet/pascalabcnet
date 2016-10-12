@@ -3755,17 +3755,20 @@ end;
 
 function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
 begin
-  Result := Range(1,n).Select(i->Random(a,b))
+  for var i:=1 to n do
+    yield Random(a,b)
 end;
 
 function SeqRandomInteger(n: integer; a: integer; b: integer): sequence of integer;
 begin
-  Result := Range(1,n).Select(i->Random(a,b))
+  for var i:=1 to n do
+    yield Random(a,b)
 end;
 
 function SeqRandomReal(n: integer; a: real; b: real): sequence of real;
 begin
-  Result := Range(1,n).Select(i->Random()*(b-a)+a)
+  for var i:=1 to n do
+    yield Random()*(b-a)+a
 end;
 
 function Arr<T>(params a: array of T): array of T;
