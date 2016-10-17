@@ -16223,8 +16223,11 @@ namespace PascalABCCompiler.TreeConverter
 
             statements_list stl = new statements_list(get_location(_statement_list), get_location_with_check(_statement_list.left_logical_bracket), get_location_with_check(_statement_list.right_logical_bracket));
             convertion_data_and_alghoritms.statement_list_stack_push(stl);
-            foreach (SyntaxTree.statement syntax_statement in _statement_list.subnodes)
+
+            for (var i=0; i< _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
+            //foreach (statement syntax_statement in _statement_list.subnodes)
             {
+                statement syntax_statement = _statement_list.subnodes[i];
                 try
                 {
                     if (syntax_statement is SyntaxTree.var_statement)
@@ -16608,6 +16611,12 @@ namespace PascalABCCompiler.TreeConverter
             return new ident("$GenId" + GenIdNum.ToString());
         }
 
+        public void ReplaceSTV(syntax_tree_node from, syntax_tree_node to)
+        {
+            from.Parent.Replace(from, to);
+            to.Parent = from.Parent;
+        }
+
         public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)
         {
             var lambdaSearcher = new LambdaSearcher(_foreach_stmt.in_what);
@@ -16635,9 +16644,9 @@ namespace PascalABCCompiler.TreeConverter
             }
 
 
-            /* SSM 23.08.16 Закомментировал оптимизацию. Не работает с лямбдами. Лямбды обходят старое дерево. А заменить foreach на for на этом этапе пока не получается - не развита инфраструктура
-             * 
-             * if (is1dimdynarr) // Замена foreach на for для массива
+            // SSM 23.08.16 Закомментировал оптимизацию. Не работает с лямбдами. Лямбды обходят старое дерево. А заменить foreach на for на этом этапе пока не получается - не развита инфраструктура
+             
+            /*if (is1dimdynarr) // Замена foreach на for для массива
             {
                 // сгенерировать код для for и вызвать соответствующий visit
                 var arrid = GenIdentName();
@@ -16667,8 +16676,8 @@ namespace PascalABCCompiler.TreeConverter
 
                 var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
-                //var stl = new SyntaxTree.statement_list(vdarr, fornode);
-                //Replace(_foreach_stmt, stl);
+                var stl = new SyntaxTree.statement_list(vdarr, fornode);
+                //ReplaceSTV(_foreach_stmt, stl);
 
                 visit(vdarr);
                 visit(fornode);
