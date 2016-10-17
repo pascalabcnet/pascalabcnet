@@ -452,6 +452,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new yield_unknown_foreach_type();
 				case 215:
 					return new yield_sequence_node();
+				case 216:
+					return new assign_var_tuple();
 			}
 			return null;
 		}
@@ -3816,6 +3818,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_yield_sequence_node);
 			_yield_sequence_node.ex = _read_node() as expression;
+		}
+
+
+		public void visit(assign_var_tuple _assign_var_tuple)
+		{
+			read_assign_var_tuple(_assign_var_tuple);
+		}
+
+		public void read_assign_var_tuple(assign_var_tuple _assign_var_tuple)
+		{
+			read_assign_tuple(_assign_var_tuple);
 		}
 
 	}

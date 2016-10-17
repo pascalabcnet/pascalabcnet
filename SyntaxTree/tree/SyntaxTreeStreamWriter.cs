@@ -5979,6 +5979,18 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(assign_var_tuple _assign_var_tuple)
+		{
+			bw.Write((Int16)216);
+			write_assign_var_tuple(_assign_var_tuple);
+		}
+
+		public void write_assign_var_tuple(assign_var_tuple _assign_var_tuple)
+		{
+			write_assign_tuple(_assign_var_tuple);
+		}
+
 	}
 
 

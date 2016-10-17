@@ -1,14 +1,14 @@
 lex=ABCPascal.lex
 yacc=ABCPascal.y
-lexGen=D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\Gplex.exe
-yaccGen=D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe
+lexGen=J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\Gplex.exe
+yaccGen=J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe
 lexGenOpt=/unicode
 yaccGenOpt=/gplex
-useCustomScript
 script=
-"D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gplex.exe" /unicode "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.lex"
-"D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe" /no-lines /gplex "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y"
-"D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\convert4.exe" 
+"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gplex.exe" /unicode "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.lex"
+"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe" /no-lines /gplex "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y"
+"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\convert4.exe" 
+
 
 
 

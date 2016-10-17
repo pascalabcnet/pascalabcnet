@@ -19107,12 +19107,44 @@ namespace PascalABCCompiler.TreeConverter
             var st = new statement_list(tt);
             for (var i = 0; i < n; i++)
             {
-                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname), 
-                    new ident("Item" + (i + 1).ToString())), Operators.Assignment, 
+                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname),
+                    new ident("Item" + (i + 1).ToString())), Operators.Assignment,
                     asstup.vars.variables[i].source_context);
                 st.Add(a);
             }
             visit(st);
+        }
+
+        public override void visit(SyntaxTree.assign_var_tuple asstup)
+        {
+            // Проверить, что справа - Tuple
+            var expr = convert_strong(asstup.expr);
+            expr = convert_if_typed_expression_to_function_call(expr);
+            var t = ConvertSemanticTypeNodeToNETType(expr.type);
+            if (t == null)
+                AddError(expr.location, "TUPLE_EXPECTED");
+            //if (t != typeof(System.Tuple<>))
+            if (!t.FullName.StartsWith("System.Tuple"))
+                AddError(expr.location, "TUPLE_EXPECTED");
+
+            var n = asstup.vars.variables.Count();
+            if (n > t.GetGenericArguments().Count())
+                AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+
+            var tname = "#temp_var" + UniqueNumStr();
+
+            var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+
+            visit(tt);
+            for (var i = 0; i < n; i++)
+            {
+                var rr = asstup.vars.variables[i] as ident;
+                var a = new var_statement(rr, 
+                    new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())), 
+                    asstup.vars.variables[i].source_context
+                    );
+                visit(a);
+            }
         }
 
         public override void visit(SyntaxTree.slice_expr sl)

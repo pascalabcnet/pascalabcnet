@@ -38327,6 +38327,138 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class assign_var_tuple : assign_tuple
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public assign_var_tuple()
+		{
+
+		}
+
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public assign_var_tuple(addressed_value_list _vars,expression _expr)
+		{
+			this._vars=_vars;
+			this._expr=_expr;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public assign_var_tuple(addressed_value_list _vars,expression _expr,SourceContext sc)
+		{
+			this._vars=_vars;
+			this._expr=_expr;
+			source_context = sc;
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			assign_var_tuple copy = new assign_var_tuple();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (vars != null)
+			{
+				copy.vars = (addressed_value_list)vars.Clone();
+				copy.vars.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new assign_var_tuple TypedClone()
+		{
+			return Clone() as assign_var_tuple;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return vars;
+					case 1:
+						return expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						vars = (addressed_value_list)value;
+						break;
+					case 1:
+						expr = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 

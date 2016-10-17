@@ -1733,6 +1733,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(assign_var_tuple _assign_var_tuple)
+		{
+		}
+
+		public virtual void post_do_visit(assign_var_tuple _assign_var_tuple)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3583,6 +3591,13 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_yield_sequence_node);
 			visit(yield_sequence_node.ex);
 			post_do_visit(_yield_sequence_node);
+		}
+
+		public override void visit(assign_var_tuple _assign_var_tuple)
+		{
+			DefaultVisit(_assign_var_tuple);
+			pre_do_visit(_assign_var_tuple);
+			post_do_visit(_assign_var_tuple);
 		}
 	}
 
