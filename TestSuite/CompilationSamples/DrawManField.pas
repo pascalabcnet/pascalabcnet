@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit DrawManField;
 
@@ -971,7 +971,8 @@ begin
   //MainForm.Bounds := new System.Drawing.Rectangle(settings.Left,settings.Top,settings.Width,settings.Height);
   SetSmoothingOff;
   //GraphABCControl.BackColor := MainForm.BackColor;
-  MainForm.Invoke(MainForm.Show);
+  var del : procedure := MainForm.Show;
+  MainForm.Invoke(del);
 end;
 
 procedure __InitModule__;

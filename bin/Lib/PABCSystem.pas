@@ -3755,17 +3755,20 @@ end;
 
 function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
 begin
-  Result := Range(1,n).Select(i->Random(a,b))
+  for var i:=1 to n do
+    yield Random(a,b)
 end;
 
 function SeqRandomInteger(n: integer; a: integer; b: integer): sequence of integer;
 begin
-  Result := Range(1,n).Select(i->Random(a,b))
+  for var i:=1 to n do
+    yield Random(a,b)
 end;
 
 function SeqRandomReal(n: integer; a: real; b: real): sequence of real;
 begin
-  Result := Range(1,n).Select(i->Random()*(b-a)+a)
+  for var i:=1 to n do
+    yield Random()*(b-a)+a
 end;
 
 function Arr<T>(params a: array of T): array of T;
@@ -3785,110 +3788,6 @@ begin
   System.Array.Copy(a,res,a.Length);
   Result := res;
 end;
-
-{type
-// Вспомогательный класс для генерации бесконечной последовательности целых, начиная с заданного значения
-  IntNumbersClass = class(SeqBaseInteger,IEnumerable<integer>,IEnumerator<integer>)
-  private
-    first,cur: integer;
-  public
-    constructor (first: integer := 0);
-    begin
-      Self.first := first;
-      cur := first-1;
-    end;
-    function get_Current: integer; virtual;
-    begin
-      Result := cur;
-    end;
-    function MoveNext(): boolean; virtual; 
-    begin
-      Result := True;
-      cur += 1;
-    end;
-    procedure Dispose(); override;
-    begin
-      cur := first-1;
-    end;
-  end;}
-
-// Вспомогательный класс для генерации рекуррентных последовательностей
-{  IterateClass<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
-  private
-    first: T;
-    cur: T;
-    next: T->T;
-    isfirst := true;
-  public
-    constructor (first: T; next: T->T);
-    begin
-      Self.first := first;
-      cur := first;
-      Self.next := next;
-    end;
-    
-    function get_Current: T; virtual;
-    begin
-      Result := cur;
-    end;
-
-    function MoveNext(): boolean; virtual; 
-    begin
-      Result := True;
-      if isfirst then 
-        isfirst := false
-      else cur := next(cur)
-    end;
-
-    procedure Dispose(); override;
-    begin
-      cur := first;
-      isfirst := true;
-    end;
-  end;
-
-// Вспомогательный класс для генерации рекуррентных последовательностей по двум предыдущим значениям
-  Iterate2Class<T> = class(SeqBase<T>,IEnumerable<T>,IEnumerator<T>)
-  private
-    first,second: T;
-    a,b: T;
-    next: (T,T)->T;
-    isfirst := true;
-  public
-    constructor (first,second: T; next: (T,T)->T);
-    begin
-      Self.first := first;
-      Self.second := second;
-      a := first;
-      b := second;
-      Self.next := next;
-    end;
-    
-    function get_Current: T; virtual;
-    begin
-      Result := a;
-    end;
-
-    function MoveNext(): boolean; virtual; 
-    begin
-      Result := True;
-      if isfirst then 
-        isfirst := false
-      else
-      begin
-        var v := next(a,b);
-        a := b;
-        b := v;
-      end;  
-    end;
-
-    procedure Dispose(); override;
-    begin
-      a := first;
-      b := second;
-      isfirst := true;
-    end;
-  end;}
 
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальным элементом first и функцией next
 function Iterate<T>(first: T; next: T->T): sequence of T;

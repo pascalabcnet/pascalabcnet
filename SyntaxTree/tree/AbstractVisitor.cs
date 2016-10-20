@@ -1087,6 +1087,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_yield_sequence_node);
 		}
+
+		public virtual void visit(assign_var_tuple _assign_var_tuple)
+		{
+			DefaultVisit(_assign_var_tuple);
+		}
 	}
 
 

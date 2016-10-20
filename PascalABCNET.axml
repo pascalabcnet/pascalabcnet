@@ -1207,6 +1207,17 @@
               </Node>
             </Items>
           </Node>
+          <Node Name="var pdCloned = ObjectCopier.Clone(pd);" NL="0,8837891" NG="0,5507813">
+            <FileName>\syntaxvisitors\yieldvisitors\processyieldscapturedvars.cs</FileName>
+            <Text>var pdCloned = ObjectCopier.Clone(pd);</Text>
+            <OCtx>
+              <i Type="Method">private void CreateErrorCheckerHelper ( procedure_definition pd )</i>
+              <i Type="ClassOrNamespace">public class ProcessYieldCapturedVarsVisitor : BaseChangeVisitor</i>
+              <i Type="ClassOrNamespace">namespace SyntaxVisitors</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="a.Sort((row1, row2) -&gt; 1)" NL="0" NG="0">
@@ -1242,6 +1253,17 @@
             <Text>public override void visit(SyntaxTree.semantic_type_node stn)</Text>
             <OCtx>
               <i Type="Method">public override void visit ( SyntaxTree . semantic_type_node stn )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="CapturedVariablesSubstitutionsManager.Substitute" NL="0,9042969" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>CapturedVariablesSubstitutionsManager.Substitute(this, _block.defs, _block.program_code);</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . block _block )</i>
               <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">
@@ -1385,12 +1407,23 @@
           </i>
         </OCtx>
       </Node>
-      <Node Name="CapturedVariablesSubstitutionsManager.Substitute" NL="0,9042969" NG="0">
-        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
-        <Text>CapturedVariablesSubstitutionsManager.Substitute(this, _block.defs, _block.program_code);</Text>
+      <Node Name="visit(vdarr);" NL="0,9033203" NG="0">
+        <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
+        <Text>visit(vdarr);</Text>
         <OCtx>
-          <i Type="Method">public override void visit ( SyntaxTree . block _block )</i>
-          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+          <i Type="Method">public override void visit ( SyntaxTree . foreach_stmt _foreach_stmt )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
+      <Node Name="foreach (statement syntax_statement" NL="0,9306641" NG="0">
+        <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+        <Text>foreach (statement syntax_statement in _statement_list.subnodes)</Text>
+        <OCtx>
+          <i Type="Method">public override void visit ( SyntaxTree . statement_list _statement_list )</i>
+          <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
           <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
           <i Type="CS_TreeNode">
           </i>

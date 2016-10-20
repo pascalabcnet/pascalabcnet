@@ -1300,6 +1300,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_yield_sequence_node">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(yield_sequence_node _yield_sequence_node);
+		///<summary>
+		///Method to visit assign_var_tuple.
+		///</summary>
+		///<param name="_assign_var_tuple">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(assign_var_tuple _assign_var_tuple);
 	}
 
 

@@ -275,6 +275,20 @@ namespace PascalABCCompiler.SyntaxTree
                 this.FileName = left.FileName == right.FileName ? left.FileName : null;
         }
 
+        public SourceContext(SourceContext sc)
+        {
+            if (sc == null)
+                throw new ArgumentNullException(nameof(sc));
+
+            if (sc._begin_position != null)
+                _begin_position = new file_position(sc._begin_position.line_num, sc._begin_position.column_num);
+            if (sc._end_position != null)
+                _end_position = new file_position(sc._end_position.line_num, sc.end_position.column_num);
+            _begin_symbol_position = sc._begin_symbol_position;
+            _end_symbol_position = sc._end_symbol_position;
+            _file_name = sc._file_name;
+        }
+
         public SourceContext Merge(SourceContext right)
         {
             return new SourceContext(this, right);
