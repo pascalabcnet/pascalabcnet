@@ -2324,7 +2324,7 @@ var_variable_list
 	{
 		$$ = new addressed_value_list($2 as addressed_value,@$);
 	}
-	| variable_list tkComma tkVar variable
+	| var_variable_list tkComma tkVar variable
 	{
 		($1 as addressed_value_list).Add($4 as addressed_value);
 		($1 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4);
