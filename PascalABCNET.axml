@@ -1270,6 +1270,17 @@
               </i>
             </OCtx>
           </Node>
+          <Node Name="if (is1dimdynarr)" NL="0,9033203" NG="0">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>/*if (is1dimdynarr) // Замена foreach на for для массива</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . foreach_stmt _foreach_stmt )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="[::]" NL="0" NG="0">

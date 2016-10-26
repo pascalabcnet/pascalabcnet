@@ -16646,11 +16646,12 @@ namespace PascalABCCompiler.TreeConverter
 
             // SSM 23.08.16 Закомментировал оптимизацию. Не работает с лямбдами. Лямбды обходят старое дерево. А заменить foreach на for на этом этапе пока не получается - не развита инфраструктура
              
-            /*if (is1dimdynarr) // Замена foreach на for для массива
+            if (is1dimdynarr) // Замена foreach на for для массива
             {
                 // сгенерировать код для for и вызвать соответствующий visit
                 var arrid = GenIdentName();
-                var vdarr = new var_statement(arrid, new semantic_addr_value(in_what)); // semantic_addr_value - перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
+                //var vdarr = new var_statement(arrid, new semantic_addr_value(in_what)); // semantic_addr_value - перевод в синтаксис для мгновенного вычисления семантического выражения, которое уже вычислено в in_what
+                var vdarr = new var_statement(arrid, _foreach_stmt.in_what);
 
                 var i = GenIdentName();
                 var x = _foreach_stmt.identifier;
@@ -16677,13 +16678,14 @@ namespace PascalABCCompiler.TreeConverter
                 var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
                 var stl = new SyntaxTree.statement_list(vdarr, fornode);
-                //ReplaceSTV(_foreach_stmt, stl);
+                ReplaceSTV(_foreach_stmt, stl);
 
-                visit(vdarr);
-                visit(fornode);
+                visit(stl);
+                //visit(vdarr);
+                //visit(fornode);
 
                 return;
-            }*/
+            }
             /// SSM 29.07.16 
 
             //throw new NotSupportedError(get_location(_foreach_stmt));
