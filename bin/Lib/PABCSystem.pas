@@ -1495,7 +1495,7 @@ function Length(a: System.Array; dim: integer): integer;
 ///- procedure SetLength(var a: array of T; n1,n2,...: integer);
 /// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
 //procedure SetLength(var a: System.Array);
-///- procedure Copy(var a: array of T);
+///- function Copy(var a: array of T): array of T;
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию

@@ -662,7 +662,6 @@ end;
 function Node.getNext:Node;
 var tmp: IntPtr;
     tmpNode: Node;
-    i: integer;
 begin
   result := nil;
   if isDisposed then
@@ -670,7 +669,7 @@ begin
   if x.Next <> IntPtr.Zero then 
   begin
      tmp := x.Next;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then 
@@ -700,14 +699,13 @@ end;
 function Node.getPrev: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Prev <> IntPtr.Zero then begin
      tmp := x.Prev;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -736,14 +734,13 @@ end;
 function Node.getLeft: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Left <> IntPtr.Zero then begin
      tmp := x.Left;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -772,14 +769,13 @@ end;
 function Node.getRight: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Right <> IntPtr.Zero then begin
      tmp := x.Right;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -808,14 +804,13 @@ end;
 function Node.getParent: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Parent <> IntPtr.Zero then begin
      tmp := x.Parent;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -938,7 +933,6 @@ function GetNode: Node;
 var 
   p: IntPtr;
   sNode: InternalNode;
-  i: integer;
 begin
   //raise new NotSupportedException('Работа с динамическими структурами задачника PT4 не поддерживается в этой версии компилятора. Исправление ошибки планируется в следуйщей версии');
   //result := new PT4Node(sNode, p);// fixme здесь ошибка генерации кода!
@@ -953,7 +947,7 @@ begin
   if p = IntPtr.Zero then
     result := nil
   else begin  
-    for i:=0 to loadNodes.Count-1 do 
+    for var i:=0 to loadNodes.Count-1 do 
       if sNode=Node(loadNodes[i]).x then
          result := Node(loadNodes[i]);
     if result = nil then begin
@@ -1833,9 +1827,8 @@ end;
 /// комментарий cmt, размер последовательности и значения, 
 /// полученные из элементов последовательности 
 /// с помощью указанного лямбда-выражения
-function System.Collections.Generic.IEnumerable<TSource>.Show
-  (cmt: string; selector: System.Func<TSource, string>): 
-  System.Collections.Generic.IEnumerable<TSource>;
+
+function Show<TSource>(self: sequence of TSource; cmt: string; selector: System.Func<TSource, string>): sequence of TSource; extensionmethod;
 begin
   var b := self.Select(selector).ToArray();
   PT4.Show(cmt);
@@ -1850,17 +1843,14 @@ end;
 /// размер последовательности и значения, 
 /// полученные из элементов последовательности 
 /// с помощью указанного лямбда-выражения
-function System.Collections.Generic.IEnumerable<TSource>.Show
-  (selector: System.Func<TSource, string>): 
-  System.Collections.Generic.IEnumerable<TSource>;
+function Show<TSource>(Self: sequence of TSource; selector: System.Func<TSource, string>): sequence of TSource; extensionmethod;
 begin
   result := self.Show('', selector); 
 end;
 
 /// Выводит в разделе отладки окна задачника 
 /// комментарий cmt, размер последовательности и ее элементы
-function System.Collections.Generic.IEnumerable<TSource>.Show(cmt: string): 
-  System.Collections.Generic.IEnumerable<TSource>;
+function Show<TSource>(Self: sequence of TSource; cmt: string): sequence of TSource; extensionmethod;
 begin
   result := self;
   var a := self.ToArray;
@@ -1877,10 +1867,10 @@ begin
     string.Format(s, e).Replace(',', '.'));
 end;
 
+
 /// Выводит в разделе отладки окна задачника 
 /// размер последовательности и ее элементы.
-function System.Collections.Generic.IEnumerable<TSource>.Show(): 
-  System.Collections.Generic.IEnumerable<TSource>;
+function Show<TSource>(Self: sequence of TSource): sequence of TSource; extensionmethod;
 begin
   result := self.Show(''); 
 end;
