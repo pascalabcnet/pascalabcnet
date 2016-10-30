@@ -1495,7 +1495,7 @@ function Length(a: System.Array; dim: integer): integer;
 ///- procedure SetLength(var a: array of T; n1,n2,...: integer);
 /// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
 //procedure SetLength(var a: System.Array);
-///- procedure Copy(var a: array of T);
+///- fucntion Copy(a: array of T): a: array of T;
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию
@@ -1514,8 +1514,10 @@ procedure Reverse<T>(a: array of T; index,length: integer);
 function Range(a,b: integer): sequence of integer;
 /// Возвращает последовательность символов от c1 до c2
 function Range(c1,c2: char): sequence of char;
-/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
+/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей (Используйте Partition)
 function Range(a,b: real; n: integer): sequence of real;
+/// Возвращает последовательность вещественных в точках разбиения отрезка [a,b] на n равных частей
+function Partition(a,b: real; n: integer): sequence of real;
 /// Возвращает последовательность целых от a до b с шагом step
 function Range(a,b,step: integer): sequence of integer;
 /// Возвращает последовательность указанных элементов
@@ -3683,29 +3685,24 @@ begin
   Result := Range(integer(c1),integer(c2)).Select(x->Chr(x));
 end;
 
-type AB = class
-  a,b,h: real;
-  n: integer;
-  constructor(aa,bb: real; nn: integer);
-  begin
-    n := nn;
-    a := aa; b := bb;
-    h := (b-a)/n;
-  end;
-  function F(x: integer): real;
-  begin
-    Result := a + h*x;
-  end;
-end;
-
 function Range(a,b: real; n: integer): sequence of real;
 begin
   if n=0 then
     raise new System.ArgumentException('n=0');
   if n<0 then
     raise new System.ArgumentException('n<0');
-  var ab1 := new AB(a,b,n);
-  Result := Range(0,n).Select(ab1.F)
+  var r := a;
+  var h := (b-a)/n;
+  for var i := 0 to n do
+  begin
+    yield r;
+    r += h
+  end;
+end;
+
+function Partition(a,b: real; n: integer): sequence of real;
+begin
+  Result := Range(a,b,n)
 end;
 
 type
