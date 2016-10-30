@@ -2684,6 +2684,9 @@ namespace PascalABCCompiler.NETGenerator
                 {
                     if (!fb.IsStatic)
                     {
+                        //il.Emit(OpCodes.Ldloc, vi.meth.frame);
+                        //il.Emit(OpCodes.Ldfld, fb);
+
                         il.Emit(OpCodes.Ldloc, vi.meth.frame);
                         init_value.visit(this);
                         EmitBox(init_value, fb.FieldType);
@@ -5512,7 +5515,7 @@ namespace PascalABCCompiler.NETGenerator
                 (value is ICommonConstructorCall) && !((ICommonConstructorCall)value).new_obj_awaited()
             ))
                 //\ssyy
-                if ((value is IFunctionCallNode) && !(value is IBasicFunctionCallNode))
+                if ((value is IFunctionCallNode) && !(value is IBasicFunctionCallNode && (value as IBasicFunctionCallNode).basic_function.basic_function_type != basic_function_type.none))
                 {
                     IFunctionCallNode fc = value as IFunctionCallNode;
                     if (fc.function.return_value_type != null)
