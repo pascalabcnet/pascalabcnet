@@ -4329,7 +4329,12 @@ namespace CodeCompletion
         public override void visit(sequence_type _sequence_type)
         {
             template_type_reference ttr = new template_type_reference();
-            ttr.name = new named_type_reference("IEnumerable");
+            List<ident> names = new List<ident>();
+            names.Add(new ident("System"));
+            names.Add(new ident("Collections"));
+            names.Add(new ident("Generic"));
+            names.Add(new ident("IEnumerable"));
+            ttr.name = new named_type_reference(names);
             ttr.source_context = _sequence_type.source_context;
             ttr.params_list = new template_param_list();
             ttr.params_list.params_list.Add(_sequence_type.elements_type);
