@@ -3205,10 +3205,16 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для List<T> 
 //------------------------------------------------------------------------------
-function List<T>.operator+=(var Self: List<T>; x: T): List<T>;
+function operator+=<T>(a, b: List<T>): List<T>; extensionmethod;
 begin
-  Self.Add(x);
-  Result := Self;
+  a.AddRange(b);
+  Result := a;
+end;
+
+function operator+=<T>(a: List<T>; x: T): List<T>; extensionmethod;
+begin
+  a.Add(x);
+  Result := a;
 end;
 
 ///--

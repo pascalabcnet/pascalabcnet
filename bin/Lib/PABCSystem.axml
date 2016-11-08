@@ -2110,82 +2110,14 @@
               </Node>
               <Node Name="Extension methods for String 3 - read">
                 <FileName>\PABCSystem.pas</FileName>
-                <Text>function string.ReadInteger(var from: integer): integer;</Text>
+                <Text>function ReadIntegerFromString(s: string; var from: integer): integer;</Text>
                 <OCtx>
-                  <i Type="Method">function string . ReadInteger ( var from : integer ) : integer</i>
-                  <i Type="">
-                  </i>
-                </OCtx>
-              </Node>
-              <Node Name="string методы расширения 2">
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>//    string методы расширения</Text>
-                <OCtx>
+                  <i Type="Method">function ReadIntegerFromString ( s : string ; var from : integer ) : integer</i>
                   <i Type="PAS_TreeNode">
                   </i>
                 </OCtx>
-                <ICtx>
-                  <i Type="Field">unit PABCSystem</i>
-                  <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
-                  <i Type="Field">MaxShortInt = shortint . MaxValue</i>
-                  <i Type="Field">MaxByte = byte . MaxValue</i>
-                  <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
-                  <i Type="Field">MaxWord = word . MaxValue</i>
-                  <i Type="Field">MaxLongWord = longword . MaxValue</i>
-                  <i Type="Field">MaxInt64 = int64 . MaxValue</i>
-                  <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
-                  <i Type="Field">MaxDouble = real . MaxValue</i>
-                </ICtx>
               </Node>
             </Items>
-          </Node>
-          <Node Name="Extension methods for IEnumerable&lt;T&gt;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension methods for IEnumerable&lt;T&gt;</Text>
-            <OCtx>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="Extension operators for IEnumerable&lt;T&gt;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension operators for IEnumerable&lt;T&gt;</Text>
-            <OCtx>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-            <ICtx>
-              <i Type="Field">unit PABCSystem</i>
-              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
-              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
-              <i Type="Field">MaxByte = byte . MaxValue</i>
-              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
-              <i Type="Field">MaxWord = word . MaxValue</i>
-              <i Type="Field">MaxLongWord = longword . MaxValue</i>
-              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
-              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
-              <i Type="Field">MaxDouble = real . MaxValue</i>
-            </ICtx>
-          </Node>
-          <Node Name="Extension methods for Complex">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension methods for Complex</Text>
-            <OCtx>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-            <ICtx>
-              <i Type="Field">unit PABCSystem</i>
-              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
-              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
-              <i Type="Field">MaxByte = byte . MaxValue</i>
-              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
-              <i Type="Field">MaxWord = word . MaxValue</i>
-              <i Type="Field">MaxLongWord = longword . MaxValue</i>
-              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
-              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
-              <i Type="Field">MaxDouble = real . MaxValue</i>
-            </ICtx>
           </Node>
         </Items>
       </Node>
