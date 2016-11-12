@@ -688,6 +688,44 @@
               </Node>
             </Items>
           </Node>
+          <Node Name="Print(Self: array [,] of real">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Print(Self: array [,] of real; w: integer := 8; f: integer := 2): array [,] of real; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Print ( Self : array [ , ] of real ; w : integer : = 8 ; f : integer : = 2 ) : array [ , ] of real extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Print">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Print&lt;T&gt;(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Print &lt; T &gt; ( Self : array [ , ] of T ; w : integer : = 4 ) : array [ , ] of T extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Методы расширения типа array [,] ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//&gt;&gt;     Методы расширения типа array [,] of T # Extension methods for array [,] of T</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="Раздел реализации">
@@ -2549,6 +2587,15 @@
           <i Type="ClassMethod">procedure Dispose ( ) virtual</i>
           <i Type="ClassMethod">procedure Reset ( )</i>
         </ICtx>
+      </Node>
+      <Node Name="Print&lt;T&gt;(Self: array [,] of T">
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Print&lt;T&gt;(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;</Text>
+        <OCtx>
+          <i Type="Method">function Print &lt; T &gt; ( Self : array [ , ] of T ; w : integer : = 4 ) : array [ , ] of T extensionmethod</i>
+          <i Type="PAS_TreeNode">
+          </i>
+        </OCtx>
       </Node>
     </Items>
   </Node>

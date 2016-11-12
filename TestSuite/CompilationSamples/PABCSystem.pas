@@ -1495,7 +1495,7 @@ function Length(a: System.Array; dim: integer): integer;
 ///- procedure SetLength(var a: array of T; n1,n2,...: integer);
 /// Устанавливает размеры n-мерного динамического массива. Старое содержимое сохраняется
 //procedure SetLength(var a: System.Array);
-///- fucntion Copy(a: array of T): a: array of T;
+///- function Copy(a: array of T): array of T;
 /// Создаёт копию динамического массива
 function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию
@@ -3205,10 +3205,16 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для List<T> 
 //------------------------------------------------------------------------------
-function List<T>.operator+=(var Self: List<T>; x: T): List<T>;
+function operator+=<T>(a, b: List<T>): List<T>; extensionmethod;
 begin
-  Self.Add(x);
-  Result := Self;
+  a.AddRange(b);
+  Result := a;
+end;
+
+function operator+=<T>(a: List<T>; x: T): List<T>; extensionmethod;
+begin
+  a.Add(x);
+  Result := a;
 end;
 
 ///--
@@ -8587,6 +8593,45 @@ end;
 function SystemSlice<T>(Self: List<T>; situation: integer; from,&to,step: integer): List<T>; extensionmethod;
 begin
   Result := SystemSliceListImpl(Self,situation,from,&to,step);
+end;
+
+// -----------------------------------------------------
+//>>     Методы расширения типа array [,] of T # Extension methods for array [,] of T
+// -----------------------------------------------------
+function Print<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
+begin
+  var m := Self.GetLength(0);
+  var n := Self.GetLength(1);
+	for var i:=0 to m-1 do
+	begin
+    for var j:=0 to n-1 do
+      write(StructuredObjectToString(Self[i,j]).PadLeft(w));
+    Writeln;  
+  end;
+	Result := Self;  
+end;
+
+function Print(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
+begin
+  var m := Self.GetLength(0);
+  var n := Self.GetLength(1);
+	for var i:=0 to m-1 do
+	begin
+    for var j:=0 to n-1 do
+      write(FormatValue(Self[i,j],w,f));
+    Writeln;  
+  end;
+	Result := Self;  
+end;
+
+function Println<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
+begin
+  Self.Print(w)
+end;
+
+function Println(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
+begin
+  Self.Println(w,f)
 end;
 
 // -----------------------------------------------------

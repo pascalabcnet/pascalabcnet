@@ -8596,6 +8596,45 @@ begin
 end;
 
 // -----------------------------------------------------
+//>>     Методы расширения типа array [,] of T # Extension methods for array [,] of T
+// -----------------------------------------------------
+function Print<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
+begin
+  var m := Self.GetLength(0);
+  var n := Self.GetLength(1);
+	for var i:=0 to m-1 do
+	begin
+    for var j:=0 to n-1 do
+      write(StructuredObjectToString(Self[i,j]).PadLeft(w));
+    Writeln;  
+  end;
+	Result := Self;  
+end;
+
+function Print(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
+begin
+  var m := Self.GetLength(0);
+  var n := Self.GetLength(1);
+	for var i:=0 to m-1 do
+	begin
+    for var j:=0 to n-1 do
+      write(FormatValue(Self[i,j],w,f));
+    Writeln;  
+  end;
+	Result := Self;  
+end;
+
+function Println<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
+begin
+  Self.Print(w)
+end;
+
+function Println(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
+begin
+  Self.Println(w,f)
+end;
+
+// -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
 // -----------------------------------------------------
 
