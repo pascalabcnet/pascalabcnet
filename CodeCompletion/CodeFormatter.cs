@@ -471,8 +471,8 @@ namespace CodeFormatters
             if (prev_pos < pos && cur_src_off < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
-                //if (comm.EndsWith(" ") && comm.IndexOf("\n") == -1)
-                //    comm = comm.TrimEnd(' ') + " ";
+                if (sn is program_module || sn is unit_module)
+                    comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))
                     add_space_before = true;
                 WriteCommentWithIndent(comm, false);
@@ -1438,7 +1438,7 @@ namespace CodeFormatters
             if (_program_module.used_units != null)
                 visit_node(_program_module.used_units);
             if (_program_module.program_block != null)
-                visit_node(_program_module.program_block);
+                visit_node(_program_module.program_block); 
             //sb.Append(".");
         }
 
