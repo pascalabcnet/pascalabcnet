@@ -2627,9 +2627,6 @@ namespace CodeFormatters
                 if (i < _simple_attribute_list.attributes.Count - 1)
                     sb.Append(",");
             }
-            //sb.Append("]");
-            //if (attr_on_new_line)
-            //    sb.AppendLine();
         }
 
         public override void visit(attribute_list _attribute_list)
@@ -2813,7 +2810,6 @@ namespace CodeFormatters
                 add_space_after = true;
                 i++;
             }
-            //sb.Append(")");
         }
 
         public override void visit(yield_node yn)
