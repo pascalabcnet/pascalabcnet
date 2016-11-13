@@ -1,4 +1,4 @@
-/// Конструктор для электронного задачника Programming Taskbook 4.11
+﻿/// Конструктор для электронного задачника Programming Taskbook 4.11
 unit PT4TaskMakerNET;
 
 //------------------------------------------------------------------------------
@@ -63,18 +63,18 @@ procedure CreateGroup(GroupName, GroupDescription, GroupAuthor, GroupKey: string
 procedure UseTask(GroupName: string; TaskNumber: integer);
 
 /// Должна указываться первой при определении нового задания
-procedure CreateTask(SubgroupName: string); overload;
+procedure CreateTask(SubgroupName: string); 
 
 /// Должна указываться первой при определении нового задания
-procedure CreateTask; overload;
-
-/// Должна указываться первой при определении нового задания
-/// (вариант для параллельного режима задачника)
-procedure CreateTask(SubgroupName: string; var ProcessCount: integer); overload;
+procedure CreateTask; 
 
 /// Должна указываться первой при определении нового задания
 /// (вариант для параллельного режима задачника)
-procedure CreateTask(var ProcessCount: integer); overload;
+procedure CreateTask(SubgroupName: string; var ProcessCount: integer); 
+
+/// Должна указываться первой при определении нового задания
+/// (вариант для параллельного режима задачника)
+procedure CreateTask(var ProcessCount: integer); 
 
 /// Позволяет определить текущий язык программирования, выбранный для задачника
 /// Возвращает значения, связанные с константами lgXXX
@@ -383,10 +383,10 @@ procedure CommentText(S: string);
 
 /// Добавляет комментарий из другой группы заданий (или ее подгруппы,
 /// если ее второй параметр не является пустой строкой)
-procedure UseComment(GroupName, SubgroupName: string); overload;
+procedure UseComment(GroupName, SubgroupName: string); 
 
 /// Добавляет комментарий из другой группы заданий
-procedure UseComment(GroupName: string); overload;
+procedure UseComment(GroupName: string); 
 
 /// Устанавливает режим добавления комментария к подгруппе заданий
 procedure Subgroup(SubgroupName: string);
