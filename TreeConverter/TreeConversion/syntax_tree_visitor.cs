@@ -13993,7 +13993,7 @@ namespace PascalABCCompiler.TreeConverter
             if (ent != null)
             {
                 var t = ent.compiled_type;
-                if (t.FullName.StartsWith("System.Tuple"))
+                if (t != null && !t.IsArray && t.FullName.StartsWith("System.Tuple"))
                 {
                     expression eee = parameters.expressions[0];
 

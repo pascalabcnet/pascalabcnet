@@ -11,8 +11,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         public string Name { get; } = "Standard";
         public syntax_tree_node Convert(syntax_tree_node root)
         {
-            FillParentNodeVisitor.New.ProcessNode(root); // прошивание ссылками на Parent nodes
-            // Пока нельзя вызывать - если это делать, то ObjectCopier.Clone провоцирует катастрофически долгое время работы!!!
+            FillParentNodeVisitor.New.ProcessNode(root); // прошивание ссылками на Parent nodes. Должно идти первым
+            StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root); // выносим выражения с лямбдами из заголовка foreach
+
             return root;
         }
     }

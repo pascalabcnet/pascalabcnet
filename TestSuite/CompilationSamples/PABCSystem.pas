@@ -8626,12 +8626,14 @@ end;
 
 function Println<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
 begin
-  Self.Print(w)
+  Self.Print(w);
+	Result := Self;  
 end;
 
 function Println(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
 begin
-  Self.Println(w,f)
+  Self.Println(w,f);
+	Result := Self;  
 end;
 
 // -----------------------------------------------------

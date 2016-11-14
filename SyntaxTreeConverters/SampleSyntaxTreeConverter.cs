@@ -83,11 +83,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
     public class SampleSyntaxTreeConvIChangeNameToExcludeFromConvertersList: ISyntaxTreeConverter
     {
         public string Name { get; } = "Sample";
-        public string Version { get; set; }
-        public string Description { get; set; }
-        public string Copyright { get; set; }
-        public ConverterType ConverterType { get; set; }
-        public ExecutionOrder ExecutionOrder { get; set; }
         public syntax_tree_node Convert(syntax_tree_node root)
         {
             //var v = new SampleVisitor();
