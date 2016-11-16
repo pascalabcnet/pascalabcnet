@@ -36,7 +36,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._source_context=_source_context;
 			source_context = sc;
 		}
-
 		protected SourceContext _source_context;
 
 		///<summary>
@@ -136,7 +135,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -222,7 +220,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 
 		}
-
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -332,14 +329,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr_lambda_body=_expr_lambda_body;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public statement_list(statement elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<statement> _subnodes=new List<statement>();
 		protected token_info _left_logical_bracket;
 		protected token_info _right_logical_bracket;
@@ -406,7 +400,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public statement_list Add(statement elem, SourceContext sc = null)
 		{
 			subnodes.Add(elem);
@@ -414,22 +407,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(statement el)
 		{
 			subnodes.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<statement> els)
 		{
 			subnodes.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params statement[] els)
 		{
 			subnodes.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(statement el)
 		{
 			var ind = subnodes.FindIndex(x => x == el);
@@ -437,55 +430,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(statement el, statement newel)
 		{
 			subnodes.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(statement el, IEnumerable<statement> newels)
 		{
 			subnodes.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(statement el, statement newel)
 		{
 			subnodes.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(statement el, IEnumerable<statement> newels)
 		{
 			subnodes.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(statement el)
 		{
 			return subnodes.Remove(el);
 		}
-
+		
 		public void ReplaceInList(statement el, statement newel)
 		{
 			subnodes[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(statement el, IEnumerable<statement> newels)
 		{
 			var ind = FindIndexInList(el);
 			subnodes.RemoveAt(ind);
 			subnodes.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<statement> match)
 		{
 			return subnodes.RemoveAll(match);
 		}
-
+		
 		public statement Last()
 		{
 			return subnodes[subnodes.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -639,7 +631,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		protected string _name;
 
 		///<summary>
@@ -765,7 +756,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._operator_type=_operator_type;
 			source_context = sc;
 		}
-
 		protected addressed_value _to;
 		protected expression _from;
 		protected Operators _operator_type;
@@ -949,7 +939,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._operation_type=_operation_type;
 			source_context = sc;
 		}
-
 		protected expression _left;
 		protected expression _right;
 		protected Operators _operation_type;
@@ -1131,7 +1120,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._operation_type=_operation_type;
 			source_context = sc;
 		}
-
 		protected expression _subnode;
 		protected Operators _operation_type;
 
@@ -1269,7 +1257,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -1372,7 +1359,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		protected bool _val;
 
 		///<summary>
@@ -1494,7 +1480,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		protected Int32 _val;
 
 		///<summary>
@@ -1616,7 +1601,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		protected double _val;
 
 		///<summary>
@@ -1740,7 +1724,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._subprogram_defs=_subprogram_defs;
 			source_context = sc;
 		}
-
 		protected statement_list _subprogram_code;
 		protected declarations _subprogram_defs;
 
@@ -1882,7 +1865,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -1985,7 +1967,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			source_context = sc;
 		}
-
 		protected type_definition_attr_list _attr_list;
 
 		///<summary>
@@ -2123,7 +2104,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._dereferencing_value=_dereferencing_value;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -2261,14 +2241,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._names=_names;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public named_type_reference(ident elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<ident> _names=new List<ident>();
 
 		///<summary>
@@ -2287,7 +2264,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public named_type_reference Add(ident elem, SourceContext sc = null)
 		{
 			names.Add(elem);
@@ -2295,22 +2271,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(ident el)
 		{
 			names.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<ident> els)
 		{
 			names.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params ident[] els)
 		{
 			names.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(ident el)
 		{
 			var ind = names.FindIndex(x => x == el);
@@ -2318,55 +2294,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(ident el, ident newel)
 		{
 			names.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
 			names.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(ident el, ident newel)
 		{
 			names.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
 			names.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(ident el)
 		{
 			return names.Remove(el);
 		}
-
+		
 		public void ReplaceInList(ident el, ident newel)
 		{
 			names[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
 			var ind = FindIndexInList(el);
 			names.RemoveAt(ind);
 			names.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<ident> match)
 		{
 			return names.RemoveAll(match);
 		}
-
+		
 		public ident Last()
 		{
 			return names[names.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -2509,14 +2484,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._var_definitions=_var_definitions;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public variable_definitions(var_def_statement elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<var_def_statement> _var_definitions=new List<var_def_statement>();
 
 		///<summary>
@@ -2535,7 +2507,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public variable_definitions Add(var_def_statement elem, SourceContext sc = null)
 		{
 			var_definitions.Add(elem);
@@ -2543,22 +2514,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(var_def_statement el)
 		{
 			var_definitions.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<var_def_statement> els)
 		{
 			var_definitions.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params var_def_statement[] els)
 		{
 			var_definitions.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(var_def_statement el)
 		{
 			var ind = var_definitions.FindIndex(x => x == el);
@@ -2566,55 +2537,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(var_def_statement el, var_def_statement newel)
 		{
 			var_definitions.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
 			var_definitions.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
 		{
 			var_definitions.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
 			var_definitions.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(var_def_statement el)
 		{
 			return var_definitions.Remove(el);
 		}
-
+		
 		public void ReplaceInList(var_def_statement el, var_def_statement newel)
 		{
 			var_definitions[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
 			var ind = FindIndexInList(el);
 			var_definitions.RemoveAt(ind);
 			var_definitions.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<var_def_statement> match)
 		{
 			return var_definitions.RemoveAll(match);
 		}
-
+		
 		public var_def_statement Last()
 		{
 			return var_definitions[var_definitions.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -2741,14 +2711,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._idents=_idents;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public ident_list(ident elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<ident> _idents=new List<ident>();
 
 		///<summary>
@@ -2767,7 +2734,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public ident_list Add(ident elem, SourceContext sc = null)
 		{
 			idents.Add(elem);
@@ -2775,22 +2741,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(ident el)
 		{
 			idents.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<ident> els)
 		{
 			idents.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params ident[] els)
 		{
 			idents.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(ident el)
 		{
 			var ind = idents.FindIndex(x => x == el);
@@ -2798,55 +2764,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(ident el, ident newel)
 		{
 			idents.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
 			idents.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(ident el, ident newel)
 		{
 			idents.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
 			idents.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(ident el)
 		{
 			return idents.Remove(el);
 		}
-
+		
 		public void ReplaceInList(ident el, ident newel)
 		{
 			idents[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
 			var ind = FindIndexInList(el);
 			idents.RemoveAt(ind);
 			idents.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<ident> match)
 		{
 			return idents.RemoveAll(match);
 		}
-
+		
 		public ident Last()
 		{
 			return idents[idents.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -2977,7 +2942,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._is_event=_is_event;
 			source_context = sc;
 		}
-
 		protected ident_list _vars;
 		protected type_definition _vars_type;
 		protected expression _inital_value;
@@ -3200,7 +3164,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attributes=_attributes;
 			source_context = sc;
 		}
-
 		protected attribute_list _attributes;
 
 		///<summary>
@@ -3332,14 +3295,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public declarations(declaration elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<declaration> _defs=new List<declaration>();
 
 		///<summary>
@@ -3358,7 +3318,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public declarations Add(declaration elem, SourceContext sc = null)
 		{
 			defs.Add(elem);
@@ -3366,22 +3325,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(declaration el)
 		{
 			defs.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<declaration> els)
 		{
 			defs.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params declaration[] els)
 		{
 			defs.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(declaration el)
 		{
 			var ind = defs.FindIndex(x => x == el);
@@ -3389,55 +3348,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(declaration el, declaration newel)
 		{
 			defs.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
 			defs.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(declaration el, declaration newel)
 		{
 			defs.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
 			defs.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(declaration el)
 		{
 			return defs.Remove(el);
 		}
-
+		
 		public void ReplaceInList(declaration el, declaration newel)
 		{
 			defs[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<declaration> match)
 		{
 			return defs.RemoveAll(match);
 		}
-
+		
 		public declaration Last()
 		{
 			return defs[defs.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -3559,14 +3517,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._compilation_units=_compilation_units;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public program_tree(compilation_unit elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<compilation_unit> _compilation_units=new List<compilation_unit>();
 
 		///<summary>
@@ -3585,7 +3540,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public program_tree Add(compilation_unit elem, SourceContext sc = null)
 		{
 			compilation_units.Add(elem);
@@ -3593,22 +3547,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(compilation_unit el)
 		{
 			compilation_units.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<compilation_unit> els)
 		{
 			compilation_units.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params compilation_unit[] els)
 		{
 			compilation_units.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(compilation_unit el)
 		{
 			var ind = compilation_units.FindIndex(x => x == el);
@@ -3616,55 +3570,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(compilation_unit el, compilation_unit newel)
 		{
 			compilation_units.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
 			compilation_units.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(compilation_unit el, compilation_unit newel)
 		{
 			compilation_units.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
 			compilation_units.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(compilation_unit el)
 		{
 			return compilation_units.Remove(el);
 		}
-
+		
 		public void ReplaceInList(compilation_unit el, compilation_unit newel)
 		{
 			compilation_units[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
 			var ind = FindIndexInList(el);
 			compilation_units.RemoveAt(ind);
 			compilation_units.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<compilation_unit> match)
 		{
 			return compilation_units.RemoveAll(match);
 		}
-
+		
 		public compilation_unit Last()
 		{
 			return compilation_units[compilation_units.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -3786,7 +3739,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._prog_name=_prog_name;
 			source_context = sc;
 		}
-
 		protected ident _prog_name;
 
 		///<summary>
@@ -3918,7 +3870,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Value=_Value;
 			source_context = sc;
 		}
-
 		protected string _Value;
 
 		///<summary>
@@ -4040,14 +3991,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expressions=_expressions;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public expression_list(expression elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<expression> _expressions=new List<expression>();
 
 		///<summary>
@@ -4066,7 +4014,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public expression_list Add(expression elem, SourceContext sc = null)
 		{
 			expressions.Add(elem);
@@ -4074,22 +4021,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(expression el)
 		{
 			expressions.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<expression> els)
 		{
 			expressions.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params expression[] els)
 		{
 			expressions.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(expression el)
 		{
 			var ind = expressions.FindIndex(x => x == el);
@@ -4097,55 +4044,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(expression el, expression newel)
 		{
 			expressions.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(expression el, IEnumerable<expression> newels)
 		{
 			expressions.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(expression el, expression newel)
 		{
 			expressions.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(expression el, IEnumerable<expression> newels)
 		{
 			expressions.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(expression el)
 		{
 			return expressions.Remove(el);
 		}
-
+		
 		public void ReplaceInList(expression el, expression newel)
 		{
 			expressions[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(expression el, IEnumerable<expression> newels)
 		{
 			var ind = FindIndexInList(el);
 			expressions.RemoveAt(ind);
 			expressions.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<expression> match)
 		{
 			return expressions.RemoveAll(match);
 		}
-
+		
 		public expression Last()
 		{
 			return expressions[expressions.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -4267,7 +4213,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._dereferencing_value=_dereferencing_value;
 			source_context = sc;
 		}
-
 		protected addressed_value _dereferencing_value;
 
 		///<summary>
@@ -4423,7 +4368,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._indexes=_indexes;
 			source_context = sc;
 		}
-
 		protected expression_list _indexes;
 
 		///<summary>
@@ -4584,7 +4528,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._create_loop_variable=_create_loop_variable;
 			source_context = sc;
 		}
-
 		protected ident _loop_variable;
 		protected expression _initial_value;
 		protected expression _finish_value;
@@ -4887,7 +4830,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected statement _statements;
 		protected expression _expr;
 
@@ -5054,7 +4996,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._CycleType=_CycleType;
 			source_context = sc;
 		}
-
 		protected expression _expr;
 		protected statement _statements;
 		protected WhileCycleType _CycleType;
@@ -5238,7 +5179,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._else_body=_else_body;
 			source_context = sc;
 		}
-
 		protected expression _condition;
 		protected statement _then_body;
 		protected statement _else_body;
@@ -5446,7 +5386,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._pointed_to=_pointed_to;
 			source_context = sc;
 		}
-
 		protected type_definition _pointed_to;
 
 		///<summary>
@@ -5616,7 +5555,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			source_context = sc;
 		}
-
 		protected expression _left;
 		protected expression _right;
 
@@ -5808,14 +5746,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._indexers=_indexers;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public indexers_types(type_definition elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<type_definition> _indexers=new List<type_definition>();
 
 		///<summary>
@@ -5834,7 +5769,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public indexers_types Add(type_definition elem, SourceContext sc = null)
 		{
 			indexers.Add(elem);
@@ -5842,22 +5776,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(type_definition el)
 		{
 			indexers.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<type_definition> els)
 		{
 			indexers.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params type_definition[] els)
 		{
 			indexers.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(type_definition el)
 		{
 			var ind = indexers.FindIndex(x => x == el);
@@ -5865,55 +5799,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
 			indexers.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
 			indexers.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
 			indexers.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
 			indexers.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(type_definition el)
 		{
 			return indexers.Remove(el);
 		}
-
+		
 		public void ReplaceInList(type_definition el, type_definition newel)
 		{
 			indexers[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
 			var ind = FindIndexInList(el);
 			indexers.RemoveAt(ind);
 			indexers.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<type_definition> match)
 		{
 			return indexers.RemoveAll(match);
 		}
-
+		
 		public type_definition Last()
 		{
 			return indexers[indexers.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -6079,7 +6012,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._elements_type=_elements_type;
 			source_context = sc;
 		}
-
 		protected indexers_types _indexers;
 		protected type_definition _elements_type;
 
@@ -6252,7 +6184,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._labels=_labels;
 			source_context = sc;
 		}
-
 		protected ident_list _labels;
 
 		///<summary>
@@ -6408,7 +6339,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attribute_type=_attribute_type;
 			source_context = sc;
 		}
-
 		protected proc_attribute _attribute_type;
 
 		///<summary>
@@ -6537,7 +6467,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._inital_value=_inital_value;
 			source_context = sc;
 		}
-
 		protected ident_list _idents;
 		protected type_definition _vars_type;
 		protected parametr_kind _param_kind;
@@ -6743,14 +6672,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._params_list=_params_list;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public formal_parameters(typed_parameters elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<typed_parameters> _params_list=new List<typed_parameters>();
 
 		///<summary>
@@ -6769,7 +6695,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public formal_parameters Add(typed_parameters elem, SourceContext sc = null)
 		{
 			params_list.Add(elem);
@@ -6777,22 +6702,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(typed_parameters el)
 		{
 			params_list.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<typed_parameters> els)
 		{
 			params_list.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params typed_parameters[] els)
 		{
 			params_list.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(typed_parameters el)
 		{
 			var ind = params_list.FindIndex(x => x == el);
@@ -6800,55 +6725,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(typed_parameters el, typed_parameters newel)
 		{
 			params_list.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
 			params_list.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(typed_parameters el, typed_parameters newel)
 		{
 			params_list.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
 			params_list.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(typed_parameters el)
 		{
 			return params_list.Remove(el);
 		}
-
+		
 		public void ReplaceInList(typed_parameters el, typed_parameters newel)
 		{
 			params_list[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
 			var ind = FindIndexInList(el);
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<typed_parameters> match)
 		{
 			return params_list.RemoveAll(match);
 		}
-
+		
 		public typed_parameters Last()
 		{
 			return params_list[params_list.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -6970,14 +6894,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._proc_attributes=_proc_attributes;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public procedure_attributes_list(procedure_attribute elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<procedure_attribute> _proc_attributes=new List<procedure_attribute>();
 
 		///<summary>
@@ -6996,7 +6917,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public procedure_attributes_list Add(procedure_attribute elem, SourceContext sc = null)
 		{
 			proc_attributes.Add(elem);
@@ -7004,22 +6924,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(procedure_attribute el)
 		{
 			proc_attributes.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<procedure_attribute> els)
 		{
 			proc_attributes.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params procedure_attribute[] els)
 		{
 			proc_attributes.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(procedure_attribute el)
 		{
 			var ind = proc_attributes.FindIndex(x => x == el);
@@ -7027,55 +6947,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(procedure_attribute el, procedure_attribute newel)
 		{
 			proc_attributes.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
 			proc_attributes.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(procedure_attribute el, procedure_attribute newel)
 		{
 			proc_attributes.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
 			proc_attributes.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(procedure_attribute el)
 		{
 			return proc_attributes.Remove(el);
 		}
-
+		
 		public void ReplaceInList(procedure_attribute el, procedure_attribute newel)
 		{
 			proc_attributes[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
 			var ind = FindIndexInList(el);
 			proc_attributes.RemoveAt(ind);
 			proc_attributes.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<procedure_attribute> match)
 		{
 			return proc_attributes.RemoveAll(match);
 		}
-
+		
 		public procedure_attribute Last()
 		{
 			return proc_attributes[proc_attributes.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -7240,7 +7159,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_defs=_where_defs;
 			source_context = sc;
 		}
-
 		protected formal_parameters _parameters;
 		protected procedure_attributes_list _proc_attributes;
 		protected method_name _name;
@@ -7558,7 +7476,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._return_type=_return_type;
 			source_context = sc;
 		}
-
 		protected type_definition _return_type;
 
 		///<summary>
@@ -7761,7 +7678,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._is_short_definition=_is_short_definition;
 			source_context = sc;
 		}
-
 		protected procedure_header _proc_header;
 		protected proc_block _proc_body;
 		protected bool _is_short_definition;
@@ -7943,7 +7859,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_def=_type_def;
 			source_context = sc;
 		}
-
 		protected ident _type_name;
 		protected type_definition _type_def;
 
@@ -8106,14 +8021,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._types_decl=_types_decl;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public type_declarations(type_declaration elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<type_declaration> _types_decl=new List<type_declaration>();
 
 		///<summary>
@@ -8132,7 +8044,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public type_declarations Add(type_declaration elem, SourceContext sc = null)
 		{
 			types_decl.Add(elem);
@@ -8140,22 +8051,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(type_declaration el)
 		{
 			types_decl.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<type_declaration> els)
 		{
 			types_decl.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params type_declaration[] els)
 		{
 			types_decl.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(type_declaration el)
 		{
 			var ind = types_decl.FindIndex(x => x == el);
@@ -8163,55 +8074,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(type_declaration el, type_declaration newel)
 		{
 			types_decl.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(type_declaration el, IEnumerable<type_declaration> newels)
 		{
 			types_decl.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(type_declaration el, type_declaration newel)
 		{
 			types_decl.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(type_declaration el, IEnumerable<type_declaration> newels)
 		{
 			types_decl.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(type_declaration el)
 		{
 			return types_decl.Remove(el);
 		}
-
+		
 		public void ReplaceInList(type_declaration el, type_declaration newel)
 		{
 			types_decl[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(type_declaration el, IEnumerable<type_declaration> newels)
 		{
 			var ind = FindIndexInList(el);
 			types_decl.RemoveAt(ind);
 			types_decl.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<type_declaration> match)
 		{
 			return types_decl.RemoveAll(match);
 		}
-
+		
 		public type_declaration Last()
 		{
 			return types_decl[types_decl.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -8341,7 +8251,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_value=_const_value;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -8491,7 +8400,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_type=_const_type;
 			source_context = sc;
 		}
-
 		protected type_definition _const_type;
 
 		///<summary>
@@ -8650,7 +8558,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_value=_const_value;
 			source_context = sc;
 		}
-
 		protected ident _const_name;
 		protected expression _const_value;
 
@@ -8813,14 +8720,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_defs=_const_defs;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public consts_definitions_list(const_definition elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<const_definition> _const_defs=new List<const_definition>();
 
 		///<summary>
@@ -8839,7 +8743,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public consts_definitions_list Add(const_definition elem, SourceContext sc = null)
 		{
 			const_defs.Add(elem);
@@ -8847,22 +8750,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(const_definition el)
 		{
 			const_defs.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<const_definition> els)
 		{
 			const_defs.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params const_definition[] els)
 		{
 			const_defs.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(const_definition el)
 		{
 			var ind = const_defs.FindIndex(x => x == el);
@@ -8870,55 +8773,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(const_definition el, const_definition newel)
 		{
 			const_defs.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(const_definition el, IEnumerable<const_definition> newels)
 		{
 			const_defs.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(const_definition el, const_definition newel)
 		{
 			const_defs.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(const_definition el, IEnumerable<const_definition> newels)
 		{
 			const_defs.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(const_definition el)
 		{
 			return const_defs.Remove(el);
 		}
-
+		
 		public void ReplaceInList(const_definition el, const_definition newel)
 		{
 			const_defs[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(const_definition el, IEnumerable<const_definition> newels)
 		{
 			var ind = FindIndexInList(el);
 			const_defs.RemoveAt(ind);
 			const_defs.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<const_definition> match)
 		{
 			return const_defs.RemoveAll(match);
 		}
-
+		
 		public const_definition Last()
 		{
 			return const_defs[const_defs.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -9047,7 +8949,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._HeaderKeyword=_HeaderKeyword;
 			source_context = sc;
 		}
-
 		protected ident _idunit_name;
 		protected UnitHeaderKeyword _HeaderKeyword;
 
@@ -9196,7 +9097,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		protected ident_list _name;
 
 		///<summary>
@@ -9347,7 +9247,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._in_file=_in_file;
 			source_context = sc;
 		}
-
 		protected string_const _in_file;
 
 		///<summary>
@@ -9489,14 +9388,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._units=_units;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public uses_list(unit_or_namespace elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<unit_or_namespace> _units=new List<unit_or_namespace>();
 
 		///<summary>
@@ -9515,7 +9411,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public uses_list Add(unit_or_namespace elem, SourceContext sc = null)
 		{
 			units.Add(elem);
@@ -9523,22 +9418,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(unit_or_namespace el)
 		{
 			units.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<unit_or_namespace> els)
 		{
 			units.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params unit_or_namespace[] els)
 		{
 			units.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(unit_or_namespace el)
 		{
 			var ind = units.FindIndex(x => x == el);
@@ -9546,55 +9441,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(unit_or_namespace el, unit_or_namespace newel)
 		{
 			units.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
 			units.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
 		{
 			units.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
 			units.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(unit_or_namespace el)
 		{
 			return units.Remove(el);
 		}
-
+		
 		public void ReplaceInList(unit_or_namespace el, unit_or_namespace newel)
 		{
 			units[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
 			var ind = FindIndexInList(el);
 			units.RemoveAt(ind);
 			units.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<unit_or_namespace> match)
 		{
 			return units.RemoveAll(match);
 		}
-
+		
 		public unit_or_namespace Last()
 		{
 			return units[units.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -9722,7 +9616,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._using_list=_using_list;
 			source_context = sc;
 		}
-
 		protected uses_list _used_units;
 		protected declarations _program_definitions;
 		protected statement_list _program_code;
@@ -9936,14 +9829,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Language=_Language;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public compilation_unit(compiler_directive elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected string _file_name;
 		protected List<compiler_directive> _compiler_directives=new List<compiler_directive>();
 		protected LanguageId _Language;
@@ -9994,7 +9884,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public compilation_unit Add(compiler_directive elem, SourceContext sc = null)
 		{
 			compiler_directives.Add(elem);
@@ -10002,22 +9891,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(compiler_directive el)
 		{
 			compiler_directives.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<compiler_directive> els)
 		{
 			compiler_directives.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params compiler_directive[] els)
 		{
 			compiler_directives.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(compiler_directive el)
 		{
 			var ind = compiler_directives.FindIndex(x => x == el);
@@ -10025,55 +9914,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(compiler_directive el, compiler_directive newel)
 		{
 			compiler_directives.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
 			compiler_directives.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
 		{
 			compiler_directives.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
 			compiler_directives.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(compiler_directive el)
 		{
 			return compiler_directives.Remove(el);
 		}
-
+		
 		public void ReplaceInList(compiler_directive el, compiler_directive newel)
 		{
 			compiler_directives[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
 			var ind = FindIndexInList(el);
 			compiler_directives.RemoveAt(ind);
 			compiler_directives.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<compiler_directive> match)
 		{
 			return compiler_directives.RemoveAll(match);
 		}
-
+		
 		public compiler_directive Last()
 		{
 			return compiler_directives[compiler_directives.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -10240,7 +10128,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attributes=_attributes;
 			source_context = sc;
 		}
-
 		protected unit_name _unit_name;
 		protected interface_node _interface_part;
 		protected implementation_node _implementation_part;
@@ -10563,7 +10450,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
 		}
-
 		protected program_name _program_name;
 		protected uses_list _used_units;
 		protected block _program_block;
@@ -10800,7 +10686,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -10904,7 +10789,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._address_of=_address_of;
 			source_context = sc;
 		}
-
 		protected addressed_value _address_of;
 
 		///<summary>
@@ -11043,7 +10927,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._exec_if_true=_exec_if_true;
 			source_context = sc;
 		}
-
 		protected expression_list _conditions;
 		protected statement _exec_if_true;
 
@@ -11210,7 +11093,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._else_statement=_else_statement;
 			source_context = sc;
 		}
-
 		protected expression _param;
 		protected case_variants _conditions;
 		protected statement _else_statement;
@@ -11405,14 +11287,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._explicit_interface_name=_explicit_interface_name;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public method_name(ident elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<ident> _ln;
 		protected ident _class_name;
 		protected ident _meth_name;
@@ -11479,7 +11358,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public method_name Add(ident elem, SourceContext sc = null)
 		{
 			ln.Add(elem);
@@ -11487,22 +11365,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(ident el)
 		{
 			ln.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<ident> els)
 		{
 			ln.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params ident[] els)
 		{
 			ln.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(ident el)
 		{
 			var ind = ln.FindIndex(x => x == el);
@@ -11510,55 +11388,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(ident el, ident newel)
 		{
 			ln.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
 			ln.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(ident el, ident newel)
 		{
 			ln.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
 			ln.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(ident el)
 		{
 			return ln.Remove(el);
 		}
-
+		
 		public void ReplaceInList(ident el, ident newel)
 		{
 			ln[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
 			var ind = FindIndexInList(el);
 			ln.RemoveAt(ind);
 			ln.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<ident> match)
 		{
 			return ln.RemoveAll(match);
 		}
-
+		
 		public ident Last()
 		{
 			return ln[ln.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -11718,7 +11595,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			source_context = sc;
 		}
-
 		protected addressed_value _left;
 		protected addressed_value _right;
 
@@ -11865,7 +11741,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -11968,7 +11843,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._label=_label;
 			source_context = sc;
 		}
-
 		protected ident _label;
 
 		///<summary>
@@ -12107,7 +11981,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._to_statement=_to_statement;
 			source_context = sc;
 		}
-
 		protected ident _label_name;
 		protected statement _to_statement;
 
@@ -12272,7 +12145,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._do_with=_do_with;
 			source_context = sc;
 		}
-
 		protected statement _what_do;
 		protected expression_list _do_with;
 
@@ -12454,7 +12326,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameters=_parameters;
 			source_context = sc;
 		}
-
 		protected expression_list _parameters;
 
 		///<summary>
@@ -12601,7 +12472,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._values=_values;
 			source_context = sc;
 		}
-
 		protected expression_list _values;
 
 		///<summary>
@@ -12738,7 +12608,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._elements=_elements;
 			source_context = sc;
 		}
-
 		protected expression_list _elements;
 
 		///<summary>
@@ -12875,7 +12744,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._accessor_name=_accessor_name;
 			source_context = sc;
 		}
-
 		protected ident _accessor_name;
 
 		///<summary>
@@ -13007,7 +12875,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._accessor_name=_accessor_name;
 			source_context = sc;
 		}
-
 		protected ident _accessor_name;
 
 		///<summary>
@@ -13141,7 +13008,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._write_accessor=_write_accessor;
 			source_context = sc;
 		}
-
 		protected read_accessor_name _read_accessor;
 		protected write_accessor_name _write_accessor;
 
@@ -13311,7 +13177,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			source_context = sc;
 		}
-
 		protected ident _property_name;
 		protected type_definition _property_type;
 		protected expression _index_expression;
@@ -13630,7 +13495,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._is_default=_is_default;
 			source_context = sc;
 		}
-
 		protected formal_parameters _property_parametres;
 		protected default_indexer_property_node _is_default;
 
@@ -13856,14 +13720,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._access_mod=_access_mod;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public class_members(declaration elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<declaration> _members=new List<declaration>();
 		protected access_modifer_node _access_mod;
 
@@ -13898,7 +13759,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public class_members Add(declaration elem, SourceContext sc = null)
 		{
 			members.Add(elem);
@@ -13906,22 +13766,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(declaration el)
 		{
 			members.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<declaration> els)
 		{
 			members.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params declaration[] els)
 		{
 			members.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(declaration el)
 		{
 			var ind = members.FindIndex(x => x == el);
@@ -13929,55 +13789,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(declaration el, declaration newel)
 		{
 			members.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
 			members.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(declaration el, declaration newel)
 		{
 			members.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
 			members.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(declaration el)
 		{
 			return members.Remove(el);
 		}
-
+		
 		public void ReplaceInList(declaration el, declaration newel)
 		{
 			members[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
 			var ind = FindIndexInList(el);
 			members.RemoveAt(ind);
 			members.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<declaration> match)
 		{
 			return members.RemoveAll(match);
 		}
-
+		
 		public declaration Last()
 		{
 			return members[members.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -14115,7 +13974,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._access_level=_access_level;
 			source_context = sc;
 		}
-
 		protected access_modifer _access_level;
 
 		///<summary>
@@ -14232,14 +14090,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_def_blocks=_class_def_blocks;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public class_body(class_members elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<class_members> _class_def_blocks=new List<class_members>();
 
 		///<summary>
@@ -14258,7 +14113,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public class_body Add(class_members elem, SourceContext sc = null)
 		{
 			class_def_blocks.Add(elem);
@@ -14266,22 +14120,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(class_members el)
 		{
 			class_def_blocks.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<class_members> els)
 		{
 			class_def_blocks.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params class_members[] els)
 		{
 			class_def_blocks.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(class_members el)
 		{
 			var ind = class_def_blocks.FindIndex(x => x == el);
@@ -14289,55 +14143,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(class_members el, class_members newel)
 		{
 			class_def_blocks.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(class_members el, IEnumerable<class_members> newels)
 		{
 			class_def_blocks.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(class_members el, class_members newel)
 		{
 			class_def_blocks.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(class_members el, IEnumerable<class_members> newels)
 		{
 			class_def_blocks.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(class_members el)
 		{
 			return class_def_blocks.Remove(el);
 		}
-
+		
 		public void ReplaceInList(class_members el, class_members newel)
 		{
 			class_def_blocks[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(class_members el, IEnumerable<class_members> newels)
 		{
 			var ind = FindIndexInList(el);
 			class_def_blocks.RemoveAt(ind);
 			class_def_blocks.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<class_members> match)
 		{
 			return class_def_blocks.RemoveAll(match);
 		}
-
+		
 		public class_members Last()
 		{
 			return class_def_blocks[class_def_blocks.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -14502,7 +14355,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._is_auto=_is_auto;
 			source_context = sc;
 		}
-
 		protected named_type_reference_list _class_parents;
 		protected class_body _body;
 		protected class_keyword _keyword;
@@ -14762,7 +14614,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -14883,7 +14734,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._unit_name=_unit_name;
 			source_context = sc;
 		}
-
 		protected known_type _tp;
 		protected ident _unit_name;
 
@@ -15066,7 +14916,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._of_type=_of_type;
 			source_context = sc;
 		}
-
 		protected type_definition _of_type;
 
 		///<summary>
@@ -15215,7 +15064,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		protected ident _name;
 		protected expression _val;
 
@@ -15378,14 +15226,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._rec_consts=_rec_consts;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public record_const(record_const_definition elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<record_const_definition> _rec_consts=new List<record_const_definition>();
 
 		///<summary>
@@ -15404,7 +15249,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public record_const Add(record_const_definition elem, SourceContext sc = null)
 		{
 			rec_consts.Add(elem);
@@ -15412,22 +15256,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(record_const_definition el)
 		{
 			rec_consts.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<record_const_definition> els)
 		{
 			rec_consts.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params record_const_definition[] els)
 		{
 			rec_consts.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(record_const_definition el)
 		{
 			var ind = rec_consts.FindIndex(x => x == el);
@@ -15435,55 +15279,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(record_const_definition el, record_const_definition newel)
 		{
 			rec_consts.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
 			rec_consts.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(record_const_definition el, record_const_definition newel)
 		{
 			rec_consts.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
 			rec_consts.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(record_const_definition el)
 		{
 			return rec_consts.Remove(el);
 		}
-
+		
 		public void ReplaceInList(record_const_definition el, record_const_definition newel)
 		{
 			rec_consts[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
 			var ind = FindIndexInList(el);
 			rec_consts.RemoveAt(ind);
 			rec_consts.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<record_const_definition> match)
 		{
 			return rec_consts.RemoveAll(match);
 		}
-
+		
 		public record_const_definition Last()
 		{
 			return rec_consts[rec_consts.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -15633,7 +15476,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._base_type=_base_type;
 			source_context = sc;
 		}
-
 		protected record_type_parts _parts;
 		protected type_definition _base_type;
 
@@ -15825,7 +15667,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._enumerators=_enumerators;
 			source_context = sc;
 		}
-
 		protected enumerator_list _enumerators;
 
 		///<summary>
@@ -15972,7 +15813,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._cconst=_cconst;
 			source_context = sc;
 		}
-
 		protected char _cconst;
 
 		///<summary>
@@ -16094,7 +15934,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._excep=_excep;
 			source_context = sc;
 		}
-
 		protected expression _excep;
 
 		///<summary>
@@ -16231,7 +16070,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._char_num=_char_num;
 			source_context = sc;
 		}
-
 		protected int _char_num;
 
 		///<summary>
@@ -16353,14 +16191,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._literals=_literals;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public literal_const_line(literal elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<literal> _literals=new List<literal>();
 
 		///<summary>
@@ -16379,7 +16214,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public literal_const_line Add(literal elem, SourceContext sc = null)
 		{
 			literals.Add(elem);
@@ -16387,22 +16221,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(literal el)
 		{
 			literals.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<literal> els)
 		{
 			literals.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params literal[] els)
 		{
 			literals.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(literal el)
 		{
 			var ind = literals.FindIndex(x => x == el);
@@ -16410,55 +16244,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(literal el, literal newel)
 		{
 			literals.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(literal el, IEnumerable<literal> newels)
 		{
 			literals.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(literal el, literal newel)
 		{
 			literals.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(literal el, IEnumerable<literal> newels)
 		{
 			literals.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(literal el)
 		{
 			return literals.Remove(el);
 		}
-
+		
 		public void ReplaceInList(literal el, literal newel)
 		{
 			literals[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(literal el, IEnumerable<literal> newels)
 		{
 			var ind = FindIndexInList(el);
 			literals.RemoveAt(ind);
 			literals.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<literal> match)
 		{
 			return literals.RemoveAll(match);
 		}
-
+		
 		public literal Last()
 		{
 			return literals[literals.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -16608,7 +16441,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		protected expression _num_of_symbols;
 		protected ident _name;
 
@@ -16783,7 +16615,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars_type=_vars_type;
 			source_context = sc;
 		}
-
 		protected ident_list _vars;
 		protected type_definition _vars_type;
 
@@ -16941,14 +16772,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public variant_list(variant elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<variant> _vars=new List<variant>();
 
 		///<summary>
@@ -16967,7 +16795,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public variant_list Add(variant elem, SourceContext sc = null)
 		{
 			vars.Add(elem);
@@ -16975,22 +16802,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(variant el)
 		{
 			vars.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<variant> els)
 		{
 			vars.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params variant[] els)
 		{
 			vars.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(variant el)
 		{
 			var ind = vars.FindIndex(x => x == el);
@@ -16998,55 +16825,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(variant el, variant newel)
 		{
 			vars.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(variant el, IEnumerable<variant> newels)
 		{
 			vars.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(variant el, variant newel)
 		{
 			vars.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(variant el, IEnumerable<variant> newels)
 		{
 			vars.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(variant el)
 		{
 			return vars.Remove(el);
 		}
-
+		
 		public void ReplaceInList(variant el, variant newel)
 		{
 			vars[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(variant el, IEnumerable<variant> newels)
 		{
 			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<variant> match)
 		{
 			return vars.RemoveAll(match);
 		}
-
+		
 		public variant Last()
 		{
 			return vars[vars.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -17170,7 +16996,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parts=_parts;
 			source_context = sc;
 		}
-
 		protected expression_list _case_exprs;
 		protected record_type_parts _parts;
 
@@ -17328,14 +17153,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public variant_types(variant_type elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<variant_type> _vars=new List<variant_type>();
 
 		///<summary>
@@ -17354,7 +17176,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public variant_types Add(variant_type elem, SourceContext sc = null)
 		{
 			vars.Add(elem);
@@ -17362,22 +17183,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(variant_type el)
 		{
 			vars.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<variant_type> els)
 		{
 			vars.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params variant_type[] els)
 		{
 			vars.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(variant_type el)
 		{
 			var ind = vars.FindIndex(x => x == el);
@@ -17385,55 +17206,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(variant_type el, variant_type newel)
 		{
 			vars.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(variant_type el, IEnumerable<variant_type> newels)
 		{
 			vars.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(variant_type el, variant_type newel)
 		{
 			vars.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(variant_type el, IEnumerable<variant_type> newels)
 		{
 			vars.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(variant_type el)
 		{
 			return vars.Remove(el);
 		}
-
+		
 		public void ReplaceInList(variant_type el, variant_type newel)
 		{
 			vars[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(variant_type el, IEnumerable<variant_type> newels)
 		{
 			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<variant_type> match)
 		{
 			return vars.RemoveAll(match);
 		}
-
+		
 		public variant_type Last()
 		{
 			return vars[vars.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -17559,7 +17379,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			source_context = sc;
 		}
-
 		protected ident _var_name;
 		protected type_definition _var_type;
 		protected variant_types _vars;
@@ -17743,7 +17562,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._func_name=_func_name;
 			source_context = sc;
 		}
-
 		protected addressed_value _func_name;
 
 		///<summary>
@@ -17901,7 +17719,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_name=_class_name;
 			source_context = sc;
 		}
-
 		protected ident _class_name;
 
 		///<summary>
@@ -18042,7 +17859,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -18164,7 +17980,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._elem_type=_elem_type;
 			source_context = sc;
 		}
-
 		protected type_definition _elem_type;
 
 		///<summary>
@@ -18326,7 +18141,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_defs=_where_defs;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -18512,7 +18326,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_defs=_where_defs;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -18685,7 +18498,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._exprs=_exprs;
 			source_context = sc;
 		}
-
 		protected ident _method_name;
 		protected expression_list _exprs;
 
@@ -18852,7 +18664,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._cast_op=_cast_op;
 			source_context = sc;
 		}
-
 		protected addressed_value _expr;
 		protected type_definition _type_def;
 		protected op_typecast _cast_op;
@@ -19036,7 +18847,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
 		}
-
 		protected declarations _interface_definitions;
 		protected uses_list _uses_modules;
 		protected using_list _using_namespaces;
@@ -19224,7 +19034,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
 		}
-
 		protected uses_list _uses_modules;
 		protected declarations _implementation_definitions;
 		protected using_list _using_namespaces;
@@ -19410,7 +19219,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			source_context = sc;
 		}
-
 		protected expression _left;
 		protected expression _right;
 
@@ -19575,7 +19383,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._program_code=_program_code;
 			source_context = sc;
 		}
-
 		protected declarations _defs;
 		protected statement_list _program_code;
 
@@ -19717,7 +19524,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -19834,7 +19640,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			source_context = sc;
 		}
-
 		protected named_type_reference _type_name;
 
 		///<summary>
@@ -19982,7 +19787,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -20084,7 +19888,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 
 		}
-
 
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -20188,14 +19991,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._variants=_variants;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public case_variants(case_variant elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<case_variant> _variants=new List<case_variant>();
 
 		///<summary>
@@ -20214,7 +20014,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public case_variants Add(case_variant elem, SourceContext sc = null)
 		{
 			variants.Add(elem);
@@ -20222,22 +20021,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(case_variant el)
 		{
 			variants.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<case_variant> els)
 		{
 			variants.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params case_variant[] els)
 		{
 			variants.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(case_variant el)
 		{
 			var ind = variants.FindIndex(x => x == el);
@@ -20245,55 +20044,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(case_variant el, case_variant newel)
 		{
 			variants.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(case_variant el, IEnumerable<case_variant> newels)
 		{
 			variants.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(case_variant el, case_variant newel)
 		{
 			variants.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(case_variant el, IEnumerable<case_variant> newels)
 		{
 			variants.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(case_variant el)
 		{
 			return variants.Remove(el);
 		}
-
+		
 		public void ReplaceInList(case_variant el, case_variant newel)
 		{
 			variants[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(case_variant el, IEnumerable<case_variant> newels)
 		{
 			var ind = FindIndexInList(el);
 			variants.RemoveAt(ind);
 			variants.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<case_variant> match)
 		{
 			return variants.RemoveAll(match);
 		}
-
+		
 		public case_variant Last()
 		{
 			return variants[variants.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -20417,7 +20215,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			source_context = sc;
 		}
-
 		protected expression _left;
 		protected expression _right;
 
@@ -20580,14 +20377,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public var_def_list_for_record(var_def_statement elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<var_def_statement> _vars=new List<var_def_statement>();
 
 		///<summary>
@@ -20606,7 +20400,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public var_def_list_for_record Add(var_def_statement elem, SourceContext sc = null)
 		{
 			vars.Add(elem);
@@ -20614,22 +20407,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(var_def_statement el)
 		{
 			vars.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<var_def_statement> els)
 		{
 			vars.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params var_def_statement[] els)
 		{
 			vars.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(var_def_statement el)
 		{
 			var ind = vars.FindIndex(x => x == el);
@@ -20637,55 +20430,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(var_def_statement el, var_def_statement newel)
 		{
 			vars.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
 			vars.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
 		{
 			vars.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
 			vars.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(var_def_statement el)
 		{
 			return vars.Remove(el);
 		}
-
+		
 		public void ReplaceInList(var_def_statement el, var_def_statement newel)
 		{
 			vars[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
 			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<var_def_statement> match)
 		{
 			return vars.RemoveAll(match);
 		}
-
+		
 		public var_def_statement Last()
 		{
 			return vars[vars.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -20809,7 +20601,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._variant_part=_variant_part;
 			source_context = sc;
 		}
-
 		protected var_def_list_for_record _fixed_part;
 		protected variant_record_type _variant_part;
 
@@ -20951,7 +20742,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -21053,7 +20843,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._index_expression=_index_expression;
 			source_context = sc;
 		}
-
 		protected property_parameter_list _parameter_list;
 		protected type_definition _property_type;
 		protected expression _index_expression;
@@ -21239,7 +21028,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type=_type;
 			source_context = sc;
 		}
-
 		protected ident_list _names;
 		protected type_definition _type;
 
@@ -21397,14 +21185,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameters=_parameters;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public property_parameter_list(property_parameter elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<property_parameter> _parameters=new List<property_parameter>();
 
 		///<summary>
@@ -21423,7 +21208,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public property_parameter_list Add(property_parameter elem, SourceContext sc = null)
 		{
 			parameters.Add(elem);
@@ -21431,22 +21215,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(property_parameter el)
 		{
 			parameters.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<property_parameter> els)
 		{
 			parameters.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params property_parameter[] els)
 		{
 			parameters.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(property_parameter el)
 		{
 			var ind = parameters.FindIndex(x => x == el);
@@ -21454,55 +21238,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(property_parameter el, property_parameter newel)
 		{
 			parameters.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(property_parameter el, IEnumerable<property_parameter> newels)
 		{
 			parameters.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(property_parameter el, property_parameter newel)
 		{
 			parameters.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(property_parameter el, IEnumerable<property_parameter> newels)
 		{
 			parameters.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(property_parameter el)
 		{
 			return parameters.Remove(el);
 		}
-
+		
 		public void ReplaceInList(property_parameter el, property_parameter newel)
 		{
 			parameters[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(property_parameter el, IEnumerable<property_parameter> newels)
 		{
 			var ind = FindIndexInList(el);
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<property_parameter> match)
 		{
 			return parameters.RemoveAll(match);
 		}
-
+		
 		public property_parameter Last()
 		{
 			return parameters[parameters.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -21625,7 +21408,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -21733,7 +21515,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._format2=_format2;
 			source_context = sc;
 		}
-
 		protected expression _expr;
 		protected expression _format1;
 		protected expression _format2;
@@ -21924,7 +21705,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._finalization_sect=_finalization_sect;
 			source_context = sc;
 		}
-
 		protected statement_list _initialization_sect;
 		protected statement_list _finalization_sect;
 
@@ -22082,7 +21862,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._text=_text;
 			source_context = sc;
 		}
-
 		protected string _text;
 
 		///<summary>
@@ -22201,7 +21980,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._address=_address;
 			source_context = sc;
 		}
-
 		protected expression _expr;
 		protected expression _address;
 
@@ -22383,7 +22161,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type=_type;
 			source_context = sc;
 		}
-
 		protected Operators _type;
 
 		///<summary>
@@ -22520,7 +22297,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._file_of_type=_file_of_type;
 			source_context = sc;
 		}
-
 		protected type_definition _file_of_type;
 
 		///<summary>
@@ -22686,7 +22462,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type=_type;
 			source_context = sc;
 		}
-
 		protected known_type _type;
 
 		///<summary>
@@ -22813,7 +22588,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._statements=_statements;
 			source_context = sc;
 		}
-
 		protected ident _variable;
 		protected named_type_reference _type_name;
 		protected statement _statements;
@@ -22999,7 +22773,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			source_context = sc;
 		}
-
 		protected ident _variable;
 		protected named_type_reference _type_name;
 
@@ -23157,14 +22930,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._handlers=_handlers;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public exception_handler_list(exception_handler elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<exception_handler> _handlers=new List<exception_handler>();
 
 		///<summary>
@@ -23183,7 +22953,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public exception_handler_list Add(exception_handler elem, SourceContext sc = null)
 		{
 			handlers.Add(elem);
@@ -23191,22 +22960,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(exception_handler el)
 		{
 			handlers.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<exception_handler> els)
 		{
 			handlers.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params exception_handler[] els)
 		{
 			handlers.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(exception_handler el)
 		{
 			var ind = handlers.FindIndex(x => x == el);
@@ -23214,55 +22983,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(exception_handler el, exception_handler newel)
 		{
 			handlers.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(exception_handler el, IEnumerable<exception_handler> newels)
 		{
 			handlers.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(exception_handler el, exception_handler newel)
 		{
 			handlers.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(exception_handler el, IEnumerable<exception_handler> newels)
 		{
 			handlers.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(exception_handler el)
 		{
 			return handlers.Remove(el);
 		}
-
+		
 		public void ReplaceInList(exception_handler el, exception_handler newel)
 		{
 			handlers[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(exception_handler el, IEnumerable<exception_handler> newels)
 		{
 			var ind = FindIndexInList(el);
 			handlers.RemoveAt(ind);
 			handlers.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<exception_handler> match)
 		{
 			return handlers.RemoveAll(match);
 		}
-
+		
 		public exception_handler Last()
 		{
 			return handlers[handlers.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -23388,7 +23156,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._else_stmt_list=_else_stmt_list;
 			source_context = sc;
 		}
-
 		protected statement_list _stmt_list;
 		protected exception_handler_list _handlers;
 		protected statement_list _else_stmt_list;
@@ -23556,7 +23323,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -23654,7 +23420,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt_list=_stmt_list;
 			source_context = sc;
 		}
-
 		protected statement_list _stmt_list;
 
 		///<summary>
@@ -23786,7 +23551,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._except_block=_except_block;
 			source_context = sc;
 		}
-
 		protected exception_block _except_block;
 
 		///<summary>
@@ -23920,7 +23684,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._handler=_handler;
 			source_context = sc;
 		}
-
 		protected statement_list _stmt_list;
 		protected try_handler _handler;
 
@@ -24067,7 +23830,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -24172,7 +23934,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		protected expression _modulename;
 		protected expression _name;
 
@@ -24330,14 +24091,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._namespaces=_namespaces;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public using_list(unit_or_namespace elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<unit_or_namespace> _namespaces=new List<unit_or_namespace>();
 
 		///<summary>
@@ -24356,7 +24114,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public using_list Add(unit_or_namespace elem, SourceContext sc = null)
 		{
 			namespaces.Add(elem);
@@ -24364,22 +24121,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(unit_or_namespace el)
 		{
 			namespaces.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<unit_or_namespace> els)
 		{
 			namespaces.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params unit_or_namespace[] els)
 		{
 			namespaces.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(unit_or_namespace el)
 		{
 			var ind = namespaces.FindIndex(x => x == el);
@@ -24387,55 +24144,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(unit_or_namespace el, unit_or_namespace newel)
 		{
 			namespaces.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
 			namespaces.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
 		{
 			namespaces.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
 			namespaces.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(unit_or_namespace el)
 		{
 			return namespaces.Remove(el);
 		}
-
+		
 		public void ReplaceInList(unit_or_namespace el, unit_or_namespace newel)
 		{
 			namespaces[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
 			var ind = FindIndexInList(el);
 			namespaces.RemoveAt(ind);
 			namespaces.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<unit_or_namespace> match)
 		{
 			return namespaces.RemoveAll(match);
 		}
-
+		
 		public unit_or_namespace Last()
 		{
 			return namespaces[namespaces.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -24559,7 +24315,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._JumpType=_JumpType;
 			source_context = sc;
 		}
-
 		protected expression _expr;
 		protected JumpStmtType _JumpType;
 
@@ -24713,7 +24468,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt=_stmt;
 			source_context = sc;
 		}
-
 		protected statement _stmt;
 
 		///<summary>
@@ -24856,7 +24610,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt=_stmt;
 			source_context = sc;
 		}
-
 		protected ident _identifier;
 		protected type_definition _type_name;
 		protected expression _in_what;
@@ -25055,7 +24808,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -25158,14 +24910,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._types=_types;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public named_type_reference_list(named_type_reference elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<named_type_reference> _types=new List<named_type_reference>();
 
 		///<summary>
@@ -25184,7 +24933,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public named_type_reference_list Add(named_type_reference elem, SourceContext sc = null)
 		{
 			types.Add(elem);
@@ -25192,22 +24940,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(named_type_reference el)
 		{
 			types.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<named_type_reference> els)
 		{
 			types.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params named_type_reference[] els)
 		{
 			types.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(named_type_reference el)
 		{
 			var ind = types.FindIndex(x => x == el);
@@ -25215,55 +24963,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(named_type_reference el, named_type_reference newel)
 		{
 			types.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
 			types.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(named_type_reference el, named_type_reference newel)
 		{
 			types.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
 			types.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(named_type_reference el)
 		{
 			return types.Remove(el);
 		}
-
+		
 		public void ReplaceInList(named_type_reference el, named_type_reference newel)
 		{
 			types[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
 			var ind = FindIndexInList(el);
 			types.RemoveAt(ind);
 			types.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<named_type_reference> match)
 		{
 			return types.RemoveAll(match);
 		}
-
+		
 		public named_type_reference Last()
 		{
 			return types[types.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -25404,14 +25151,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._params_list=_params_list;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public template_param_list(type_definition elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<type_definition> _params_list=new List<type_definition>();
 
 		///<summary>
@@ -25430,7 +25174,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public template_param_list Add(type_definition elem, SourceContext sc = null)
 		{
 			params_list.Add(elem);
@@ -25438,22 +25181,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(type_definition el)
 		{
 			params_list.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<type_definition> els)
 		{
 			params_list.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params type_definition[] els)
 		{
 			params_list.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(type_definition el)
 		{
 			var ind = params_list.FindIndex(x => x == el);
@@ -25461,55 +25204,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
 			params_list.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
 			params_list.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
 			params_list.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
 			params_list.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(type_definition el)
 		{
 			return params_list.Remove(el);
 		}
-
+		
 		public void ReplaceInList(type_definition el, type_definition newel)
 		{
 			params_list[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
 			var ind = FindIndexInList(el);
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<type_definition> match)
 		{
 			return params_list.RemoveAll(match);
 		}
-
+		
 		public type_definition Last()
 		{
 			return params_list[params_list.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -25677,7 +25419,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._params_list=_params_list;
 			source_context = sc;
 		}
-
 		protected named_type_reference _name;
 		protected template_param_list _params_list;
 
@@ -25874,7 +25615,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		protected Int64 _val;
 
 		///<summary>
@@ -25996,7 +25736,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._val=_val;
 			source_context = sc;
 		}
-
 		protected UInt64 _val;
 
 		///<summary>
@@ -26124,7 +25863,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._array_init_expr=_array_init_expr;
 			source_context = sc;
 		}
-
 		protected type_definition _type;
 		protected expression_list _params_list;
 		protected bool _new_array;
@@ -26330,14 +26068,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public where_type_specificator_list(type_definition elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<type_definition> _defs=new List<type_definition>();
 
 		///<summary>
@@ -26356,7 +26091,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public where_type_specificator_list Add(type_definition elem, SourceContext sc = null)
 		{
 			defs.Add(elem);
@@ -26364,22 +26098,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(type_definition el)
 		{
 			defs.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<type_definition> els)
 		{
 			defs.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params type_definition[] els)
 		{
 			defs.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(type_definition el)
 		{
 			var ind = defs.FindIndex(x => x == el);
@@ -26387,55 +26121,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
 			defs.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
 			defs.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
 			defs.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
 			defs.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(type_definition el)
 		{
 			return defs.Remove(el);
 		}
-
+		
 		public void ReplaceInList(type_definition el, type_definition newel)
 		{
 			defs[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<type_definition> match)
 		{
 			return defs.RemoveAll(match);
 		}
-
+		
 		public type_definition Last()
 		{
 			return defs[defs.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -26559,7 +26292,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._types=_types;
 			source_context = sc;
 		}
-
 		protected ident_list _names;
 		protected where_type_specificator_list _types;
 
@@ -26717,14 +26449,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public where_definition_list(where_definition elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<where_definition> _defs=new List<where_definition>();
 
 		///<summary>
@@ -26743,7 +26472,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public where_definition_list Add(where_definition elem, SourceContext sc = null)
 		{
 			defs.Add(elem);
@@ -26751,22 +26479,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(where_definition el)
 		{
 			defs.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<where_definition> els)
 		{
 			defs.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params where_definition[] els)
 		{
 			defs.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(where_definition el)
 		{
 			var ind = defs.FindIndex(x => x == el);
@@ -26774,55 +26502,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(where_definition el, where_definition newel)
 		{
 			defs.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(where_definition el, IEnumerable<where_definition> newels)
 		{
 			defs.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(where_definition el, where_definition newel)
 		{
 			defs.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(where_definition el, IEnumerable<where_definition> newels)
 		{
 			defs.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(where_definition el)
 		{
 			return defs.Remove(el);
 		}
-
+		
 		public void ReplaceInList(where_definition el, where_definition newel)
 		{
 			defs[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(where_definition el, IEnumerable<where_definition> newels)
 		{
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<where_definition> match)
 		{
 			return defs.RemoveAll(match);
 		}
-
+		
 		public where_definition Last()
 		{
 			return defs[defs.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -26946,7 +26673,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected type_definition _type_def;
 		protected expression _expr;
 
@@ -27109,7 +26835,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			source_context = sc;
 		}
-
 		protected named_type_reference _type_name;
 
 		///<summary>
@@ -27248,7 +26973,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Directive=_Directive;
 			source_context = sc;
 		}
-
 		protected token_info _Name;
 		protected token_info _Directive;
 
@@ -27425,7 +27149,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._operator_type=_operator_type;
 			source_context = sc;
 		}
-
 		protected Operators _operator_type;
 
 		///<summary>
@@ -27548,7 +27271,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._var_def=_var_def;
 			source_context = sc;
 		}
-
 		protected var_def_statement _var_def;
 
 		///<summary>
@@ -27689,7 +27411,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._ret_if_false=_ret_if_false;
 			source_context = sc;
 		}
-
 		protected expression _condition;
 		protected expression _ret_if_true;
 		protected expression _ret_if_false;
@@ -27878,7 +27599,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected expression _expr;
 
 		///<summary>
@@ -28038,7 +27758,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._sign=_sign;
 			source_context = sc;
 		}
-
 		protected c_scalar_type_name _scalar_name;
 		protected c_scalar_sign _sign;
 
@@ -28220,7 +27939,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._used_units=_used_units;
 			source_context = sc;
 		}
-
 		protected declarations _defs;
 		protected uses_list _used_units;
 
@@ -28404,7 +28122,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			source_context = sc;
 		}
-
 		protected declarations _defs;
 
 		///<summary>
@@ -28560,7 +28277,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._max_value=_max_value;
 			source_context = sc;
 		}
-
 		protected expression _max_value;
 
 		///<summary>
@@ -28709,7 +28425,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._value=_value;
 			source_context = sc;
 		}
-
 		protected type_definition _name;
 		protected expression _value;
 
@@ -28867,14 +28582,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._enumerators=_enumerators;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public enumerator_list(enumerator elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<enumerator> _enumerators=new List<enumerator>();
 
 		///<summary>
@@ -28893,7 +28605,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public enumerator_list Add(enumerator elem, SourceContext sc = null)
 		{
 			enumerators.Add(elem);
@@ -28901,22 +28612,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(enumerator el)
 		{
 			enumerators.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<enumerator> els)
 		{
 			enumerators.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params enumerator[] els)
 		{
 			enumerators.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(enumerator el)
 		{
 			var ind = enumerators.FindIndex(x => x == el);
@@ -28924,55 +28635,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(enumerator el, enumerator newel)
 		{
 			enumerators.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(enumerator el, IEnumerable<enumerator> newels)
 		{
 			enumerators.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(enumerator el, enumerator newel)
 		{
 			enumerators.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(enumerator el, IEnumerable<enumerator> newels)
 		{
 			enumerators.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(enumerator el)
 		{
 			return enumerators.Remove(el);
 		}
-
+		
 		public void ReplaceInList(enumerator el, enumerator newel)
 		{
 			enumerators[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(enumerator el, IEnumerable<enumerator> newels)
 		{
 			var ind = FindIndexInList(el);
 			enumerators.RemoveAt(ind);
 			enumerators.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<enumerator> match)
 		{
 			return enumerators.RemoveAll(match);
 		}
-
+		
 		public enumerator Last()
 		{
 			return enumerators[enumerators.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -29100,7 +28810,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt=_stmt;
 			source_context = sc;
 		}
-
 		protected statement _expr1;
 		protected expression _expr2;
 		protected expression _expr3;
@@ -29319,7 +29028,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Part=_Part;
 			source_context = sc;
 		}
-
 		protected expression _condition;
 		protected statement _stmt;
 		protected SwitchPartType _Part;
@@ -29499,14 +29207,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attributes=_attributes;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public type_definition_attr_list(type_definition_attr elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<type_definition_attr> _attributes=new List<type_definition_attr>();
 
 		///<summary>
@@ -29525,7 +29230,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public type_definition_attr_list Add(type_definition_attr elem, SourceContext sc = null)
 		{
 			attributes.Add(elem);
@@ -29533,22 +29237,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(type_definition_attr el)
 		{
 			attributes.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<type_definition_attr> els)
 		{
 			attributes.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params type_definition_attr[] els)
 		{
 			attributes.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(type_definition_attr el)
 		{
 			var ind = attributes.FindIndex(x => x == el);
@@ -29556,55 +29260,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(type_definition_attr el, type_definition_attr newel)
 		{
 			attributes.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
 			attributes.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(type_definition_attr el, type_definition_attr newel)
 		{
 			attributes.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
 			attributes.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(type_definition_attr el)
 		{
 			return attributes.Remove(el);
 		}
-
+		
 		public void ReplaceInList(type_definition_attr el, type_definition_attr newel)
 		{
 			attributes[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
 			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<type_definition_attr> match)
 		{
 			return attributes.RemoveAll(match);
 		}
-
+		
 		public type_definition_attr Last()
 		{
 			return attributes[attributes.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -29745,7 +29448,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			source_context = sc;
 		}
-
 		protected definition_attribute _attr;
 
 		///<summary>
@@ -29885,7 +29587,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt=_stmt;
 			source_context = sc;
 		}
-
 		protected expression _lock_object;
 		protected statement _stmt;
 
@@ -30069,14 +29770,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._directives=_directives;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public compiler_directive_list(compiler_directive elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<compiler_directive> _directives=new List<compiler_directive>();
 
 		///<summary>
@@ -30095,7 +29793,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public compiler_directive_list Add(compiler_directive elem, SourceContext sc = null)
 		{
 			directives.Add(elem);
@@ -30103,22 +29800,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(compiler_directive el)
 		{
 			directives.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<compiler_directive> els)
 		{
 			directives.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params compiler_directive[] els)
 		{
 			directives.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(compiler_directive el)
 		{
 			var ind = directives.FindIndex(x => x == el);
@@ -30126,55 +29823,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(compiler_directive el, compiler_directive newel)
 		{
 			directives.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
 			directives.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
 		{
 			directives.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
 			directives.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(compiler_directive el)
 		{
 			return directives.Remove(el);
 		}
-
+		
 		public void ReplaceInList(compiler_directive el, compiler_directive newel)
 		{
 			directives[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
 			var ind = FindIndexInList(el);
 			directives.RemoveAt(ind);
 			directives.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<compiler_directive> match)
 		{
 			return directives.RemoveAll(match);
 		}
-
+		
 		public compiler_directive Last()
 		{
 			return directives[directives.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -30347,7 +30043,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._elseif_part=_elseif_part;
 			source_context = sc;
 		}
-
 		protected compiler_directive _if_part;
 		protected compiler_directive _elseif_part;
 
@@ -30525,14 +30220,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._sections=_sections;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public documentation_comment_list(documentation_comment_section elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<documentation_comment_section> _sections=new List<documentation_comment_section>();
 
 		///<summary>
@@ -30551,7 +30243,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public documentation_comment_list Add(documentation_comment_section elem, SourceContext sc = null)
 		{
 			sections.Add(elem);
@@ -30559,22 +30250,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(documentation_comment_section el)
 		{
 			sections.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<documentation_comment_section> els)
 		{
 			sections.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params documentation_comment_section[] els)
 		{
 			sections.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(documentation_comment_section el)
 		{
 			var ind = sections.FindIndex(x => x == el);
@@ -30582,55 +30273,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(documentation_comment_section el, documentation_comment_section newel)
 		{
 			sections.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
 			sections.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(documentation_comment_section el, documentation_comment_section newel)
 		{
 			sections.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
 			sections.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(documentation_comment_section el)
 		{
 			return sections.Remove(el);
 		}
-
+		
 		public void ReplaceInList(documentation_comment_section el, documentation_comment_section newel)
 		{
 			sections[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
 			var ind = FindIndexInList(el);
 			sections.RemoveAt(ind);
 			sections.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<documentation_comment_section> match)
 		{
 			return sections.RemoveAll(match);
 		}
-
+		
 		public documentation_comment_section Last()
 		{
 			return sections[sections.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -30756,14 +30446,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._text=_text;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public documentation_comment_tag(documentation_comment_tag_param elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected string _name;
 		protected List<documentation_comment_tag_param> _parameters=new List<documentation_comment_tag_param>();
 		protected string _text;
@@ -30814,7 +30501,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public documentation_comment_tag Add(documentation_comment_tag_param elem, SourceContext sc = null)
 		{
 			parameters.Add(elem);
@@ -30822,22 +30508,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(documentation_comment_tag_param el)
 		{
 			parameters.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<documentation_comment_tag_param> els)
 		{
 			parameters.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params documentation_comment_tag_param[] els)
 		{
 			parameters.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(documentation_comment_tag_param el)
 		{
 			var ind = parameters.FindIndex(x => x == el);
@@ -30845,55 +30531,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
 			parameters.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
 			parameters.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
 			parameters.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
 			parameters.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(documentation_comment_tag_param el)
 		{
 			return parameters.Remove(el);
 		}
-
+		
 		public void ReplaceInList(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
 			parameters[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
 			var ind = FindIndexInList(el);
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<documentation_comment_tag_param> match)
 		{
 			return parameters.RemoveAll(match);
 		}
-
+		
 		public documentation_comment_tag_param Last()
 		{
 			return parameters[parameters.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -31019,7 +30704,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._value=_value;
 			source_context = sc;
 		}
-
 		protected string _name;
 		protected string _value;
 
@@ -31155,14 +30839,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._text=_text;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public documentation_comment_section(documentation_comment_tag elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<documentation_comment_tag> _tags=new List<documentation_comment_tag>();
 		protected string _text;
 
@@ -31197,7 +30878,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public documentation_comment_section Add(documentation_comment_tag elem, SourceContext sc = null)
 		{
 			tags.Add(elem);
@@ -31205,22 +30885,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(documentation_comment_tag el)
 		{
 			tags.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<documentation_comment_tag> els)
 		{
 			tags.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params documentation_comment_tag[] els)
 		{
 			tags.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(documentation_comment_tag el)
 		{
 			var ind = tags.FindIndex(x => x == el);
@@ -31228,55 +30908,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(documentation_comment_tag el, documentation_comment_tag newel)
 		{
 			tags.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
 			tags.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(documentation_comment_tag el, documentation_comment_tag newel)
 		{
 			tags.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
 			tags.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(documentation_comment_tag el)
 		{
 			return tags.Remove(el);
 		}
-
+		
 		public void ReplaceInList(documentation_comment_tag el, documentation_comment_tag newel)
 		{
 			tags[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
 			var ind = FindIndexInList(el);
 			tags.RemoveAt(ind);
 			tags.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<documentation_comment_tag> match)
 		{
 			return tags.RemoveAll(match);
 		}
-
+		
 		public documentation_comment_tag Last()
 		{
 			return tags[tags.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -31418,7 +31097,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._tag=_tag;
 			source_context = sc;
 		}
-
 		protected object _tag;
 
 		///<summary>
@@ -31559,7 +31237,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		protected DeclarationSpecificator _specificator;
 		protected string _name;
 
@@ -31716,7 +31393,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_params=_template_params;
 			source_context = sc;
 		}
-
 		protected addressed_value _name;
 		protected template_param_list _template_params;
 
@@ -31898,7 +31574,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			source_context = sc;
 		}
-
 		protected ident_list _template_args;
 
 		///<summary>
@@ -32036,7 +31711,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			source_context = sc;
 		}
-
 		protected named_type_reference _type_name;
 
 		///<summary>
@@ -32173,7 +31847,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected expression _expr;
 
 		///<summary>
@@ -32314,7 +31987,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._arguments=_arguments;
 			source_context = sc;
 		}
-
 		protected ident _qualifier;
 		protected named_type_reference _type;
 		protected expression_list _arguments;
@@ -32498,14 +32170,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attributes=_attributes;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public simple_attribute_list(attribute elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<attribute> _attributes=new List<attribute>();
 
 		///<summary>
@@ -32524,7 +32193,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public simple_attribute_list Add(attribute elem, SourceContext sc = null)
 		{
 			attributes.Add(elem);
@@ -32532,22 +32200,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(attribute el)
 		{
 			attributes.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<attribute> els)
 		{
 			attributes.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params attribute[] els)
 		{
 			attributes.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(attribute el)
 		{
 			var ind = attributes.FindIndex(x => x == el);
@@ -32555,55 +32223,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(attribute el, attribute newel)
 		{
 			attributes.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(attribute el, IEnumerable<attribute> newels)
 		{
 			attributes.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(attribute el, attribute newel)
 		{
 			attributes.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(attribute el, IEnumerable<attribute> newels)
 		{
 			attributes.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(attribute el)
 		{
 			return attributes.Remove(el);
 		}
-
+		
 		public void ReplaceInList(attribute el, attribute newel)
 		{
 			attributes[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(attribute el, IEnumerable<attribute> newels)
 		{
 			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<attribute> match)
 		{
 			return attributes.RemoveAll(match);
 		}
-
+		
 		public attribute Last()
 		{
 			return attributes[attributes.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -32725,14 +32392,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attributes=_attributes;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public attribute_list(simple_attribute_list elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<simple_attribute_list> _attributes=new List<simple_attribute_list>();
 
 		///<summary>
@@ -32751,7 +32415,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public attribute_list Add(simple_attribute_list elem, SourceContext sc = null)
 		{
 			attributes.Add(elem);
@@ -32759,22 +32422,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(simple_attribute_list el)
 		{
 			attributes.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<simple_attribute_list> els)
 		{
 			attributes.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params simple_attribute_list[] els)
 		{
 			attributes.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(simple_attribute_list el)
 		{
 			var ind = attributes.FindIndex(x => x == el);
@@ -32782,55 +32445,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(simple_attribute_list el, simple_attribute_list newel)
 		{
 			attributes.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
 			attributes.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(simple_attribute_list el, simple_attribute_list newel)
 		{
 			attributes.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
 			attributes.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(simple_attribute_list el)
 		{
 			return attributes.Remove(el);
 		}
-
+		
 		public void ReplaceInList(simple_attribute_list el, simple_attribute_list newel)
 		{
 			attributes[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
 			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<simple_attribute_list> match)
 		{
 			return attributes.RemoveAll(match);
 		}
-
+		
 		public simple_attribute_list Last()
 		{
 			return attributes[attributes.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -32972,14 +32634,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._usedkeyword=_usedkeyword;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public function_lambda_definition(declaration elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected ident_list _ident_list;
 		protected type_definition _return_type;
 		protected formal_parameters _formal_parameters;
@@ -33158,7 +32817,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public function_lambda_definition Add(declaration elem, SourceContext sc = null)
 		{
 			defs.Add(elem);
@@ -33166,22 +32824,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(declaration el)
 		{
 			defs.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<declaration> els)
 		{
 			defs.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params declaration[] els)
 		{
 			defs.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(declaration el)
 		{
 			var ind = defs.FindIndex(x => x == el);
@@ -33189,55 +32847,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(declaration el, declaration newel)
 		{
 			defs.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
 			defs.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(declaration el, declaration newel)
 		{
 			defs.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
 			defs.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(declaration el)
 		{
 			return defs.Remove(el);
 		}
-
+		
 		public void ReplaceInList(declaration el, declaration newel)
 		{
 			defs[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<declaration> match)
 		{
 			return defs.RemoveAll(match);
 		}
-
+		
 		public declaration Last()
 		{
 			return defs[defs.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -33445,7 +33102,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameters=_parameters;
 			source_context = sc;
 		}
-
 		protected function_lambda_definition _f_lambda_def;
 		protected expression_list _parameters;
 
@@ -33612,14 +33268,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._fictive=_fictive;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public semantic_check(syntax_tree_node elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected string _CheckName;
 		protected List<syntax_tree_node> _param=new List<syntax_tree_node>();
 		protected int _fictive;
@@ -33670,7 +33323,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public semantic_check Add(syntax_tree_node elem, SourceContext sc = null)
 		{
 			param.Add(elem);
@@ -33678,22 +33330,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(syntax_tree_node el)
 		{
 			param.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<syntax_tree_node> els)
 		{
 			param.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params syntax_tree_node[] els)
 		{
 			param.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(syntax_tree_node el)
 		{
 			var ind = param.FindIndex(x => x == el);
@@ -33701,55 +33353,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(syntax_tree_node el, syntax_tree_node newel)
 		{
 			param.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
 			param.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
 		{
 			param.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
 			param.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(syntax_tree_node el)
 		{
 			return param.Remove(el);
 		}
-
+		
 		public void ReplaceInList(syntax_tree_node el, syntax_tree_node newel)
 		{
 			param[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
 			var ind = FindIndexInList(el);
 			param.RemoveAt(ind);
 			param.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<syntax_tree_node> match)
 		{
 			return param.RemoveAll(match);
 		}
-
+		
 		public syntax_tree_node Last()
 		{
 			return param[param.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -33897,7 +33548,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._real_type=_real_type;
 			source_context = sc;
 		}
-
 		protected object _real_type;
 
 		///<summary>
@@ -34054,7 +33704,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._ex=_ex;
 			source_context = sc;
 		}
-
 		protected expression _ex;
 
 		///<summary>
@@ -34203,7 +33852,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected ident _name;
 		protected expression _expr;
 
@@ -34361,14 +34009,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name_expr=_name_expr;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public name_assign_expr_list(name_assign_expr elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<name_assign_expr> _name_expr=new List<name_assign_expr>();
 
 		///<summary>
@@ -34387,7 +34032,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public name_assign_expr_list Add(name_assign_expr elem, SourceContext sc = null)
 		{
 			name_expr.Add(elem);
@@ -34395,22 +34039,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(name_assign_expr el)
 		{
 			name_expr.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<name_assign_expr> els)
 		{
 			name_expr.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params name_assign_expr[] els)
 		{
 			name_expr.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(name_assign_expr el)
 		{
 			var ind = name_expr.FindIndex(x => x == el);
@@ -34418,55 +34062,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(name_assign_expr el, name_assign_expr newel)
 		{
 			name_expr.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
 			name_expr.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(name_assign_expr el, name_assign_expr newel)
 		{
 			name_expr.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
 			name_expr.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(name_assign_expr el)
 		{
 			return name_expr.Remove(el);
 		}
-
+		
 		public void ReplaceInList(name_assign_expr el, name_assign_expr newel)
 		{
 			name_expr[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
 			var ind = FindIndexInList(el);
 			name_expr.RemoveAt(ind);
 			name_expr.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<name_assign_expr> match)
 		{
 			return name_expr.RemoveAll(match);
 		}
-
+		
 		public name_assign_expr Last()
 		{
 			return name_expr[name_expr.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -34594,7 +34237,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._new_ex=_new_ex;
 			source_context = sc;
 		}
-
 		protected name_assign_expr_list _ne_list;
 		protected bool _is_class;
 		protected new_expr _new_ex;
@@ -34793,7 +34435,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type=_type;
 			source_context = sc;
 		}
-
 		protected Object _type;
 
 		///<summary>
@@ -34954,7 +34595,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._procdef=_procdef;
 			source_context = sc;
 		}
-
 		protected procedure_definition _procdef;
 
 		///<summary>
@@ -35113,7 +34753,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -35234,7 +34873,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			source_context = sc;
 		}
-
 		protected expression _left;
 		protected expression _right;
 
@@ -35416,7 +35054,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._substitution=_substitution;
 			source_context = sc;
 		}
-
 		protected dot_node _substitution;
 
 		///<summary>
@@ -35573,7 +35210,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._elements_type=_elements_type;
 			source_context = sc;
 		}
-
 		protected type_definition _elements_type;
 
 		///<summary>
@@ -35747,7 +35383,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._res=_res;
 			source_context = sc;
 		}
-
 		protected type_definition _aloneparam;
 		protected enumerator_list _el;
 		protected type_definition _res;
@@ -35946,7 +35581,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._ex=_ex;
 			source_context = sc;
 		}
-
 		protected expression _ex;
 
 		///<summary>
@@ -36104,7 +35738,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._opname=_opname;
 			source_context = sc;
 		}
-
 		protected operator_name_ident _opname;
 
 		///<summary>
@@ -36252,7 +35885,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected Object _expr;
 
 		///<summary>
@@ -36376,7 +36008,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._exprs=_exprs;
 			source_context = sc;
 		}
-
 		protected type_definition _tn;
 		protected statement_list _exprs;
 
@@ -36536,7 +36167,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		protected addressed_value_list _vars;
 		protected expression _expr;
 
@@ -36699,14 +36329,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._variables=_variables;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public addressed_value_list(addressed_value elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<addressed_value> _variables=new List<addressed_value>();
 
 		///<summary>
@@ -36725,7 +36352,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public addressed_value_list Add(addressed_value elem, SourceContext sc = null)
 		{
 			variables.Add(elem);
@@ -36733,22 +36359,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(addressed_value el)
 		{
 			variables.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<addressed_value> els)
 		{
 			variables.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params addressed_value[] els)
 		{
 			variables.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(addressed_value el)
 		{
 			var ind = variables.FindIndex(x => x == el);
@@ -36756,55 +36382,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(addressed_value el, addressed_value newel)
 		{
 			variables.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(addressed_value el, IEnumerable<addressed_value> newels)
 		{
 			variables.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(addressed_value el, addressed_value newel)
 		{
 			variables.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(addressed_value el, IEnumerable<addressed_value> newels)
 		{
 			variables.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(addressed_value el)
 		{
 			return variables.Remove(el);
 		}
-
+		
 		public void ReplaceInList(addressed_value el, addressed_value newel)
 		{
 			variables[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(addressed_value el, IEnumerable<addressed_value> newels)
 		{
 			var ind = FindIndexInList(el);
 			variables.RemoveAt(ind);
 			variables.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<addressed_value> match)
 		{
 			return variables.RemoveAll(match);
 		}
-
+		
 		public addressed_value Last()
 		{
 			return variables[variables.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -36926,7 +36551,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._el=_el;
 			source_context = sc;
 		}
-
 		protected expression_list _el;
 
 		///<summary>
@@ -37082,14 +36706,11 @@ namespace PascalABCCompiler.SyntaxTree
 			this._listunitsections=_listunitsections;
 			source_context = sc;
 		}
-		// Конструкторы списка
 		public uses_closure(uses_list elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		}
-
-		// Окончание конструкторов списка
-
+		
 		protected List<uses_list> _listunitsections=new List<uses_list>();
 
 		///<summary>
@@ -37108,7 +36729,6 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		// Методы списка
 		public uses_closure Add(uses_list elem, SourceContext sc = null)
 		{
 			listunitsections.Add(elem);
@@ -37116,22 +36736,22 @@ namespace PascalABCCompiler.SyntaxTree
 				source_context = sc;
 			return this;
 		}
-
+		
 		public void AddFirst(uses_list el)
 		{
 			listunitsections.Insert(0, el);
 		}
-
+		
 		public void AddFirst(IEnumerable<uses_list> els)
 		{
 			listunitsections.InsertRange(0, els);
 		}
-
+		
 		public void AddMany(params uses_list[] els)
 		{
 			listunitsections.AddRange(els);
 		}
-
+		
 		private int FindIndexInList(uses_list el)
 		{
 			var ind = listunitsections.FindIndex(x => x == el);
@@ -37139,55 +36759,54 @@ namespace PascalABCCompiler.SyntaxTree
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
 			return ind;
 		}
-
+		
 		public void InsertAfter(uses_list el, uses_list newel)
 		{
 			listunitsections.Insert(FindIndex(el) + 1, newel);
 		}
-
+		
 		public void InsertAfter(uses_list el, IEnumerable<uses_list> newels)
 		{
 			listunitsections.InsertRange(FindIndex(el) + 1, newels);
 		}
-
+		
 		public void InsertBefore(uses_list el, uses_list newel)
 		{
 			listunitsections.Insert(FindIndex(el), newel);
 		}
-
+		
 		public void InsertBefore(uses_list el, IEnumerable<uses_list> newels)
 		{
 			listunitsections.InsertRange(FindIndex(el), newels);
 		}
-
+		
 		public bool Remove(uses_list el)
 		{
 			return listunitsections.Remove(el);
 		}
-
+		
 		public void ReplaceInList(uses_list el, uses_list newel)
 		{
 			listunitsections[FindIndexInList(el)] = newel;
 		}
-
+		
 		public void ReplaceInList(uses_list el, IEnumerable<uses_list> newels)
 		{
 			var ind = FindIndexInList(el);
 			listunitsections.RemoveAt(ind);
 			listunitsections.InsertRange(ind, newels);
 		}
-
+		
 		public int RemoveAll(Predicate<uses_list> match)
 		{
 			return listunitsections.RemoveAll(match);
 		}
-
+		
 		public uses_list Last()
 		{
 			return listunitsections[listunitsections.Count - 1];
 		}
-
-		// Окончание методов списка
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -37337,7 +36956,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			source_context = sc;
 		}
-
 		protected addressed_value _left;
 		protected addressed_value _right;
 
@@ -37531,7 +37149,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._step=_step;
 			source_context = sc;
 		}
-
 		protected addressed_value _v;
 		protected expression _from;
 		protected expression _to;
@@ -37757,7 +37374,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -37877,7 +37493,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -37982,7 +37597,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -38102,7 +37716,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -38221,7 +37834,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._ex=_ex;
 			source_context = sc;
 		}
-
 		protected expression _ex;
 
 		///<summary>
@@ -38361,7 +37973,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			source_context = sc;
 		}
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{

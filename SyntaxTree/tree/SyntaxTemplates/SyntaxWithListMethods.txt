@@ -1,0 +1,77 @@
+public <#NodeName#> Add(<#ListElementType#> elem, SourceContext sc = null)
+{
+	<#ListName#>.Add(elem);
+	if (sc != null)
+		source_context = sc;
+	return this;
+}
+
+public void AddFirst(<#ListElementType#> el)
+{
+	<#ListName#>.Insert(0, el);
+}
+
+public void AddFirst(IEnumerable<<#ListElementType#>> els)
+{
+	<#ListName#>.InsertRange(0, els);
+}
+
+public void AddMany(params <#ListElementType#>[] els)
+{
+	<#ListName#>.AddRange(els);
+}
+
+private int FindIndexInList(<#ListElementType#> el)
+{
+	var ind = <#ListName#>.FindIndex(x => x == el);
+	if (ind == -1)
+		throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+	return ind;
+}
+
+public void InsertAfter(<#ListElementType#> el, <#ListElementType#> newel)
+{
+	<#ListName#>.Insert(FindIndex(el) + 1, newel);
+}
+
+public void InsertAfter(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
+{
+	<#ListName#>.InsertRange(FindIndex(el) + 1, newels);
+}
+
+public void InsertBefore(<#ListElementType#> el, <#ListElementType#> newel)
+{
+	<#ListName#>.Insert(FindIndex(el), newel);
+}
+
+public void InsertBefore(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
+{
+	<#ListName#>.InsertRange(FindIndex(el), newels);
+}
+
+public bool Remove(<#ListElementType#> el)
+{
+	return <#ListName#>.Remove(el);
+}
+
+public void ReplaceInList(<#ListElementType#> el, <#ListElementType#> newel)
+{
+	<#ListName#>[FindIndexInList(el)] = newel;
+}
+
+public void ReplaceInList(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
+{
+	var ind = FindIndexInList(el);
+	<#ListName#>.RemoveAt(ind);
+	<#ListName#>.InsertRange(ind, newels);
+}
+
+public int RemoveAll(Predicate<<#ListElementType#>> match)
+{
+	return <#ListName#>.RemoveAll(match);
+}
+
+public <#ListElementType#> Last()
+{
+	return <#ListName#>[<#ListName#>.Count - 1];
+}
