@@ -367,18 +367,26 @@ namespace NodeGenerator
         }
     }
 
-    class SyntaxTemplateManager
+    public class SyntaxTemplateManager
     {
         static readonly string templatesFolder = "./SyntaxTemplates/";
         static readonly string methodsTemplatePath = templatesFolder + "SyntaxWithListMethods.txt";
         static readonly string constructorsTemplatePath = templatesFolder + "SyntaxWithListConstructors.txt";
 
-        static private string LoadAndPrepareTemplate(string path)
+        private Dictionary<string, string> cachedTemplates = new Dictionary<string, string>();
+
+        public SyntaxTemplateManager()
+        {
+            cachedTemplates[methodsTemplatePath] = LoadAndPrepareTemplate(methodsTemplatePath);
+            cachedTemplates[constructorsTemplatePath] = LoadAndPrepareTemplate(constructorsTemplatePath);
+        }
+
+        private string LoadAndPrepareTemplate(string path)
         {
             return StringHelper.AddIndent(File.ReadAllText(path), "\t\t");
         }
 
-        static private string FillTemplateVariables(string pattern, string nodeName, string listName, string listElemType)
+        private string FillTemplateVariables(string pattern, string nodeName, string listName, string listElemType)
         {
             return text_consts.change_words(
                 pattern,
@@ -394,10 +402,9 @@ namespace NodeGenerator
         /// <param name="listName">Имя поля-списка</param>
         /// <param name="listElemType">Тип элементов списка</param>
         /// <returns></returns>
-        static public string GetListMethodsCode(string nodeName, string listName, string listElemType)
+        public string GetListMethodsCode(string nodeName, string listName, string listElemType)
         {
-            string preparedMethods = LoadAndPrepareTemplate(methodsTemplatePath);
-            return FillTemplateVariables(preparedMethods, nodeName, listName, listElemType);
+            return FillTemplateVariables(cachedTemplates[methodsTemplatePath], nodeName, listName, listElemType);
         }
 
         /// <summary>
@@ -407,10 +414,9 @@ namespace NodeGenerator
         /// <param name="listName">Имя поля-списка</param>
         /// <param name="listElemType">Тип элементов списка</param>
         /// <returns></returns>
-        static public string GetListConstructorsCode(string nodeName, string listName, string listElemType)
+        public string GetListConstructorsCode(string nodeName, string listName, string listElemType)
         {
-            string preparedConstructors = LoadAndPrepareTemplate(constructorsTemplatePath);
-            return FillTemplateVariables(preparedConstructors, nodeName, listName, listElemType);
+            return FillTemplateVariables(cachedTemplates[constructorsTemplatePath], nodeName, listName, listElemType);
         }
     }
 
@@ -3117,11 +3123,11 @@ namespace NodeGenerator
         /// Генерация методов для узлов, содержащих список наследников syntax_tree_node (если такой список есть)
         /// </summary>
         /// <param name="sw">Writer потока, в который добавляется сгенерированный код</param>
-        private void generate_list_methods(StreamWriter sw)
+        private void generate_list_methods(StreamWriter sw, SyntaxTemplateManager manager)
         {
             var listField = GetListField();
             if (listField != null)
-                sw.WriteLine(SyntaxTemplateManager.GetListMethodsCode(
+                sw.WriteLine(manager.GetListMethodsCode(
                     node_name,
                     listField.field_name,
                     listField.list_type));
@@ -3131,11 +3137,11 @@ namespace NodeGenerator
         /// Генерация конструкторов для узлов, содержащих список наследников syntax_tree_node (если такой список есть)
         /// </summary>
         /// <param name="sw">Writer потока, в который добавляется сгенерированный код</param>
-        private void generate_list_constructors(StreamWriter sw)
+        private void generate_list_constructors(StreamWriter sw, SyntaxTemplateManager manager)
         {
             var listField = GetListField();
             if (listField != null)
-                sw.WriteLine(SyntaxTemplateManager.GetListConstructorsCode(
+                sw.WriteLine(manager.GetListConstructorsCode(
                     node_name,
                     listField.field_name,
                     listField.list_type));
@@ -3208,7 +3214,7 @@ namespace NodeGenerator
             }
         }
 
-        public void generate_code(StreamWriter sw,HelpStorage hst)
+        public void generate_code(StreamWriter sw,HelpStorage hst, SyntaxTemplateManager manager)
 		{
 			//sw.WriteLine();
 
@@ -3249,7 +3255,7 @@ namespace NodeGenerator
                 generate_big_constructor_code(sw, true, true);
             }
 
-            generate_list_constructors(sw);
+            generate_list_constructors(sw, manager);
 
             //sw.WriteLine();
             foreach (node_field_info nfi in _subnodes)
@@ -3276,7 +3282,7 @@ namespace NodeGenerator
             if (_methods.Count > 0)
                 sw.WriteLine();
 
-            generate_list_methods(sw);
+            generate_list_methods(sw, manager);
 
             generate_clone_method(sw);
             sw.WriteLine();
@@ -3867,6 +3873,7 @@ namespace NodeGenerator
 		public void generate_code()
 		{
 			StreamWriter sw=new StreamWriter(file_name);
+            SyntaxTemplateManager templateManager = new SyntaxTemplateManager();
 
             sw.WriteLine();
             sw.WriteLine("using System;");
@@ -3877,7 +3884,7 @@ namespace NodeGenerator
 
 			foreach(node_info ni in nodes)
 			{
-				ni.generate_code(sw,this.help_storage);
+				ni.generate_code(sw,this.help_storage, templateManager);
 			}
 
 			//generate_factory_class(sw);
