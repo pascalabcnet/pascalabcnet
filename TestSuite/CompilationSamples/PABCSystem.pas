@@ -8646,6 +8646,24 @@ begin
   Result := Self.GetLength(1);
 end;
 
+function Row<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
+begin
+  var n := Self.Cols();
+  var res := new T[n];
+  for var j:=0 to n-1 do
+    res[j] := Self[k,j];
+  Result := res;
+end;
+
+function Col<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
+begin
+  var m := Self.Rows();
+  var res := new T[m];
+  for var i:=0 to m-1 do
+    res[i] := Self[i,k];
+  Result := res;
+end;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
 // -----------------------------------------------------
