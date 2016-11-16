@@ -1440,6 +1440,17 @@
           </i>
         </OCtx>
       </Node>
+      <Node Name="FindIndex" NL="0,5634766" NG="0,5947266">
+        <FileName>\SyntaxTree\tree\TreeHelper.cs</FileName>
+        <Text>public int FindIndex(syntax_tree_node node)</Text>
+        <OCtx>
+          <i Type="Method">public int FindIndex ( syntax_tree_node node )</i>
+          <i Type="ClassOrNamespace">public partial class syntax_tree_node</i>
+          <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTree</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>

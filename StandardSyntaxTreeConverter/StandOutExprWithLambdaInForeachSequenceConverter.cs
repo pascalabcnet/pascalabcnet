@@ -20,7 +20,7 @@ public class StandOutExprWithLambdaInForeachSequenceVisitor : BaseEnterExitVisit
         return new ident("$GenContFE" + GenIdNum.ToString());
     }
 
-    public void ReplaceStatement(statement from, IEnumerable<statement> to)
+    public void ReplaceStatement(statement from, IEnumerable<statement> to, Desc d = Desc.DirectDescendants)
     {
         foreach (var x in to)
             x.Parent = from.Parent;
@@ -34,7 +34,7 @@ public class StandOutExprWithLambdaInForeachSequenceVisitor : BaseEnterExitVisit
             var l = new statement_list();
             l.AddMany(to);
             l.source_context = from.source_context;
-            from.Parent.Replace(from, l);
+            from.Parent.Replace(from, l, d); 
         }
     }
 

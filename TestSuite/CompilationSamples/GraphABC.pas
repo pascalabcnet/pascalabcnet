@@ -2904,7 +2904,10 @@ end;
 procedure SetPenWidth(Width: integer);
 begin
   lock f do
+  begin
     Pen.NETPen.Width := Width;
+    _ColorLinePen.Width := Width;
+  end;  
 end;
 
 function PenWidth: integer;

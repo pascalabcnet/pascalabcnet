@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Исполнитель Чертежник предназначен для построения рисунков и чертежей на плоскости с координатами. 
@@ -29,6 +29,9 @@ procedure Start;
 /// Остановить Чертежника
 procedure Stop;
 
+/// Установить ширину пера Чертежника
+procedure SetDrawmanWidth(w: integer);
+
 ///--
 procedure __InitModule__;
 ///--
@@ -37,6 +40,11 @@ procedure __FinalizeModule__;
 implementation
 
 uses DMTaskMaker,DMZadan,DrawmanField;
+
+procedure SetDrawmanWidth(w: integer);
+begin
+  DMField.dmwidth := w
+end;
 
 procedure Start;
 begin
