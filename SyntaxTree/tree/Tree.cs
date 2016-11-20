@@ -10377,7 +10377,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="visitor">Объект-посетитель.</param>
 		///<returns>Return value is void</returns>
 		public override void visit(IVisitor visitor)
-		{
+	{
 			visitor.visit(this);
 		}
 

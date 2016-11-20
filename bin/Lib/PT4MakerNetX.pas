@@ -2,33 +2,33 @@ unit PT4MakerNetX;
 
 // Конструктор учебных заданий для задачника Programming Taskbook
 // М.Э.Абрамян, 2016
-// Версия 1.1 от 9.11.2016
+// Версия 1.2 от 14.11.2016
+
+{$reference 'System.Windows.Forms.dll'}
 
 interface
 
-uses PT4TaskMakerNET;
+procedure NewTask(topic, tasktext: string);
+procedure NewTask(tasktext: string);
 
-procedure TaskText(topic, s: string);
-procedure TaskText(s: string);
-
-procedure DataComm(Comm: string);
-procedure Data(Comm: string; a: object);
-procedure Data(Comm1: string; a1: object; Comm2: string);
-procedure Data(Comm1: string; a1: object; Comm2: string; a2: object);
-procedure Data(Comm1: string; a1: object; Comm2: string; a2: object; Comm3: string);
-procedure Data(Comm1: string; a1: object; Comm2: string; a2: object; Comm3: string; a3: object);
+procedure DataComm(comm: string);
+procedure Data(comm: string; a: object);
+procedure Data(comm1: string; a1: object; comm2: string);
+procedure Data(comm1: string; a1: object; comm2: string; a2: object);
+procedure Data(comm1: string; a1: object; comm2: string; a2: object; comm3: string);
+procedure Data(comm1: string; a1: object; comm2: string; a2: object; comm3: string; a3: object);
 procedure Data(seq: sequence of boolean);
 procedure Data(seq: sequence of integer);
 procedure Data(seq: sequence of real);
 procedure Data(seq: sequence of char);
 procedure Data(seq: sequence of string);
 
-procedure ResComm(Comm: string);
-procedure Res(Comm: string; a: object);
-procedure Res(Comm1: string; a1: object; Comm2: string);
-procedure Res(Comm1: string; a1: object; Comm2: string; a2: object);
-procedure Res(Comm1: string; a1: object; Comm2: string; a2: object; Comm3: string);
-procedure Res(Comm1: string; a1: object; Comm2: string; a2: object; Comm3: string; a3: object);
+procedure ResComm(comm: string);
+procedure Res(comm: string; a: object);
+procedure Res(comm1: string; a1: object; comm2: string);
+procedure Res(comm1: string; a1: object; comm2: string; a2: object);
+procedure Res(comm1: string; a1: object; comm2: string; a2: object; comm3: string);
+procedure Res(comm1: string; a1: object; comm2: string; a2: object; comm3: string; a3: object);
 procedure Res(seq: sequence of boolean);
 procedure Res(seq: sequence of integer);
 procedure Res(seq: sequence of real);
@@ -45,7 +45,7 @@ function RandomR(A, B: real): real;
 function Random(A, B: real): real;
 function RandomName(len: integer): string;
 
-procedure CreateGroup(GroupName, GroupDescription, GroupAuthor: string);
+procedure NewGroup(GroupDescription, GroupAuthor: string);
 procedure ActivateNET(S: string);
 procedure UseTask(GroupName: string; TaskNumber: integer);
 
@@ -70,7 +70,7 @@ procedure ResText(FileName: string; LineCount: integer := 5);
 
 implementation
 
-uses System.Reflection, Microsoft.Win32;
+uses System.Reflection, Microsoft.Win32, PT4TaskMakerNET, System.Windows.Forms;
 
 const
   alphabet = '0123456789abcdefghijklmnopqrstuvwxyz';
@@ -78,16 +78,41 @@ const
   ErrMes2 = 'Error: При наличии файловых данных раздел не может содержать более 5 строк.';
   ErrMes3 = 'Error: Количество исходных данных превысило 200.';
   ErrMes4 = 'Error: Количество результирующих данных превысило 200.';
+  ErrMes5 = 'Error: При определении задания первой должна вызываться процедура NewTask.';
+  ErrMes6 = 'Error: При определении задания не указаны исходные данные.';
+  ErrMes7 = 'Error: При определении задания не указаны результирующие данные.';
 
 var
-  yd, yr, nd, nr, pr: integer;
-  fd, fr: boolean;
+  yd, yr, ye, nd, nr, pr: integer;
+  nt, ut, fd, fr: boolean;
   fmt: string;
   tasks := new List<MethodInfo>(100);
 
+procedure Show(s: string);
+begin
+  MessageBox.Show(s, 'Error', MessageBoxButtons.OK, MessageBoxIcon.Error);
+end;
+
 function ErrorMessage(s: string): string;
 begin
-  result := Copy('==' + s + new string('=', 100), 1, 78);
+  result := Copy(s + new string(' ', 100), 1, 78);
+end;
+
+procedure ErrorInfo(s: string);
+begin
+  PT4TaskMakerNET.TaskText('\B'+ErrorMessage(s)+'\b', 0, ye);
+  ye := ye + 1;
+  if ye > 5 then ye := 0;
+end;
+
+function CheckTT: boolean;
+begin
+  result := ut;
+  if not nt then
+  begin
+    NewTask('');
+    ErrorInfo(ErrMes5);
+  end;  
 end;
 
 function RandomName(len: integer): string;
@@ -98,6 +123,7 @@ end;
 
 procedure SetPrecision(n: integer);
 begin
+  if CheckTT then exit;
   if abs(n) > 10 then exit;
   pr := n;
   if n < 0 then
@@ -112,18 +138,22 @@ begin
   PT4TaskMakerNET.SetPrecision(n);
 end;
 
-procedure TaskText(topic, s: string);
+procedure NewTask(topic, tasktext: string);
 begin
+  if nt then exit;
   PT4TaskMakerNET.CreateTask(topic);
-  PT4TaskMakerNET.TaskText(s);
-  yd := 0;
-  yr := 0;
-  nd := 0;
-  nr := 0;
-  fd := false;
-  fr := false;
-  pr := 2;
-  fmt := 'f2';
+  PT4TaskMakerNET.TaskText(tasktext);
+  nt := true;  // вызвана процедура NewTask
+  ut := false; // было подключено существующее задание (процедурой UseTask)
+  ye := 1;     // текущий номер строки для вывода сообщения об ошибке
+  yd := 0;     // текущий номер строки в разделе исходных данных
+  yr := 0;     // текущий номер строки в разделе результатов
+  nd := 0;     // количество элементов исходных данных
+  nr := 0;     // количество элементов результирующих данных
+  fd := false; // наличие файловых данных в разделе исходных данных
+  fr := false; // наличие файловых данных в разделе результатов
+  pr := 2;     // текущая точность вывода вещественных данных
+  fmt := 'f2'; // текущий формат вывода вещественных данных
 end;
 
 function wreal(w: integer; x: real): integer;
@@ -144,24 +174,22 @@ begin
     result := IntToStr(x).Length;
 end;
 
-procedure TaskText(s: string);
+procedure NewTask(tasktext: string);
 begin
-  TaskText('', s);
+  NewTask('', tasktext);
 end;
 
 procedure Data(s: string; a: object; x, y, w: integer);
 begin
   if (y > 5) and fd then
   begin
-    PT4TaskMakerNET.TaskText(ErrorMessage(ErrMes2), 0, 1);
-    PT4TaskMakerNET.TaskText(ErrorMessage(''), 0, 2);
+    ErrorInfo(ErrMes2);
     exit;  
   end;
   inc(nd);
   if nd > 200 then
   begin
-    PT4TaskMakerNET.TaskText(ErrorMessage(ErrMes3), 0, 1);
-    PT4TaskMakerNET.TaskText(ErrorMessage(''), 0, 2);
+    ErrorInfo(ErrMes3);
     exit;  
   end;
   if a is boolean then
@@ -182,15 +210,13 @@ procedure Res(s: string; a: object; x, y, w: integer);
 begin
   if (y > 5) and fr then
   begin
-    PT4TaskMakerNET.TaskText(ErrorMessage(ErrMes2), 0, 1);
-    PT4TaskMakerNET.TaskText(ErrorMessage(''), 0, 2);
+    ErrorInfo(ErrMes2);
     exit;  
   end;
   inc(nr);
   if nr > 200 then
   begin
-    PT4TaskMakerNET.TaskText(ErrorMessage(ErrMes4), 0, 1);
-    PT4TaskMakerNET.TaskText(ErrorMessage(''), 0, 2);
+    ErrorInfo(ErrMes4);
     exit;  
   end;
   if a is boolean then
@@ -209,18 +235,21 @@ end;
 
 procedure DataComm(comm: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   DataComment(comm, 0, yd);
 end;
 
 procedure Data(comm: string; a: object);
 begin
+  if CheckTT then exit;
   inc(yd);
   Data(comm, a, 0, yd, 0);
 end;
 
 procedure Data(comm1: string; a1: object; comm2: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   Data(comm1, a1, xLeft, yd, 0);
   DataComment(comm2, xRight, yd);
@@ -228,6 +257,7 @@ end;
 
 procedure Data(comm1: string; a1: object; comm2: string; a2: object);
 begin
+  if CheckTT then exit;
   inc(yd);
   Data(comm1, a1, xLeft, yd, 0);
   Data(comm2, a2, xRight, yd, 0);
@@ -235,6 +265,7 @@ end;
 
 procedure Data(comm1: string; a1: object; comm2: string; a2: object; comm3: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   Data(comm1, a1, xLeft, yd, 0);
   Data(comm2, a2, 0, yd, 0);
@@ -243,6 +274,7 @@ end;
 
 procedure Data(comm1: string; a1: object; comm2: string; a2: object; comm3: string; a3: object);
 begin
+  if CheckTT then exit;
   inc(yd);
   Data(comm1, a1, xLeft, yd, 0);
   Data(comm2, a2, 0, yd, 0);
@@ -251,6 +283,7 @@ end;
 
 procedure Data(seq: sequence of boolean);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yd);
@@ -273,6 +306,7 @@ end;
 
 procedure Data(seq: sequence of integer);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yd);
@@ -295,6 +329,7 @@ end;
 
 procedure Data(seq: sequence of real);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yd);
@@ -317,6 +352,7 @@ end;
 
 procedure Data(seq: sequence of char);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yd);
@@ -339,6 +375,7 @@ end;
 
 procedure Data(seq: sequence of string);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yd);
@@ -361,18 +398,21 @@ end;
 
 procedure ResComm(comm: string);
 begin
+  if CheckTT then exit;
   inc(yr);
   ResultComment(comm, 0, yr);
 end;
 
 procedure Res(comm: string; a: object);
 begin
+  if CheckTT then exit;
   inc(yr);
   Res(comm, a, 0, yr, 0);
 end;
 
 procedure Res(comm1: string; a1: object; comm2: string);
 begin
+  if CheckTT then exit;
   inc(yr);
   Res(comm1, a1, xLeft, yr, 0);
   ResultComment(comm2, xRight, yr);
@@ -380,6 +420,7 @@ end;
 
 procedure Res(comm1: string; a1: object; comm2: string; a2: object);
 begin
+  if CheckTT then exit;
   inc(yr);
   Res(comm1, a1, xLeft, yr, 0);
   Res(comm2, a2, xRight, yr, 0);
@@ -387,6 +428,7 @@ end;
 
 procedure Res(comm1: string; a1: object; comm2: string; a2: object; comm3: string);
 begin
+  if CheckTT then exit;
   inc(yr);
   Res(comm1, a1, xLeft, yr, 0);
   Res(comm2, a2, 0, yr, 0);
@@ -395,6 +437,7 @@ end;
 
 procedure Res(comm1: string; a1: object; comm2: string; a2: object; comm3: string; a3: object);
 begin
+  if CheckTT then exit;
   inc(yr);
   Res(comm1, a1, xLeft, yr, 0);
   Res(comm2, a2, 0, yr, 0);
@@ -403,6 +446,7 @@ end;
 
 procedure Res(seq: sequence of boolean);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yr);
@@ -425,6 +469,7 @@ end;
 
 procedure Res(seq: sequence of integer);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yr);
@@ -447,6 +492,7 @@ end;
 
 procedure Res(seq: sequence of real);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yr);
@@ -469,6 +515,7 @@ end;
 
 procedure Res(seq: sequence of char);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yr);
@@ -491,6 +538,7 @@ end;
 
 procedure Res(seq: sequence of string);
 begin
+  if CheckTT then exit;
   var n := seq.Count;
   if n = 0 then exit;
   inc(yr);
@@ -517,84 +565,76 @@ begin
   PT4TaskMakerNET.ActivateNET(S);
 end;
 
-function TryAssembly(path: string): Assembly;
-begin
-  result := nil;
-  if FileExists(path) then
-    try
-      result := Assembly.LoadFrom(path);
-    except
-    end;
-end;
-
-function GetAssembly(nm: string): Assembly;
-begin
-  result := TryAssembly('C:\PABCWork.NET\' + nm);
-  if result = nil then
-    result := TryAssembly('C:\Program Files (x86)\PascalABC.NET\PT4\Lib\' + nm);
-  if result = nil then
-    result := TryAssembly('C:\Program Files\PascalABC.NET\PT4\Lib\' + nm);
-  if result <> nil then
-    exit;
-  var dir: string := '';
-  var rk: RegistryKey := nil;
-  try
-    try
-      rk := Registry.CurrentUser.OpenSubKey('Software\PascalABC.NET');
-      if rk <> nil then
-        dir := string(rk.GetValue('Install Directory', ''));
-    finally
-      if rk <> nil then
-        rk.Close;
-    end;
-  except
-  end;
-  if dir <> '' then 
-    result := TryAssembly(dir + '\PT4\Lib\' + nm);
-end;
-
-
-
 procedure RunTask(num: integer);
+var ut0: boolean;
 begin
   try
+    try
     if (num > 0) and (num <= tasks.Count) then
       tasks[num - 1].Invoke(nil, nil);
+    finally
+      nt := false;
+      ut0 := ut;
+      ut := false;
+    end;
   except
     on e: TargetInvocationException do
     begin
-      PT4TaskMakerNET.TaskText(ErrorMessage('Error ' 
+      ErrorInfo('Error ' 
           + e.InnerException.GetType.Name + ': '
-          + e.InnerException.message), 0, 1);
-      PT4TaskMakerNET.TaskText(ErrorMessage(''), 0, 2);
-      raise;  
+          + e.InnerException.message);
     end;
   end;
+  if ut0 then exit;
+  if (nd = 0) and not fd then 
+    DataS('\B'+Copy(ErrorMessage(ErrMes6),1,76)+'\b', '', 1, 1);
+  if (nr = 0) and not fr then 
+    ResultS('\B'+Copy(ErrorMessage(ErrMes7),1,76)+'\b', '', 1, 1);
 end;
 
+function GetGroupName(assname: string): string;
+begin
+  result := copy(assname, 1, pos(',', assname)-1);
+  var p := pos('_', result);
+  if p > 0 then
+    delete(result, p, 100);
+  delete(result, 1, 3);
+end;
 
-procedure CreateGroup(GroupName, GroupDescription, GroupAuthor: string);
+procedure NewGroup(GroupDescription, GroupAuthor: string);
 begin
   if CurrentLanguage <> lgPascalABCNET then exit; // задания доступны только для PascalABC.NET
+  var ass := Assembly.GetCallingAssembly;
+  var GroupName := GetGroupName(ass.FullName);
   var nm := 'PT4' + GroupName;
   tasks.Clear;
-  var ass: Assembly := GetAssembly(nm + '.dll');
-  if ass = nil then exit;  
+  var GroupKey := 'GK';
   foreach var e in ass.GetType(nm + '.' + nm).GetMethods do
     if e.Name.ToUpper.StartsWith('TASK') then
+    begin
       tasks.Add(e);
-  PT4TaskMakerNET.CreateGroup(GroupName, GroupDescription, GroupAuthor, 
-      '111' + nm + '222', tasks.Count, RunTask);
+      GroupKey := GroupKey + Copy(e.Name, 5, 100);
+    end;  
+  if tasks.Count = 0 then
+  begin
+    Show('Группа ' + GroupName + ' не содержит заданий'#13#10+
+    '(имена процедур с заданиями должны начинаться с текста "Task").');
+    exit;
+  end;  
+  CreateGroup(GroupName, GroupDescription, GroupAuthor, 
+      GroupKey, tasks.Count, RunTask);
 end;
 
 
 procedure SetTestCount(n: integer);
 begin
+  if CheckTT then exit;
   PT4TaskMakerNET.SetTestCount(n);
 end;
 
 procedure SetRequiredDataCount(n: integer);
 begin
+  if CheckTT then exit;
   PT4TaskMakerNET.SetRequiredDataCount(n);
 end;
 
@@ -615,12 +655,15 @@ end;
 
 function CurrentTest: integer;
 begin
+  if CheckTT then exit;
   result := PT4TaskMakerNET.CurrentTest;
 end;
 
 procedure UseTask(GroupName: string; TaskNumber: integer);
 begin
+  if ut then exit;
   PT4TaskMakerNET.UseTask(GroupName, TaskNumber);
+  ut := true;
 end;
 
 function GetWords: array of string;
@@ -655,10 +698,11 @@ end;
 
 procedure DataFileInteger(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   if yd > 5 then
   begin
-    DataComm(ErrorMessage(ErrMes1));
+    DataComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   var w := 0;
@@ -677,7 +721,7 @@ begin
   except
     on ex: Exception do
     begin
-      DataComm(ErrorMessage('FileError(' + FileName + '): ' + ex.Message));
+      DataComm('\B'+ErrorMessage('FileError(' + FileName + '): ' + ex.Message)+'\b');
       exit;
     end;  
   end;
@@ -687,10 +731,11 @@ end;
 
 procedure DataFileReal(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   if yd > 5 then
   begin
-    DataComm(ErrorMessage(ErrMes1));
+    DataComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   var w := 0;
@@ -709,7 +754,7 @@ begin
   except
     on ex: Exception do
     begin
-      DataComm(ErrorMessage('FileError(' + FileName + '): ' + ex.Message));
+      DataComm('\B'+ErrorMessage('FileError(' + FileName + '): ' + ex.Message)+'\b');
       exit;
     end;  
   end;
@@ -719,10 +764,11 @@ end;
 
 procedure DataFileChar(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   if yd > 5 then
   begin
-    DataComm(ErrorMessage(ErrMes1));
+    DataComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   fd := true;
@@ -731,10 +777,11 @@ end;
 
 procedure DataFileString(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yd);
   if yd > 5 then
   begin
-    DataComm(ErrorMessage(ErrMes1));
+    DataComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   var w := 0;
@@ -752,7 +799,7 @@ begin
   except
     on ex: Exception do
     begin
-      DataComm(ErrorMessage('FileError(' + FileName + '): ' + ex.Message));
+      DataComm('\B'+ErrorMessage('FileError(' + FileName + '): ' + ex.Message)+'\b');
       exit;
     end;  
   end;
@@ -762,10 +809,11 @@ end;
 
 procedure DataText(FileName: string; LineCount: integer);
 begin
+  if CheckTT then exit;
   inc(yd);
   if yd > 5 then
   begin
-    ResComm(ErrorMessage(ErrMes1));
+    DataComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   fd := true;
@@ -777,10 +825,11 @@ end;
 
 procedure ResFileInteger(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yr);
   if yr > 5 then
   begin
-    ResComm(ErrorMessage(ErrMes1));
+    ResComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   var w := 0;
@@ -799,7 +848,7 @@ begin
   except
     on ex: Exception do
     begin
-      ResComm(ErrorMessage('FileError(' + FileName + '): ' + ex.Message));
+      ResComm('\B'+ErrorMessage('FileError(' + FileName + '): ' + ex.Message)+'\b');
       exit;
     end;  
   end;
@@ -809,11 +858,12 @@ end;
 
 procedure ResFileReal(FileName: string);
 begin
+  if CheckTT then exit;
   ResComm(fmt);
   inc(yr);
   if yr > 5 then
   begin
-    ResComm(ErrorMessage(ErrMes1));
+    ResComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   var w := 0;
@@ -832,7 +882,7 @@ begin
   except
     on ex: Exception do
     begin
-      ResComm(ErrorMessage('FileError(' + FileName + '): ' + ex.Message));
+      ResComm('\B'+ErrorMessage('FileError(' + FileName + '): ' + ex.Message)+'\b');
       exit;
     end;  
   end;
@@ -842,10 +892,11 @@ end;
 
 procedure ResFileChar(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yr);
   if yr > 5 then
   begin
-    ResComm(ErrorMessage(ErrMes1));
+    ResComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   fr := true;
@@ -854,10 +905,11 @@ end;
 
 procedure ResFileString(FileName: string);
 begin
+  if CheckTT then exit;
   inc(yr);
   if yr > 5 then
   begin
-    ResComm(ErrorMessage(ErrMes1));
+    ResComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   var w := 0;
@@ -875,7 +927,7 @@ begin
   except
     on ex: Exception do
     begin
-      ResComm(ErrorMessage('FileError(' + FileName + '): ' + ex.Message));
+      ResComm('\B'+ErrorMessage('FileError(' + FileName + '): ' + ex.Message)+'\b');
       exit;
     end;  
   end;
@@ -885,10 +937,11 @@ end;
 
 procedure ResText(FileName: string; LineCount: integer);
 begin
+  if CheckTT then exit;
   inc(yr);
   if yr > 5 then
   begin
-    ResComm(ErrorMessage(ErrMes1));
+    ResComm('\B'+ErrorMessage(ErrMes1)+'\b');
     exit;
   end;
   fr := true;

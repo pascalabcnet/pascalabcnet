@@ -336,5 +336,6 @@
     <name value="typed_const" />
     <name value="var_stmt" />
     <name value="const_expr" />
+    <name value="func_decl_lambda" />
   </tag>
 </tags>
