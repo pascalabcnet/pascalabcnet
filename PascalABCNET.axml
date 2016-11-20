@@ -1451,6 +1451,17 @@
           </i>
         </OCtx>
       </Node>
+      <Node Name="switch (action)" NL="0,7285156" NG="0,5">
+        <FileName>\Parsers\PascalABCParserNewSaushkin\ABCPascalYacc.cs</FileName>
+        <Text>switch (action)</Text>
+        <OCtx>
+          <i Type="Method">protected override void DoAction ( int action )</i>
+          <i Type="ClassOrNamespace">public partial class GPPGParser : ShiftReduceParser &lt; PascalABCSavParser . Union , LexLocation &gt;</i>
+          <i Type="ClassOrNamespace">namespace GPPGParserScanner</i>
+          <i Type="CS_TreeNode">
+          </i>
+        </OCtx>
+      </Node>
     </Items>
   </Node>
 </AspectFile>
