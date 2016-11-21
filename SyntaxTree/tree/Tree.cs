@@ -5866,11 +5866,14 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			if (indexers != null)
 				foreach (type_definition elem in indexers)
-					if (elem != null)
-					{
-						copy.Add((type_definition)elem.Clone());
-						copy.Last().Parent = copy;
-					}
+				{
+                    if (elem != null)
+                    {
+                        copy.Add((type_definition)elem.Clone());
+                        copy.Last().Parent = copy;
+                    }
+                    else copy.Add(null);
+				}
 			return copy;
 		}
 
