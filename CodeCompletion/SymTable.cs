@@ -319,8 +319,8 @@ namespace CodeCompletion
 
         public SymInfo[] GetSymInfosForExtensionMethods(TypeScope ts)
         {
-            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
-                return new SymInfo[0];
+            /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new SymInfo[0];*/
             List<SymInfo> lst = new List<SymInfo>();
             List<ProcScope> meth_list = GetExtensionMethods(ts);
             for (int i = 0; i < meth_list.Count; i++)
@@ -330,8 +330,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(string name, TypeScope ts)
         {
-            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
-                return new List<ProcScope>();
+            /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new List<ProcScope>();*/
             List<ProcScope> meths = GetExtensionMethods(ts);
             List<ProcScope> lst = new List<ProcScope>();
             for (int i = 0; i < meths.Count; i++)
@@ -346,8 +346,6 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(TypeScope ts)
         {
-            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
-                return new List<ProcScope>();
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -366,15 +364,18 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray) || (t is TemplateParameterScope || t is UnknownScope))
+                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || (t is TemplateParameterScope || t is UnknownScope))
                             {
                                 lst.AddRange(extension_methods[t]);
                             }
                         }
                     }
-                    tmp_ts = tmp_ts.baseScope;
+                    if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                        tmp_ts = null;
+                    else
+                        tmp_ts = tmp_ts.baseScope;
                 }
-                if (ts.implemented_interfaces != null)
+                if (ts.implemented_interfaces != null && !(ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr))
                 foreach (TypeScope int_ts in ts.implemented_interfaces)
                 {
                     TypeScope int_ts2 = int_ts;
@@ -388,7 +389,7 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray) || (int_ts2 is ArrayScope && t.IsArray))
+                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) || (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank))
                             {
                                 lst.AddRange(extension_methods[t]);
                                 //break;
@@ -2906,6 +2907,15 @@ namespace CodeCompletion
             this.members = new List<SymScope>();
         }
 
+        public override int Rank
+        {
+            get
+            {
+                if (indexes == null)
+                    return 1;
+                return indexes.Length;
+            }
+        }
         public bool IsMultiDynArray
         {
             get
@@ -3528,6 +3538,14 @@ namespace CodeCompletion
                 case SymbolKind.Enum: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Enum); break;
             }
 
+        }
+
+        public virtual int Rank
+        {
+            get
+            {
+                return 0;
+            }
         }
 
         public virtual List<TypeScope> GetInstances()
@@ -4697,6 +4715,14 @@ namespace CodeCompletion
                 return typ;
             }
             return TypeTable.get_compiled_type(t);
+        }
+
+        public override int Rank
+        {
+            get
+            {
+                return this.ctn.GetArrayRank();
+            }
         }
 
         public override List<TypeScope> GetInstances()
