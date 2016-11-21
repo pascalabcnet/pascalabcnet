@@ -854,15 +854,20 @@ namespace NodeGenerator
                 string cast = list_type == text_consts.base_tree_node_name ? "" : "(" + list_type + ")";
 
                 writer.WriteLine($"if ({field_name} != null)");
-                writer.Indent++;
+                writer.OpenBlock();
                 writer.WriteLine($"foreach ({list_type} elem in {field_name})");
-                writer.Indent++;
+                writer.OpenBlock(); 
                 writer.WriteLine($"if (elem != null)");
                 writer.OpenBlock();
                 writer.WriteLine($"{variableName}.Add({cast}elem.Clone());");
                 writer.WriteLine($"{variableName}.Last().Parent = {variableName};");
                 writer.CloseBlock();
-                writer.Indent -= 2;
+                writer.WriteLine("else");
+                writer.Indent++;
+                writer.WriteLine($"{variableName}.Add(null);");
+                writer.Indent--;
+                writer.CloseBlock();
+                writer.CloseBlock();
             }
             else
                 writer.WriteLine($"{destination} = {field_name};");
