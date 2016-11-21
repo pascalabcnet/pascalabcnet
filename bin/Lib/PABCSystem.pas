@@ -1616,9 +1616,11 @@ function ReadArrString(const prompt: string; n: integer): array of string;
 //>>     Подпрограммы для генерации случайных матриц # Subroutines for matrix generation
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
-function MatrixRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
+function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
+/// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
+function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
-function MatrixRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
+function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
@@ -3926,7 +3928,7 @@ begin
   Result := Range(0,count-1).Select(f)
 end;
 
-function MatrixRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
+function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
 begin
   Result := new integer[m,n];
   for var i:=0 to Result.GetLength(0)-1 do
@@ -3934,7 +3936,15 @@ begin
     Result[i,j] := Random(a,b);
 end;
 
-function MatrixRandomReal(m: integer; n: integer; a,b: real): array [,] of real;
+function MatrRandomInteger(m: integer; n: integer; a,b: integer): array [,] of integer;
+begin
+  Result := new integer[m,n];
+  for var i:=0 to Result.GetLength(0)-1 do
+  for var j:=0 to Result.GetLength(1)-1 do
+    Result[i,j] := Random(a,b);
+end;
+
+function MatrRandomReal(m: integer; n: integer; a,b: real): array [,] of real;
 begin
   Result := new real[m,n];
   for var i:=0 to Result.GetLength(0)-1 do
@@ -8644,6 +8654,34 @@ end;
 function Cols<T>(Self: array [,] of T): integer; extensionmethod;
 begin
   Result := Self.GetLength(1);
+end;
+
+function RowCount<T>(Self: array [,] of T): integer; extensionmethod;
+begin
+  Result := Self.GetLength(0);
+end;
+
+function ColCount<T>(Self: array [,] of T): integer; extensionmethod;
+begin
+  Result := Self.GetLength(1);
+end;
+
+function Row<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
+begin
+  var n := Self.Cols();
+  var res := new T[n];
+  for var j:=0 to n-1 do
+    res[j] := Self[k,j];
+  Result := res;
+end;
+
+function Col<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
+begin
+  var m := Self.Rows();
+  var res := new T[m];
+  for var i:=0 to m-1 do
+    res[i] := Self[i,k];
+  Result := res;
 end;
 
 // -----------------------------------------------------

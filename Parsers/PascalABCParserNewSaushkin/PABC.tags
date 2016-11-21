@@ -19,7 +19,6 @@
     <name value="const_set" />
     <name value="typed_const_or_new" />
     <name value="allowable_expr_as_stmt" />
-    <name value="expr" />
     <name value="expr_l1" />
     <name value="typeof_expr" />
     <name value="question_expr" />
@@ -34,6 +33,7 @@
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
+    <name value="expr" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
@@ -331,10 +331,10 @@
   </tag>
   <tag value="Лямбда-выражения">
     <name value="full_lambda_fp_list" />
-    <name value="expr" />
     <name value="var_decl_part" />
     <name value="typed_const" />
     <name value="var_stmt" />
     <name value="const_expr" />
+    <name value="func_decl_lambda" />
   </tag>
 </tags>

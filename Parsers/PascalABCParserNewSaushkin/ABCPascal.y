@@ -1,3 +1,4 @@
+// SSM 21/11/16 Ћ€мбда выражени€ вынесены на верхний уровень (п.ч. присваивани€ и параметры)
 %{
 // Ёти объ€влени€ добавл€ютс€ в класс GPPGParser, представл€ющий собой парсер, генерируемый системой gppg
     public syntax_tree_node root; //  орневой узел синтаксического дерева 
@@ -76,7 +77,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_or_new expr const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term typed_const typed_const_or_new expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -2284,7 +2285,7 @@ var_stmt
     ;
 
 assignment
-    : var_reference assign_operator expr           
+    : var_reference assign_operator expr_with_func_decl_lambda           
         {      
 			$$ = new assign($1 as addressed_value, $3, $2.type, @$);
         }
@@ -2629,11 +2630,11 @@ raise_stmt
     ;
 
 expr_list
-    : expr                                
+    : expr_with_func_decl_lambda                                
         { 
 			$$ = new expression_list($1, @$); 
 		}
-    | expr_list tkComma expr              
+    | expr_list tkComma expr_with_func_decl_lambda              
 		{
 			$$ = ($1 as expression_list).Add($3, @$); 
 		}
@@ -2649,6 +2650,13 @@ expr_as_stmt
 allowable_expr_as_stmt
     : new_expr
 		{ $$ = $1; }
+    ;
+
+expr_with_func_decl_lambda
+	: expr
+		{ $$ = $1; }
+    | func_decl_lambda
+        { $$ = $1; }
     ;
 
 expr
@@ -2963,8 +2971,20 @@ factor
 		}
     | var_reference
 		{ $$ = $1; }
-    | func_decl_lambda
-        { $$ = $1; }
+	| tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose 
+		{
+			($4 as expression_list).expressions.Insert(0,$2);
+			if (($4 as expression_list).expressions.Count>7) 
+				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
+			
+			if (parsertools.build_tree_for_formatter)
+				$$ = new tuple_node_for_formatter($4 as expression_list,@$);
+			else	
+			{
+			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
+				$$ = new method_call(dn,$4 as expression_list,@$);
+			}
+		}	
     ;
       
 literal_or_number
@@ -3595,8 +3615,7 @@ optional_full_lambda_fp_list
 	;
 	
 rem_lambda
-	: { $$ = null; }
-	| lambda_type_ref_noproctype tkArrow lambda_function_body
+	: lambda_type_ref_noproctype tkArrow lambda_function_body
 		{ 
 		    $$ = new pair_type_stlist($1,$3 as statement_list);
 		}

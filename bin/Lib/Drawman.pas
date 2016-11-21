@@ -29,6 +29,22 @@ procedure Start;
 /// Остановить Чертежника
 procedure Stop;
 
+/// Поднять перо
+procedure ОпуститьПеро;
+/// Опустить перо
+procedure ПоднятьПеро;
+/// Переместиться к точке (x,y)
+procedure КТочке(x,y: integer);
+/// Переместиться на вектор (a,b)
+procedure НаВектор(a,b: integer);
+/// Вызывать задание с данным именем
+procedure Задание(имя: string);
+/// Создать пустое поле размера 9 на 11 клеток
+procedure СтандартноеПоле;
+/// Создать пустое поле размера n на m клеток
+procedure Поле(n,m: integer);
+
+
 /// Установить ширину пера Чертежника
 procedure SetDrawmanWidth(w: integer);
 
@@ -112,6 +128,15 @@ begin
   SetTaskCall;
   Stop;
 end;
+
+procedure ОпуститьПеро := PenDown;
+procedure ПоднятьПеро := PenUp;
+procedure КТочке(x,y: integer) := ToPoint(x,y);
+procedure НаВектор(a,b: integer) := OnVector(a,b);
+procedure Задание(имя: string) := Task(имя);
+procedure СтандартноеПоле := StandardField;
+procedure Поле(n,m: integer) := Field(n,m);
+
 
 procedure RegisterTasks;
 begin
