@@ -236,7 +236,7 @@ EXCEPTION_IN_START_EXE{0}=При попытке запуска файла {0} п
 
 ERROR_FILE_EXISTS_IN_CODEPAGES=Нельзя сохранить файл под таким именем, т.к. этот файл уже открыт
 
-SAVE_FILE_ERROR_TEXT{0}=Ошибка при сохраннении файла {0}
+SAVE_FILE_ERROR_TEXT{0}=Ошибка при сохранении файла {0}
 
 FILE_ALREADY_EXISTS{0}=Файл с именем {0} уже существует
 TOO_LONG_FILE_NAME{0}=Слишком длинное имя файла

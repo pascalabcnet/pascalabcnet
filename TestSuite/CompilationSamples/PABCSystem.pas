@@ -1500,8 +1500,12 @@ function Length(a: System.Array; dim: integer): integer;
 function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию
 procedure Sort<T>(a: array of T);
+/// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
+procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
+/// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
+procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
@@ -6996,9 +7000,19 @@ begin
   System.Array.Sort(a);
 end;
 
+procedure Sort<T>(a: array of T; less: (T,T)->boolean);
+begin
+  System.Array.Sort(a,(x,y)->less(y,x)?1:-1);
+end;
+
 procedure Sort<T>(l: List<T>);
 begin
   l.Sort();
+end;
+
+procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+begin
+  l.Sort((x,y)->less(y,x)?1:-1);
 end;
 
 procedure Reverse<T>(a: array of T);
@@ -8656,16 +8670,19 @@ begin
   Result := Self.GetLength(1);
 end;
 
+/// Количество строк в двумерном массиве
 function RowCount<T>(Self: array [,] of T): integer; extensionmethod;
 begin
   Result := Self.GetLength(0);
 end;
 
+/// Количество столбцов в двумерном массиве
 function ColCount<T>(Self: array [,] of T): integer; extensionmethod;
 begin
   Result := Self.GetLength(1);
 end;
 
+/// k-тая строка двумерного массива
 function Row<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
 begin
   var n := Self.Cols();
@@ -8675,6 +8692,7 @@ begin
   Result := res;
 end;
 
+/// k-тый столбец двумерного массива
 function Col<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
 begin
   var m := Self.Rows();

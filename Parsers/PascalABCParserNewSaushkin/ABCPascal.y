@@ -3522,83 +3522,62 @@ func_decl_lambda
 		}
     | tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose rem_lambda
 		{ 
-			if ($8==null) // It is a tuple - check for nothing except expr_list is in parentheses
+			var pair = $8 as pair_type_stlist;
+			
+			if ($5 is lambda_inferred_type)
 			{
-				if (!($5 is lambda_inferred_type))
-					parsertools.AddErrorFromResource("BAD_TUPLE",@5);
-				if ($6 != null)
-					parsertools.AddErrorFromResource("BAD_TUPLE",@5);
-				($4 as expression_list).expressions.Insert(0,$2);
-				if (($4 as expression_list).expressions.Count>7) 
-					parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
-				
-				if (parsertools.build_tree_for_formatter)
-					$$ = new tuple_node_for_formatter($4 as expression_list,@$);
-				else	
+				var formal_pars = new formal_parameters();
+				var idd = $2 as ident;
+				if (idd==null)
+					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",@2);
+				var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+				var new_typed_pars = new typed_parameters(new ident_list(idd, idd.source_context), lambda_inf_type, parametr_kind.none, null, idd.source_context);
+				formal_pars.Add(new_typed_pars);
+				foreach (var id in ($4 as expression_list).expressions)
 				{
-				    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
-					$$ = new method_call(dn,$4 as expression_list,@$);
-				}
-			}
-			else  // It is a lambda-expression. Expressions in parameters must be identifiers. 
-			{
-				var pair = $8 as pair_type_stlist;
-				
-				if ($5 is lambda_inferred_type)
-				{
-					var formal_pars = new formal_parameters();
-					var idd = $2 as ident;
-					if (idd==null)
-						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",@2);
-					var lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
-					var new_typed_pars = new typed_parameters(new ident_list(idd, idd.source_context), lambda_inf_type, parametr_kind.none, null, idd.source_context);
+					var idd1 = id as ident;
+					if (idd1==null)
+						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",id.source_context);
+					
+					lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
+					new_typed_pars = new typed_parameters(new ident_list(idd1, idd1.source_context), lambda_inf_type, parametr_kind.none, null, idd1.source_context);
 					formal_pars.Add(new_typed_pars);
-					foreach (var id in ($4 as expression_list).expressions)
-					{
-						var idd1 = id as ident;
-						if (idd1==null)
-							parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",id.source_context);
-						
-						lambda_inf_type = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);
-						new_typed_pars = new typed_parameters(new ident_list(idd1, idd1.source_context), lambda_inf_type, parametr_kind.none, null, idd1.source_context);
-						formal_pars.Add(new_typed_pars);
-					}
-					
-					if ($6 != null)
-						for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
-							formal_pars.Add(($6 as formal_parameters).params_list[i]);		
-						
-					formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
-					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
 				}
-				else
-				{			
-					var loc = LexLocation.MergeAll(@2,@3,@4);
-					var idd = $2 as ident;
-					if (idd==null)
-						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",@2);
+				
+				if ($6 != null)
+					for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+						formal_pars.Add(($6 as formal_parameters).params_list[i]);		
 					
-					var idList = new ident_list(idd, loc);
+				formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formal_pars, pair.tn, pair.exprs, @$);
+			}
+			else
+			{			
+				var loc = LexLocation.MergeAll(@2,@3,@4);
+				var idd = $2 as ident;
+				if (idd==null)
+					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",@2);
+				
+				var idList = new ident_list(idd, loc);
+				
+				var iddlist = ($4 as expression_list).expressions;
+				
+				for (int j = 0; j < iddlist.Count; j++)
+				{
+					var idd2 = iddlist[j] as ident;
+					if (idd2==null)
+						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
+					idList.idents.Add(idd2);
+				}	
+				var parsType = $5;
+				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
+				
+				if ($6 != null)
+					for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+						formalPars.Add(($6 as formal_parameters).params_list[i]);
 					
-					var iddlist = ($4 as expression_list).expressions;
-					
-					for (int j = 0; j < iddlist.Count; j++)
-					{
-						var idd2 = iddlist[j] as ident;
-						if (idd2==null)
-							parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
-						idList.idents.Add(idd2);
-					}	
-					var parsType = $5;
-					var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
-					
-					if ($6 != null)
-						for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
-							formalPars.Add(($6 as formal_parameters).params_list[i]);
-						
-					$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
-				}
-			}			
+				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);
+			}
 		}
 	| expl_func_decl_lambda
 		{
