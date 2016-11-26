@@ -1591,10 +1591,10 @@ function ArrRandom(n: integer := 10; a: integer := 0; b: integer := 100): array 
 function ArrRandomInteger(n: integer := 10; a: integer := 0; b: integer := 100): array of integer;
 /// Возвращает массив размера n, заполненный случайными вещественными значениями
 function ArrRandomReal(n: integer := 10; a: real := 0; b: real := 10): array of real;
-/// Возвращает массив из count элементов, заполненных значениями f(i)
-function ArrGen<T>(count: integer; f: integer -> T): array of T;
-/// Возвращает массив из count элементов, заполненных значениями f(i), начиная с i=from
-function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
+/// Возвращает массив из count элементов, заполненных значениями gen(i)
+function ArrGen<T>(count: integer; gen: integer -> T): array of T;
+/// Возвращает массив из count элементов, заполненных значениями gen(i), начиная с i=from
+function ArrGen<T>(count: integer; gen: integer -> T; from: integer): array of T;
 /// Возвращает массив из count элементов, начинающихся с first, с функцией next перехода от предыдущего к следующему 
 function ArrGen<T>(count: integer; first: T; next: T -> T): array of T;
 /// Возвращает массив из count элементов, начинающихся с first и second, с функцией next перехода от двух предыдущих к следующему 
@@ -1625,6 +1625,10 @@ function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: intege
 function MatrRandomInteger(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
 /// Возвращает двумерный массив размера m x n, заполненный случайными вещественными значениями
 function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real := 10): array [,] of real;
+/// Возвращает двумерный массив размера m x n, заполненный элементами x 
+function MatrFill<T>(m,n: integer; x: T): array [,] of T;
+/// Возвращает двумерный массив размера m x n, заполненный элементами x 
+function MatrGen<T>(m,n: integer; gen: (integer,integer)->T): array [,] of T;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
@@ -3904,17 +3908,20 @@ begin
   Result := new T[count];
   for var i:=0 to Result.Length-1 do
     Result[i] := x;
-  //Result := System.Linq.Enumerable.Repeat(x,count).ToArray();
 end;
 
-function ArrGen<T>(count: integer; f: integer -> T; from: integer): array of T;
+function ArrGen<T>(count: integer; gen: integer -> T; from: integer): array of T;
 begin
-  Result := Range(from,count+from-1).Select(f).ToArray()
+  Result := new T[count];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := gen(i+from);
 end;
 
-function ArrGen<T>(count: integer; f: integer -> T): array of T;
+function ArrGen<T>(count: integer; gen: integer -> T): array of T;
 begin
-  Result := Range(0,count-1).Select(f).ToArray()
+  Result := new T[count];
+  for var i:=0 to Result.Length-1 do
+    Result[i] := gen(i);
 end;
 
 function SeqFill<T>(count: integer; x: T): sequence of T;
@@ -3930,30 +3937,6 @@ end;
 function SeqGen<T>(count: integer; f: integer -> T): sequence of T;
 begin
   Result := Range(0,count-1).Select(f)
-end;
-
-function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
-begin
-  Result := new integer[m,n];
-  for var i:=0 to Result.GetLength(0)-1 do
-  for var j:=0 to Result.GetLength(1)-1 do
-    Result[i,j] := Random(a,b);
-end;
-
-function MatrRandomInteger(m: integer; n: integer; a,b: integer): array [,] of integer;
-begin
-  Result := new integer[m,n];
-  for var i:=0 to Result.GetLength(0)-1 do
-  for var j:=0 to Result.GetLength(1)-1 do
-    Result[i,j] := Random(a,b);
-end;
-
-function MatrRandomReal(m: integer; n: integer; a,b: real): array [,] of real;
-begin
-  Result := new real[m,n];
-  for var i:=0 to Result.GetLength(0)-1 do
-  for var j:=0 to Result.GetLength(1)-1 do
-    Result[i,j] := Random()*(b-a) + a;
 end;
 
 function ReadArrInteger(n: integer): array of integer;
@@ -8622,14 +8605,28 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа array [,] of T # Extension methods for array [,] of T
 // -----------------------------------------------------
+/// Количество строк в двумерном массиве
+function RowCount<T>(Self: array [,] of T): integer; extensionmethod;
+begin
+  Result := Self.GetLength(0);
+end;
+
+/// Количество столбцов в двумерном массиве
+function ColCount<T>(Self: array [,] of T): integer; extensionmethod;
+begin
+  Result := Self.GetLength(1);
+end;
+
 function Print<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
 begin
-  var m := Self.GetLength(0);
-  var n := Self.GetLength(1);
-	for var i:=0 to m-1 do
+	for var i:=0 to Self.RowCount-1 do
 	begin
-    for var j:=0 to n-1 do
-      write(StructuredObjectToString(Self[i,j]).PadLeft(w));
+    for var j:=0 to Self.ColCount-1 do
+    begin
+      var elem := Self[i,j];
+      var s := StructuredObjectToString(elem);
+      Write(s.PadLeft(w));
+    end;
     Writeln;  
   end;
 	Result := Self;  
@@ -8637,12 +8634,10 @@ end;
 
 function Print(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
 begin
-  var m := Self.GetLength(0);
-  var n := Self.GetLength(1);
-	for var i:=0 to m-1 do
+	for var i:=0 to Self.RowCount-1 do
 	begin
-    for var j:=0 to n-1 do
-      write(FormatValue(Self[i,j],w,f));
+    for var j:=0 to Self.ColCount-1 do
+      Write(FormatValue(Self[i,j],w,f));
     Writeln;  
   end;
 	Result := Self;  
@@ -8656,36 +8651,14 @@ end;
 
 function Println(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
 begin
-  Self.Println(w,f);
+  Self.Print(w,f);
 	Result := Self;  
-end;
-
-function Rows<T>(Self: array [,] of T): integer; extensionmethod;
-begin
-  Result := Self.GetLength(0);
-end;
-
-function Cols<T>(Self: array [,] of T): integer; extensionmethod;
-begin
-  Result := Self.GetLength(1);
-end;
-
-/// Количество строк в двумерном массиве
-function RowCount<T>(Self: array [,] of T): integer; extensionmethod;
-begin
-  Result := Self.GetLength(0);
-end;
-
-/// Количество столбцов в двумерном массиве
-function ColCount<T>(Self: array [,] of T): integer; extensionmethod;
-begin
-  Result := Self.GetLength(1);
 end;
 
 /// k-тая строка двумерного массива
 function Row<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
 begin
-  var n := Self.Cols();
+  var n := Self.ColCount;
   var res := new T[n];
   for var j:=0 to n-1 do
     res[j] := Self[k,j];
@@ -8695,11 +8668,95 @@ end;
 /// k-тый столбец двумерного массива
 function Col<T>(Self: array [,] of T; k: integer): array of T; extensionmethod;
 begin
-  var m := Self.Rows();
+  var m := Self.RowCount;
   var res := new T[m];
   for var i:=0 to m-1 do
     res[i] := Self[i,k];
   Result := res;
+end;
+
+/// k-тая строка двумерного массива как последовательность
+function RowSeq<T>(Self: array [,] of T; k: integer): sequence of T; extensionmethod;
+begin
+  for var j:=0 to Self.ColCount-1 do
+    yield Self[k,j];
+end;
+
+/// k-тый столбец двумерного массива как последовательность
+function ColSeq<T>(Self: array [,] of T; k: integer): sequence of T; extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+    yield Self[i,k];
+end;
+
+/// Возвращает последовательность строк двумерного массива 
+function Rows<T>(Self: array [,] of T): sequence of sequence of T; extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+    yield Self.RowSeq(i);
+end;
+
+/// Возвращает последовательность столбцов двумерного массива 
+function Cols<T>(Self: array [,] of T): sequence of sequence of T; extensionmethod;
+begin
+  for var j:=0 to Self.ColCount-1 do
+    yield Self.ColSeq(j);
+end;
+
+/// Меняет местами две строки двумерного массива с номерами k1 и k2
+procedure SwapRows<T>(Self: array [,] of T; k1,k2: integer); extensionmethod;
+begin
+  for var j:=0 to Self.ColCount-1 do
+    Swap(Self[k1,j],Self[k2,j])
+end;
+
+/// Меняет местами два столбца двумерного массива с номерами k1 и k2
+procedure SwapCols<T>(Self: array [,] of T; k1,k2: integer); extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+    Swap(Self[i,k1],Self[i,k2])
+end;
+
+
+// Реализация операций с матрицами - только после введения RowCount и ColCount
+function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
+begin
+  Result := new integer[m,n];
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+    Result[i,j] := Random(a,b);
+end;
+
+function MatrRandomInteger(m: integer; n: integer; a,b: integer): array [,] of integer;
+begin
+  Result := new integer[m,n];
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+    Result[i,j] := Random(a,b);
+end;
+
+function MatrRandomReal(m: integer; n: integer; a,b: real): array [,] of real;
+begin
+  Result := new real[m,n];
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+    Result[i,j] := Random()*(b-a) + a;
+end;
+
+function MatrFill<T>(m,n: integer; x: T): array [,] of T;
+begin
+  Result := new T[m,n];
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+    Result[i,j] := x;
+end;
+
+function MatrGen<T>(m,n: integer; gen: (integer,integer)->T): array [,] of T;
+begin
+  Result := new T[m,n];
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+    Result[i,j] := gen(i,j);
 end;
 
 // -----------------------------------------------------
