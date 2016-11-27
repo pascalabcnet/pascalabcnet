@@ -2969,7 +2969,7 @@ namespace CodeCompletion
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
             if ((elementType is UnknownScope || elementType is TemplateParameterScope) && gen_args.Count > 0)
-                return new ArrayScope(gen_args[0], indexes);
+               return new ArrayScope(gen_args[0], Rank > 1?indexes:null);
             return this;
         }
 
