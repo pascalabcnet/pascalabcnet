@@ -837,7 +837,7 @@
       </Node>
       <Node Name="Преобразование синт дерева" NL="0" NG="0">
         <Items>
-          <Node Name="Вызов Convert контроллера SyntaxTrees" NL="0" NG="0">
+          <Node ID="CompileUnit" Name="Вызов Convert контроллера SyntaxTrees" NL="0,7451172" NG="0,5644531">
             <FileName>\Compiler\Compiler.cs</FileName>
             <Text>CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;</Text>
             <OCtx>

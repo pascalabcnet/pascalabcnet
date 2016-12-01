@@ -1510,6 +1510,10 @@ procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
 procedure Reverse<T>(a: array of T; index,length: integer);
+/// Перемешивает динамический массив случайным образом
+procedure Shuffle<T>(a: array of T);
+/// Перемешивает список случайным образом
+procedure Shuffle<T>(l: List<T>);
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации последовательностей # Subroutines for sequence generation
@@ -1617,7 +1621,7 @@ function ReadArrReal(const prompt: string; n: integer): array of real;
 function ReadArrString(const prompt: string; n: integer): array of string;
 
 // -----------------------------------------------------
-//>>     Подпрограммы для генерации случайных матриц # Subroutines for matrix generation
+//>>     Подпрограммы для матриц # Subroutines for matrixes 
 // -----------------------------------------------------
 /// Возвращает двумерный массив размера m x n, заполненный случайными целыми значениями
 function MatrRandom(m: integer := 5; n: integer := 5; a: integer := 0; b: integer := 100): array [,] of integer;
@@ -1629,6 +1633,8 @@ function MatrRandomReal(m: integer := 5; n: integer := 5; a: real := 0; b: real 
 function MatrFill<T>(m,n: integer; x: T): array [,] of T;
 /// Возвращает двумерный массив размера m x n, заполненный элементами x 
 function MatrGen<T>(m,n: integer; gen: (integer,integer)->T): array [,] of T;
+/// Транспонирует двумерный массив 
+function Transpose<T>(a: array [,] of T): array [,] of T;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
@@ -7008,6 +7014,24 @@ begin
   System.Array.Reverse(a,index,length);
 end;
 
+procedure Shuffle<T>(a: array of T);
+begin
+  var n := a.Length;
+	for var i:=0 to n-1 do
+	  Swap(a[i],a[Random(n)]);
+end;
+
+procedure Shuffle<T>(l: List<T>);
+begin
+  var n := l.Count;
+	for var i:=0 to n-1 do
+	begin
+    var v := l[i];
+    l[i] := l[Random(n)];
+    l[Random(n)] := v;
+  end;
+end;
+
 // -----------------------------------------------------
 //                Char and String: implementation
 // -----------------------------------------------------
@@ -8759,6 +8783,16 @@ begin
     Result[i,j] := gen(i,j);
 end;
 
+function Transpose<T>(a: array [,] of T): array [,] of T;
+begin
+  var m := a.RowCount;
+  var n := a.ColCount;
+  Result := new T[n,m];
+  for var i:=0 to Result.RowCount-1 do
+  for var j:=0 to Result.ColCount-1 do
+    Result[i,j] := a[j,i]
+end;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
 // -----------------------------------------------------
@@ -8772,7 +8806,7 @@ function Shuffle<T>(Self: array of T): array of T; extensionmethod;
 begin
   var n := Self.Length;
 	for var i:=0 to n-1 do
-	  Swap(Self[i],Self[PABCSystem.Random(n)]);
+	  Swap(Self[i],Self[Random(n)]);
 	Result := Self;  
 end;
 
@@ -9271,16 +9305,16 @@ end;
 /// Предыдущий символ
 function Pred(Self: char): char; extensionmethod;
 begin
-  Result := PABCSystem.pred(Self);
+  Result := PABCSystem.Pred(Self);
 end;
 
 /// Следующий символ
 function Succ(Self: char): char; extensionmethod;
 begin
-  Result := PABCSystem.succ(Self);
+  Result := PABCSystem.Succ(Self);
 end;
 
-/// Код символа
+/// Код символа в кодировке Unicode
 function Code(Self: char): integer; extensionmethod;
 begin
   Result := word(Self);
