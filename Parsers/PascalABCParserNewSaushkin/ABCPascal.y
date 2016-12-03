@@ -29,7 +29,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkMatching tkQuestionPoint
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -67,7 +67,7 @@
 %type <stn> program_decl_sect_list int_decl_sect_list1 inclass_decl_sect_list1 interface_decl_sect_list decl_sect_list decl_sect_list1 inclass_decl_sect_list 
 %type <stn> field_or_const_definition abc_decl_sect decl_sect int_decl_sect type_decl simple_type_decl simple_field_or_const_definition res_str_decl_sect 
 %type <stn> method_decl_withattr method_or_property_decl property_definition fp_sect 
-%type <ex> default_expr  
+%type <ex> default_expr tuple 
 %type <stn> expr_as_stmt  
 %type <stn> exception_block  
 %type <stn> external_block  
@@ -77,7 +77,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_or_new expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -689,36 +689,6 @@ const_expr
 		{ 
 			$$ = $1; 
 		}
-    | identifier tkArrow lambda_function_body
-		{  
-			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
-		}
-    | tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
-		{
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, $5 as statement_list, @$);
-		}
-    | tkRoundOpen typed_const_list tkRoundClose tkArrow lambda_function_body
-		{  
-		    var el = $2 as expression_list;
-		    var cnt = el.expressions.Count;
-		    
-			var idList = new ident_list();
-			idList.source_context = @2;
-			
-			for (int j = 0; j < cnt; j++)
-			{
-				if (!(el.expressions[j] is ident))
-					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",el.expressions[j].source_context);
-				idList.idents.Add(el.expressions[j] as ident);
-			}	
-				
-			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);	
-				
-			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
-		}
     | const_simple_expr const_relop const_simple_expr   
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
@@ -967,11 +937,11 @@ typed_const_list
 	;
 	
 typed_const_list1
-    : typed_const_or_new  
+    : typed_const_plus  
         { 
 			$$ = new expression_list($1, @$);
         }
-    | typed_const_list1 tkComma typed_const_or_new   
+    | typed_const_list1 tkComma typed_const_plus   
         { 
 			$$ = ($1 as expression_list).Add($3, @$);
 		} 
@@ -1879,17 +1849,50 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, null, $3, definition_attribute.None, false, @$);		
 		}
-    | ident_list tkColon type_ref tkAssignOrEqual typed_const_or_new
+    | ident_list tkColon type_ref tkAssignOrEqual typed_var_init_expression // typed_const_plus уже давно не константа :) Но сюда не попали Tuples, поскольку они конкурируют с дурацкими старыми инициализаторами массивов 
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
-	| ident_list tkColon type_ref tkAssignOrEqual expl_func_decl_lambda
-		{
-			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$);
-		}
     ;
 
-typed_const_or_new
+typed_var_init_expression
+	: typed_const_plus 
+		{ $$ = $1; }
+	| expl_func_decl_lambda
+		{ $$ = $1; }
+    | identifier tkArrow lambda_function_body
+		{  
+			var idList = new ident_list($1, @1); 
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
+		}
+    | tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
+		{
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), null, $3, $5 as statement_list, @$);
+		}
+    | tkRoundOpen typed_const_list tkRoundClose tkArrow lambda_function_body
+		{  
+		    var el = $2 as expression_list;
+		    var cnt = el.expressions.Count;
+		    
+			var idList = new ident_list();
+			idList.source_context = @2;
+			
+			for (int j = 0; j < cnt; j++)
+			{
+				if (!(el.expressions[j] is ident))
+					parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",el.expressions[j].source_context);
+				idList.idents.Add(el.expressions[j] as ident);
+			}	
+				
+			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);	
+				
+			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
+		}
+	;
+
+typed_const_plus
     : typed_const
 		{ $$ = $1; }
     | new_expr
@@ -2815,10 +2818,6 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
-	| relop_expr tkMatching simple_expr
-		{
-			$$ = new matching_expression($1, $3, @$);
-		}
     ;
 
 simple_expr_or_nothing
@@ -2943,6 +2942,23 @@ default_expr
 		}
     ;
 
+tuple
+	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
+		{
+			($4 as expression_list).expressions.Insert(0,$2);
+			if (($4 as expression_list).expressions.Count>7) 
+				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
+			
+			if (parsertools.build_tree_for_formatter)
+				$$ = new tuple_node_for_formatter($4 as expression_list,@$);
+			else	
+			{
+			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
+				$$ = new method_call(dn,$4 as expression_list,@$);
+			}
+		}	
+    ; 
+
 factor        
     : tkNil                     
         { 
@@ -2971,21 +2987,9 @@ factor
 		}
     | var_reference
 		{ $$ = $1; }
-	| tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose 
-		{
-			($4 as expression_list).expressions.Insert(0,$2);
-			if (($4 as expression_list).expressions.Count>7) 
-				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
-			
-			if (parsertools.build_tree_for_formatter)
-				$$ = new tuple_node_for_formatter($4 as expression_list,@$);
-			else	
-			{
-			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
-				$$ = new method_call(dn,$4 as expression_list,@$);
-			}
-		}	
-    ;
+	| tuple 
+		{ $$ = $1; }
+	;
       
 literal_or_number
     : literal

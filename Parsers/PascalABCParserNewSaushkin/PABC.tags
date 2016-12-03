@@ -17,7 +17,6 @@
     <name value="record_const" />
     <name value="const_term" />
     <name value="const_set" />
-    <name value="typed_const_or_new" />
     <name value="allowable_expr_as_stmt" />
     <name value="expr_l1" />
     <name value="typeof_expr" />
@@ -28,18 +27,17 @@
     <name value="as_is_expr" />
     <name value="term" />
     <name value="default_expr" />
-    <name value="factor" />
     <name value="literal_or_number" />
     <name value="one_literal" />
     <name value="literal" />
     <name value="literal_list" />
     <name value="expr" />
+    <name value="expr_with_func_decl_lambda" />
   </tag>
   <tag value="Списки">
     <name value="decl_sect_list" />
     <name value="const_func_expr_list" />
     <name value="label_list" />
-    <name value="typed_const_list" />
     <name value="const_field_list" />
     <name value="const_field_list_1" />
     <name value="attribute_declarations" />

@@ -52,17 +52,18 @@ namespace PascalABCCompiler.SyntaxTree
             return ind;
         }
 
-        /*public void Replace(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All) // есть риск, что типы не совпадут
+        /*public void ReplaceDescendant(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All) // есть риск, что типы не совпадут
         {
             var ind = FindIndex(from,d);
             this[ind] = to;
         }*/
 
-        // Безопасная версия Replace
-        public void Replace<T,T1>(T from, T1 to, Desc d = Desc.All) where T: syntax_tree_node where T1 : T
+        // Безопасная версия Replace - не сработает если менять foreach_node на if_node. Плохо
+        public void ReplaceDescendant<T,T1>(T from, T1 to, Desc d = Desc.All) where T: syntax_tree_node where T1 : T
         {
             var ind = FindIndex(from,d);
             this[ind] = to;
+            to.Parent = from.Parent;
         }
 
         /// <summary>

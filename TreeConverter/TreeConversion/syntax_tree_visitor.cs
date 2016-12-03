@@ -38,7 +38,7 @@ namespace PascalABCCompiler.TreeConverter
         }
     }*/
 
-    public class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew
+    public class syntax_tree_visitor : SyntaxTree.BaseChangeVisitor
     {
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
@@ -16606,12 +16606,6 @@ namespace PascalABCCompiler.TreeConverter
             return new ident("$GenId" + GenIdNum.ToString());
         }
 
-        public void ReplaceSTV(syntax_tree_node from, syntax_tree_node to)
-        {
-            from.Parent.Replace(from, to);
-            to.Parent = from.Parent;
-        }
-
         public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)
         {
             var lambdaSearcher = new LambdaSearcher(_foreach_stmt.in_what);
@@ -16673,7 +16667,7 @@ namespace PascalABCCompiler.TreeConverter
                 var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
                 var stl = new SyntaxTree.statement_list(vdarr, fornode);
-                ReplaceSTV(_foreach_stmt, stl);
+                ReplaceByVisitor(_foreach_stmt, stl);
 
                 visit(stl);
                 //visit(vdarr);
