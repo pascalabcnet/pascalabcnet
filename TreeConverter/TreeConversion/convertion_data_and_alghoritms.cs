@@ -1298,11 +1298,17 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance)
             {
-                return method_compare.greater_method;
+                if (left_func is basic_function_node)
+                    return method_compare.less_method;
+                else
+                    return method_compare.greater_method;
             }
             if (left_func.is_generic_function_instance && !right_func.is_generic_function_instance)
             {
-                return method_compare.less_method;
+                if (right_func is basic_function_node)
+                    return method_compare.greater_method;
+                else
+                    return method_compare.less_method;
             }
             if (left_func.is_generic_function_instance && right_func.is_generic_function_instance)
             {

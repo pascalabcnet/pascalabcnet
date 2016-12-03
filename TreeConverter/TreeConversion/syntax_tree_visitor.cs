@@ -1071,11 +1071,6 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-			
-            //zdes ne vse verno. += odnostoronnjaa operacija, a += b pochemu esli tipy ne ravny, += ishetsja v tipe b???
-            //TODO: Посмотреть.
-            //TODO: Не find а find_in_type.
-            //SymbolInfo si=left_type.find(name, context.CurrentScope);
             SymbolInfo si = left_type.find_in_type(name, left_type.Scope, no_search_in_extension_methods);
             SymbolInfo added_symbols = null;
             SymbolInfo si2 = null;

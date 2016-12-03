@@ -3171,12 +3171,6 @@ namespace PascalABCCompiler.TreeRealization
         //Попытался написать правильно.
 		public override SymbolInfo find(string name, bool no_search_in_extension_methods = false)
 		{
-            /*//Старый код
-            SymbolInfo si = AddToSymbolInfo(compiled_find(name), find_in_additional_names(name));
-            if(scope!=null)
-                si = AddToSymbolInfo(si, scope.SymbolTable.Find(scope,name));
-			return si;
-            */
             if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && scope == null)
                 this.init_scope();
             if (scope == null)
@@ -3214,7 +3208,7 @@ namespace PascalABCCompiler.TreeRealization
                 SymbolInfo si2 = find_in_additional_names(name);
                 SymbolInfo si3 = compiled_find(name);
                 bool clone = false;
-                if (!no_search_in_extension_methods)
+                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType)
                 {
                     
                     if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)

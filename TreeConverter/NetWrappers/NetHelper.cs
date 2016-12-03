@@ -421,13 +421,6 @@ namespace PascalABCCompiler.NetHelper
             {
 
                 Type[] tarr = _assembly.GetTypes();
-                /*if (_assembly.ManifestModule.ScopeName == "System.Core.dll")
-                {
-                    ExtensionAttributeType = _assembly.GetType("System.Runtime.CompilerServices.ExtensionAttribute");
-                    SystemCoreAssembly =  _assembly;
-                    members.Clear();
-                    
-                }*/
                 //Hashtable ns_ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
                 Hashtable ns_ht = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
                 foreach (Type t in tarr)
