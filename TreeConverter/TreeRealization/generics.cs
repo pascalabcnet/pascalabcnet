@@ -841,6 +841,9 @@ namespace PascalABCCompiler.TreeRealization
 
                 for (int i = 0; i < count_params_to_see; ++i)
                 {
+                    if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null && DeduceInstanceTypes(formal[i].type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils))
+                        continue;
+                    else
                     if (!DeduceInstanceTypes(formal[i].type, fact[i].type, deduced, nils))
                     {
                         if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null)
