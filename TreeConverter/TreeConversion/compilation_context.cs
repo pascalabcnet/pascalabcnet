@@ -1345,16 +1345,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public common_type_node create_set_type(type_node elem_type, location def_loc)
         {
-            //if (elem_type == PascalABCCompiler.SystemLibrary.SystemLibrary.byte_type) 
-            //	elem_type = PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type;
         	if (TypedSets.ContainsKey(elem_type))
                 return TypedSets[elem_type];
             string name = compiler_string_consts.GetSetTypeName(elem_type.name);
-            /*common_type_node sctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as common_type_node;
-            sctn.type_special_kind = SemanticTree.type_special_kind.set_type;
-            if (sctn.scope.Find(compiler_string_consts.assign_name) == null)
-            sctn.scope.AddSymbol(compiler_string_consts.assign_name, sctn.scope.Find(compiler_string_consts.AssignSetName));
-            return sctn;*/
             type_node base_type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
             //check_name_free(name, def_loc);
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
@@ -1363,27 +1356,12 @@ namespace PascalABCCompiler.TreeConverter
             set_field_access_level(SemanticTree.field_access_level.fal_public);
             _cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
             tctn.type_special_kind = SemanticTree.type_special_kind.set_type;
-            //tctn.add_intersection_node(type_intersection_node);
             tctn.element_type = elem_type;
             tctn.internal_is_value = base_type.is_value;
             tctn.is_class = base_type.is_class;
             tctn.SetBaseType(base_type);
             tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            //tctn.add_name(compiler_string_consts.assign_name,SystemLibrary.SystemLibInitializer.AssignSetProcedure.SymbolInfo);
-            /*foreach (type_node tn in TypedSets.Keys)
-            {
-            	type_compare tc = type_table.compare_types(elem_type,tn);
-            	if (tc != type_compare.non_comparable_type)
-            	{
-            		tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(TypedSets[tn],PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            		TypedSets[tn].add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            	}
-            }*/
             tctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
-            //tctn.scope.AddSymbol(compiler_string_consts.and_name,SystemLibrary.)
-            //_ctn = tctn;
-            //if (tctn.scope.Find(compiler_string_consts.assign_name) != tctn.scope.Find(compiler_string_consts.AssignSetName))
-              //  tctn.scope.AddSymbol(compiler_string_consts.assign_name, tctn.scope.Find(compiler_string_consts.AssignSetName));
             tctn.scope.AddSymbol(compiler_string_consts.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo);
             tctn.scope.AddSymbol(compiler_string_consts.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo);
             tctn.scope.AddSymbol(compiler_string_consts.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo);
@@ -1397,7 +1375,6 @@ namespace PascalABCCompiler.TreeConverter
             tctn.scope.AddSymbol(compiler_string_consts.plusassign_name,new SymbolInfo(make_set_plus_assign(tctn)));
             tctn.scope.AddSymbol(compiler_string_consts.minusassign_name,new SymbolInfo(make_set_minus_assign(tctn)));
             tctn.scope.AddSymbol(compiler_string_consts.multassign_name,new SymbolInfo(make_set_mult_assign(tctn)));
-            //SystemLibrary.SystemLibrary.init_reference_type(tctn);
             converted_namespace.types.AddElement(tctn);
             TypedSets.Add(elem_type, tctn);
             return tctn;            

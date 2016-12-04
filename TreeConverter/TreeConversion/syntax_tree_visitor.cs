@@ -15658,7 +15658,17 @@ namespace PascalABCCompiler.TreeConverter
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
-            
+            if (res.type.type_special_kind == SemanticTree.type_special_kind.base_set_type)
+            {
+                if (left.type.element_type == right.type.element_type)
+                    res.type = left.type;
+                else if (type_table.compare_types(left.type, right.type) == type_compare.greater_type)
+                    res.type = left.type;
+                else if (type_table.compare_types(left.type, right.type) == type_compare.less_type)
+                    res.type = right.type;
+                else if (type_table.compare_types(left.type, right.type) == type_compare.non_comparable_type)
+                    res.type = context.create_set_type(SystemLibrary.SystemLibrary.object_type, get_location(_bin_expr));
+            }
             //ssyy, 15.05.2009
             switch (_bin_expr.operation_type)
             {
