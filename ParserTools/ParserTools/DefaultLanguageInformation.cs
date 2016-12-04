@@ -1690,6 +1690,8 @@ namespace PascalABCCompiler.Parsers
                             generic_param_args = new Dictionary<string, string>();
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                             generic_param_args.Add(gen_arg.Name, scope.GenericArgs[ind]);
+                        else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > ind)
+                            generic_param_args.Add(gen_arg.Name, scope.DeclaringType.TemplateArguments[ind]);
                     }
                     ind++;
                 }
@@ -1710,6 +1712,8 @@ namespace PascalABCCompiler.Parsers
                                 class_generic_table.Add(class_generic_args[i].Name, j);
                             if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
                                 generic_param_args.Add(class_generic_args[i].Name, scope.GenericArgs[j]);
+                            else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > j)
+                                generic_param_args.Add(class_generic_args[i].Name, scope.DeclaringType.TemplateArguments[j]);
                         }
                         break;
                     }
@@ -1790,7 +1794,12 @@ namespace PascalABCCompiler.Parsers
                     ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, scope.GenericArgs, generic_param_args);
                 }
                 if (ret_inst_type == null)
-                    sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
+                {
+                    if (scope.ReturnType is ICompiledTypeScope)
+                        sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
+                    else
+                        sb.Append(": " + GetSimpleDescription(scope.ReturnType));
+                }
                 else
                     sb.Append(": " + ret_inst_type);
             }

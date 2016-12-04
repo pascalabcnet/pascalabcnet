@@ -2319,7 +2319,17 @@ namespace CodeCompletion
                         {
                             List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
                             if (meths.Count > 0)
+                            {
                                 returned_scope = meths[0];
+                                if (meths[0].IsGeneric() && meths[0].IsExtension)
+                                {
+                                    TypeScope elem_ts = ts.GetElementType();
+                                    if (elem_ts == null)
+                                        elem_ts = ts;
+                                    returned_scope = meths[0].GetInstance(new List<TypeScope>() { elem_ts });
+                                }
+                            }
+                                
                         }
                         if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
 						{
@@ -2406,6 +2416,8 @@ namespace CodeCompletion
                     return false;
             if (args.Count == 0)
                 if (ps.parameters.Count == 1 && ps.parameters[0].param_kind == parametr_kind.params_parametr)
+                    return true;
+                else if (ps.IsExtension && ps.parameters.Count == 1)
                     return true;
                 else
                     return false;
@@ -2578,14 +2590,14 @@ namespace CodeCompletion
             } 
         	return null;
         }
-        
+
         public override void visit(method_call _method_call)
         {
-        	search_all = true;
-        	_method_call.dereferencing_value.visit(this);
+            search_all = true;
+            _method_call.dereferencing_value.visit(this);
             search_all = false;
-        	this.cnst_val.prim_val = null;
-        	SymScope[] names = returned_scopes.ToArray();
+            this.cnst_val.prim_val = null;
+            SymScope[] names = returned_scopes.ToArray();
             List<expression> parameters = new List<expression>();
             TypeScope obj = null;
             if (names.Length > 0 && names[0] is TypeScope)
@@ -2613,48 +2625,55 @@ namespace CodeCompletion
                                     {
                                         List<TypeScope> generic_args = interf.GetInstances();
                                         if (generic_args != null && generic_args.Count > 0)
-                                            obj = generic_args[0];    
+                                            obj = generic_args[0];
                                     }
                                 }
                             }
                         }
                     }
-                } 
+                }
             }
             if (_method_call.parameters != null)
                 parameters.AddRange(_method_call.parameters.expressions);
             ProcScope ps = select_method(names, null, null, obj, parameters.ToArray());
-        	returned_scopes.Clear();
+            returned_scopes.Clear();
 
-        	if (ps != null)
-        	{
-        		if (ps.return_type != null)
+            if (ps != null)
+            {
+                if (ps.return_type != null)
                 {
                     returned_scope = ps.return_type;
                 }
-				else 
-					returned_scope = null;
-        	}
-        	else if (names.Length > 0)
-        	{
-        		returned_scope = null;
-        		foreach (SymScope ss in names)
-        		if (ss is ProcScope)
-        		{
-        			ps = ss as ProcScope;
-        			if (ps.return_type != null)
-        			{
-						returned_scope = ps.return_type;
-						break;
-        			}
-					else 
-						returned_scope = null;
-        		}
-        		else if (ss is TypeScope)
-        		{
-        			returned_scope = ss;
-        		}
-        	}
+                else
+                    returned_scope = null;
+            }
+            else if (names.Length > 0)
+            {
+                returned_scope = null;
+                foreach (SymScope ss in names)
+                    if (ss is ProcScope)
+                    {
+                        ps = ss as ProcScope;
+                        if (ps.return_type != null)
+                        {
+                            returned_scope = ps.return_type;
+                            if (ps.IsExtension && ps.IsGeneric() && obj != null)
+                            {
+                                TypeScope elem_ts = obj.GetElementType();
+                                if (elem_ts == null)
+                                    elem_ts = obj;
+                                returned_scope = ps.return_type.GetInstance(new List<TypeScope>() { elem_ts });
+                            }
+                            break;
+                        }
+                        else
+                            returned_scope = null;
+                    }
+                    else if (ss is TypeScope)
+                    {
+                        returned_scope = ss;
+                    }
+            }
         }
 
         public override void visit(pascal_set_constant _pascal_set_constant)

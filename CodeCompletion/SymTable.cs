@@ -1798,6 +1798,14 @@ namespace CodeCompletion
             }
         }
 
+        ITypeScope IProcScope.DeclaringType
+        {
+            get
+            {
+                return declaringType;
+            }
+        }
+
         public virtual IElementScope[] Parameters
         {
             get
@@ -2969,7 +2977,7 @@ namespace CodeCompletion
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
             if ((elementType is UnknownScope || elementType is TemplateParameterScope) && gen_args.Count > 0)
-               return new ArrayScope(gen_args[0], Rank > 1?indexes:null);
+               return new ArrayScope(gen_args[gen_args.Count-1], Rank > 1?indexes:null);
             return this;
         }
 
@@ -4844,9 +4852,13 @@ namespace CodeCompletion
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
                             lst[0] = lst[0].instances[0];
                         sc.instances.Add(this.instances[i].GetInstance(lst));
+                        sc.generic_params.Add(gen_args[i].si.name);
                     }
                     else
+                    {
+                        sc.generic_params.Add(gen_args[i].si.name);
                         sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                    }   
                 }
             else
                 for (int i = 0; i < gen_args.Count; i++)
@@ -6472,7 +6484,7 @@ namespace CodeCompletion
             this.si = si;
             this.mi = mi;
             string[] args = declaringType.TemplateArguments;
-
+            this.declaringType = declaringType;
             if (args != null)
             {
                 generic_args = new List<string>();
@@ -6486,7 +6498,7 @@ namespace CodeCompletion
             }
             if (mi.ReturnType != typeof(void))
             {
-                if (generic_args != null /*&& mi.GetGenericArguments().Length == 0*/)
+                if (generic_args != null)
                 {
                     this.return_type = CompiledScope.get_type_instance(mi.ReturnType, declaringType.instances);
                 }
@@ -6527,6 +6539,7 @@ namespace CodeCompletion
         {
             this.si = si;
             this.mi = mi;
+            this.declaringType = declaringType;
             string[] args = declaringType.TemplateArguments;
             if (args != null)
             {
