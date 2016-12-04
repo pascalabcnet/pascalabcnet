@@ -2678,8 +2678,34 @@ namespace CodeCompletion
 
         public override void visit(pascal_set_constant _pascal_set_constant)
         {
-            //throw new Exception("The method or operation is not implemented.");
-            returned_scope = cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.set_name);
+            TypeScope element_type = null;
+            List<TypeScope> element_types = new List<TypeScope>();
+            if (_pascal_set_constant.values != null)
+                foreach (expression ex in _pascal_set_constant.values.expressions)
+                {
+                    ex.visit(this);
+                    if (returned_scope != null && returned_scope is TypeScope)
+                        element_types.Add(returned_scope as TypeScope);
+                }
+            if (element_types.Count > 0)
+            {
+                element_type = element_types[0];
+                for (int i = 1; i < element_types.Count; i++)
+                {
+                    if (element_type.IsConvertable(element_types[i]))
+                        element_type = element_types[i];
+                    else if (!element_types[i].IsConvertable(element_type))
+                    {
+                        element_type = TypeTable.obj_type;
+                        break;
+                    }
+                }
+            }
+            
+            if (element_type != null)
+                returned_scope = new SetScope(element_type);
+            else
+                returned_scope = cur_scope.FindName(PascalABCCompiler.TreeConverter.compiler_string_consts.set_name);
             cnst_val.prim_val = null;
         }
 
@@ -3691,7 +3717,7 @@ namespace CodeCompletion
 
         public override void visit(diapason_expr _diapason_expr)
         {
-            //throw new Exception("The method or operation is not implemented.");
+            _diapason_expr.left.visit(this);
         }
 
         public override void visit(var_def_list_for_record _var_def_list)
