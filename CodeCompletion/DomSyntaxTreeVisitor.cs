@@ -4359,6 +4359,30 @@ namespace CodeCompletion
             ttr.params_list.params_list.Add(_sequence_type.elements_type);
             visit(ttr);
         }
+        public override void visit(assign_var_tuple _assign_var_tuple)
+        {
+            _assign_var_tuple.expr.visit(this);
+            TypeScope ts = returned_scope as TypeScope;
+            if (ts != null && ts.instances != null && ts.instances.Count > 0)
+            {
+                for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+                {
+                    ident id = _assign_var_tuple.vars.variables[i] as ident;
+                    if (id != null)
+                    {
+                        SymInfo si = new SymInfo(id.name, SymbolKind.Variable, id.name);
+
+                        ElementScope es = new ElementScope(si, ts.instances[Math.Min(i, ts.instances.Count-1)], cur_scope);
+                        es.acc_mod = cur_access_mod;
+                        es.si.acc_mod = cur_access_mod;
+                        es.loc = get_location(id);
+                        cur_scope.AddName(id.name, es);
+                        es.declaringUnit = cur_scope;
+                    }
+                }
+            }
+            
+        }
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();
