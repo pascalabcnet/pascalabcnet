@@ -8973,9 +8973,26 @@ namespace PascalABCCompiler.TreeConverter
                             return make_delegate_wrapper(en, si, get_location(id_right), false);
                         else
                         {
-                            function_node fn = convertion_data_and_alghoritms.select_function(new expressions_list(),
-                                si, get_location(id_right));
-                            return create_not_static_method_call(fn, en, get_location(id_right), false);
+                            function_node tmp_fn = null;
+                            SymbolInfo tmp_si = si;
+                            expressions_list pars = new expressions_list();
+                            if (en != null)
+                                while (tmp_si != null)
+                                {
+                                    tmp_fn = tmp_si.sym_info as function_node;
+                                    if (tmp_fn != null && tmp_fn.is_extension_method && 
+                                        (tmp_fn.parameters.Count == 1 || tmp_fn.parameters.Count == 2 && (tmp_fn.parameters[1].is_params || tmp_fn.parameters[1].default_value != null)))
+                                    {
+                                        pars.AddElement(en);
+                                        break;
+                                    }
+                                    tmp_si = tmp_si.Next;
+                                }
+                            function_node fn = convertion_data_and_alghoritms.select_function(pars, si, get_location(id_right));
+                            if (!fn.is_extension_method)
+                                return create_not_static_method_call(fn, en, get_location(id_right), false);
+                            else
+                                return create_static_method_call_with_params(fn, get_location(id_right), fn.return_value_type, false, pars);
                         }
                     }
                 case general_node_type.property_node:
