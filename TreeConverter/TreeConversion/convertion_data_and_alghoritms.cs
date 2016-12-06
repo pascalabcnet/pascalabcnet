@@ -1879,18 +1879,18 @@ namespace PascalABCCompiler.TreeConverter
             }
 
 			int j=0;
-			while(j<set_of_possible_functions.Count)
-			{
-				if (tcll[j]==null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
-				{
-					tcll.remove_at(j);
-					set_of_possible_functions.remove_at(j);
-				}
-				else
-				{
-					j++;
-				}
-			}
+            while (j < set_of_possible_functions.Count)
+            {
+                if (tcll[j] == null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
+                {
+                    tcll.remove_at(j);
+                    set_of_possible_functions.remove_at(j);
+                }
+                else
+                {
+                    j++;
+                }
+            }
 
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
 			{
