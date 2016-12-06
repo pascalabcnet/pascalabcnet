@@ -6658,7 +6658,6 @@ namespace PascalABCCompiler.NETGenerator
             if (_box)
                 is_dot_expr = false;
             value.obj.visit(this);
-            //DarkStar Fixed: type t:=i.gettype();
             if ((value.obj.type.is_value_type) && !value.compiled_method.method_info.DeclaringType.IsValueType)
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
@@ -6684,18 +6683,6 @@ namespace PascalABCCompiler.NETGenerator
                 is_addr = false;
             }
             MethodInfo mi = value.compiled_method.method_info;
-            /*
-            if (value.template_parametres.Length > 0)
-            {
-                Type[] type_arr=new Type[value.template_parametres.Length];
-                for (int int_i = 0; int_i < value.template_parametres.Length; int_i++)
-                {
-                    type_arr[int_i] = helper.GetTypeReference(value.template_parametres[int_i]).tp;
-                }
-                mi = mi.MakeGenericMethod(type_arr);
-            }
-             */
-            //if ((value.virtual_call && mi.IsVirtual || !value.virtual_call && value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || !mi.IsStatic && !mi.DeclaringType.IsValueType) && !mi.DeclaringType.IsValueType)
             if (value.compiled_method.comperehensive_type.is_value_type || !value.virtual_call && value.compiled_method.polymorphic_state == polymorphic_state.ps_virtual || value.compiled_method.polymorphic_state == polymorphic_state.ps_static)
             {
                 il.EmitCall(OpCodes.Call, mi, null);
@@ -6824,6 +6811,16 @@ namespace PascalABCCompiler.NETGenerator
             if (tmp_dot == false)
                 is_dot_expr = true;
             value.obj.visit(this);
+            if ((value.obj.type.is_value_type) && !value.method.common_comprehensive_type.is_value_type)
+            {
+                il.Emit(OpCodes.Box, helper.GetTypeReference(value.obj.type).tp);
+            }
+            else if (value.obj.type.is_generic_parameter && !(value.obj is IAddressedExpressionNode))
+            {
+                LocalBuilder lb = il.DeclareLocal(helper.GetTypeReference(value.obj.type).tp);
+                il.Emit(OpCodes.Stloc, lb);
+                il.Emit(OpCodes.Ldloca, lb);
+            }
             is_dot_expr = false;
             //bool is_comp_gen = false;
             //bool need_fee = false;
@@ -6861,10 +6858,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             //вызов метода
             //(ssyy) Функции размерных типов всегда вызываются через call
-            //if (save_debug_info && need_fee)
-            //  MarkSequencePoint(il, value.Location);
             if (value.method.comperehensive_type.is_value_type || !value.virtual_call && value.method.polymorphic_state == polymorphic_state.ps_virtual || value.method.polymorphic_state == polymorphic_state.ps_static /*|| !value.virtual_call || (value.method.polymorphic_state != polymorphic_state.ps_virtual && value.method.polymorphic_state != polymorphic_state.ps_virtual_abstract && !value.method.common_comprehensive_type.IsInterface)*/)
-            //if (!value.virtual_call && value.method.polymorphic_state == polymorphic_state.ps_virtual || (value.method.polymorphic_state != polymorphic_state.ps_virtual && value.method.polymorphic_state != polymorphic_state.ps_virtual_abstract && !value.method.common_comprehensive_type.IsInterface))
             {
                 il.EmitCall(OpCodes.Call, mi, null);
             }
@@ -6923,14 +6917,6 @@ namespace PascalABCCompiler.NETGenerator
             //MarkSequencePoint(value.Location);
 
             MethInfo meth = helper.GetMethod(value.common_function);
-            /*
-            //ssyy добавил
-            if (meth == null)
-            {
-                meth = helper.GetConstructor(value.common_function);
-            }
-            //\ssyy
-             */
             MethodInfo mi = meth.mi;
             bool tmp_dot = is_dot_expr;
             is_dot_expr = false;
