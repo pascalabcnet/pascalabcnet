@@ -1725,17 +1725,12 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						if (is_exist_eq_method_in_list(fn,set_of_possible_functions) != null)
 						{
-                            //!!!!!!!!!!!!!
-                            //DS TODO
-                            //Это нужно чтобы была возможность создавать операторы = := ..., т.к. всегда они добавляюся автоматом
-                            //Надо сначало просматривать заголовки и добавлять такие операторы только если нужно.
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
                                 {
                                     set_of_possible_functions.remove(set_of_possible_functions[0]);
                                     set_of_possible_functions.AddElement(fn);
                                 }
-                            //!!!!!!!!!!!!!
 							
                             functions=functions.Next;
 							continue;
