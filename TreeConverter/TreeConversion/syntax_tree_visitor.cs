@@ -19207,11 +19207,30 @@ namespace PascalABCCompiler.TreeConverter
 
             var el = new SyntaxTree.expression_list();
             el.Add(new int32_const(situation));
-            el.Add(sl.from);
+
+            var semfrom = convert_strong(sl.from);
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(sl.from), "INTEGER_VALUE_EXPECTED");
+
+            el.Add(sl.from); // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!
+
+            var semto = convert_strong(sl.to);
+            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(sl.to), "INTEGER_VALUE_EXPECTED");
+
             el.Add(sl.to);
 
             if (sl.step != null)
+            {
+                var semstep = convert_strong(sl.step);
+                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
+                if (!b)
+                    AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
+
                 el.Add(sl.step);
+            }
 
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
             visit(mc);

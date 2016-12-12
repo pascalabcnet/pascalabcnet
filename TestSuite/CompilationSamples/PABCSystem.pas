@@ -1500,12 +1500,12 @@ function Length(a: System.Array; dim: integer): integer;
 function Copy(a: System.Array): System.Array;
 /// Сортирует динамический массив по возрастанию
 procedure Sort<T>(a: array of T);
-/// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
-procedure Sort<T>(a: array of T; less: (T,T)->boolean);
+/// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp
+procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
-/// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
-procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+/// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
+procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
@@ -6999,9 +6999,9 @@ begin
   System.Array.Sort(a);
 end;
 
-procedure Sort<T>(a: array of T; less: (T,T)->boolean);
+procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
 begin
-  System.Array.Sort(a,(x,y)->less(y,x)?1:-1);
+  System.Array.Sort(a,cmp);
 end;
 
 procedure Sort<T>(l: List<T>);
@@ -7009,9 +7009,9 @@ begin
   l.Sort();
 end;
 
-procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 begin
-  l.Sort((x,y)->less(y,x)?1:-1);
+  l.Sort(cmp);
 end;
 
 procedure Reverse<T>(a: array of T);
@@ -9241,7 +9241,7 @@ end;
 /// Генерирует последовательность целых от текущего значения до n в убывающем порядке
 function &Downto(Self: integer; n: integer): sequence of integer; extensionmethod;
 begin
-  Result := Range(n, Self, -1); // неверно - исправить
+  Result := Range(Self, n, -1); 
 end;
 
 /// Возвращает последовательность целых 0,1,...n-1
