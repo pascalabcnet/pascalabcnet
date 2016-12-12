@@ -9241,7 +9241,7 @@ end;
 /// Генерирует последовательность целых от текущего значения до n в убывающем порядке
 function &Downto(Self: integer; n: integer): sequence of integer; extensionmethod;
 begin
-  Result := Range(n, Self, -1); // неверно - исправить
+  Result := Range(Self, n, -1); 
 end;
 
 /// Возвращает последовательность целых 0,1,...n-1
