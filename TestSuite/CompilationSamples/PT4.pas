@@ -3,12 +3,13 @@ unit PT4;
 
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника Programming Taskbook
-// Версия 4.13
+// Версия 4.15
 // Copyright (c) 2006-2008 DarkStar, SSM
 // Copyright (c) 2010 М.Э.Абрамян, дополнения к версии 1.3
 // Copyright (c) 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
 // Copyright (c) 2015 М.Э.Абрамян, дополнения к версии 4.14
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2015
+// Copyright (c) 2016 М.Э.Абрамян, дополнения к версии 4.15
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2016
 //------------------------------------------------------------------------------
 
 {$apptype windows}
@@ -132,6 +133,54 @@ function ReadlnPNode: PNode;
 /// Возвращает введенное значение типа Node
 function ReadlnNode: Node;
 
+// == Версия 4.15. Дополнения ==
+
+/// Возвращает введенное значение типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadInteger(prompt: string): integer;
+/// Возвращает введенное значение типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadReal(prompt: string): real;
+/// Возвращает введенное значение типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadChar(prompt: string): char;
+/// Возвращает введенное значение типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadString(prompt: string): string;
+/// Возвращает введенное значение типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadBoolean(prompt: string): boolean;
+/// Возвращает введенное значение типа PNode.
+/// Строковое приглашение prompt игнорируется
+function ReadPNode(prompt: string): PNode;
+/// Возвращает введенное значение типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadNode(prompt: string): Node;
+
+/// Возвращает введенное значение типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadlnInteger(prompt: string): integer;
+/// Возвращает введенное значение типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadlnReal(prompt: string): real;
+/// Возвращает введенное значение типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadlnChar(prompt: string): char;
+/// Возвращает введенное значение типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadlnString(prompt: string): string;
+/// Возвращает введенное значение типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadlnBoolean(prompt: string): boolean;
+/// Возвращает введенное значение типа PNode.
+/// Строковое приглашение prompt игнорируется
+function ReadlnPNode(prompt: string): PNode;
+/// Возвращает введенное значение типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadlnNode(prompt: string): Node;
+
+// == Версия 4.15. Конец дополнений ==
+
 procedure GetR(var param: real);
 procedure GetN(var param: integer);
 procedure GetC(var param: char);
@@ -195,8 +244,14 @@ procedure Read(var val: PNode);
 procedure Readln;
 
 procedure Print(params args: array of object);
-
 procedure Println(params args: array of object);
+
+// == Версия 4.15. Дополнения ==
+
+procedure Print(s: string);
+procedure Println(s: string);
+
+// == Версия 4.15. Конец дополнений ==
 
 /// Освобождает память, выделенную динамически, на которую указывает p
 procedure Dispose(p: pointer);
@@ -1034,6 +1089,80 @@ begin
   Result := GetNode;
 end;
 
+// == Версия 4.15. Дополнения ==
+
+function ReadInteger(prompt: string): integer;
+begin
+  Result := GetInt;
+end;
+
+function ReadReal(prompt: string): real;
+begin
+  Result := GetReal;
+end;
+
+function ReadChar(prompt: string): char;
+begin
+  Result := GetChar;
+end;
+
+function ReadString(prompt: string): string;
+begin
+  Result := GetString;
+end;
+
+function ReadBoolean(prompt: string): boolean;
+begin
+  Result := GetBool;
+end;
+
+function ReadPNode(prompt: string): PNode;
+begin
+  Result := GetPNode;
+end;
+
+function ReadNode(prompt: string): Node;
+begin
+  Result := GetNode;
+end;
+
+function ReadlnInteger(prompt: string): integer;
+begin
+  Result := GetInt;
+end;
+
+function ReadlnReal(prompt: string): real;
+begin
+  Result := GetReal;
+end;
+
+function ReadlnChar(prompt: string): char;
+begin
+  Result := GetChar;
+end;
+
+function ReadlnString(prompt: string): string;
+begin
+  Result := GetString;
+end;
+
+function ReadlnBoolean(prompt: string): boolean;
+begin
+  Result := GetBool;
+end;
+
+function ReadlnPNode(prompt: string): PNode;
+begin
+  Result := GetPNode;
+end;
+
+function ReadlnNode(prompt: string): Node;
+begin
+  Result := GetNode;
+end;
+
+// == Версия 4.15. Конец дополнений ==
+
 // -----------------------------------------------------
 //                      Процедуры Put
 // -----------------------------------------------------
@@ -1208,6 +1337,20 @@ procedure Println(params args: array of object);
 begin
   Print(args);
 end;
+
+// == Версия 4.15. Дополнения ==
+
+procedure Print(s: string);
+begin
+  write(s);
+end;
+
+procedure Println(s: string);
+begin
+  write(s);
+end;
+
+// == Версия 4.15. Конец дополнений ==
 
 {procedure write;
 begin
