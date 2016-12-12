@@ -3427,6 +3427,16 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для BigInteger
 //------------------------------------------------------------------------------
+function BigInteger.operator/(p: BigInteger; q: real): real;
+begin
+  Result := real(p)/q;
+end;
+
+function BigInteger.operator/(q: real; p: BigInteger): real;
+begin
+  Result := q/real(p);
+end;
+
 function BigInteger.operator>(p: BigInteger; q: integer): boolean;
 begin
   Result := p > BigInteger.Create(q);
