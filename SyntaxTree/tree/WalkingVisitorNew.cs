@@ -12,13 +12,11 @@ namespace PascalABCCompiler.SyntaxTree
     //2. Унаследовать от этого класса свой класс, в котором переорпеделить обработку нужных узлов.
     //Не забывать при этом о вызове visit'ов для подузлов (или base.visit), если это нужно.
 
-	public delegate void VisitorDelegateNew(syntax_tree_node node);
-
     public class WalkingVisitorNew : AbstractVisitor
     {
 
-		protected VisitorDelegateNew OnEnter;
-        protected VisitorDelegateNew OnLeave;
+		protected Action<syntax_tree_node> OnEnter;
+        protected Action<syntax_tree_node> OnLeave;
 
         protected bool visitNode = true; // в OnEnter можно сделать false
 

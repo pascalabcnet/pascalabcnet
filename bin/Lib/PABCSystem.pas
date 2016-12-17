@@ -914,6 +914,8 @@ function BinaryFileRead(var f: BinaryFile; ElementType: System.Type): object;
 // -----------------------------------------------------
 //>>     Cистемные подпрограммы # System subroutines
 // -----------------------------------------------------
+/// Возвращает версию PascalABC.NET
+function PascalABCVersion: string;
 /// Возвращает количество параметров командной строки
 function ParamCount: integer;
 /// Возвращает i-тый параметр командной строки
@@ -1502,10 +1504,14 @@ function Copy(a: System.Array): System.Array;
 procedure Sort<T>(a: array of T);
 /// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(a: array of T; cmp: (T,T)->integer);
+/// Сортирует динамический массив по критерию сортировки, задаваемому функцией сравнения less
+procedure Sort<T>(a: array of T; less: (T,T)->boolean);
 /// Сортирует список по возрастанию
 procedure Sort<T>(l: List<T>);
 /// Сортирует список по критерию сортировки, задаваемому функцией сравнения cmp
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
+/// Сортирует список по критерию сортировки, задаваемому функцией сравнения less
+procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
@@ -6179,6 +6185,11 @@ end;
 // -----------------------------------------------------
 // Operating System subroutines: implementation
 // -----------------------------------------------------
+function PascalABCVersion: string;
+begin
+  Result := '3.2';
+end;
+
 function ParamCount: integer;
 begin
   if (Environment.GetCommandLineArgs.Length > 1) and ((Environment.GetCommandLineArgs[1] = '[REDIRECTIOMODE]') or (Environment.GetCommandLineArgs[1] = '[RUNMODE]')) then
@@ -7004,6 +7015,11 @@ begin
   System.Array.Sort(a,cmp);
 end;
 
+procedure Sort<T>(a: array of T; less: (T,T)->boolean);
+begin
+  System.Array.Sort(a,(x,y)->less(x,y)?-1:(less(y,x)?1:0));
+end;
+
 procedure Sort<T>(l: List<T>);
 begin
   l.Sort();
@@ -7012,6 +7028,11 @@ end;
 procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 begin
   l.Sort(cmp);
+end;
+
+procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
+begin
+  l.Sort((x,y)->less(x,y)?-1:(less(y,x)?1:0));
 end;
 
 procedure Reverse<T>(a: array of T);
