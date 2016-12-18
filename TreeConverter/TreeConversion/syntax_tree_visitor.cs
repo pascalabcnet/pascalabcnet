@@ -14877,6 +14877,11 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         AddError(inital_value.location, "CAN_NOT_DEDUCE_TYPE_{0}", null);
                     }
+                    foreach (parameter p in bfc.simple_function_node.parameters)
+                    {
+                        if (p.type.is_generic_parameter)
+                            AddError(inital_value.location, "USE_ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS");
+                    }
                     common_type_node del =
             			convertion_data_and_alghoritms.type_constructor.create_delegate(context.get_delegate_type_name(), bfc.simple_function_node.return_value_type, bfc.simple_function_node.parameters, context.converted_namespace, null);
             		context.converted_namespace.types.AddElement(del);

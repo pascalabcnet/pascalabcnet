@@ -1588,6 +1588,11 @@ namespace CodeCompletion
             this.si = new SymInfo(this.ToString(), SymbolKind.Delegate, this.ToString());
         }
 
+        public ProcType(ProcScope target, List<string> generic_params):this(target)
+        {
+            this.generic_params = generic_params;
+        }
+
         IProcScope IProcType.Target
         {
             get
@@ -2563,11 +2568,12 @@ namespace CodeCompletion
     {
         public TypeScope actType;
 
-        public TypeSynonim(SymInfo si, SymScope actType)
+        public TypeSynonim(SymInfo si, SymScope actType, List<string> generic_params)
             : base(SymbolKind.Type, null, null)
         {
             this.actType = actType as TypeScope;
             this.si = si;
+            this.generic_params = generic_params;
             if (actType.si != null && actType.si.description != null)
                 this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
             //this.si.describe = "type "+this.si.name + " = "+actType.si.name;

@@ -1564,10 +1564,16 @@ namespace CodeCompletion
         {
             //throw new Exception("The method or operation is not implemented.");
             cur_type_name = _type_declaration.type_name.name;
+            List<string> generic_params = new List<string>();
             if (_type_declaration.type_name is template_type_name)
             {
                 template_args = (_type_declaration.type_name as template_type_name).template_args;
+                foreach (ident id in (_type_declaration.type_name as template_type_name).template_args.list)
+                {
+                    generic_params.Add(id.name);
+                }
             }
+            
             _type_declaration.type_def.visit(this);
             if (returned_scope != null && returned_scope is PointerScope && (returned_scope as PointerScope).ref_type is UnknownScope)
             {
@@ -1576,8 +1582,6 @@ namespace CodeCompletion
             //else
             if (returned_scope != null && returned_scope is TypeScope)
             {
-                //if (ret_tn is TypeScope)
-                //{
                 if (!(_type_declaration.type_def is named_type_reference))
                 {
                     //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
@@ -1601,7 +1605,7 @@ namespace CodeCompletion
                 }
                 else
                 {
-                    TypeSynonim ts = new TypeSynonim(new SymInfo(_type_declaration.type_name.name, SymbolKind.Type, _type_declaration.type_name.name), returned_scope);
+                    TypeSynonim ts = new TypeSynonim(new SymInfo(_type_declaration.type_name.name, SymbolKind.Type, _type_declaration.type_name.name), returned_scope, generic_params);
                     ts.loc = get_location(_type_declaration);
                     ts.topScope = cur_scope;
                     ts.declaringUnit = entry_scope;
@@ -1610,14 +1614,13 @@ namespace CodeCompletion
                     if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_type_declaration))
                         ts.AddDocumentation(this.converter.controller.docs[_type_declaration]);
                 }
-                //}
 
             }
             else if (returned_scope != null)
             {
                 if (returned_scope is ProcScope)
                 {
-                    returned_scope = new ProcType(returned_scope as ProcScope);
+                    returned_scope = new ProcType(returned_scope as ProcScope, generic_params);
                     returned_scope.topScope = cur_scope;
                 }
                 cur_scope.AddName(_type_declaration.type_name.name, returned_scope);

@@ -2004,12 +2004,12 @@ namespace PascalABCCompiler.Parsers
 		
 		public string GetSynonimDescription(ITypeScope scope)
 		{
-			return "type "+scope.Name+" = "+scope.Description;
+			return "type "+scope.Name + GetGenericString(scope.TemplateArguments)+" = " +scope.Description;
 		}
 		
 		public string GetSynonimDescription(ITypeSynonimScope scope)
-		{
-			return "type "+scope.Name+" = "+GetSimpleDescription(scope.ActType);
+		{ 
+			return "type "+scope.Name+GetGenericString(scope.TemplateArguments) + " = "+GetSimpleDescription(scope.ActType);
 		}
 		
 		public string GetSynonimDescription(IProcScope scope)
