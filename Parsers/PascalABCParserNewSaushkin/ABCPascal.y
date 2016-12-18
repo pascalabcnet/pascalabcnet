@@ -3086,7 +3086,7 @@ variable
         	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,fe.source_context);
+        		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value,el, @$);
         }

@@ -2824,6 +2824,31 @@ namespace CodeFormatters
             visit_node(yn.ex);
         }
 
+        public override void visit(assign_var_tuple _assign_var_tuple)
+        {
+            read_from_beg_pos = true;
+            for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+            {
+                if (options.SpaceBetweenArguments == 1)
+                {
+                    add_space_after = true;
+                }  
+                visit_node(_assign_var_tuple.vars.variables[i]);
+                add_space_before = true;
+            }
+            visit_node(_assign_var_tuple.expr);
+        }
+
+        public override void visit(slice_expr _slice_expr)
+        {
+            visit_node(_slice_expr.v);
+            if (_slice_expr.from != null)
+                visit_node(_slice_expr.from);
+            if (_slice_expr.to != null)
+                visit_node(_slice_expr.to);
+            if (_slice_expr.step != null)
+                visit_node(_slice_expr.step);          
+        }
         #endregion
     }
 }

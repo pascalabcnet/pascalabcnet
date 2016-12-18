@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-8EAQPI9
-// DateTime: 12.12.2016 11:36:36
-// UserName: ?????????
-// Input file <J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
+// Machine:  IVAN-PC
+// DateTime: 18.12.2016 12:52:08
+// UserName: Ivan
+// Input file <ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -56,7 +56,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // Verbatim content from ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -68,7 +68,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
+  // End verbatim content from ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -5029,7 +5029,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
-        		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,fe.source_context);
+        		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
 			}   
 			else CurrentSemanticValue.ex = new indexer(ValueStack[ValueStack.Depth-4].ex as addressed_value,el, CurrentLocationSpan);
         }
