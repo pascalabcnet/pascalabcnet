@@ -899,7 +899,7 @@ namespace PascalABCCompiler.Parsers
 			if (sc is IProcScope) return "";
 			if (sc is ITypeScope)
 			{
-				return sc.Name+((sc as ITypeScope).TemplateArguments != null?"<>":"")+".";
+				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))?"<>":"")+".";
 			}
 			return sc.Name + ".";
 		}
@@ -911,7 +911,7 @@ namespace PascalABCCompiler.Parsers
 			if (sc is IProcScope) return "";
 			if (sc is ITypeScope)
 			{
-				return sc.Name+((sc as ITypeScope).TemplateArguments != null?"<>":"");
+				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))? "<>":"");
 			}
 			return sc.Name;
 		}
@@ -1819,9 +1819,26 @@ namespace PascalABCCompiler.Parsers
 		protected virtual string GetDescriptionForProcedure(IProcScope scope)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            
+            string extensionType = null;
+            if (scope.IsExtension && scope.Parameters.Length > 0)
+            {
+                extensionType = GetTopScopeName(scope.Parameters[0].Type);
+                if (extensionType == "")
+                    extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+            }
             if (scope.IsExtension)
-                sb.Append("("+StringResources.Get("CODE_COMPLETION_EXTENSION")+") ");
+            {
+                if (extensionType != null && extensionType.IndexOf(' ') != -1)
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                    extensionType = null;
+                }
+                else
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION")+ ") ");
+                }   
+            }
+              
 			if (scope.IsStatic) sb.Append("class ");
 			if (scope.IsConstructor())
 				sb.Append("constructor ");
@@ -1832,8 +1849,16 @@ namespace PascalABCCompiler.Parsers
 				sb.Append("function ");
 			if (!scope.IsConstructor())
 			{
-				sb.Append(GetTopScopeName(scope.TopScope));
-				sb.Append(scope.Name);
+                if (extensionType != null)
+                {
+                    sb.Append(extensionType);
+                    sb.Append(scope.Name);
+                }
+                else
+                {
+                    sb.Append(GetTopScopeName(scope.TopScope));
+                    sb.Append(scope.Name);
+                }
 			}
 			else
 			{
@@ -1856,6 +1881,8 @@ namespace PascalABCCompiler.Parsers
 			IElementScope[] parameters = scope.Parameters;
 			for (int i=0; i<parameters.Length; i++)
 			{
+                if (scope.IsExtension && i == 0)
+                    continue;
 				sb.Append(GetSimpleDescription(parameters[i]));
 				if (i < parameters.Length - 1)
 				{
