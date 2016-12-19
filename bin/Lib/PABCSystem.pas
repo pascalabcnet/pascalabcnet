@@ -1273,6 +1273,7 @@ procedure Str(r: single; var s: string);
 ///--
 procedure Str(s1: string; var s: string);
 /// Возвращает позицию подстроки subs в строке s. Если не найдена, возвращает 0 
+
 function Pos(subs, s: string; from: integer := 1): integer;
 /// Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function PosEx(subs, s: string; from: integer := 1): integer;
@@ -1280,6 +1281,16 @@ function PosEx(subs, s: string; from: integer := 1): integer;
 function LastPos(subs, s: string): integer;
 /// Возвращает позицию последнего вхождения подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function LastPos(subs, s: string; from: integer): integer;
+
+/// Возвращает позицию символа c в строке s. Если не найдена, возвращает 0 
+function Pos(c: char; s: string; from: integer := 1): integer;
+/// Возвращает позицию символа c в строке s начиная с позиции from. Если не найдена, возвращает 0 
+function PosEx(c: char; s: string; from: integer := 1): integer;
+/// Возвращает позицию последнего вхождения символа c в строке s. Если не найдена, возвращает 0 
+function LastPos(c: char; s: string): integer;
+/// Возвращает позицию последнего вхождения символа c в строке s начиная с позиции from. Если не найдена, возвращает 0 
+function LastPos(c: char; s: string; from: integer): integer;
+
 /// Возвращает длину строки 
 function Length(s: string): integer;
 /// Устанавливает длину строки s равной n
@@ -6187,7 +6198,7 @@ end;
 // -----------------------------------------------------
 function PascalABCVersion: string;
 begin
-  Result := '3.2';
+  Result := '3.2.0.1364';
 end;
 
 function ParamCount: integer;
@@ -7216,6 +7227,25 @@ begin
   else Result := s.LastIndexOf(subs, from - 1) + 1;
 end;
 
+function Pos(c: char; s: string; from: integer): integer;
+begin
+  Result := s.IndexOf(c, from - 1) + 1;
+end;
+
+function PosEx(c: char; s: string; from: integer): integer;
+begin
+  Result := s.IndexOf(c, from - 1) + 1;
+end;
+
+function LastPos(c: char; s: string): integer;
+begin
+  Result := s.LastIndexOf(c, s.Length - 1) + 1;
+end;
+
+function LastPos(c: char; s: string; from: integer): integer;
+begin
+  Result := s.LastIndexOf(c, from - 1) + 1;
+end;
 
 function Length(s: string): integer;
 begin
@@ -9657,6 +9687,43 @@ function operator+<T1, T2, T3, T4, T5, T6, T7> (Self: (T1,T2,T3,T4,T5,T6); v: T7
 begin
   Result := (Self[0],Self[1],Self[2],Self[3],Self[4],Self[5],v);
 end;
+
+///--
+function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
+begin
+  Result := Self.Equals( v ) ;
+end;
+
+///--
+function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
+begin
+  Result := not Self.Equals( v ) ;
+end;
+
+///--
+function operator<<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
+begin
+  Result := (Self as System.IComparable).CompareTo( v ) < 0 ;
+end;
+
+///--
+function operator<=<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
+begin
+  Result := (Self as System.IComparable).CompareTo( v ) <= 0 ;
+end;
+
+///--
+function operator><T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
+begin
+  Result := (Self as System.IComparable).CompareTo( v ) > 0 ;
+end;
+
+///--
+function operator>=<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
+begin
+  Result := (Self as System.IComparable).CompareTo( v ) >= 0 ;
+end;
+
 
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple
