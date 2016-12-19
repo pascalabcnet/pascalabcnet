@@ -1666,8 +1666,24 @@ namespace PascalABCCompiler.Parsers
         protected virtual string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            string extensionType = null;
+            if (scope.IsExtension && scope.Parameters.Length > 0)
+            {
+                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+            }
             if (scope.IsExtension)
-                sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+            {
+                if (extensionType.IndexOf(' ') != -1)
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                }
+                else
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+                    extensionType = null;
+                }
+            }
+                
             if (scope.IsStatic && !scope.IsGlobal) sb.Append("class ");
             if (scope.ReturnType == null)
                 sb.Append("procedure ");
@@ -1699,11 +1715,11 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                gen_ind = 1;
+                gen_ind = 0;
                 generic_param_args = new Dictionary<string, string>();
                 for (int i = 0; i < pis.Length; i++)
                 {
-                    if (i == 0 && scope.IsExtension)
+                    if (i == 0)
                     {
                         Type[] class_generic_args = pis[i].ParameterType.GetGenericArguments();
                         for (int j = 0; j < class_generic_args.Length; j++)
@@ -1718,11 +1734,13 @@ namespace PascalABCCompiler.Parsers
                         break;
                     }
                 }
-                sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
+                if (extensionType == null)
+                    sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
             }
             if (scope.Name != "Invoke")
             {
-                sb.Append(".");
+                if (extensionType == null)
+                    sb.Append(".");
                 sb.Append(scope.Name);
             }
 
@@ -1737,7 +1755,8 @@ namespace PascalABCCompiler.Parsers
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                         {
                             sb.Append(scope.GenericArgs[ind]);
-                            generic_param_args.Add(tt[i].Name, scope.GenericArgs[ind]);
+                            if (!generic_param_args.ContainsKey(tt[i].Name))
+                                generic_param_args.Add(tt[i].Name, scope.GenericArgs[ind]);
                         }
                     }
                     else
@@ -1822,9 +1841,7 @@ namespace PascalABCCompiler.Parsers
             string extensionType = null;
             if (scope.IsExtension && scope.Parameters.Length > 0)
             {
-                extensionType = GetTopScopeName(scope.Parameters[0].Type);
-                if (extensionType == "")
-                    extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
             }
             if (scope.IsExtension)
             {
