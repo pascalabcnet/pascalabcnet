@@ -2090,7 +2090,7 @@ namespace PascalABCCompiler.TreeConverter
                                     ctn1 = cgn1.original_generic as compiled_type_node;
                             }
 
-                            var ctn2 = p1 as compiled_type_node;
+                            var ctn2 = p2 as compiled_type_node;
                             if (ctn2 == null)
                             {
                                 var cgn2 = p2 as compiled_generic_instance_type_node;
@@ -2117,6 +2117,45 @@ namespace PascalABCCompiler.TreeConverter
                                     return f1;
                             }
                         }
+                        /*if (f1.return_value_type != null && f2.return_value_type != null)
+                        {
+                            var p1 = f1.return_value_type;
+                            var p2 = f2.return_value_type;
+                            var ctn1 = p1 as compiled_type_node;
+                            if (ctn1 == null)
+                            {
+                                var cgn1 = p1 as compiled_generic_instance_type_node;
+                                if (cgn1 != null)
+                                    ctn1 = cgn1.original_generic as compiled_type_node;
+                            }
+
+                            var ctn2 = p2 as compiled_type_node;
+                            if (ctn2 == null)
+                            {
+                                var cgn2 = p2 as compiled_generic_instance_type_node;
+                                if (cgn2 != null)
+                                    ctn2 = cgn2.original_generic as compiled_type_node;
+                            }
+
+                            if (ctn1 == null || ctn2 == null)
+                                continue;
+
+                            System.Type ct1 = ctn1.compiled_type;
+                            if (ct1.IsGenericType && ct1.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct1.GetGenericArguments().Length;
+                                if (c != 0 && ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                    return f2;
+                            }
+
+                            System.Type ct2 = ctn2.compiled_type;
+                            if (ct2.IsGenericType && ct2.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct2.GetGenericArguments().Length;
+                                if (c != 0 && ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                    return f1;
+                            }
+                        }*/
                     }
                     
                 }
