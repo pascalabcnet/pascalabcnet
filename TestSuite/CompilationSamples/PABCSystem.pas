@@ -1272,8 +1272,8 @@ procedure Str(r: real; var s: string);
 procedure Str(r: single; var s: string);
 ///--
 procedure Str(s1: string; var s: string);
-/// Возвращает позицию подстроки subs в строке s. Если не найдена, возвращает 0 
 
+/// Возвращает позицию подстроки subs в строке s. Если не найдена, возвращает 0 
 function Pos(subs, s: string; from: integer := 1): integer;
 /// Возвращает позицию подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function PosEx(subs, s: string; from: integer := 1): integer;
@@ -1281,15 +1281,6 @@ function PosEx(subs, s: string; from: integer := 1): integer;
 function LastPos(subs, s: string): integer;
 /// Возвращает позицию последнего вхождения подстроки subs в строке s начиная с позиции from. Если не найдена, возвращает 0 
 function LastPos(subs, s: string; from: integer): integer;
-
-/// Возвращает позицию символа c в строке s. Если не найдена, возвращает 0 
-function Pos(c: char; s: string; from: integer := 1): integer;
-/// Возвращает позицию символа c в строке s начиная с позиции from. Если не найдена, возвращает 0 
-function PosEx(c: char; s: string; from: integer := 1): integer;
-/// Возвращает позицию последнего вхождения символа c в строке s. Если не найдена, возвращает 0 
-function LastPos(c: char; s: string): integer;
-/// Возвращает позицию последнего вхождения символа c в строке s начиная с позиции from. Если не найдена, возвращает 0 
-function LastPos(c: char; s: string; from: integer): integer;
 
 /// Возвращает длину строки 
 function Length(s: string): integer;
@@ -7203,48 +7194,48 @@ function Pos(subs, s: string; from: integer): integer;
 begin
   if (subs = nil) or (subs.Length = 0) then
     Result := 0
-  else Result := s.IndexOf(subs, from - 1) + 1;
+  else Result := s.IndexOf(subs, from - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function PosEx(subs, s: string; from: integer): integer;
 begin
   if (subs = nil) or (subs.Length = 0) then
     Result := 0
-  else Result := s.IndexOf(subs, from - 1) + 1;
+  else Result := s.IndexOf(subs, from - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function LastPos(subs, s: string): integer;
 begin
   if (subs = nil) or (subs.Length = 0) then
     Result := 0
-  else Result := s.LastIndexOf(subs, s.Length - 1) + 1;
+  else Result := s.LastIndexOf(subs, s.Length - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function LastPos(subs, s: string; from: integer): integer;
 begin
   if (subs = nil) or (subs.Length = 0) then
     Result := 0
-  else Result := s.LastIndexOf(subs, from - 1) + 1;
+  else Result := s.LastIndexOf(subs, from - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function Pos(c: char; s: string; from: integer): integer;
 begin
-  Result := s.IndexOf(c, from - 1) + 1;
+  Result := s.IndexOf(c, from - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function PosEx(c: char; s: string; from: integer): integer;
 begin
-  Result := s.IndexOf(c, from - 1) + 1;
+  Result := s.IndexOf(c, from - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function LastPos(c: char; s: string): integer;
 begin
-  Result := s.LastIndexOf(c, s.Length - 1) + 1;
+  Result := s.LastIndexOf(c, s.Length - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function LastPos(c: char; s: string; from: integer): integer;
 begin
-  Result := s.LastIndexOf(c, from - 1) + 1;
+  Result := s.LastIndexOf(c, from - 1,System.StringComparison.Ordinal) + 1;
 end;
 
 function Length(s: string): integer;
@@ -9965,34 +9956,6 @@ begin
   // SSM 31.03.09
   var FmtStr := '{0,' + NumOfChars.ToString + ':f' + abs(NumOfSignesAfterDot).ToString + '}';
   Result := Format(FmtStr, value);
-  {var s := value.ToString(ENCultureInfo);
-  var i := s.IndexOf('.')+1;
-  if NumOfSignesAfterDot>=0 then 
-  begin
-  if i=0 then 
-  begin
-  s := s + '.';
-  for var j:=1 to NumOfSignesAfterDot do
-  s := s + '0'
-  end 
-  else if NumOfSignesAfterDot=0 then begin
-  s := Round(value).ToString(ENCultureInfo);      
-  //s := s.SubString(0,i-1);
-  end else 
-  begin
-  var d := s.Length - i;
-  if NumOfSignesAfterDot>d then
-  for var j:=1 to NumOfSignesAfterDot-d do
-  s := s + '0'
-  else if NumOfSignesAfterDot<d then begin
-  var p := Round(Math.Pow(10,NumOfSignesAfterDot));
-  s := (Round(value*p) / p).ToString(ENCultureInfo);
-  //s := s.SubString(0,s.IndexOf('.')+1+NumOfSignesAfterDot)
-  end;
-  end;
-  end;
-  s := s.PadLeft(NumOfChars); 
-  result := s;}
 end;
 
 procedure StringDefaultPropertySet(var s: string; index: integer; c: char);
