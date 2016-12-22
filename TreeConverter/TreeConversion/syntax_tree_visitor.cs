@@ -1101,9 +1101,11 @@ namespace PascalABCCompiler.TreeConverter
 #endif
                         
                         function_node fn = ((function_node)(sic.sym_info));
-                        if (convertion_data_and_alghoritms.is_exist_eq_method_in_list(fn, funcs) != null)
+                        if (convertion_data_and_alghoritms.is_exist_eq_method_in_list(fn, funcs) == null)
                         {
-                            break;
+                            //break;
+                            funcs.AddElement(fn);
+
                         }
                         funcs.AddElement(fn);
                         sic_last = sic;
