@@ -9482,7 +9482,13 @@ begin
   Result := sb.ToString;
 end;
 
-// Дополнения февраль 2016: Matches, MatchValues, Remove, Right, Left
+// Дополнения февраль 2016: Matches, MatchValues, Replace, Remove, Right, Left
+
+/// Заменяет в указанной строке все вхождения регулярного выражения указанной строкой замены и возвращает преобразованную строку
+function Replace(Self: string; reg,repl: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+begin
+	Result := Regex.Replace(Self,reg,repl,options)
+end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
 function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
