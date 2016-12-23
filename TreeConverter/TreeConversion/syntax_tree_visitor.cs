@@ -1105,9 +1105,7 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             //break;
                             funcs.AddElement(fn);
-
                         }
-                        funcs.AddElement(fn);
                         sic_last = sic;
                         sic = sic.Next;
                     }
