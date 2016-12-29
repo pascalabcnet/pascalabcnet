@@ -228,7 +228,7 @@ namespace CodeCompletion
             RestoreCurrentUsedAssemblies();
         	return meths.ToArray();
         }
-        
+
         /// <summary>
         /// Получение списка нереализованных методов
         /// </summary>
@@ -315,12 +315,6 @@ namespace CodeCompletion
                             if (!(ss as ProcScope).already_defined && ss.loc != null)
                                 meths.Add(ss as ProcScope);
                         }
-                        /*else
-                        {
-                            pos.line = ss.loc.end_line_num;
-                            pos.column = ss.loc.end_column_num+2;
-                        }*/
-
                     }
                 }
                 RestoreCurrentUsedAssemblies();
@@ -331,9 +325,9 @@ namespace CodeCompletion
 
             }
             RestoreCurrentUsedAssemblies();
-        	return null;
+            return null;
         }
-        
+
         /// <summary>
         /// Получение описания символа
         /// </summary>
@@ -399,97 +393,94 @@ namespace CodeCompletion
         	}
         	return result_names.ToArray();
         }
-        
+
         /// <summary>
         /// Получение имен, начинающихся с pattern
         /// </summary>
         public SymInfo[] GetNameByPattern(string pattern, int line, int col, bool all_names, int nest_level)
         {
-        	if (visitor.cur_scope == null) return null;
-        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);
-        	if (si == null)
-        	{
-        		si = visitor.FindScopeByLocation(line,col+1);
-        		if (si == null)
-        		si = visitor.cur_scope;
-        	}
-        	SymInfo[] elems = null;
-        	if (si == null) return null;
-        	if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si,visitor),false);
-        	else elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si,visitor),false);
-        	List<SymInfo> result_names = new List<SymInfo>();
-        	if (elems == null) return null;
-        	for (int i=0; i<elems.Length; i++)
-        		if (pattern == null || pattern == "")
-        		{
-        			if (!elems[i].name.StartsWith("$"))
-        			if (all_names)
-        			{
-        				if (elems[i].kind != SymbolKind.Namespace || nest_level == 0)
-        				result_names.Add(elems[i]);
-        				else
-        				{
-        					string name = elems[i].name;
-        					string tmp = name;
-        					int num_dot=0;
-        					for (int j=0; j<nest_level; j++)
-        					{
-        						int pos = tmp.IndexOf('.');
-        						if (pos != -1)
-        						{
-        							num_dot++;
-        							tmp = tmp.Substring(pos+1,tmp.Length-pos-1);
-        						}
-        						else break;
-        					}
-        					if (num_dot < nest_level)
-        						result_names.Add(elems[i]);
-        				}
-        			}
-        			else 
-        			{
-        				if (elems[i].kind != SymbolKind.Namespace) result_names.Add(elems[i]);
-        				else if (elems[i].name.IndexOf('.') == -1) result_names.Add(elems[i]);
-        			}
-        		}
-        		else
-        		if (elems[i].name.StartsWith(pattern,true,System.Globalization.CultureInfo.CurrentCulture))
-        			result_names.Add(elems[i]);
+            if (visitor.cur_scope == null) return null;
+            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);
+            if (si == null)
+            {
+                si = visitor.FindScopeByLocation(line, col + 1);
+                if (si == null)
+                    si = visitor.cur_scope;
+            }
+            SymInfo[] elems = null;
+            if (si == null) return null;
+            if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            else elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            List<SymInfo> result_names = new List<SymInfo>();
+            if (elems == null) return null;
+            for (int i = 0; i < elems.Length; i++)
+                if (pattern == null || pattern == "")
+                {
+                    if (!elems[i].name.StartsWith("$"))
+                        if (all_names)
+                        {
+                            if (elems[i].kind != SymbolKind.Namespace || nest_level == 0)
+                                result_names.Add(elems[i]);
+                            else
+                            {
+                                string name = elems[i].name;
+                                string tmp = name;
+                                int num_dot = 0;
+                                for (int j = 0; j < nest_level; j++)
+                                {
+                                    int pos = tmp.IndexOf('.');
+                                    if (pos != -1)
+                                    {
+                                        num_dot++;
+                                        tmp = tmp.Substring(pos + 1, tmp.Length - pos - 1);
+                                    }
+                                    else break;
+                                }
+                                if (num_dot < nest_level)
+                                    result_names.Add(elems[i]);
+                            }
+                        }
+                        else
+                        {
+                            if (elems[i].kind != SymbolKind.Namespace) result_names.Add(elems[i]);
+                            else if (elems[i].name.IndexOf('.') == -1) result_names.Add(elems[i]);
+                        }
+                }
+                else
+                if (elems[i].name.StartsWith(pattern, true, System.Globalization.CultureInfo.CurrentCulture))
+                    result_names.Add(elems[i]);
             return result_names.ToArray();
         }
-        
+
         /// <summary>
         /// Получение типов, начинающихся с pattern
         /// </summary>
         public SymInfo[] GetTypeByPattern(string pattern, int line, int col, bool all_names, int nest_level)
         {
-        	if (visitor.cur_scope == null) return null;
-        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
-        	SymInfo[] elems = null;
-        	if (si == null)
-        	{
-        		elems = visitor.entry_scope.GetNamesInAllTopScopes(all_names,null,false);
-        	}
-        	else
-        	if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si, visitor),false);
-        	else elems = si.GetNamesInAllTopScopes(all_names,new ExpressionVisitor(si, visitor),false);
-        	List<SymInfo> result_names = new List<SymInfo>();
-        	if (elems == null) return null;
-        	for (int i=0; i<elems.Length; i++)
-        		if (pattern != null && pattern != "")
-        		{
-        			if (!elems[i].name.StartsWith("$"))
-        			if (all_names)
-        			{
-        				if (elems[i].kind == SymbolKind.Namespace || elems[i].kind == SymbolKind.Class||elems[i].kind == SymbolKind.Type
-        				    || elems[i].kind == SymbolKind.Struct || elems[i].kind == SymbolKind.Delegate || elems[i].kind == SymbolKind.Enum 
-        				    || elems[i].kind == SymbolKind.Interface)
-        				result_names.Add(elems[i]);
-        			}
-        		}
-        		/*else
-        		if (elems[i].name.StartsWith(pattern,true,System.Globalization.CultureInfo.CurrentCulture))
-        			result_names.Add(elems[i]);*/
+            if (visitor.cur_scope == null) return null;
+            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            SymInfo[] elems = null;
+            if (si == null)
+            {
+                elems = visitor.entry_scope.GetNamesInAllTopScopes(all_names, null, false);
+            }
+            else
+            if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            else elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            List<SymInfo> result_names = new List<SymInfo>();
+            if (elems == null) return null;
+            for (int i = 0; i < elems.Length; i++)
+                if (pattern != null && pattern != "")
+                {
+                    if (!elems[i].name.StartsWith("$"))
+                        if (all_names)
+                        {
+                            if (elems[i].kind == SymbolKind.Namespace || elems[i].kind == SymbolKind.Class || elems[i].kind == SymbolKind.Type
+                                || elems[i].kind == SymbolKind.Struct || elems[i].kind == SymbolKind.Delegate || elems[i].kind == SymbolKind.Enum
+                                || elems[i].kind == SymbolKind.Interface)
+                                result_names.Add(elems[i]);
+                        }
+                }
             return result_names.ToArray();
         }
         
@@ -873,55 +864,55 @@ namespace CodeCompletion
             RestoreCurrentUsedAssemblies();
         	return poses; 
         }
-        
+
         /// <summary>
         /// Получить описание элемента при наведении мышью
         /// </summary>
         public string GetDescription(expression expr, string FileName, string expr_without_brackets, PascalABCCompiler.Parsers.Controller parser, int line, int col, PascalABCCompiler.Parsers.KeywordKind keyword, bool header)
         {
-        	if (visitor.cur_scope == null) return null;
-        	SymScope ss = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
-        	if (ss == null) return null;
-        	if (!header && ss.IsInScope(ss.head_loc,line+1,col+1))
-        	{
-        		List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+            if (visitor.cur_scope == null) return null;
+            SymScope ss = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            if (ss == null) return null;
+            if (!header && ss.IsInScope(ss.head_loc, line + 1, col + 1))
+            {
+                List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
                 List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
-        		expr = parser.GetExpression("test"+Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
-        		if (expr == null || Errors.Count > 0)
-        			return null;
-        	}
-        	bool on_proc = false;
+                expr = parser.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, Warnings);
+                if (expr == null || Errors.Count > 0)
+                    return null;
+            }
+            bool on_proc = false;
             SetCurrentUsedAssemblies();
-        	if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
-        	{
-        		if (ss is ProcRealization)
-        		{
-        			if (expr is ident)
-        			{
-        				if ((expr as ident).name == (ss as ProcRealization).def_proc.si.name) on_proc = true;
-        			}
-        			else on_proc = true;
-        		}
-        		else if (ss is ProcScope)
-        		{
-        			if (expr is ident)
-        			{
-        				if ((expr as ident).name == (ss as ProcScope).si.name) on_proc = true;
-        			}
-        			else on_proc = true;
-        		}
-        	}
-        	//if (!((keyword == KeywordKind.kw_proc || keyword == KeywordKind.kw_constr || keyword == KeywordKind.kw_destr) && ss is ProcScope))
-        	if (!on_proc)
-        	{
-        		ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
-        		ev.mouse_hover = true;
-        		ss = ev.GetScopeOfExpression();
-        	}
-        	if (ss != null && ss.si != null) 
-        	{
-        		try
-        		{
+            if (keyword == PascalABCCompiler.Parsers.KeywordKind.Function || keyword == PascalABCCompiler.Parsers.KeywordKind.Constructor || keyword == PascalABCCompiler.Parsers.KeywordKind.Destructor)
+            {
+                if (ss is ProcRealization)
+                {
+                    if (expr is ident)
+                    {
+                        if ((expr as ident).name == (ss as ProcRealization).def_proc.si.name) on_proc = true;
+                    }
+                    else on_proc = true;
+                }
+                else if (ss is ProcScope)
+                {
+                    if (expr is ident)
+                    {
+                        if ((expr as ident).name == (ss as ProcScope).si.name) on_proc = true;
+                    }
+                    else on_proc = true;
+                }
+            }
+            //if (!((keyword == KeywordKind.kw_proc || keyword == KeywordKind.kw_constr || keyword == KeywordKind.kw_destr) && ss is ProcScope))
+            if (!on_proc)
+            {
+                ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
+                ev.mouse_hover = true;
+                ss = ev.GetScopeOfExpression();
+            }
+            if (ss != null && ss.si != null)
+            {
+                try
+                {
                     if (ss.si.has_doc != true)
                         if (ss is CompiledScope)
                             ss.AddDocumentation(AssemblyDocCache.GetDocumentation((ss as CompiledScope).ctn));
@@ -945,19 +936,19 @@ namespace CodeCompletion
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
                         else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
                             ss.si.description = (ss as ElementScope).sc.Description;
-        		}
-        		catch (Exception e)
-        		{
-        			
-        		}
+                }
+                catch (Exception e)
+                {
+
+                }
                 RestoreCurrentUsedAssemblies();
                 string description = ss.si.description;
                 if (description != null)
-                    description = description.Replace("!#","");
-        		return description;
-        	}
+                    description = description.Replace("!#", "");
+                return description;
+            }
             RestoreCurrentUsedAssemblies();
-        	return null;
+            return null;
         }
         
         /// <summary>
@@ -977,129 +968,110 @@ namespace CodeCompletion
         	si = ev.GetScopeOfExpression(false,true);
         	return CodeCompletionController.CurrentParser.LanguageInformation.GetIndexerString(si);
         }
-        
+
         /// <summary>
         /// Получить подсказку параметров метода
         /// </summary>
-        public string[] GetNameOfMethod(expression expr, string str, int line, int col, int num_param,ref int defIndex, int choose_param_num, out int param_count)
+        public string[] GetNameOfMethod(expression expr, string str, int line, int col, int num_param, ref int defIndex, int choose_param_num, out int param_count)
         {
-        	param_count = 0;
-        	if (visitor.cur_scope == null) return null;
-        	if (col +1 > str.Length)
-        		col -= str.Length;
-        	SymScope si = visitor.FindScopeByLocation(line+1,col+1);//stv.cur_scope;
-        	if (si == null) 
-        	{
-        		si = visitor.FindScopeByLocation(line,col+1);
-        		if (si == null)
-        		return null;
-        	}
+            param_count = 0;
+            if (visitor.cur_scope == null) return null;
+            if (col + 1 > str.Length)
+                col -= str.Length;
+            SymScope si = visitor.FindScopeByLocation(line + 1, col + 1);//stv.cur_scope;
+            if (si == null)
+            {
+                si = visitor.FindScopeByLocation(line, col + 1);
+                if (si == null)
+                    return null;
+            }
             SetCurrentUsedAssemblies();
-        	ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
-        	List<ProcScope> scopes = ev.GetOverloadScopes();
-        	bool was_empty_params = false;
+            ExpressionVisitor ev = new ExpressionVisitor(expr, si, visitor);
+            List<ProcScope> scopes = ev.GetOverloadScopes();
             if (scopes.Count == 0)
             {
                 RestoreCurrentUsedAssemblies();
                 return null;
             }
-        	si = scopes[0];
-        	//if (si is ElementScope && (si as ElementScope).sc is ProcScope) si = (si as ElementScope).sc as ProcScope;
-        	//if (si is ElementScope && (si as ElementScope).sc is ProcType) si = ((si as ElementScope).sc as ProcType).target;
-        	if (si != null && si is ProcScope)
-        	{
-        		List<string> procs = new List<string>();
-        		List<ProcScope> proc_defs = new List<ProcScope>();
-        		ProcScope ps = si as ProcScope;
-        		int i = 0; bool stop = false;
-        		ProcScope tmp = ps;
-        		while (i < scopes.Count)
-        		{
-        			if (i == defIndex) 
-        			{
-        				if (tmp.GetParametersCount() != 0)
-        				{
-        					choose_param_num = tmp.GetParametersCount();
-        					param_count = choose_param_num;
-        				}
-        				break;
-        			}
-        			i++;
-        			tmp = scopes[i];
-        		}
-        		i = 0;
-        		while (ps != null)
-        		{
-        			//if (!ps.si.name.StartsWith("$"))
-        			//if (!stop && ((ps.GetParametersCount() >= num_param) || ps.GetParametersCount() == 0 && num_param == 1 && choose_param_num==1))
-        			//if (i == defIndex) param_count = ps.GetParametersCount();
-        			if (!stop && num_param > choose_param_num && ps.GetParametersCount() >= num_param && ps.GetParametersCount() > choose_param_num)
-        			{
-        				//if (ps.GetParametersCount() >= choose_param_num && choose_param_num == 1 || choose_param_num > 1 && ps.GetParametersCount() > choose_param_num)
-        				{
-        					defIndex = i;
-        					stop = true;
-        					param_count = ps.GetParametersCount();
-        				}
-        				//System.Diagnostics.Debug.WriteLine(defIndex);
-        			}
-        			if (ps is CompiledMethodScope)
-        				ps.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledMethodScope).mi));
-        			else if (ps is CompiledConstructorScope)
-        				ps.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledConstructorScope).mi));
-        			else if (ps is ProcScope)
-        			{
-        				if (!ps.si.has_doc)
-        				{
-        					ps.AddDocumentation(UnitDocCache.GetDocumentation(ps as ProcScope));
-        				}
-        			}
-        			if (ps.acc_mod == access_modifer.protected_modifer || ps.acc_mod == access_modifer.private_modifer)
-        			{
-        				if (ps.acc_mod == access_modifer.private_modifer)
-        				{
-        					if (ev.IsInOneModule(ev.entry_scope,ps.topScope))
-        						if (!ps.si.not_include && !equal_params(ps,proc_defs))
-        						{
-        							procs.Add(ps.si.description);
-        							proc_defs.Add(ps);
-        						}
-        				}
-        				else
-        				if (ev.CheckForBaseAccess(ev.entry_scope,ps.topScope))
-        					if (!ps.si.not_include && !equal_params(ps,proc_defs))
-        					{
-        						procs.Add(ps.si.description);
-        						proc_defs.Add(ps);
-        					}
-        			}
-        			else 
-        			if (!ps.si.not_include)
-        			/*if (ps.GetParametersCount() == 0)
-        			{
-        				if (!was_empty_params)
-        				{
-        					procs.Add(ps.si.describe);
-        					proc_defs.Add(ps);
-        					was_empty_params = true;
-        				}
-        			}*/
-        			if (!equal_params(ps,proc_defs))
-        			{
-        				procs.Add(ps.si.description);
-        				proc_defs.Add(ps);
-        			}
-        			i++;
-        			if (i<scopes.Count)
-        				ps = scopes[i];
-        			else
-        				ps = null;
-        		}
+            si = scopes[0];
+            if (si != null && si is ProcScope)
+            {
+                List<string> procs = new List<string>();
+                List<ProcScope> proc_defs = new List<ProcScope>();
+                ProcScope ps = si as ProcScope;
+                int i = 0; bool stop = false;
+                ProcScope tmp = ps;
+                while (i < scopes.Count)
+                {
+                    if (i == defIndex)
+                    {
+                        if (tmp.GetParametersCount() != 0)
+                        {
+                            choose_param_num = tmp.GetParametersCount();
+                            param_count = choose_param_num;
+                        }
+                        break;
+                    }
+                    i++;
+                    tmp = scopes[i];
+                }
+                i = 0;
+                while (ps != null)
+                {
+                    if (!stop && num_param > choose_param_num && ps.GetParametersCount() >= num_param && ps.GetParametersCount() > choose_param_num)
+                    {
+                        defIndex = i;
+                        stop = true;
+                        param_count = ps.GetParametersCount();
+                    }
+                    if (ps is CompiledMethodScope)
+                        ps.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledMethodScope).mi));
+                    else if (ps is CompiledConstructorScope)
+                        ps.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledConstructorScope).mi));
+                    else if (ps is ProcScope)
+                    {
+                        if (!ps.si.has_doc)
+                        {
+                            ps.AddDocumentation(UnitDocCache.GetDocumentation(ps as ProcScope));
+                        }
+                    }
+                    if (ps.acc_mod == access_modifer.protected_modifer || ps.acc_mod == access_modifer.private_modifer)
+                    {
+                        if (ps.acc_mod == access_modifer.private_modifer)
+                        {
+                            if (ev.IsInOneModule(ev.entry_scope, ps.topScope))
+                                if (!ps.si.not_include && !equal_params(ps, proc_defs))
+                                {
+                                    procs.Add(ps.si.description);
+                                    proc_defs.Add(ps);
+                                }
+                        }
+                        else
+                        if (ev.CheckForBaseAccess(ev.entry_scope, ps.topScope))
+                            if (!ps.si.not_include && !equal_params(ps, proc_defs))
+                            {
+                                procs.Add(ps.si.description);
+                                proc_defs.Add(ps);
+                            }
+                    }
+                    else
+                    if (!ps.si.not_include)
+                        if (!equal_params(ps, proc_defs))
+                        {
+                            procs.Add(ps.si.description);
+                            proc_defs.Add(ps);
+                        }
+                    i++;
+                    if (i < scopes.Count)
+                        ps = scopes[i];
+                    else
+                        ps = null;
+                }
                 RestoreCurrentUsedAssemblies();
-        		return procs.ToArray();
-        	}
+                return procs.ToArray();
+            }
             RestoreCurrentUsedAssemblies();
-        	return null;
+            return null;
         }
         
         private bool equal_params(ProcScope ps, List<ProcScope> procs)

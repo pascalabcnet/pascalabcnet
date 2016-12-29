@@ -832,7 +832,8 @@ namespace CodeCompletion
                     {
                         List<ProcScope> procs = stv.entry_scope.GetExtensionMethods((_dot_node.right as ident).name,(returned_scope as ElementScope).sc as TypeScope);
                         for (int i = 0; i < procs.Count; i++)
-                            returned_scopes.Add(procs[i]);
+                            if (!returned_scopes.Contains(procs[i]))
+                                returned_scopes.Add(procs[i]);
                     }
                     
                     search_all = false;
