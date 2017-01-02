@@ -354,6 +354,21 @@
           </Node>
         </Items>
       </Node>
+      <Node Name="Реализуем (var a, var b) := (1,2)" NL="0" NG="0">
+        <Items>
+          <Node ID="visit" Name="visit(SyntaxTree.assign_var_tuple" NL="0,9746094" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.assign_var_tuple asstup)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . assign_var_tuple asstup )</i>
+              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+        </Items>
+      </Node>
       <Node Name="Реализуем тип (integer,integer)" NL="0" NG="0">
         <Items>
           <Node Name="void visit(enum_type_definition" NL="0" NG="0">

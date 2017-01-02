@@ -38,7 +38,10 @@ namespace PascalABCCompiler.TreeConverter
         }
     }*/
 
-    public class syntax_tree_visitor : SyntaxTree.BaseChangeVisitor
+    public class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
+    // Порядок обхода не важен поскольку все узлы visit переопределяются
+    // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
+    // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
     {
         public convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
@@ -19146,7 +19149,7 @@ namespace PascalABCCompiler.TreeConverter
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
             if (t == null)
                 AddError(expr.location, "TUPLE_EXPECTED");
-            //if (t != typeof(System.Tuple<>))
+
             if (!t.FullName.StartsWith("System.Tuple"))
                 AddError(expr.location, "TUPLE_EXPECTED");
 
@@ -19157,8 +19160,10 @@ namespace PascalABCCompiler.TreeConverter
             var tname = "#temp_var" + UniqueNumStr();
 
             var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            visit(tt); // обходится первый элемент - вместо asstup
 
-            visit(tt);
+            var sl = new List<statement>();
+            sl.Add(tt); // он же помещается в новое синтаксическое дерево
             for (var i = 0; i < n; i++)
             {
                 var rr = asstup.vars.variables[i] as ident;
@@ -19166,8 +19171,11 @@ namespace PascalABCCompiler.TreeConverter
                     new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())), 
                     asstup.vars.variables[i].source_context
                     );
-                visit(a);
+                //visit(a); // Остальные элементы обходить не надо - они обходятся на следующих итерациях при обходе внешнего statement_list
+                sl.Add(a);
             }
+            var ssl = asstup.Parent as SyntaxTree.statement_list;
+            ssl.ReplaceInList(asstup, sl); // Всё обходится вперёд, поэтому все операторы кроме первого обойдутся автоматически
         }
 
         public override void visit(SyntaxTree.slice_expr sl)
