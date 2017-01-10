@@ -1621,6 +1621,7 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class expression
     {
+        public object semantic_ex = null; // 3.01.17 convert_strong, вызванная первый раз, заполняет это поле, а потом только обращается к нему
         public expression Plus(expression e)
         {
             return new bin_expr(this, e, Operators.Plus);

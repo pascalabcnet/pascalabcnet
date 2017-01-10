@@ -32,24 +32,6 @@ namespace PascalABCCompiler.SyntaxTree
             upper.ReplaceDescendant(from, to);
         }
 
-        public void ReplaceStatement(statement from, IEnumerable<statement> to, Desc d = Desc.DirectDescendants)
-        {
-            foreach (var x in to)
-                x.Parent = from.Parent;
-            var sl = from.Parent as statement_list;
-            if (sl != null)
-            {
-                sl.ReplaceInList(from, to);
-            }
-            else
-            {
-                var l = new statement_list();
-                l.AddMany(to);
-                l.source_context = from.source_context;
-                from.Parent.ReplaceDescendant(from, l, d);
-            }
-        }
-
 
         public void ReplaceStatement(statement from, statement to)
         {

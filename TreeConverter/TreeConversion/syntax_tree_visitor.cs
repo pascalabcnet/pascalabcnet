@@ -808,14 +808,17 @@ namespace PascalABCCompiler.TreeConverter
                 throw new CompilerInternalError("This syntax tree node can not be null.");
             }
 #endif
+            //if (expr.semantic_ex != null) // SSM 3.1.17 - возвращаем кешированное значение
+            //    return expr.semantic_ex as expression_node; 
 
             convertion_data_and_alghoritms.check_node_parser_error(expr);
 
             //Посмотреть, может вызвать ошибку
             //ssyy
-            motivation_keeper.reset();
+            motivation_keeper.reset(); // Это можно закомментировать - все тесты проходят SSM 2/1/17
             //\ssyy
             expression_node en = ret.visit(expr);
+            //expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
 
             //en.loc=get_location(expr);
 
@@ -3133,7 +3136,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             //statement_node sn=convert_strong(_procedure_call.func_name);
             statement_node sn = convert_strong(mc);
-            //проверяем на слукчай вызова типа real(a) ...
+            //проверяем на случай вызова типа real(a) ...
             if (/*((sn is base_function_call) && (sn as base_function_call).IsExplicitConversion)
                 || (sn is SemanticTree.IReferenceNode)
                 || (sn is SemanticTree.IGetAddrNode)
@@ -8316,7 +8319,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.label_name);
             SymbolInfo si = context.CurrentScope.FindOnlyInScopeAndBlocks(_labeled_statement.label_name.name);
-            if (_labeled_statement.to_statement is SyntaxTree.var_statement)
+            if (_labeled_statement.to_statement is SyntaxTree.var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
             {
                 AddError(get_location(_labeled_statement.label_name), "LABELED_DECLARATION_NOT_ALLOWED");
             }
@@ -16702,6 +16705,7 @@ namespace PascalABCCompiler.TreeConverter
                 var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
                 var stl = new SyntaxTree.statement_list(vdarr, fornode);
+                // Замена 1 оператора на 1 оператор. Всё хороо даже если оператор помечен меткой
                 ReplaceByVisitor(_foreach_stmt, stl);
 
                 visit(stl);
@@ -19118,7 +19122,6 @@ namespace PascalABCCompiler.TreeConverter
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
             if (t == null)
                 AddError(expr.location, "TUPLE_EXPECTED");
-            //if (t != typeof(System.Tuple<>))
             if (!t.FullName.StartsWith("System.Tuple"))
                 AddError(expr.location, "TUPLE_EXPECTED");
 
@@ -19128,8 +19131,8 @@ namespace PascalABCCompiler.TreeConverter
 
             var tname = "#temp_var" + UniqueNumStr();
 
-            var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-
+            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var tt = new var_statement(new ident(tname), asstup.expr); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             var st = new statement_list(tt);
             for (var i = 0; i < n; i++)
             {
@@ -19139,13 +19142,16 @@ namespace PascalABCCompiler.TreeConverter
                 st.Add(a);
             }
             visit(st);
+            // Замена 1 оператор на 1 оператор - всё OK
+            ReplaceByVisitor(asstup, st);
         }
 
-        public override void visit(SyntaxTree.assign_var_tuple asstup)
+        public override void visit(SyntaxTree.assign_var_tuple assvartup)
         {
             // Проверить, что справа - Tuple
-            var expr = convert_strong(asstup.expr);
+            var expr = convert_strong(assvartup.expr);
             expr = convert_if_typed_expression_to_function_call(expr);
+
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
             if (t == null)
                 AddError(expr.location, "TUPLE_EXPECTED");
@@ -19153,87 +19159,71 @@ namespace PascalABCCompiler.TreeConverter
             if (!t.FullName.StartsWith("System.Tuple"))
                 AddError(expr.location, "TUPLE_EXPECTED");
 
-            var n = asstup.vars.variables.Count();
+            var n = assvartup.vars.variables.Count();
             if (n > t.GetGenericArguments().Count())
-                AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                AddError(get_location(assvartup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
 
             var tname = "#temp_var" + UniqueNumStr();
 
-            var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
+            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             visit(tt); // обходится первый элемент - вместо asstup
 
             var sl = new List<statement>();
             sl.Add(tt); // он же помещается в новое синтаксическое дерево
             for (var i = 0; i < n; i++)
             {
-                var rr = asstup.vars.variables[i] as ident;
+                var rr = assvartup.vars.variables[i] as ident;
                 var a = new var_statement(rr, 
-                    new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())), 
-                    asstup.vars.variables[i].source_context
+                    new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
+                    assvartup.vars.variables[i].source_context
                     );
                 //visit(a); // Остальные элементы обходить не надо - они обходятся на следующих итерациях при обходе внешнего statement_list
                 sl.Add(a);
             }
-            var ssl = asstup.Parent as SyntaxTree.statement_list;
-            ssl.ReplaceInList(asstup, sl); // Всё обходится вперёд, поэтому все операторы кроме первого обойдутся автоматически
+            ReplaceStatementUsingParent(assvartup, sl);
         }
 
         public override void visit(SyntaxTree.slice_expr sl)
         {
-            // Новое
-            // Последовательности исключены
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
+            // Тип a должен быть array of T, List<T> или string
             // situation = 0 - ничего не пропущено
             // situation = 1 - пропущен from
             // situation = 2 - пропущен to
             // situation = 3 - пропущены from и to
-            // пропущенность кодируется тем, что в соответствующем поле int.MaxValue
+            // Пропущенность кодируется тем, что в соответствующем поле - int.MaxValue
+            // step может просто отсутствовать - это параметр по умолчанию в SystemSlice
 
             var semvar = convert_strong(sl.v);
             if (semvar is typed_expression)
                 semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
 
-            var semvartype = semvar.type;
+            var t = ConvertSemanticTypeNodeToNETType(semvar.type);
 
-            // semvartype должен быть array of T, List<T> или string
-
-            var IsSlicedType = 0; // проверим, является ли semvartype динамическим массивом, списком List или строкой
-
-            var t = ConvertSemanticTypeNodeToNETType(semvartype);
-
-            if (t.IsArray)
+            var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
+            // semvar.type должен быть array of T, List<T> или string
+            if (t == null)
+                IsSlicedType = 0; // можно ничего не присваивать :)
+            else if (t.IsArray)
                 IsSlicedType = 1;
             else if (t == typeof(System.String))
                 IsSlicedType = 2;
-            else if (t.IsGenericType && t.GetGenericTypeDefinition()==typeof(System.Collections.Generic.List<>))
+            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
                 IsSlicedType = 3;
 
             if (IsSlicedType==0)
                 AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
-
-            int situation = 0;
-
-            if ((sl.from is int32_const) && (sl.from as int32_const).val==int.MaxValue)
-                situation += 1;
-            if ((sl.to is int32_const) && (sl.to as int32_const).val == int.MaxValue)
-                situation += 2;
-
-            var el = new SyntaxTree.expression_list();
-            el.Add(new int32_const(situation));
 
             var semfrom = convert_strong(sl.from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             if (!b)
                 AddError(get_location(sl.from), "INTEGER_VALUE_EXPECTED");
 
-            el.Add(sl.from); // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!
-
             var semto = convert_strong(sl.to);
             b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             if (!b)
                 AddError(get_location(sl.to), "INTEGER_VALUE_EXPECTED");
-
-            el.Add(sl.to);
 
             if (sl.step != null)
             {
@@ -19241,11 +19231,94 @@ namespace PascalABCCompiler.TreeConverter
                 b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
                 if (!b)
                     AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
-
-                el.Add(sl.step);
             }
 
+            int situation = 0;
+
+            if ((sl.from is int32_const) && (sl.from as int32_const).val == int.MaxValue)
+                situation += 1;
+            if ((sl.to is int32_const) && (sl.to as int32_const).val == int.MaxValue)
+                situation += 2;
+
+            var el = new SyntaxTree.expression_list();
+            el.Add(new int32_const(situation));
+            el.Add(sl.from); // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!? Нет!!!
+                             // Если там будет лямбда, то не будет работать - известно, что semantic_expr_node не работает с лямбдами 
+                             // т.к. они несколько раз обходят код. 
+            el.Add(sl.to);
+            if (sl.step != null)
+                el.Add(sl.step);
+
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+            visit(mc);
+        }
+
+        public override void visit(SyntaxTree.slice_expr_question sl)
+        {
+            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
+            // Тип a должен быть array of T, List<T> или string
+            // situation = 0 - ничего не пропущено
+            // situation = 1 - пропущен from
+            // situation = 2 - пропущен to
+            // situation = 3 - пропущены from и to
+            // Пропущенность кодируется тем, что в соответствующем поле - int.MaxValue
+            // step может просто отсутствовать - это параметр по умолчанию в SystemSlice
+
+            var semvar = convert_strong(sl.v);
+            if (semvar is typed_expression)
+                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
+
+            var t = ConvertSemanticTypeNodeToNETType(semvar.type);
+
+            var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
+            // semvar.type должен быть array of T, List<T> или string
+            if (t == null)
+                IsSlicedType = 0; // можно ничего не присваивать :)
+            else if (t.IsArray)
+                IsSlicedType = 1;
+            else if (t == typeof(System.String))
+                IsSlicedType = 2;
+            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+                IsSlicedType = 3;
+
+            if (IsSlicedType == 0)
+                AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
+
+            var semfrom = convert_strong(sl.from);
+            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(sl.from), "INTEGER_VALUE_EXPECTED");
+
+            var semto = convert_strong(sl.to);
+            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(get_location(sl.to), "INTEGER_VALUE_EXPECTED");
+
+            if (sl.step != null)
+            {
+                var semstep = convert_strong(sl.step);
+                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
+                if (!b)
+                    AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
+            }
+
+            int situation = 0;
+
+            if ((sl.from is int32_const) && (sl.from as int32_const).val == int.MaxValue)
+                situation += 1;
+            if ((sl.to is int32_const) && (sl.to as int32_const).val == int.MaxValue)
+                situation += 2;
+
+            var el = new SyntaxTree.expression_list();
+            el.Add(new int32_const(situation));
+            el.Add(sl.from); // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!? Нет!!!
+                             // Если там будет лямбда, то не будет работать - известно, что semantic_expr_node не работает с лямбдами 
+                             // т.к. они несколько раз обходят код. 
+            el.Add(sl.to);
+            if (sl.step != null)
+                el.Add(sl.step);
+
+            var mc = new method_call(new dot_node(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
             visit(mc);
         }
 

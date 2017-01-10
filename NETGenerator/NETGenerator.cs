@@ -9210,7 +9210,8 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     else
                     {
-                        mi = helper.GetMethod(ifc.function).mi;
+                        var meth = helper.GetMethod(ifc.function);
+                        mi = meth.mi;
                     }
                 }
                 PushObjectCommand(ifc);

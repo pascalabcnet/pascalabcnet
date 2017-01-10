@@ -1092,6 +1092,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_assign_var_tuple);
 		}
+
+		public virtual void visit(slice_expr_question _slice_expr_question)
+		{
+			DefaultVisit(_slice_expr_question);
+		}
 	}
 
 
