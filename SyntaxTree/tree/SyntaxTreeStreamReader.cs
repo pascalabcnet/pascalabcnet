@@ -3841,11 +3841,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_slice_expr_question(slice_expr_question _slice_expr_question)
 		{
-			read_dereference(_slice_expr_question);
-			_slice_expr_question.v = _read_node() as addressed_value;
-			_slice_expr_question.from = _read_node() as expression;
-			_slice_expr_question.to = _read_node() as expression;
-			_slice_expr_question.step = _read_node() as expression;
+			read_slice_expr(_slice_expr_question);
 		}
 
 	}

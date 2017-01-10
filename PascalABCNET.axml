@@ -1341,12 +1341,21 @@
       </Node>
       <Node Name="[::]" NL="0" NG="0">
         <Items>
-          <Node Name="visit(slice_expr" NL="0,9521484" NG="-1">
-            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
-            <Text>public override void visit(SyntaxTree.slice_expr sl)</Text>
+          <Node ID="visit" Name="visit(slice_expr" NL="0,9521484" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <OCtx>
               <i Type="Method">public override void visit ( SyntaxTree . slice_expr sl )</i>
-              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node ID="visit" Name="visit(slice_expr_question" NL="0,9521484" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . slice_expr_question sl )</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">
               </i>
