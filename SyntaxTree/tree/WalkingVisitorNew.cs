@@ -38,8 +38,9 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override void DefaultVisit(syntax_tree_node n)
         {
-            var count = n.subnodes_count;
-            for (var i = 0; i < count; i++)
+            // n.subnodes_count может меняться в процессе работы этого алгоритма
+            // В частности, в результате ReplaceStatementWithParent
+            for (var i = 0; i < n.subnodes_count; i++)
                 ProcessNode(n[i]);
         }
 
@@ -50,6 +51,25 @@ namespace PascalABCCompiler.SyntaxTree
                 throw new Exception("У корневого элемента нельзя получить Parent");
             from.Parent.ReplaceDescendant(from, to);
         }
+
+        public void ReplaceStatementUsingParent(statement from, IEnumerable<statement> to, Desc d = Desc.DirectDescendants)
+        {
+            foreach (var x in to)
+                x.Parent = from.Parent;
+            var sl = from.Parent as statement_list;
+            if (sl != null)
+            {
+                sl.ReplaceInList(from, to);
+            }
+            else
+            {
+                var l = new statement_list();
+                l.AddMany(to);
+                l.source_context = from.source_context;
+                from.Parent.ReplaceDescendant(from, l, d);
+            }
+        }
+
     }
 
 }

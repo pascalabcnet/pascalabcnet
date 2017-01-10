@@ -5991,6 +5991,54 @@ namespace PascalABCCompiler.SyntaxTree
 			write_assign_tuple(_assign_var_tuple);
 		}
 
+
+		public void visit(slice_expr_question _slice_expr_question)
+		{
+			bw.Write((Int16)217);
+			write_slice_expr_question(_slice_expr_question);
+		}
+
+		public void write_slice_expr_question(slice_expr_question _slice_expr_question)
+		{
+			write_dereference(_slice_expr_question);
+			if (_slice_expr_question.v == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr_question.v.visit(this);
+			}
+			if (_slice_expr_question.from == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr_question.from.visit(this);
+			}
+			if (_slice_expr_question.to == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr_question.to.visit(this);
+			}
+			if (_slice_expr_question.step == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_slice_expr_question.step.visit(this);
+			}
+		}
+
 	}
 
 

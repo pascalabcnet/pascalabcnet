@@ -216,10 +216,10 @@ type
   Predicate<T> = System.Predicate<T>;
 
   /// Представляет функцию с двумя параметрами, возвращающую boolean 
-  Predicate2<T1,T2> = System.Predicate<T1,T2>;
+  Predicate2<T1,T2> = function(x1: T1; x2: T2): boolean;
 
   /// Представляет функцию с тремя параметрами, возвращающую boolean 
-  Predicate3<T1,T2,T3> = System.Predicate<T1,T2,T3>;
+  Predicate3<T1,T2,T3> = function(x1: T1; x2: T2; x3: T3): boolean;
   
   /// Представляет регулярное выражение
   Regex = System.Text.RegularExpressions.Regex;
@@ -8603,8 +8603,64 @@ begin
   Result := Self;
 end;
 
+procedure CorrectFromTo(situation: integer; Len: integer; var from,&to: integer; step: integer);
+begin
+  if step>0 then
+  begin
+    case situation of
+  1: from := 0;
+  2: &to := Len;
+  3: begin
+       from := 0;
+       &to := Len;
+     end;
+    end;  
+  end
+  else
+  begin
+    case situation of
+  1: from := Len - 1;
+  2: &to := -1;
+  3: begin
+       from := Len - 1;
+       &to := -1;
+     end;
+    end;
+  end;
+end;
+
 ///--
-function CalcCountForSystemSlice(situation: integer; Len: integer; var from,&to: integer; step: integer): integer;
+function CorrectFromToAndCalcCountForSystemSliceQuestion(situation: integer; Len: integer; var from,&to: integer; step: integer): integer;
+begin
+  if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  CorrectFromTo(situation,Len,from,&to,step);
+
+  if step>0 then
+  begin
+    if from<0 then
+      from += (step - from - 1) div step * step;
+    // from может оказаться > Len - 1
+    var m := min(Len,&to);
+    if from >= m then 
+      Result := 0
+    else Result := (m - from - 1) div step + 1  
+  end
+  else
+  begin
+    if from > Len - 1 then
+      from -= (from - Len - step) div step * step;
+    // from может оказаться < 0   
+    var m := max(&to,-1);
+    if from <= m then
+      Result := 0
+    else Result := (from - m - 1) div (-step) + 1
+  end;
+end;
+
+///--
+function CheckAndCorrectFromToAndCalcCountForSystemSlice(situation: integer; Len: integer; var from,&to: integer; step: integer): integer;
 begin
 // situation = 0 - все параметры присутствуют
 // situation = 1 - from отсутствует
@@ -8621,19 +8677,12 @@ begin
     if (&to < -1) or (&to > Len) then
       raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));
 
+  CorrectFromTo(situation,Len,from,&to,step);
+
   var count: integer;
   
   if step>0 then
   begin
-    case situation of
-  1: from := 0;
-  2: &to := Len;
-  3: begin
-       from := 0;
-       &to := Len;
-     end;
-    end;  
-  
     var cnt := &to - from;
     if cnt<=0 then 
       count := 0
@@ -8641,27 +8690,40 @@ begin
   end
   else
   begin
-    case situation of
-  1: from := Len - 1;
-  2: &to := -1;
-  3: begin
-       from := Len - 1;
-       &to := -1;
-     end;
-    end;  
-  
     var cnt := from - &to;
     if cnt<=0 then 
       count := 0
     else count := (cnt-1) div (-step) + 1;
   end;
+
   Result := count;
+end;
+
+///--
+procedure CheckStepAndCorrectFromTo(situation: integer; Len: integer; var from,&to: integer; step: integer);
+begin
+// situation = 0 - все параметры присутствуют
+// situation = 1 - from отсутствует
+// situation = 2 - to отсутствует
+// situation = 3 - from и to отсутствуют
+  if step = 0 then
+    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
+
+  {if (situation=0) or (situation=2) then
+    if (from < 0) or (from > Len - 1) then
+      raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
+
+  if (situation=0) or (situation=1) then
+    if (&to < -1) or (&to > Len) then
+      raise new ArgumentException(GetTranslation(PARAMETER_TO_OUT_OF_RANGE));}
+
+  CorrectFromTo(situation,Len,from,&to,step);
 end;
 
 ///-- 
 function SystemSliceListImpl<T>(Self: List<T>; situation: integer; from,&to: integer; step: integer := 1): List<T>;
 begin
-  var count := CalcCountForSystemSlice(situation,Self.Count,from,&to,step);
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation,Self.Count,from,&to,step);
 
   Result := CreateSliceFromListInternal(Self,from,step,count);
 end;
@@ -8678,6 +8740,25 @@ begin
   Result := SystemSliceListImpl(Self,situation,from,&to,step);
 end;
 
+///-- 
+function SystemSliceListImplQuestion<T>(Self: List<T>; situation: integer; from,&to: integer; step: integer := 1): List<T>;
+begin
+  var count := CorrectFromToAndCalcCountForSystemSliceQuestion(situation,Self.Count,from,&to,step);
+  
+  Result := CreateSliceFromListInternal(Self,from,step,count);
+end;
+
+///--
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from,&to: integer): List<T>; extensionmethod;
+begin
+  Result := SystemSliceListImplQuestion(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from,&to,step: integer): List<T>; extensionmethod;
+begin
+  Result := SystemSliceListImplQuestion(Self,situation,from,&to,step);
+end;
 // -----------------------------------------------------
 //>>     Методы расширения типа array [,] of T # Extension methods for array [,] of T
 // -----------------------------------------------------
@@ -9220,7 +9301,7 @@ end;
 ///-- 
 function SystemSliceArrayImpl<T>(Self: array of T; situation: integer; from,&to: integer; step: integer := 1): array of T;
 begin
-  var count := CalcCountForSystemSlice(situation,Self.Length,from,&to,step);
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation,Self.Length,from,&to,step);
 
   Result := CreateSliceFromArrayInternal(Self,from,step,count)
 end;
@@ -9235,6 +9316,26 @@ end;
 function SystemSlice<T>(Self: array of T; situation: integer; from,&to,step: integer): array of T; extensionmethod;
 begin
   Result := SystemSliceArrayImpl(Self,situation,from,&to,step);
+end;
+
+///-- 
+function SystemSliceArrayImplQuestion<T>(Self: array of T; situation: integer; from,&to: integer; step: integer := 1): array of T;
+begin
+  var count := CorrectFromToAndCalcCountForSystemSliceQuestion(situation,Self.Length,from,&to,step);
+  
+  Result := CreateSliceFromArrayInternal(Self,from,step,count);
+end;
+
+///--
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from,&to: integer): array of T; extensionmethod;
+begin
+  Result := SystemSliceArrayImplQuestion(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSliceQuestion<T>(Self: array of T; situation: integer; from,&to,step: integer): array of T; extensionmethod;
+begin
+  Result := SystemSliceArrayImplQuestion(Self,situation,from,&to,step);
 end;
 
 // -----------------------------------------------------
@@ -9588,7 +9689,7 @@ function SystemSliceStringImpl(Self: string; situation: integer; from,&to: integ
 begin
   var fromv := from-1;
   var tov := &to-1;
-  var count := CalcCountForSystemSlice(situation,Self.Length,fromv,tov,step);
+  var count := CheckAndCorrectFromToAndCalcCountForSystemSlice(situation,Self.Length,fromv,tov,step);
 
   Result := CreateSliceFromStringInternal(Self,fromv+1,step,count)
 end;
@@ -9605,7 +9706,28 @@ begin
   Result := SystemSliceStringImpl(Self,situation,from,&to,step);
 end;
 
+///-- 
+function SystemSliceStringImplQuestion(Self: string; situation: integer; from,&to: integer; step: integer := 1): string;
+begin
+  var fromv := from-1;
+  var tov := &to-1;
+  
+  var count := CorrectFromToAndCalcCountForSystemSliceQuestion(situation,Self.Length,fromv,tov,step);
+  
+  Result := CreateSliceFromStringInternal(Self,fromv+1,step,count);
+end;
 
+///--
+function SystemSliceQuestion(Self: string; situation: integer; from,&to: integer): string; extensionmethod;
+begin
+  Result := SystemSliceStringImplQuestion(Self,situation,from,&to,1);
+end;
+
+///--
+function SystemSliceQuestion(Self: string; situation: integer; from,&to,step: integer): string; extensionmethod;
+begin
+  Result := SystemSliceStringImplQuestion(Self,situation,from,&to,step);
+end;
 //--------------------------------------------
 //>>     Методы расширения типа Func # Extension methods for Func
 //--------------------------------------------

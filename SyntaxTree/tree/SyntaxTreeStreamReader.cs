@@ -454,6 +454,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new yield_sequence_node();
 				case 216:
 					return new assign_var_tuple();
+				case 217:
+					return new slice_expr_question();
 			}
 			return null;
 		}
@@ -3829,6 +3831,21 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_assign_var_tuple(assign_var_tuple _assign_var_tuple)
 		{
 			read_assign_tuple(_assign_var_tuple);
+		}
+
+
+		public void visit(slice_expr_question _slice_expr_question)
+		{
+			read_slice_expr_question(_slice_expr_question);
+		}
+
+		public void read_slice_expr_question(slice_expr_question _slice_expr_question)
+		{
+			read_dereference(_slice_expr_question);
+			_slice_expr_question.v = _read_node() as addressed_value;
+			_slice_expr_question.from = _read_node() as expression;
+			_slice_expr_question.to = _read_node() as expression;
+			_slice_expr_question.step = _read_node() as expression;
 		}
 
 	}

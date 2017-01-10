@@ -1306,6 +1306,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_assign_var_tuple">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(assign_var_tuple _assign_var_tuple);
+		///<summary>
+		///Method to visit slice_expr_question.
+		///</summary>
+		///<param name="_slice_expr_question">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(slice_expr_question _slice_expr_question);
 	}
 
 
