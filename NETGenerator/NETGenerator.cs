@@ -127,6 +127,7 @@ namespace PascalABCCompiler.NETGenerator
         protected CompilerOptions comp_opt = new CompilerOptions();//опции компилятора
         protected Dictionary<string, ISymbolDocumentWriter> sym_docs = new Dictionary<string, ISymbolDocumentWriter>();//таблица отладочных документов
         protected bool is_constructor = false;//флаг, переводим ли мы конструктор
+        protected bool init_call_awaited = false;
         protected bool save_debug_info = false;
         protected bool add_special_debug_variables = false;
         protected bool make_next_spoint = true;
@@ -5782,15 +5783,17 @@ namespace PascalABCCompiler.NETGenerator
                     ConvertCommonFunctionConstantDefinitions(value.constants);
                     ConvertLocalVariables(value.var_definition_nodes);
                     //вызываем метод $Init$ для инициализации массивов и проч.
-                    if (value.polymorphic_state != polymorphic_state.ps_static && value.common_comprehensive_type.base_type is ICompiledTypeNode && (value.common_comprehensive_type.base_type as ICompiledTypeNode).compiled_type == TypeFactory.ObjectType)
+                    /*if (value.polymorphic_state != polymorphic_state.ps_static && value.common_comprehensive_type.base_type is ICompiledTypeNode && (value.common_comprehensive_type.base_type as ICompiledTypeNode).compiled_type == TypeFactory.ObjectType)
                     {
                         il.Emit(OpCodes.Ldarg_0);
                         il.Emit(OpCodes.Call, TypeFactory.ObjectType.GetConstructor(Type.EmptyTypes));
-                    }
+                    }*/
                     if (value.polymorphic_state != polymorphic_state.ps_static)
                     {
-                        il.Emit(OpCodes.Ldarg_0);
-                        il.Emit(OpCodes.Call, cur_ti.init_meth);
+                        init_call_awaited = true;
+
+                        //il.Emit(OpCodes.Ldarg_0);
+                        //il.Emit(OpCodes.Call, cur_ti.init_meth);
                     }
                     //переводим тело
                     is_constructor = true;
@@ -9182,6 +9185,12 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
+            if (init_call_awaited && !value.new_obj_awaited())
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Call, cur_ti.init_meth);
+                init_call_awaited = false;
+            }
         }
 
         //вызов откомпилированного конструктора
@@ -9263,7 +9272,13 @@ namespace PascalABCCompiler.NETGenerator
             {
                 is_dot_expr = false;
             }
-            //\ssyy            
+            //\ssyy  
+            if (init_call_awaited && !value.new_obj_awaited())
+            {
+                il.Emit(OpCodes.Ldarg_0);
+                il.Emit(OpCodes.Call, cur_ti.init_meth);
+                init_call_awaited = false;
+            }
         }
 
         private bool TypeNeedToFix(ITypeNode type)
