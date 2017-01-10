@@ -8969,6 +8969,30 @@ namespace PascalABCCompiler.TreeConverter
                         {
                             return new indefinite_reference(dn as indefinite_definition_node, get_location(id_right));
                         }
+                        if (expected_delegate && en != null)
+                        {
+                            SymbolInfo tmp_si = si;
+                            function_node tmp_fn = null;
+                            bool has_empty_methods = false;
+                            bool only_extension_methods = true;
+                            while (tmp_si != null)
+                            {
+                                tmp_fn = tmp_si.sym_info as function_node;
+                                if (tmp_fn != null)
+                                {
+                                    if (!tmp_fn.is_extension_method)
+                                        only_extension_methods = false;
+                                    else
+                                    {
+                                        if (tmp_fn.parameters.Count == 1 || tmp_fn.parameters.Count == 2 && (tmp_fn.parameters[1].is_params || tmp_fn.parameters[1].default_value != null))
+                                            has_empty_methods = true;
+                                    }
+                                }
+                                tmp_si = tmp_si.Next;
+                            }
+                            if (has_empty_methods && only_extension_methods)
+                                expected_delegate = false;
+                        }
                         if (expected_delegate)
                             return make_delegate_wrapper(en, si, get_location(id_right), false);
                         else
