@@ -50,7 +50,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
         private void AddExternalConvertersAsPlugins(string DirectoryName)
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
-            List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntax.dll").ToList(); // Это только YieldConversionSyntax.dll
+            List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntaxExternal.dll").ToList(); // Это только YieldConversionSyntax.dll
             //List<FileInfo> standartdllfile = di.GetFiles("StandardSyntaxTreeConverter.dll").ToList();
             //if (standartdllfile.Count>0)
             //    dllfiles.Insert(0, standartdllfile[0]);
