@@ -40,7 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StandardSyntaxConverters.cs" />
+    <Compile Include="StandardSyntaxConverter.cs" />
     <Compile Include="StandOutExprWithLambdaInForeachSequenceConverter.cs" />
   </ItemGroup>
   <ItemGroup>
