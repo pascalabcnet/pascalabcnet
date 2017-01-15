@@ -445,8 +445,11 @@ namespace CodeCompletion
         			_var_def_statement.vars_type.visit(this);
         		if (_var_def_statement.vars_type == null && _var_def_statement.inital_value != null || _var_def_statement.inital_value is function_lambda_definition)
         		{
+                    SymScope tmp_scope = returned_scope;
         			_var_def_statement.inital_value.visit(this);
-        		}
+                    if (tmp_scope != null && _var_def_statement.inital_value is function_lambda_definition)
+                        returned_scope = tmp_scope;
+                }
            		// if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
            
             	if (returned_scope == null) return;
