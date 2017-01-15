@@ -7,6 +7,7 @@ using System.Text;
 using System.IO;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.Errors;
+using PascalABCCompiler.SyntaxTreeConverters;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -36,17 +37,23 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             this.Compiler = Compiler;
         }
 
+        public void AddStandardConverters()
+        {
+            var st = new StandardSyntaxTreeConverter();
+            syntaxTreeConverters.Add(st);
+        }
         public void AddConverters()
         {
-            AddConverters(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName));
+            AddStandardConverters();
+            AddExternalConvertersAsPlugins(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName));
         }
-        private void AddConverters(string DirectoryName)
+        private void AddExternalConvertersAsPlugins(string DirectoryName)
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
-            List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntax.dll").ToList();
-            List<FileInfo> standartdllfile = di.GetFiles("StandardSyntaxTreeConverter.dll").ToList();
-            if (standartdllfile.Count>0)
-                dllfiles.Insert(0, standartdllfile[0]);
+            List<FileInfo> dllfiles = di.GetFiles("*ConversionSyntaxExternal.dll").ToList(); // Это только YieldConversionSyntax.dll
+            //List<FileInfo> standartdllfile = di.GetFiles("StandardSyntaxTreeConverter.dll").ToList();
+            //if (standartdllfile.Count>0)
+            //    dllfiles.Insert(0, standartdllfile[0]);
             //dllfiles.Insert(0,new FileInfo("StandardSyntaxTreeConverter.dll"));
 
             System.Reflection.Assembly assembly = null;

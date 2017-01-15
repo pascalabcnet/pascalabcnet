@@ -40,7 +40,11 @@ namespace PascalABCCompiler.SemanticTreeConverters
         private void AddConverters(string DirectoryName)
         {
             DirectoryInfo di = new DirectoryInfo(DirectoryName);
-            FileInfo[] dllfiles = di.GetFiles("*Conversion.dll");
+
+            // динамически подключаемые конверторы. Не очень устойчивая конструкция!!!
+            // Делается это для ликвидации зависимости от семантического уровня - это понятно
+            // Но - должен быть другой - нормальный - путь
+            FileInfo[] dllfiles = di.GetFiles("*Conversion.dll"); 
             System.Reflection.Assembly assembly = null;
             ISemanticTreeConverter Converter;
             foreach (FileInfo fi in dllfiles)

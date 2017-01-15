@@ -38,7 +38,7 @@ namespace PascalABCCompiler.TreeConverter
         }
     }*/
 
-    public class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
+    public partial class syntax_tree_visitor : SyntaxTree.WalkingVisitorNew // SSM 02.01.17 менять на визитор с другим порядком обхода можно, но бессмысленно
     // Порядок обхода не важен поскольку все узлы visit переопределяются
     // SSM 02.01.17 Использование ReplaceStatement из BaseChangeVisitor плохо изучено - что-то не работает
     // Поэтому используется явный Parent и ReplaceStatement из узла statement_list
@@ -19208,54 +19208,14 @@ namespace PascalABCCompiler.TreeConverter
             ReplaceStatementUsingParent(assvartup, sl);
         }
 
-        public override void visit(SyntaxTree.slice_expr sl)
+        expression_list construct_expression_list_for_slice_expr(SyntaxTree.slice_expr sl)
         {
-            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
-            // Тип a должен быть array of T, List<T> или string
             // situation = 0 - ничего не пропущено
             // situation = 1 - пропущен from
             // situation = 2 - пропущен to
             // situation = 3 - пропущены from и to
             // Пропущенность кодируется тем, что в соответствующем поле - int.MaxValue
             // step может просто отсутствовать - это параметр по умолчанию в SystemSlice
-
-            var semvar = convert_strong(sl.v);
-            if (semvar is typed_expression)
-                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
-
-            var t = ConvertSemanticTypeNodeToNETType(semvar.type);
-
-            var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
-            // semvar.type должен быть array of T, List<T> или string
-            if (t == null)
-                IsSlicedType = 0; // можно ничего не присваивать :)
-            else if (t.IsArray)
-                IsSlicedType = 1;
-            else if (t == typeof(System.String))
-                IsSlicedType = 2;
-            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
-                IsSlicedType = 3;
-
-            if (IsSlicedType==0)
-                AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
-
-            var semfrom = convert_strong(sl.from);
-            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
-                AddError(get_location(sl.from), "INTEGER_VALUE_EXPECTED");
-
-            var semto = convert_strong(sl.to);
-            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
-                AddError(get_location(sl.to), "INTEGER_VALUE_EXPECTED");
-
-            if (sl.step != null)
-            {
-                var semstep = convert_strong(sl.step);
-                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
-                if (!b)
-                    AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
-            }
 
             int situation = 0;
 
@@ -19273,7 +19233,19 @@ namespace PascalABCCompiler.TreeConverter
             if (sl.step != null)
                 el.Add(sl.step);
 
+            return el;
+        }
+
+        public override void visit(SyntaxTree.slice_expr sl)
+        {
+            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
+            // Тип a должен быть array of T, List<T> или string
+            semcheck(sl);
+
+            // Действия уровня синтаксиса. Можно вынести на синтаксический уровень как desugaring для сахарного узла
+            var el = construct_expression_list_for_slice_expr(sl); 
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+
             visit(mc);
         }
 
@@ -19281,68 +19253,11 @@ namespace PascalABCCompiler.TreeConverter
         {
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
             // Тип a должен быть array of T, List<T> или string
-            // situation = 0 - ничего не пропущено
-            // situation = 1 - пропущен from
-            // situation = 2 - пропущен to
-            // situation = 3 - пропущены from и to
-            // Пропущенность кодируется тем, что в соответствующем поле - int.MaxValue
-            // step может просто отсутствовать - это параметр по умолчанию в SystemSlice
+            semcheck(sl);
 
-            var semvar = convert_strong(sl.v);
-            if (semvar is typed_expression)
-                semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
-
-            var t = ConvertSemanticTypeNodeToNETType(semvar.type);
-
-            var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
-            // semvar.type должен быть array of T, List<T> или string
-            if (t == null)
-                IsSlicedType = 0; // можно ничего не присваивать :)
-            else if (t.IsArray)
-                IsSlicedType = 1;
-            else if (t == typeof(System.String))
-                IsSlicedType = 2;
-            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
-                IsSlicedType = 3;
-
-            if (IsSlicedType == 0)
-                AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
-
-            var semfrom = convert_strong(sl.from);
-            var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
-                AddError(get_location(sl.from), "INTEGER_VALUE_EXPECTED");
-
-            var semto = convert_strong(sl.to);
-            b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
-            if (!b)
-                AddError(get_location(sl.to), "INTEGER_VALUE_EXPECTED");
-
-            if (sl.step != null)
-            {
-                var semstep = convert_strong(sl.step);
-                b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
-                if (!b)
-                    AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
-            }
-
-            int situation = 0;
-
-            if ((sl.from is int32_const) && (sl.from as int32_const).val == int.MaxValue)
-                situation += 1;
-            if ((sl.to is int32_const) && (sl.to as int32_const).val == int.MaxValue)
-                situation += 2;
-
-            var el = new SyntaxTree.expression_list();
-            el.Add(new int32_const(situation));
-            el.Add(sl.from); // Это плохо - считается 2 раза. Надо делать semantic_expr_node !!!? Нет!!!
-                             // Если там будет лямбда, то не будет работать - известно, что semantic_expr_node не работает с лямбдами 
-                             // т.к. они несколько раз обходят код. 
-            el.Add(sl.to);
-            if (sl.step != null)
-                el.Add(sl.step);
-
+            var el = construct_expression_list_for_slice_expr(sl);
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+
             visit(mc);
         }
 

@@ -38362,7 +38362,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class slice_expr_question : dereference
+	public partial class slice_expr_question : slice_expr
 	{
 
 		///<summary>
@@ -38373,28 +38373,6 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public slice_expr_question(addressed_value _v,expression _from,expression _to,expression _step)
-		{
-			this._v=_v;
-			this._from=_from;
-			this._to=_to;
-			this._step=_step;
-		}
-
-		///<summary>
-		///Конструктор с параметрами.
-		///</summary>
-		public slice_expr_question(addressed_value _v,expression _from,expression _to,expression _step,SourceContext sc)
-		{
-			this._v=_v;
-			this._from=_from;
-			this._to=_to;
-			this._step=_step;
-			source_context = sc;
-		}
 
 		///<summary>
 		///Конструктор с параметрами.
@@ -38420,72 +38398,6 @@ namespace PascalABCCompiler.SyntaxTree
 			this._step=_step;
 			source_context = sc;
 		}
-		protected addressed_value _v;
-		protected expression _from;
-		protected expression _to;
-		protected expression _step;
-
-		///<summary>
-		///
-		///</summary>
-		public addressed_value v
-		{
-			get
-			{
-				return _v;
-			}
-			set
-			{
-				_v=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public expression from
-		{
-			get
-			{
-				return _from;
-			}
-			set
-			{
-				_from=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public expression to
-		{
-			get
-			{
-				return _to;
-			}
-			set
-			{
-				_to=value;
-			}
-		}
-
-		///<summary>
-		///
-		///</summary>
-		public expression step
-		{
-			get
-			{
-				return _step;
-			}
-			set
-			{
-				_step=value;
-			}
-		}
-
-
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{

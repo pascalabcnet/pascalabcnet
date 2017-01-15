@@ -4,11 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using PascalABCCompiler.Errors;
-using PascalABCCompiler.PCU;
-using PascalABCCompiler.SemanticTreeConverters;
-using System.CodeDom.Compiler;
-using PascalABCCompiler;
 using PascalABCCompiler.SyntaxTree;
 
 

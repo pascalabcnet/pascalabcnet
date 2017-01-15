@@ -1341,12 +1341,21 @@
       </Node>
       <Node Name="[::]" NL="0" NG="0">
         <Items>
-          <Node Name="visit(slice_expr" NL="0,9521484" NG="-1">
-            <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
-            <Text>public override void visit(SyntaxTree.slice_expr sl)</Text>
+          <Node ID="visit" Name="visit(slice_expr" NL="0,9521484" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
             <OCtx>
               <i Type="Method">public override void visit ( SyntaxTree . slice_expr sl )</i>
-              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node ID="visit" Name="visit(slice_expr_question" NL="0,9521484" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . slice_expr_question sl )</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">
               </i>
@@ -1393,13 +1402,23 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="AddConverters()" NL="0" NG="0">
-            <FileName>\Compiler\Compiler.cs</FileName>
-            <Text>syntaxTreeConvertersController.AddConverters();</Text>
+          <Node ID="AddConverters" Name="AddConverters() - semantic" NL="0,6904297" NG="-1">
+            <FileName>\compiler\semantictreeconverters\semantictreeconverterscontroller.cs</FileName>
             <OCtx>
-              <i Type="Method">public void Reload ( )</i>
-              <i Type="ClassOrNamespace">public class Compiler : MarshalByRefObject , ICompiler</i>
-              <i Type="ClassOrNamespace">namespace PascalABCCompiler</i>
+              <i Type="Method">private void AddConverters ( string DirectoryName )</i>
+              <i Type="ClassOrNamespace">public class SemanticTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SemanticTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node ID="AddConverters" Name="AddConverters() - syntax" NL="0,6904297" NG="-1">
+            <FileName>\Compiler\SyntaxTreeConvertersController\SyntaxTreeConvertersController.cs</FileName>
+            <Text>private void AddConverters(string DirectoryName)</Text>
+            <OCtx>
+              <i Type="Method">private void AddConverters ( string DirectoryName )</i>
+              <i Type="ClassOrNamespace">public class SyntaxTreeConvertersController</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
               <i Type="CS_TreeNode">
               </i>
             </OCtx>
@@ -1415,15 +1434,20 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="StandardSyntaxConverters" NL="0" NG="0">
+          <Node Name="StandardSyntaxConverters" NL="-1" NG="0,3144531">
             <FileName>\SyntaxTreeConverters\AddStandardSyntaxConverters.cs</FileName>
-            <Text>static class AddStandardSyntaxConverters</Text>
+            <Text>class StandardSyntaxConverters: ISyntaxTreeConverter</Text>
             <OCtx>
-              <i Type="ClassOrNamespace">static class AddStandardSyntaxConverters</i>
+              <i Type="ClassOrNamespace">class StandardSyntaxConverters : ISyntaxTreeConverter</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
               <i Type="CS_TreeNode">
               </i>
             </OCtx>
+            <ICtx>
+              <i Type="Method">public string Name</i>
+              <i Type="Field">=</i>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+            </ICtx>
           </Node>
           <Node Name="StandardSyntaxTreeConverter" NL="0" NG="0">
             <FileName>\StandardSyntaxTreeConverter\StandardSyntaxConverters.cs</FileName>

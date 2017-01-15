@@ -3612,10 +3612,6 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_slice_expr_question);
 			pre_do_visit(_slice_expr_question);
-			visit(slice_expr_question.v);
-			visit(slice_expr_question.from);
-			visit(slice_expr_question.to);
-			visit(slice_expr_question.step);
 			post_do_visit(_slice_expr_question);
 		}
 	}
