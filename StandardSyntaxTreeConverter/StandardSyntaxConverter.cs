@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using PascalABCCompiler.SyntaxTree;
 using SyntaxVisitors;
+using SyntaxVisitors.SugarVisitors;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
@@ -18,6 +19,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
+
+            // Пока не доделали
+            //SliceQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
             root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());

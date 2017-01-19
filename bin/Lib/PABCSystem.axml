@@ -2188,15 +2188,6 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Операции для List&lt;T&gt;, Dictionary&lt;T&gt; и т.д.">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function List&lt;T&gt;.operator+=(var Self: List&lt;T&gt;; x: T): List&lt;T&gt;;</Text>
-            <OCtx>
-              <i Type="Method">function List &lt; T &gt; . operator + = ( var Self : List &lt; T &gt; ; x : T ) : List &lt; T &gt;</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
           <Node Name="Операции для HashSet, SortedSet">
             <FileName>\PABCSystem.pas</FileName>
             <Text>function HashSet&lt;T&gt;.operator in(x: T; Self: HashSet&lt;T&gt;): boolean;</Text>
@@ -2205,6 +2196,108 @@
               <i Type="PAS_TreeNode">
               </i>
             </OCtx>
+          </Node>
+          <Node Name="Операции для Tuple">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для Tuple</Text>
+            <OCtx>
+              <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+              <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">function CreateSliceFromArrayInternal &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+              <i Type="Method">function SliceArrayImpl &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSliceArrayImpl &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+              <i Type="Method">function SystemSlice &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSlice &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to , step : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSliceArrayImplQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+              <i Type="Method">function SystemSliceQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSliceQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to , step : integer ) : array of T extensionmethod</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для List&lt;T&gt; ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для List&lt;T&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для HashSet&lt;T&gt; ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для HashSet&lt;T&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для SortedSet&lt;T&gt; ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для SortedSet&lt;T&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для Dictionary&lt;K,V&gt;, SortedDictionary&lt;K,V&gt;, SortedList&lt;K,V&gt;">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для Dictionary&lt;K,V&gt;, SortedDictionary&lt;K,V&gt;, SortedList&lt;K,V&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
           </Node>
         </Items>
       </Node>

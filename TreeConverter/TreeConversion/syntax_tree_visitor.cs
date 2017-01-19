@@ -770,8 +770,9 @@ namespace PascalABCCompiler.TreeConverter
             //try
             {
                 sn = ret.visit(st);
-                if (sn == null)
-                    sn = new empty_statement(null);
+                // SSM 19/01/17 закомментировал две следующие строчки
+                //if (sn == null)
+                //    sn = new empty_statement(null);
             }
             /*catch (PascalABCCompiler.Errors.Error e)
             {
@@ -16287,10 +16288,12 @@ namespace PascalABCCompiler.TreeConverter
                 statement syntax_statement = _statement_list.subnodes[i];
                 try
                 {
-                    if (syntax_statement is SyntaxTree.var_statement)
-                        visit(syntax_statement as SyntaxTree.var_statement);
-                    else if (MustVisitBody)
-                    {
+                    // SSM выкинул эти три строки - теперь внутриблочные описания обрабатываются как обычные операторы. 
+                    // При этом в конце visit(var_statement) стоит вызов ret.reset(), который возвращает нулевой semantic_statement - и всё работает эквивалентно
+                    //if (syntax_statement is SyntaxTree.var_statement)
+                    //    visit(syntax_statement as SyntaxTree.var_statement); // Добавление в текущий statements_list происходит опосредованно !!
+                    //else if (MustVisitBody) // MustVisitBody - всегда True!!!
+                    //{
                         //(ssyy) TODO Сделать по-другому!!!
                         statement_node semantic_statement = convert_strong(syntax_statement);
                         //(ssyy) Проверка для C
@@ -16304,7 +16307,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
 
                         context.allow_inherited_ctor_call = false;
-                    }
+                    //}
                 }
                 catch (Errors.Error ex)
                 {
@@ -17781,6 +17784,7 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.var_statement node)
         {
             visit(node.var_def);
+            ret.reset(); // SSM 19.01.17 не возвращать семантическое значение т.к. ничего не нужно добавлять в текущий список операторов!!
         }
 
         public override void visit(SyntaxTree.expression_as_statement node)
@@ -19202,7 +19206,8 @@ namespace PascalABCCompiler.TreeConverter
                     new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
                     assvartup.vars.variables[i].source_context
                     );
-                //visit(a); // Остальные элементы обходить не надо - они обходятся на следующих итерациях при обходе внешнего statement_list
+                // Остальные элементы обходить не надо (!!!уже надо!) - они обходятся на следующих итерациях при обходе внешнего statement_list
+                //visit(a); 
                 sl.Add(a);
             }
             ReplaceStatementUsingParent(assvartup, sl);

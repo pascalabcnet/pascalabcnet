@@ -9808,41 +9808,49 @@ begin
 end;
 
 ///--
-function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
-begin
-  Result := Self.Equals( v ) ;
-end;
+function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Self.Equals( v ) ;
+///--
+function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := not Self.Equals( v );
+///--
+function CompareToTup2<T1,T2>(v1: (T1,T2); v2: (T1,T2)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := CompareToTup2(Self,v) < 0;
+///--
+function operator<=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := CompareToTup2(Self,v) <= 0;
+///--
+function operator><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := CompareToTup2(Self,v) > 0;
+///--
+function operator>=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := CompareToTup2(Self,v) >= 0;
 
 ///--
-function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
-begin
-  Result := not Self.Equals( v ) ;
-end;
+function operator=<T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := Self.Equals( v ) ;
+///--
+function operator<><T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := not Self.Equals( v );
+///--
+function CompareToTup3<T1,T2,T3>(v1: (T1,T2,T3); v2: (T1,T2,T3)) := (v1 as System.IComparable).CompareTo(v2);
+///--
+function operator<<T1,T2,T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := CompareToTup3(Self,v) < 0;
+///--
+function operator<=<T1,T2,T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := CompareToTup3(Self,v) <= 0;
+///--
+function operator><T1,T2,T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := CompareToTup3(Self,v) > 0;
+///--
+function operator>=<T1,T2,T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := CompareToTup3(Self,v) >= 0;
 
 ///--
-function operator<<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
-begin
-  Result := (Self as System.IComparable).CompareTo( v ) < 0 ;
-end;
-
+function operator=<T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := Self.Equals( v ) ;
 ///--
-function operator<=<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
-begin
-  Result := (Self as System.IComparable).CompareTo( v ) <= 0 ;
-end;
-
+function operator<><T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := not Self.Equals( v );
 ///--
-function operator><T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
-begin
-  Result := (Self as System.IComparable).CompareTo( v ) > 0 ;
-end;
-
+function CompareToTup4<T1,T2,T3,T4>(v1: (T1,T2,T3,T4); v2: (T1,T2,T3,T4)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
-function operator>=<T1, T2> (Self: (T1,T2); v: (T1,T2)): boolean; extensionmethod;
-begin
-  Result := (Self as System.IComparable).CompareTo( v ) >= 0 ;
-end;
-
+function operator<<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) < 0;
+///--
+function operator<=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) <= 0;
+///--
+function operator><T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) > 0;
+///--
+function operator>=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) >= 0;
 
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple
