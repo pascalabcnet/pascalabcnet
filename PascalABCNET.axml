@@ -1449,11 +1449,10 @@
               <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
             </ICtx>
           </Node>
-          <Node Name="StandardSyntaxTreeConverter" NL="0" NG="0">
-            <FileName>\StandardSyntaxTreeConverter\StandardSyntaxConverters.cs</FileName>
-            <Text>class StandardSyntaxTreeConverter: ISyntaxTreeConverter</Text>
+          <Node ID="StandardSyntaxTreeConverter" Name="StandardSyntaxTreeConverter" NL="-1" NG="0,2734375">
+            <FileName>\standardsyntaxtreeconverter\standardsyntaxconverter.cs</FileName>
             <OCtx>
-              <i Type="ClassOrNamespace">class StandardSyntaxTreeConverter : ISyntaxTreeConverter</i>
+              <i Type="ClassOrNamespace">public class StandardSyntaxTreeConverter : ISyntaxTreeConverter</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
               <i Type="CS_TreeNode">
               </i>

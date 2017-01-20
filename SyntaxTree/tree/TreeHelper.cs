@@ -273,6 +273,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class statement_list 
     {
+        public statement_list(IEnumerable<statement> sts)
+        {
+            AddMany(sts);
+        }
+
         public statement_list(params statement[] sts)
         {
             AddMany(sts);
