@@ -19419,7 +19419,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (st.stat is SyntaxTree.assign_tuple)
             {
-                check_sugared(st.stat as SyntaxTree.assign_tuple);
+                semantic_check_sugared_statement(st.stat as SyntaxTree.assign_tuple);
             }
             else 
             {
