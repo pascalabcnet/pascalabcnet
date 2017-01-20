@@ -1098,9 +1098,14 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_slice_expr_question);
 		}
 
-		public virtual void visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		public virtual void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
-			DefaultVisit(_semantic_check_sugared_statement);
+			DefaultVisit(_semantic_check_sugared_statement_node);
+		}
+
+		public virtual void visit(sugared_expression _sugared_expression)
+		{
+			DefaultVisit(_sugared_expression);
 		}
 	}
 

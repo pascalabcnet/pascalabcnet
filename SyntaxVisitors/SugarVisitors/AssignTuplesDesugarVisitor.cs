@@ -25,7 +25,7 @@ namespace SyntaxVisitors.SugarVisitors
         public override void visit(assign_tuple asstup)
         {
             var sl = new statement_list();
-            sl.Add(new semantic_check_sugared_statement(asstup)); // Это нужно для проверок на этапе преобразования в семантику
+            sl.Add(new semantic_check_sugared_statement_node(asstup)); // Это нужно для проверок на этапе преобразования в семантику
 
             var tname = "#temp_var" + UniqueNumStr();
             var tt = new var_statement(new ident(tname), asstup.expr);
@@ -48,7 +48,7 @@ namespace SyntaxVisitors.SugarVisitors
         public override void visit(assign_var_tuple assvartup)
         {
             var sl = new List<statement>();
-            sl.Add(new semantic_check_sugared_statement(assvartup)); // Это нужно для проверок на этапе преобразования в семантику
+            sl.Add(new semantic_check_sugared_statement_node(assvartup)); // Это нужно для проверок на этапе преобразования в семантику
 
             var tname = "#temp_var" + UniqueNumStr();
             var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!

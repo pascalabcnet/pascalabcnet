@@ -1313,11 +1313,17 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(slice_expr_question _slice_expr_question);
 		///<summary>
-		///Method to visit semantic_check_sugared_statement.
+		///Method to visit semantic_check_sugared_statement_node.
 		///</summary>
-		///<param name="_semantic_check_sugared_statement">Node to visit</param>
+		///<param name="_semantic_check_sugared_statement_node">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(semantic_check_sugared_statement _semantic_check_sugared_statement);
+		void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node);
+		///<summary>
+		///Method to visit sugared_expression.
+		///</summary>
+		///<param name="_sugared_expression">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(sugared_expression _sugared_expression);
 	}
 
 

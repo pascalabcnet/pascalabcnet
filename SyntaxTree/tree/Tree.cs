@@ -38529,13 +38529,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось
 	///</summary>
 	[Serializable]
-	public partial class semantic_check_sugared_statement : statement
+	public partial class semantic_check_sugared_statement_node : statement
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public semantic_check_sugared_statement()
+		public semantic_check_sugared_statement_node()
 		{
 
 		}
@@ -38543,7 +38543,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public semantic_check_sugared_statement(object _stat)
+		public semantic_check_sugared_statement_node(object _stat)
 		{
 			this._stat=_stat;
 		}
@@ -38551,7 +38551,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public semantic_check_sugared_statement(object _stat,SourceContext sc)
+		public semantic_check_sugared_statement_node(object _stat,SourceContext sc)
 		{
 			this._stat=_stat;
 			source_context = sc;
@@ -38577,7 +38577,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			semantic_check_sugared_statement copy = new semantic_check_sugared_statement();
+			semantic_check_sugared_statement_node copy = new semantic_check_sugared_statement_node();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -38591,9 +38591,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new semantic_check_sugared_statement TypedClone()
+		public new semantic_check_sugared_statement_node TypedClone()
 		{
-			return Clone() as semantic_check_sugared_statement;
+			return Clone() as semantic_check_sugared_statement_node;
 		}
 
 		///<summary>
@@ -38631,6 +38631,161 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class sugared_expression : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public sugared_expression()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public sugared_expression(object _sugared_expr,expression _new_expr)
+		{
+			this._sugared_expr=_sugared_expr;
+			this._new_expr=_new_expr;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public sugared_expression(object _sugared_expr,expression _new_expr,SourceContext sc)
+		{
+			this._sugared_expr=_sugared_expr;
+			this._new_expr=_new_expr;
+			source_context = sc;
+		}
+		protected object _sugared_expr;
+		protected expression _new_expr;
+
+		///<summary>
+		///
+		///</summary>
+		public object sugared_expr
+		{
+			get
+			{
+				return _sugared_expr;
+			}
+			set
+			{
+				_sugared_expr=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression new_expr
+		{
+			get
+			{
+				return _new_expr;
+			}
+			set
+			{
+				_new_expr=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			sugared_expression copy = new sugared_expression();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			copy.sugared_expr = sugared_expr;
+			if (new_expr != null)
+			{
+				copy.new_expr = (expression)new_expr.Clone();
+				copy.new_expr.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new sugared_expression TypedClone()
+		{
+			return Clone() as sugared_expression;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return new_expr;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						new_expr = (expression)value;
+						break;
+				}
 			}
 		}
 		///<summary>

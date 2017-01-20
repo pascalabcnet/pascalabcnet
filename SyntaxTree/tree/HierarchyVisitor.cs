@@ -1749,11 +1749,19 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		public virtual void pre_do_visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
 		}
 
-		public virtual void post_do_visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		public virtual void post_do_visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+		}
+
+		public virtual void pre_do_visit(sugared_expression _sugared_expression)
+		{
+		}
+
+		public virtual void post_do_visit(sugared_expression _sugared_expression)
 		{
 		}
 
@@ -3623,11 +3631,19 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_slice_expr_question);
 		}
 
-		public override void visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		public override void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
-			DefaultVisit(_semantic_check_sugared_statement);
-			pre_do_visit(_semantic_check_sugared_statement);
-			post_do_visit(_semantic_check_sugared_statement);
+			DefaultVisit(_semantic_check_sugared_statement_node);
+			pre_do_visit(_semantic_check_sugared_statement_node);
+			post_do_visit(_semantic_check_sugared_statement_node);
+		}
+
+		public override void visit(sugared_expression _sugared_expression)
+		{
+			DefaultVisit(_sugared_expression);
+			pre_do_visit(_sugared_expression);
+			visit(sugared_expression.new_expr);
+			post_do_visit(_sugared_expression);
 		}
 	}
 

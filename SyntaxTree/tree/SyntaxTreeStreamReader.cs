@@ -457,7 +457,9 @@ namespace PascalABCCompiler.SyntaxTree
 				case 217:
 					return new slice_expr_question();
 				case 218:
-					return new semantic_check_sugared_statement();
+					return new semantic_check_sugared_statement_node();
+				case 219:
+					return new sugared_expression();
 			}
 			return null;
 		}
@@ -3847,15 +3849,28 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		public void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
-			read_semantic_check_sugared_statement(_semantic_check_sugared_statement);
+			read_semantic_check_sugared_statement_node(_semantic_check_sugared_statement_node);
 		}
 
-		public void read_semantic_check_sugared_statement(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		public void read_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
-			read_statement(_semantic_check_sugared_statement);
-			_semantic_check_sugared_statement.stat = (object)br.ReadByte();
+			read_statement(_semantic_check_sugared_statement_node);
+			_semantic_check_sugared_statement_node.stat = (object)br.ReadByte();
+		}
+
+
+		public void visit(sugared_expression _sugared_expression)
+		{
+			read_sugared_expression(_sugared_expression);
+		}
+
+		public void read_sugared_expression(sugared_expression _sugared_expression)
+		{
+			read_expression(_sugared_expression);
+			_sugared_expression.sugared_expr = (object)br.ReadByte();
+			_sugared_expression.new_expr = _read_node() as expression;
 		}
 
 	}

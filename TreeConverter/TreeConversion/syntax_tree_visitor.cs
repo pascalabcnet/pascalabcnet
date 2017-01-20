@@ -19415,17 +19415,23 @@ namespace PascalABCCompiler.TreeConverter
             visit(pc);
         }
 
-        public override void visit(SyntaxTree.semantic_check_sugared_statement st) 
+        public override void visit(SyntaxTree.semantic_check_sugared_statement_node st)
         {
-            if (st.stat is SyntaxTree.assign_var_tuple)
+            if (st.stat is SyntaxTree.assign_tuple)
             {
-                check_sugared(st.stat as SyntaxTree.assign_var_tuple);
+                check_sugared(st.stat as SyntaxTree.assign_tuple);
             }
-            else
+            else 
             {
-
+                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
+        }
+
+        public override void visit(SyntaxTree.sugared_expression ex)
+        {
+            //semantic_check_sugared_expression(ex.sugared_expr);
+            visit(ex.new_expr);
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
