@@ -6003,6 +6003,19 @@ namespace PascalABCCompiler.SyntaxTree
 			write_slice_expr(_slice_expr_question);
 		}
 
+
+		public void visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+			bw.Write((Int16)218);
+			write_semantic_check_sugared_statement(_semantic_check_sugared_statement);
+		}
+
+		public void write_semantic_check_sugared_statement(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+			write_statement(_semantic_check_sugared_statement);
+			bw.Write((byte)_semantic_check_sugared_statement.stat);
+		}
+
 	}
 
 

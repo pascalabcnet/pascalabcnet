@@ -456,6 +456,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new assign_var_tuple();
 				case 217:
 					return new slice_expr_question();
+				case 218:
+					return new semantic_check_sugared_statement();
 			}
 			return null;
 		}
@@ -3842,6 +3844,18 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_slice_expr_question(slice_expr_question _slice_expr_question)
 		{
 			read_slice_expr(_slice_expr_question);
+		}
+
+
+		public void visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+			read_semantic_check_sugared_statement(_semantic_check_sugared_statement);
+		}
+
+		public void read_semantic_check_sugared_statement(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+			read_statement(_semantic_check_sugared_statement);
+			_semantic_check_sugared_statement.stat = (object)br.ReadByte();
 		}
 
 	}

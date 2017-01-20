@@ -16732,8 +16732,8 @@ namespace PascalABCCompiler.TreeConverter
                 var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
                 var stl = new SyntaxTree.statement_list(vdarr, fornode);
-                // Замена 1 оператора на 1 оператор. Всё хороо даже если оператор помечен меткой
-                ReplaceByVisitor(_foreach_stmt, stl);
+                // Замена 1 оператора на 1 оператор. Всё хорошо даже если оператор помечен меткой
+                ReplaceUsingParent(_foreach_stmt, stl);
 
                 visit(stl);
                 //visit(vdarr);
@@ -19144,24 +19144,17 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_tuple asstup)
         {
-            // Проверить, что справа - Tuple
-            var expr = convert_strong(asstup.expr);
-            expr = convert_if_typed_expression_to_function_call(expr);
-            var t = ConvertSemanticTypeNodeToNETType(expr.type);
-            if (t == null)
-                AddError(expr.location, "TUPLE_EXPECTED");
-            if (!t.FullName.StartsWith("System.Tuple"))
-                AddError(expr.location, "TUPLE_EXPECTED");
+            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", typeof(assign_var_tuple).Name);
 
-            var n = asstup.vars.variables.Count();
-            if (n > t.GetGenericArguments().Count())
-                AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            /*check_sugared(asstup);
 
             var tname = "#temp_var" + UniqueNumStr();
 
             //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             var tt = new var_statement(new ident(tname), asstup.expr); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
             var st = new statement_list(tt);
+
+            var n = asstup.vars.variables.Count();
             for (var i = 0; i < n; i++)
             {
                 var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname),
@@ -19171,25 +19164,14 @@ namespace PascalABCCompiler.TreeConverter
             }
             visit(st);
             // Замена 1 оператор на 1 оператор - всё OK
-            ReplaceByVisitor(asstup, st);
+            ReplaceUsingParent(asstup, st);*/
         }
 
         public override void visit(SyntaxTree.assign_var_tuple assvartup)
         {
-            // Проверить, что справа - Tuple
-            var expr = convert_strong(assvartup.expr);
-            expr = convert_if_typed_expression_to_function_call(expr);
+            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", typeof(assign_var_tuple).Name);
 
-            var t = ConvertSemanticTypeNodeToNETType(expr.type);
-            if (t == null)
-                AddError(expr.location, "TUPLE_EXPECTED");
-
-            if (!t.FullName.StartsWith("System.Tuple"))
-                AddError(expr.location, "TUPLE_EXPECTED");
-
-            var n = assvartup.vars.variables.Count();
-            if (n > t.GetGenericArguments().Count())
-                AddError(get_location(assvartup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+            /*check_sugared(assvartup);
 
             var tname = "#temp_var" + UniqueNumStr();
 
@@ -19199,6 +19181,8 @@ namespace PascalABCCompiler.TreeConverter
 
             var sl = new List<statement>();
             sl.Add(tt); // он же помещается в новое синтаксическое дерево
+
+            var n = assvartup.vars.variables.Count();
             for (var i = 0; i < n; i++)
             {
                 var rr = assvartup.vars.variables[i] as ident;
@@ -19210,7 +19194,7 @@ namespace PascalABCCompiler.TreeConverter
                 //visit(a); 
                 sl.Add(a);
             }
-            ReplaceStatementUsingParent(assvartup, sl);
+            ReplaceStatementUsingParent(assvartup, sl);*/
         }
 
         expression_list construct_expression_list_for_slice_expr(SyntaxTree.slice_expr sl)
@@ -19429,6 +19413,19 @@ namespace PascalABCCompiler.TreeConverter
             visit(ass);
             var pc = new procedure_call("exit");
             visit(pc);
+        }
+
+        public override void visit(SyntaxTree.semantic_check_sugared_statement st) 
+        {
+            if (st.stat is SyntaxTree.assign_var_tuple)
+            {
+                check_sugared(st.stat as SyntaxTree.assign_var_tuple);
+            }
+            else
+            {
+
+            }
+            ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)

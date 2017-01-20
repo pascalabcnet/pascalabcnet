@@ -1749,6 +1749,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+		}
+
+		public virtual void post_do_visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3613,6 +3621,13 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_slice_expr_question);
 			pre_do_visit(_slice_expr_question);
 			post_do_visit(_slice_expr_question);
+		}
+
+		public override void visit(semantic_check_sugared_statement _semantic_check_sugared_statement)
+		{
+			DefaultVisit(_semantic_check_sugared_statement);
+			pre_do_visit(_semantic_check_sugared_statement);
+			post_do_visit(_semantic_check_sugared_statement);
 		}
 	}
 

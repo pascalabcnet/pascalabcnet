@@ -20,6 +20,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
 
+            AssignTuplesDesugarVisitor.New.ProcessNode(root);
+
             // Пока не доделали
             //SliceQuestionDesugarVisitor.New.ProcessNode(root);
 
