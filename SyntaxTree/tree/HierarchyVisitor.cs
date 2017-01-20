@@ -1765,6 +1765,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(sugared_addressed_value _sugared_addressed_value)
+		{
+		}
+
+		public virtual void post_do_visit(sugared_addressed_value _sugared_addressed_value)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3644,6 +3652,14 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_sugared_expression);
 			visit(sugared_expression.new_expr);
 			post_do_visit(_sugared_expression);
+		}
+
+		public override void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			DefaultVisit(_sugared_addressed_value);
+			pre_do_visit(_sugared_addressed_value);
+			visit(sugared_addressed_value.new_addr_value);
+			post_do_visit(_sugared_addressed_value);
 		}
 	}
 

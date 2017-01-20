@@ -19144,9 +19144,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_tuple asstup)
         {
-            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", typeof(assign_var_tuple).Name);
+            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
 
-            /*check_sugared(asstup);
+            /*semantic_check_assign_tuple(asstup);
 
             var tname = "#temp_var" + UniqueNumStr();
 
@@ -19169,7 +19169,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.assign_var_tuple assvartup)
         {
-            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", typeof(assign_var_tuple).Name);
+            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
 
             /*check_sugared(assvartup);
 
@@ -19227,6 +19227,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr sl)
         {
+            //AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+            
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
             // Тип a должен быть array of T, List<T> или string
             semcheck(sl);
@@ -19240,6 +19242,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr_question sl)
         {
+            //AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
             // Тип a должен быть array of T, List<T> или string
             semcheck(sl);
@@ -19419,7 +19423,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (st.stat is SyntaxTree.assign_tuple)
             {
-                semantic_check_sugared_statement(st.stat as SyntaxTree.assign_tuple);
+                semantic_check_assign_tuple(st.stat as SyntaxTree.assign_tuple);
             }
             else 
             {
@@ -19430,8 +19434,30 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_expression ex)
         {
-            //semantic_check_sugared_expression(ex.sugared_expr);
-            visit(ex.new_expr);
+            /*if (ex.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            {
+                //semantic_check_slice_expr(ex.sugared_expr as SyntaxTree.slice_expr);
+            }
+            else*/
+            {
+                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}");
+            }
+
+            ProcessNode(ex.new_expr); // обойти десахарное выражение - обязательно ProcessNode - visit нельзя!
+        }
+
+        public override void visit(SyntaxTree.sugared_addressed_value av)
+        {
+            if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            {
+                semantic_check_slice_expr(av.sugared_expr as SyntaxTree.slice_expr);
+            }
+            else
+            {
+                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}");
+            }
+
+            ProcessNode(av.new_addr_value); // обойти десахарное 
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)

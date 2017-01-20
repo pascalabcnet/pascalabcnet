@@ -1324,6 +1324,12 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_sugared_expression">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(sugared_expression _sugared_expression);
+		///<summary>
+		///Method to visit sugared_addressed_value.
+		///</summary>
+		///<param name="_sugared_addressed_value">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(sugared_addressed_value _sugared_addressed_value);
 	}
 
 

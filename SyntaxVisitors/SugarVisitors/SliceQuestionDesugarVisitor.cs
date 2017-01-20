@@ -42,12 +42,25 @@ namespace SyntaxVisitors.SugarVisitors
             return el;
         }
 
+        public override void visit(slice_expr sl)
+        {
+            var el = construct_expression_list_for_slice_expr(sl);
+            var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+
+            var sug = new sugared_addressed_value(sl, mc, sl.source_context);
+
+            ReplaceUsingParent(sl, sug);
+            visit(mc); // обойти заменённое на предмет наличия такого же синтаксического сахара
+        }
+
         public override void visit(slice_expr_question sl)
         {
             var el = construct_expression_list_for_slice_expr(sl);
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
 
-            ReplaceUsingParent(sl, mc);
+            var sug = new sugared_addressed_value(sl, mc, sl.source_context);
+
+            ReplaceUsingParent(sl, sug);
             visit(mc); // обойти заменённое на предмет наличия такого же синтаксического сахара
         }
 

@@ -460,6 +460,8 @@ namespace PascalABCCompiler.SyntaxTree
 					return new semantic_check_sugared_statement_node();
 				case 219:
 					return new sugared_expression();
+				case 220:
+					return new sugared_addressed_value();
 			}
 			return null;
 		}
@@ -3871,6 +3873,19 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_sugared_expression);
 			_sugared_expression.sugared_expr = (object)br.ReadByte();
 			_sugared_expression.new_expr = _read_node() as expression;
+		}
+
+
+		public void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			read_sugared_addressed_value(_sugared_addressed_value);
+		}
+
+		public void read_sugared_addressed_value(sugared_addressed_value _sugared_addressed_value)
+		{
+			read_addressed_value(_sugared_addressed_value);
+			_sugared_addressed_value.sugared_expr = (object)br.ReadByte();
+			_sugared_addressed_value.new_addr_value = _read_node() as addressed_value;
 		}
 
 	}
