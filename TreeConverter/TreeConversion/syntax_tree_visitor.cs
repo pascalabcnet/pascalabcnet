@@ -19227,8 +19227,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.slice_expr sl)
         {
-            //AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
             
+            /*
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
             // Тип a должен быть array of T, List<T> или string
             semcheck(sl);
@@ -19237,13 +19238,13 @@ namespace PascalABCCompiler.TreeConverter
             var el = construct_expression_list_for_slice_expr(sl); 
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
 
-            visit(mc);
+            visit(mc);*/
         }
 
         public override void visit(SyntaxTree.slice_expr_question sl)
         {
-            //AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
-
+            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+            /*
             // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
             // Тип a должен быть array of T, List<T> или string
             semcheck(sl);
@@ -19251,7 +19252,7 @@ namespace PascalABCCompiler.TreeConverter
             var el = construct_expression_list_for_slice_expr(sl);
             var mc = new method_call(new dot_node(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
 
-            visit(mc);
+            visit(mc);*/
         }
 
         // frninja 04/03/16 - для yield
