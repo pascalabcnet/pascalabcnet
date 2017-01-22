@@ -168,7 +168,6 @@
     <Compile Include="TreeConversion\syntax_tree_visitor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TreeConversion\syntax_tree_visitor_semcheck_helper.cs" />
     <Compile Include="TreeConversion\type_constructor.cs" />
     <Compile Include="TreeRealization\attributes.cs" />
     <Compile Include="TreeRealization\events.cs" />

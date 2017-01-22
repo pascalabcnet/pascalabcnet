@@ -49,7 +49,6 @@ ONE_TKIDENTIFIER=Expected identefier
 ONE_OPERATOR=Expected operator
 ONE_STMT=Expected statement
 BAD_TUPLE=Badly formed Tuple
-TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Count of Tuple elements must be <=7
 EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Statement expected
 
 

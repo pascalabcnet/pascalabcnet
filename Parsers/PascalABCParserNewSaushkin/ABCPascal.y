@@ -2945,6 +2945,7 @@ default_expr
 tuple
 	 : tkRoundOpen expr_l1 tkComma expr_l1_list lambda_type_ref optional_full_lambda_fp_list tkRoundClose // lambda_type_ref optional_full_lambda_fp_list нужно оставить чтобы не было конфликтов с грамматикой лямбд 
 		{
+			/*
 			($4 as expression_list).expressions.Insert(0,$2);
 			if (($4 as expression_list).expressions.Count>7) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
@@ -2955,7 +2956,15 @@ tuple
 			{
 			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
 				$$ = new method_call(dn,$4 as expression_list,@$);
-			}
+			}*/
+
+			/*if ($5 != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
+			if ($6 != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
+
+            ($4 as expression_list).expressions.Insert(0,$2);
+			$$ = new tuple_node_for_formatter($4 as expression_list,@$);
 		}	
     ; 
 
