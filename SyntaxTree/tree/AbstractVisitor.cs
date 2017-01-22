@@ -1107,6 +1107,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_sugared_expression);
 		}
+
+		public virtual void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			DefaultVisit(_sugared_addressed_value);
+		}
 	}
 
 

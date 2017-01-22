@@ -413,12 +413,12 @@
       </Node>
       <Node Name="Реализуем тип (integer,integer)" NL="0" NG="0">
         <Items>
-          <Node Name="void visit(enum_type_definition" NL="0" NG="0">
+          <Node Name="void visit(enum_type_definition" NL="0,9619141" NG="-1">
             <FileName>\treeconverter\treeconversion\syntax_tree_visitor.cs</FileName>
             <Text>public override void visit(SyntaxTree.enum_type_definition _enum_type_definition)</Text>
             <OCtx>
               <i Type="Method">public override void visit ( SyntaxTree . enum_type_definition _enum_type_definition )</i>
-              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . AbstractVisitor</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">
               </i>

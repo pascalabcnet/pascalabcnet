@@ -6038,6 +6038,28 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			bw.Write((Int16)220);
+			write_sugared_addressed_value(_sugared_addressed_value);
+		}
+
+		public void write_sugared_addressed_value(sugared_addressed_value _sugared_addressed_value)
+		{
+			write_addressed_value(_sugared_addressed_value);
+			bw.Write((byte)_sugared_addressed_value.sugared_expr);
+			if (_sugared_addressed_value.new_addr_value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_sugared_addressed_value.new_addr_value.visit(this);
+			}
+		}
+
 	}
 
 

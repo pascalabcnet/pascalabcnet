@@ -23,7 +23,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             AssignTuplesDesugarVisitor.New.ProcessNode(root);
 
             // Пока не доделали
-            //SliceQuestionDesugarVisitor.New.ProcessNode(root);
+            SliceQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
             root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());

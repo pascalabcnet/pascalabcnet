@@ -38647,7 +38647,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Обёртка для сахарного выражения, хранящего сахарный узел для семантических проверок и новое выражение после удаления синтаксического сахара
 	///</summary>
 	[Serializable]
 	public partial class sugared_expression : expression
@@ -38784,6 +38784,161 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						new_expr = (expression)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///Обёртка для сахарного адресуемого значения, хранящего сахарный узел для семантических проверок и новое выражение после удаления синтаксического сахара
+	///</summary>
+	[Serializable]
+	public partial class sugared_addressed_value : addressed_value
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public sugared_addressed_value()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public sugared_addressed_value(object _sugared_expr,addressed_value _new_addr_value)
+		{
+			this._sugared_expr=_sugared_expr;
+			this._new_addr_value=_new_addr_value;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public sugared_addressed_value(object _sugared_expr,addressed_value _new_addr_value,SourceContext sc)
+		{
+			this._sugared_expr=_sugared_expr;
+			this._new_addr_value=_new_addr_value;
+			source_context = sc;
+		}
+		protected object _sugared_expr;
+		protected addressed_value _new_addr_value;
+
+		///<summary>
+		///
+		///</summary>
+		public object sugared_expr
+		{
+			get
+			{
+				return _sugared_expr;
+			}
+			set
+			{
+				_sugared_expr=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public addressed_value new_addr_value
+		{
+			get
+			{
+				return _new_addr_value;
+			}
+			set
+			{
+				_new_addr_value=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			sugared_addressed_value copy = new sugared_addressed_value();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			copy.sugared_expr = sugared_expr;
+			if (new_addr_value != null)
+			{
+				copy.new_addr_value = (addressed_value)new_addr_value.Clone();
+				copy.new_addr_value.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new sugared_addressed_value TypedClone()
+		{
+			return Clone() as sugared_addressed_value;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 1;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return new_addr_value;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						new_addr_value = (addressed_value)value;
 						break;
 				}
 			}
