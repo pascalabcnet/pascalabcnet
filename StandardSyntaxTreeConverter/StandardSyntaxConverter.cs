@@ -20,9 +20,15 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Выносим выражения с лямбдами из заголовка foreach
             StandOutExprWithLambdaInForeachSequenceVisitor.New.ProcessNode(root);
 
+            //--- Обработка синтаксически сахарных узлов
+
+            // tuple_node
+            TupleVisitor.New.ProcessNode(root);
+
+            // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root);
 
-            // Пока не доделали
+            // slice_expr и slice_expr_question
             SliceQuestionDesugarVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield

@@ -358,10 +358,10 @@
         <Items>
           <Node ID="visit" Name="visit(SyntaxTree.assign_var_tuple" NL="0,9414063" NG="-1">
             <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
-            <Text>public override void visit(SyntaxTree.assign_var_tuple assvartup)</Text>
+            <Text>public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел</Text>
             <OCtx>
               <i Type="Method">public override void visit ( SyntaxTree . assign_var_tuple assvartup )</i>
-              <i Type="ClassOrNamespace">public class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
               <i Type="CS_TreeNode">
               </i>

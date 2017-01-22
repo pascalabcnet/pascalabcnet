@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-8EAQPI9
-// DateTime: 09.01.2017 15:07:30
+// DateTime: 21.01.2017 21:29:18
 // UserName: ?????????
 // Input file <J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -4902,17 +4902,26 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 595: // tuple -> tkRoundOpen, expr_l1, tkComma, expr_l1_list, lambda_type_ref, 
                 //          optional_full_lambda_fp_list, tkRoundClose
 {
-			(ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Insert(0,ValueStack[ValueStack.Depth-6].ex);
-			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Count>7) 
-				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",LocationStack[LocationStack.Depth-3]);
+			/*
+			($4 as expression_list).expressions.Insert(0,$2);
+			if (($4 as expression_list).expressions.Count>7) 
+				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
 			
 			if (parsertools.build_tree_for_formatter)
-				CurrentSemanticValue.ex = new tuple_node_for_formatter(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
+				$$ = new tuple_node_for_formatter($4 as expression_list,@$);
 			else	
 			{
-			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",CurrentLocationSpan));
-				CurrentSemanticValue.ex = new method_call(dn,ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
-			}
+			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
+				$$ = new method_call(dn,$4 as expression_list,@$);
+			}*/
+
+			/*if ($5 != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
+			if ($6 != null) 
+				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
+
+            (ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Insert(0,ValueStack[ValueStack.Depth-6].ex);
+			CurrentSemanticValue.ex = new tuple_node_for_formatter(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
 		}
         break;
       case 596: // factor -> tkNil

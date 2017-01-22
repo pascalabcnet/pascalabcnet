@@ -19022,19 +19022,10 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(matching_expression _matching_expression)
         {
-            SyntaxTree.procedure_call pc = new SyntaxTree.procedure_call();
-            SyntaxTree.method_call mc = new SyntaxTree.method_call();
-            dot_node dot = new dot_node(new ident("PABCSystem"), new ident("KV"));
-            mc.dereferencing_value = dot;
-            pc.func_name = mc;
-            pc.source_context = _matching_expression.source_context;
-            SyntaxTree.expression_list exl = new PascalABCCompiler.SyntaxTree.expression_list();
-            exl.Add(_matching_expression.left);
-            exl.Add(_matching_expression.right);
-            mc.parameters = exl;
-            visit(pc);
+            throw new NotSupportedError(get_location(_matching_expression));
         }
-        public override void visit(SyntaxTree.sequence_type _sequence_type)
+
+        public override void visit(SyntaxTree.sequence_type _sequence_type) // сахарный узел
         {
             // SSM 11/05/15 sugared node
             var l = new List<ident>();
@@ -19047,7 +19038,8 @@ namespace PascalABCCompiler.TreeConverter
                 _sequence_type.source_context);
             visit(tr);
         }
-        public override void visit(SyntaxTree.modern_proc_type _modern_proc_type)
+
+        public override void visit(SyntaxTree.modern_proc_type _modern_proc_type) // сахарный узел
         {
             if (_modern_proc_type.res != null)
             {
@@ -19142,62 +19134,7 @@ namespace PascalABCCompiler.TreeConverter
             return null;
         }
 
-        public override void visit(SyntaxTree.assign_tuple asstup)
-        {
-            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
-
-            /*semantic_check_assign_tuple(asstup);
-
-            var tname = "#temp_var" + UniqueNumStr();
-
-            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            var tt = new var_statement(new ident(tname), asstup.expr); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            var st = new statement_list(tt);
-
-            var n = asstup.vars.variables.Count();
-            for (var i = 0; i < n; i++)
-            {
-                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname),
-                    new ident("Item" + (i + 1).ToString())), Operators.Assignment,
-                    asstup.vars.variables[i].source_context);
-                st.Add(a);
-            }
-            visit(st);
-            // Замена 1 оператор на 1 оператор - всё OK
-            ReplaceUsingParent(asstup, st);*/
-        }
-
-        public override void visit(SyntaxTree.assign_var_tuple assvartup)
-        {
-            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
-
-            /*check_sugared(assvartup);
-
-            var tname = "#temp_var" + UniqueNumStr();
-
-            var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
-            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
-            visit(tt); // обходится первый элемент - вместо asstup
-
-            var sl = new List<statement>();
-            sl.Add(tt); // он же помещается в новое синтаксическое дерево
-
-            var n = assvartup.vars.variables.Count();
-            for (var i = 0; i < n; i++)
-            {
-                var rr = assvartup.vars.variables[i] as ident;
-                var a = new var_statement(rr, 
-                    new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
-                    assvartup.vars.variables[i].source_context
-                    );
-                // Остальные элементы обходить не надо (!!!уже надо!) - они обходятся на следующих итерациях при обходе внешнего statement_list
-                //visit(a); 
-                sl.Add(a);
-            }
-            ReplaceStatementUsingParent(assvartup, sl);*/
-        }
-
-        expression_list construct_expression_list_for_slice_expr(SyntaxTree.slice_expr sl)
+        /*expression_list construct_expression_list_for_slice_expr(SyntaxTree.slice_expr sl)
         {
             // situation = 0 - ничего не пропущено
             // situation = 1 - пропущен from
@@ -19223,37 +19160,7 @@ namespace PascalABCCompiler.TreeConverter
                 el.Add(sl.step);
 
             return el;
-        }
-
-        public override void visit(SyntaxTree.slice_expr sl)
-        {
-            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
-            
-            /*
-            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
-            // Тип a должен быть array of T, List<T> или string
-            semcheck(sl);
-
-            // Действия уровня синтаксиса. Можно вынести на синтаксический уровень как desugaring для сахарного узла
-            var el = construct_expression_list_for_slice_expr(sl); 
-            var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
-
-            visit(mc);*/
-        }
-
-        public override void visit(SyntaxTree.slice_expr_question sl)
-        {
-            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
-            /*
-            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
-            // Тип a должен быть array of T, List<T> или string
-            semcheck(sl);
-
-            var el = construct_expression_list_for_slice_expr(sl);
-            var mc = new method_call(new dot_node(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
-
-            visit(mc);*/
-        }
+        }*/
 
         // frninja 04/03/16 - для yield
 
@@ -19420,6 +19327,23 @@ namespace PascalABCCompiler.TreeConverter
             visit(pc);
         }
 
+        /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
+        {
+            // Неверно работает. Пока не используется. Доделать
+            addressed_value left = dqn.left;
+            addressed_value right = dqn.right;
+            var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
+            var dn = new dot_node(left, right, dqn.source_context);
+            var q = new SyntaxTree.question_colon_expression(eq, new nil_const(), dn, dqn.source_context);
+            return q;
+        }
+        public override void visit(SyntaxTree.dot_question_node dqn)
+        {
+            // a?.b
+            var q = ConvertToQCE(dqn);
+            visit(q);
+        }*/
+
         public override void visit(SyntaxTree.semantic_check_sugared_statement_node st)
         {
             if (st.stat is SyntaxTree.assign_tuple)
@@ -19428,20 +19352,20 @@ namespace PascalABCCompiler.TreeConverter
             }
             else 
             {
-                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}");
+                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", st.GetType().Name);
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
         }
 
         public override void visit(SyntaxTree.sugared_expression ex)
         {
-            /*if (ex.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
+            if (ex.sugared_expr is SyntaxTree.tuple_node_for_formatter) 
             {
-                //semantic_check_slice_expr(ex.sugared_expr as SyntaxTree.slice_expr);
+                semantic_check_tuple(ex.sugared_expr as SyntaxTree.tuple_node_for_formatter);
             }
-            else*/
+            else
             {
-                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}");
+                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.GetType().Name);
             }
 
             ProcessNode(ex.new_expr); // обойти десахарное выражение - обязательно ProcessNode - visit нельзя!
@@ -19455,27 +19379,95 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}");
+                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.GetType().Name);
             }
 
             ProcessNode(av.new_addr_value); // обойти десахарное 
         }
 
-        /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
-    {
-        // Неверно работает. Пока не используется. Доделать
-        addressed_value left = dqn.left;
-        addressed_value right = dqn.right;
-        var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
-        var dn = new dot_node(left, right, dqn.source_context);
-        var q = new SyntaxTree.question_colon_expression(eq, new nil_const(), dn, dqn.source_context);
-        return q;
-    }
-    public override void visit(SyntaxTree.dot_question_node dqn)
-    {
-        // a?.b
-        var q = ConvertToQCE(dqn);
-        visit(q);
-    }*/
+        public override void visit(SyntaxTree.assign_tuple asstup) // сахарный узел
+        {
+            AddError(get_location(asstup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", asstup.GetType().Name);
+
+            /*semantic_check_assign_tuple(asstup);
+
+            var tname = "#temp_var" + UniqueNumStr();
+
+            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var tt = new var_statement(new ident(tname), asstup.expr); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            var st = new statement_list(tt);
+
+            var n = asstup.vars.variables.Count();
+            for (var i = 0; i < n; i++)
+            {
+                var a = new assign(asstup.vars.variables[i], new dot_node(new ident(tname),
+                    new ident("Item" + (i + 1).ToString())), Operators.Assignment,
+                    asstup.vars.variables[i].source_context);
+                st.Add(a);
+            }
+            visit(st);
+            // Замена 1 оператор на 1 оператор - всё OK
+            ReplaceUsingParent(asstup, st);*/
+        }
+
+        public override void visit(SyntaxTree.assign_var_tuple assvartup) // сахарный узел
+        {
+            AddError(get_location(assvartup), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", assvartup.GetType().Name);
+
+            /*check_sugared(assvartup);
+
+            var tname = "#temp_var" + UniqueNumStr();
+
+            var tt = new var_statement(new ident(tname), assvartup.expr); // тут для assvartup.expr внутри повторно вызывается convert_strong, это плохо, но если там лямбда, то иначе - с semantic_addr_value - не работает!!!
+            //var tt = new var_statement(new ident(tname), new semantic_addr_value(expr)); // тут semantic_addr_value хранит на самом деле expr - просто неудачное название
+            visit(tt); // обходится первый элемент - вместо asstup
+
+            var sl = new List<statement>();
+            sl.Add(tt); // он же помещается в новое синтаксическое дерево
+
+            var n = assvartup.vars.variables.Count();
+            for (var i = 0; i < n; i++)
+            {
+                var rr = assvartup.vars.variables[i] as ident;
+                var a = new var_statement(rr, 
+                    new dot_node(new ident(tname),new ident("Item" + (i + 1).ToString())),
+                    assvartup.vars.variables[i].source_context
+                    );
+                // Остальные элементы обходить не надо (!!!уже надо!) - они обходятся на следующих итерациях при обходе внешнего statement_list
+                //visit(a); 
+                sl.Add(a);
+            }
+            ReplaceStatementUsingParent(assvartup, sl);*/
+        }
+
+        public override void visit(SyntaxTree.slice_expr sl) // сахарный узел
+        {
+            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+
+            /*
+            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
+            // Тип a должен быть array of T, List<T> или string
+            semcheck(sl);
+
+            // Действия уровня синтаксиса. Можно вынести на синтаксический уровень как desugaring для сахарного узла
+            var el = construct_expression_list_for_slice_expr(sl); 
+            var mc = new method_call(new dot_node(sl.v, new ident("SystemSlice", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+
+            visit(mc);*/
+        }
+
+        public override void visit(SyntaxTree.slice_expr_question sl) // сахарный узел
+        {
+            AddError(get_location(sl), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", sl.GetType().Name);
+            /*
+            // Преобразуется в вызов a.SystemSlice(situation,from,to,step)
+            // Тип a должен быть array of T, List<T> или string
+            semcheck(sl);
+
+            var el = construct_expression_list_for_slice_expr(sl);
+            var mc = new method_call(new dot_node(sl.v, new ident("SystemSliceQuestion", sl.v.source_context), sl.v.source_context), el, sl.source_context);
+
+            visit(mc);*/
+        }
     }
 }

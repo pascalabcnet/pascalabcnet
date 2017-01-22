@@ -34,18 +34,24 @@ namespace PascalABCCompiler.TreeConverter
             if (semvar is typed_expression)
                 semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
 
-            var t = ConvertSemanticTypeNodeToNETType(semvar.type);
-
             var IsSlicedType = 0; // проверим, является ли semvar.type динамическим массивом, списком List или строкой
-            // semvar.type должен быть array of T, List<T> или string
-            if (t == null)
-                IsSlicedType = 0; // можно ничего не присваивать :)
-            else if (t.IsArray)
+            if (semvar.type.type_special_kind == SemanticTree.type_special_kind.array_kind)
                 IsSlicedType = 1;
-            else if (t == typeof(System.String))
-                IsSlicedType = 2;
-            else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
-                IsSlicedType = 3;
+
+            if (IsSlicedType == 0)
+            {
+                var t = ConvertSemanticTypeNodeToNETType(semvar.type); // не работает для array of T
+
+                // semvar.type должен быть array of T, List<T> или string
+                if (t == null)
+                    IsSlicedType = 0; // можно ничего не присваивать :)
+//                else if (t.IsArray)
+//                  IsSlicedType = 1;
+                else if (t == typeof(System.String))
+                    IsSlicedType = 2;
+                else if (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(System.Collections.Generic.List<>))
+                    IsSlicedType = 3;
+            }
 
             if (IsSlicedType == 0)
                 AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
@@ -67,6 +73,12 @@ namespace PascalABCCompiler.TreeConverter
                 if (!b)
                     AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
             }
+
+        }
+        void semantic_check_tuple(SyntaxTree.tuple_node_for_formatter tup)
+        {
+            if (tup.el.expressions.Count > 7) 
+				AddError(get_location(tup),"TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
         }
     }
 }

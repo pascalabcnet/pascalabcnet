@@ -10,3 +10,4 @@ ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED=Только в коротки
 ONE_TKIDENTIFIER=В качестве типа ожидался идентификатор
 SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR=Сахарный узел {0} не должен обходиться в syntax_tree_visitor. Обратитесь к разработчикам PascalABC.NET
 MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}=Отсутствует семантическая проверка для сахарного узла {0}
+TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Количество элементов кортежа не должно быть больше 7 
