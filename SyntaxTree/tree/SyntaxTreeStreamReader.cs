@@ -435,7 +435,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 206:
 					return new addressed_value_list();
 				case 207:
-					return new tuple_node_for_formatter();
+					return new tuple_node();
 				case 208:
 					return new uses_closure();
 				case 209:
@@ -3709,15 +3709,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public void visit(tuple_node _tuple_node)
 		{
-			read_tuple_node_for_formatter(_tuple_node_for_formatter);
+			read_tuple_node(_tuple_node);
 		}
 
-		public void read_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		public void read_tuple_node(tuple_node _tuple_node)
 		{
-			read_expression(_tuple_node_for_formatter);
-			_tuple_node_for_formatter.el = _read_node() as expression_list;
+			read_expression(_tuple_node);
+			_tuple_node.el = _read_node() as expression_list;
 		}
 
 

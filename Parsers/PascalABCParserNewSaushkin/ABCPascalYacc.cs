@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-8EAQPI9
-// DateTime: 21.01.2017 21:29:18
+// DateTime: 26.01.2017 15:17:46
 // UserName: ?????????
 // Input file <J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -4904,8 +4904,6 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
 			/*
 			($4 as expression_list).expressions.Insert(0,$2);
-			if (($4 as expression_list).expressions.Count>7) 
-				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@5);
 			
 			if (parsertools.build_tree_for_formatter)
 				$$ = new tuple_node_for_formatter($4 as expression_list,@$);
@@ -4920,8 +4918,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
+			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Count>7) 
+				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
             (ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Insert(0,ValueStack[ValueStack.Depth-6].ex);
-			CurrentSemanticValue.ex = new tuple_node_for_formatter(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
+			CurrentSemanticValue.ex = new tuple_node(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
 		}
         break;
       case 596: // factor -> tkNil

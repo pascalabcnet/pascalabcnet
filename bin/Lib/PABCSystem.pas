@@ -8967,6 +8967,7 @@ begin
     end;
 end;
 
+///--
 type
   AdjGroupClass<T> = class
   private

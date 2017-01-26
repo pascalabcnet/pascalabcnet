@@ -2774,10 +2774,10 @@ namespace CodeFormatters
             }
         }
 
-        public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+        public override void visit(tuple_node _tuple_node)
         {
             sb.Append("(");
-            visit_node(_tuple_node_for_formatter.el);
+            visit_node(_tuple_node.el);
         }
 
         public override void visit(uses_closure uc)

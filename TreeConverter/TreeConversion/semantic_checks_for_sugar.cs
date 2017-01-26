@@ -75,10 +75,10 @@ namespace PascalABCCompiler.TreeConverter
             }
 
         }
-        void semantic_check_tuple(SyntaxTree.tuple_node_for_formatter tup)
+        /*void semantic_check_tuple(SyntaxTree.tuple_node tup)
         {
-            if (tup.el.expressions.Count > 7) 
-				AddError(get_location(tup),"TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
-        }
+            //if (tup.el.expressions.Count > 7) 
+			//	AddError(get_location(tup),"TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
+        }*/
     }
 }

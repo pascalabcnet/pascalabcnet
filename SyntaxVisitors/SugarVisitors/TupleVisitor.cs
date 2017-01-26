@@ -14,14 +14,14 @@ namespace SyntaxVisitors.SugarVisitors
             get { return new TupleVisitor(); }
         }
 
-        public override void visit(tuple_node_for_formatter tup)
+        public override void visit(tuple_node tup)
         {
             var dn = new dot_node(new dot_node(new ident("?System"), new ident("Tuple")), new ident("Create", tup.source_context));
 			var mc = new method_call(dn, tup.el, tup.source_context);
 
-            var sug = new sugared_expression(tup, mc, tup.source_context);
+            //var sug = new sugared_expression(tup, mc, tup.source_context); - нет никакой семантической проверки - всё - на уровне синтаксиса!
 
-            ReplaceUsingParent(tup, sug);
+            ReplaceUsingParent(tup, mc);
             visit(mc); 
         }
 

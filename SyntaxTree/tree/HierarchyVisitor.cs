@@ -1661,11 +1661,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public virtual void pre_do_visit(tuple_node _tuple_node)
 		{
 		}
 
-		public virtual void post_do_visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public virtual void post_do_visit(tuple_node _tuple_node)
 		{
 		}
 
@@ -3552,12 +3552,12 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_addressed_value_list);
 		}
 
-		public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public override void visit(tuple_node _tuple_node)
 		{
-			DefaultVisit(_tuple_node_for_formatter);
-			pre_do_visit(_tuple_node_for_formatter);
-			visit(tuple_node_for_formatter.el);
-			post_do_visit(_tuple_node_for_formatter);
+			DefaultVisit(_tuple_node);
+			pre_do_visit(_tuple_node);
+			visit(tuple_node.el);
+			post_do_visit(_tuple_node);
 		}
 
 		public override void visit(uses_closure _uses_closure)

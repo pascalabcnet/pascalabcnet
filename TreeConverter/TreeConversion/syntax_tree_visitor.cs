@@ -19359,13 +19359,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_expression ex)
         {
-            if (ex.sugared_expr is SyntaxTree.tuple_node_for_formatter) 
+            /*if (ex.sugared_expr is SyntaxTree.tuple_node) 
             {
-                semantic_check_tuple(ex.sugared_expr as SyntaxTree.tuple_node_for_formatter);
+                semantic_check_tuple(ex.sugared_expr as SyntaxTree.tuple_node);
             }
-            else
+            else*/
             {
-                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.GetType().Name);
+                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.sugared_expr.GetType().Name);
             }
 
             ProcessNode(ex.new_expr); // обойти десахарное выражение - обязательно ProcessNode - visit нельзя!
@@ -19379,7 +19379,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.GetType().Name);
+                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.sugared_expr.GetType().Name);
             }
 
             ProcessNode(av.new_addr_value); // обойти десахарное 
