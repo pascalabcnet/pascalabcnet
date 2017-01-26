@@ -5991,6 +5991,75 @@ namespace PascalABCCompiler.SyntaxTree
 			write_assign_tuple(_assign_var_tuple);
 		}
 
+
+		public void visit(slice_expr_question _slice_expr_question)
+		{
+			bw.Write((Int16)217);
+			write_slice_expr_question(_slice_expr_question);
+		}
+
+		public void write_slice_expr_question(slice_expr_question _slice_expr_question)
+		{
+			write_slice_expr(_slice_expr_question);
+		}
+
+
+		public void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+			bw.Write((Int16)218);
+			write_semantic_check_sugared_statement_node(_semantic_check_sugared_statement_node);
+		}
+
+		public void write_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+			write_statement(_semantic_check_sugared_statement_node);
+			bw.Write((byte)_semantic_check_sugared_statement_node.stat);
+		}
+
+
+		public void visit(sugared_expression _sugared_expression)
+		{
+			bw.Write((Int16)219);
+			write_sugared_expression(_sugared_expression);
+		}
+
+		public void write_sugared_expression(sugared_expression _sugared_expression)
+		{
+			write_expression(_sugared_expression);
+			bw.Write((byte)_sugared_expression.sugared_expr);
+			if (_sugared_expression.new_expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_sugared_expression.new_expr.visit(this);
+			}
+		}
+
+
+		public void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			bw.Write((Int16)220);
+			write_sugared_addressed_value(_sugared_addressed_value);
+		}
+
+		public void write_sugared_addressed_value(sugared_addressed_value _sugared_addressed_value)
+		{
+			write_addressed_value(_sugared_addressed_value);
+			bw.Write((byte)_sugared_addressed_value.sugared_expr);
+			if (_sugared_addressed_value.new_addr_value == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_sugared_addressed_value.new_addr_value.visit(this);
+			}
+		}
+
 	}
 
 

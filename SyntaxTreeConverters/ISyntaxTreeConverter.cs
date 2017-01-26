@@ -6,14 +6,15 @@ using System.Collections.Generic;
 
 namespace PascalABCCompiler.SyntaxTreeConverters
 {
-    public enum ConverterType
+    /*public enum ConverterType
     {
         Conversion, Analysis
     }
     public enum ExecutionOrder
     {
         Undefined, First, Last
-    }
+    }*/
+
     public interface ISyntaxTreeConverter
     {
         string Name { get; }

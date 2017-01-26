@@ -832,7 +832,8 @@ namespace CodeCompletion
                     {
                         List<ProcScope> procs = stv.entry_scope.GetExtensionMethods((_dot_node.right as ident).name,(returned_scope as ElementScope).sc as TypeScope);
                         for (int i = 0; i < procs.Count; i++)
-                            returned_scopes.Add(procs[i]);
+                            if (!returned_scopes.Contains(procs[i]))
+                                returned_scopes.Add(procs[i]);
                     }
                     
                     search_all = false;
@@ -903,71 +904,71 @@ namespace CodeCompletion
         		return good_procs[0];
         	return null;
         }
-		
-		public override void visit(method_call _method_call)
-		{
-			returned_scopes.Clear();
-			search_all = true;
-			_method_call.dereferencing_value.visit(this);
+
+        public override void visit(method_call _method_call)
+        {
+            returned_scopes.Clear();
+            search_all = true;
+            _method_call.dereferencing_value.visit(this);
             search_all = false;
-			SymScope[] names = returned_scopes.ToArray();
+            SymScope[] names = returned_scopes.ToArray();
             if (names.Length > 0 && names[0] is ElementScope && ((names[0] as ElementScope).sc is ProcType || (names[0] as ElementScope).sc is CompiledScope))
-			{
-				returned_scope = names[0];
-				return;
-			}
+            {
+                returned_scope = names[0];
+                return;
+            }
             if (names.Length > 0 && names[0] is TypeScope)
             {
                 returned_scope = names[0];
                 return;
             }
-            ProcScope ps = select_method(names,_method_call.parameters!=null?_method_call.parameters.expressions.ToArray():null);
-			returned_scope = ps;
-			if (ps == null && names.Length > 0)
-        	{
-        		returned_scope = null;
-        		foreach (SymScope ss in names)
-        		if (ss is ProcScope)
-        		{
-        			returned_scope = ss;
-        			break;
-        		}
-        		else if (ss is TypeScope)
-        		{
-        			returned_scope = new ElementScope(ss);
-                    return ;
-        		}	 
-        	}
-			if (returned_scope != null)
-			{
-				if (returned_scope is ProcScope)
-				{
-					ps = returned_scope as ProcScope;
-					if (by_dot)
-					{
+            ProcScope ps = select_method(names, _method_call.parameters != null ? _method_call.parameters.expressions.ToArray() : null);
+            returned_scope = ps;
+            if (ps == null && names.Length > 0)
+            {
+                returned_scope = null;
+                foreach (SymScope ss in names)
+                    if (ss is ProcScope)
+                    {
+                        returned_scope = ss;
+                        break;
+                    }
+                    else if (ss is TypeScope)
+                    {
+                        returned_scope = new ElementScope(ss);
+                        return;
+                    }
+            }
+            if (returned_scope != null)
+            {
+                if (returned_scope is ProcScope)
+                {
+                    ps = returned_scope as ProcScope;
+                    if (by_dot)
+                    {
                         if (ps.return_type != null)
                             returned_scope = new ElementScope(ps.return_type);
                         else if (ps.is_constructor)
                             returned_scope = new ElementScope(ps.declaringType);
                         else
                             returned_scope = null;
-					}
-					else
-						returned_scope = new ElementScope(ps);
-				}
-				else if (returned_scope is ProcRealization)
-				{
-					if ((returned_scope as ProcRealization).def_proc != null && (returned_scope as ProcRealization).def_proc.return_type != null)
-					returned_scope = new ElementScope((returned_scope as ProcRealization).def_proc.return_type);
-					else returned_scope = null;
-				}
-				else if (returned_scope is CompiledMethodScope)
-				{
-					if ((returned_scope as CompiledMethodScope).return_type != null)
-					returned_scope = new ElementScope((returned_scope as CompiledMethodScope).return_type);
-					else returned_scope = null;
-				}
-				/*else if (ret_tn is ElementScope && (ret_tn as ElementScope).sc is ProcScope)
+                    }
+                    else
+                        returned_scope = new ElementScope(ps);
+                }
+                else if (returned_scope is ProcRealization)
+                {
+                    if ((returned_scope as ProcRealization).def_proc != null && (returned_scope as ProcRealization).def_proc.return_type != null)
+                        returned_scope = new ElementScope((returned_scope as ProcRealization).def_proc.return_type);
+                    else returned_scope = null;
+                }
+                else if (returned_scope is CompiledMethodScope)
+                {
+                    if ((returned_scope as CompiledMethodScope).return_type != null)
+                        returned_scope = new ElementScope((returned_scope as CompiledMethodScope).return_type);
+                    else returned_scope = null;
+                }
+                /*else if (ret_tn is ElementScope && (ret_tn as ElementScope).sc is ProcScope)
 				{
 					ret_tn = new ElementScope(((ret_tn as ElementScope).sc as ProcScope).return_type);
 				}
@@ -978,8 +979,8 @@ namespace CodeCompletion
 						ret_tn = new ElementScope(ts);
 				}
 				else ret_tn = null;*/
-			}
-		}
+            }
+        }
 		
 		public override void visit(pascal_set_constant _pascal_set_constant)
 		{

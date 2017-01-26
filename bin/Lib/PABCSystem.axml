@@ -688,6 +688,44 @@
               </Node>
             </Items>
           </Node>
+          <Node Name="Print(Self: array [,] of real">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Print(Self: array [,] of real; w: integer := 8; f: integer := 2): array [,] of real; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Print ( Self : array [ , ] of real ; w : integer : = 8 ; f : integer : = 2 ) : array [ , ] of real extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Print">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>function Print&lt;T&gt;(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;</Text>
+            <OCtx>
+              <i Type="Method">function Print &lt; T &gt; ( Self : array [ , ] of T ; w : integer : = 4 ) : array [ , ] of T extensionmethod</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node Name="Методы расширения типа array [,] ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//&gt;&gt;     Методы расширения типа array [,] of T # Extension methods for array [,] of T</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="Раздел реализации">
@@ -2110,82 +2148,14 @@
               </Node>
               <Node Name="Extension methods for String 3 - read">
                 <FileName>\PABCSystem.pas</FileName>
-                <Text>function string.ReadInteger(var from: integer): integer;</Text>
+                <Text>function ReadIntegerFromString(s: string; var from: integer): integer;</Text>
                 <OCtx>
-                  <i Type="Method">function string . ReadInteger ( var from : integer ) : integer</i>
-                  <i Type="">
-                  </i>
-                </OCtx>
-              </Node>
-              <Node Name="string методы расширения 2">
-                <FileName>\PABCSystem.pas</FileName>
-                <Text>//    string методы расширения</Text>
-                <OCtx>
+                  <i Type="Method">function ReadIntegerFromString ( s : string ; var from : integer ) : integer</i>
                   <i Type="PAS_TreeNode">
                   </i>
                 </OCtx>
-                <ICtx>
-                  <i Type="Field">unit PABCSystem</i>
-                  <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
-                  <i Type="Field">MaxShortInt = shortint . MaxValue</i>
-                  <i Type="Field">MaxByte = byte . MaxValue</i>
-                  <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
-                  <i Type="Field">MaxWord = word . MaxValue</i>
-                  <i Type="Field">MaxLongWord = longword . MaxValue</i>
-                  <i Type="Field">MaxInt64 = int64 . MaxValue</i>
-                  <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
-                  <i Type="Field">MaxDouble = real . MaxValue</i>
-                </ICtx>
               </Node>
             </Items>
-          </Node>
-          <Node Name="Extension methods for IEnumerable&lt;T&gt;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension methods for IEnumerable&lt;T&gt;</Text>
-            <OCtx>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="Extension operators for IEnumerable&lt;T&gt;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension operators for IEnumerable&lt;T&gt;</Text>
-            <OCtx>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-            <ICtx>
-              <i Type="Field">unit PABCSystem</i>
-              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
-              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
-              <i Type="Field">MaxByte = byte . MaxValue</i>
-              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
-              <i Type="Field">MaxWord = word . MaxValue</i>
-              <i Type="Field">MaxLongWord = longword . MaxValue</i>
-              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
-              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
-              <i Type="Field">MaxDouble = real . MaxValue</i>
-            </ICtx>
-          </Node>
-          <Node Name="Extension methods for Complex">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>// Extension methods for Complex</Text>
-            <OCtx>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-            <ICtx>
-              <i Type="Field">unit PABCSystem</i>
-              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
-              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
-              <i Type="Field">MaxByte = byte . MaxValue</i>
-              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
-              <i Type="Field">MaxWord = word . MaxValue</i>
-              <i Type="Field">MaxLongWord = longword . MaxValue</i>
-              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
-              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
-              <i Type="Field">MaxDouble = real . MaxValue</i>
-            </ICtx>
           </Node>
         </Items>
       </Node>
@@ -2218,15 +2188,6 @@
               </i>
             </OCtx>
           </Node>
-          <Node Name="Операции для List&lt;T&gt;, Dictionary&lt;T&gt; и т.д.">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function List&lt;T&gt;.operator+=(var Self: List&lt;T&gt;; x: T): List&lt;T&gt;;</Text>
-            <OCtx>
-              <i Type="Method">function List &lt; T &gt; . operator + = ( var Self : List &lt; T &gt; ; x : T ) : List &lt; T &gt;</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
           <Node Name="Операции для HashSet, SortedSet">
             <FileName>\PABCSystem.pas</FileName>
             <Text>function HashSet&lt;T&gt;.operator in(x: T; Self: HashSet&lt;T&gt;): boolean;</Text>
@@ -2235,6 +2196,108 @@
               <i Type="PAS_TreeNode">
               </i>
             </OCtx>
+          </Node>
+          <Node Name="Операции для Tuple">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для Tuple</Text>
+            <OCtx>
+              <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+              <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">function CreateSliceFromArrayInternal &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+              <i Type="Method">function SliceArrayImpl &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSliceArrayImpl &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+              <i Type="Method">function SystemSlice &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSlice &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to , step : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSliceArrayImplQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+              <i Type="Method">function SystemSliceQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ) : array of T extensionmethod</i>
+              <i Type="Method">function SystemSliceQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to , step : integer ) : array of T extensionmethod</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для List&lt;T&gt; ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для List&lt;T&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для HashSet&lt;T&gt; ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для HashSet&lt;T&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для SortedSet&lt;T&gt; ">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для SortedSet&lt;T&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
+          </Node>
+          <Node Name="Операции для Dictionary&lt;K,V&gt;, SortedDictionary&lt;K,V&gt;, SortedList&lt;K,V&gt;">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//          Операции для Dictionary&lt;K,V&gt;, SortedDictionary&lt;K,V&gt;, SortedList&lt;K,V&gt;</Text>
+            <OCtx>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Field">unit PABCSystem</i>
+              <i Type="Field">uses System . Runtime . InteropServices , System . IO , System . Collections , System . Collections . Generic , System</i>
+              <i Type="Field">MaxShortInt = shortint . MaxValue</i>
+              <i Type="Field">MaxByte = byte . MaxValue</i>
+              <i Type="Field">MaxSmallInt = smallint . MaxValue</i>
+              <i Type="Field">MaxWord = word . MaxValue</i>
+              <i Type="Field">MaxLongWord = longword . MaxValue</i>
+              <i Type="Field">MaxInt64 = int64 . MaxValue</i>
+              <i Type="Field">MaxUInt64 = uint64 . MaxValue</i>
+              <i Type="Field">MaxDouble = real . MaxValue</i>
+            </ICtx>
           </Node>
         </Items>
       </Node>
@@ -2376,101 +2439,10 @@
       </Node>
       <Node Name="Slices">
         <Items>
-          <Node Name="Slice&lt;T&gt;(Self: sequence of T">
+          <Node Name="CreateSliceFromListInternal">
             <FileName>\PABCSystem.pas</FileName>
-            <Text>function Slice&lt;T&gt;(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;</Text>
             <OCtx>
-              <i Type="Method">function Slice &lt; T &gt; ( Self : sequence of T ; from , step : integer ) : sequence of T extensionmethod</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="Slice&lt;T&gt;(Self: List&lt;T&gt;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function Slice&lt;T&gt;(Self: List&lt;T&gt;; from,step,count: integer): List&lt;T&gt;; extensionmethod;</Text>
-            <OCtx>
-              <i Type="Method">function Slice &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt; extensionmethod</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="Slice&lt;T&gt;(Self: array of T">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function Slice&lt;T&gt;(Self: array of T; from,step: integer): array of T; extensionmethod;</Text>
-            <OCtx>
-              <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step : integer ) : array of T extensionmethod</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="Slice(Self: string;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function Slice(Self: string; from,step: integer): string; extensionmethod;</Text>
-            <OCtx>
-              <i Type="Method">function Slice ( Self : string ; from , step : integer ) : string extensionmethod</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="CalcCountForSystemSlice">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function CalcCountForSystemSlice(situation: integer; Len: integer; var from,&amp;to: integer; step: integer): integer;</Text>
-            <OCtx>
-              <i Type="Method">function CalcCountForSystemSlice ( situation : integer ; Len : integer ; var from , &amp;to : integer ; step : integer ) : integer</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="SliceListImpl&lt;T&gt;(Self: List&lt;T&gt;">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function SliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; from,step,count: integer): List&lt;T&gt;;</Text>
-            <OCtx>
-              <i Type="Method">function SliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt;</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="SliceArrayImpl&lt;T&gt;(Self: array of T">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function SliceArrayImpl&lt;T&gt;(Self: array of T; from,step,count: integer): array of T;</Text>
-            <OCtx>
-              <i Type="Method">function SliceArrayImpl &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="SliceStringImpl(Self: string">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function SliceStringImpl(Self: string; from,step,count: integer): string;</Text>
-            <OCtx>
-              <i Type="Method">function SliceStringImpl ( Self : string ; from , step , count : integer ) : string</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="SystemSliceListImpl">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function SystemSliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; situation: integer; from,&amp;to: integer; step: integer := 1): List&lt;T&gt;;</Text>
-            <OCtx>
-              <i Type="Method">function SystemSliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : List &lt; T &gt;</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="SystemSliceArrayImpl">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function SystemSliceArrayImpl&lt;T&gt;(Self: array of T; situation: integer; from,&amp;to: integer; step: integer := 1): array of T;</Text>
-            <OCtx>
-              <i Type="Method">function SystemSliceArrayImpl &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
-              <i Type="PAS_TreeNode">
-              </i>
-            </OCtx>
-          </Node>
-          <Node Name="SystemSliceStringImpl">
-            <FileName>\PABCSystem.pas</FileName>
-            <Text>function SystemSliceStringImpl(Self: string; situation: integer; from,&amp;to: integer; step: integer := 1): string;</Text>
-            <OCtx>
-              <i Type="Method">function SystemSliceStringImpl ( Self : string ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : string</i>
+              <i Type="Method">function CreateSliceFromListInternal &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt;</i>
               <i Type="PAS_TreeNode">
               </i>
             </OCtx>
@@ -2488,10 +2460,232 @@
             <FileName>\PABCSystem.pas</FileName>
             <Text>function CreateSliceFromStringInternal&lt;T&gt;(Self: string; from,count,step: integer): string;</Text>
             <OCtx>
-              <i Type="Method">function CreateSliceFromStringInternal ( Self : string ; from , count , step : integer ) : string</i>
+              <i Type="Method">function CreateSliceFromStringInternal ( Self : string ; from , step , count : integer ) : string</i>
+              <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+              <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
               <i Type="PAS_TreeNode">
               </i>
             </OCtx>
+          </Node>
+          <Node Name="Slice">
+            <Items>
+              <Node Name="SliceListImpl&lt;T&gt;(Self: List&lt;T&gt;">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function SliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; from,step,count: integer): List&lt;T&gt;;</Text>
+                <OCtx>
+                  <i Type="Method">function SliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt;</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SliceArrayImpl&lt;T&gt;(Self: array of T">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function SliceArrayImpl&lt;T&gt;(Self: array of T; from,step,count: integer): array of T;</Text>
+                <OCtx>
+                  <i Type="Method">function SliceArrayImpl &lt; T &gt; ( Self : array of T ; from , step , count : integer ) : array of T</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SliceStringImpl(Self: string">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function SliceStringImpl(Self: string; from,step,count: integer): string;</Text>
+                <OCtx>
+                  <i Type="Method">function SliceStringImpl ( Self : string ; from , step , count : integer ) : string</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Slice&lt;T&gt;(Self: sequence of T">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function Slice&lt;T&gt;(Self: sequence of T; from,step: integer): sequence of T; extensionmethod;</Text>
+                <OCtx>
+                  <i Type="Method">function Slice &lt; T &gt; ( Self : sequence of T ; from , step : integer ) : sequence of T extensionmethod</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Slice&lt;T&gt;(Self: List&lt;T&gt;">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function Slice&lt;T&gt;(Self: List&lt;T&gt;; from,step,count: integer): List&lt;T&gt;; extensionmethod;</Text>
+                <OCtx>
+                  <i Type="Method">function Slice &lt; T &gt; ( Self : List &lt; T &gt; ; from , step , count : integer ) : List &lt; T &gt; extensionmethod</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Slice&lt;T&gt;(Self: array of T">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function Slice&lt;T&gt;(Self: array of T; from,step: integer): array of T; extensionmethod;</Text>
+                <OCtx>
+                  <i Type="Method">function Slice &lt; T &gt; ( Self : array of T ; from , step : integer ) : array of T extensionmethod</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="Slice(Self: string;">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function Slice(Self: string; from,step: integer): string; extensionmethod;</Text>
+                <OCtx>
+                  <i Type="Method">function Slice ( Self : string ; from , step : integer ) : string extensionmethod</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="SystemSlice">
+            <Items>
+              <Node Name="CalcCountForSystemSlice">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function CalcCountForSystemSlice(situation: integer; Len: integer; var from,&amp;to: integer; step: integer): integer;</Text>
+                <OCtx>
+                  <i Type="Method">function CheckAndCorrectFromToAndCalcCountForSystemSlice ( situation : integer ; Len : integer ; var from , &amp;to : integer ; step : integer ) : integer</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceListImpl">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function SystemSliceListImpl&lt;T&gt;(Self: List&lt;T&gt;; situation: integer; from,&amp;to: integer; step: integer := 1): List&lt;T&gt;;</Text>
+                <OCtx>
+                  <i Type="Method">function SystemSliceListImpl &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : List &lt; T &gt;</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceArrayImpl">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function SystemSliceArrayImpl&lt;T&gt;(Self: array of T; situation: integer; from,&amp;to: integer; step: integer := 1): array of T;</Text>
+                <OCtx>
+                  <i Type="Method">function SystemSliceArrayImpl &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceStringImpl">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function SystemSliceStringImpl(Self: string; situation: integer; from,&amp;to: integer; step: integer := 1): string;</Text>
+                <OCtx>
+                  <i Type="Method">function SystemSliceStringImpl ( Self : string ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : string</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSlice&lt;T&gt;(Self: List&lt;T&gt;">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSlice &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ) : List &lt; T &gt; extensionmethod</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSlice&lt;T&gt;(Self: array of T">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSlice &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ) : array of T extensionmethod</i>
+                  <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+                  <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSlice(Self: string">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSlice ( Self : string ; situation : integer ; from , &amp;to : integer ) : string extensionmethod</i>
+                  <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+                  <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
+          </Node>
+          <Node Name="SystemSliceQuestion">
+            <Items>
+              <Node Name="CheckStepAndCorrectFromTo">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">procedure CheckStepAndCorrectFromTo ( situation : integer ; Len : integer ; var from , &amp;to : integer ; step : integer )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceListImplQuestion">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSliceListImplQuestion &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : List &lt; T &gt;</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceQuestion&lt;T&gt;(Self: List&lt;T&gt;">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSliceQuestion &lt; T &gt; ( Self : List &lt; T &gt; ; situation : integer ; from , &amp;to : integer ) : List &lt; T &gt; extensionmethod</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceArrayImplQuestion">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSliceArrayImplQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : array of T</i>
+                  <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+                  <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceQuestion&lt;T&gt;(Self: array of T">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSliceQuestion &lt; T &gt; ( Self : array of T ; situation : integer ; from , &amp;to : integer ) : array of T extensionmethod</i>
+                  <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+                  <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceStringImplQuestion">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSliceStringImplQuestion ( Self : string ; situation : integer ; from , &amp;to : integer ; step : integer : = 1 ) : string</i>
+                  <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+                  <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="SystemSliceQuestion(Self: string">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">function SystemSliceQuestion ( Self : string ; situation : integer ; from , &amp;to : integer ) : string extensionmethod</i>
+                  <i Type="Method">function Low ( self : System . Array ) extensionmethod : = Low ( Self )</i>
+                  <i Type="Method">function High ( self : System . Array ) extensionmethod : = High ( Self )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="CorrectFromTo">
+                <FileName>\PABCSystem.pas</FileName>
+                <OCtx>
+                  <i Type="Method">procedure CorrectFromTo ( situation : integer ; Len : integer ; var from , &amp;to : integer ; step : integer )</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+              <Node Name="CorrectFromToAndCalcCountForSystemSliceQuestion">
+                <FileName>\PABCSystem.pas</FileName>
+                <Text>function CorrectFromToAndCalcCountForSystemSliceQuestion(situation: integer; Len: integer; var from,&amp;to: integer; step: integer): integer;</Text>
+                <OCtx>
+                  <i Type="Method">function CorrectFromToAndCalcCountForSystemSliceQuestion ( situation : integer ; Len : integer ; var from , &amp;to : integer ; step : integer ) : integer</i>
+                  <i Type="PAS_TreeNode">
+                  </i>
+                </OCtx>
+              </Node>
+            </Items>
           </Node>
         </Items>
       </Node>
@@ -2617,6 +2811,15 @@
           <i Type="ClassMethod">procedure Dispose ( ) virtual</i>
           <i Type="ClassMethod">procedure Reset ( )</i>
         </ICtx>
+      </Node>
+      <Node Name="Print&lt;T&gt;(Self: array [,] of T">
+        <FileName>\PABCSystem.pas</FileName>
+        <Text>function Print&lt;T&gt;(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;</Text>
+        <OCtx>
+          <i Type="Method">function Print &lt; T &gt; ( Self : array [ , ] of T ; w : integer : = 4 ) : array [ , ] of T extensionmethod</i>
+          <i Type="PAS_TreeNode">
+          </i>
+        </OCtx>
       </Node>
     </Items>
   </Node>

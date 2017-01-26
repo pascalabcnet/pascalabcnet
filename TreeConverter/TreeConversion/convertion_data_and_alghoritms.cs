@@ -1298,11 +1298,17 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance)
             {
-                return method_compare.greater_method;
+                if (left_func is basic_function_node)
+                    return method_compare.less_method;
+                else
+                    return method_compare.greater_method;
             }
             if (left_func.is_generic_function_instance && !right_func.is_generic_function_instance)
             {
-                return method_compare.less_method;
+                if (right_func is basic_function_node)
+                    return method_compare.greater_method;
+                else
+                    return method_compare.less_method;
             }
             if (left_func.is_generic_function_instance && right_func.is_generic_function_instance)
             {
@@ -1719,17 +1725,12 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						if (is_exist_eq_method_in_list(fn,set_of_possible_functions) != null)
 						{
-                            //!!!!!!!!!!!!!
-                            //DS TODO
-                            //Это нужно чтобы была возможность создавать операторы = := ..., т.к. всегда они добавляюся автоматом
-                            //Надо сначало просматривать заголовки и добавлять такие операторы только если нужно.
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
                                 {
                                     set_of_possible_functions.remove(set_of_possible_functions[0]);
                                     set_of_possible_functions.AddElement(fn);
                                 }
-                            //!!!!!!!!!!!!!
 							
                             functions=functions.Next;
 							continue;
@@ -1878,18 +1879,18 @@ namespace PascalABCCompiler.TreeConverter
             }
 
 			int j=0;
-			while(j<set_of_possible_functions.Count)
-			{
-				if (tcll[j]==null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
-				{
-					tcll.remove_at(j);
-					set_of_possible_functions.remove_at(j);
-				}
-				else
-				{
-					j++;
-				}
-			}
+            while (j < set_of_possible_functions.Count)
+            {
+                if (tcll[j] == null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
+                {
+                    tcll.remove_at(j);
+                    set_of_possible_functions.remove_at(j);
+                }
+                else
+                {
+                    j++;
+                }
+            }
 
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
 			{
@@ -2089,7 +2090,7 @@ namespace PascalABCCompiler.TreeConverter
                                     ctn1 = cgn1.original_generic as compiled_type_node;
                             }
 
-                            var ctn2 = p1 as compiled_type_node;
+                            var ctn2 = p2 as compiled_type_node;
                             if (ctn2 == null)
                             {
                                 var cgn2 = p2 as compiled_generic_instance_type_node;
@@ -2116,6 +2117,45 @@ namespace PascalABCCompiler.TreeConverter
                                     return f1;
                             }
                         }
+                        /*if (f1.return_value_type != null && f2.return_value_type != null)
+                        {
+                            var p1 = f1.return_value_type;
+                            var p2 = f2.return_value_type;
+                            var ctn1 = p1 as compiled_type_node;
+                            if (ctn1 == null)
+                            {
+                                var cgn1 = p1 as compiled_generic_instance_type_node;
+                                if (cgn1 != null)
+                                    ctn1 = cgn1.original_generic as compiled_type_node;
+                            }
+
+                            var ctn2 = p2 as compiled_type_node;
+                            if (ctn2 == null)
+                            {
+                                var cgn2 = p2 as compiled_generic_instance_type_node;
+                                if (cgn2 != null)
+                                    ctn2 = cgn2.original_generic as compiled_type_node;
+                            }
+
+                            if (ctn1 == null || ctn2 == null)
+                                continue;
+
+                            System.Type ct1 = ctn1.compiled_type;
+                            if (ct1.IsGenericType && ct1.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct1.GetGenericArguments().Length;
+                                if (c != 0 && ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                    return f2;
+                            }
+
+                            System.Type ct2 = ctn2.compiled_type;
+                            if (ct2.IsGenericType && ct2.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct2.GetGenericArguments().Length;
+                                if (c != 0 && ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                    return f1;
+                            }
+                        }*/
                     }
                     
                 }

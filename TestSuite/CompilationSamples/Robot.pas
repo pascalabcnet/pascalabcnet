@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Исполнитель Робот действует на прямоугольном клеточном поле. Между некоторыми клетками, а также по периметру поля находятся стены. 
@@ -49,6 +49,45 @@ procedure Field(n,m: integer);
 procedure Start;
 /// Остановить Робота
 procedure Stop;
+
+// Русские подпрограммы
+/// Переместить Робота вправо
+procedure Вправо;
+/// Переместить Робота влево
+procedure Влево;
+/// Переместить Робота вверх
+procedure Вверх;
+/// Переместить Робота вниз
+procedure Вниз;
+/// Закрасить текущую ячейку
+procedure Закрасить;
+/// Возвращает True, если справа от Робота - свободно, и False в противном случае
+function СправаСвободно: boolean;
+/// Возвращает True, если слева от Робота - свободно, и False в противном случае
+function СлеваСвободно: boolean;
+/// Возвращает True, если сверху от Робота - свободно, и False в противном случае
+function СверхуСвободно: boolean;
+/// Возвращает True, если снизу от Робота - свободно, и False в противном случае
+function СнизуСвободно: boolean;
+/// Возвращает True, если справа от Робота - стена, и False в противном случае
+function СправаСтена: boolean;
+/// Возвращает True, если слева от Робота - стена, и False в противном случае
+function СлеваСтена: boolean;
+/// Возвращает True, если сверху от Робота - стена, и False в противном случае
+function СверхуСтена: boolean;
+/// Возвращает True, если снизу от Робота - стена, и False в противном случае
+function СнизуСтена: boolean;
+/// Возвращает True, если текущая ячейка не закрашена, и False в противном случае
+function ЯчейкаНеЗакрашена: boolean;
+/// Возвращает True, если текущая ячейка закрашена, и False в противном случае
+function ЯчейкаЗакрашена: boolean;
+/// Вызывать задание с данным именем
+procedure Задание(имя: string);
+/// Создать пустое поле размера 9 на 11 клеток
+procedure СтандартноеПоле;
+/// Создать пустое поле размера n на m клеток
+procedure Поле(n,m: integer);
+
 
 var 
   __IS_ROBOT_UNIT: boolean;
@@ -188,6 +227,28 @@ begin
   SetTaskCall;
   Stop;
 end;
+
+// Русские
+
+procedure Вправо := Right;
+procedure Влево := Left;
+procedure Вверх := Up;
+procedure Вниз := Down;
+procedure Закрасить := Paint;
+function СправаСвободно := FreeFromRight;
+function СлеваСвободно := FreeFromLeft;
+function СверхуСвободно := FreeFromUp;
+function СнизуСвободно := FreeFromDown;
+function СправаСтена := WallFromRight;
+function СлеваСтена := WallFromLeft;
+function СверхуСтена := WallFromUp;
+function СнизуСтена := WallFromDown;
+function ЯчейкаНеЗакрашена := CellIsFree;
+function ЯчейкаЗакрашена := CellIsPainted;
+procedure Задание(имя: string) := Task(имя);
+procedure СтандартноеПоле := StandardField;
+procedure Поле(n,m: integer) := Field(n,m);
+
 
 procedure RegisterTasks;
 begin

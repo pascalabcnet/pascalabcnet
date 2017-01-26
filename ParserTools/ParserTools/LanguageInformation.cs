@@ -459,6 +459,11 @@ namespace PascalABCCompiler.Parsers
  			get;
  		}
  		
+        ITypeScope DeclaringType
+        {
+            get;
+        }
+
     	IElementScope[] Parameters
     	{
     		get;

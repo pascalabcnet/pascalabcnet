@@ -26,13 +26,22 @@ namespace PascalABCCompiler.SyntaxTree
         PreOrder
     }
 
+    public enum Desc
+    {
+        All,
+        DirectDescendants
+    }
+
     public partial class syntax_tree_node
     {
         public syntax_tree_node Parent;
-        public int FindIndex(syntax_tree_node node)
+        public int FindIndex(syntax_tree_node node, Desc d = Desc.All)
         {
             int ind = -1;
-            for (var i = 0; i < subnodes_count; i++)
+
+            var count = d == Desc.All ? subnodes_count : subnodes_without_list_elements_count;
+
+            for (var i = 0; i < count; i++)
                 if (node == this[i])
                 {
                     ind = i;
@@ -43,10 +52,18 @@ namespace PascalABCCompiler.SyntaxTree
             return ind;
         }
 
-        public void Replace(syntax_tree_node from, syntax_tree_node to) // есть риск, что типы не совпадут
+        /*public void ReplaceDescendant(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All) // есть риск, что типы не совпадут
         {
-            var ind = FindIndex(from);
+            var ind = FindIndex(from,d);
             this[ind] = to;
+        }*/
+
+        // Безопасная версия Replace - не сработает если менять foreach_node на if_node. Плохо
+        public void ReplaceDescendant<T,T1>(T from, T1 to, Desc d = Desc.All) where T: syntax_tree_node where T1 : T
+        {
+            var ind = FindIndex(from,d);
+            this[ind] = to;
+            to.Parent = from.Parent;
         }
 
         /// <summary>
@@ -256,6 +273,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class statement_list 
     {
+        public statement_list(IEnumerable<statement> sts)
+        {
+            AddMany(sts);
+        }
+
         public statement_list(params statement[] sts)
         {
             AddMany(sts);
@@ -1616,6 +1638,14 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return new int32_const(i);
         }
+    }
+
+    public partial class slice_expr_question
+    {
+        public slice_expr_question(addressed_value v, expression from, expression to, expression step) : base(v, from, to, step)
+        { }
+        public slice_expr_question(addressed_value v, expression from, expression to, expression step, SourceContext sc) : base(v, from, to, step, sc)
+        { }
     }
 
 }

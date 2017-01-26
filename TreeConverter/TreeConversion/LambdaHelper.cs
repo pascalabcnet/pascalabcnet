@@ -211,10 +211,13 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef)
         {
+            // SSM 12/12/16 - сделал чтобы всегда эта функция возвращала true.
+            // Посмотрю далее на её поведение. Мне кажется, что если мы попали сюда, то мы хотим присвоить процедурному типу, 
+            // и в любом случае это надо интерпретировать как процедуру
             var stl = lambdaDef.proc_body as SyntaxTree.statement_list;
             if (stl.expr_lambda_body)
             {
-                // Очищаем от Result :=
+                // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
                 if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
@@ -227,10 +230,14 @@ namespace PascalABCCompiler.TreeConverter
                         lambdaDef.return_type = null;
                         return true;
                     }
+                    else
+                        return false;
                 }
             }
 
-            return false;
+            lambdaDef.return_type = null;
+            return true;
+//            return false;
         }
 
         /// <summary>

@@ -13,13 +13,6 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override void DefaultVisit(syntax_tree_node n)
         {
-            // frninja 07/12/15 - // SSM - это - идиотский код, приводивший к двойному обходу визитором всех узлов
-            /*if (!_rootAdded)
-            {
-                _rootAdded = true;
-                ProcessNode(n);
-            }*/
-
             // Элементы списков - с конца в начало чтобы можно было эти элементы изменять по ходу (удалять/вставлять/заменять один несколькими)
             var Сount = n.subnodes_count;
             var СountWithoutListElements = n.subnodes_without_list_elements_count;
@@ -36,7 +29,23 @@ namespace PascalABCCompiler.SyntaxTree
             var upper = UpperNode();
             if (upper == null)
                 throw new Exception("У корневого элемента нельзя получить UpperNode");
-            upper.Replace(from, to);
+            upper.ReplaceDescendant(from, to);
+        }
+
+
+        public void ReplaceStatement(statement from, statement to)
+        {
+            to.Parent = from.Parent;
+            var stl = UpperNodeAs<statement_list>();
+            stl.ReplaceInList(from, to);
+        }
+
+        public void ReplaceStatement(statement from, IEnumerable<statement> to)
+        {
+            foreach (var x in to)
+                x.Parent = from.Parent;
+            var stl = UpperNodeAs<statement_list>();
+            stl.ReplaceInList(from, to);
         }
 
         public T UpperNodeAs<T>(int up = 1) where T : syntax_tree_node
@@ -83,18 +92,6 @@ namespace PascalABCCompiler.SyntaxTree
                     l.AddRange((st as statement_list).list);
                 else l.Add(st);
             return l;
-        }
-
-        public void ReplaceStatement(statement from, statement to)
-        {
-            var stl = UpperNodeAs<statement_list>();
-            stl.ReplaceInList(from, to);
-        }
-
-        public void ReplaceStatement(statement from, IEnumerable<statement> to)
-        {
-            var stl = UpperNodeAs<statement_list>();
-            stl.ReplaceInList(from, to);
         }
     }
 

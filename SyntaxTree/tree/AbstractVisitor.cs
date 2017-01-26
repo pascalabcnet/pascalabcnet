@@ -1092,6 +1092,26 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_assign_var_tuple);
 		}
+
+		public virtual void visit(slice_expr_question _slice_expr_question)
+		{
+			DefaultVisit(_slice_expr_question);
+		}
+
+		public virtual void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+			DefaultVisit(_semantic_check_sugared_statement_node);
+		}
+
+		public virtual void visit(sugared_expression _sugared_expression)
+		{
+			DefaultVisit(_sugared_expression);
+		}
+
+		public virtual void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			DefaultVisit(_sugared_addressed_value);
+		}
 	}
 
 

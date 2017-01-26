@@ -471,8 +471,8 @@ namespace CodeFormatters
             if (prev_pos < pos && cur_src_off < pos)
             {
                 string comm = Text.Substring(prev_pos, pos - prev_pos);
-                //if (comm.EndsWith(" ") && comm.IndexOf("\n") == -1)
-                //    comm = comm.TrimEnd(' ') + " ";
+                if (sn is program_module || sn is unit_module)
+                    comm = Text.Substring(prev_pos);
                 if (comm.StartsWith(" "))
                     add_space_before = true;
                 WriteCommentWithIndent(comm, false);
@@ -1438,7 +1438,7 @@ namespace CodeFormatters
             if (_program_module.used_units != null)
                 visit_node(_program_module.used_units);
             if (_program_module.program_block != null)
-                visit_node(_program_module.program_block);
+                visit_node(_program_module.program_block); 
             //sb.Append(".");
         }
 
@@ -2627,9 +2627,6 @@ namespace CodeFormatters
                 if (i < _simple_attribute_list.attributes.Count - 1)
                     sb.Append(",");
             }
-            //sb.Append("]");
-            //if (attr_on_new_line)
-            //    sb.AppendLine();
         }
 
         public override void visit(attribute_list _attribute_list)
@@ -2813,7 +2810,6 @@ namespace CodeFormatters
                 add_space_after = true;
                 i++;
             }
-            //sb.Append(")");
         }
 
         public override void visit(yield_node yn)
@@ -2828,6 +2824,31 @@ namespace CodeFormatters
             visit_node(yn.ex);
         }
 
+        public override void visit(assign_var_tuple _assign_var_tuple)
+        {
+            read_from_beg_pos = true;
+            for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+            {
+                if (options.SpaceBetweenArguments == 1)
+                {
+                    add_space_after = true;
+                }  
+                visit_node(_assign_var_tuple.vars.variables[i]);
+                add_space_before = true;
+            }
+            visit_node(_assign_var_tuple.expr);
+        }
+
+        public override void visit(slice_expr _slice_expr)
+        {
+            visit_node(_slice_expr.v);
+            if (_slice_expr.from != null)
+                visit_node(_slice_expr.from);
+            if (_slice_expr.to != null)
+                visit_node(_slice_expr.to);
+            if (_slice_expr.step != null)
+                visit_node(_slice_expr.step);          
+        }
         #endregion
     }
 }

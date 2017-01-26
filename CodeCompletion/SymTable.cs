@@ -319,8 +319,8 @@ namespace CodeCompletion
 
         public SymInfo[] GetSymInfosForExtensionMethods(TypeScope ts)
         {
-            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
-                return new SymInfo[0];
+            /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new SymInfo[0];*/
             List<SymInfo> lst = new List<SymInfo>();
             List<ProcScope> meth_list = GetExtensionMethods(ts);
             for (int i = 0; i < meth_list.Count; i++)
@@ -330,8 +330,8 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(string name, TypeScope ts)
         {
-            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
-                return new List<ProcScope>();
+            /*if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                return new List<ProcScope>();*/
             List<ProcScope> meths = GetExtensionMethods(ts);
             List<ProcScope> lst = new List<ProcScope>();
             for (int i = 0; i < meths.Count; i++)
@@ -346,8 +346,6 @@ namespace CodeCompletion
 
         public List<ProcScope> GetExtensionMethods(TypeScope ts)
         {
-            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
-                return new List<ProcScope>();
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
@@ -366,15 +364,18 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray) || ( tmp_ts2 is ArrayScope && t.IsArray) || (t is TemplateParameterScope || t is UnknownScope))
+                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || (t is TemplateParameterScope || t is UnknownScope))
                             {
                                 lst.AddRange(extension_methods[t]);
                             }
                         }
                     }
-                    tmp_ts = tmp_ts.baseScope;
+                    if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr)
+                        tmp_ts = null;
+                    else
+                        tmp_ts = tmp_ts.baseScope;
                 }
-                if (ts.implemented_interfaces != null)
+                if (ts.implemented_interfaces != null && !(ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr))
                 foreach (TypeScope int_ts in ts.implemented_interfaces)
                 {
                     TypeScope int_ts2 = int_ts;
@@ -388,7 +389,7 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray) || (int_ts2 is ArrayScope && t.IsArray))
+                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) || (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank))
                             {
                                 lst.AddRange(extension_methods[t]);
                                 //break;
@@ -1587,6 +1588,11 @@ namespace CodeCompletion
             this.si = new SymInfo(this.ToString(), SymbolKind.Delegate, this.ToString());
         }
 
+        public ProcType(ProcScope target, List<string> generic_params):this(target)
+        {
+            this.generic_params = generic_params;
+        }
+
         IProcScope IProcType.Target
         {
             get
@@ -1794,6 +1800,14 @@ namespace CodeCompletion
             get
             {
                 return is_reintroduce;
+            }
+        }
+
+        ITypeScope IProcScope.DeclaringType
+        {
+            get
+            {
+                return declaringType;
             }
         }
 
@@ -2554,11 +2568,12 @@ namespace CodeCompletion
     {
         public TypeScope actType;
 
-        public TypeSynonim(SymInfo si, SymScope actType)
+        public TypeSynonim(SymInfo si, SymScope actType, List<string> generic_params)
             : base(SymbolKind.Type, null, null)
         {
             this.actType = actType as TypeScope;
             this.si = si;
+            this.generic_params = generic_params;
             if (actType.si != null && actType.si.description != null)
                 this.si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetDescription(this);
             //this.si.describe = "type "+this.si.name + " = "+actType.si.name;
@@ -2906,6 +2921,15 @@ namespace CodeCompletion
             this.members = new List<SymScope>();
         }
 
+        public override int Rank
+        {
+            get
+            {
+                if (indexes == null)
+                    return 1;
+                return indexes.Length;
+            }
+        }
         public bool IsMultiDynArray
         {
             get
@@ -2959,7 +2983,7 @@ namespace CodeCompletion
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
             if ((elementType is UnknownScope || elementType is TemplateParameterScope) && gen_args.Count > 0)
-                return new ArrayScope(gen_args[0], null);
+               return new ArrayScope(gen_args[gen_args.Count-1], Rank > 1?indexes:null);
             return this;
         }
 
@@ -3528,6 +3552,14 @@ namespace CodeCompletion
                 case SymbolKind.Enum: si.description = CodeCompletionController.CurrentParser.LanguageInformation.GetKeyword(PascalABCCompiler.Parsers.SymbolKind.Enum); break;
             }
 
+        }
+
+        public virtual int Rank
+        {
+            get
+            {
+                return 0;
+            }
         }
 
         public virtual List<TypeScope> GetInstances()
@@ -4699,6 +4731,14 @@ namespace CodeCompletion
             return TypeTable.get_compiled_type(t);
         }
 
+        public override int Rank
+        {
+            get
+            {
+                return this.ctn.GetArrayRank();
+            }
+        }
+
         public override List<TypeScope> GetInstances()
         {
             if (this.instances.Count == 0 && ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
@@ -4818,9 +4858,13 @@ namespace CodeCompletion
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
                             lst[0] = lst[0].instances[0];
                         sc.instances.Add(this.instances[i].GetInstance(lst));
+                        sc.generic_params.Add(gen_args[i].si.name);
                     }
                     else
+                    {
+                        sc.generic_params.Add(gen_args[i].si.name);
                         sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                    }   
                 }
             else
                 for (int i = 0; i < gen_args.Count; i++)
@@ -6446,7 +6490,7 @@ namespace CodeCompletion
             this.si = si;
             this.mi = mi;
             string[] args = declaringType.TemplateArguments;
-
+            this.declaringType = declaringType;
             if (args != null)
             {
                 generic_args = new List<string>();
@@ -6460,7 +6504,7 @@ namespace CodeCompletion
             }
             if (mi.ReturnType != typeof(void))
             {
-                if (generic_args != null /*&& mi.GetGenericArguments().Length == 0*/)
+                if (generic_args != null)
                 {
                     this.return_type = CompiledScope.get_type_instance(mi.ReturnType, declaringType.instances);
                 }
@@ -6501,6 +6545,7 @@ namespace CodeCompletion
         {
             this.si = si;
             this.mi = mi;
+            this.declaringType = declaringType;
             string[] args = declaringType.TemplateArguments;
             if (args != null)
             {

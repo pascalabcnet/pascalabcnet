@@ -44,6 +44,7 @@ type
     procedure DrawFieldOnly;
     procedure DrawXY;
   public
+    dmwidth := 2;
     // Добавил - МА
     TaskName: string;  
     //
@@ -70,6 +71,8 @@ type
     procedure MakerPenDown;
     procedure MakerToPoint(x,y: integer);
     procedure MakerOnVector(x,y: integer);
+    
+    procedure SetDrawManWidth(w: integer);
 
     // примитивы для выполнителя
     procedure DrawDM;
@@ -217,16 +220,14 @@ begin
 end;
 
 procedure TDMField.DrawDMDrawing;
-var i: integer;
 begin
-  for i:=0 to DMColl.Count-1 do
+  for var i:=0 to DMColl.Count-1 do
     DMLine(DMColl[i].p.x,DMColl[i].p.y,DMColl[i].p.x+DMColl[i].v.x,DMColl[i].p.y+DMColl[i].v.y,colorSolve);
 end;
 
 procedure TDMField.DrawDMMakerDrawing;
-var i: integer;
 begin
-  for i:=0 to DMMakerColl.Count-1 do
+  for var i:=0 to DMMakerColl.Count-1 do
     DMLine(DMMakerColl[i].p.x,DMMakerColl[i].p.y,DMMakerColl[i].p.x+DMMakerColl[i].v.x,DMMakerColl[i].p.y+DMMakerColl[i].v.y,colorTask);
 end;
 
@@ -243,17 +244,16 @@ begin
 end;
 
 procedure TDMField.DrawFieldOnly;
-var ix,iy,w,h: integer;
 begin
-  w := CellSize*DimX; 
-  h := CellSize*DimY;
+  var w := CellSize*DimX; 
+  var h := CellSize*DimY;
   Brush.Color := clWhite;
   FillRectangle(X0,Y0,X0+ZazX1+w+1+ZazX2,Y0+ZazY1+h+1+ZazY2);
   Pen.Width := 1;
   Pen.Color := RGB(191,191,191);
-  for ix:=0 to DimX do
+  for var ix:=0 to DimX do
     Line(X0+ZazX1+ix*CellSize,Y0+ZazY1,X0+ZazX1+ix*CellSize,Y0+ZazY1+h);
-  for iy:=0 to DimY do
+  for var iy:=0 to DimY do
     Line(X0+ZazX1,Y0+ZazY1+iy*CellSize,X0+ZazX1+w,Y0+ZazY1+iy*CellSize);
   Pen.Color := clGray;
   if (orx>-DimX) and (orx<0) then
@@ -266,7 +266,7 @@ begin
 end;
 
 procedure TDMField.DrawXY;
-var x,y,ww: integer;
+var ww: integer;
     s: string;
     interval: integer;
     bs: BrushStyleType;
@@ -283,7 +283,7 @@ begin
   Brush.Style := bsClear;
   Font.Name := 'MS Sans Serif';
   Font.Size := 8;
-  for x:=0 to DimX do
+  for var x:=0 to DimX do
     if (x+orx) mod interval = 0 then
     begin
       s:=IntToStr(x+orx);
@@ -291,7 +291,7 @@ begin
 //        hh:=Canvas.TextHeight(s);
       TextOut(X0+ZazX1+x*CellSize-ww div 2+1,Y0+ZazY1+DimY*CellSize+1+2,s);
     end;
-  for y:=0 to DimY do
+  for var y:=0 to DimY do
     if (y+ory) mod interval = 0 then
     begin
       s:=IntToStr(y+ory);
@@ -306,6 +306,7 @@ end;
 
 procedure TDMField.DMLine(x1,y1,x2,y2: integer; c: GraphABC.Color);
 begin
+  Pen.Width := dmwidth;
   Line(X0+ZazX1+(x1-orx)*CellSize,Y0+ZazY1+(DimY-y1+ory)*CellSize,X0+ZazX1+(x2-orx)*CellSize,Y0+ZazY1+(DimY-y2+ory)*CellSize,c);
 end;
 
@@ -364,6 +365,11 @@ begin
   MakerToPoint(MakerX+x,MakerY+y);
 end;
 
+procedure TDMField.SetDrawManWidth(w: integer);
+begin
+  dmwidth := 2;
+end;
+
 procedure TDMField.DrawDM;
 var 
   ZZ: integer;
@@ -376,6 +382,7 @@ begin
   r1 := r;
   r1.Offset(X0+ZazX1+(DMX-orx)*CellSize-4+1,Y0+ZazY1+(DimY-DMY+ory)*CellSize-4+1);
   DMPicture.CopyRect(r,GraphBufferBitmap,r1);
+  Pen.Width := 1;
   DrawRectangle(X0+ZazX1+(DMX-orx)*CellSize-ZZ+1,Y0+ZazY1+(DimY+ory-DMY)*CellSize-ZZ+1,X0+ZazX1+(DMX-orx)*CellSize+ZZ,Y0+ZazY1+(DimY+ory-DMY)*CellSize+ZZ);
 end;
 

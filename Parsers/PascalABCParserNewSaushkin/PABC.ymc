@@ -4,10 +4,32 @@ lexGen=J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\
 yaccGen=J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe
 lexGenOpt=/unicode
 yaccGenOpt=/gplex
+useCustomScript
 script=
-"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gplex.exe" /unicode "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.lex"
-"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe" /no-lines /gplex "D:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y"
+"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gplex.exe" /unicode "J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.lex"
+
+"J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\GPLex_GPPG\gppg.exe" /no-lines /gplex "J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y"
+
 "J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\convert4.exe" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

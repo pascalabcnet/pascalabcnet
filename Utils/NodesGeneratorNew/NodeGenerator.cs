@@ -241,158 +241,6 @@ namespace NodeGenerator
 		}
 ";
 
-        // Шаблоны кода для узлов, содержащих список
-
-        // Методы
-
-        // переменные шаблона:
-        // list_name            имя поля, типа List
-        // list_element_type    тип элементов списка
-        // node_name            название узла
-
-        public static readonly string list_add_many_method =
-@"		public void AddMany(params list_element_type[] els)
-		{
-			list_name.AddRange(els);
-		}
-";
-        public static readonly string list_remove_method =
-@"		public bool Remove(list_element_type el)
-		{
-			return list_name.Remove(el);
-		}
-";
-        public static readonly string list_find_index_method =
-@"		private int FindIndexInList(list_element_type el)
-		{
-			var ind = list_name.FindIndex(x => x == el);
-			if (ind == -1)
-				throw new Exception(string.Format(""У списка {0} не найден элемент {1} среди дочерних\n"", this, el));
-			return ind;
-		}
-";
-        public static readonly string list_replace_method =
-@"		public void ReplaceInList(list_element_type el, list_element_type newel)
-		{
-			list_name[FindIndexInList(el)] = newel;
-		}
-";
-        public static readonly string list_replace_many_method =
-@"		public void ReplaceInList(list_element_type el, IEnumerable<list_element_type> newels)
-		{
-			var ind = FindIndexInList(el);
-			list_name.RemoveAt(ind);
-			list_name.InsertRange(ind, newels);
-		}
-";
-        public static readonly string list_insert_after_method =
-@"		public void InsertAfter(list_element_type el, list_element_type newel)
-		{
-			list_name.Insert(FindIndex(el) + 1, newel);
-		}
-";
-        public static readonly string list_insert_before_method =
-@"		public void InsertBefore(list_element_type el, list_element_type newel)
-		{
-			list_name.Insert(FindIndex(el), newel);
-		}
-";
-        public static readonly string list_insert_after_many_method =
-@"		public void InsertAfter(list_element_type el, IEnumerable<list_element_type> newels)
-		{
-			list_name.InsertRange(FindIndex(el) + 1, newels);
-		}
-";
-        public static readonly string list_insert_before_many_method =
-@"		public void InsertBefore(list_element_type el, IEnumerable<list_element_type> newels)
-		{
-			list_name.InsertRange(FindIndex(el), newels);
-		}
-";
-        public static readonly string list_add_first_method =
-@"		public void AddFirst(list_element_type el)
-		{
-			list_name.Insert(0, el);
-		}
-";
-
-        public static readonly string list_add_first_many_method =
-@"		public void AddFirst(IEnumerable<list_element_type> els)
-		{
-			list_name.InsertRange(0, els);
-		}
-";
-        public static readonly string list_add_method =
-@"		public node_name Add(list_element_type elem, SourceContext sc = null)
-		{
-			list_name.Add(elem);
-			if (sc != null)
-				source_context = sc;
-			return this;
-		}
-";
-
-        public static readonly string list_remove_all_method =
-@"		public int RemoveAll(Predicate<list_element_type> match)
-		{
-			return list_name.RemoveAll(match);
-		}
-";
-
-        public static readonly string list_last_method =
-@"		public list_element_type Last()
-		{
-			return list_name[list_name.Count - 1];
-		}
-";
-        public static readonly string[] list_methods =
-        {
-            list_add_method,
-            list_add_first_method,
-            list_add_first_many_method,
-            list_add_many_method,
-            list_find_index_method,
-            list_insert_after_method,
-            list_insert_after_many_method,
-            list_insert_before_method,
-            list_insert_before_many_method,
-            list_remove_method,
-            list_replace_method,
-            list_replace_many_method,
-            list_remove_all_method,
-            list_last_method
-        };
-
-        // !Методы
-
-        // Конструкторы
-
-        // переменные шаблона:
-        // list_name            имя поля, типа List
-        // list_element_type    тип элементов списка
-        // node_name            имя узла
-
-        public static readonly string list_one_element_constructor =
-@"		public node_name(list_element_type elem, SourceContext sc = null)
-		{
-			Add(elem, sc);
-		}
-";
-        public static readonly string[] list_constructors =
-        {
-            list_one_element_constructor
-        };
-
-        // !Конструкторы
-
-        // Свойства
-
-        public static readonly string[] list_properties;
-
-        // !Свойства
-
-        // !Шаблоны кода для узлов, содержащих список
-
         public static string change_word(string where,string from,string to)
 		{
 			Regex rg=new Regex(from);
@@ -412,23 +260,6 @@ namespace NodeGenerator
 			}
 			return where;
         }
-
-        /// <summary>
-        /// Производит замены в списке строк
-        /// </summary>
-        /// <param name="list">Список строк, в которых необходимо произвести замену</param>
-        /// <param name="replacements">Список замен</param>
-        /// <returns>Результат замен</returns>
-        public static string[] change_words_in_list(string[] list, params string_repl[] replacements)
-        {
-            string[] result = new string[list.Count()];
-
-            for (int i = 0; i < list.Count(); ++i)
-                result[i] = change_words(list[i], replacements);
-
-            return result;
-        }
-
 
         public static string create_property(string property_type,string property_name,string field_name,string help_context)
 		{
@@ -452,51 +283,6 @@ namespace NodeGenerator
 		public static string create_simple_constructor(string class_name)
 		{
 			return change_words(simple_constructor_template,new string_repl("class_name",class_name));
-        }
-
-
-        /// <summary>
-        /// Генерирует конструкторы для списков, используя <see cref="list_constructors"/>
-        /// </summary>
-        /// <param name="list_field_name">Название поля-списка</param>
-        /// <param name="list_elem_type">Тип элементов списка</param>
-        /// <param name="node_name">Название синтаксического узла</param>
-        /// <returns>Код конструкторов</returns>
-        public static string generate_list_constructors(string list_field_name, string list_elem_type, string node_name)
-        {
-            // Для всех шаблонов конструкторов подставляем значения переменных шаблона
-            string[] constructors = change_words_in_list(list_constructors, 
-                                                         new string_repl("list_name", list_field_name),
-                                                         new string_repl("list_element_type", list_elem_type),
-                                                         new string_repl("node_name", node_name));
-
-            return string.Join(Environment.NewLine, constructors);
-        }
-
-        /// <summary>
-        /// Генерирует методы для списков, используя <see cref="list_methods"/>
-        /// </summary>
-        /// <param name="list_field_name">Название поля-списка</param>
-        /// <param name="list_elem_type">Тип элементов списка</param>
-        /// <param name="node_name">Название синтаксического узла</param>
-        /// <returns>Код методов</returns>
-        public static string generate_list_methods(string list_field_name, string list_elem_type, string node_name)
-        {
-            string[] methods = change_words_in_list(list_methods,
-                                                    new string_repl("list_name", list_field_name),
-                                                    new string_repl("list_element_type", list_elem_type),
-                                                    new string_repl("node_name", node_name));
-
-            return string.Join(Environment.NewLine, methods);
-        }
-
-        /// <summary>
-        /// Генерирует свойства для списков, используя <see cref="list_properties"/>
-        /// </summary>
-        /// <returns>Код свойств</returns>
-        public static string generate_list_properties()
-        {
-            throw new NotImplementedException();
         }
     }
 
@@ -562,7 +348,79 @@ namespace NodeGenerator
         }
     }
 
-	[Serializable]
+    class StringHelper
+    {
+        /// <summary>
+        /// Adds indent after every new line in given string
+        /// </summary>
+        /// <param name="str"></param>
+        /// <param name="indent"></param>
+        /// <returns></returns>
+        public static string AddIndent(string str, string indent)
+        {
+            if (indent == null || indent == "")
+                return str;
+
+            return string.Join(Environment.NewLine, str
+                .Split(new string[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                .Select(s => indent + s));
+        }
+    }
+
+    public class SyntaxTemplateManager
+    {
+        static readonly string templatesFolder = "./SyntaxTemplates/";
+        static readonly string methodsTemplatePath = templatesFolder + "SyntaxWithListMethods.txt";
+        static readonly string constructorsTemplatePath = templatesFolder + "SyntaxWithListConstructors.txt";
+
+        private Dictionary<string, string> cachedTemplates = new Dictionary<string, string>();
+
+        public SyntaxTemplateManager()
+        {
+            cachedTemplates[methodsTemplatePath] = LoadAndPrepareTemplate(methodsTemplatePath);
+            cachedTemplates[constructorsTemplatePath] = LoadAndPrepareTemplate(constructorsTemplatePath);
+        }
+
+        private string LoadAndPrepareTemplate(string path)
+        {
+            return StringHelper.AddIndent(File.ReadAllText(path), "\t\t");
+        }
+
+        private string FillTemplateVariables(string pattern, string nodeName, string listName, string listElemType)
+        {
+            return text_consts.change_words(
+                pattern,
+                new text_consts.string_repl("<#ListName#>", listName),
+                new text_consts.string_repl("<#ListElementType#>", listElemType),
+                new text_consts.string_repl("<#NodeName#>", nodeName));
+        }
+
+        /// <summary>
+        /// Получает код методов для узлов со списками
+        /// </summary>
+        /// <param name="nodeName">Имя узла</param>
+        /// <param name="listName">Имя поля-списка</param>
+        /// <param name="listElemType">Тип элементов списка</param>
+        /// <returns></returns>
+        public string GetListMethodsCode(string nodeName, string listName, string listElemType)
+        {
+            return FillTemplateVariables(cachedTemplates[methodsTemplatePath], nodeName, listName, listElemType);
+        }
+
+        /// <summary>
+        /// Получает код конструкторов для узлов со списками
+        /// </summary>
+        /// <param name="nodeName">Имя узла</param>
+        /// <param name="listName">Имя поля-списка</param>
+        /// <param name="listElemType">Тип элементов списка</param>
+        /// <returns></returns>
+        public string GetListConstructorsCode(string nodeName, string listName, string listElemType)
+        {
+            return FillTemplateVariables(cachedTemplates[constructorsTemplatePath], nodeName, listName, listElemType);
+        }
+    }
+
+    [Serializable]
 	public class HelpContext
 	{
 
@@ -996,15 +854,20 @@ namespace NodeGenerator
                 string cast = list_type == text_consts.base_tree_node_name ? "" : "(" + list_type + ")";
 
                 writer.WriteLine($"if ({field_name} != null)");
-                writer.Indent++;
+                writer.OpenBlock();
                 writer.WriteLine($"foreach ({list_type} elem in {field_name})");
-                writer.Indent++;
+                writer.OpenBlock(); 
                 writer.WriteLine($"if (elem != null)");
                 writer.OpenBlock();
                 writer.WriteLine($"{variableName}.Add({cast}elem.Clone());");
                 writer.WriteLine($"{variableName}.Last().Parent = {variableName};");
                 writer.CloseBlock();
-                writer.Indent -= 2;
+                writer.WriteLine("else");
+                writer.Indent++;
+                writer.WriteLine($"{variableName}.Add(null);");
+                writer.Indent--;
+                writer.CloseBlock();
+                writer.CloseBlock();
             }
             else
                 writer.WriteLine($"{destination} = {field_name};");
@@ -3251,59 +3114,42 @@ namespace NodeGenerator
 
         // !Генерация кода для узлов, содержащих список
 
+        simple_element GetListField()
+        {
+            var list_fields = subnodes.OfType<simple_element>().Where(field => field.val_field_type_name.StartsWith("List<"));
+            simple_element list_field = null;
+            if (list_fields.Count() > 0)
+                list_field = list_fields.First();
+
+            return list_field;
+        }
+
         /// <summary>
         /// Генерация методов для узлов, содержащих список наследников syntax_tree_node (если такой список есть)
         /// </summary>
         /// <param name="sw">Writer потока, в который добавляется сгенерированный код</param>
-        private void generate_list_methods(StreamWriter sw)
-        {   
-            // Генерируем методы только для одного поля-списка
-            // Получаем первый список узлов-наследников syntax_tree_node
-            var list_fields = subnodes.OfType<simple_element>().Where(field => field.val_field_type_name.StartsWith("List<"));
-            simple_element list_field = null;
-            if (list_fields.Count() > 0)
-                list_field = list_fields.First();
-
-            // Записываем код методов, если узел найден
-            if (list_field != null)
-            {
-                sw.WriteLine(text_consts.tab2 + "// Методы списка");
-                sw.WriteLine(text_consts.generate_list_methods(list_field.field_name, list_field.list_type, this.node_name));
-                sw.WriteLine(text_consts.tab2 + "// Окончание методов списка");
-            }
+        private void generate_list_methods(StreamWriter sw, SyntaxTemplateManager manager)
+        {
+            var listField = GetListField();
+            if (listField != null)
+                sw.WriteLine(manager.GetListMethodsCode(
+                    node_name,
+                    listField.field_name,
+                    listField.list_type));
         }
 
         /// <summary>
         /// Генерация конструкторов для узлов, содержащих список наследников syntax_tree_node (если такой список есть)
         /// </summary>
         /// <param name="sw">Writer потока, в который добавляется сгенерированный код</param>
-        private void generate_list_constructors(StreamWriter sw)
+        private void generate_list_constructors(StreamWriter sw, SyntaxTemplateManager manager)
         {
-            // Генерируем конструкторы только для одного поля-списка
-            // Получаем первый список узлов-наследников syntax_tree_node
-            var list_fields = subnodes.OfType<simple_element>().Where(field => field.val_field_type_name.StartsWith("List<"));
-            simple_element list_field = null;
-            if (list_fields.Count() > 0)
-                list_field = list_fields.First();
-
-            // Записываем код методов, если узел найден
-            if (list_field != null)
-            {
-                sw.WriteLine(text_consts.tab2 + "// Конструкторы списка");
-                sw.WriteLine(text_consts.generate_list_constructors(list_field.field_name, list_field.list_type, this.node_name));
-                sw.WriteLine(text_consts.tab2 + "// Окончание конструкторов списка");
-            }
-        }
-
-        /// <summary>
-        /// Генерация конструкторов для узлов, содержащих список наследников syntax_tree_node (если такой список есть)
-        /// </summary>
-        /// <param name="sw">Writer потока, в который добавляется сгенерированный код</param>
-        private void generate_list_properties(StreamWriter sw)
-        {
-            // TODO: реализовать генерацию свойств
-
-            //sw.WriteLine(text_consts.generate_list_properties());
+            var listField = GetListField();
+            if (listField != null)
+                sw.WriteLine(manager.GetListConstructorsCode(
+                    node_name,
+                    listField.field_name,
+                    listField.list_type));
         }
 
         // !Генерация кода для узлов, содержащих список
@@ -3373,7 +3219,7 @@ namespace NodeGenerator
             }
         }
 
-        public void generate_code(StreamWriter sw,HelpStorage hst)
+        public void generate_code(StreamWriter sw,HelpStorage hst, SyntaxTemplateManager manager)
 		{
 			//sw.WriteLine();
 
@@ -3414,9 +3260,9 @@ namespace NodeGenerator
                 generate_big_constructor_code(sw, true, true);
             }
 
-            generate_list_constructors(sw);
+            generate_list_constructors(sw, manager);
 
-            sw.WriteLine();
+            //sw.WriteLine();
             foreach (node_field_info nfi in _subnodes)
 			{
 				nfi.generate_field_code(sw);
@@ -3433,8 +3279,6 @@ namespace NodeGenerator
             if (_subnodes.Count>0)
                 sw.WriteLine();
 
-            generate_list_properties(sw);
-
             foreach (method_info mi in _methods)
             {
                 mi.generate_code(sw, this, hst);
@@ -3443,7 +3287,7 @@ namespace NodeGenerator
             if (_methods.Count > 0)
                 sw.WriteLine();
 
-            generate_list_methods(sw);
+            generate_list_methods(sw, manager);
 
             generate_clone_method(sw);
             sw.WriteLine();
@@ -4034,6 +3878,7 @@ namespace NodeGenerator
 		public void generate_code()
 		{
 			StreamWriter sw=new StreamWriter(file_name);
+            SyntaxTemplateManager templateManager = new SyntaxTemplateManager();
 
             sw.WriteLine();
             sw.WriteLine("using System;");
@@ -4044,7 +3889,7 @@ namespace NodeGenerator
 
 			foreach(node_info ni in nodes)
 			{
-				ni.generate_code(sw,this.help_storage);
+				ni.generate_code(sw,this.help_storage, templateManager);
 			}
 
 			//generate_factory_class(sw);

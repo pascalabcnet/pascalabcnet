@@ -66,7 +66,7 @@
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
 	
-	File ..\bin\Lib\__RedirectIOMode.pcu
+    File ..\bin\Lib\__RedirectIOMode.pcu
     File ..\bin\Lib\__RunMode.pcu
     File ..\bin\Lib\ABCButtons.pcu
     File ..\bin\Lib\ABCHouse.pcu
@@ -106,10 +106,11 @@
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\OpenGL.pcu
+    File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
-	${AddFile} "__RedirectIOMode.pcu"
+    ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
     ${AddFile} "ABCButtons.pcu"
     ${AddFile} "ABCHouse.pcu"
@@ -121,7 +122,7 @@
     ${AddFile} "CRT.pcu"
     ${AddFile} "DMCollect.pcu"
     ${AddFile} "DMTaskMaker.pcu"
-	${AddFile} "DMZadan.pcu"
+    ${AddFile} "DMZadan.pcu"
     ${AddFile} "Drawman.pcu"
     ${AddFile} "DrawManField.pcu"
     ${AddFile} "Events.pcu"
@@ -140,7 +141,7 @@
     ${AddFile} "RobotTaskMaker.pcu"
     ${AddFile} "RobotZadan.pcu"
     ${AddFile} "Sockets.pcu"
-	${AddFile} "Timers.pcu"
+    ${AddFile} "Timers.pcu"
     ${AddFile} "Utils.pcu"
     ${AddFile} "VCL.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
@@ -151,6 +152,7 @@
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
     ${AddFile} "OpenGL.pcu"
+    ${AddFile} "PT4MakerNetX.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -187,7 +189,7 @@
     File ..\bin\Lib\RobotTaskMaker.pas
 ;    File ..\bin\Lib\RobotZadan.pas
     File ..\bin\Lib\Sockets.pas
-	File ..\bin\Lib\Timers.pas
+    File ..\bin\Lib\Timers.pas
     File ..\bin\Lib\Utils.pas
     File ..\bin\Lib\VCL.pas
     File ..\bin\Lib\PT4TaskMakerNET.pas
@@ -197,6 +199,7 @@
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
     File ..\bin\Lib\OpenGL.pas
+    File ..\bin\Lib\PT4MakerNetX.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -241,6 +244,7 @@
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
     ${AddFile} "OpenGL.pas"
+    ${AddFile} "PT4MakerNetX.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

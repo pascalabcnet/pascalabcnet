@@ -234,10 +234,16 @@ function GetPixel(x,y: integer): Color;
 
 /// Устанавливает текущую позицию рисования в точку (x,y)
 procedure MoveTo(x,y: integer);
+/// Перемещает текущую позицию рисования на вектор (dx,dy)
+procedure MoveRel(dx,dy: integer);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: integer);
 /// Рисует отрезок от текущей позиции до точки (x,y) цветом c. Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: integer; c: Color);
+/// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineRel(dx,dy: integer);
+/// Рисует отрезок цветом c от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineRel(dx,dy: integer; c: Color);
 
 /// Рисует отрезок от точки (x1,y1) до точки (x2,y2)
 procedure Line(x1,y1,x2,y2: integer);
@@ -2388,6 +2394,12 @@ begin
   y_coord := y;
 end;
 
+procedure MoveRel(dx,dy: integer);
+begin
+  x_coord += dx;
+  y_coord += dy;
+end;
+
 procedure LineTo(x,y: integer);
 begin
   Line(x_coord,y_coord,x,y);
@@ -2400,6 +2412,16 @@ begin
   Line(x_coord,y_coord,x,y,c);
   x_coord := x;
   y_coord := y;
+end;
+
+procedure LineRel(dx,dy: integer);
+begin
+  LineTo(x_coord + dx,y_coord + dy);
+end;
+
+procedure LineRel(dx,dy: integer; c: Color);
+begin
+  LineTo(x_coord + dx,y_coord + dy,c);
 end;
 
 procedure Line(x1,y1,x2,y2: integer; c: Color);
@@ -2904,7 +2926,10 @@ end;
 procedure SetPenWidth(Width: integer);
 begin
   lock f do
+  begin
     Pen.NETPen.Width := Width;
+    _ColorLinePen.Width := Width;
+  end;  
 end;
 
 function PenWidth: integer;
