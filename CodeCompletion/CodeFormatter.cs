@@ -2849,6 +2849,17 @@ namespace CodeFormatters
             if (_slice_expr.step != null)
                 visit_node(_slice_expr.step);          
         }
+
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            visit_node(_slice_expr_question.v);
+            if (_slice_expr_question.from != null)
+                visit_node(_slice_expr_question.from);
+            if (_slice_expr_question.to != null)
+                visit_node(_slice_expr_question.to);
+            if (_slice_expr_question.step != null)
+                visit_node(_slice_expr_question.step);
+        }
         #endregion
     }
 }
