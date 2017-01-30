@@ -3018,7 +3018,7 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNamesOnlyInType(string name)
         {
-            if (!is_dynamic_arr)
+            if (!is_dynamic_arr && !IsMultiDynArray)
                 return new List<SymScope>();
             List<SymScope> syms = base.FindOverloadNamesOnlyInType(name);
             if (implemented_interfaces != null)
@@ -3037,7 +3037,7 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
-            if (!is_dynamic_arr)
+            if (!is_dynamic_arr && !IsMultiDynArray)
                 return null;
             SymScope sc = null;
             if (baseScope != null && is_dynamic_arr) sc = baseScope.FindNameOnlyInType(name);
@@ -3049,7 +3049,7 @@ namespace CodeCompletion
         public override List<SymScope> FindOverloadNames(string name)
         {
             List<SymScope> names = new List<SymScope>();
-            if (!is_dynamic_arr)
+            if (!is_dynamic_arr && !IsMultiDynArray)
                 return names;
             if (baseScope != null && is_dynamic_arr) names.AddRange(baseScope.FindOverloadNamesOnlyInType(name));
             if (topScope != null)
@@ -3059,7 +3059,7 @@ namespace CodeCompletion
 
         public override SymScope FindNameInAnyOrder(string name)
         {
-            if (!is_dynamic_arr)
+            if (!is_dynamic_arr && !IsMultiDynArray)
                 return null;
             SymScope sc = null;
             if (baseScope != null && is_dynamic_arr) sc = baseScope.FindNameOnlyInType(name);
@@ -3109,20 +3109,6 @@ namespace CodeCompletion
                 return this.indexes.Length == arrs.indexes.Length;
             }
             return true;
-            /*if (this.indexes == null && arrs.indexes == null) return true;//?????
-            if (this.indexes != null && arrs.indexes != null)
-            {
-                if (this.indexes.Length != arrs.indexes.Length) return false;
-                for (int i=0; i<this.indexes.Length; i++)
-                    if (this.indexes[i] == null && arrs.indexes[i] == null)
-                        continue;
-                    else if (this.indexes[i] == null && arrs.indexes[i] != null || this.indexes[i] != null && arrs.indexes[i] == null)
-                        return false;
-                    else
-                    if (!this.indexes[i].IsEqual(arrs.indexes[i])) return false;
-                return true;
-            }
-            return false;*/
         }
 
         public override bool IsEqual(SymScope ts)
