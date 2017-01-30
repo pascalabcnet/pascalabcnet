@@ -2809,7 +2809,7 @@ namespace PascalABCCompiler.PCU
                 cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
                 compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-            else if (cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && cnfn.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
+            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && cnfn.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
                 (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             return cnfn;
 		}
