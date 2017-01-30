@@ -1550,11 +1550,14 @@ namespace CodeCompletion
             	}*/
                 if (!parse_only_interface)
             	    _procedure_definition.proc_body.visit(this);
-            	ProcRealization pr = (cur_scope as ProcScope).proc_realization;
-            	if (pr == null)
-            	    cur_scope.body_loc = get_location(_procedure_definition.proc_body);
-            	else 
-            		pr.body_loc = get_location(_procedure_definition.proc_body);
+                if (cur_scope != null && cur_scope is ProcScope)
+                {
+                    ProcRealization pr = (cur_scope as ProcScope).proc_realization;
+                    if (pr == null)
+                        cur_scope.body_loc = get_location(_procedure_definition.proc_body);
+                    else
+                        pr.body_loc = get_location(_procedure_definition.proc_body);
+                }
             }
             cur_scope = tmp;
         }
@@ -3662,7 +3665,7 @@ namespace CodeCompletion
                     }
                     catch (Exception e)
                     {
-
+                        cur_scope = impl_scope;
                     }
                 }
         }
