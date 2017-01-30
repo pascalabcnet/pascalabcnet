@@ -32,9 +32,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             SliceDesugarVisitor.New.ProcessNode(root);
 
             // Всё, связанное с yield
-            root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());
+            MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
-
 
             return root;
         }

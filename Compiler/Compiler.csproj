@@ -142,10 +142,6 @@
       <Project>{613E0DDA-AA8A-437C-AC45-507B47429FF9}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
     </ProjectReference>
-    <ProjectReference Include="..\StandardSyntaxTreeConverter\StandardSyntaxTreeConverter.csproj">
-      <Project>{4d36d4ce-56fd-4bec-b846-d54b3a39ffd5}</Project>
-      <Name>StandardSyntaxTreeConverter</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SyntaxTreeConverters\SyntaxTreeConverters.csproj">
       <Project>{f10a5330-dcf4-4533-877c-7b1b1be23884}</Project>
       <Name>SyntaxTreeConverters</Name>

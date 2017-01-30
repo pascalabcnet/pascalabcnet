@@ -19297,6 +19297,15 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        public override void visit(SyntaxTree.yield_node yn)
+        {
+            // надо что то сгенерировать, иначе выдается ложное предупреждение о недостижимом коде и проч.
+            /*var ass = new assign("Result", new nil_const());
+            visit(ass);
+            var pc = new procedure_call("exit");
+            visit(pc);*/
+        }
+
         // frninja - захват полей класса для yield
         public override void visit(SyntaxTree.yield_unknown_ident _unk)
         {
@@ -19316,15 +19325,6 @@ namespace PascalABCCompiler.TreeConverter
         {
             var t = new semantic_type_node(new ienumerable_auto_type(get_location(_unk)));
             t.visit(this);
-        }
-
-        public override void visit(SyntaxTree.yield_node yn)
-        {
-            // надо что то сгенерировать, иначе выдается ложное предупреждение о недостижимом коде и проч.
-            var ass = new assign("Result", new nil_const());
-            visit(ass);
-            var pc = new procedure_call("exit");
-            visit(pc);
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
