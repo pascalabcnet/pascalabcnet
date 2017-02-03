@@ -31,6 +31,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // slice_expr и slice_expr_question
             SliceQuestionDesugarVisitor.New.ProcessNode(root);
 
+
+
             // Всё, связанное с yield
             root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
