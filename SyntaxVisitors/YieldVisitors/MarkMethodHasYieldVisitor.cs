@@ -17,6 +17,11 @@ namespace SyntaxVisitors
 
         private Stack<procedure_definition> MethodsStack = new Stack<procedure_definition>();
 
+        public static MarkMethodHasYieldAndCheckSomeErrorsVisitor New
+        {
+            get { return new MarkMethodHasYieldAndCheckSomeErrorsVisitor(); }
+        }
+
         public override void visit(function_lambda_definition ld)
         {
             if (ld.DescendantNodes().OfType<yield_node>().Count() > 0)

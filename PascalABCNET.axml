@@ -1274,6 +1274,29 @@
               </i>
             </OCtx>
           </Node>
+          <Node ID="visit" Name="Обработка auto_type в assign_node" NL="0,8925781" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Note>Обработка auto_type в assign_node</Note>
+            <Text>if (to.type is auto_type)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . assign _assign )</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
+          <Node ID="visit" Name="visit(SyntaxTree.yield_unknown_expression_type" NL="0,9160156" NG="-1">
+            <FileName>\TreeConverter\TreeConversion\syntax_tree_visitor.cs</FileName>
+            <Text>public override void visit(SyntaxTree.yield_unknown_expression_type _unk_expr)</Text>
+            <OCtx>
+              <i Type="Method">public override void visit ( SyntaxTree . yield_unknown_expression_type _unk_expr )</i>
+              <i Type="ClassOrNamespace">public partial class syntax_tree_visitor : SyntaxTree . WalkingVisitorNew</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . TreeConverter</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+          </Node>
         </Items>
       </Node>
       <Node Name="a.Sort((row1, row2) -&gt; 1)" NL="0" NG="0">
@@ -1391,6 +1414,20 @@
       </Node>
       <Node Name="Ядро преобраз-я синт. деревьев" NL="0" NG="0">
         <Items>
+          <Node ID="StandardSyntaxTreeConverter" Name="StandardSyntaxTreeConverter" NL="-1" NG="0,2734375">
+            <FileName>\standardsyntaxtreeconverter\standardsyntaxconverter.cs</FileName>
+            <OCtx>
+              <i Type="ClassOrNamespace">public class StandardSyntaxTreeConverter : ISyntaxTreeConverter</i>
+              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
+              <i Type="CS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">public string Name</i>
+              <i Type="Field">=</i>
+              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
+            </ICtx>
+          </Node>
           <Node Name="SyntaxTree = Convert(SyntaxTree)" NL="0" NG="0">
             <FileName>\Compiler\Compiler.cs</FileName>
             <Text>CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;</Text>
@@ -1439,20 +1476,6 @@
             <Text>class StandardSyntaxConverters: ISyntaxTreeConverter</Text>
             <OCtx>
               <i Type="ClassOrNamespace">class StandardSyntaxConverters : ISyntaxTreeConverter</i>
-              <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
-              <i Type="CS_TreeNode">
-              </i>
-            </OCtx>
-            <ICtx>
-              <i Type="Method">public string Name</i>
-              <i Type="Field">=</i>
-              <i Type="Method">public syntax_tree_node Convert ( syntax_tree_node root )</i>
-            </ICtx>
-          </Node>
-          <Node ID="StandardSyntaxTreeConverter" Name="StandardSyntaxTreeConverter" NL="-1" NG="0,2734375">
-            <FileName>\standardsyntaxtreeconverter\standardsyntaxconverter.cs</FileName>
-            <OCtx>
-              <i Type="ClassOrNamespace">public class StandardSyntaxTreeConverter : ISyntaxTreeConverter</i>
               <i Type="ClassOrNamespace">namespace PascalABCCompiler . SyntaxTreeConverters</i>
               <i Type="CS_TreeNode">
               </i>

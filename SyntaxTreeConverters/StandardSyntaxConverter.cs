@@ -29,14 +29,13 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             AssignTuplesDesugarVisitor.New.ProcessNode(root);
 
             // slice_expr и slice_expr_question
-            SliceQuestionDesugarVisitor.New.ProcessNode(root);
+            SliceDesugarVisitor.New.ProcessNode(root);
 
 
 
             // Всё, связанное с yield
-            root.visit(new MarkMethodHasYieldAndCheckSomeErrorsVisitor());
+            MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
-
 
             return root;
         }

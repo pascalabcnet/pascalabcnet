@@ -12444,6 +12444,8 @@ namespace PascalABCCompiler.TreeConverter
                                 top_function.ConnectedToType.original_generic.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType.IsDelegate && top_function.ConnectedToType.base_type.IsDelegate)
                                 compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
+                            else if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && top_function.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
+                                (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             if (top_function.ConnectedToType.IsDelegate && context.top_function.IsOperator && (context.top_function.name == "+" || context.top_function.name == "-" || context.top_function.name == "+=" || context.top_function.name == "-="))
                                 AddError(get_location(_procedure_attributes_list), "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
                             if (context.top_function.IsOperator && (context.top_function.name == compiler_string_consts.implicit_operator_name || context.top_function.name == compiler_string_consts.explicit_operator_name) && context.top_function.parameters.Count == 1 && context.top_function.return_value_type != null)
@@ -19297,6 +19299,15 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        public override void visit(SyntaxTree.yield_node yn)
+        {
+            // надо что то сгенерировать, иначе выдается ложное предупреждение о недостижимом коде и проч.
+            /*var ass = new assign("Result", new nil_const());
+            visit(ass);
+            var pc = new procedure_call("exit");
+            visit(pc);*/
+        }
+
         // frninja - захват полей класса для yield
         public override void visit(SyntaxTree.yield_unknown_ident _unk)
         {
@@ -19316,15 +19327,6 @@ namespace PascalABCCompiler.TreeConverter
         {
             var t = new semantic_type_node(new ienumerable_auto_type(get_location(_unk)));
             t.visit(this);
-        }
-
-        public override void visit(SyntaxTree.yield_node yn)
-        {
-            // надо что то сгенерировать, иначе выдается ложное предупреждение о недостижимом коде и проч.
-            var ass = new assign("Result", new nil_const());
-            visit(ass);
-            var pc = new procedure_call("exit");
-            visit(pc);
         }
 
         /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
@@ -19359,13 +19361,13 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.sugared_expression ex)
         {
-            if (ex.sugared_expr is SyntaxTree.tuple_node_for_formatter) 
+            /*if (ex.sugared_expr is SyntaxTree.tuple_node) 
             {
-                semantic_check_tuple(ex.sugared_expr as SyntaxTree.tuple_node_for_formatter);
+                semantic_check_tuple(ex.sugared_expr as SyntaxTree.tuple_node);
             }
-            else
+            else*/
             {
-                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.GetType().Name);
+                AddError(get_location(ex), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", ex.sugared_expr.GetType().Name);
             }
 
             ProcessNode(ex.new_expr); // обойти десахарное выражение - обязательно ProcessNode - visit нельзя!
@@ -19379,7 +19381,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.GetType().Name);
+                AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.sugared_expr.GetType().Name);
             }
 
             ProcessNode(av.new_addr_value); // обойти десахарное 

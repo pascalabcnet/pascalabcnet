@@ -5779,23 +5779,23 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public void visit(tuple_node _tuple_node)
 		{
 			bw.Write((Int16)207);
-			write_tuple_node_for_formatter(_tuple_node_for_formatter);
+			write_tuple_node(_tuple_node);
 		}
 
-		public void write_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		public void write_tuple_node(tuple_node _tuple_node)
 		{
-			write_expression(_tuple_node_for_formatter);
-			if (_tuple_node_for_formatter.el == null)
+			write_expression(_tuple_node);
+			if (_tuple_node.el == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_tuple_node_for_formatter.el.visit(this);
+				_tuple_node.el.visit(this);
 			}
 		}
 

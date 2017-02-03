@@ -36800,13 +36800,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class tuple_node_for_formatter : expression
+	public partial class tuple_node : expression
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public tuple_node_for_formatter()
+		public tuple_node()
 		{
 
 		}
@@ -36814,7 +36814,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public tuple_node_for_formatter(expression_list _el)
+		public tuple_node(expression_list _el)
 		{
 			this._el=_el;
 		}
@@ -36822,7 +36822,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public tuple_node_for_formatter(expression_list _el,SourceContext sc)
+		public tuple_node(expression_list _el,SourceContext sc)
 		{
 			this._el=_el;
 			source_context = sc;
@@ -36848,7 +36848,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			tuple_node_for_formatter copy = new tuple_node_for_formatter();
+			tuple_node copy = new tuple_node();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -36866,9 +36866,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new tuple_node_for_formatter TypedClone()
+		public new tuple_node TypedClone()
 		{
-			return Clone() as tuple_node_for_formatter;
+			return Clone() as tuple_node;
 		}
 
 		///<summary>
@@ -37854,7 +37854,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///Узел для вычисления типа выражения используемого в теле функции-итератора (с yield)
+	///Узел для вычисления типа выражения используемого в теле функции-итератора (с yield). Используется для описаний всех переменных с автовыводом типов в теле yield: например, для var a := 1; Дело в том, что эти переменные становятся полями класса, а для описания полей класса нужен тип
 	///</summary>
 	[Serializable]
 	public partial class yield_unknown_expression_type : type_definition

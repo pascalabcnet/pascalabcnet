@@ -2774,10 +2774,10 @@ namespace CodeFormatters
             }
         }
 
-        public override void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+        public override void visit(tuple_node _tuple_node)
         {
             sb.Append("(");
-            visit_node(_tuple_node_for_formatter.el);
+            visit_node(_tuple_node.el);
         }
 
         public override void visit(uses_closure uc)
@@ -2848,6 +2848,17 @@ namespace CodeFormatters
                 visit_node(_slice_expr.to);
             if (_slice_expr.step != null)
                 visit_node(_slice_expr.step);          
+        }
+
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            visit_node(_slice_expr_question.v);
+            if (_slice_expr_question.from != null)
+                visit_node(_slice_expr_question.from);
+            if (_slice_expr_question.to != null)
+                visit_node(_slice_expr_question.to);
+            if (_slice_expr_question.step != null)
+                visit_node(_slice_expr_question.step);
         }
         #endregion
     }

@@ -7,11 +7,11 @@ using PascalABCCompiler.SyntaxTree;
 
 namespace SyntaxVisitors.SugarVisitors
 {
-    public class SliceQuestionDesugarVisitor : BaseChangeVisitor
+    public class SliceDesugarVisitor : BaseChangeVisitor
     {
-        public static SliceQuestionDesugarVisitor New
+        public static SliceDesugarVisitor New
         {
-            get { return new SliceQuestionDesugarVisitor(); }
+            get { return new SliceDesugarVisitor(); }
         }
 
         expression_list construct_expression_list_for_slice_expr(slice_expr sl)
