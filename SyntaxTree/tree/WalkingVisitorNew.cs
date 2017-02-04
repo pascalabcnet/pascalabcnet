@@ -47,6 +47,7 @@ namespace PascalABCCompiler.SyntaxTree
         // Можно перенести сюда поскольку замена 1 на 1 позволяет пользоваться текущим DefaultVisit
         public void ReplaceUsingParent(syntax_tree_node from, syntax_tree_node to)
         {
+            to.Parent = from.Parent;
             if (from.Parent == null)
                 throw new Exception("У корневого элемента нельзя получить Parent");
             from.Parent.ReplaceDescendant(from, to);
