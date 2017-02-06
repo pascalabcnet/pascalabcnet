@@ -28,9 +28,14 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
         }
 
-        void semantic_check_slice_expr(SyntaxTree.slice_expr sl)
+        void semantic_check_method_call_as_slice_expr(SyntaxTree.method_call mc)
         {
-            var semvar = convert_strong(sl.v);
+            var v = (mc.dereferencing_value as dot_node).left;
+            var from = mc.parameters.expressions[1];
+            var to = mc.parameters.expressions[2];
+            expression step = mc.parameters.expressions.Count > 3 ? mc.parameters.expressions[3] : null;
+
+            var semvar = convert_strong(v);
             if (semvar is typed_expression)
                 semvar = convert_typed_expression_to_function_call(semvar as typed_expression);
 
@@ -54,24 +59,24 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             if (IsSlicedType == 0)
-                AddError(get_location(sl.v), "BAD_SLICE_OBJECT");
+                AddError(get_location(v), "BAD_SLICE_OBJECT");
 
-            var semfrom = convert_strong(sl.from);
+            var semfrom = convert_strong(from);
             var b = convertion_data_and_alghoritms.can_convert_type(semfrom, SystemLibrary.SystemLibrary.integer_type);
             if (!b)
-                AddError(get_location(sl.from), "INTEGER_VALUE_EXPECTED");
+                AddError(get_location(from), "INTEGER_VALUE_EXPECTED");
 
-            var semto = convert_strong(sl.to);
+            var semto = convert_strong(to);
             b = convertion_data_and_alghoritms.can_convert_type(semto, SystemLibrary.SystemLibrary.integer_type);
             if (!b)
-                AddError(get_location(sl.to), "INTEGER_VALUE_EXPECTED");
+                AddError(get_location(to), "INTEGER_VALUE_EXPECTED");
 
-            if (sl.step != null)
+            if (step != null)
             {
-                var semstep = convert_strong(sl.step);
+                var semstep = convert_strong(step);
                 b = convertion_data_and_alghoritms.can_convert_type(semstep, SystemLibrary.SystemLibrary.integer_type);
                 if (!b)
-                    AddError(get_location(sl.step), "INTEGER_VALUE_EXPECTED");
+                    AddError(get_location(step), "INTEGER_VALUE_EXPECTED");
             }
 
         }
