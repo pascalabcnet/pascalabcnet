@@ -1205,8 +1205,14 @@ function Odd(i: longword): boolean;
 function Odd(i: int64): boolean;
 ///--
 function Odd(i: uint64): boolean;
+
+// -----------------------------------------------------
+//>>     Функции для работы с комплексными числами # Functions for Complex numbers
+// -----------------------------------------------------
 /// Конструирует комплексное число с вещественной частью re и мнимой частью im
 function Cplx(re,im: real): Complex;
+/// Вычисляет квадратный корень из комплексного числа
+function Sqrt(c: Complex): Complex;
 
 // -----------------------------------------------------
 //>>     Процедуры для работы со стандартными множествами # Subroutines for set of T
@@ -6970,6 +6976,12 @@ function Cplx(re,im: real): Complex;
 begin
   Result := new Complex(re,im);
 end;
+
+function Sqrt(c: Complex): Complex;
+begin
+  Result := Complex.Sqrt(c);
+end;
+
 
 // -----------------------------------------------------
 //                Dynamic arrays: implementation

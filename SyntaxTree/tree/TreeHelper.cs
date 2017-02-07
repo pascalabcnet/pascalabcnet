@@ -948,8 +948,28 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class dot_node
+    {
+        public static dot_node NewP(addressed_value avl, addressed_value avr, SourceContext sc)
+        {
+            var dn = new dot_node(avl, avr, sc);
+            if (avl != null) avl.Parent = dn;
+            if (avr != null) avr.Parent = dn;
+            return dn;
+        }
+    }
+
+
     public partial class method_call
     {
+        public static method_call NewP(addressed_value av, expression_list el, SourceContext sc)
+        {
+            var mc = new method_call(av, el, sc);
+            if (av != null) av.Parent = mc;
+            if (el != null) el.Parent = mc;
+            return mc;
+        }
+
         /// <summary>
         /// Простое имя метода. Возвращает null, если не удалось такое получить.
         /// </summary>
@@ -1640,6 +1660,11 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class slice_expr
+    {
+        public override string ToString() => this.v + "[" + this.from + ":" + this.to + ":" + this.step + "]";
+    }
+
     public partial class slice_expr_question
     {
         public slice_expr_question(addressed_value v, expression from, expression to, expression step) : base(v, from, to, step)
@@ -1647,6 +1672,22 @@ namespace PascalABCCompiler.SyntaxTree
         public slice_expr_question(addressed_value v, expression from, expression to, expression step, SourceContext sc) : base(v, from, to, step, sc)
         { }
     }
+
+    public partial class sugared_addressed_value
+    {
+        public static sugared_addressed_value NewP(object sug, addressed_value av, SourceContext sc)
+        {
+            var res = new sugared_addressed_value(sug, av, sc);
+            av.Parent = res;
+            return res;
+        }
+        public override string ToString()
+        {
+            return "{sug}" + this.new_addr_value;
+        }
+
+    }
+
 
 }
 
