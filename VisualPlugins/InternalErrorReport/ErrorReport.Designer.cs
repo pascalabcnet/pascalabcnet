@@ -105,7 +105,7 @@ namespace VisualPascalABCPlugins
             this.linkLabel2.Size = new System.Drawing.Size(95, 13);
             this.linkLabel2.TabIndex = 8;
             this.linkLabel2.TabStop = true;
-            this.linkLabel2.Text = "darkstarta@mail.ru";
+            this.linkLabel2.Text = "ibondarev@sfedu.ru";
             this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
             // 
             // PluginImage
