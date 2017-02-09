@@ -217,7 +217,8 @@ namespace PascalABCCompiler.PCU
 		private bool is_interface = true;//переводим ли интерфейсную часть
         //глобальная таблица для хранения смещений сущностей
         private static Dictionary<definition_node,int> gl_members = new Dictionary<definition_node,int>();
-        
+        private Dictionary<int, common_namespace_function_node> function_references = new Dictionary<int, common_namespace_function_node>();
+        private Dictionary<int, common_type_node> type_references = new Dictionary<int, common_type_node>();
         //глобальная таблица, привязывающая импортируемую сущность, смещение которой пока неизвестно с PCUWriter
         private static Dictionary<definition_node, List<PCUWriter>> not_comp_members = new Dictionary<definition_node, List<PCUWriter>>();
        
@@ -392,7 +393,8 @@ namespace PascalABCCompiler.PCU
             WriteConstantPositions();
             AddAttributes();
             WriteInitExpressions();
-            
+            WriteFunctionReferences();
+            WriteTypeReferences();
             //сохранение интерфейсной и имплементац. частей модуля
             if (ext_offsets.Count != 0)
             {
@@ -408,32 +410,9 @@ namespace PascalABCCompiler.PCU
                     if (PCUReader.AllReadOrWritedDefinitionNodesOffsets.ContainsKey(wdn))
                         AddOffsetForMembers(wdn, PCUReader.AllReadOrWritedDefinitionNodesOffsets[wdn]);
                 }
-                //ssyy 01.07.2007
-                //CloseWriter();
-                //\ssyy
             }
-
-            //если нет импортирумых сущностей, смещение которых неизвестно
-            else //if (ext_offsets.Count == 0)
-            {
-                //CloseWriter();
-                /*FileStream fs = new FileStream(TargetFileName, FileMode.Create, FileAccess.ReadWrite);
-                BinaryWriter fbw = new BinaryWriter(fs);
-                WritePCUHeader(fbw); //пишем заголовок PCU
-                byte[] buf = new byte[bw.BaseStream.Length];
-                bw.Seek(0, SeekOrigin.Begin);
-                bw.BaseStream.Read(buf, 0, buf.Length);
-                fbw.Write(buf);
-                bw.Close();
-                ms.Close();
-                fbw.Close();
-                fs.Close();*/
-                //если существовал pcu, который использовался reader-ом и была циклическая связь
-                //if (pcu_reader != null) pcu_reader.OpenUnit();
-            }
+            
 		}
-		
-        //private void AddOffsetForMembers(wrapped_definition_node
 
         //запись шапки PCU на диск
 		private void WritePCUHeader(BinaryWriter fbw)
@@ -643,14 +622,37 @@ namespace PascalABCCompiler.PCU
         
         private void WriteInitExpressions()
         {
-        	//System.Diagnostics.Debug.WriteLine("");
         	foreach (expression_node expr in exprs_cache.Keys)
         	{
         		FixupExpressionPosition(expr);
         		VisitExpression(expr);
         	}
         }
-        
+
+        private void WriteFunctionReferences()
+        {
+            foreach (int off in function_references.Keys)
+            {
+                common_namespace_function_node cnfn = function_references[off];
+                int pos = (int)bw.BaseStream.Position;
+                bw.Seek(off, SeekOrigin.Begin);
+                WriteFunctionReference(cnfn);
+                bw.Seek(pos, SeekOrigin.Begin);
+            }
+        }
+
+        private void WriteTypeReferences()
+        {
+            foreach (int off in type_references.Keys)
+            {
+                common_type_node ctn = type_references[off];
+                int pos = (int)bw.BaseStream.Position;
+                bw.Seek(off, SeekOrigin.Begin);
+                WriteTypeReference(ctn);
+                bw.Seek(pos, SeekOrigin.Begin);
+            }
+        }
+
         //получения индекса сборки в списке подключаемых сборок
         private int GetAssemblyToken(Assembly a)
 		{
@@ -1237,15 +1239,6 @@ namespace PascalABCCompiler.PCU
                 WriteUnsizedArrayType(type,aii);
                 return;
             }
-            /*
-            ii = type.get_internal_interface(internal_interface_kind.bounded_array_interface);
-            if (ii != null)
-            {
-                bounded_array_interface bai = (bounded_array_interface)ii;
-                WriteBoundedArray(bai);
-                return;
-            }
-            */
             
             //Пишем параметр generic-типа
             if (type.is_generic_parameter)
@@ -1275,6 +1268,13 @@ namespace PascalABCCompiler.PCU
 			bw.Write(is_def); //пишем флаг импортируемый ли это тип или нет
 			bw.Write(offset); // сохраняем его смещение (это либо смещение в самом модуле, либо в списке импорт. сущностей)
 		}
+
+        private void WriteTypeReferenceWithDelay(common_type_node type)
+        {
+            type_references.Add((int)bw.BaseStream.Position, type);
+            bw.Write((byte)0);
+            bw.Write(0);
+        }
 
         private void WriteTypeList(List<type_node> types)
         {
@@ -1336,7 +1336,10 @@ namespace PascalABCCompiler.PCU
             {
                 bw.Write((byte)TypeKind.GenericParameterOfType);
                 //Пишем ссылку на generic-тип, содержащий данный параметр
-                WriteTypeReference(type.generic_type_container as type_node);
+                if (type.generic_type_container is common_type_node)
+                    WriteTypeReferenceWithDelay(type.generic_type_container as common_type_node);
+                else
+                    WriteTypeReference(type.generic_type_container as type_node);
             }
             else
             {
@@ -1350,7 +1353,7 @@ namespace PascalABCCompiler.PCU
                 {
                     common_namespace_function_node cnfn = type.generic_function_container as common_namespace_function_node;
                     bw.Write((byte)TypeKind.GenericParameterOfFunction);
-                    WriteFunctionReference(cnfn);
+                    WriteFunctionReferenceWithDelay(cnfn);
                 }
             }
             bw.Write(type.generic_param_index);
@@ -1484,8 +1487,15 @@ namespace PascalABCCompiler.PCU
             return offset;
         }
 
+        private void WriteFunctionReferenceWithDelay(common_namespace_function_node fn)
+        {
+            function_references.Add((int)bw.BaseStream.Position, fn);
+            bw.Write((byte)0);
+            bw.Write(0);
+        }
+
         //сохранение ссылки на функцию
-		private void WriteFunctionReference(common_namespace_function_node fn)
+        private void WriteFunctionReference(common_namespace_function_node fn)
 		{
 			generic_namespace_function_instance_node gi = fn as generic_namespace_function_instance_node;
             if (gi != null)

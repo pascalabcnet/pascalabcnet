@@ -340,6 +340,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
         public static string system_unit_file_name = "PABCSystem";
+        public static string extensions_unit_file_name = "PABCExtensions";
 
         public static string get_array_type_name(string type_name, int rank)
         {

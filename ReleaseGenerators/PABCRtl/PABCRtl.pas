@@ -1,7 +1,7 @@
 library PABCRtl;
 
 uses 
-  PABCSystem, ABCButtons, ABCHouse, ABCObjects,
+  PABCSystem, PABCExtensions, ABCButtons, ABCHouse, ABCObjects,
   ABCSprites, Colors, CRT, DMCollect, DMTaskMaker, DMZadan, Drawman, 
   DrawManField, Events, FilesOperations, GraphABC, 
   GraphABCHelper, IniFile, PointerTools, PointRect, Robot, RobotField,
