@@ -10,6 +10,16 @@ begin
   PABCSystem.Reset(Result, fname);
 end;
 
+function Elements<T>(Self: file of T): sequence of T; extensionmethod;
+begin
+  while not Self.Eof do
+  begin
+    var x: T;
+    read(Self,x);
+    yield x;
+  end;
+end;
+
 function ReadElement<T>(Self: file of T): T; extensionmethod;
 begin
   Read(Self, Result);

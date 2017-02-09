@@ -364,7 +364,13 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || t.IsEqual(tmp_ts2) || (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || (t is TemplateParameterScope || t is UnknownScope))
+                            if (t.GenericTypeDefinition == tmp_ts2.GenericTypeDefinition || 
+                                t.IsEqual(tmp_ts2) || 
+                                (t is ArrayScope && tmp_ts2.IsArray && t.Rank == tmp_ts2.Rank) || 
+                                ( tmp_ts2 is ArrayScope && t.IsArray && tmp_ts2.Rank == t.Rank) || 
+                                (t is TemplateParameterScope || t is UnknownScope) ||
+                                t is FileScope && tmp_ts2 is FileScope
+                                )
                             {
                                 lst.AddRange(extension_methods[t]);
                             }
@@ -389,7 +395,10 @@ namespace CodeCompletion
                     {
                         foreach (TypeScope t in extension_methods.Keys)
                         {
-                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) || (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank))
+                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || 
+                                    (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) || 
+                                    (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
+                                    t is FileScope && int_ts2 is FileScope)
                             {
                                 lst.AddRange(extension_methods[t]);
                                 //break;
