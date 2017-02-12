@@ -349,6 +349,8 @@ namespace CodeCompletion
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr && !(ts as ArrayScope).is_multi_dyn_arr)
+                return lst;
             if (extension_methods != null)
             {
                 while (tmp_ts != null)
@@ -2892,12 +2894,12 @@ namespace CodeCompletion
     public class ArrayScope : TypeScope, IArrayScope
     {
         public TypeScope[] indexes;
-        public bool is_dynamic_arr = false;
+        private bool _is_dynamic_arr = false;
         private bool _is_multi_dyn_arr = false;
 
         public ArrayScope()
         {
-            is_dynamic_arr = true;
+            _is_dynamic_arr = true;
             this.si = new SymInfo("$" + this.ToString(), SymbolKind.Type, this.ToString());
         }
 
@@ -2906,7 +2908,7 @@ namespace CodeCompletion
             this.elementType = elementType;
             this.indexes = indexes;
             if (indexes == null)
-                is_dynamic_arr = true;
+                _is_dynamic_arr = true;
             else
             {
                 _is_multi_dyn_arr = true;
@@ -2946,6 +2948,26 @@ namespace CodeCompletion
             get
             {
                 return _is_multi_dyn_arr;
+            }
+        }
+
+        public bool is_multi_dyn_arr
+        {
+            get
+            {
+                return _is_multi_dyn_arr;
+            }
+        }
+
+        public bool is_dynamic_arr
+        {
+            get
+            {
+                return _is_dynamic_arr;
+            }
+            set
+            {
+                _is_dynamic_arr = value;
             }
         }
 
