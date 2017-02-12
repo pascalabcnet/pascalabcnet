@@ -1691,6 +1691,11 @@ function Dict<TKey, TVal>(params pairs: array of KeyValuePair<TKey, TVal>): Dict
 /// Возвращает пару элементов (ключ, значение)
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 
+// -----------------------------------------------------
+//>>     Вспомогательные функции для pattern matching
+// -----------------------------------------------------
+function IsTest<T>(obj: object; var res: T): boolean;
+
 //{{{--doc: Конец секции интерфейса для документации }}} 
 
 
@@ -4178,6 +4183,21 @@ end;
 function KV<TKey, TVal>(key: TKey; value: TVal): KeyValuePair<TKey, TVal>;
 begin
   Result := new KeyValuePair<TKey, TVal>(key, value);
+end;
+
+
+function IsTest<T>(obj: object; var res: T): boolean;
+begin
+  if obj is T then
+    begin
+      res := T(obj);
+      Result := true;
+    end
+  else
+    begin
+      res := default(T);
+      Result := false;
+    end;
 end;
 
 {function read_lexem: string; 
