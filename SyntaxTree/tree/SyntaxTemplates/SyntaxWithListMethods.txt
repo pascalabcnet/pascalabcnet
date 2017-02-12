@@ -31,22 +31,22 @@ private int FindIndexInList(<#ListElementType#> el)
 
 public void InsertAfter(<#ListElementType#> el, <#ListElementType#> newel)
 {
-	<#ListName#>.Insert(FindIndex(el) + 1, newel);
+	<#ListName#>.Insert(FindIndexInList(el) + 1, newel);
 }
 
 public void InsertAfter(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
-	<#ListName#>.InsertRange(FindIndex(el) + 1, newels);
+	<#ListName#>.InsertRange(FindIndexInList(el) + 1, newels);
 }
 
 public void InsertBefore(<#ListElementType#> el, <#ListElementType#> newel)
 {
-	<#ListName#>.Insert(FindIndex(el), newel);
+	<#ListName#>.Insert(FindIndexInList(el), newel);
 }
 
 public void InsertBefore(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
-	<#ListName#>.InsertRange(FindIndex(el), newels);
+	<#ListName#>.InsertRange(FindIndexInList(el), newels);
 }
 
 public bool Remove(<#ListElementType#> el)
