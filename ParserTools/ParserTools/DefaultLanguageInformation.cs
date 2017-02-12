@@ -238,22 +238,31 @@ namespace PascalABCCompiler.Parsers
 			return "unit "+scope.Name;
 		}
 		
-		public virtual string GetShortTypeName(ICompiledTypeScope scope)
+		public virtual string GetShortName(ICompiledTypeScope scope)
 		{
 			return GetShortTypeName(scope.CompiledType);
 		}
 		
-		public virtual string GetShortTypeName(ICompiledMethodScope scope)
+		public virtual string GetShortName(ICompiledMethodScope scope)
 		{
 			return GetShortTypeName(scope.CompiledMethod);
 		}
 		
-		public virtual string GetShortTypeName(ICompiledConstructorScope scope)
+		public virtual string GetShortName(ICompiledConstructorScope scope)
 		{
 			return "Create";
 		}
-		
-		public virtual string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true)
+
+        public virtual string GetShortName(IProcScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(scope.Name);
+            if (scope.TemplateParameters != null && scope.TemplateParameters.Length > 0)
+                sb.Append("<>");
+            return sb.ToString();
+        }
+
+        public virtual string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true)
 		{
 			return GetFullTypeName(scope.CompiledType);
 		}
@@ -1039,7 +1048,7 @@ namespace PascalABCCompiler.Parsers
 			ICompiledTypeScope cts = scope as ICompiledTypeScope;
 			if (cts == null)
 				return GetSimpleDescription(scope);
-			string s = GetShortTypeName(cts);
+			string s = GetShortName(cts);
 			ITypeScope[] instances = scope.GenericInstances;
 			if (instances != null && instances.Length > 0)
 			{
