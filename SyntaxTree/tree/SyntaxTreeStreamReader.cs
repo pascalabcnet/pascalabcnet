@@ -462,6 +462,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new sugared_expression();
 				case 220:
 					return new sugared_addressed_value();
+				case 221:
+					return new pattern_node();
+				case 222:
+					return new type_pattern();
+				case 223:
+					return new is_pattern_expr();
 			}
 			return null;
 		}
@@ -3886,6 +3892,43 @@ namespace PascalABCCompiler.SyntaxTree
 			read_addressed_value(_sugared_addressed_value);
 			_sugared_addressed_value.sugared_expr = (object)br.ReadByte();
 			_sugared_addressed_value.new_addr_value = _read_node() as addressed_value;
+		}
+
+
+		public void visit(pattern_node _pattern_node)
+		{
+			read_pattern_node(_pattern_node);
+		}
+
+		public void read_pattern_node(pattern_node _pattern_node)
+		{
+			read_syntax_tree_node(_pattern_node);
+		}
+
+
+		public void visit(type_pattern _type_pattern)
+		{
+			read_type_pattern(_type_pattern);
+		}
+
+		public void read_type_pattern(type_pattern _type_pattern)
+		{
+			read_pattern_node(_type_pattern);
+			_type_pattern.identifier = _read_node() as ident;
+			_type_pattern.type = _read_node() as type_definition;
+		}
+
+
+		public void visit(is_pattern_expr _is_pattern_expr)
+		{
+			read_is_pattern_expr(_is_pattern_expr);
+		}
+
+		public void read_is_pattern_expr(is_pattern_expr _is_pattern_expr)
+		{
+			read_expression(_is_pattern_expr);
+			_is_pattern_expr.left = _read_node() as expression;
+			_is_pattern_expr.right = _read_node() as pattern_node;
 		}
 
 	}

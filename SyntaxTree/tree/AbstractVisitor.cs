@@ -1112,6 +1112,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_sugared_addressed_value);
 		}
+
+		public virtual void visit(pattern_node _pattern_node)
+		{
+			DefaultVisit(_pattern_node);
+		}
+
+		public virtual void visit(type_pattern _type_pattern)
+		{
+			DefaultVisit(_type_pattern);
+		}
+
+		public virtual void visit(is_pattern_expr _is_pattern_expr)
+		{
+			DefaultVisit(_is_pattern_expr);
+		}
 	}
 
 

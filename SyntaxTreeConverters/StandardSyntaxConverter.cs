@@ -35,6 +35,8 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
+            IsPatternVisitor.New.ProcessNode(root);
+
             return root;
         }
     }

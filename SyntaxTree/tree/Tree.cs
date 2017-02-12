@@ -433,22 +433,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(statement el, statement newel)
 		{
-			subnodes.Insert(FindIndex(el) + 1, newel);
+			subnodes.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(statement el, IEnumerable<statement> newels)
 		{
-			subnodes.InsertRange(FindIndex(el) + 1, newels);
+			subnodes.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(statement el, statement newel)
 		{
-			subnodes.Insert(FindIndex(el), newel);
+			subnodes.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(statement el, IEnumerable<statement> newels)
 		{
-			subnodes.InsertRange(FindIndex(el), newels);
+			subnodes.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(statement el)
@@ -1858,6 +1858,8 @@ namespace PascalABCCompiler.SyntaxTree
 
 	///<summary>
 	///Значение, имеющее адрес
+
+
 	///</summary>
 	[Serializable]
 	public partial class addressed_value : expression
@@ -2303,22 +2305,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(ident el, ident newel)
 		{
-			names.Insert(FindIndex(el) + 1, newel);
+			names.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
-			names.InsertRange(FindIndex(el) + 1, newels);
+			names.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(ident el, ident newel)
 		{
-			names.Insert(FindIndex(el), newel);
+			names.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
-			names.InsertRange(FindIndex(el), newels);
+			names.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(ident el)
@@ -2552,22 +2554,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(var_def_statement el, var_def_statement newel)
 		{
-			var_definitions.Insert(FindIndex(el) + 1, newel);
+			var_definitions.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
-			var_definitions.InsertRange(FindIndex(el) + 1, newels);
+			var_definitions.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
 		{
-			var_definitions.Insert(FindIndex(el), newel);
+			var_definitions.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
-			var_definitions.InsertRange(FindIndex(el), newels);
+			var_definitions.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(var_def_statement el)
@@ -2785,22 +2787,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(ident el, ident newel)
 		{
-			idents.Insert(FindIndex(el) + 1, newel);
+			idents.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
-			idents.InsertRange(FindIndex(el) + 1, newels);
+			idents.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(ident el, ident newel)
 		{
-			idents.Insert(FindIndex(el), newel);
+			idents.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
-			idents.InsertRange(FindIndex(el), newels);
+			idents.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(ident el)
@@ -3375,22 +3377,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(declaration el, declaration newel)
 		{
-			defs.Insert(FindIndex(el) + 1, newel);
+			defs.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
-			defs.InsertRange(FindIndex(el) + 1, newels);
+			defs.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(declaration el, declaration newel)
 		{
-			defs.Insert(FindIndex(el), newel);
+			defs.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
-			defs.InsertRange(FindIndex(el), newels);
+			defs.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(declaration el)
@@ -3603,22 +3605,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(compilation_unit el, compilation_unit newel)
 		{
-			compilation_units.Insert(FindIndex(el) + 1, newel);
+			compilation_units.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
-			compilation_units.InsertRange(FindIndex(el) + 1, newels);
+			compilation_units.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(compilation_unit el, compilation_unit newel)
 		{
-			compilation_units.Insert(FindIndex(el), newel);
+			compilation_units.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
-			compilation_units.InsertRange(FindIndex(el), newels);
+			compilation_units.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(compilation_unit el)
@@ -4083,22 +4085,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(expression el, expression newel)
 		{
-			expressions.Insert(FindIndex(el) + 1, newel);
+			expressions.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(expression el, IEnumerable<expression> newels)
 		{
-			expressions.InsertRange(FindIndex(el) + 1, newels);
+			expressions.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(expression el, expression newel)
 		{
-			expressions.Insert(FindIndex(el), newel);
+			expressions.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(expression el, IEnumerable<expression> newels)
 		{
-			expressions.InsertRange(FindIndex(el), newels);
+			expressions.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(expression el)
@@ -5844,22 +5846,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
-			indexers.Insert(FindIndex(el) + 1, newel);
+			indexers.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
-			indexers.InsertRange(FindIndex(el) + 1, newels);
+			indexers.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
-			indexers.Insert(FindIndex(el), newel);
+			indexers.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
-			indexers.InsertRange(FindIndex(el), newels);
+			indexers.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(type_definition el)
@@ -6776,22 +6778,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(typed_parameters el, typed_parameters newel)
 		{
-			params_list.Insert(FindIndex(el) + 1, newel);
+			params_list.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
-			params_list.InsertRange(FindIndex(el) + 1, newels);
+			params_list.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(typed_parameters el, typed_parameters newel)
 		{
-			params_list.Insert(FindIndex(el), newel);
+			params_list.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
-			params_list.InsertRange(FindIndex(el), newels);
+			params_list.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(typed_parameters el)
@@ -7004,22 +7006,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(procedure_attribute el, procedure_attribute newel)
 		{
-			proc_attributes.Insert(FindIndex(el) + 1, newel);
+			proc_attributes.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
-			proc_attributes.InsertRange(FindIndex(el) + 1, newels);
+			proc_attributes.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(procedure_attribute el, procedure_attribute newel)
 		{
-			proc_attributes.Insert(FindIndex(el), newel);
+			proc_attributes.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
-			proc_attributes.InsertRange(FindIndex(el), newels);
+			proc_attributes.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(procedure_attribute el)
@@ -8137,22 +8139,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_declaration el, type_declaration newel)
 		{
-			types_decl.Insert(FindIndex(el) + 1, newel);
+			types_decl.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(type_declaration el, IEnumerable<type_declaration> newels)
 		{
-			types_decl.InsertRange(FindIndex(el) + 1, newels);
+			types_decl.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(type_declaration el, type_declaration newel)
 		{
-			types_decl.Insert(FindIndex(el), newel);
+			types_decl.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(type_declaration el, IEnumerable<type_declaration> newels)
 		{
-			types_decl.InsertRange(FindIndex(el), newels);
+			types_decl.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(type_declaration el)
@@ -8842,22 +8844,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(const_definition el, const_definition newel)
 		{
-			const_defs.Insert(FindIndex(el) + 1, newel);
+			const_defs.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(const_definition el, IEnumerable<const_definition> newels)
 		{
-			const_defs.InsertRange(FindIndex(el) + 1, newels);
+			const_defs.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(const_definition el, const_definition newel)
 		{
-			const_defs.Insert(FindIndex(el), newel);
+			const_defs.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(const_definition el, IEnumerable<const_definition> newels)
 		{
-			const_defs.InsertRange(FindIndex(el), newels);
+			const_defs.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(const_definition el)
@@ -9516,22 +9518,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(unit_or_namespace el, unit_or_namespace newel)
 		{
-			units.Insert(FindIndex(el) + 1, newel);
+			units.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
-			units.InsertRange(FindIndex(el) + 1, newels);
+			units.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
 		{
-			units.Insert(FindIndex(el), newel);
+			units.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
-			units.InsertRange(FindIndex(el), newels);
+			units.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(unit_or_namespace el)
@@ -9995,22 +9997,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(compiler_directive el, compiler_directive newel)
 		{
-			compiler_directives.Insert(FindIndex(el) + 1, newel);
+			compiler_directives.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
-			compiler_directives.InsertRange(FindIndex(el) + 1, newels);
+			compiler_directives.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
 		{
-			compiler_directives.Insert(FindIndex(el), newel);
+			compiler_directives.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
-			compiler_directives.InsertRange(FindIndex(el), newels);
+			compiler_directives.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(compiler_directive el)
@@ -11487,22 +11489,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(ident el, ident newel)
 		{
-			ln.Insert(FindIndex(el) + 1, newel);
+			ln.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
-			ln.InsertRange(FindIndex(el) + 1, newels);
+			ln.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(ident el, ident newel)
 		{
-			ln.Insert(FindIndex(el), newel);
+			ln.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
-			ln.InsertRange(FindIndex(el), newels);
+			ln.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(ident el)
@@ -13894,22 +13896,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(declaration el, declaration newel)
 		{
-			members.Insert(FindIndex(el) + 1, newel);
+			members.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
-			members.InsertRange(FindIndex(el) + 1, newels);
+			members.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(declaration el, declaration newel)
 		{
-			members.Insert(FindIndex(el), newel);
+			members.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
-			members.InsertRange(FindIndex(el), newels);
+			members.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(declaration el)
@@ -14254,22 +14256,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(class_members el, class_members newel)
 		{
-			class_def_blocks.Insert(FindIndex(el) + 1, newel);
+			class_def_blocks.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(class_members el, IEnumerable<class_members> newels)
 		{
-			class_def_blocks.InsertRange(FindIndex(el) + 1, newels);
+			class_def_blocks.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(class_members el, class_members newel)
 		{
-			class_def_blocks.Insert(FindIndex(el), newel);
+			class_def_blocks.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(class_members el, IEnumerable<class_members> newels)
 		{
-			class_def_blocks.InsertRange(FindIndex(el), newels);
+			class_def_blocks.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(class_members el)
@@ -15396,22 +15398,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(record_const_definition el, record_const_definition newel)
 		{
-			rec_consts.Insert(FindIndex(el) + 1, newel);
+			rec_consts.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
-			rec_consts.InsertRange(FindIndex(el) + 1, newels);
+			rec_consts.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(record_const_definition el, record_const_definition newel)
 		{
-			rec_consts.Insert(FindIndex(el), newel);
+			rec_consts.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
-			rec_consts.InsertRange(FindIndex(el), newels);
+			rec_consts.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(record_const_definition el)
@@ -16367,22 +16369,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(literal el, literal newel)
 		{
-			literals.Insert(FindIndex(el) + 1, newel);
+			literals.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(literal el, IEnumerable<literal> newels)
 		{
-			literals.InsertRange(FindIndex(el) + 1, newels);
+			literals.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(literal el, literal newel)
 		{
-			literals.Insert(FindIndex(el), newel);
+			literals.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(literal el, IEnumerable<literal> newels)
 		{
-			literals.InsertRange(FindIndex(el), newels);
+			literals.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(literal el)
@@ -16954,22 +16956,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(variant el, variant newel)
 		{
-			vars.Insert(FindIndex(el) + 1, newel);
+			vars.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(variant el, IEnumerable<variant> newels)
 		{
-			vars.InsertRange(FindIndex(el) + 1, newels);
+			vars.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(variant el, variant newel)
 		{
-			vars.Insert(FindIndex(el), newel);
+			vars.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(variant el, IEnumerable<variant> newels)
 		{
-			vars.InsertRange(FindIndex(el), newels);
+			vars.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(variant el)
@@ -17341,22 +17343,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(variant_type el, variant_type newel)
 		{
-			vars.Insert(FindIndex(el) + 1, newel);
+			vars.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(variant_type el, IEnumerable<variant_type> newels)
 		{
-			vars.InsertRange(FindIndex(el) + 1, newels);
+			vars.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(variant_type el, variant_type newel)
 		{
-			vars.Insert(FindIndex(el), newel);
+			vars.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(variant_type el, IEnumerable<variant_type> newels)
 		{
-			vars.InsertRange(FindIndex(el), newels);
+			vars.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(variant_type el)
@@ -20185,22 +20187,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(case_variant el, case_variant newel)
 		{
-			variants.Insert(FindIndex(el) + 1, newel);
+			variants.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(case_variant el, IEnumerable<case_variant> newels)
 		{
-			variants.InsertRange(FindIndex(el) + 1, newels);
+			variants.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(case_variant el, case_variant newel)
 		{
-			variants.Insert(FindIndex(el), newel);
+			variants.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(case_variant el, IEnumerable<case_variant> newels)
 		{
-			variants.InsertRange(FindIndex(el), newels);
+			variants.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(case_variant el)
@@ -20577,22 +20579,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(var_def_statement el, var_def_statement newel)
 		{
-			vars.Insert(FindIndex(el) + 1, newel);
+			vars.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
-			vars.InsertRange(FindIndex(el) + 1, newels);
+			vars.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
 		{
-			vars.Insert(FindIndex(el), newel);
+			vars.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
-			vars.InsertRange(FindIndex(el), newels);
+			vars.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(var_def_statement el)
@@ -21391,22 +21393,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(property_parameter el, property_parameter newel)
 		{
-			parameters.Insert(FindIndex(el) + 1, newel);
+			parameters.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(property_parameter el, IEnumerable<property_parameter> newels)
 		{
-			parameters.InsertRange(FindIndex(el) + 1, newels);
+			parameters.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(property_parameter el, property_parameter newel)
 		{
-			parameters.Insert(FindIndex(el), newel);
+			parameters.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(property_parameter el, IEnumerable<property_parameter> newels)
 		{
-			parameters.InsertRange(FindIndex(el), newels);
+			parameters.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(property_parameter el)
@@ -23142,22 +23144,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(exception_handler el, exception_handler newel)
 		{
-			handlers.Insert(FindIndex(el) + 1, newel);
+			handlers.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(exception_handler el, IEnumerable<exception_handler> newels)
 		{
-			handlers.InsertRange(FindIndex(el) + 1, newels);
+			handlers.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(exception_handler el, exception_handler newel)
 		{
-			handlers.Insert(FindIndex(el), newel);
+			handlers.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(exception_handler el, IEnumerable<exception_handler> newels)
 		{
-			handlers.InsertRange(FindIndex(el), newels);
+			handlers.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(exception_handler el)
@@ -24309,22 +24311,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(unit_or_namespace el, unit_or_namespace newel)
 		{
-			namespaces.Insert(FindIndex(el) + 1, newel);
+			namespaces.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
-			namespaces.InsertRange(FindIndex(el) + 1, newels);
+			namespaces.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
 		{
-			namespaces.Insert(FindIndex(el), newel);
+			namespaces.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
-			namespaces.InsertRange(FindIndex(el), newels);
+			namespaces.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(unit_or_namespace el)
@@ -25134,22 +25136,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(named_type_reference el, named_type_reference newel)
 		{
-			types.Insert(FindIndex(el) + 1, newel);
+			types.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
-			types.InsertRange(FindIndex(el) + 1, newels);
+			types.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(named_type_reference el, named_type_reference newel)
 		{
-			types.Insert(FindIndex(el), newel);
+			types.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
-			types.InsertRange(FindIndex(el), newels);
+			types.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(named_type_reference el)
@@ -25381,22 +25383,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
-			params_list.Insert(FindIndex(el) + 1, newel);
+			params_list.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
-			params_list.InsertRange(FindIndex(el) + 1, newels);
+			params_list.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
-			params_list.Insert(FindIndex(el), newel);
+			params_list.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
-			params_list.InsertRange(FindIndex(el), newels);
+			params_list.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(type_definition el)
@@ -26310,22 +26312,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
-			defs.Insert(FindIndex(el) + 1, newel);
+			defs.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
-			defs.InsertRange(FindIndex(el) + 1, newels);
+			defs.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
-			defs.Insert(FindIndex(el), newel);
+			defs.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
-			defs.InsertRange(FindIndex(el), newels);
+			defs.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(type_definition el)
@@ -26697,22 +26699,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(where_definition el, where_definition newel)
 		{
-			defs.Insert(FindIndex(el) + 1, newel);
+			defs.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(where_definition el, IEnumerable<where_definition> newels)
 		{
-			defs.InsertRange(FindIndex(el) + 1, newels);
+			defs.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(where_definition el, where_definition newel)
 		{
-			defs.Insert(FindIndex(el), newel);
+			defs.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(where_definition el, IEnumerable<where_definition> newels)
 		{
-			defs.InsertRange(FindIndex(el), newels);
+			defs.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(where_definition el)
@@ -28842,22 +28844,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(enumerator el, enumerator newel)
 		{
-			enumerators.Insert(FindIndex(el) + 1, newel);
+			enumerators.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(enumerator el, IEnumerable<enumerator> newels)
 		{
-			enumerators.InsertRange(FindIndex(el) + 1, newels);
+			enumerators.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(enumerator el, enumerator newel)
 		{
-			enumerators.Insert(FindIndex(el), newel);
+			enumerators.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(enumerator el, IEnumerable<enumerator> newels)
 		{
-			enumerators.InsertRange(FindIndex(el), newels);
+			enumerators.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(enumerator el)
@@ -29473,22 +29475,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition_attr el, type_definition_attr newel)
 		{
-			attributes.Insert(FindIndex(el) + 1, newel);
+			attributes.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
-			attributes.InsertRange(FindIndex(el) + 1, newels);
+			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(type_definition_attr el, type_definition_attr newel)
 		{
-			attributes.Insert(FindIndex(el), newel);
+			attributes.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
-			attributes.InsertRange(FindIndex(el), newels);
+			attributes.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(type_definition_attr el)
@@ -30042,22 +30044,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(compiler_directive el, compiler_directive newel)
 		{
-			directives.Insert(FindIndex(el) + 1, newel);
+			directives.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
-			directives.InsertRange(FindIndex(el) + 1, newels);
+			directives.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
 		{
-			directives.Insert(FindIndex(el), newel);
+			directives.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
-			directives.InsertRange(FindIndex(el), newels);
+			directives.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(compiler_directive el)
@@ -30498,22 +30500,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(documentation_comment_section el, documentation_comment_section newel)
 		{
-			sections.Insert(FindIndex(el) + 1, newel);
+			sections.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
-			sections.InsertRange(FindIndex(el) + 1, newels);
+			sections.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(documentation_comment_section el, documentation_comment_section newel)
 		{
-			sections.Insert(FindIndex(el), newel);
+			sections.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
-			sections.InsertRange(FindIndex(el), newels);
+			sections.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(documentation_comment_section el)
@@ -30762,22 +30764,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
-			parameters.Insert(FindIndex(el) + 1, newel);
+			parameters.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
-			parameters.InsertRange(FindIndex(el) + 1, newels);
+			parameters.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
-			parameters.Insert(FindIndex(el), newel);
+			parameters.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
-			parameters.InsertRange(FindIndex(el), newels);
+			parameters.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(documentation_comment_tag_param el)
@@ -31145,22 +31147,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(documentation_comment_tag el, documentation_comment_tag newel)
 		{
-			tags.Insert(FindIndex(el) + 1, newel);
+			tags.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
-			tags.InsertRange(FindIndex(el) + 1, newels);
+			tags.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(documentation_comment_tag el, documentation_comment_tag newel)
 		{
-			tags.Insert(FindIndex(el), newel);
+			tags.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
-			tags.InsertRange(FindIndex(el), newels);
+			tags.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(documentation_comment_tag el)
@@ -32466,22 +32468,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(attribute el, attribute newel)
 		{
-			attributes.Insert(FindIndex(el) + 1, newel);
+			attributes.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(attribute el, IEnumerable<attribute> newels)
 		{
-			attributes.InsertRange(FindIndex(el) + 1, newels);
+			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(attribute el, attribute newel)
 		{
-			attributes.Insert(FindIndex(el), newel);
+			attributes.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(attribute el, IEnumerable<attribute> newels)
 		{
-			attributes.InsertRange(FindIndex(el), newels);
+			attributes.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(attribute el)
@@ -32694,22 +32696,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(simple_attribute_list el, simple_attribute_list newel)
 		{
-			attributes.Insert(FindIndex(el) + 1, newel);
+			attributes.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
-			attributes.InsertRange(FindIndex(el) + 1, newels);
+			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(simple_attribute_list el, simple_attribute_list newel)
 		{
-			attributes.Insert(FindIndex(el), newel);
+			attributes.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
-			attributes.InsertRange(FindIndex(el), newels);
+			attributes.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(simple_attribute_list el)
@@ -33102,22 +33104,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(declaration el, declaration newel)
 		{
-			defs.Insert(FindIndex(el) + 1, newel);
+			defs.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
-			defs.InsertRange(FindIndex(el) + 1, newels);
+			defs.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(declaration el, declaration newel)
 		{
-			defs.Insert(FindIndex(el), newel);
+			defs.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
-			defs.InsertRange(FindIndex(el), newels);
+			defs.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(declaration el)
@@ -33614,22 +33616,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(syntax_tree_node el, syntax_tree_node newel)
 		{
-			param.Insert(FindIndex(el) + 1, newel);
+			param.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
-			param.InsertRange(FindIndex(el) + 1, newels);
+			param.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
 		{
-			param.Insert(FindIndex(el), newel);
+			param.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
-			param.InsertRange(FindIndex(el), newels);
+			param.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(syntax_tree_node el)
@@ -34329,22 +34331,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(name_assign_expr el, name_assign_expr newel)
 		{
-			name_expr.Insert(FindIndex(el) + 1, newel);
+			name_expr.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
-			name_expr.InsertRange(FindIndex(el) + 1, newels);
+			name_expr.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(name_assign_expr el, name_assign_expr newel)
 		{
-			name_expr.Insert(FindIndex(el), newel);
+			name_expr.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
-			name_expr.InsertRange(FindIndex(el), newels);
+			name_expr.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(name_assign_expr el)
@@ -36655,22 +36657,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(addressed_value el, addressed_value newel)
 		{
-			variables.Insert(FindIndex(el) + 1, newel);
+			variables.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(addressed_value el, IEnumerable<addressed_value> newels)
 		{
-			variables.InsertRange(FindIndex(el) + 1, newels);
+			variables.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(addressed_value el, addressed_value newel)
 		{
-			variables.Insert(FindIndex(el), newel);
+			variables.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(addressed_value el, IEnumerable<addressed_value> newels)
 		{
-			variables.InsertRange(FindIndex(el), newels);
+			variables.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(addressed_value el)
@@ -37038,22 +37040,22 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(uses_list el, uses_list newel)
 		{
-			listunitsections.Insert(FindIndex(el) + 1, newel);
+			listunitsections.Insert(FindIndexInList(el) + 1, newel);
 		}
 		
 		public void InsertAfter(uses_list el, IEnumerable<uses_list> newels)
 		{
-			listunitsections.InsertRange(FindIndex(el) + 1, newels);
+			listunitsections.InsertRange(FindIndexInList(el) + 1, newels);
 		}
 		
 		public void InsertBefore(uses_list el, uses_list newel)
 		{
-			listunitsections.Insert(FindIndex(el), newel);
+			listunitsections.Insert(FindIndexInList(el), newel);
 		}
 		
 		public void InsertBefore(uses_list el, IEnumerable<uses_list> newels)
 		{
-			listunitsections.InsertRange(FindIndex(el), newels);
+			listunitsections.InsertRange(FindIndexInList(el), newels);
 		}
 		
 		public bool Remove(uses_list el)
@@ -38939,6 +38941,410 @@ namespace PascalABCCompiler.SyntaxTree
 				{
 					case 0:
 						new_addr_value = (addressed_value)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_node : syntax_tree_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_node()
+		{
+
+		}
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_node copy = new pattern_node();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_node TypedClone()
+		{
+			return Clone() as pattern_node;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class type_pattern : pattern_node
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public type_pattern()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public type_pattern(ident _identifier,type_definition _type)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public type_pattern(ident _identifier,type_definition _type,SourceContext sc)
+		{
+			this._identifier=_identifier;
+			this._type=_type;
+			source_context = sc;
+		}
+		protected ident _identifier;
+		protected type_definition _type;
+
+		///<summary>
+		///
+		///</summary>
+		public ident identifier
+		{
+			get
+			{
+				return _identifier;
+			}
+			set
+			{
+				_identifier=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public type_definition type
+		{
+			get
+			{
+				return _type;
+			}
+			set
+			{
+				_type=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			type_pattern copy = new type_pattern();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (identifier != null)
+			{
+				copy.identifier = (ident)identifier.Clone();
+				copy.identifier.Parent = copy;
+			}
+			if (type != null)
+			{
+				copy.type = (type_definition)type.Clone();
+				copy.type.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new type_pattern TypedClone()
+		{
+			return Clone() as type_pattern;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return identifier;
+					case 1:
+						return type;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						identifier = (ident)value;
+						break;
+					case 1:
+						type = (type_definition)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class is_pattern_expr : expression
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public is_pattern_expr()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public is_pattern_expr(expression _left,pattern_node _right)
+		{
+			this._left=_left;
+			this._right=_right;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public is_pattern_expr(expression _left,pattern_node _right,SourceContext sc)
+		{
+			this._left=_left;
+			this._right=_right;
+			source_context = sc;
+		}
+		protected expression _left;
+		protected pattern_node _right;
+
+		///<summary>
+		///
+		///</summary>
+		public expression left
+		{
+			get
+			{
+				return _left;
+			}
+			set
+			{
+				_left=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_node right
+		{
+			get
+			{
+				return _right;
+			}
+			set
+			{
+				_right=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			is_pattern_expr copy = new is_pattern_expr();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (expression)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (pattern_node)right.Clone();
+				copy.right.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new is_pattern_expr TypedClone()
+		{
+			return Clone() as is_pattern_expr;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return left;
+					case 1:
+						return right;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						left = (expression)value;
+						break;
+					case 1:
+						right = (pattern_node)value;
 						break;
 				}
 			}

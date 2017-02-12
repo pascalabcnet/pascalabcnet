@@ -1773,6 +1773,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(pattern_node _pattern_node)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_node _pattern_node)
+		{
+		}
+
+		public virtual void pre_do_visit(type_pattern _type_pattern)
+		{
+		}
+
+		public virtual void post_do_visit(type_pattern _type_pattern)
+		{
+		}
+
+		public virtual void pre_do_visit(is_pattern_expr _is_pattern_expr)
+		{
+		}
+
+		public virtual void post_do_visit(is_pattern_expr _is_pattern_expr)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3660,6 +3684,31 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_sugared_addressed_value);
 			visit(sugared_addressed_value.new_addr_value);
 			post_do_visit(_sugared_addressed_value);
+		}
+
+		public override void visit(pattern_node _pattern_node)
+		{
+			DefaultVisit(_pattern_node);
+			pre_do_visit(_pattern_node);
+			post_do_visit(_pattern_node);
+		}
+
+		public override void visit(type_pattern _type_pattern)
+		{
+			DefaultVisit(_type_pattern);
+			pre_do_visit(_type_pattern);
+			visit(type_pattern.identifier);
+			visit(type_pattern.type);
+			post_do_visit(_type_pattern);
+		}
+
+		public override void visit(is_pattern_expr _is_pattern_expr)
+		{
+			DefaultVisit(_is_pattern_expr);
+			pre_do_visit(_is_pattern_expr);
+			visit(is_pattern_expr.left);
+			visit(is_pattern_expr.right);
+			post_do_visit(_is_pattern_expr);
 		}
 	}
 

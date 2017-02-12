@@ -168,6 +168,7 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_variable_list
 %type <ti> tkAssignOrEqual
+%type <stn> pattern
 
 %%
 
@@ -2666,7 +2667,20 @@ expr
     : expr_l1
 		{ $$ = $1; }
     | format_expr
-		{ $$ = $1; }
+		{
+            /*var formatExpr = $1 as format_expr;
+            var expr = formatExpr.expr as typecast_node;
+            if (expr != null)
+            {
+                var identifier = (expr.type_def as named_type_reference).names[0];
+                a
+                var type = formatExpr.format1 as ident
+                var pattern = new type_pattern(identifier, , identifier.source_context);
+                $$ = new is_pattern_expr(expr, pattern, formatExpr.source_context);
+            }
+            else*/
+                $$ = $1;
+        }
     ;
 
 expr_l1
@@ -2818,8 +2832,30 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
+    | as_is_expr tkColon type_ref
+        {
+            var asExpr = $1 as typecast_node;
+            var typeDef = asExpr.type_def as named_type_reference;
+            if (typeDef != null && typeDef.names.Count > 0)
+            {
+                var pattern = new type_pattern(typeDef.names[0], $3); 
+                $$ = new is_pattern_expr(asExpr.expr, pattern, @$);
+            }
+            else
+            {
+                parsertools.errors.Add(new unexpected_ident(parsertools.CurrentFileName, new ident(), "", @$, null));
+                $$ = null;
+            }
+        }
     ;
-
+    
+pattern
+    : identifier tkColon type_ref
+        { 
+            $$ = new type_pattern($1, $3); 
+        }
+    ;
+    
 simple_expr_or_nothing
 	: simple_expr 
 	{

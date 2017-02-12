@@ -407,7 +407,7 @@ namespace PascalABCCompiler
 
 
         public static int Main(string[] initialArgs)
-		{
+        {
             var args = initialArgs.ToList();
             if (args.Remove("/noconsole"))
             {

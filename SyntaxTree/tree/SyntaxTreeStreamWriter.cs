@@ -6060,6 +6060,78 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(pattern_node _pattern_node)
+		{
+			bw.Write((Int16)221);
+			write_pattern_node(_pattern_node);
+		}
+
+		public void write_pattern_node(pattern_node _pattern_node)
+		{
+			write_syntax_tree_node(_pattern_node);
+		}
+
+
+		public void visit(type_pattern _type_pattern)
+		{
+			bw.Write((Int16)222);
+			write_type_pattern(_type_pattern);
+		}
+
+		public void write_type_pattern(type_pattern _type_pattern)
+		{
+			write_pattern_node(_type_pattern);
+			if (_type_pattern.identifier == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_type_pattern.identifier.visit(this);
+			}
+			if (_type_pattern.type == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_type_pattern.type.visit(this);
+			}
+		}
+
+
+		public void visit(is_pattern_expr _is_pattern_expr)
+		{
+			bw.Write((Int16)223);
+			write_is_pattern_expr(_is_pattern_expr);
+		}
+
+		public void write_is_pattern_expr(is_pattern_expr _is_pattern_expr)
+		{
+			write_expression(_is_pattern_expr);
+			if (_is_pattern_expr.left == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_is_pattern_expr.left.visit(this);
+			}
+			if (_is_pattern_expr.right == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_is_pattern_expr.right.visit(this);
+			}
+		}
+
 	}
 
 

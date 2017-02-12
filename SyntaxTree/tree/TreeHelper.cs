@@ -83,6 +83,24 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         /// <summary>
+        /// Получает коллекцию предков текущего узла
+        /// </summary>
+        /// <param name="includeSelf">Включить в список текущий узел</param>
+        /// <returns>Коллекция предков узла</returns>
+        public IEnumerable<syntax_tree_node> AscendantNodes(bool includeSelf = false)
+        {
+            if (includeSelf)
+                yield return this;
+
+            var parentNode = Parent;
+            while (parentNode != null)
+            {
+                yield return parentNode;
+                parentNode = parentNode.Parent;
+            }
+        }
+
+        /// <summary>
         /// Получает коллекцию узлов поддерева, в котором корнем является текущий узел. 
         /// </summary>
         /// <param name="traversalType">Тип обхода дерева. Определяет порядок добавления узлов в коллекцию</param>
