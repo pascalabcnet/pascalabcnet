@@ -1743,7 +1743,7 @@ namespace CodeCompletion
             this.name = name;
             this.topScope = topScope;
             this.si = new SymInfo(name, SymbolKind.Method, name);
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
+            //this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             parameters = new List<ElementScope>();
             members = new List<SymScope>();
             //UnitDocCache.AddDescribeToComplete(this);
@@ -1755,7 +1755,7 @@ namespace CodeCompletion
             this.name = name;
             this.topScope = topScope;
             this.si = new SymInfo(name, SymbolKind.Method, name);
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
+            //this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             parameters = new List<ElementScope>();
             members = new List<SymScope>();
             this.is_constructor = is_constructor;
@@ -1935,7 +1935,7 @@ namespace CodeCompletion
         {
             if (documentation != null && documentation.Length > 0 && documentation[0] == '-') return;
             this.si.description = this.ToString();
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
+            this.si.addit_name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             if (documentation != null) this.si.description += "\n" + this.documentation;
         }
 
