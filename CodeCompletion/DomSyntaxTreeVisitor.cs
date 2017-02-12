@@ -2332,7 +2332,7 @@ namespace CodeCompletion
             bool tmp = search_all;
         	search_all = false;
         	_dot_node.left.visit(this);
-			search_all = tmp;
+            search_all = tmp;
         	if (returned_scope != null)
 			{
 				if (_dot_node.right is ident)
@@ -2354,6 +2354,10 @@ namespace CodeCompletion
                             List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
                             if (meths.Count > 0)
                             {
+                                method_call mc = new method_call(_dot_node, new expression_list());
+                                search_all = true;
+                                mc.visit(this);
+                                return;
                                 returned_scope = meths[0];
                                 if (meths[0].IsGeneric() && meths[0].IsExtension)
                                 {
@@ -4448,6 +4452,14 @@ namespace CodeCompletion
             }
             
         }
+        public override void visit(tuple_node _tuple_node)
+        {
+            method_call mc = new method_call();
+            mc.parameters = _tuple_node.el;
+            mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+            mc.visit(this);
+        }
+
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();

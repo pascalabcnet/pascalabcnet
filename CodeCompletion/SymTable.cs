@@ -1895,6 +1895,8 @@ namespace CodeCompletion
                     ElementScope inst_param = null;
                     if ((parameter.sc as TypeScope).IsGeneric)
                         inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
+                    else if ((parameter.sc as TypeScope).GetElementType() != null && (parameter.sc as TypeScope).GetElementType().IsGenericParameter)
+                        inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
                     else
                         inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
                     instance.parameters.Add(inst_param);
@@ -4857,8 +4859,19 @@ namespace CodeCompletion
                     }
                     else
                     {
-                        sc.generic_params.Add(gen_args[i].si.name);
-                        sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                        if (this.instances[i].instances != null && this.instances[i].instances.Count > 0 && gen_args[i].elementType != null)
+                        {
+                            List<TypeScope> lst = new List<TypeScope>();
+                            lst.Add(gen_args[i].elementType);
+                            sc.instances.Add(this.instances[i].GetInstance(lst));
+                            sc.generic_params.Add(gen_args[i].elementType.si.name);
+                        }
+                        else
+                        {
+                            sc.generic_params.Add(gen_args[i].si.name);
+                            sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                        }
+                        
                     }   
                 }
             else
