@@ -332,6 +332,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                     else
                     {
                         var si = forScope.SymbolInfoLoopVar;
+                        if (!_capturedVarsTreeNodesDictionary.ContainsKey(si.scope.ScopeNum))
+                            return;
                         var scopeWhereVarDefined = _capturedVarsTreeNodesDictionary[si.scope.ScopeNum];
                         var idRef = scopeWhereVarDefined
                             .VariablesDefinedInScope
