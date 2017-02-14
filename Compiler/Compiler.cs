@@ -575,6 +575,7 @@ namespace PascalABCCompiler
         {
             StandartModules=new List<StandartModule>();
             StandartModules.Add(new StandartModule("PABCSystem", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
+            StandartModules.Add(new StandartModule("PABCExtensions", SyntaxTree.LanguageId.PascalABCNET | SyntaxTree.LanguageId.C));
         }
 
         private void SetDirectories()

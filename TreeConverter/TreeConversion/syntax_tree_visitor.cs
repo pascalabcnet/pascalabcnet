@@ -19377,7 +19377,7 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (av.sugared_expr is SyntaxTree.slice_expr) // и slice_expr_question
             {
-                semantic_check_slice_expr(av.sugared_expr as SyntaxTree.slice_expr);
+                semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
             }
             else
             {

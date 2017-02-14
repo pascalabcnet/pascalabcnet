@@ -11,7 +11,6 @@
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
-    File "..\bin\StandardSyntaxTreeConverter.dll"
     File "..\bin\SyntaxVisitors.dll"
     File "..\bin\YieldConversionSyntax.dll"
     File "..\bin\YieldHelpers.dll"
@@ -49,7 +48,6 @@
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
     ${AddFile} "SyntaxTreeConverters.dll"
-    ${AddFile} "StandardSyntaxTreeConverter.dll"
     ${AddFile} "YieldHelpers.dll"
     ${AddFile} "SyntaxVisitors.dll"
     ${AddFile} "YieldConversionSyntax.dll"
@@ -87,6 +85,7 @@
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
     File ..\bin\Lib\PABCSystem.pcu
+    File ..\bin\Lib\PABCExtensions.pcu
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
@@ -133,6 +132,7 @@
     ${AddFile} "GraphABCHelper.pcu"
     ${AddFile} "IniFile.pcu"
     ${AddFile} "PABCSystem.pcu"
+    ${AddFile} "PABCExtensions.pcu"
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
@@ -180,6 +180,7 @@
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
     File ..\bin\Lib\PABCSystem.pas
+    File ..\bin\Lib\PABCExtensions.pas
     File ..\bin\Lib\PointerTools.pas
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
@@ -225,6 +226,7 @@
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"
     ${AddFile} "PABCSystem.pas"
+    ${AddFile} "PABCExtensions.pas"
     ${AddFile} "PointerTools.pas"
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
@@ -254,8 +256,6 @@
 	Push "SyntaxVisitors.dll"
     Call NGEN
     Push "YieldConversionSyntax.dll"
-    Call NGEN
-    Push "StandardSyntaxTreeConverter.dll"
     Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"

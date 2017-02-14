@@ -24,19 +24,20 @@ namespace PascalABCCompiler.Parsers
     	/// <summary>
     	/// Получить короткое имя откомпилированного типа
     	/// </summary>
-    	string GetShortTypeName(ICompiledTypeScope scope);
+    	string GetShortName(ICompiledTypeScope scope);
         /// <summary>
         /// Получить короткое имя откомпилированного метода
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-    	string GetShortTypeName(ICompiledMethodScope scope);
+    	string GetShortName(ICompiledMethodScope scope);
         /// <summary>
         /// Получить короткое имя откомпилированного конструктора
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-    	string GetShortTypeName(ICompiledConstructorScope scope);
+    	string GetShortName(ICompiledConstructorScope scope);
+    	string GetShortName(IProcScope scope);
         string GetShortTypeName(Type t, bool noalias = true);
         /// <summary>
         /// Получить представление массива рамерности rank

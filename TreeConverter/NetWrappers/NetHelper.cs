@@ -383,8 +383,9 @@ namespace PascalABCCompiler.NetHelper
 				byte[] buf = new byte[fs.Length];
            		fs.Read(buf, 0, (int)fs.Length);
             	fs.Close();
-                a = System.Reflection.Assembly.Load(buf);      
                 curr_inited_assm_path = name;
+                a = System.Reflection.Assembly.Load(buf);      
+                
                 a.GetTypes();
             	buf = null;
             	//Thread th = new Thread(new ThreadStart(collect_internal));
@@ -894,14 +895,18 @@ namespace PascalABCCompiler.NetHelper
         {
             try
             {
-                Assembly assm = null;
-                string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(curr_inited_assm_path),args.Name.Substring(0,args.Name.IndexOf(","))+".dll");
-                if (System.IO.File.Exists(path))
-                    assm = LoadAssembly(path);
-                curr_inited_assm_path = null;
-           
-                //return LoadAssembly(args.Name);
-                return assm;
+                if (curr_inited_assm_path != null)
+                {
+                    Assembly assm = null;
+                    string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(curr_inited_assm_path), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
+                    if (System.IO.File.Exists(path))
+                        assm = LoadAssembly(path);
+                    curr_inited_assm_path = null;
+
+                    //return LoadAssembly(args.Name);
+                    return assm;
+                }
+                return null;
             }
             catch
             {
