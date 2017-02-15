@@ -68,16 +68,19 @@ namespace VisualPascalABC
     public class DefaultDispatcher : CodeCompletion.AbstractDispatcher
     {
         private Dictionary<PascalABCCompiler.Parsers.SymInfo, ICompletionData> dict = new Dictionary<PascalABCCompiler.Parsers.SymInfo, ICompletionData>();
-		
+        private Dictionary<string, ICompletionData> dict2 = new Dictionary<string, ICompletionData>();
     	public void Reset()
     	{
     		dict.Clear();
+            dict2.Clear();
     	}
 
         public void Add(PascalABCCompiler.Parsers.SymInfo si, ICompletionData data)
     	{
     		if (!dict.ContainsKey(si))
-    		dict[si] = data;
+    		    dict[si] = data;
+            if (!dict2.ContainsKey(si.description))
+                dict2[si.description] = data;
     	}
 
         public override void Update(PascalABCCompiler.Parsers.SymInfo si)
@@ -87,6 +90,10 @@ namespace VisualPascalABC
     		{
     			val.Description = si.description;
     		}
+            else if (si.description != null && dict2.TryGetValue(si.description.Split('\n')[0], out val))
+            {
+                val.Description = si.description;
+            }
 		}
     }
 }
