@@ -10,6 +10,11 @@ begin
   PABCSystem.Reset(Result, fname);
 end;
 
+function CreateBinary<T>(fname: string): file of T;
+begin
+  PABCSystem.Rewrite(Result, fname);
+end;
+
 function Elements<T>(Self: file of T): sequence of T; extensionmethod;
 begin
   while not Self.Eof do
