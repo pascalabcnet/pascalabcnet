@@ -41,6 +41,12 @@ begin
   f.Close
 end;
 
+procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
+begin
+  foreach var x in vals do
+    PABCSystem.Write(Self, x);
+end;
+
 var __initialized: boolean;
 
 procedure __InitModule;
