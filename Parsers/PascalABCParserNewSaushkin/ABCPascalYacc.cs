@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-8EAQPI9
-// DateTime: 26.01.2017 15:17:46
+// DateTime: 11.02.2017 17:44:25
 // UserName: ?????????
 // Input file <J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -4902,17 +4902,6 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 595: // tuple -> tkRoundOpen, expr_l1, tkComma, expr_l1_list, lambda_type_ref, 
                 //          optional_full_lambda_fp_list, tkRoundClose
 {
-			/*
-			($4 as expression_list).expressions.Insert(0,$2);
-			
-			if (parsertools.build_tree_for_formatter)
-				$$ = new tuple_node_for_formatter($4 as expression_list,@$);
-			else	
-			{
-			    var dn = new dot_node(new dot_node(new ident("?System"),new ident("Tuple")),new ident("Create",@$));
-				$$ = new method_call(dn,$4 as expression_list,@$);
-			}*/
-
 			/*if ($5 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@5);
 			if ($6 != null) 

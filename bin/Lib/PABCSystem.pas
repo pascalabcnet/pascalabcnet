@@ -468,9 +468,6 @@ type
     procedure Erase;
     /// Переименовывает файл, давая ему имя newname 
     procedure Rename(newname: string);
-    ///- Write(f: file; a,b,...)
-    /// Выводит значения a,b,... в двоичный файл
-    procedure Write(params vals: array of object);
   end;
 
   // Class for typed files
@@ -504,6 +501,9 @@ type
     function FileSize: int64;
     /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n  
     procedure Seek(n: int64);
+    ///- f.Write(a,b,...)
+    /// Выводит значения a,b,... в двоичный файл
+    procedure Write(params vals: array of object);
   end;
  
 //{{{doc: Начало секции интерфейса для документации }}} 
@@ -5174,11 +5174,6 @@ begin
   PABCSystem.Rename(Self, newname);
 end;
 
-procedure AbstractBinaryFile.Write(params vals: array of object);
-begin
-  PABCSystem.Write(Self, vals);
-end;
-
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods
 // -----------------------------------------------------
@@ -5210,6 +5205,11 @@ end;
 procedure BinaryFile.Seek(n: int64);
 begin
   PABCSystem.Seek(Self, n);
+end;
+
+procedure BinaryFile.Write(params vals: array of object);
+begin
+  PABCSystem.Write(Self, vals);
 end;
 
 // -----------------------------------------------------
@@ -9600,6 +9600,12 @@ end;
 
 /// Заменяет в указанной строке все вхождения регулярного выражения указанной строкой замены и возвращает преобразованную строку
 function Replace(Self: string; reg,repl: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+begin
+	Result := Regex.Replace(Self,reg,repl,options)
+end;
+
+/// Заменяет в указанной строке все вхождения регулярного выражения указанным преобразованием замены и возвращает преобразованную строку
+function Replace(Self: string; reg: string; repl: Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
 	Result := Regex.Replace(Self,reg,repl,options)
 end;

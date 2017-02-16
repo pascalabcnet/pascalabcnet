@@ -9604,6 +9604,12 @@ begin
 	Result := Regex.Replace(Self,reg,repl,options)
 end;
 
+/// Заменяет в указанной строке все вхождения регулярного выражения указанным преобразованием замены и возвращает преобразованную строку
+function Replace(Self: string; reg: string; repl: Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+begin
+	Result := Regex.Replace(Self,reg,repl,options)
+end;
+
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
 function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
 begin

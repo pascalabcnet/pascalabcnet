@@ -10,6 +10,11 @@ begin
   PABCSystem.Reset(Result, fname);
 end;
 
+function CreateBinary<T>(fname: string): file of T;
+begin
+  PABCSystem.Rewrite(Result, fname);
+end;
+
 function Elements<T>(Self: file of T): sequence of T; extensionmethod;
 begin
   while not Self.Eof do
@@ -34,6 +39,12 @@ begin
     yield x;
   end;
   f.Close
+end;
+
+procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
+begin
+  foreach var x in vals do
+    PABCSystem.Write(Self, x);
 end;
 
 var __initialized: boolean;
