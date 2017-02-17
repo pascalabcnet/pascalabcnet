@@ -37,6 +37,18 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
+/*#if DEBUG
+            try
+            {
+                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
+            }
+            catch
+            {
+
+            }
+
+#endif*/
+
             return root;
         }
     }
