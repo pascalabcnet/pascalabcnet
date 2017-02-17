@@ -468,6 +468,9 @@ type
     procedure Erase;
     /// Переименовывает файл, давая ему имя newname 
     procedure Rename(newname: string);
+    ///- f.Write(a,b,...)
+    /// Выводит значения a,b,... в двоичный файл
+    procedure Write(params vals: array of object);
   end;
 
   // Class for typed files
@@ -501,9 +504,6 @@ type
     function FileSize: int64;
     /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n  
     procedure Seek(n: int64);
-    ///- f.Write(a,b,...)
-    /// Выводит значения a,b,... в двоичный файл
-    procedure Write(params vals: array of object);
   end;
  
 //{{{doc: Начало секции интерфейса для документации }}} 
@@ -3232,6 +3232,18 @@ begin
   Result := a.Contains(x);
 end;
 
+function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
+begin
+  Result := new T[a.Length*n];
+  for var i:=0 to n-1 do
+    a.CopyTo(Result,a.Length*i);
+end;
+
+function operator*<T>(n: integer; a: array of T): array of T; extensionmethod;
+begin
+  Result := a*n
+end;
+
 //------------------------------------------------------------------------------
 //          Операции для List<T> 
 //------------------------------------------------------------------------------
@@ -3239,6 +3251,12 @@ function operator+=<T>(a, b: List<T>): List<T>; extensionmethod;
 begin
   a.AddRange(b);
   Result := a;
+end;
+
+function operator+<T>(a, b: List<T>): List<T>; extensionmethod;
+begin
+  Result := new List<T>(a);
+  Result.AddRange(b);
 end;
 
 function operator+=<T>(a: List<T>; x: T): List<T>; extensionmethod;
@@ -5174,6 +5192,11 @@ begin
   PABCSystem.Rename(Self, newname);
 end;
 
+procedure AbstractBinaryFile.Write(params vals: array of object);
+begin
+  PABCSystem.Write(Self, vals);
+end;
+
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods
 // -----------------------------------------------------
@@ -5205,11 +5228,6 @@ end;
 procedure BinaryFile.Seek(n: int64);
 begin
   PABCSystem.Seek(Self, n);
-end;
-
-procedure BinaryFile.Write(params vals: array of object);
-begin
-  PABCSystem.Write(Self, vals);
 end;
 
 // -----------------------------------------------------
@@ -8582,17 +8600,6 @@ end;
 function SliceListImpl<T>(Self: List<T>; from,step,count: integer): List<T>;
 begin
   CorrectCountForSlice(Self.Count,from,step,count);
-  {if step = 0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
-
-  if (from < 0) or (from > Self.Count - 1) then
-    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
-
-  var cnt := step > 0 ? Self.Count - from : from + 1; 
-  var cntstep := (cnt-1) div abs(step) + 1;
-  if count > cntstep then 
-    count := cntstep;}
-    
   Result := CreateSliceFromListInternal(Self,from,step,count);
 end;
 

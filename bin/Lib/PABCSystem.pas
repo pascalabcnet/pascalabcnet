@@ -468,6 +468,11 @@ type
     procedure Erase;
     /// Переименовывает файл, давая ему имя newname 
     procedure Rename(newname: string);
+    ///- f.Write(a,b,...)
+    /// Выводит значения a,b,... в двоичный файл
+    procedure Write(params vals: array of object);
+    /// Устанавливает файловый указатель на начало файла
+    procedure Reset;
   end;
 
   // Class for typed files
@@ -501,9 +506,6 @@ type
     function FileSize: int64;
     /// Устанавливает текущую позицию файлового указателя в бестиповом файле на байт с номером n  
     procedure Seek(n: int64);
-    ///- f.Write(a,b,...)
-    /// Выводит значения a,b,... в двоичный файл
-    procedure Write(params vals: array of object);
   end;
  
 //{{{doc: Начало секции интерфейса для документации }}} 
@@ -1523,7 +1525,11 @@ procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
-procedure Reverse<T>(a: array of T; index,length: integer);
+procedure Reverse<T>(a: array of T; index,count: integer);
+/// Изменяет порядок элементов в списке на противоположный
+procedure Reverse<T>(a: List<T>);
+/// Изменяет порядок элементов на противоположный в диапазоне списка длины length начиная с индекса index
+procedure Reverse<T>(a: List<T>; index,count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
 /// Перемешивает список случайным образом
@@ -3247,18 +3253,21 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для List<T> 
 //------------------------------------------------------------------------------
+///--
 function operator+=<T>(a, b: List<T>): List<T>; extensionmethod;
 begin
   a.AddRange(b);
   Result := a;
 end;
 
+///--
 function operator+<T>(a, b: List<T>): List<T>; extensionmethod;
 begin
   Result := new List<T>(a);
   Result.AddRange(b);
 end;
 
+///--
 function operator+=<T>(a: List<T>; x: T): List<T>; extensionmethod;
 begin
   a.Add(x);
@@ -3269,6 +3278,40 @@ end;
 function List<T>.operator in(x: T; Self: List<T>): boolean;
 begin
   Result := Self.Contains(x);
+end;
+
+///--
+function operator*<T>(a: List<T>; n: integer): List<T>; extensionmethod;
+begin
+  Result := new List<T>();
+  for var i := 1 to n do
+    Result.AddRange(a);
+end;
+
+///--
+function operator*<T>(n: integer; a: List<T>): List<T>; extensionmethod;
+begin
+  Result := a*n;
+end;
+
+//------------------------------------------------------------------------------
+//          Операции для Stack<T> 
+//------------------------------------------------------------------------------
+///--
+function operator+=<T>(s: Stack<T>; x: T): Stack<T>; extensionmethod;
+begin
+  s.Push(x);
+  Result := s;
+end;
+
+//------------------------------------------------------------------------------
+//          Операции для Queue<T> 
+//------------------------------------------------------------------------------
+///--
+function operator+=<T>(q: Queue<T>; x: T): Queue<T>; extensionmethod;
+begin
+  q.Enqueue(x);
+  Result := q;
 end;
 
 //------------------------------------------------------------------------------
@@ -5192,6 +5235,16 @@ begin
   PABCSystem.Rename(Self, newname);
 end;
 
+procedure AbstractBinaryFile.Write(params vals: array of object);
+begin
+  PABCSystem.Write(Self, vals);
+end;
+
+procedure AbstractBinaryFile.Reset;
+begin
+  PABCSystem.Reset(Self);
+end;
+
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods
 // -----------------------------------------------------
@@ -5223,11 +5276,6 @@ end;
 procedure BinaryFile.Seek(n: int64);
 begin
   PABCSystem.Seek(Self, n);
-end;
-
-procedure BinaryFile.Write(params vals: array of object);
-begin
-  PABCSystem.Write(Self, vals);
 end;
 
 // -----------------------------------------------------
@@ -7072,10 +7120,21 @@ begin
   System.Array.Reverse(a);
 end;
 
-procedure Reverse<T>(a: array of T; index,length: integer);
+procedure Reverse<T>(a: array of T; index,count: integer);
 begin
-  System.Array.Reverse(a,index,length);
+  System.Array.Reverse(a,index,count);
 end;
+
+procedure Reverse<T>(a: List<T>);
+begin
+  a.Reverse
+end;
+
+procedure Reverse<T>(a: List<T>; index,count: integer);
+begin
+  a.Reverse(index,count)
+end;
+
 
 procedure Shuffle<T>(a: array of T);
 begin
