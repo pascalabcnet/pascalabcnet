@@ -1,0 +1,4254 @@
+<?xml version="1.0"?>
+<NodeGeneratorData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SyntaxNodes>
+    <SyntaxNode Name="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="source_context" Type="SourceContext" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="expression" BaseName="declaration">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="statement" BaseName="declaration">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="statement_list" BaseName="statement">
+      <Fields>
+        <ExtendedField Name="subnodes" Type="List&lt;statement&gt;" CreateVariable="true" DeleteVariable="false" />
+        <SyntaxField Name="left_logical_bracket" SyntaxType="token_info" />
+        <SyntaxField Name="right_logical_bracket" SyntaxType="token_info" />
+        <ExtendedField Name="expr_lambda_body" Type="bool" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="ident" BaseName="addressed_value_funcname">
+      <Fields>
+        <ExtendedField Name="name" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+          <TagIndex>6</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="assign" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="to" SyntaxType="addressed_value" />
+        <SyntaxField Name="from" SyntaxType="expression" />
+        <ExtendedField Name="operator_type" Type="Operators" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+          <TagIndex>6</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="bin_expr" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+        <ExtendedField Name="operation_type" Type="Operators" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="un_expr" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="subnode" SyntaxType="expression" />
+        <ExtendedField Name="operation_type" Type="Operators" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="const_node" BaseName="addressed_value">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+          <TagIndex>2</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="bool_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+          <TagIndex>2</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="int32_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="Int32" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+          <TagIndex>2</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="double_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="double" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+          <TagIndex>2</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="subprogram_body" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="subprogram_code" SyntaxType="statement_list" />
+        <SyntaxField Name="subprogram_defs" SyntaxType="declarations" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="addressed_value" BaseName="expression">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="type_definition" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="attr_list" SyntaxType="type_definition_attr_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="roof_dereference" BaseName="dereference">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="named_type_reference" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="names" Type="List&lt;ident&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="variable_definitions" BaseName="declaration">
+      <Fields>
+        <ExtendedField Name="var_definitions" Type="List&lt;var_def_statement&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="ident_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="idents" Type="List&lt;ident&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="var_def_statement" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="vars" SyntaxType="ident_list" />
+        <SyntaxField Name="vars_type" SyntaxType="type_definition" />
+        <SyntaxField Name="inital_value" SyntaxType="expression" />
+        <ExtendedField Name="var_attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="is_event" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="declaration" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="attributes" SyntaxType="attribute_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="declarations" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="program_tree" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="compilation_units" Type="List&lt;compilation_unit&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="program_name" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="prog_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="string_const" BaseName="literal">
+      <Fields>
+        <ExtendedField Name="Value" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="expression_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="expressions" Type="List&lt;expression&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="dereference" BaseName="addressed_value_funcname">
+      <Fields>
+        <SyntaxField Name="dereferencing_value" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="indexer" BaseName="dereference">
+      <Fields>
+        <SyntaxField Name="indexes" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="for_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="loop_variable" SyntaxType="ident" />
+        <SyntaxField Name="initial_value" SyntaxType="expression" />
+        <SyntaxField Name="finish_value" SyntaxType="expression" />
+        <SyntaxField Name="statements" SyntaxType="statement" />
+        <ExtendedField Name="cycle_type" Type="for_cycle_type" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="increment_value" SyntaxType="expression" />
+        <SyntaxField Name="type_name" SyntaxType="type_definition" />
+        <ExtendedField Name="create_loop_variable" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="repeat_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="statements" SyntaxType="statement" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="while_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+        <SyntaxField Name="statements" SyntaxType="statement" />
+        <ExtendedField Name="CycleType" Type="WhileCycleType" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="if_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="condition" SyntaxType="expression" />
+        <SyntaxField Name="then_body" SyntaxType="statement" />
+        <SyntaxField Name="else_body" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="ref_type" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="pointed_to" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="diapason" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="indexers_types" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="indexers" Type="List&lt;type_definition&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="array_type" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="indexers" SyntaxType="indexers_types" />
+        <SyntaxField Name="elements_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="label_definitions" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="labels" SyntaxType="ident_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="procedure_attribute" BaseName="ident">
+      <Fields>
+        <ExtendedField Name="attribute_type" Type="proc_attribute" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typed_parameters" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="idents" SyntaxType="ident_list" />
+        <SyntaxField Name="vars_type" SyntaxType="type_definition" />
+        <ExtendedField Name="param_kind" Type="parametr_kind" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="inital_value" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="formal_parameters" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="params_list" Type="List&lt;typed_parameters&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="procedure_attributes_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="proc_attributes" Type="List&lt;procedure_attribute&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="procedure_header" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="parameters" SyntaxType="formal_parameters" />
+        <SyntaxField Name="proc_attributes" SyntaxType="procedure_attributes_list" />
+        <SyntaxField Name="name" SyntaxType="method_name" />
+        <ExtendedField Name="of_object" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="class_keyword" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="template_args" SyntaxType="ident_list" />
+        <SyntaxField Name="where_defs" SyntaxType="where_definition_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="function_header" BaseName="procedure_header">
+      <Fields>
+        <SyntaxField Name="return_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="procedure_definition" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="proc_header" SyntaxType="procedure_header" />
+        <SyntaxField Name="proc_body" SyntaxType="proc_block" />
+        <ExtendedField Name="is_short_definition" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="type_declaration" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="type_name" SyntaxType="ident" />
+        <SyntaxField Name="type_def" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="type_declarations" BaseName="declaration">
+      <Fields>
+        <ExtendedField Name="types_decl" Type="List&lt;type_declaration&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="simple_const_definition" BaseName="const_definition">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typed_const_definition" BaseName="const_definition">
+      <Fields>
+        <SyntaxField Name="const_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="const_definition" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="const_name" SyntaxType="ident" />
+        <SyntaxField Name="const_value" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="consts_definitions_list" BaseName="declaration">
+      <Fields>
+        <ExtendedField Name="const_defs" Type="List&lt;const_definition&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="unit_name" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="idunit_name" SyntaxType="ident" />
+        <ExtendedField Name="HeaderKeyword" Type="UnitHeaderKeyword" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="unit_or_namespace" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="ident_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="uses_unit_in" BaseName="unit_or_namespace">
+      <Fields>
+        <SyntaxField Name="in_file" SyntaxType="string_const" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="uses_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="units" Type="List&lt;unit_or_namespace&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="program_body" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="used_units" SyntaxType="uses_list" />
+        <SyntaxField Name="program_definitions" SyntaxType="declarations" />
+        <SyntaxField Name="program_code" SyntaxType="statement_list" />
+        <SyntaxField Name="using_list" SyntaxType="using_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="compilation_unit" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="file_name" Type="string" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="compiler_directives" Type="List&lt;compiler_directive&gt;" CreateVariable="true" DeleteVariable="false" />
+        <ExtendedField Name="Language" Type="LanguageId" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="unit_module" BaseName="compilation_unit">
+      <Fields>
+        <SyntaxField Name="unit_name" SyntaxType="unit_name" />
+        <SyntaxField Name="interface_part" SyntaxType="interface_node" />
+        <SyntaxField Name="implementation_part" SyntaxType="implementation_node" />
+        <SyntaxField Name="initialization_part" SyntaxType="statement_list" />
+        <SyntaxField Name="finalization_part" SyntaxType="statement_list" />
+        <SyntaxField Name="attributes" SyntaxType="attribute_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="program_module" BaseName="compilation_unit">
+      <Fields>
+        <SyntaxField Name="program_name" SyntaxType="program_name" />
+        <SyntaxField Name="used_units" SyntaxType="uses_list" />
+        <SyntaxField Name="program_block" SyntaxType="block" />
+        <SyntaxField Name="using_namespaces" SyntaxType="using_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="hex_constant" BaseName="int64_const">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="get_address" BaseName="addressed_value_funcname">
+      <Fields>
+        <SyntaxField Name="address_of" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="case_variant" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="conditions" SyntaxType="expression_list" />
+        <SyntaxField Name="exec_if_true" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="case_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="param" SyntaxType="expression" />
+        <SyntaxField Name="conditions" SyntaxType="case_variants" />
+        <SyntaxField Name="else_statement" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="method_name" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="ln" Type="List&lt;ident&gt;" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="class_name" SyntaxType="ident" />
+        <SyntaxField Name="meth_name" SyntaxType="ident" />
+        <SyntaxField Name="explicit_interface_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="dot_node" BaseName="addressed_value_funcname">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="addressed_value" />
+        <SyntaxField Name="right" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="empty_statement" BaseName="statement">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="goto_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="label" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="labeled_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="label_name" SyntaxType="ident" />
+        <SyntaxField Name="to_statement" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="with_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="what_do" SyntaxType="statement" />
+        <SyntaxField Name="do_with" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="method_call" BaseName="dereference">
+      <Fields>
+        <SyntaxField Name="parameters" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+          <TagIndex>7</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="pascal_set_constant" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="values" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="array_const" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="elements" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="write_accessor_name" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="accessor_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="read_accessor_name" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="accessor_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="property_accessors" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="read_accessor" SyntaxType="read_accessor_name" />
+        <SyntaxField Name="write_accessor" SyntaxType="write_accessor_name" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="simple_property" BaseName="declaration">
+      <Fields>
+        <SyntaxField Name="property_name" SyntaxType="ident" />
+        <SyntaxField Name="property_type" SyntaxType="type_definition" />
+        <SyntaxField Name="index_expression" SyntaxType="expression" />
+        <SyntaxField Name="accessors" SyntaxType="property_accessors" />
+        <SyntaxField Name="array_default" SyntaxType="property_array_default" />
+        <SyntaxField Name="parameter_list" SyntaxType="property_parameter_list" />
+        <ExtendedField Name="attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="index_property" BaseName="simple_property">
+      <Fields>
+        <SyntaxField Name="property_parametres" SyntaxType="formal_parameters" />
+        <SyntaxField Name="is_default" SyntaxType="default_indexer_property_node" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="class_members" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="members" Type="List&lt;declaration&gt;" CreateVariable="true" DeleteVariable="false" />
+        <SyntaxField Name="access_mod" SyntaxType="access_modifer_node" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="access_modifer_node" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="access_level" Type="access_modifer" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="class_body" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="class_def_blocks" Type="List&lt;class_members&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="class_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="class_parents" SyntaxType="named_type_reference_list" />
+        <SyntaxField Name="body" SyntaxType="class_body" />
+        <ExtendedField Name="keyword" Type="class_keyword" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="template_args" SyntaxType="ident_list" />
+        <SyntaxField Name="where_section" SyntaxType="where_definition_list" />
+        <ExtendedField Name="attribute" Type="class_attribute" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="is_auto" Type="bool" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="default_indexer_property_node" BaseName="syntax_tree_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="known_type_definition" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="tp" Type="known_type" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="unit_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="set_type_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="of_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="record_const_definition" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="ident" />
+        <SyntaxField Name="val" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="record_const" BaseName="expression">
+      <Fields>
+        <ExtendedField Name="rec_consts" Type="List&lt;record_const_definition&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="record_type" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="parts" SyntaxType="record_type_parts" />
+        <SyntaxField Name="base_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="enum_type_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="enumerators" SyntaxType="enumerator_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="char_const" BaseName="literal">
+      <Fields>
+        <ExtendedField Name="cconst" Type="char" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="raise_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="excep" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="sharp_char_const" BaseName="literal">
+      <Fields>
+        <ExtendedField Name="char_num" Type="int" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="literal_const_line" BaseName="literal">
+      <Fields>
+        <ExtendedField Name="literals" Type="List&lt;literal&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="string_num_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="num_of_symbols" SyntaxType="expression" />
+        <SyntaxField Name="name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="variant" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="vars" SyntaxType="ident_list" />
+        <SyntaxField Name="vars_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="variant_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="vars" Type="List&lt;variant&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="variant_type" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="case_exprs" SyntaxType="expression_list" />
+        <SyntaxField Name="parts" SyntaxType="record_type_parts" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="variant_types" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="vars" Type="List&lt;variant_type&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="variant_record_type" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="var_name" SyntaxType="ident" />
+        <SyntaxField Name="var_type" SyntaxType="type_definition" />
+        <SyntaxField Name="vars" SyntaxType="variant_types" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="procedure_call" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="func_name" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+          <TagIndex>7</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="class_predefinition" BaseName="type_declaration">
+      <Fields>
+        <SyntaxField Name="class_name" SyntaxType="ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="nil_const" BaseName="const_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="file_type_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="elem_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="constructor" BaseName="procedure_header">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="destructor" BaseName="procedure_header">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="inherited_method_call" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="method_name" SyntaxType="ident" />
+        <SyntaxField Name="exprs" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typecast_node" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="addressed_value" />
+        <SyntaxField Name="type_def" SyntaxType="type_definition" />
+        <ExtendedField Name="cast_op" Type="op_typecast" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="interface_node" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="interface_definitions" SyntaxType="declarations" />
+        <SyntaxField Name="uses_modules" SyntaxType="uses_list" />
+        <SyntaxField Name="using_namespaces" SyntaxType="using_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="implementation_node" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="uses_modules" SyntaxType="uses_list" />
+        <SyntaxField Name="implementation_definitions" SyntaxType="declarations" />
+        <SyntaxField Name="using_namespaces" SyntaxType="using_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="diap_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="block" BaseName="proc_block">
+      <Fields>
+        <SyntaxField Name="defs" SyntaxType="declarations" />
+        <SyntaxField Name="program_code" SyntaxType="statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>6</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="proc_block" BaseName="syntax_tree_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="array_of_named_type_definition" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="type_name" SyntaxType="named_type_reference" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="array_of_const_type_definition" BaseName="type_definition">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="literal" BaseName="const_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="case_variants" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="variants" Type="List&lt;case_variant&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="diapason_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="var_def_list_for_record" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="vars" Type="List&lt;var_def_statement&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="record_type_parts" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="fixed_part" SyntaxType="var_def_list_for_record" />
+        <SyntaxField Name="variant_part" SyntaxType="variant_record_type" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="property_array_default" BaseName="syntax_tree_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="property_interface" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="parameter_list" SyntaxType="property_parameter_list" />
+        <SyntaxField Name="property_type" SyntaxType="type_definition" />
+        <SyntaxField Name="index_expression" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="property_parameter" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="names" SyntaxType="ident_list" />
+        <SyntaxField Name="type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="property_parameter_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="parameters" Type="List&lt;property_parameter&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="inherited_ident" BaseName="ident">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="format_expr" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+        <SyntaxField Name="format1" SyntaxType="expression" />
+        <SyntaxField Name="format2" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="initfinal_part" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="initialization_sect" SyntaxType="statement_list" />
+        <SyntaxField Name="finalization_sect" SyntaxType="statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="token_info" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="text" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="raise_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+        <SyntaxField Name="address" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="op_type_node" BaseName="token_info">
+      <Fields>
+        <ExtendedField Name="type" Type="Operators" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="file_type" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="file_of_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="known_type_ident" BaseName="ident">
+      <Fields>
+        <ExtendedField Name="type" Type="known_type" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="exception_handler" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="variable" SyntaxType="ident" />
+        <SyntaxField Name="type_name" SyntaxType="named_type_reference" />
+        <SyntaxField Name="statements" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="exception_ident" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="variable" SyntaxType="ident" />
+        <SyntaxField Name="type_name" SyntaxType="named_type_reference" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="exception_handler_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="handlers" Type="List&lt;exception_handler&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="exception_block" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="stmt_list" SyntaxType="statement_list" />
+        <SyntaxField Name="handlers" SyntaxType="exception_handler_list" />
+        <SyntaxField Name="else_stmt_list" SyntaxType="statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="try_handler" BaseName="syntax_tree_node">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="try_handler_finally" BaseName="try_handler">
+      <Fields>
+        <SyntaxField Name="stmt_list" SyntaxType="statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="try_handler_except" BaseName="try_handler">
+      <Fields>
+        <SyntaxField Name="except_block" SyntaxType="exception_block" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="try_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="stmt_list" SyntaxType="statement_list" />
+        <SyntaxField Name="handler" SyntaxType="try_handler" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="inherited_message" BaseName="statement">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="external_directive" BaseName="proc_block">
+      <Fields>
+        <SyntaxField Name="modulename" SyntaxType="expression" />
+        <SyntaxField Name="name" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="using_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="namespaces" Type="List&lt;unit_or_namespace&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="jump_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+        <ExtendedField Name="JumpType" Type="JumpStmtType" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="loop_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="stmt" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="foreach_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="identifier" SyntaxType="ident" />
+        <SyntaxField Name="type_name" SyntaxType="type_definition" />
+        <SyntaxField Name="in_what" SyntaxType="expression" />
+        <SyntaxField Name="stmt" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="addressed_value_funcname" BaseName="addressed_value">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="named_type_reference_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="types" Type="List&lt;named_type_reference&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="template_param_list" BaseName="dereference">
+      <Fields>
+        <ExtendedField Name="params_list" Type="List&lt;type_definition&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="template_type_reference" BaseName="named_type_reference">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="named_type_reference" />
+        <SyntaxField Name="params_list" SyntaxType="template_param_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="int64_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="Int64" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="uint64_const" BaseName="const_node">
+      <Fields>
+        <ExtendedField Name="val" Type="UInt64" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>2</TagIndex>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="new_expr" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="type" SyntaxType="type_definition" />
+        <SyntaxField Name="params_list" SyntaxType="expression_list" />
+        <ExtendedField Name="new_array" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="array_init_expr" SyntaxType="array_const" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="where_type_specificator_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="defs" Type="List&lt;type_definition&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="where_definition" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="names" SyntaxType="ident_list" />
+        <SyntaxField Name="types" SyntaxType="where_type_specificator_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="where_definition_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="defs" Type="List&lt;where_definition&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="sizeof_operator" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="type_def" SyntaxType="type_definition" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="typeof_operator" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="type_name" SyntaxType="named_type_reference" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="compiler_directive" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="Name" SyntaxType="token_info" />
+        <SyntaxField Name="Directive" SyntaxType="token_info" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="operator_name_ident" BaseName="ident">
+      <Fields>
+        <ExtendedField Name="operator_type" Type="Operators" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="var_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="var_def" SyntaxType="var_def_statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="question_colon_expression" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="condition" SyntaxType="expression" />
+        <SyntaxField Name="ret_if_true" SyntaxType="expression" />
+        <SyntaxField Name="ret_if_false" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="expression_as_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="c_scalar_type" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="scalar_name" Type="c_scalar_type_name" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="sign" Type="c_scalar_sign" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="c_module" BaseName="compilation_unit">
+      <Fields>
+        <SyntaxField Name="defs" SyntaxType="declarations" />
+        <SyntaxField Name="used_units" SyntaxType="uses_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="declarations_as_statement" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="defs" SyntaxType="declarations" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="array_size" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="max_value" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="enumerator" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="type_definition" />
+        <SyntaxField Name="value" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="enumerator_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="enumerators" Type="List&lt;enumerator&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="c_for_cycle" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="expr1" SyntaxType="statement" />
+        <SyntaxField Name="expr2" SyntaxType="expression" />
+        <SyntaxField Name="expr3" SyntaxType="expression" />
+        <SyntaxField Name="stmt" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="switch_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="condition" SyntaxType="expression" />
+        <SyntaxField Name="stmt" SyntaxType="statement" />
+        <ExtendedField Name="Part" Type="SwitchPartType" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="type_definition_attr_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="attributes" Type="List&lt;type_definition_attr&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="type_definition_attr" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="lock_stmt" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="lock_object" SyntaxType="expression" />
+        <SyntaxField Name="stmt" SyntaxType="statement" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>0</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="compiler_directive_list" BaseName="compiler_directive">
+      <Fields>
+        <ExtendedField Name="directives" Type="List&lt;compiler_directive&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="compiler_directive_if" BaseName="compiler_directive">
+      <Fields>
+        <SyntaxField Name="if_part" SyntaxType="compiler_directive" />
+        <SyntaxField Name="elseif_part" SyntaxType="compiler_directive" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="documentation_comment_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="sections" Type="List&lt;documentation_comment_section&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="documentation_comment_tag" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="name" Type="string" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="parameters" Type="List&lt;documentation_comment_tag_param&gt;" CreateVariable="true" DeleteVariable="false" />
+        <ExtendedField Name="text" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="documentation_comment_tag_param" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="name" Type="string" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="value" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="documentation_comment_section" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="tags" Type="List&lt;documentation_comment_tag&gt;" CreateVariable="true" DeleteVariable="false" />
+        <ExtendedField Name="text" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="token_taginfo" BaseName="token_info">
+      <Fields>
+        <ExtendedField Name="tag" Type="object" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="declaration_specificator" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="specificator" Type="DeclarationSpecificator" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="name" Type="string" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="ident_with_templateparams" BaseName="addressed_value_funcname">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="addressed_value" />
+        <SyntaxField Name="template_params" SyntaxType="template_param_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="template_type_name" BaseName="ident">
+      <Fields>
+        <SyntaxField Name="template_args" SyntaxType="ident_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="default_operator" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="type_name" SyntaxType="named_type_reference" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="bracket_expr" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="attribute" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="qualifier" SyntaxType="ident" />
+        <SyntaxField Name="type" SyntaxType="named_type_reference" />
+        <SyntaxField Name="arguments" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="simple_attribute_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="attributes" Type="List&lt;attribute&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="attribute_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="attributes" Type="List&lt;simple_attribute_list&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="function_lambda_definition" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="ident_list" SyntaxType="ident_list" />
+        <SyntaxField Name="return_type" SyntaxType="type_definition" />
+        <SyntaxField Name="formal_parameters" SyntaxType="formal_parameters" />
+        <SyntaxField Name="proc_body" SyntaxType="statement" />
+        <SyntaxField Name="proc_definition" SyntaxType="procedure_definition" />
+        <SyntaxField Name="parameters" SyntaxType="expression_list" />
+        <ExtendedField Name="lambda_name" Type="string" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="defs" Type="List&lt;declaration&gt;" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="lambda_visit_mode" Type="LambdaVisitMode" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="substituting_node" SyntaxType="syntax_tree_node" />
+        <ExtendedField Name="usedkeyword" Type="int" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>5</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="function_lambda_call" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="f_lambda_def" SyntaxType="function_lambda_definition" />
+        <SyntaxField Name="parameters" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>1</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_check" BaseName="statement">
+      <Fields>
+        <ExtendedField Name="CheckName" Type="string" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="param" Type="List&lt;syntax_tree_node&gt;" CreateVariable="true" DeleteVariable="false" />
+        <ExtendedField Name="fictive" Type="int" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="lambda_inferred_type" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="real_type" Type="object" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="same_type_node" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="ex" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>4</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="name_assign_expr" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="name" SyntaxType="ident" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="name_assign_expr_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="name_expr" Type="List&lt;name_assign_expr&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>3</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="unnamed_type_object" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="ne_list" SyntaxType="name_assign_expr_list" />
+        <ExtendedField Name="is_class" Type="bool" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="new_ex" SyntaxType="new_expr" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_type_node" BaseName="type_definition">
+      <Fields>
+        <ExtendedField Name="type" Type="Object" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="short_func_definition" BaseName="procedure_definition">
+      <Fields>
+        <SyntaxField Name="procdef" SyntaxType="procedure_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="no_type_foreach" BaseName="type_definition">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="matching_expression" BaseName="addressed_value">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="closure_substituting_node" BaseName="ident">
+      <Fields>
+        <SyntaxField Name="substitution" SyntaxType="dot_node" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="sequence_type" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="elements_type" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="modern_proc_type" BaseName="type_definition">
+      <Fields>
+        <SyntaxField Name="aloneparam" SyntaxType="type_definition" />
+        <SyntaxField Name="el" SyntaxType="enumerator_list" />
+        <SyntaxField Name="res" SyntaxType="type_definition" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="yield_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="ex" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="template_operator_name" BaseName="template_type_name">
+      <Fields>
+        <SyntaxField Name="opname" SyntaxType="operator_name_ident" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_addr_value" BaseName="addressed_value">
+      <Fields>
+        <ExtendedField Name="expr" Type="Object" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="pair_type_stlist" BaseName="syntax_tree_node">
+      <Fields>
+        <SyntaxField Name="tn" SyntaxType="type_definition" />
+        <SyntaxField Name="exprs" SyntaxType="statement_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="assign_tuple" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="vars" SyntaxType="addressed_value_list" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="addressed_value_list" BaseName="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="variables" Type="List&lt;addressed_value&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="tuple_node" BaseName="expression">
+      <Fields>
+        <SyntaxField Name="el" SyntaxType="expression_list" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="uses_closure" BaseName="uses_list">
+      <Fields>
+        <ExtendedField Name="listunitsections" Type="List&lt;uses_list&gt;" CreateVariable="true" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="dot_question_node" BaseName="addressed_value_funcname">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="addressed_value" />
+        <SyntaxField Name="right" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="slice_expr" BaseName="dereference">
+      <Fields>
+        <SyntaxField Name="v" SyntaxType="addressed_value" />
+        <SyntaxField Name="from" SyntaxType="expression" />
+        <SyntaxField Name="to" SyntaxType="expression" />
+        <SyntaxField Name="step" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="no_type" BaseName="type_definition">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="yield_unknown_ident" BaseName="ident">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>8</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="yield_unknown_expression_type" BaseName="type_definition">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>8</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="yield_unknown_foreach_type" BaseName="type_definition">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices>
+          <CategoryIndex>0</CategoryIndex>
+        </CategoryIndices>
+        <TagIndices>
+          <TagIndex>8</TagIndex>
+        </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="yield_sequence_node" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="ex" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="assign_var_tuple" BaseName="assign_tuple">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="slice_expr_question" BaseName="slice_expr">
+      <Fields />
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="semantic_check_sugared_statement_node" BaseName="statement">
+      <Fields>
+        <ExtendedField Name="stat" Type="object" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="sugared_expression" BaseName="expression">
+      <Fields>
+        <ExtendedField Name="sugared_expr" Type="object" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="new_expr" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="sugared_addressed_value" BaseName="addressed_value">
+      <Fields>
+        <ExtendedField Name="sugared_expr" Type="object" CreateVariable="false" DeleteVariable="false" />
+        <SyntaxField Name="new_addr_value" SyntaxType="addressed_value" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
+  </SyntaxNodes>
+  <Settings>
+    <FileName>Tree.cs</FileName>
+    <NamespaceName>PascalABCCompiler.SyntaxTree</NamespaceName>
+    <FactoryName>initial_tree_maker</FactoryName>
+    <VisitorInterfaceFileName>Visitor.cs</VisitorInterfaceFileName>
+    <PcuWriterName>SyntaxTreeStreamWriter</PcuWriterName>
+    <PcuWriterFileName>SyntaxTreeStreamWriter.cs</PcuWriterFileName>
+    <PcuReaderName>SyntaxTreeStreamReader</PcuReaderName>
+    <PcuReaderFileName>SyntaxTreeStreamReader.cs</PcuReaderFileName>
+    <PcuReaderFileNameHeader>SyntaxTreeStreamReader.h</PcuReaderFileNameHeader>
+    <PcuReaderFileNameCpp>SyntaxTreeStreamReader.cpp</PcuReaderFileNameCpp>
+  </Settings>
+  <TagCategories>
+    <FilterCategory Name="General">
+      <Tags>
+        <Tag Name="Операторы" ReferenceCount="27" />
+        <Tag Name="Выражения" ReferenceCount="36" />
+        <Tag Name="Константы" ReferenceCount="15" />
+        <Tag Name="Списки" ReferenceCount="23" />
+        <Tag Name="Типы" ReferenceCount="12" />
+        <Tag Name="Описания" ReferenceCount="23" />
+        <Tag Name="Важнейшие" ReferenceCount="207" />
+        <Tag Name="Method_Procedure_Call" ReferenceCount="2" />
+        <Tag Name="Yield" ReferenceCount="8" />
+      </Tags>
+    </FilterCategory>
+  </TagCategories>
+  <HelpStorage>
+    <HelpData>
+      <HelpData Key="semantic_check_sugared_statement_node.stat" Value="" />
+      <HelpData Key="compiler_directive.Directive" Value="" />
+      <HelpData Key="initfinal_part." Value="" />
+      <HelpData Key="const_node" Value="Константа" />
+      <HelpData Key="int32_const" Value="Целая константа" />
+      <HelpData Key="typed_parameters.vars_type" Value="" />
+      <HelpData Key="c_scalar_type.scalar_name" Value="" />
+      <HelpData Key="subprogram_definitions" Value="" />
+      <HelpData Key="procedure_definition.void AssignAttrList(attribute_list al)" Value="" />
+      <HelpData Key="label_name." Value="" />
+      <HelpData Key="new_expr.type" Value="" />
+      <HelpData Key="slice_expr_question.from" Value="" />
+      <HelpData Key="class_members.class_members(access_modifer_node access)" Value="" />
+      <HelpData Key="for_node." Value="" />
+      <HelpData Key="unit_module.unit_module(LanguageId _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,SourceContext sc)" Value="" />
+      <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
+      <HelpData Key="expression_list.expression_list(expression e)" Value="" />
+      <HelpData Key="on_exception.exception_var_name" Value="" />
+      <HelpData Key="type_definition_attr_list.type_definition_attr_list(type_definition_attr _type_definition_attr, SourceContext sc)" Value="" />
+      <HelpData Key="simple_attribute_list" Value="" />
+      <HelpData Key="oberon_import_module" Value="" />
+      <HelpData Key="statement_list.statement_list(statement st, SourceContext sc)" Value="" />
+      <HelpData Key="var_def_statement.is_event" Value="Являются ли переменные событиями" />
+      <HelpData Key="dot_question_node" Value="" />
+      <HelpData Key="no_type" Value="" />
+      <HelpData Key="var_statement.var_def" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition vars_type)" Value="" />
+      <HelpData Key="simple_attribute_list." Value="" />
+      <HelpData Key="while_node" Value="Цикл ПОКА" />
+      <HelpData Key="simple_attribute_list.simple_attribute_list(attribute a, SourceContext sc)" Value="" />
+      <HelpData Key="unit_name." Value="" />
+      <HelpData Key="oberon_module.module_name" Value="" />
+      <HelpData Key="bin_expr.right" Value="" />
+      <HelpData Key="simple_property.index_expression" Value="" />
+      <HelpData Key="implementation_node." Value="" />
+      <HelpData Key="ident.name" Value="Строка, представляющая идентификатор" />
+      <HelpData Key="method_call" Value="" />
+      <HelpData Key="uses_list.uses_list(unit_or_namespace un, SourceContext sc)" Value="" />
+      <HelpData Key=".val" Value="" />
+      <HelpData Key="type_declarations.type_declarations Add(type_declaration _type_declaration)" Value="" />
+      <HelpData Key="jump_stmt.expr" Value="" />
+      <HelpData Key="template_type_name" Value="" />
+      <HelpData Key="variable_definitions.void Add(var_def_statement v)" Value="" />
+      <HelpData Key="declarations_as_statement.defs" Value="" />
+      <HelpData Key="type_declaration.type_def" Value="" />
+      <HelpData Key="class_predefinition." Value="" />
+      <HelpData Key="bin_expr.left" Value="" />
+      <HelpData Key="uses_unit" Value="" />
+      <HelpData Key="attribute." Value="" />
+      <HelpData Key="exception_handler.statements" Value="" />
+      <HelpData Key="attribute_list." Value="" />
+      <HelpData Key="case_variants.case_variants(case_variant _case_variant, SourceContext sc)" Value="" />
+      <HelpData Key="question_colon_expression.condition" Value="" />
+      <HelpData Key="named_type_reference_list.types" Value="" />
+      <HelpData Key="property_parameter_list" Value="" />
+      <HelpData Key="yield_unknown_ident" Value="Неопознанный идентификатор. Откладывает определение необходимости захвата имени как поля класса до этапа семантики." />
+      <HelpData Key="try_stmt." Value="" />
+      <HelpData Key=".aloneparam" Value="" />
+      <HelpData Key="class_definition.template_args" Value="" />
+      <HelpData Key="typed_parameters.idents" Value="" />
+      <HelpData Key="slice_expr" Value="" />
+      <HelpData Key="record_type.var_part" Value="" />
+      <HelpData Key="return_stmt" Value="" />
+      <HelpData Key="variant_types" Value="" />
+      <HelpData Key="dotdot_node.right" Value="" />
+      <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block)" Value="" />
+      <HelpData Key="double_const." Value="" />
+      <HelpData Key="expression_list.override string ToString()" Value="" />
+      <HelpData Key="raise_statement.excep" Value="Выкидываемое исключение." />
+      <HelpData Key="documentation_comment_section.documentation_comment_section Add(documentation_comment_tag _documentation_comment_tag)" Value="" />
+      <HelpData Key="typeof_operator.type_name" Value="" />
+      <HelpData Key="try_stmt.handler" Value="" />
+      <HelpData Key="diap_expr.left" Value="" />
+      <HelpData Key="raise_statement" Value="Выкидывание исключения." />
+      <HelpData Key="named_type_reference_list.named_type_reference_list Add(named_type_reference _named_type_reference)" Value="" />
+      <HelpData Key="statement_list." Value="" />
+      <HelpData Key="expression_as_statement" Value="" />
+      <HelpData Key="simple_attribute_list.simple_attribute_list(attribute a, Source_context sc)" Value="" />
+      <HelpData Key="semantic_expr_node" Value="" />
+      <HelpData Key="ident_list.ident_list Add(ident _ident)" Value="" />
+      <HelpData Key="documentation_comment_tag.text" Value="" />
+      <HelpData Key="uses_lists.lists" Value="" />
+      <HelpData Key="typedef_and_expr" Value="" />
+      <HelpData Key="procedure_header.parameters" Value="" />
+      <HelpData Key="compiler_directive_list.directives" Value="" />
+      <HelpData Key="yield_variable_definitions_with_unknown_type.vars" Value="" />
+      <HelpData Key="array_type.size" Value="" />
+      <HelpData Key="simple_attribute_list.attributes" Value="" />
+      <HelpData Key="template_type_reference.params_list" Value="" />
+      <HelpData Key="uses_unit.unit_name" Value="" />
+      <HelpData Key="function_lambda_call.parameters" Value="" />
+      <HelpData Key="raise_stmt" Value="raise [expr [at address]]" />
+      <HelpData Key="ident_with_templateparams" Value="" />
+      <HelpData Key="array_const" Value="" />
+      <HelpData Key="ident_list." Value="" />
+      <HelpData Key="declaration.attributes" Value="Список атрибутов описания" />
+      <HelpData Key="procedure_definition.proc_body" Value="" />
+      <HelpData Key="method_header" Value="" />
+      <HelpData Key="type_declaration.type_declaration(string name, type_definition type): this(new ident(name),type)" Value="" />
+      <HelpData Key="default_operator.type_name" Value="" />
+      <HelpData Key="uses_closure.listunitsections" Value="" />
+      <HelpData Key="lambda_inferred_type.realType" Value="" />
+      <HelpData Key="attribute_list.attribute_list(simple_attribute_list _simple_attribute_list, SourceContext sc)" Value="" />
+      <HelpData Key="variant_list" Value="" />
+      <HelpData Key=".step" Value="" />
+      <HelpData Key="oberon_ident" Value="" />
+      <HelpData Key=".types" Value="" />
+      <HelpData Key="typedef_declaration" Value="" />
+      <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)" Value="" />
+      <HelpData Key="c_type_def." Value="" />
+      <HelpData Key="assign.assign(addressed_value left,expression ex): this(left,ex,Operators.Assignment)" Value="" />
+      <HelpData Key="semantic_check.CheckName" Value="Тип проверки. Пока строковый. Например, является ли выражение целым" />
+      <HelpData Key="property_interface.parameter_list" Value="" />
+      <HelpData Key="program_name" Value="Имя программы" />
+      <HelpData Key="record_const.record_const(record_const_definition rcd, SourceContext sc);" Value="" />
+      <HelpData Key="where_definition." Value="" />
+      <HelpData Key="oberon_procedure_header" Value="" />
+      <HelpData Key="statement_list.void Add(statement st)" Value="" />
+      <HelpData Key="procedure_attribute.attribute_type" Value="" />
+      <HelpData Key="labelname_list" Value="" />
+      <HelpData Key="method_call.parameters" Value="" />
+      <HelpData Key="sugared_addressed_value.new_addr_value" Value="" />
+      <HelpData Key="uses_lists.listunitsections" Value="" />
+      <HelpData Key="variable_definitions_as_statement" Value="" />
+      <HelpData Key="assign_tuple.expr" Value="" />
+      <HelpData Key="on_exception.stat" Value="" />
+      <HelpData Key="documentation_comment_list.documentation_comment_list(documentation_comment_section _documentation_comment_section, SourceContext sc)" Value="" />
+      <HelpData Key="type_declarations.type_declarations(type_declaration _type_declaration, SourceContext sc)" Value="" />
+      <HelpData Key="case_node" Value="" />
+      <HelpData Key="record_const.record_const(record_const_definition _record_const_definition, SourceContext sc)" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference(ident _ident, SourceContext sc)" Value="" />
+      <HelpData Key="set_type_definition" Value="" />
+      <HelpData Key="exception_handler." Value="" />
+      <HelpData Key="function_header.public procedure_header(formal_parameters _parameters,procedure_attributes_list _proc_attributes,method_name _name,where_definition_list _where_defs)" Value="" />
+      <HelpData Key="enumerator_list.List&lt;enumerator&gt;" Value="" />
+      <HelpData Key="type_declarations.void Add(type_declaration typeDecl, SourceContext sc)" Value="" />
+      <HelpData Key="diap_expr" Value="" />
+      <HelpData Key="declaration" Value="Описание" />
+      <HelpData Key="using_clause" Value="" />
+      <HelpData Key="no_type_foreach" Value="" />
+      <HelpData Key="program_name.prog_name" Value="Идентификатор - имя программы" />
+      <HelpData Key="oberon_withstmt_guardstat.name" Value="" />
+      <HelpData Key="semantic_expr_node.expr" Value="" />
+      <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// ne - это узел для генерации кода, основной узел предназначен для форматирования" />
+      <HelpData Key="oberon_module" Value="" />
+      <HelpData Key="function_lambda_call.parametres" Value="" />
+      <HelpData Key="semantic_type_node" Value="" />
+      <HelpData Key="oberon_withstmt_guardstat.stmt" Value="" />
+      <HelpData Key="variant_types.variant_types Add(variant_type _variant_type, SourceContext sc)" Value="" />
+      <HelpData Key="ident_list.override string ToString()" Value="" />
+      <HelpData Key="record_const.record_const Add(record_const_definition _record_const_definition)" Value="" />
+      <HelpData Key="class_members.class_members Add(declaration _declaration)" Value="" />
+      <HelpData Key="labeled_statement.label_name" Value="" />
+      <HelpData Key="sharp_char_const" Value="Представление в синтаксичеком дереве символьной константы вида #100." />
+      <HelpData Key="where_definition_list.where_definition_list Add(where_definition _where_definition, SourceContext sc)" Value="" />
+      <HelpData Key="method_name.method_name(string name)" Value="" />
+      <HelpData Key="empty_statement" Value="" />
+      <HelpData Key="function_lambda_definition.usedkeyword" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident_list vars,type_definition vars_type)" Value="" />
+      <HelpData Key="case_variants.case_variants Add(case_variant _case_variant, SourceContext sc)" Value="" />
+      <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header,statement_list sl): this(proc_header, new block(sl))" Value="" />
+      <HelpData Key="typed_parametres." Value="" />
+      <HelpData Key="declarations_as_statement" Value="" />
+      <HelpData Key="yield_var_def_statement_with_unknown_type" Value="Узел-обертка для yield для определения типов локальных переменных в var_def_statement" />
+      <HelpData Key="ident_list.ident_list(ident _ident)" Value="" />
+      <HelpData Key="semantic_check_sugared_statement_node" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
+      <HelpData Key="slice_expr_question.v" Value="" />
+      <HelpData Key="on_exception_list.on_exception_list Add(on_exception _on_exception, SourceContext sc)" Value="" />
+      <HelpData Key="ident." Value="" />
+      <HelpData Key="implementation_node.implementation_definitions" Value="" />
+      <HelpData Key="ident.ident(string n, SourceContext sc)" Value="" />
+      <HelpData Key="procedure_of_object." Value="" />
+      <HelpData Key="statement_list.void Add(SourceContext sc)" Value="" />
+      <HelpData Key="binop_type" Value="Знак бинарной опирации" />
+      <HelpData Key="known_type_indent" Value="" />
+      <HelpData Key="documentation_comment_section.documentation_comment_section Add(documentation_comment_tag _documentation_comment_tag, SourceContext sc)" Value="" />
+      <HelpData Key="attribute_list.attribute_list(" Value="" />
+      <HelpData Key="string_num_definition" Value="Представление для класса строки вида string[256]." />
+      <HelpData Key="implementation_node" Value="" />
+      <HelpData Key="dot_question_node.left" Value="" />
+      <HelpData Key="statement_list" Value="Блок операторов" />
+      <HelpData Key="read_accessor_name" Value="" />
+      <HelpData Key="record_type" Value="" />
+      <HelpData Key="assign_tuple.vars" Value="" />
+      <HelpData Key="program_body.program_definitions" Value="" />
+      <HelpData Key="program_body" Value="" />
+      <HelpData Key="loop_stmt" Value="" />
+      <HelpData Key="forward_directr" Value="" />
+      <HelpData Key="indexer.override string ToString()" Value="" />
+      <HelpData Key="documentation_comment_section.text" Value="" />
+      <HelpData Key="modern_proc_type.aloneparam" Value="" />
+      <HelpData Key="ident_list.ident_list(string name, SourceContext sc)" Value="" />
+      <HelpData Key="simple_property" Value="property property_name[parameter_list]:property_type index index_expression accessors;array_default;" />
+      <HelpData Key="file_type_definition." Value="" />
+      <HelpData Key="unit_module.interface_part" Value="" />
+      <HelpData Key="expression_list." Value="" />
+      <HelpData Key="assign.assign(ident left,expression ex): this(new ident_list(left),ex)" Value="" />
+      <HelpData Key=".usings" Value="" />
+      <HelpData Key="slice_expr.v" Value="" />
+      <HelpData Key="variant_record_type" Value="" />
+      <HelpData Key="method_name.override string ToString()" Value="" />
+      <HelpData Key="type_definition_list.type_definition_list Add(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="short_proc_definition.def" Value="" />
+      <HelpData Key="label_name.name" Value="" />
+      <HelpData Key="name_space" Value="" />
+      <HelpData Key="function_lambda_definition.formal_parametres" Value="" />
+      <HelpData Key="var_attribute_node" Value="" />
+      <HelpData Key="typeof_operator" Value="" />
+      <HelpData Key="for_node.cycle_type" Value="" />
+      <HelpData Key="indexer.indexes" Value="Список индексов" />
+      <HelpData Key="goto_statement.goto_statement(string name, SourceContext sc)" Value="" />
+      <HelpData Key="known_type_definition" Value="" />
+      <HelpData Key="property_accessors" Value="" />
+      <HelpData Key="format_expr.format1" Value="" />
+      <HelpData Key="question_colon_expression." Value="" />
+      <HelpData Key="named_type_reference.override string ToString()" Value="" />
+      <HelpData Key="variant_list.variant_list Add(variant _variant)" Value="" />
+      <HelpData Key="inherited_ident" Value="" />
+      <HelpData Key="procedure_of_object.header" Value="" />
+      <HelpData Key="function_header.function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype): this(fp,pal,name,null,returntype,null)" Value="for sugar" />
+      <HelpData Key="byte_const.val" Value="" />
+      <HelpData Key="diapason_expr." Value="" />
+      <HelpData Key="class_body" Value="" />
+      <HelpData Key="array_type.elemets_types" Value="Тип элементов массива" />
+      <HelpData Key="template_operator_name.opname" Value="" />
+      <HelpData Key="try_statement" Value="" />
+      <HelpData Key="nil_const" Value="" />
+      <HelpData Key="uses_list.uses_list(unit_or_namespace un)" Value="" />
+      <HelpData Key=".handlers" Value="" />
+      <HelpData Key="yield_unknown_ident.UnknownID" Value="" />
+      <HelpData Key="int32_const." Value="" />
+      <HelpData Key="var_def_statement.field_attr" Value="" />
+      <HelpData Key="procedure_attributes_list.procedure_attributes_list Add(procedure_attribute _procedure_attribute)" Value="" />
+      <HelpData Key="named_type_reference_list.named_type_reference_list Add(named_type_reference _named_type_reference, SourceContext sc)" Value="" />
+      <HelpData Key="attribute.qualifier" Value="" />
+      <HelpData Key="short_proc_func_definition" Value="" />
+      <HelpData Key="record_type_fields.fixed_part" Value="" />
+      <HelpData Key="compiler_directive" Value="" />
+      <HelpData Key="class_definition" Value="" />
+      <HelpData Key="class_body.class_body(class_members _class_members, SourceContext sc)" Value="" />
+      <HelpData Key="foreach_stmt" Value="" />
+      <HelpData Key="enum_type_definition.enumerators" Value="" />
+      <HelpData Key="record_type_fields" Value="" />
+      <HelpData Key=".tn" Value="" />
+      <HelpData Key=".to" Value="" />
+      <HelpData Key="variant_type.case_exprs" Value="" />
+      <HelpData Key="oberon_module." Value="" />
+      <HelpData Key="op_type_node" Value="" />
+      <HelpData Key="try_except_statement.else_statements" Value="" />
+      <HelpData Key="enum_type_definition." Value="" />
+      <HelpData Key="documentation_comment_tag_param.value" Value="" />
+      <HelpData Key="variable_definitions.var_definitions" Value="Список описаний переменных" />
+      <HelpData Key="name_assign_expr_list.name_assign_expr_list Add(name_assign_expr ne)" Value="" />
+      <HelpData Key="type_definition_attr_list.attributes" Value="" />
+      <HelpData Key="new_expr.params_list" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition type): this(id,type)" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident_list vars,type_definition vars_type, expression iv): this(vars, vars_type, iv, definition_attribute.None, false)" Value="" />
+      <HelpData Key="unit_module.initialization_part" Value="" />
+      <HelpData Key="function_lambda_call." Value="" />
+      <HelpData Key="enumerator." Value="" />
+      <HelpData Key="unknown_expression_type.MapHelper" Value="" />
+      <HelpData Key="record_const_definition.val" Value="" />
+      <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block,SourceContext sc)" Value="" />
+      <HelpData Key="type_declarations.types_decl" Value="" />
+      <HelpData Key="external_directive" Value="expression может быть literal или ident" />
+      <HelpData Key="expression_as_statement.expr" Value="" />
+      <HelpData Key="pair_type_stlist.tn" Value="" />
+      <HelpData Key="class_definition.class_definition(class_body body): this(null,body)" Value="" />
+      <HelpData Key="diapason_expr.right" Value="" />
+      <HelpData Key="array_size." Value="" />
+      <HelpData Key="statement_list.expr_lambda_body" Value="Поле, показывающее, что это - тело лямбда-выражения из одного выражения (созданное вызовом NewLambdaBody)" />
+      <HelpData Key="fptype_and_expr.typedef" Value="" />
+      <HelpData Key="sugared_expression.new_expr" Value="" />
+      <HelpData Key="attribute_list.attribute_list Add(simple_attribute_list _simple_attribute_list)" Value="" />
+      <HelpData Key="const_method_call.method_name" Value="" />
+      <HelpData Key="exception_handler_list" Value="" />
+      <HelpData Key="oberon_procedure_header.return_type" Value="" />
+      <HelpData Key="roof_dereference.override string ToString()" Value="" />
+      <HelpData Key="new_expr.params" Value="" />
+      <HelpData Key="oberon_exit_directive" Value="" />
+      <HelpData Key="procedure_call" Value="" />
+      <HelpData Key="variant_list.variant_list(variant _variant, SourceContext sc)" Value="" />
+      <HelpData Key="simple_attribute_list.simple_attribute_list Add(attribute _attribute, SourceContext sc)" Value="" />
+      <HelpData Key="short_func_definition.def" Value="" />
+      <HelpData Key="compiler_directive_if." Value="" />
+      <HelpData Key="function_lambda_definition.keyw" Value="" />
+      <HelpData Key="sugared_addressed_value.sugared_expr" Value="" />
+      <HelpData Key="file_type.file_of_type" Value="" />
+      <HelpData Key="statement." Value="" />
+      <HelpData Key="named_type_reference" Value="Именованное определение типа" />
+      <HelpData Key="proc_block" Value="" />
+      <HelpData Key="class_members.members" Value="" />
+      <HelpData Key="lock_stmt.lock_object" Value="" />
+      <HelpData Key="interface_node.using_namespaces" Value="" />
+      <HelpData Key="long_const" Value="" />
+      <HelpData Key="new_expr.name" Value="" />
+      <HelpData Key="indexers_types." Value="" />
+      <HelpData Key="consts_definitions_list.void Add(const_definition cd)" Value="" />
+      <HelpData Key="statement_list.abc&#xA;{&#xA;&#xA;}" Value="" />
+      <HelpData Key="formal_parameters.formal_parameters Add(typed_parameters _typed_parameters)" Value="" />
+      <HelpData Key="for_node.finish_value" Value="Конечное значение переменной цикла" />
+      <HelpData Key="._realType" Value="" />
+      <HelpData Key=".attr" Value="" />
+      <HelpData Key="class_definition.class_definition(named_type_reference_list parents, class_body body): this(parents,body,class_keyword.Class, null, null, class_attribute.None, null)" Value="" />
+      <HelpData Key="look_stmt.stmt" Value="" />
+      <HelpData Key="token_taginfo" Value="" />
+      <HelpData Key="exception_handler_list.exception_handler_list Add(exception_handler _exception_handler)" Value="" />
+      <HelpData Key="unit_module.attributes" Value="" />
+      <HelpData Key="oberon_ident_wiht_export_marker.marker" Value="" />
+      <HelpData Key="constructor.constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, sc)" Value="" />
+      <HelpData Key="matching_expression.left" Value="" />
+      <HelpData Key="assign" Value="Оператор присваивания" />
+      <HelpData Key="sugared_addressed_value.sugared" Value="" />
+      <HelpData Key="template_param_list.params_list" Value="" />
+      <HelpData Key="where_definition_list" Value="" />
+      <HelpData Key="var_attribute_node.var_attr" Value="" />
+      <HelpData Key="property_interface." Value="" />
+      <HelpData Key="new_expr." Value="" />
+      <HelpData Key="variable_definitions." Value="" />
+      <HelpData Key="array_of_named_type_reference" Value="" />
+      <HelpData Key="un_expr.subnode" Value="" />
+      <HelpData Key="property_parameter_list.property_parameter_list Add(property_parameter _property_parameter, SourceContext sc)" Value="" />
+      <HelpData Key="token_taginfo.tag" Value="" />
+      <HelpData Key="function_lambda_definition.ident_list" Value="" />
+      <HelpData Key="variant_record_type." Value="" />
+      <HelpData Key="variant_types.vars" Value="" />
+      <HelpData Key="inherited_node.left" Value="" />
+      <HelpData Key="const_method_call." Value="" />
+      <HelpData Key="labeled_statement.labeled_statement(string name, statement st)" Value="" />
+      <HelpData Key="variable_definitions" Value="Секция описания переменных (до beginа). Состоит из var_def_statement. Не путать с var_statement - однострочным описанием переменной внутри begin-end" />
+      <HelpData Key="bool_const.val" Value="Значение логической константы" />
+      <HelpData Key="simple_property.attr" Value="" />
+      <HelpData Key="ident_list.idents" Value="Список идентификаторов" />
+      <HelpData Key="function_lambda_definition.visit_for_type_inference" Value="" />
+      <HelpData Key="modern_proc_type.res" Value="" />
+      <HelpData Key="class_definition.class_name" Value="" />
+      <HelpData Key="type_definition_attr_list.type_definition_attr_list Add(type_definition_attr _type_definition_attr, SourceContext sc)" Value="" />
+      <HelpData Key="int32_const.val" Value="Значение" />
+      <HelpData Key="uses_closure" Value="" />
+      <HelpData Key="tuple_node_for_formatter.el" Value="" />
+      <HelpData Key="external_directr." Value="" />
+      <HelpData Key="where_definition.constructor_specific_params" Value="" />
+      <HelpData Key="property_parameter.type" Value="" />
+      <HelpData Key="c_scalar_type" Value="" />
+      <HelpData Key="formal_parameters.formal_parameters(typed_parameters _typed_parameters, SourceContext sc)" Value="" />
+      <HelpData Key="type_definition_attr" Value="" />
+      <HelpData Key="byte_const.value" Value="" />
+      <HelpData Key="name_assign_expr" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference Add(ident _ident, SourceContext sc)" Value="" />
+      <HelpData Key="compilation_unit" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference(ident id, SourceContext sc)" Value="" />
+      <HelpData Key="unknown_ident" Value="" />
+      <HelpData Key="named_type_reference_list.named_type_reference_list(named_type_reference _named_type_reference, SourceContext sc)" Value="" />
+      <HelpData Key="class_predefinition.class_name" Value="" />
+      <HelpData Key="attribute_list.attribute_list Add(simple_attribute_list _simple_attribute_list, SourceContext sc)" Value="" />
+      <HelpData Key="int64_const.val" Value="" />
+      <HelpData Key="var_def_statement.vars_type" Value="Тип переменных" />
+      <HelpData Key="ident_list.void Add(string name)" Value="" />
+      <HelpData Key="try_finally_statement" Value="" />
+      <HelpData Key="diapason_expr.left" Value="" />
+      <HelpData Key="exception_ident" Value="" />
+      <HelpData Key="oberon_procedure_header.first_name" Value="" />
+      <HelpData Key="for_node.create_loop_variable" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident_list vars,type_definition vars_type): this(vars, vars_type, null, definition_attribute.None, false)" Value="" />
+      <HelpData Key="subprogram_body.subprogram_code" Value="Блок операторов подпрограммы" />
+      <HelpData Key="return_stmt." Value="" />
+      <HelpData Key="oberon_withstmt" Value="" />
+      <HelpData Key="exception_ident.variable" Value="" />
+      <HelpData Key="byte_const." Value="" />
+      <HelpData Key="procedure_header.template_params" Value="" />
+      <HelpData Key="labeled_statement.labeled_statement(string name, statement st, SourceContext sc)" Value="" />
+      <HelpData Key="dereference" Value="" />
+      <HelpData Key="template_type_name.template_args" Value="" />
+      <HelpData Key=".mark" Value="" />
+      <HelpData Key="case_variant.exec_if_true" Value="" />
+      <HelpData Key="method_name.ln" Value="" />
+      <HelpData Key="variant_types.variant_types Add(variant_type _variant_type)" Value="" />
+      <HelpData Key="program_tree" Value="" />
+      <HelpData Key="roof_dereference" Value="" />
+      <HelpData Key="method_name.explicit_interface_name" Value="" />
+      <HelpData Key="external_directive.modulename" Value="" />
+      <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,SourceContext sc)" Value="" />
+      <HelpData Key="property_parameter_list.type" Value="" />
+      <HelpData Key="for_node.type_name" Value="" />
+      <HelpData Key="pascal_set_constant.void Add(expression value)" Value="Добавляет во множество элемент" />
+      <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces)" Value="" />
+      <HelpData Key="template_param_list" Value="" />
+      <HelpData Key="simple_const_definition." Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition type): this(new ident_list(id),type)" Value="" />
+      <HelpData Key="uses_list.units" Value="" />
+      <HelpData Key="var_def_list" Value="" />
+      <HelpData Key="int32_const.public override string ToString()" Value="" />
+      <HelpData Key="semantic_check" Value="Узел для семантических проверок на этапе построения семантического дерева. Сделан для узлов синтаксического дерева, реализующих синтаксический сахар. Может, видимо, использоваться и для обычных семантических проверок" />
+      <HelpData Key="type_declarations.type_declarations Add(type_declaration _type_declaration, SourceContext sc)" Value="" />
+      <HelpData Key="enumerator_list.enumerator_list(enumerators en, SourceContext sc)" Value="" />
+      <HelpData Key="template_param_list.params" Value="" />
+      <HelpData Key="typecast_node." Value="" />
+      <HelpData Key="name_assign_expr.name" Value="" />
+      <HelpData Key="oberon_procedure_header.second_name" Value="" />
+      <HelpData Key="attribute_list" Value="" />
+      <HelpData Key="enumerator_list.enumerator_list Add(enumerator en, SourceContext sc)" Value="" />
+      <HelpData Key="type_declaration" Value="" />
+      <HelpData Key="int64_const." Value="" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident id,type_definition type): this(new ident_list(id), type)" Value="" />
+      <HelpData Key="consts_definitions_list.consts_definitions_list(const_definition _const_definition, SourceContext sc)" Value="" />
+      <HelpData Key="short_proc_func_definition.def" Value="" />
+      <HelpData Key="property_accessors.read_accessor" Value="" />
+      <HelpData Key="exception_block.else_stmt_list" Value="" />
+      <HelpData Key="with_statement" Value="Представление оператора with в синтаксическом дереве." />
+      <HelpData Key="literal_const_line.literal_const_line(literal _literal, SourceContext sc)" Value="" />
+      <HelpData Key="raise_statement." Value="" />
+      <HelpData Key="documentation_comment_section.params" Value="" />
+      <HelpData Key="known_type_ident.type" Value="" />
+      <HelpData Key="unnamed_type_object.ne" Value="" />
+      <HelpData Key="try_finally_statement.finally_statements" Value="" />
+      <HelpData Key="new_expr.parameters" Value="" />
+      <HelpData Key=".ClassName" Value="" />
+      <HelpData Key="addressed_value_funcname" Value="" />
+      <HelpData Key="template_param_list.template_param_list Add(type_definition _type_definition)" Value="" />
+      <HelpData Key="variant_record_type.vars" Value="" />
+      <HelpData Key="inherited_node." Value="" />
+      <HelpData Key="class_predefinition" Value="" />
+      <HelpData Key="method_call.method_call(addressed_value id, expression_list pars, SourceContext sc)" Value="" />
+      <HelpData Key=".attributes" Value="" />
+      <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit)" Value="" />
+      <HelpData Key="declarations.declarations(declaration _declaration, SourceContext sc)" Value="" />
+      <HelpData Key="enumerator.value" Value="" />
+      <HelpData Key="addressed_value_list.void Add(addressed_value av)" Value="" />
+      <HelpData Key="semantic_check_statement.stat" Value="" />
+      <HelpData Key="dotdot_node.left" Value="" />
+      <HelpData Key="jump_stmt.JumpType" Value="" />
+      <HelpData Key="if_node.then_body" Value="Оператор по ветви then" />
+      <HelpData Key="case_node." Value="" />
+      <HelpData Key="bool_const.override string ToString()" Value="" />
+      <HelpData Key="function_lambda_definition.parametres" Value="" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition type): this(idents, type, parametr_kind.none, null)" Value="" />
+      <HelpData Key="function_header.function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype): this(fp,pal,new method_name(name),null,new named_type_reference(returntype),null)" Value="for sugar" />
+      <HelpData Key="implementation_node.impl_defs" Value="" />
+      <HelpData Key="class_members.class_members(access_modifer access)" Value="" />
+      <HelpData Key="using_list" Value="" />
+      <HelpData Key="slice_expr_question.step" Value="" />
+      <HelpData Key="initfinal_part.initialization_sect" Value="" />
+      <HelpData Key="function_lambda_definition.return_type" Value="" />
+      <HelpData Key="oberon_module_name" Value="" />
+      <HelpData Key=".override string ToString()" Value="" />
+      <HelpData Key="while_node.expr" Value="Условие цикла" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition vars_type): this(idents, vars_type)" Value="" />
+      <HelpData Key="as_node.right" Value="" />
+      <HelpData Key="using_namespaces" Value="" />
+      <HelpData Key="named_type_reference.void Add(string name, SourceContext sc)" Value="" />
+      <HelpData Key="procedure_header.procedure_header(formal_parameters _parameters,procedure_attributes_list _proc_attributes,method_name _name,where_definition_list _where_defs,SourceContext sc)" Value="" />
+      <HelpData Key="variant_type." Value="" />
+      <HelpData Key="bracket_expr.expr" Value="" />
+      <HelpData Key="const_method_call.parametres" Value="" />
+      <HelpData Key=".el" Value="" />
+      <HelpData Key="semantic_check.fictive" Value="Фиктивное поле - чтобы можно было вручную написать конструктор с params" />
+      <HelpData Key="class_definition." Value="" />
+      <HelpData Key="file_type." Value="" />
+      <HelpData Key="variant." Value="" />
+      <HelpData Key="forward_directive" Value="" />
+      <HelpData Key="class_definition.class_parents" Value="" />
+      <HelpData Key="get_address" Value="" />
+      <HelpData Key="string_const.override string ToString()" Value="" />
+      <HelpData Key="goto_statement.goto_statement(string name, source_context sc)" Value="" />
+      <HelpData Key="enumerator_list.enumerator_list Add(enumerator _enumerator, SourceContext sc)" Value="" />
+      <HelpData Key="try_except_statement.on_except" Value="" />
+      <HelpData Key="array_size" Value="" />
+      <HelpData Key="property_interface.property_type" Value="" />
+      <HelpData Key="class_definition.where_section" Value="" />
+      <HelpData Key="uses_lists" Value="" />
+      <HelpData Key="typedef_and_expr.expr" Value="" />
+      <HelpData Key="simple_property.array_default" Value="" />
+      <HelpData Key="goto_statement.goto_statement(string name)" Value="" />
+      <HelpData Key=".List&lt;enumerator&gt;" Value="" />
+      <HelpData Key="indexer" Value="Индекс или индексы" />
+      <HelpData Key="closure_substituting_node.substitution" Value="" />
+      <HelpData Key="oberon_import_module." Value="" />
+      <HelpData Key="external_directr" Value="expression может быть literal или ident" />
+      <HelpData Key="c_for_cycle.expr3" Value="" />
+      <HelpData Key="program_tree.compilation_units" Value="Список подключенных модулей" />
+      <HelpData Key="class_body.class_body Add(class_members _class_members, SourceContext sc)" Value="" />
+      <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute)" Value="" />
+      <HelpData Key="case_variants.variants" Value="" />
+      <HelpData Key="slice_expr_question" Value="" />
+      <HelpData Key="oberon_module.first_name" Value="" />
+      <HelpData Key="bracket_expr." Value="" />
+      <HelpData Key="ident_with_templateparams.name" Value="" />
+      <HelpData Key=".ex" Value="" />
+      <HelpData Key="property_accessors.write_accessor" Value="" />
+      <HelpData Key="simple_attribute_list.simple_attribute_list(attribute _attribute, SourceContext sc)" Value="" />
+      <HelpData Key="var_statement." Value="" />
+      <HelpData Key="unit_module.unit_name" Value="" />
+      <HelpData Key="function_lambda_definition.lambda_visit_mode" Value="" />
+      <HelpData Key="raise_stmt." Value="" />
+      <HelpData Key="known_type_definition.unit_name" Value="" />
+      <HelpData Key="attribute" Value="" />
+      <HelpData Key="procedure_header.parametres" Value="" />
+      <HelpData Key="named_type_reference_list" Value="" />
+      <HelpData Key="oberon_withstmt_guardstat." Value="" />
+      <HelpData Key="type_definition_attr_list" Value="" />
+      <HelpData Key="case_variants" Value="" />
+      <HelpData Key="consts_definitions_list.consts_definitions_list Add(const_definition _const_definition)" Value="" />
+      <HelpData Key="program_module.used_units" Value="" />
+      <HelpData Key="attribute_list.attributes" Value="" />
+      <HelpData Key="procedure_call.func_name" Value="" />
+      <HelpData Key="default_operator." Value="" />
+      <HelpData Key="try_handler_except.except_block" Value="" />
+      <HelpData Key="while_node." Value="" />
+      <HelpData Key="with_statement.what_do" Value="Что делать." />
+      <HelpData Key=".stat" Value="" />
+      <HelpData Key=".MapHelper" Value="" />
+      <HelpData Key="sugared_expression" Value="Обёртка для сахарного выражения, хранящего сахарный узел для семантических проверок и новое выражение после удаления синтаксического сахара" />
+      <HelpData Key="unnamed_type_object.ne_list" Value="" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition type): this(idents, type,null,null)" Value="" />
+      <HelpData Key="exit_directive" Value="" />
+      <HelpData Key="yield_unknown_ident.ClassName" Value="" />
+      <HelpData Key="fptype_and_expr" Value="" />
+      <HelpData Key="diapason_expr" Value="" />
+      <HelpData Key="method_name.explicitly_interface_name" Value="" />
+      <HelpData Key="lambda_inferred_type.real_type" Value="" />
+      <HelpData Key="try_handler" Value="" />
+      <HelpData Key="const_method_call" Value="" />
+      <HelpData Key="procedure_definition.proc_header" Value="" />
+      <HelpData Key="compiler_directive_if.if_part" Value="" />
+      <HelpData Key="program_module.program_body" Value="" />
+      <HelpData Key="attribute.expr" Value="" />
+      <HelpData Key=".guardstats" Value="" />
+      <HelpData Key="declarations" Value="Список описаний" />
+      <HelpData Key="oberon_withstmt.else_stmt" Value="" />
+      <HelpData Key="documentation_comment_tag.parameters" Value="" />
+      <HelpData Key="semantic_addr_value" Value="" />
+      <HelpData Key=".tag" Value="" />
+      <HelpData Key="unknown_ident.ClassName" Value="" />
+      <HelpData Key="look_stmt" Value="" />
+      <HelpData Key="program_module.program_block" Value="" />
+      <HelpData Key="procedure_attributes_list.procedure_attributes_list Add(procedure_attribute _procedure_attribute, SourceContext sc)" Value="" />
+      <HelpData Key="addressed_value_list.addressed_value_list()" Value="" />
+      <HelpData Key="simple_attribute_list.void Add(attribute a, SourceContext sc)" Value="" />
+      <HelpData Key="record_type.parts" Value="" />
+      <HelpData Key="destructor" Value="" />
+      <HelpData Key="sequence_type" Value="" />
+      <HelpData Key="syntax_tree_node" Value="Базовый класс для всех классов синтаксического дерева" />
+      <HelpData Key="closure_substituting_node" Value="" />
+      <HelpData Key="function_lambda_call" Value="" />
+      <HelpData Key="question_colon_expression" Value="" />
+      <HelpData Key="inherited_method_call" Value="" />
+      <HelpData Key=".vars" Value="" />
+      <HelpData Key="property_parameter_list.property_parameter_list(property_parameter _property_parameter, SourceContext sc)" Value="" />
+      <HelpData Key="class_members" Value="" />
+      <HelpData Key=".UnknownID" Value="" />
+      <HelpData Key="formal_parameters.params_list" Value="" />
+      <HelpData Key="semantic_check.semantic_check(string name, params object[] pars)" Value="" />
+      <HelpData Key="same_type_node" Value="" />
+      <HelpData Key="function_lambda_definition.defs" Value="" />
+      <HelpData Key="type_definition_list.defs" Value="" />
+      <HelpData Key="documentation_comment_list.documentation_comment_list Add(documentation_comment_section _documentation_comment_section)" Value="" />
+      <HelpData Key="bin_expr.override string ToString()" Value="" />
+      <HelpData Key="string_const" Value="Строковая константа" />
+      <HelpData Key="var_def_statement.var_attr" Value="" />
+      <HelpData Key="statement.label_name" Value="" />
+      <HelpData Key="while_type_specificator_list.defs" Value="" />
+      <HelpData Key="array_type.indexers" Value="Типы индексов массива" />
+      <HelpData Key="documentation_comment_tag" Value="" />
+      <HelpData Key="name_assign_expr_list" Value="" />
+      <HelpData Key="ident_with_inital_value.ident" Value="" />
+      <HelpData Key="dot_node.override string ToString()" Value="" />
+      <HelpData Key="switch_stmt.stmt" Value="" />
+      <HelpData Key="template_type_reference.name" Value="" />
+      <HelpData Key="labeled_statement.to_statement" Value="" />
+      <HelpData Key="unit_module.public unit_module(LanguageId _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,SourceContext sc)" Value="" />
+      <HelpData Key="int_const" Value="" />
+      <HelpData Key="procedure_call." Value="" />
+      <HelpData Key="record_const.void Add(record_const_definition rcd, SourceContext sc)" Value="" />
+      <HelpData Key="record_type_parts.variant_part" Value="" />
+      <HelpData Key="program_module.program_name" Value="" />
+      <HelpData Key="program_module.using_namespaces" Value="" />
+      <HelpData Key="char_const" Value="Класс, представляющий символьную константу в синтаксическом дереве программы." />
+      <HelpData Key="block" Value="" />
+      <HelpData Key=".tags" Value="" />
+      <HelpData Key="semantic_check_sugared_statement.stat" Value="" />
+      <HelpData Key="function_header.function_header(formal_parameters _parameters, procedure_attributes_list _proc_attributes, method_name _name, where_definition_list _where_defs, type_definition _return_type, SourceContext sc)" Value="" />
+      <HelpData Key="program_module" Value="" />
+      <HelpData Key="format_expr" Value="expr:1:2" />
+      <HelpData Key="repeat_node.expr" Value="Условие завершения цикла" />
+      <HelpData Key="question_colon_expression.ret_if_true" Value="" />
+      <HelpData Key="class_members.access_mod" Value="" />
+      <HelpData Key="block.block(declarations decls,statement_list code): this(defs,code)" Value="" />
+      <HelpData Key="token_info.text" Value="" />
+      <HelpData Key="oberon_exit_stmt" Value="" />
+      <HelpData Key="uses_list" Value="" />
+      <HelpData Key="type_declarations.type_declarations(type_declaration typeDecl, SourceContext sc)" Value="" />
+      <HelpData Key="simple_const_definition.simple_const_definition(ident name, expression value, SourceContext sc)" Value="" />
+      <HelpData Key="unknown_expression_type.Vds" Value="" />
+      <HelpData Key="if_node.condition" Value="Условие" />
+      <HelpData Key="enumerator_list." Value="" />
+      <HelpData Key="literal_const_line.literal_const_line Add(literal _literal)" Value="" />
+      <HelpData Key="known_type_definition.tp" Value="" />
+      <HelpData Key="initfinal_part.initfinal_part(syntax_tree_node stn1, statement_list init, syntax_tree_node stn2, statement_list fin, syntax_tree_node stn3, SourceContext sc)" Value="" />
+      <HelpData Key="file_type" Value="" />
+      <HelpData Key="class_definition.body" Value="" />
+      <HelpData Key="class_members.class_members Add(declaration _declaration, SourceContext sc)" Value="" />
+      <HelpData Key="variant_types." Value="" />
+      <HelpData Key="type_declarations." Value="" />
+      <HelpData Key="inherited_method_call.method_name" Value="" />
+      <HelpData Key="string_num_definition.num_of_symbols" Value="Число символов в строке вида string[256]." />
+      <HelpData Key="lock_stmt.stmt" Value="" />
+      <HelpData Key="dot_node" Value="" />
+      <HelpData Key="program_body.used_units" Value="" />
+      <HelpData Key="oberon_withstmt." Value="" />
+      <HelpData Key="question_colon_expression.ret_if_false" Value="" />
+      <HelpData Key="record_type.rec_vars" Value="" />
+      <HelpData Key=".params" Value="" />
+      <HelpData Key="property_interface" Value="" />
+      <HelpData Key="ident_list.void Add(string name, SourceContext sc)" Value="" />
+      <HelpData Key="oberon_procedure_receiver." Value="" />
+      <HelpData Key="function_lambda_definition.formal_parameters" Value="" />
+      <HelpData Key="function_lambda_definition" Value="" />
+      <HelpData Key="name_space.name_space_parts" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference(string name, SourceContext sc)" Value="" />
+      <HelpData Key="template_param_list.template_params" Value="" />
+      <HelpData Key="compiler_directive_list.compiler_directive_list Add(compiler_directive _compiler_directive)" Value="" />
+      <HelpData Key="attribute_list.void Add(simple_attribute_list sal, SourceContext sc)" Value="" />
+      <HelpData Key="slice_expr.step" Value="" />
+      <HelpData Key="enumerator_list.enumerator_list Add(enumerator _enumerator)" Value="" />
+      <HelpData Key="oberon_procedure_receiver.receiver_typename" Value="" />
+      <HelpData Key="type_definition_list.type_definition_list Add(type_definition _type_definition)" Value="" />
+      <HelpData Key="new_expr.name_ref" Value="" />
+      <HelpData Key="compilation_unit.compiler_directives" Value="" />
+      <HelpData Key="unknown_ident.UnknownID" Value="" />
+      <HelpData Key="array_of_named_type_reference." Value="" />
+      <HelpData Key="attribute.type" Value="" />
+      <HelpData Key="method_name.meth_name" Value="" />
+      <HelpData Key="new_expr.new_expr(type_definition type,expression_list pars): this(type,pars,false,null)" Value="" />
+      <HelpData Key="uses_list.uses_list(string name)" Value="" />
+      <HelpData Key="yield_node.ex" Value="" />
+      <HelpData Key="attribute.arguments" Value="" />
+      <HelpData Key="simple_property." Value="" />
+      <HelpData Key="compiler_directive_list" Value="" />
+      <HelpData Key="unit_or_namespace.unit_or_namespace(string name)" Value="" />
+      <HelpData Key="assign.assign(ident left,expression ex): this(left,ex)" Value="" />
+      <HelpData Key=".cconst" Value="Значение константы." />
+      <HelpData Key=".sugared" Value="" />
+      <HelpData Key="int64_const.unsigned" Value="" />
+      <HelpData Key="ref_type.pointed_to" Value="" />
+      <HelpData Key="declaration_specificator.name" Value="" />
+      <HelpData Key="slice_expr.to" Value="" />
+      <HelpData Key=".substitution" Value="" />
+      <HelpData Key="modern_proc_type" Value="" />
+      <HelpData Key="simple_property.property_name" Value="" />
+      <HelpData Key="diap_expr." Value="" />
+      <HelpData Key="subprogram_definitions.defs" Value="" />
+      <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
+      <HelpData Key="procedure_attribute.override string ToString()" Value="" />
+      <HelpData Key="variable_definitions.override string ToString()" Value="" />
+      <HelpData Key="record_type_fields.variant_part" Value="" />
+      <HelpData Key="sizeof_operator.type_decl" Value="" />
+      <HelpData Key="variant_type.parts" Value="" />
+      <HelpData Key="record_const_definition.name" Value="" />
+      <HelpData Key="template_param_list.void Add(type_definition td, SourceContext sc)" Value="" />
+      <HelpData Key="operator_name.operator_type" Value="" />
+      <HelpData Key="new_expr.new_array" Value="" />
+      <HelpData Key="try_stmt" Value="" />
+      <HelpData Key="oberon_exit_stmt.text" Value="" />
+      <HelpData Key="." Value="" />
+      <HelpData Key="expression_list.expression_list Add(expression _expression, SourceContext sc)" Value="" />
+      <HelpData Key="simple_property.accessors" Value="" />
+      <HelpData Key="oberon_ident_wiht_export_marker." Value="" />
+      <HelpData Key="sharp_const_line.literals" Value="" />
+      <HelpData Key="where_definition_list.where_definition_list(where_definition _where_definition, SourceContext sc)" Value="" />
+      <HelpData Key="short_func_definition.procdef" Value="" />
+      <HelpData Key="typed_const_definition" Value="" />
+      <HelpData Key="case_node.conditions" Value="" />
+      <HelpData Key="enum_type_definition" Value="" />
+      <HelpData Key="compiler_directive.Name" Value="" />
+      <HelpData Key="try_statement.statements" Value="" />
+      <HelpData Key="record_const.record_const Add(record_const_definition _record_const_definition, SourceContext sc)" Value="" />
+      <HelpData Key="documentation_comment_section.name" Value="" />
+      <HelpData Key="documentation_comment_section." Value="" />
+      <HelpData Key="on_exception_list.on_exceptions" Value="" />
+      <HelpData Key="array_of_named_type_definition.type_name" Value="" />
+      <HelpData Key="variant_record_type.var_name" Value="" />
+      <HelpData Key="record_const_definition" Value="" />
+      <HelpData Key="program_body.program_code" Value="" />
+      <HelpData Key="int_const.val" Value="" />
+      <HelpData Key="lambda_inferred_type" Value="" />
+      <HelpData Key="uses_unit_in.in_file" Value="" />
+      <HelpData Key="procedure_definition.has_yield" Value="" />
+      <HelpData Key="procedure_call.override string ToString()" Value="" />
+      <HelpData Key="bool_const" Value="Логическая константа" />
+      <HelpData Key="semantic_type_node.type" Value="" />
+      <HelpData Key="exception_identifier" Value="" />
+      <HelpData Key="try_stmt.stmt_list" Value="" />
+      <HelpData Key="inherited_node" Value="" />
+      <HelpData Key="procedure_header.class_keyword" Value="class procedure..." />
+      <HelpData Key="program_module.using_list" Value="" />
+      <HelpData Key="procedure_header." Value="" />
+      <HelpData Key="procedure_header.of_object" Value="" />
+      <HelpData Key="ident_list" Value="Список идентификаторов" />
+      <HelpData Key="semantic_check_statement" Value="" />
+      <HelpData Key="semantic_check_sugared_statement" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
+      <HelpData Key="exception_handler_list.handlers" Value="" />
+      <HelpData Key="tuple_node_for_formatter" Value="" />
+      <HelpData Key="documentation_comment_section.parameters" Value="" />
+      <HelpData Key="declarations.declarations Add(declaration _declaration, SourceContext sc)" Value="" />
+      <HelpData Key="named_type_reference.void Add(string name)" Value="" />
+      <HelpData Key="method_call.func_name" Value="" />
+      <HelpData Key="record_type." Value="" />
+      <HelpData Key="oberon_ident_with_export_marker" Value="" />
+      <HelpData Key="variant_record_type.var_type" Value="" />
+      <HelpData Key="on_exception_list.on_exception_list(on_exception _on_exception, SourceContext sc)" Value="" />
+      <HelpData Key="unnamed_type_object.is_class" Value="" />
+      <HelpData Key="try_except_statement" Value="" />
+      <HelpData Key="function_header.override string ToString()" Value="" />
+      <HelpData Key="yield_sequence_node" Value="" />
+      <HelpData Key="typeof_operator." Value="" />
+      <HelpData Key="external_directive.name" Value="" />
+      <HelpData Key="double_const" Value="Вещественная константа" />
+      <HelpData Key="compiler_directive_if.elseif_part" Value="" />
+      <HelpData Key="exception_handler.variable" Value="" />
+      <HelpData Key="external_directr.name" Value="" />
+      <HelpData Key="sequence_type.elemets_types" Value="Тип элементов последовательности" />
+      <HelpData Key="tree_node.source_context" Value="Положение объекта, представленного данным узлои дерева, в исходных кодах программы." />
+      <HelpData Key="assign.assign(string left,expression ex): this(new ident(left),ex)" Value="" />
+      <HelpData Key="new_expr.new_expr(type_definition type,expression_list pars,SourceContext sc): this(type,pars,false,null,sc)" Value="" />
+      <HelpData Key="formal_parametres.params_list" Value="" />
+      <HelpData Key="var_def_statement." Value="" />
+      <HelpData Key="uint64_const." Value="" />
+      <HelpData Key="type_definition." Value="" />
+      <HelpData Key="default_indexer_property_node" Value="" />
+      <HelpData Key="slice_expr_question.n" Value="" />
+      <HelpData Key="typecast_node.left" Value="" />
+      <HelpData Key="documentation_comment_list.documentation_comment_list Add(documentation_comment_section _documentation_comment_section, SourceContext sc)" Value="" />
+      <HelpData Key="lambda_inferred_type._realType" Value="" />
+      <HelpData Key="yield_var_def_statement_with_unknown_type.vars" Value="" />
+      <HelpData Key="initfinal_part.finalization_sect" Value="" />
+      <HelpData Key="indexers_types" Value="Типы индексов" />
+      <HelpData Key="typeof_operator.type" Value="" />
+      <HelpData Key="ident_list.ident_list(string name)" Value="" />
+      <HelpData Key="using_clause.name_space_parts" Value="" />
+      <HelpData Key="c_module.defs" Value="" />
+      <HelpData Key="statement_list.statement_list Add(statement _statement)" Value="" />
+      <HelpData Key="goto_statement.label" Value="" />
+      <HelpData Key="switch_stmt." Value="" />
+      <HelpData Key="compiler_directive_list.compiler_directive_list Add(compiler_directive _compiler_directive, SourceContext sc)" Value="" />
+      <HelpData Key="consts_definitions_list" Value="" />
+      <HelpData Key="typecast_expr." Value="" />
+      <HelpData Key="formal_parametres" Value="" />
+      <HelpData Key="declaration_as_statement.defs" Value="" />
+      <HelpData Key="subprogram_definitions_as_statement" Value="" />
+      <HelpData Key="index_property" Value="" />
+      <HelpData Key="while_node.override string ToString()" Value="" />
+      <HelpData Key="array_of_named_type_definition" Value="array of type_name" />
+      <HelpData Key="statement" Value="Оператор" />
+      <HelpData Key="c_type_def.name" Value="" />
+      <HelpData Key="method_name" Value="" />
+      <HelpData Key="with_statement." Value="" />
+      <HelpData Key="initfinal_part" Value="" />
+      <HelpData Key="operator_name." Value="" />
+      <HelpData Key="typedef_declaration." Value="" />
+      <HelpData Key="variant_types.variant_types(variant_type _variant_type, SourceContext sc)" Value="" />
+      <HelpData Key="long_const.val" Value="" />
+      <HelpData Key="sharp_const_line" Value="Представляет в синтаксическом дереве строку вида #123#124#125." />
+      <HelpData Key="type_definition_attr_list.type_definition_attr_list Add(type_definition_attr _type_definition_attr)" Value="" />
+      <HelpData Key="expression_list.expression_list(expression _expression, SourceContext s)" Value="" />
+      <HelpData Key="typed_parameters.inital_value" Value="" />
+      <HelpData Key="oberon_procedure_header." Value="" />
+      <HelpData Key="typed_parameters" Value="" />
+      <HelpData Key=".listunitsections" Value="" />
+      <HelpData Key="procedure_header.name" Value="" />
+      <HelpData Key="statement_list.statement_list(statement _statement, SourceContext sc)" Value="" />
+      <HelpData Key="record_type_fields." Value="" />
+      <HelpData Key="ident_list.void Add(ident id)" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident_list vars,type_definition vars_type, expression iv): this(vars, vars_type, null, definition_attribute.None, false)" Value="" />
+      <HelpData Key="diap_expr.right" Value="" />
+      <HelpData Key="operator_name_ident.operator_type" Value="" />
+      <HelpData Key="uses_unit.unit_or_namespace_name" Value="" />
+      <HelpData Key="interface_node.interface_definitions" Value="" />
+      <HelpData Key="variable_definitions_as_statement.var_defs" Value="" />
+      <HelpData Key="procedure_header.override string ToString()" Value="" />
+      <HelpData Key="for_node.loop_variable" Value="Переменная цикла for" />
+      <HelpData Key="class_body.class_def_blocks" Value="" />
+      <HelpData Key="yield_unknown_foreach_type.unknown_foreach" Value="" />
+      <HelpData Key="oberon_withstmt_guardstat" Value="" />
+      <HelpData Key="constructor" Value="" />
+      <HelpData Key="ref_type" Value="" />
+      <HelpData Key="raise_stmt.address" Value="" />
+      <HelpData Key="simple_const_definition" Value="" />
+      <HelpData Key="access_modifer_node" Value="" />
+      <HelpData Key="semantic_check." Value="" />
+      <HelpData Key="enumerator" Value="" />
+      <HelpData Key=".def" Value="" />
+      <HelpData Key="unit_name" Value="" />
+      <HelpData Key="try_handler_finally" Value="" />
+      <HelpData Key="yield_node.override string ToString()" Value="" />
+      <HelpData Key="sizeof_operator.expr" Value="" />
+      <HelpData Key="enum_type_definition.name" Value="" />
+      <HelpData Key="set_type_definition.of_type" Value="" />
+      <HelpData Key="named_type_reference.void Add(ident id)" Value="" />
+      <HelpData Key="pair_type_stlist.exprs" Value="" />
+      <HelpData Key="try_handler_finally." Value="" />
+      <HelpData Key="statement_list.void Add(statement st, )" Value="" />
+      <HelpData Key="addressed_value_list.addressed_value_list(addressed_value av)" Value="" />
+      <HelpData Key="indexers_types.indexers_types Add(type_definition _type_definition)" Value="" />
+      <HelpData Key="raise_stmt.expr" Value="" />
+      <HelpData Key="definition_specificator" Value="" />
+      <HelpData Key="lock_stmt" Value="" />
+      <HelpData Key="operator_name_ident.type" Value="" />
+      <HelpData Key="attribute_list.w" Value="" />
+      <HelpData Key="unit_module" Value="" />
+      <HelpData Key="literal_const_line.literals" Value="" />
+      <HelpData Key="template_type_name." Value="" />
+      <HelpData Key="const_method_call.name" Value="" />
+      <HelpData Key="typedef_and_expr.typedef" Value="" />
+      <HelpData Key="simple_property.simple_property(ident name, type_definition type, property_accessors accessors): this(name, type, null, accessors, null, null, definition_attribute.None)" Value="" />
+      <HelpData Key="sizeof_operator." Value="" />
+      <HelpData Key=".type" Value="" />
+      <HelpData Key=".Directive" Value="" />
+      <HelpData Key="case_variant.conditions" Value="" />
+      <HelpData Key="ident.override string ToString()" Value="" />
+      <HelpData Key="token_info.override string ToString()" Value="" />
+      <HelpData Key="oberon_module_name." Value="" />
+      <HelpData Key="default_operator" Value="" />
+      <HelpData Key="labelname_list.names" Value="" />
+      <HelpData Key="loop_stmt.stmt" Value="" />
+      <HelpData Key="variant_type.var_list" Value="" />
+      <HelpData Key="typed_const_definition.const_type" Value="" />
+      <HelpData Key="initfinal_part.initfinal_part(statement_list init,statement_list fin,SourceContext sc)" Value="" />
+      <HelpData Key="syntax_tree_node.f" Value="" />
+      <HelpData Key="function_header.function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype)" Value="for sugar" />
+      <HelpData Key="bracket_expr" Value="" />
+      <HelpData Key="array_const.elements" Value="" />
+      <HelpData Key="dereference.dereferencing_value" Value="" />
+      <HelpData Key="method_name.dotted_namespace" Value="" />
+      <HelpData Key=".char_num" Value="Номер символа." />
+      <HelpData Key="inherited_method_call." Value="" />
+      <HelpData Key="try_handler_finally.stmt_list" Value="" />
+      <HelpData Key="compilation_unit.file_name" Value="" />
+      <HelpData Key="where_definition_list.defs" Value="" />
+      <HelpData Key="variable_definitions.variable_definitions(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
+      <HelpData Key="access_modifer_node.access_level" Value="" />
+      <HelpData Key="switch_stmt.Part" Value="" />
+      <HelpData Key="function_lambda_definition.lambda_name" Value="" />
+      <HelpData Key="bin_expr" Value="Бинарное выражение" />
+      <HelpData Key="oberon_procedure_header.receiver" Value="" />
+      <HelpData Key="program_body.using_list" Value="" />
+      <HelpData Key="try_handler_except." Value="" />
+      <HelpData Key="indexers_types.indexers_types Add(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="subprogram_body.subprogram_defs" Value="Описания подпрограммы" />
+      <HelpData Key="uses_list.Add(unit_or_namespace un)" Value="" />
+      <HelpData Key="uses_list.void Add(unit_or_namespace un, SourceContext sc)" Value="" />
+      <HelpData Key="enumerator_list.enumerator_list(enumerator _enumerator, SourceContext sc)" Value="" />
+      <HelpData Key="short_proc_definition.procdef" Value="" />
+      <HelpData Key="oberon_withstmt_guardstat_list" Value="" />
+      <HelpData Key="record_const." Value="" />
+      <HelpData Key="as_node.left" Value="" />
+      <HelpData Key="yield_unknown_foreach_type_ident.unknown_foreach" Value="" />
+      <HelpData Key="typedef_and_expr." Value="" />
+      <HelpData Key="char_const.cconst" Value="" />
+      <HelpData Key="simple_attribute_list.simple_attribute_list Add(attribute _attribute)" Value="" />
+      <HelpData Key="oberon_module.import_list" Value="" />
+      <HelpData Key="compilation_unit." Value="" />
+      <HelpData Key="oberon_procedure_header.method_name" Value="" />
+      <HelpData Key="addressed_value_list.vlist" Value="" />
+      <HelpData Key="assign_tuple" Value="" />
+      <HelpData Key="oberon_procedure_header.parametres" Value="" />
+      <HelpData Key="foreach_stmt." Value="" />
+      <HelpData Key="ident" Value="Идентификатор" />
+      <HelpData Key="ident_list.ident_list(ident _ident, SourceContext sc)" Value="" />
+      <HelpData Key="documentation_comment_tag.name" Value="" />
+      <HelpData Key="uses_list.uses_list Add(unit_or_namespace _unit_or_namespace, SourceContext sc)" Value="" />
+      <HelpData Key="template_param_list.template_param_list(type_definition td, SourceContext sc)" Value="" />
+      <HelpData Key="uint64_const.val" Value="" />
+      <HelpData Key="dereference.override string ToString()" Value="" />
+      <HelpData Key="look_stmt." Value="" />
+      <HelpData Key="assign.assign(ident left,expression ex): this(left,ex,Operators.Assignment)" Value="" />
+      <HelpData Key="format_expr." Value="" />
+      <HelpData Key="property_parameter_list.property_parameter_list Add(property_parameter _property_parameter)" Value="" />
+      <HelpData Key="same_type_node.ex" Value="" />
+      <HelpData Key=".left" Value="" />
+      <HelpData Key=".sugared_expr" Value="" />
+      <HelpData Key="exception_identifier.type_name" Value="" />
+      <HelpData Key="labeled_statement.override string ToString()" Value="" />
+      <HelpData Key="record_type_parts" Value="" />
+      <HelpData Key="assign.from" Value="Выражение в правой части" />
+      <HelpData Key="unit_module.finalization_part" Value="" />
+      <HelpData Key="enumerator_list.enumerator_list(enumerator en, SourceContext sc)" Value="" />
+      <HelpData Key="simple_property.parameter_list" Value="" />
+      <HelpData Key="typed_parametres.vars_type" Value="" />
+      <HelpData Key="ident_list.ident_list Add(ident _ident, SourceContext sc)" Value="" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition _vars_type,parametr_kind _param_kind,expression _inital_value)" Value="" />
+      <HelpData Key="unit_or_namespace." Value="" />
+      <HelpData Key="" Value="" />
+      <HelpData Key="var_def_statement.inital_value" Value="Начальное значение переменных" />
+      <HelpData Key="uses_list.void Add(unit_or_namespace un)" Value="" />
+      <HelpData Key="jump_stmt" Value="" />
+      <HelpData Key="if_node.else_body" Value="Оператор по ветви else" />
+      <HelpData Key="type_definition.attr_list" Value="" />
+      <HelpData Key="oberon_exit_reservedword" Value="" />
+      <HelpData Key="id_expr_node.ex" Value="" />
+      <HelpData Key="property_parameter_list." Value="" />
+      <HelpData Key="enumerator_list.enumerator_list Add(enumerators en, SourceContext sc)" Value="" />
+      <HelpData Key="operator_name_ident." Value="" />
+      <HelpData Key="token_info" Value="" />
+      <HelpData Key="on_exception.exception_type_name" Value="" />
+      <HelpData Key="variable_definitions_as_statement.defs" Value="" />
+      <HelpData Key="procedure_header.t" Value="" />
+      <HelpData Key="where_definition" Value="" />
+      <HelpData Key="typecast_node.expr" Value="" />
+      <HelpData Key="pair_type_stlist" Value="" />
+      <HelpData Key="operator_name" Value="" />
+      <HelpData Key="oberon_module_name.first_name" Value="" />
+      <HelpData Key="matching_expression" Value="" />
+      <HelpData Key="class_members.class_members(declaration _declaration, SourceContext sc)" Value="" />
+      <HelpData Key="exception_handler_list.exception_handler_list(exception_handler _exception_handler, SourceContext sc)" Value="" />
+      <HelpData Key="declaration_specificator.specificator" Value="" />
+      <HelpData Key="token_info." Value="" />
+      <HelpData Key="type_declarations" Value="Список определений типов" />
+      <HelpData Key="oberon_withstmt_guardstat_list.guardstats" Value="" />
+      <HelpData Key="format_expr.expr" Value="" />
+      <HelpData Key="property_parameter_list.parameters" Value="" />
+      <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block)" Value="" />
+      <HelpData Key="declarations.declarations(declaration d, SourceContext sc)" Value="" />
+      <HelpData Key="subprogram_body" Value="Тело подпрограммы" />
+      <HelpData Key="c_for_cycle" Value="" />
+      <HelpData Key="definition_specificator.name" Value="" />
+      <HelpData Key="sharp_const_line.sharp_consts" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference Add(ident _ident)" Value="" />
+      <HelpData Key="double_const.override string ToString()" Value="" />
+      <HelpData Key="program_tree.program_tree(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
+      <HelpData Key="dotdot_node." Value="" />
+      <HelpData Key=".new_expr" Value="" />
+      <HelpData Key=".value" Value="" />
+      <HelpData Key="foreach_stmt.stmt" Value="" />
+      <HelpData Key="class_body.class_body Add(class_members _class_members)" Value="" />
+      <HelpData Key="unit_or_namespace.name" Value="" />
+      <HelpData Key="simple_property.property_type" Value="" />
+      <HelpData Key="typed_parametres.inital_value" Value="" />
+      <HelpData Key="exception_identifier." Value="" />
+      <HelpData Key="template_type_name.name_ident" Value="" />
+      <HelpData Key="oberon_ident_with_export_marker.marker" Value="" />
+      <HelpData Key="uint64_const.override string ToString()" Value="" />
+      <HelpData Key="label_definitions.override string ToString()" Value="" />
+      <HelpData Key="name_assign_expr_list.name_assign_expr_list Add(name_assign_expr ne, SourceContext sc)" Value="" />
+      <HelpData Key="pascal_set_constant." Value="" />
+      <HelpData Key="op_type_node.type" Value="" />
+      <HelpData Key="interface_node." Value="" />
+      <HelpData Key="using_clause.idents" Value="" />
+      <HelpData Key="named_type_reference.void Add(ident id, SourceContext sc)" Value="" />
+      <HelpData Key="c_for_cycle.expr2" Value="" />
+      <HelpData Key="expression_list.expression_list(expression e, SourceContext sc)" Value="" />
+      <HelpData Key="variant_type" Value="" />
+      <HelpData Key=".from" Value="" />
+      <HelpData Key="oberon_procedure_receiver.reciver_type" Value="" />
+      <HelpData Key="property_accessors.property_accessors(ident read_accessor, ident write_accessor): this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor))" Value="" />
+      <HelpData Key="template_type_reference." Value="" />
+      <HelpData Key="case_node.else_statement" Value="" />
+      <HelpData Key="while_node.statements" Value="Тело цикла" />
+      <HelpData Key="statement_list.void Add(statement st, SourceContext sc)" Value="" />
+      <HelpData Key="dotdot_node" Value="" />
+      <HelpData Key="diapason.right" Value="Верхняя граница диапазона" />
+      <HelpData Key="assign.p()" Value="" />
+      <HelpData Key="expression_list.expression_list Add(expression _expression)" Value="" />
+      <HelpData Key="sizeof_operator.type_name" Value="" />
+      <HelpData Key="array_of_const_type" Value="array of const" />
+      <HelpData Key="array_type." Value="" />
+      <HelpData Key="semantic_addr_value.expr" Value="" />
+      <HelpData Key="array_of_const_type_defenition" Value="array of const" />
+      <HelpData Key="array_type.elements_type" Value="Тип элементов массива" />
+      <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)" Value="" />
+      <HelpData Key="for_node.statements" Value="Тело цикла" />
+      <HelpData Key="if_node" Value="Условный оператор" />
+      <HelpData Key="c_type_def" Value="" />
+      <HelpData Key="function_lambda_definition.parameters" Value="" />
+      <HelpData Key="using_clause.namespace_parts" Value="" />
+      <HelpData Key="procedure_definition" Value="" />
+      <HelpData Key="no_type_foreach.no_type_foreach()" Value="" />
+      <HelpData Key="double_const.val" Value="Значение вещественной константы" />
+      <HelpData Key="c_scalar_type.sign" Value="" />
+      <HelpData Key="typecast_expr" Value="" />
+      <HelpData Key="case_variants.case_variants Add(case_variant _case_variant)" Value="" />
+      <HelpData Key="int64_const.override string ToString()" Value="" />
+      <HelpData Key="var_def_list_for_record.vars" Value="" />
+      <HelpData Key="declarations.defs" Value="Список описаний" />
+      <HelpData Key="addressed_value" Value="Значение, имеющее адрес" />
+      <HelpData Key="sharp_char_const.char_num" Value="" />
+      <HelpData Key="try_handler_except" Value="" />
+      <HelpData Key="property_parameter.names" Value="" />
+      <HelpData Key="addressed_value_list.addressed_value_list(addressed_value av, SourceContext sc)" Value="" />
+      <HelpData Key="foreach_stmt.identifier" Value="" />
+      <HelpData Key="method_name.method_name(string name): this(null,null,new ident(name),null)" Value="" />
+      <HelpData Key="declarations." Value="" />
+      <HelpData Key="semantic_check.semantic_check(string name, params syntax_tree_node[] pars)" Value="" />
+      <HelpData Key="foreach_stmt.type_name" Value="" />
+      <HelpData Key="uses_unit_in" Value="" />
+      <HelpData Key=".name_expr" Value="" />
+      <HelpData Key="procedure_header.proc_attributes" Value="" />
+      <HelpData Key="assign.assign(ident left,expression ex): this(new ident_list(left),ex,Operators.Assignment)" Value="" />
+      <HelpData Key="oberon_module_name.second_name" Value="" />
+      <HelpData Key="where_type_specificator_list.defs" Value="" />
+      <HelpData Key="return_stmt.JumpType" Value="" />
+      <HelpData Key="template_param_list." Value="" />
+      <HelpData Key="documentation_comment_section.tags" Value="" />
+      <HelpData Key="name_space." Value="" />
+      <HelpData Key="typecast_expr.type_def" Value="" />
+      <HelpData Key="matching_expression.right" Value="" />
+      <HelpData Key="int32_const.override string ToString()" Value="" />
+      <HelpData Key="sugared_addressed_value" Value="Обёртка для сахарного адресуемого значения, хранящего сахарный узел для семантических проверок и новое выражение после удаления синтаксического сахара" />
+      <HelpData Key="known_type_definition." Value="" />
+      <HelpData Key="using_namespaces.usings" Value="" />
+      <HelpData Key="variable_definitions.void Add1(var_def_statement v)" Value="" />
+      <HelpData Key="tuple_node.el" Value="" />
+      <HelpData Key="enumerator_list" Value="" />
+      <HelpData Key=".name" Value="" />
+      <HelpData Key="look_stmt.name" Value="" />
+      <HelpData Key=".procdef" Value="" />
+      <HelpData Key="label_definitions.labels" Value="Список меток" />
+      <HelpData Key="type_def_attr_list" Value="" />
+      <HelpData Key=".specificator" Value="" />
+      <HelpData Key="fptype_and_expr." Value="" />
+      <HelpData Key="while_node.CycleType" Value="Тип цикла ПОКА" />
+      <HelpData Key="typedef_declaration.defs" Value="" />
+      <HelpData Key=".directives" Value="" />
+      <HelpData Key="oberon_module.definitions" Value="" />
+      <HelpData Key="c_module.used_units" Value="" />
+      <HelpData Key="indexers_types.indexers_types(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="record_const.record_const(record_const_definition rcd, SourceContext sc)" Value="" />
+      <HelpData Key="interface_node" Value="" />
+      <HelpData Key="unit_or_namespace" Value="" />
+      <HelpData Key="uses_unit.name" Value="" />
+      <HelpData Key="method_name." Value="" />
+      <HelpData Key="semantic_check.semantic_check(string name, params syntax_node[] pars)" Value="" />
+      <HelpData Key="implementation_node.using_namespaces" Value="" />
+      <HelpData Key="program_module." Value="" />
+      <HelpData Key="function_header" Value="" />
+      <HelpData Key="tuple_node" Value="" />
+      <HelpData Key="method_call.parametres" Value="" />
+      <HelpData Key="enumerator_list.enumerators" Value="" />
+      <HelpData Key="uses_list." Value="" />
+      <HelpData Key="variable_definitions.variable_definitions Add(var_def_statement _var_def_statement)" Value="" />
+      <HelpData Key="variable_definitions.void Add(var_def_statement v, SourceContext sc)" Value="" />
+      <HelpData Key="consts_definitions_list.consts_definitions_list(const_definition cd, SourceContext sc)" Value="" />
+      <HelpData Key="uint64_const" Value="" />
+      <HelpData Key="class_definition.class_definition(named_type_reference_list parents, class_body body): this(parents,body,class_keyword.Class, null, null, class_attribute.None, null,false)" Value="" />
+      <HelpData Key="procedure_header.template_args" Value="" />
+      <HelpData Key="new_expr" Value="" />
+      <HelpData Key="external_directr.modulename" Value="" />
+      <HelpData Key="c_scalar_type." Value="" />
+      <HelpData Key="where_type_specificator_list" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(string name, type_definition type): this(new ident(name),type)" Value="" />
+      <HelpData Key="const_definition" Value="" />
+      <HelpData Key="method_name.method_name(string name): base(null,new ident(name),null)" Value="" />
+      <HelpData Key="method_call.override string ToString()" Value="" />
+      <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header, proc_block proc_body)" Value="" />
+      <HelpData Key="with_statement.do_with" Value="Список объектов, с которыми производить действия." />
+      <HelpData Key="procedure_header" Value="" />
+      <HelpData Key="for_node.increment_value" Value="Шаг переменной цикла" />
+      <HelpData Key="documentation_comment_section.documentation_comment_section(documentation_comment_tag _documentation_comment_tag, SourceContext sc)" Value="" />
+      <HelpData Key="expression_list.expressions" Value="Список выражений" />
+      <HelpData Key="expression" Value="Выражение" />
+      <HelpData Key="yield_unknown_foreach_type_ident" Value="Узел для приведения типа enumerator.Current к типу переменной цикла foreach" />
+      <HelpData Key=".Name" Value="" />
+      <HelpData Key="definition_specificator." Value="" />
+      <HelpData Key="exception_handler" Value="" />
+      <HelpData Key="property_interface.index_expression" Value="" />
+      <HelpData Key="declarations.void Add(declaration d)" Value="" />
+      <HelpData Key="consts_definitions_list." Value="" />
+      <HelpData Key="using_namespaces.namespaces" Value="" />
+      <HelpData Key="format_expr.format2" Value="" />
+      <HelpData Key="yield_node" Value="" />
+      <HelpData Key="oberon_ident_wiht_export_marker" Value="" />
+      <HelpData Key="record_type.fixed_part" Value="" />
+      <HelpData Key="block.program_code" Value="" />
+      <HelpData Key="documentation_comment_list" Value="" />
+      <HelpData Key="procedure_attributes_list.procedure_attributes_list(proc_attribute attr, SourceContext sc): this(new procedure_attribute(attr),sc)" Value="" />
+      <HelpData Key="bin_expr.operation_type" Value="" />
+      <HelpData Key="unnamed_type_object.new_ex" Value="" />
+      <HelpData Key="expression_list" Value="Список выражений" />
+      <HelpData Key="new_expr.array_size" Value="" />
+      <HelpData Key="record_type.base_type" Value="in oberon2" />
+      <HelpData Key="variant" Value="" />
+      <HelpData Key=".elements_type" Value="Тип элементов" />
+      <HelpData Key="method_call." Value="" />
+      <HelpData Key="string_num_definition." Value="" />
+      <HelpData Key="diapason" Value="Диапазон" />
+      <HelpData Key="program_name.override string ToString()" Value="" />
+      <HelpData Key="ident_list.ident_list(ident id, SourceContext sc)" Value="" />
+      <HelpData Key="compilation_unit.Language" Value="" />
+      <HelpData Key="oberon_procedure_receiver.receiver_name" Value="" />
+      <HelpData Key="goto_statement.override string ToString()" Value="" />
+      <HelpData Key="using_list.namespaces" Value="" />
+      <HelpData Key="procedure_header.where_defs" Value="" />
+      <HelpData Key="named_type_reference.unit_name" Value="" />
+      <HelpData Key="property_parameter_list.names" Value="" />
+      <HelpData Key="subprogram_definition" Value="" />
+      <HelpData Key="compiler_directive_if" Value="" />
+      <HelpData Key="function_lambda_definition.function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)" Value="" />
+      <HelpData Key="oberon_exit_reservedword." Value="" />
+      <HelpData Key=".res" Value="" />
+      <HelpData Key="exception_ident.type_name" Value="" />
+      <HelpData Key="yield_unknown_foreach_type" Value="Узел для вычисления типа переменной используемой в теле foreach (с yield)" />
+      <HelpData Key="foreach_stmt.in_what" Value="" />
+      <HelpData Key="index_property.property_parametres" Value="" />
+      <HelpData Key="enum_type_definition.values" Value="" />
+      <HelpData Key="simple_property.simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr)" Value="" />
+      <HelpData Key="class_definition.IsInterface" Value="" />
+      <HelpData Key="procedure_definition.is_short_definition" Value="" />
+      <HelpData Key="block.block(statement_list code): this(null,code)" Value="" />
+      <HelpData Key="declaration." Value="" />
+      <HelpData Key="repeat_node.statements" Value="Тело цикла" />
+      <HelpData Key="block.where_defs" Value="" />
+      <HelpData Key="id_expr_node" Value="" />
+      <HelpData Key="assign.assign(string left,expression ex, SourceContext sc): this(new ident(left),ex,sc)" Value="" />
+      <HelpData Key="yield_variable_definitions_with_unknown_type" Value="Узел-обертка для yield для определения типов локальных переменных в variable_definitions" />
+      <HelpData Key="array_type" Value="Тип массива" />
+      <HelpData Key="string_const.Value" Value="Значенеи строковой константы" />
+      <HelpData Key="method_name.method_name(string name): this(null,new ident(name),null)" Value="" />
+      <HelpData Key="function_lambda_definition." Value="" />
+      <HelpData Key="attribute_list.attribute_list(simple_attribute_list sal, SourceContext sc)" Value="" />
+      <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement)" Value="" />
+      <HelpData Key="repeat_node" Value="Цикл с постусловием (repeat)" />
+      <HelpData Key="exception_block.handlers" Value="" />
+      <HelpData Key="diapason.left" Value="Нижняя граница диапазона" />
+      <HelpData Key="sizeof_operator.type_def" Value="" />
+      <HelpData Key="type_declaration.type_declaration(string name, type_definition type, SourceContext sc): this(new ident(name),type,sc)" Value="" />
+      <HelpData Key="constructor.constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null)" Value="" />
+      <HelpData Key="ident.public override string ToString()" Value="" />
+      <HelpData Key="typecast_node.cast_op" Value="" />
+      <HelpData Key="expression_list.expression_list(expression _expression, SourceContext sc)" Value="" />
+      <HelpData Key=".right" Value="" />
+      <HelpData Key="template_operator_name" Value="" />
+      <HelpData Key="named_type_reference." Value="" />
+      <HelpData Key="named_type_reference.names" Value="Список имен типа" />
+      <HelpData Key="assign.to" Value="Левый операнд оператора присваивания (чему присваивать)." />
+      <HelpData Key="raise_stmt.object" Value="" />
+      <HelpData Key="documentation_comment_section.sectinos" Value="" />
+      <HelpData Key="where_definition.names" Value="" />
+      <HelpData Key="array_of_const_type_definition" Value="array of const" />
+      <HelpData Key="unit_module.implementation_part" Value="" />
+      <HelpData Key="method_call.method_call(expression_list pars)" Value="" />
+      <HelpData Key="declaration_as_statement" Value="" />
+      <HelpData Key="function_header.return_type" Value="" />
+      <HelpData Key="statement_list.subnodes" Value="Список операторов" />
+      <HelpData Key="procedure_attribute" Value="" />
+      <HelpData Key="typecast_node.type_def" Value="" />
+      <HelpData Key="modern_proc_type.el" Value="" />
+      <HelpData Key="new_expr.array_init_expr" Value="" />
+      <HelpData Key="record_const" Value="" />
+      <HelpData Key="declaration_specificator" Value="" />
+      <HelpData Key="class_definition.is_auto" Value="" />
+      <HelpData Key="type_declarations.void Add(type_declaration typeDecl)" Value="Добавляет в список определение типа" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition type): this(idents, type)" Value="" />
+      <HelpData Key="slice_expr.from" Value="" />
+      <HelpData Key="c_module" Value="" />
+      <HelpData Key="array_size.max_value" Value="" />
+      <HelpData Key=".variants" Value="" />
+      <HelpData Key="var_def_list.vars" Value="" />
+      <HelpData Key="compiler_directive_list.compiler_directive_list(compiler_directive _compiler_directive, SourceContext sc)" Value="" />
+      <HelpData Key="expression_as_statement." Value="" />
+      <HelpData Key="statement_list.statement_list(statement _statement)" Value="" />
+      <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
+      <HelpData Key="formal_parameters" Value="" />
+      <HelpData Key="block.defs" Value="" />
+      <HelpData Key=".parameters" Value="" />
+      <HelpData Key="variant.vars" Value="" />
+      <HelpData Key="documentation_comment_list." Value="" />
+      <HelpData Key="goto_statement" Value="" />
+      <HelpData Key="name_space.namespace_parts" Value="" />
+      <HelpData Key="on_exception_list" Value="" />
+      <HelpData Key="sequence_type.elements_type" Value="Тип элементов" />
+      <HelpData Key="c_for_cycle.stmt" Value="" />
+      <HelpData Key="addressed_value_list" Value="" />
+      <HelpData Key="procedure_attributes_list" Value="" />
+      <HelpData Key="variable_definitions.variable_definitions Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
+      <HelpData Key="semantic_check.param" Value="Параметры - синтаксические узлы для проверки" />
+      <HelpData Key="eee" Value="" />
+      <HelpData Key="expression." Value="" />
+      <HelpData Key="oberon_import_module.new_name" Value="import new_name:=unit_name;" />
+      <HelpData Key="method_name.class_name" Value="" />
+      <HelpData Key="exception_handler.type_name" Value="" />
+      <HelpData Key="array_of_named_type_reference.type_name" Value="" />
+      <HelpData Key="consts_definitions_list.const_defs" Value="" />
+      <HelpData Key="yield_unknown_expression_type.Vds" Value="" />
+      <HelpData Key="var_def_list.var_def_list(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
+      <HelpData Key="c_module." Value="" />
+      <HelpData Key="index_property.is_default" Value="" />
+      <HelpData Key="lock_stmt.name" Value="" />
+      <HelpData Key="const_definition.const_value" Value="" />
+      <HelpData Key=".opname" Value="" />
+      <HelpData Key="uses_list.uses_list(unit_or_namespace _unit_or_namespace, SourceContext sc)" Value="" />
+      <HelpData Key="function_lambda_definition.substituting_node" Value="" />
+      <HelpData Key="declarations.declarations Add(declaration _declaration)" Value="" />
+      <HelpData Key="uses_list.uses_list Add(unit_or_namespace _unit_or_namespace)" Value="" />
+      <HelpData Key="assign_var_tuple" Value="" />
+      <HelpData Key="name_assign_expr_list.name_expr" Value="" />
+      <HelpData Key=".names" Value="" />
+      <HelpData Key="assign.assign(addressed_value left,expression ex, SourceContext sc): this(left,ex,Operators.Assignment,sc)" Value="" />
+      <HelpData Key="consts_definitions_list.void Add(const_definition cd, SourceContext sc)" Value="" />
+      <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header,proc_block body)" Value="" />
+      <HelpData Key="CompilerDirective" Value="" />
+      <HelpData Key="write_accessor_name" Value="" />
+      <HelpData Key="variant_list.variant_list Add(variant _variant, SourceContext sc)" Value="" />
+      <HelpData Key="property_parameters" Value="" />
+      <HelpData Key="unnamed_type_object.void set_name(string nm)" Value="" />
+      <HelpData Key="inherited_message" Value="" />
+      <HelpData Key="named_type_reference.type_name" Value="" />
+      <HelpData Key="statement_list.left_logical_bracket" Value="Левая операторная скобка" />
+      <HelpData Key="documentation_comment_section" Value="" />
+      <HelpData Key="template_param_list.template_param_list Add(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="expression_list.void Add(expression ex, SourceContext sc)" Value="" />
+      <HelpData Key="where_definition_list.where_definition_list Add(where_definition _where_definition)" Value="" />
+      <HelpData Key="definition_specificator.specificator" Value="" />
+      <HelpData Key=".vlist" Value="" />
+      <HelpData Key="type_declaration.type_name" Value="" />
+      <HelpData Key="function_lambda_definition.proc_definition" Value="" />
+      <HelpData Key="labeled_statement" Value="" />
+      <HelpData Key="property_parameter" Value="" />
+      <HelpData Key="typed_parametres.idents" Value="" />
+      <HelpData Key="slice_expr_question.to" Value="" />
+      <HelpData Key="var_def_statement.override string ToString()" Value="" />
+      <HelpData Key="sizeof_operator" Value="" />
+      <HelpData Key="byte_const" Value="" />
+      <HelpData Key="inherited_method_call.exprs" Value="" />
+      <HelpData Key="for_node.initial_value" Value="Начальное значение переменной цикла" />
+      <HelpData Key="un_expr.operation_type" Value="" />
+      <HelpData Key="procedure_call.parametres" Value="" />
+      <HelpData Key="typecast_node.right" Value="" />
+      <HelpData Key=".v" Value="" />
+      <HelpData Key="get_address.address_of" Value="" />
+      <HelpData Key="literal" Value="#12 либо 'abc'" />
+      <HelpData Key="consts_definitions_list.(const_definition cd, SourceContext sc)" Value="" />
+      <HelpData Key="syntax_tree_node.source_context" Value="Позиция в тексте (строка-столбец начала - строка-столбец конца)" />
+      <HelpData Key="constructor.constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null, sc)" Value="" />
+      <HelpData Key="class_definition.class_definition(named_type_reference_list parents, class_body body): this(parents,body,class_keyword.Class, null, null, class_attribute.None,false)" Value="" />
+      <HelpData Key="function_lambda_definition.proc_body" Value="" />
+      <HelpData Key="type_definition_list" Value="" />
+      <HelpData Key=".defs" Value="" />
+      <HelpData Key="unit_name.idunit_name" Value="" />
+      <HelpData Key="return_stmt.expr" Value="" />
+      <HelpData Key="sugared_addressed_value.new_expr" Value="" />
+      <HelpData Key="assign.override string ToString()" Value="" />
+      <HelpData Key="interface_node.interface_defsinitions" Value="" />
+      <HelpData Key="typed_parameters.param_kind" Value="" />
+      <HelpData Key="unit_module." Value="" />
+      <HelpData Key="while_type_specificator_list" Value="" />
+      <HelpData Key="file_type_definition" Value="" />
+      <HelpData Key="file_type_definition.elem_type" Value="" />
+      <HelpData Key="short_proc_definition" Value="" />
+      <HelpData Key="name_assign_expr.expr" Value="" />
+      <HelpData Key="const_method_call.unit_name" Value="" />
+      <HelpData Key="sugared_expression.sugared_expr" Value="" />
+      <HelpData Key="var_def_statement.vars" Value="Список имен переменных" />
+      <HelpData Key="literal_const_line.literal_const_line Add(literal _literal, SourceContext sc)" Value="" />
+      <HelpData Key="switch_stmt.SwitchPartType" Value="" />
+      <HelpData Key="consts_definitions_list.consts_definitions_list Add(const_definition _const_definition, SourceContext sc)" Value="" />
+      <HelpData Key="program_body." Value="" />
+      <HelpData Key="template_param_list.template_param_list(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces)" Value="" />
+      <HelpData Key="variant.vars_type" Value="" />
+      <HelpData Key="documentation_comment_tag_param" Value="" />
+      <HelpData Key="record_type.variant_part" Value="" />
+      <HelpData Key="variable_definitions.variable_definitions(" Value="" />
+      <HelpData Key="record_const.rec_consts" Value="" />
+      <HelpData Key="var_def_statement" Value="Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).&#xD;&#xA;" />
+      <HelpData Key="class_definition.keyword" Value="" />
+      <HelpData Key="tree_node" Value="Базовый класс для всех классов синтаксического дерева" />
+      <HelpData Key="oberon_withstmt_guardstat.type_name" Value="" />
+      <HelpData Key="operator_name_ident" Value="" />
+      <HelpData Key="statement_list.right_logical_bracket" Value="Правая операторная скобка" />
+      <HelpData Key="constructor.constructor(formal_parameters fp): this(fp, null)" Value="" />
+      <HelpData Key="on_exception" Value="" />
+      <HelpData Key="bracket_expr.override string ToString()" Value="" />
+      <HelpData Key="using_clause." Value="" />
+      <HelpData Key="unit_name.HeaderKeyword" Value="" />
+      <HelpData Key=".subprogram_definitions" Value="" />
+      <HelpData Key="var_statement" Value="Однострочное описание переменной внутри begin-end. Хранит внутри var_def_statement" />
+      <HelpData Key="class_definition.attribute" Value="" />
+      <HelpData Key="label_name" Value="" />
+      <HelpData Key="type_definition_attr.attr" Value="" />
+      <HelpData Key="oberon_module.second_name" Value="" />
+      <HelpData Key="hex_constant" Value="" />
+      <HelpData Key="assign.operator_type" Value="Тип оператора присваивания" />
+      <HelpData Key=".exprs" Value="" />
+      <HelpData Key="property_array_default" Value="" />
+      <HelpData Key="short_func_definition" Value="" />
+      <HelpData Key="variant_list.vars" Value="" />
+      <HelpData Key="interface_node.uses_modules" Value="" />
+      <HelpData Key="documentation_comment_list.sections" Value="" />
+      <HelpData Key="assign." Value="" />
+      <HelpData Key="var_def_list_for_record" Value="" />
+      <HelpData Key="implementation_node.uses_modules" Value="" />
+      <HelpData Key="switch_stmt.condition" Value="" />
+      <HelpData Key="dot_node.right" Value="" />
+      <HelpData Key="read_accessor_name.accessor_name" Value="" />
+      <HelpData Key="write_accessor_name.accessor_name" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference(string name)" Value="" />
+      <HelpData Key="where_definition.types" Value="" />
+      <HelpData Key="literal_const_line" Value="Представляет в синтаксическом дереве строку вида #123'abc'#124#125." />
+      <HelpData Key="exception_identifier.variable" Value="" />
+      <HelpData Key="type_definition_list.type_definition_list(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="pascal_set_constant.values" Value="" />
+      <HelpData Key="subprogram_definitions_as_statement.defs" Value="" />
+      <HelpData Key="uses_list.void Add(unit_or_namespace un, SouceContext sc)" Value="" />
+      <HelpData Key="formal_parameters.formal_parameters Add(typed_parameters _typed_parameters, SourceContext sc)" Value="" />
+      <HelpData Key="function_lambda_call.f_lambda_def" Value="" />
+      <HelpData Key="indexers_types.indexers" Value="Список типов индексов" />
+      <HelpData Key="c_for_cycle.expr1" Value="" />
+      <HelpData Key="variable_definitions.variable_definitions(var_def_statement v, SourceContext sc)" Value="" />
+      <HelpData Key="record_type_parts.fixed_part" Value="" />
+      <HelpData Key="ident_with_templateparams.template_params" Value="" />
+      <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc)" Value="" />
+      <HelpData Key="yield_sequence_node.ex" Value="" />
+      <HelpData Key="oberon_exit_reservedword.text" Value="" />
+      <HelpData Key="for_node" Value="Цикл for" />
+      <HelpData Key="array_of_named_type_reference.name_type" Value="" />
+      <HelpData Key="procedure_of_object" Value="... of object" />
+      <HelpData Key="label_definitions" Value="Описание меток" />
+      <HelpData Key=".lists" Value="" />
+      <HelpData Key=".unknown_foreach" Value="" />
+      <HelpData Key="c_for_cycle." Value="" />
+      <HelpData Key=".expr" Value="" />
+      <HelpData Key="dot_question_node.right" Value="" />
+      <HelpData Key="ident_with_inital_value" Value="" />
+      <HelpData Key="as_node." Value="" />
+      <HelpData Key="ident_with_templateparams." Value="" />
+      <HelpData Key="case_node.param" Value="" />
+      <HelpData Key="template_type_reference" Value="" />
+      <HelpData Key="yield_unknown_expression_type" Value="Узел для вычисления типа выражения используемого в теле функции-итератора (с yield). Используется для описаний всех переменных с автовыводом типов в теле yield: например, для var a := 1; Дело в том, что эти переменные становятся полями класса, а для описания полей класса нужен тип" />
+      <HelpData Key=".no_type_foreach()" Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition type)" Value="" />
+      <HelpData Key="exception_handler_list.exception_handler_list Add(exception_handler _exception_handler, SourceContext sc)" Value="" />
+      <HelpData Key=".Vds" Value="" />
+      <HelpData Key="string_num_definition.name" Value="" />
+      <HelpData Key="exception_block." Value="" />
+      <HelpData Key="loop_stmt." Value="" />
+      <HelpData Key="on_exception_list.on_exception_list Add(on_exception _on_exception)" Value="" />
+      <HelpData Key="exception_block" Value="" />
+      <HelpData Key="typed_parametres" Value="" />
+      <HelpData Key=".var_attr" Value="" />
+      <HelpData Key="compiler_directive." Value="" />
+      <HelpData Key="int64_const" Value="" />
+      <HelpData Key="block." Value="" />
+      <HelpData Key="oberon_withstmt.quardstat_list" Value="" />
+      <HelpData Key="indexers_types.void Add(type_definition indexer)" Value="Добавляет в список тип индексов" />
+      <HelpData Key=".string" Value="" />
+      <HelpData Key="id_expr_node.id" Value="" />
+      <HelpData Key="method_name.method_name(string name): base(null,name,null)" Value="" />
+      <HelpData Key="type_definition" Value="Определение типа" />
+      <HelpData Key="as_node" Value="" />
+      <HelpData Key="ident_with_inital_value." Value="" />
+      <HelpData Key="oberon_procedure_receiver.param_kind" Value="" />
+      <HelpData Key="un_expr" Value="Унарное выражение" />
+      <HelpData Key="procedure_attributes_list.proc_attributes" Value="" />
+      <HelpData Key="type_def_attr_list.attributes" Value="" />
+      <HelpData Key="unknown_expression_type" Value="" />
+      <HelpData Key="const_definition.const_name" Value="" />
+      <HelpData Key="typecast_node" Value="" />
+      <HelpData Key="addressed_value_list.variables" Value="" />
+      <HelpData Key="ident_list.void Add(ident id, SourceContext sc)" Value="" />
+      <HelpData Key="documentation_comment_tag_param.name" Value="" />
+      <HelpData Key="bracket_expr._expr" Value="" />
+      <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)" Value="" />
+      <HelpData Key="pascal_set_constant" Value="Выражение-константа множество" />
+      <HelpData Key="procedure_attributes_list.procedure_attributes_list(proc_attribute attr): this(attr,null)" Value="" />
+      <HelpData Key="declarations.void Add(declaration d, SourceContext sc)" Value="" />
+      <HelpData Key="method_name.lttn" Value="" />
+      <HelpData Key="dot_node.left" Value="" />
+      <HelpData Key="known_type_ident" Value="" />
+      <HelpData Key="statement_list.statement_list Add(statement _statement, SourceContext sc)" Value="" />
+      <HelpData Key="typed_parametres.param_kind" Value="" />
+      <HelpData Key="ident_with_inital_value.inital_value" Value="" />
+      <HelpData Key="var_statement.override string ToString()" Value="" />
+      <HelpData Key="switch_stmt" Value="" />
+      <HelpData Key="known_type_indent.type" Value="" />
+      <HelpData Key="expression_list.void Add(expression ex)" Value="" />
+      <HelpData Key="unnamed_type_object.string name()" Value="" />
+      <HelpData Key="oberon_module.module_code" Value="" />
+      <HelpData Key="case_variant" Value="" />
+      <HelpData Key="exception_block.stmt_list" Value="" />
+      <HelpData Key="variable_definitions_as_statement." Value="" />
+      <HelpData Key="oberon_procedure_receiver" Value="" />
+      <HelpData Key="enumerator.name" Value="" />
+    </HelpData>
+  </HelpStorage>
+</NodeGeneratorData>
