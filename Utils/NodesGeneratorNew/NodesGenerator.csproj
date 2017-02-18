@@ -119,6 +119,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XmlModel\ExtendedField.cs" />
+    <Compile Include="XmlModel\HelpStorage.cs" />
+    <Compile Include="XmlModel\Method.cs" />
+    <Compile Include="XmlModel\SimpleField.cs" />
+    <Compile Include="XmlModel\SyntaxField.cs" />
+    <Compile Include="XmlModel\SyntaxNodeTags.cs" />
+    <Compile Include="XmlModel\SyntaxTagStorage.cs" />
     <Content Include="App.ico" />
     <Compile Include="AboutBox.cs">
       <SubType>Form</SubType>
@@ -151,6 +158,9 @@
     <Compile Include="GrammarBrowser.Designer.cs">
       <DependentUpon>GrammarBrowser.cs</DependentUpon>
     </Compile>
+    <Compile Include="XmlModel\SyntaxNode.cs" />
+    <Compile Include="XmlModel\Settings.cs" />
+    <Compile Include="XmlModel\NodeGeneratorData.cs" />
     <Compile Include="options_form.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -213,6 +223,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

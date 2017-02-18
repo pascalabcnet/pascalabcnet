@@ -342,12 +342,12 @@ namespace NodesGenerator
             // openFileDialog1
             // 
             this.openFileDialog1.DefaultExt = "nin";
-            this.openFileDialog1.Filter = "Файлы синтаксического дерева (*.nin)|*.nin|Все файлы (*.*)|*.*";
+            this.openFileDialog1.Filter = "Файлы синтаксического дерева (*.nin, *.xml)|*.nin;*.xml|Все файлы (*.*)|*.*";
             // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "nin";
-            this.saveFileDialog1.Filter = "Файлы синтаксического дерева (*.nin)|*.nin|Все файлы (*.*)|*.*";
+            this.saveFileDialog1.Filter = "Файлы синтаксического дерева (*.nin, *.xml)|*.nin;*.xml|Все файлы (*.*)|*.*";
             // 
             // toolStripStatusLabel1
             // 
@@ -1535,7 +1535,7 @@ namespace NodesGenerator
             else
             {
                 set_nodes_information();
-                this.Text = Path.GetFileNameWithoutExtension(fname) + " - " + default_caption;
+                this.Text = Path.GetFileName(fname) + " - " + default_caption;
             }
         }
 

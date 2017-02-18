@@ -53,7 +53,6 @@ G:\MMCS\Programming\PABC.NET_GitRepo\Utils\NodesGeneratorNew\NodesGenerator_old\
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.exe.config
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.exe
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.pdb
-G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csprojResolveAssemblyReference.cache
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.Form1.resources
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.method_editor.resources
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.node_def.resources
@@ -63,3 +62,17 @@ G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csproj.GenerateResource.Cache
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.exe
 G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.pdb
+G:\MMCS\Programming\PascalABC.NET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csprojResolveAssemblyReference.cache
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.exe.config
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.exe
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.pdb
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csprojResolveAssemblyReference.cache
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.Form1.resources
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.method_editor.resources
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.node_def.resources
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.simple_node_editor.resources
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.subnode_editor.resources
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.template_form.resources
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csproj.GenerateResource.Cache
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.exe
+G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.pdb
