@@ -226,6 +226,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        private int _num_for_delegates;
 		private int _num_of_for_cycles;
 
         internal convertion_data_and_alghoritms convertion_data_and_alghoritms;
@@ -276,6 +277,7 @@ namespace PascalABCCompiler.TreeConverter
             _cycles_stack.clear();
             _num_of_for_cycles = 0;
             _fal = SemanticTree.field_access_level.fal_private;
+            _num_for_delegates = 0;
             rec_num = 1;
             var_defs_stack.Clear();
             type_stack.Clear();
@@ -1791,7 +1793,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public string get_delegate_type_name()
         {
-            return (compiler_string_consts.delegate_type_name_template+get_and_postinc_num_of_for_cycles());
+            return (compiler_string_consts.delegate_type_name_template + _num_for_delegates++);
         }
 
 		public var_definition_node create_for_temp_variable(type_node type,location loc)
