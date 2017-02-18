@@ -1141,7 +1141,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (eq_func != null)
                         {
                             //TODO: Проверить правильно ли это будет работать.
-                            if (eq_func != fnode)
+                            if (eq_func != fnode)//zachem eto nuzhno voobshe??
                             {
                                 basic_function_node bbfn1 = fnode as basic_function_node;
                                 basic_function_node bbfn2 = eq_func as basic_function_node;
@@ -1162,7 +1162,8 @@ namespace PascalABCCompiler.TreeConverter
                                 	 || left.type.type_special_kind == SemanticTree.type_special_kind.base_set_type &&  right.type.type_special_kind == SemanticTree.type_special_kind.base_set_type
                                 	|| left.type == SystemLibrary.SystemLibrary.string_type && right.type.type_special_kind == SemanticTree.type_special_kind.short_string
                                		 || right.type == SystemLibrary.SystemLibrary.string_type && left.type.type_special_kind == SemanticTree.type_special_kind.short_string
-                               		|| left.type.type_special_kind == SemanticTree.type_special_kind.short_string && right.type.type_special_kind == SemanticTree.type_special_kind.short_string)
+                               		|| left.type.type_special_kind == SemanticTree.type_special_kind.short_string && right.type.type_special_kind == SemanticTree.type_special_kind.short_string
+                                    || left.type.IsDelegate == right.type.IsDelegate)
                                 	{
                                 		//if (left.type.find_in_type(name) !=null)
                                 	}
