@@ -9975,6 +9975,7 @@ function operator><T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensi
 ///--
 function operator>=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) >= 0;
 
+
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple
 // -------------------------------------------
