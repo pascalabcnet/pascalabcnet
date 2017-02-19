@@ -982,6 +982,8 @@ namespace PascalABCCompiler.TreeRealization
         //Выведение типов
         public static bool DeduceInstanceTypes(type_node formal_type, type_node fact_type, type_node[] deduced, List<int> nils)
         {
+            if (fact_type == null)//issue #347
+                return false;
             if (formal_type.generic_function_container == null && fact_type.generic_function_container != null)
             {
                 //swap

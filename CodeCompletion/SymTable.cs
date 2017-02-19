@@ -349,6 +349,8 @@ namespace CodeCompletion
             List<ProcScope> lst = new List<ProcScope>();
             List<ProcScope> meths = null;
             TypeScope tmp_ts = ts;
+            if (ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr && !(ts as ArrayScope).is_multi_dyn_arr)
+                return lst;
             if (extension_methods != null)
             {
                 while (tmp_ts != null)
@@ -983,6 +985,14 @@ namespace CodeCompletion
             si.description = this.ToString();
         }
 
+        IImplementationUnitScope IInterfaceUnitScope.ImplementationUnitScope
+        {
+            get
+            {
+                return impl_scope;
+            }
+        }
+
         public override bool InUsesRange(int line, int column)
         {
             if (this.uses_source_range != null)
@@ -1073,7 +1083,7 @@ namespace CodeCompletion
         public ImplementationUnitScope(SymInfo si, SymScope topScope)
             : base(si, topScope)
         {
-
+            
         }
 
         public override bool InUsesRange(int line, int column)
@@ -1103,11 +1113,6 @@ namespace CodeCompletion
                 if (sc != null) return sc;
             }
             if (topScope != null) return topScope.FindName(name);
-
-            //Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(name,unl);
-            //if (t != null && !t.IsNested) return new CompiledScope(new SymInfo(t.Name, SymbolKind.Type,t.FullName),t);
-            //			if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(name)) 
-            //				return new NamespaceScope(name);
             return null;
         }
 
@@ -1741,6 +1746,7 @@ namespace CodeCompletion
             this.name = name;
             this.topScope = topScope;
             this.si = new SymInfo(name, SymbolKind.Method, name);
+            //this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             parameters = new List<ElementScope>();
             members = new List<SymScope>();
             //UnitDocCache.AddDescribeToComplete(this);
@@ -1752,6 +1758,7 @@ namespace CodeCompletion
             this.name = name;
             this.topScope = topScope;
             this.si = new SymInfo(name, SymbolKind.Method, name);
+            //this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             parameters = new List<ElementScope>();
             members = new List<SymScope>();
             this.is_constructor = is_constructor;
@@ -1875,6 +1882,7 @@ namespace CodeCompletion
             if (this.template_parameters == null || this.template_parameters.Count == 0)
                 return this;
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
+            instance.is_extension = this.is_extension;
             instance.parameters = new List<ElementScope>(this.parameters.Count);
             int i = 0;
             foreach (ElementScope parameter in this.parameters)
@@ -1894,6 +1902,8 @@ namespace CodeCompletion
                 {
                     ElementScope inst_param = null;
                     if ((parameter.sc as TypeScope).IsGeneric)
+                        inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
+                    else if ((parameter.sc as TypeScope).GetElementType() != null && (parameter.sc as TypeScope).GetElementType().IsGenericParameter)
                         inst_param = new ElementScope(parameter.si, (parameter.sc as TypeScope).GetInstance(gen_args), parameter.topScope);
                     else
                         inst_param = new ElementScope(parameter.si, parameter.sc, parameter.topScope);
@@ -1929,6 +1939,7 @@ namespace CodeCompletion
         {
             if (documentation != null && documentation.Length > 0 && documentation[0] == '-') return;
             this.si.description = this.ToString();
+            this.si.addit_name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             if (documentation != null) this.si.description += "\n" + this.documentation;
         }
 
@@ -2485,7 +2496,7 @@ namespace CodeCompletion
 
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
-            return this;
+            return new FileScope(gen_args[0], this.topScope);
         }
 
         public override bool IsConvertable(TypeScope ts)
@@ -2890,12 +2901,12 @@ namespace CodeCompletion
     public class ArrayScope : TypeScope, IArrayScope
     {
         public TypeScope[] indexes;
-        public bool is_dynamic_arr = false;
+        private bool _is_dynamic_arr = false;
         private bool _is_multi_dyn_arr = false;
 
         public ArrayScope()
         {
-            is_dynamic_arr = true;
+            _is_dynamic_arr = true;
             this.si = new SymInfo("$" + this.ToString(), SymbolKind.Type, this.ToString());
         }
 
@@ -2904,7 +2915,7 @@ namespace CodeCompletion
             this.elementType = elementType;
             this.indexes = indexes;
             if (indexes == null)
-                is_dynamic_arr = true;
+                _is_dynamic_arr = true;
             else
             {
                 _is_multi_dyn_arr = true;
@@ -2944,6 +2955,26 @@ namespace CodeCompletion
             get
             {
                 return _is_multi_dyn_arr;
+            }
+        }
+
+        public bool is_multi_dyn_arr
+        {
+            get
+            {
+                return _is_multi_dyn_arr;
+            }
+        }
+
+        public bool is_dynamic_arr
+        {
+            get
+            {
+                return _is_dynamic_arr;
+            }
+            set
+            {
+                _is_dynamic_arr = value;
             }
         }
 
@@ -4661,7 +4692,7 @@ namespace CodeCompletion
             }
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, ctn);
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
+            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             this.si.kind = get_kind();
             this.si.description = GetDescription();
             if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
@@ -4857,8 +4888,19 @@ namespace CodeCompletion
                     }
                     else
                     {
-                        sc.generic_params.Add(gen_args[i].si.name);
-                        sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                        if (this.instances[i].instances != null && this.instances[i].instances.Count > 0 && gen_args[i].elementType != null)
+                        {
+                            List<TypeScope> lst = new List<TypeScope>();
+                            lst.Add(gen_args[i].elementType);
+                            sc.instances.Add(this.instances[i].GetInstance(lst));
+                            sc.generic_params.Add(gen_args[i].elementType.si.name);
+                        }
+                        else
+                        {
+                            sc.generic_params.Add(gen_args[i].si.name);
+                            sc.instances.Add(this.instances[i].GetInstance(gen_args));
+                        }
+                        
                     }   
                 }
             else
@@ -6515,7 +6557,7 @@ namespace CodeCompletion
             }
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, mi);
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
+            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             this.si.description = this.ToString();
             //this.si.describe += "\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+"."+mi.Name+GetParamNames());
             this.topScope = declaringType;
@@ -6559,7 +6601,7 @@ namespace CodeCompletion
             this.is_global = is_global;
             if (si.name == null)
                 AssemblyDocCache.AddDescribeToComplete(this.si, mi);
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
+            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             this.si.description = this.ToString();
             //this.si.describe += "\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+"."+mi.Name+GetParamNames());
             this.topScope = declaringType;
@@ -6745,7 +6787,7 @@ namespace CodeCompletion
             foreach (ParameterInfo pi in mi.GetParameters())
                 parameters.Add(new CompiledParameterScope(new SymInfo(pi.Name, SymbolKind.Parameter, pi.Name), pi));
 
-            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortTypeName(this);
+            this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             this.si.description = this.ToString();//+"\n"+AssemblyDocCache.GetDocumentation(mi.DeclaringType.Assembly,"M:"+mi.DeclaringType.FullName+".#ctor"+GetParamNames());
             this.topScope = declaringType;
             if (mi.IsPrivate)

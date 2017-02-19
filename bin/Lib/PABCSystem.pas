@@ -385,6 +385,8 @@ type
     function FullName: string;
     /// Возвращает в виде строки содержимое файла от текущего положения до конца
     function ReadToEnd: string;
+    /// Устанавливает файловый указатель на начало файла
+    procedure Reset;
   end;
   
   /// Тип текстового файла
@@ -468,9 +470,11 @@ type
     procedure Erase;
     /// Переименовывает файл, давая ему имя newname 
     procedure Rename(newname: string);
-    ///- Write(f: file; a,b,...)
+    ///- f.Write(a,b,...)
     /// Выводит значения a,b,... в двоичный файл
     procedure Write(params vals: array of object);
+    /// Устанавливает файловый указатель на начало файла
+    procedure Reset;
   end;
 
   // Class for typed files
@@ -1211,8 +1215,27 @@ function Odd(i: uint64): boolean;
 // -----------------------------------------------------
 /// Конструирует комплексное число с вещественной частью re и мнимой частью im
 function Cplx(re,im: real): Complex;
-/// Вычисляет квадратный корень из комплексного числа
+/// Конструирует комплексное число по полярным координатам
+function CplxFromPolar(magnitude,phase: real) : Complex;
+/// Возвращает квадратный корень из комплексного числа
 function Sqrt(c: Complex): Complex;
+/// Возвращает модуль комплексного числа
+function Abs(c: Complex): Complex;
+/// Возвращает комплексно сопряженное число
+function Conjugate(c: Complex): Complex;
+/// Возвращает косинус комплексного числа
+function Cos(c: Complex): Complex;
+/// Возвращает экспоненту комплексного числа
+function Exp(c: Complex): Complex;
+/// Возвращает натуральный логарифм комплексного числа
+function Log(c: Complex): Complex;
+/// Возвращает десятичный логарифм комплексного числа
+function Log10(c: Complex): Complex;
+/// Возвращает степень комплексного числа
+function Power(c,power: Complex): Complex;
+/// Возвращает синус комплексного числа
+function Sin(c: Complex): Complex;
+
 
 // -----------------------------------------------------
 //>>     Процедуры для работы со стандартными множествами # Subroutines for set of T
@@ -1523,7 +1546,11 @@ procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
 /// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
-procedure Reverse<T>(a: array of T; index,length: integer);
+procedure Reverse<T>(a: array of T; index,count: integer);
+/// Изменяет порядок элементов в списке на противоположный
+procedure Reverse<T>(a: List<T>);
+/// Изменяет порядок элементов на противоположный в диапазоне списка длины length начиная с индекса index
+procedure Reverse<T>(a: List<T>; index,count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
 /// Перемешивает список случайным образом
@@ -3237,15 +3264,36 @@ begin
   Result := a.Contains(x);
 end;
 
+function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
+begin
+  Result := new T[a.Length*n];
+  for var i:=0 to n-1 do
+    a.CopyTo(Result,a.Length*i);
+end;
+
+function operator*<T>(n: integer; a: array of T): array of T; extensionmethod;
+begin
+  Result := a*n
+end;
+
 //------------------------------------------------------------------------------
 //          Операции для List<T> 
 //------------------------------------------------------------------------------
+///--
 function operator+=<T>(a, b: List<T>): List<T>; extensionmethod;
 begin
   a.AddRange(b);
   Result := a;
 end;
 
+///--
+function operator+<T>(a, b: List<T>): List<T>; extensionmethod;
+begin
+  Result := new List<T>(a);
+  Result.AddRange(b);
+end;
+
+///--
 function operator+=<T>(a: List<T>; x: T): List<T>; extensionmethod;
 begin
   a.Add(x);
@@ -3256,6 +3304,40 @@ end;
 function List<T>.operator in(x: T; Self: List<T>): boolean;
 begin
   Result := Self.Contains(x);
+end;
+
+///--
+function operator*<T>(a: List<T>; n: integer): List<T>; extensionmethod;
+begin
+  Result := new List<T>();
+  for var i := 1 to n do
+    Result.AddRange(a);
+end;
+
+///--
+function operator*<T>(n: integer; a: List<T>): List<T>; extensionmethod;
+begin
+  Result := a*n;
+end;
+
+//------------------------------------------------------------------------------
+//          Операции для Stack<T> 
+//------------------------------------------------------------------------------
+///--
+function operator+=<T>(s: Stack<T>; x: T): Stack<T>; extensionmethod;
+begin
+  s.Push(x);
+  Result := s;
+end;
+
+//------------------------------------------------------------------------------
+//          Операции для Queue<T> 
+//------------------------------------------------------------------------------
+///--
+function operator+=<T>(q: Queue<T>; x: T): Queue<T>; extensionmethod;
+begin
+  q.Enqueue(x);
+  Result := q;
 end;
 
 //------------------------------------------------------------------------------
@@ -5166,6 +5248,12 @@ begin
   Result := sr.ReadToEnd  
 end;
 
+procedure Text.Reset;
+begin
+  PABCSystem.Reset(Self);
+end;
+
+
 // -----------------------------------------------------
 //                AbstractBinaryFile methods
 // -----------------------------------------------------
@@ -5197,6 +5285,11 @@ end;
 procedure AbstractBinaryFile.Write(params vals: array of object);
 begin
   PABCSystem.Write(Self, vals);
+end;
+
+procedure AbstractBinaryFile.Reset;
+begin
+  PABCSystem.Reset(Self);
 end;
 
 // -----------------------------------------------------
@@ -6992,16 +7085,27 @@ begin
   result := (i mod 2) <> 0;
 end;
 
-function Cplx(re,im: real): Complex;
-begin
-  Result := new Complex(re,im);
-end;
+function Cplx(re,im: real) := new Complex(re,im);
 
-function Sqrt(c: Complex): Complex;
-begin
-  Result := Complex.Sqrt(c);
-end;
+function CplxFromPolar(magnitude,phase: real) := Complex.FromPolarCoordinates(magnitude,phase);
 
+function Sqrt(c: Complex) := Complex.Sqrt(c);
+
+function Abs(c: Complex) := Complex.Abs(c);
+
+function Conjugate(c: Complex) := Complex.Conjugate(c);
+
+function Cos(c: Complex) := Complex.Cos(c);
+
+function Exp(c: Complex) := Complex.Exp(c);
+
+function Log(c: Complex) := Complex.Log(c);
+
+function Log10(c: Complex) := Complex.Log10(c);
+
+function Power(c,power: Complex) := Complex.Pow(c,power);
+
+function Sin(c: Complex) := Complex.Sin(c);
 
 // -----------------------------------------------------
 //                Dynamic arrays: implementation
@@ -7074,10 +7178,21 @@ begin
   System.Array.Reverse(a);
 end;
 
-procedure Reverse<T>(a: array of T; index,length: integer);
+procedure Reverse<T>(a: array of T; index,count: integer);
 begin
-  System.Array.Reverse(a,index,length);
+  System.Array.Reverse(a,index,count);
 end;
+
+procedure Reverse<T>(a: List<T>);
+begin
+  a.Reverse
+end;
+
+procedure Reverse<T>(a: List<T>; index,count: integer);
+begin
+  a.Reverse(index,count)
+end;
+
 
 procedure Shuffle<T>(a: array of T);
 begin
@@ -8602,17 +8717,6 @@ end;
 function SliceListImpl<T>(Self: List<T>; from,step,count: integer): List<T>;
 begin
   CorrectCountForSlice(Self.Count,from,step,count);
-  {if step = 0 then
-    raise new ArgumentException(GetTranslation(PARAMETER_STEP_MUST_BE_NOT_EQUAL_0));
-
-  if (from < 0) or (from > Self.Count - 1) then
-    raise new ArgumentException(GetTranslation(PARAMETER_FROM_OUT_OF_RANGE));
-
-  var cnt := step > 0 ? Self.Count - from : from + 1; 
-  var cntstep := (cnt-1) div abs(step) + 1;
-  if count > cntstep then 
-    count := cntstep;}
-    
   Result := CreateSliceFromListInternal(Self,from,step,count);
 end;
 
@@ -9624,6 +9728,12 @@ begin
 	Result := Regex.Replace(Self,reg,repl,options)
 end;
 
+/// Заменяет в указанной строке все вхождения регулярного выражения указанным преобразованием замены и возвращает преобразованную строку
+function Replace(Self: string; reg: string; repl: Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+begin
+	Result := Regex.Replace(Self,reg,repl,options)
+end;
+
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
 function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
 begin
@@ -9884,6 +9994,7 @@ function operator<=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extens
 function operator><T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) > 0;
 ///--
 function operator>=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) >= 0;
+
 
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple

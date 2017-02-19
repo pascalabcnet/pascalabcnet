@@ -1452,7 +1452,11 @@ begin
       solveproc.Invoke(nil,nil);
     except
       on e: Exception do
-        RaisePT(e.InnerException.GetType.ToString, e.InnerException.Message);
+      begin
+        //if e.InnerException<>nil then
+        RaisePT('HHH', 'ggg');
+          //RaisePT(e.InnerException.GetType.ToString, e.InnerException.Message);
+      end;
     end;
     if finexamproc <> nil then
       finexamproc.Invoke(nil,nil);

@@ -41,6 +41,11 @@ namespace VisualPascalABC
             //CodeCompletion.CodeCompletionController.OpenFiles = open_files;
         }
 
+        public PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string fileName)
+        {
+            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Parsers.ICodeCompletionDomConverter;
+        }
+
         public static string CurrentTwoLetterISO
         {
             get

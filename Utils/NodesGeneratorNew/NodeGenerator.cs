@@ -1,3 +1,4 @@
+using NodesGenerator.XmlModel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace NodeGenerator
 {
@@ -445,6 +447,8 @@ namespace NodeGenerator
 	{
 		private Hashtable ht=new Hashtable();
 
+        public Hashtable HelpData => ht;
+
 		public void add_context(object ob,HelpContext hc)
 		{
 			ht.Add(ob,hc);
@@ -707,6 +711,14 @@ namespace NodeGenerator
             writer.CloseBlock();
         }
 
+        /// <summary>
+        /// Получает эквивалент поля для модели XML
+        /// </summary>
+        /// <returns></returns>
+        public virtual SyntaxField XmlField()
+        {
+            return new SyntaxField(this);
+        }
 	}
     //miks 31.05.10
     [Serializable]
@@ -806,7 +818,11 @@ namespace NodeGenerator
             }
         }
 
-	}
+        public override SyntaxField XmlField()
+        {
+            return new SimpleField(this);
+        }
+    }
 
 	[Serializable]
 	public class extended_simple_element:simple_element
@@ -871,6 +887,11 @@ namespace NodeGenerator
             }
             else
                 writer.WriteLine($"{destination} = {field_name};");
+        }
+
+        public override SyntaxField XmlField()
+        {
+            return new ExtendedField(this);
         }
     }
 
@@ -3517,6 +3538,7 @@ namespace NodeGenerator
 			{
 				return hstr;
 			}
+            set { hstr = value; }
 		}
 
 		public void add_node(node_info ni)
@@ -4492,9 +4514,24 @@ namespace NodeGenerator
 
 			Stream str=File.Open(file_name,FileMode.Create);
 
-			BinaryFormatter formatter=new BinaryFormatter();
+            var extension = Path.GetExtension(file_name).ToLower();
+            switch (extension)
+            {
+                case ".xml":
+                    var serializer = new XmlSerializer(typeof(NodeGeneratorData));
+                    serializer.Serialize(str, new NodeGeneratorData(this));
+                    break;
+                case ".nin":
+                    var formatter = new BinaryFormatter();
+                    formatter.Serialize(str, this);
+                    break;
+                default:
+                    throw new FileLoadException($"Unknown file format: {extension}");
+            }
 
-			formatter.Serialize(str,this);
+            //var formatter=new XmlSerializer(typeof(NodeGenerator)); //new BinaryFormatter();
+
+			
 
 			str.Flush();
 			str.Close();            
@@ -4503,16 +4540,30 @@ namespace NodeGenerator
 		public static NodeGenerator deserialize(string file_name)
 		{
 			Stream str=File.Open(file_name,FileMode.Open);
-			
-			BinaryFormatter formatter=new BinaryFormatter();
 
-			object o=formatter.Deserialize(str);
+            var extension = Path.GetExtension(file_name).ToLower();
+            object deserializedGenerator;
+            switch (extension)
+            {
+                case ".xml":
+                    var deserializer = new XmlSerializer(typeof(NodeGeneratorData));
+                    var generator = (deserializer.Deserialize(str) as NodeGeneratorData).ToNodeGenerator();
+                    generator.unsorted_nodes = new ArrayList(generator.nodes);
+                    deserializedGenerator = generator;
+                    break;
+                case ".nin":
+                    var formatter = new BinaryFormatter();
+                    deserializedGenerator = formatter.Deserialize(str);
+                    break;
+                default:
+                    throw new FileLoadException($"Unknown file format: {extension}");
+            }
+            str.Close();
 
-			NodeGenerator ng=(o as NodeGenerator);
+            NodeGenerator ng=(deserializedGenerator as NodeGenerator);
             ng.removeIncorrectTags();
 
 			//str.Flush();
-			str.Close();
 
             //for compatibility with the older serialization method
             if (ng.hstr == null)

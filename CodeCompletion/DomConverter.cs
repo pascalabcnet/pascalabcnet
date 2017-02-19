@@ -19,7 +19,7 @@ namespace CodeCompletion
     	public object prim_val;
     }
 
-	public class DomConverter
+	public class DomConverter: ICodeCompletionDomConverter
     {
     	public DomSyntaxTreeVisitor visitor;
         //TreeConverterSymbolTable tcst;
@@ -50,6 +50,22 @@ namespace CodeCompletion
         	}
         }
         
+        bool ICodeCompletionDomConverter.IsCompiled
+        {
+            get
+            {
+                return is_compiled;
+            }
+        }
+
+        IBaseScope ICodeCompletionDomConverter.EntryScope
+        {
+            get
+            {
+                return visitor.entry_scope;
+            }
+        }
+
         public DomConverter(CodeCompletionController controller)
         {
         	visitor = new DomSyntaxTreeVisitor(this);
@@ -516,23 +532,6 @@ namespace CodeCompletion
                         string s = CodeCompletionController.CurrentParser.LanguageInformation.GetSimpleDescriptionWithoutNamespace((si as ElementScope).sc as PascalABCCompiler.Parsers.ITypeScope);
                         if (s != out_si.name)
                             out_si.addit_name = s;
-                        //        				if (((si as ElementScope).sc as TypeScope).TemplateArguments != null)
-                        //        				{
-                        //        					SymInfo tmp_si = new SymInfo(null,elems[i].kind,elems[i].describe);
-                        //        					StringBuilder sb = new StringBuilder();
-                        //        					string[] template_args = ((si as ElementScope).sc as TypeScope).TemplateArguments;
-                        //        					sb.Append(elems[i].name);
-                        //        					sb.Append('<');
-                        //        					for (int j=0; j<template_args.Length; j++)
-                        //        					{
-                        //        						sb.Append(template_args[j]);
-                        //        						if (j<template_args.Length-1)
-                        //        							sb.Append(',');
-                        //        					}
-                        //        					sb.Append('>');
-                        //        					elems[i] = tmp_si;
-                        //        					out_si = tmp_si;
-                        //        				}
                     }
                     result_names.Add(elems[i]);
                 }

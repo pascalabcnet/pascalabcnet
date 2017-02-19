@@ -24,19 +24,20 @@ namespace PascalABCCompiler.Parsers
     	/// <summary>
     	/// Получить короткое имя откомпилированного типа
     	/// </summary>
-    	string GetShortTypeName(ICompiledTypeScope scope);
+    	string GetShortName(ICompiledTypeScope scope);
         /// <summary>
         /// Получить короткое имя откомпилированного метода
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-    	string GetShortTypeName(ICompiledMethodScope scope);
+    	string GetShortName(ICompiledMethodScope scope);
         /// <summary>
         /// Получить короткое имя откомпилированного конструктора
         /// </summary>
         /// <param name="scope"></param>
         /// <returns></returns>
-    	string GetShortTypeName(ICompiledConstructorScope scope);
+    	string GetShortName(ICompiledConstructorScope scope);
+    	string GetShortName(IProcScope scope);
         string GetShortTypeName(Type t, bool noalias = true);
         /// <summary>
         /// Получить представление массива рамерности rank
@@ -356,6 +357,42 @@ namespace PascalABCCompiler.Parsers
             this.kind = kind;
             this.description = description;
         }
+
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+            }
+        }
+
+        public SymbolKind Kind
+        {
+            get
+            {
+                return kind;
+            }
+            set
+            {
+                kind = value;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return description;
+            }
+            set
+            {
+                description = value;
+            }
+        }
     }
 
     public interface IBaseScope
@@ -410,6 +447,7 @@ namespace PascalABCCompiler.Parsers
         Position GetHeaderPosition();
         Position GetBodyPosition();
         Position GetPosition();
+        string GetDescriptionWithoutDoc();
         IBaseScope FindScopeByLocation(int line, int column);
         IBaseScope FindNameInAnyOrder(string name);
         IBaseScope FindNameOnlyInType(string name);
@@ -759,7 +797,10 @@ namespace PascalABCCompiler.Parsers
     
     public interface IInterfaceUnitScope : IBaseScope
     {
-    	
+        IImplementationUnitScope ImplementationUnitScope
+        {
+            get;
+        }
     }
     
     public interface IShortStringScope : ITypeScope
@@ -794,6 +835,18 @@ namespace PascalABCCompiler.Parsers
     public interface ITemplateParameterScope : ITypeScope
     {
     	
+    }
+
+    public interface ICodeCompletionDomConverter
+    {
+        bool IsCompiled
+        {
+            get;
+        }
+        IBaseScope EntryScope
+        {
+            get;
+        }
     }
 }
 

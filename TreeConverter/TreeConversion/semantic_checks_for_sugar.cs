@@ -29,6 +29,7 @@ namespace PascalABCCompiler.TreeConverter
         }
 
         void semantic_check_method_call_as_slice_expr(SyntaxTree.method_call mc)
+        // нельзя проверять сахарный узел, т.к.могут быть вложенные сахарные expression!!
         {
             var v = (mc.dereferencing_value as dot_node).left;
             var from = mc.parameters.expressions[1];
