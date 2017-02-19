@@ -1099,8 +1099,20 @@ namespace PascalABCCompiler.TreeConverter
 						{
                             if (is_alone_method_defined)
                             {
-                                error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
-                                //AddError(new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg));
+                                //issue #348
+                                if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
+                                {
+                                    possible_type_convertions ptci = new possible_type_convertions();
+                                    ptci.first = null;
+                                    ptci.second = null;
+                                    ptci.from = factparams[i].type;
+                                    ptci.to = formal_param_type;
+                                    tc.AddElement(ptci);
+                                    factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
+                                    return tc;
+                                }
+                                else
+                                    error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
                             }
 							return null;
                             
