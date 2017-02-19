@@ -985,6 +985,14 @@ namespace CodeCompletion
             si.description = this.ToString();
         }
 
+        IImplementationUnitScope IInterfaceUnitScope.ImplementationUnitScope
+        {
+            get
+            {
+                return impl_scope;
+            }
+        }
+
         public override bool InUsesRange(int line, int column)
         {
             if (this.uses_source_range != null)
@@ -1075,7 +1083,7 @@ namespace CodeCompletion
         public ImplementationUnitScope(SymInfo si, SymScope topScope)
             : base(si, topScope)
         {
-
+            
         }
 
         public override bool InUsesRange(int line, int column)
@@ -1105,11 +1113,6 @@ namespace CodeCompletion
                 if (sc != null) return sc;
             }
             if (topScope != null) return topScope.FindName(name);
-
-            //Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(name,unl);
-            //if (t != null && !t.IsNested) return new CompiledScope(new SymInfo(t.Name, SymbolKind.Type,t.FullName),t);
-            //			if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(name)) 
-            //				return new NamespaceScope(name);
             return null;
         }
 
@@ -1879,6 +1882,7 @@ namespace CodeCompletion
             if (this.template_parameters == null || this.template_parameters.Count == 0)
                 return this;
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
+            instance.is_extension = this.is_extension;
             instance.parameters = new List<ElementScope>(this.parameters.Count);
             int i = 0;
             foreach (ElementScope parameter in this.parameters)
@@ -2492,7 +2496,7 @@ namespace CodeCompletion
 
         public override TypeScope GetInstance(List<TypeScope> gen_args)
         {
-            return this;
+            return new FileScope(gen_args[0], this.topScope);
         }
 
         public override bool IsConvertable(TypeScope ts)

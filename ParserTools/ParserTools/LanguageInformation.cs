@@ -357,6 +357,42 @@ namespace PascalABCCompiler.Parsers
             this.kind = kind;
             this.description = description;
         }
+
+        public string Name
+        {
+            get
+            {
+                return name;
+            }
+            set
+            {
+                name = value;
+            }
+        }
+
+        public SymbolKind Kind
+        {
+            get
+            {
+                return kind;
+            }
+            set
+            {
+                kind = value;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return description;
+            }
+            set
+            {
+                description = value;
+            }
+        }
     }
 
     public interface IBaseScope
@@ -411,6 +447,7 @@ namespace PascalABCCompiler.Parsers
         Position GetHeaderPosition();
         Position GetBodyPosition();
         Position GetPosition();
+        string GetDescriptionWithoutDoc();
         IBaseScope FindScopeByLocation(int line, int column);
         IBaseScope FindNameInAnyOrder(string name);
         IBaseScope FindNameOnlyInType(string name);
@@ -760,7 +797,10 @@ namespace PascalABCCompiler.Parsers
     
     public interface IInterfaceUnitScope : IBaseScope
     {
-    	
+        IImplementationUnitScope ImplementationUnitScope
+        {
+            get;
+        }
     }
     
     public interface IShortStringScope : ITypeScope
@@ -795,6 +835,18 @@ namespace PascalABCCompiler.Parsers
     public interface ITemplateParameterScope : ITypeScope
     {
     	
+    }
+
+    public interface ICodeCompletionDomConverter
+    {
+        bool IsCompiled
+        {
+            get;
+        }
+        IBaseScope EntryScope
+        {
+            get;
+        }
     }
 }
 

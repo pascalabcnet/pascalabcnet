@@ -2358,14 +2358,6 @@ namespace CodeCompletion
                                 search_all = true;
                                 mc.visit(this);
                                 return;
-                                returned_scope = meths[0];
-                                if (meths[0].IsGeneric() && meths[0].IsExtension)
-                                {
-                                    TypeScope elem_ts = ts.GetElementType();
-                                    if (elem_ts == null)
-                                        elem_ts = ts;
-                                    returned_scope = meths[0].GetInstance(new List<TypeScope>() { elem_ts });
-                                }
                             }
                                 
                         }
@@ -2623,7 +2615,12 @@ namespace CodeCompletion
         	if (good_procs.Count > 0)
             {
                 if (obj != null)
+                {
+                    if (obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
+                        obj = obj.GetElementType();
                     arg_types2.Insert(0, obj);
+                }
+                    
                 return good_procs[0].GetInstance(arg_types2);
             } 
         	return null;
@@ -4332,7 +4329,40 @@ namespace CodeCompletion
         }
         public override void visit(ident_with_templateparams node)
         {
-            throw new NotImplementedException();
+            node.name.visit(this);
+            if (returned_scopes.Count > 0 && returned_scopes[0] is ProcScope)
+            {
+                ProcScope ps = returned_scopes[0] as ProcScope;
+                List<TypeScope> template_params = new List<TypeScope>();
+                foreach (type_definition td in node.template_params.params_list)
+                {
+                    td.visit(this);
+                    if (returned_scope is TypeScope)
+                        template_params.Add(returned_scope as TypeScope);
+                    else
+                    {
+                        return;
+                    }
+                }
+                returned_scopes[0] = ps.GetInstance(template_params);
+            }
+            else if (returned_scope is ProcScope)
+            {
+            	ProcScope ps = returned_scope as ProcScope;
+                List<TypeScope> template_params = new List<TypeScope>();
+                foreach (type_definition td in node.template_params.params_list)
+                {
+                    td.visit(this);
+                    if (returned_scope is TypeScope)
+                        template_params.Add(returned_scope as TypeScope);
+                    else
+                    {
+                    	returned_scope = ps;
+                        return;
+                    }
+                }
+                returned_scope = ps.GetInstance(template_params);
+            }
         }
 		public override void visit(bracket_expr _bracket_expr)
         {

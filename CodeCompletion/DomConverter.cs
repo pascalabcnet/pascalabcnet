@@ -19,7 +19,7 @@ namespace CodeCompletion
     	public object prim_val;
     }
 
-	public class DomConverter
+	public class DomConverter: ICodeCompletionDomConverter
     {
     	public DomSyntaxTreeVisitor visitor;
         //TreeConverterSymbolTable tcst;
@@ -50,6 +50,22 @@ namespace CodeCompletion
         	}
         }
         
+        bool ICodeCompletionDomConverter.IsCompiled
+        {
+            get
+            {
+                return is_compiled;
+            }
+        }
+
+        IBaseScope ICodeCompletionDomConverter.EntryScope
+        {
+            get
+            {
+                return visitor.entry_scope;
+            }
+        }
+
         public DomConverter(CodeCompletionController controller)
         {
         	visitor = new DomSyntaxTreeVisitor(this);

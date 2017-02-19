@@ -18,15 +18,13 @@ namespace VisualPascalABC
 		private System.Windows.Forms.ComboBox classComboBox;
 		private System.Windows.Forms.ComboBox membersComboBox;
 		
-		SymScope currentCompilationUnit;
+		IBaseScope currentCompilationUnit;
 		CodeFileDocumentTextEditorControl textAreaControl;
 		bool autoselect = true;
-		ComboBoxItem curItem;
-		Position cur_pos;
 		
 		class ComboBoxItem : System.IComparable
 		{
-			SymScope item;
+			IBaseScope item;
 			string text;
 			int    iconIndex;
 			bool   isInCurrentPart;
@@ -39,7 +37,7 @@ namespace VisualPascalABC
 				}
 			}
 			
-			public SymScope Item {
+			public IBaseScope Item {
 				get {
 					return item;
 				}
@@ -59,11 +57,6 @@ namespace VisualPascalABC
 			
 			public int Line {
 				get {
-					/*DomRegion r = this.ItemRegion;
-					if (r.IsEmpty)
-						return 0;
-					else
-						return r.BeginLine - 1;*/
 					return pos.line-1;
 				}
 			}
@@ -80,7 +73,7 @@ namespace VisualPascalABC
 				}
 			}
 			
-			public ComboBoxItem(SymScope item, string text, int iconIndex, bool isInCurrentPart, bool is_global)
+			public ComboBoxItem(IBaseScope item, string text, int iconIndex, bool isInCurrentPart, bool is_global)
 			{
 				this.item = item;
 				if (item != null)
@@ -155,14 +148,10 @@ namespace VisualPascalABC
 			base.Dock = DockStyle.Top;
 			this.textAreaControl = textAreaControl;
 			this.textAreaControl.ActiveTextAreaControl.Caret.PositionChanged += new EventHandler(CaretPositionChanged);
-			//this.Paint += new PaintEventHandler( PaintInternal);
             if (VisualPABCSingleton.MainForm != null && !VisualPABCSingleton.MainForm.UserOptions.ShowQuickClassBrowserPanel)
             {
                 this.Visible = false;
             }
-//            else this.ShowPanel();
-			//FillMembersComboBox();
-			//UpdateMembersComboBox();
             if (VisualPABCSingleton.MainForm != null)
             {
                 th = new Thread(new ThreadStart(ChangeInternal));
@@ -190,17 +179,11 @@ namespace VisualPascalABC
 		public void ShowPanel()
 		{
 			base.Visible = true;
-            //if (Parent != null)
-                //Parent.Parent.Parent.BackColor = SystemColors.Control;
-            //textAreaControl.TextAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 		}
 		
 		public void HidePanel()
 		{
 			base.Visible = false;
-            //if (Parent != null)
-                //Parent.Parent.Parent.BackColor = SystemColors.ButtonShadow;
-            //textAreaControl.TextAreaPanel.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		}
 		
 		private void PaintInternal(object sender, PaintEventArgs e)
@@ -225,7 +208,7 @@ namespace VisualPascalABC
 		void ChangeInternal()
 		{
 			bool first_comp;
-			CodeCompletion.DomConverter dconv=null;
+            ICodeCompletionDomConverter dconv =null;
 			bool tmp = true;
             while (true)
             {
@@ -235,10 +218,10 @@ namespace VisualPascalABC
                     {
                         if (currentCompilationUnit == null && textAreaControl.FileName != null)
                         {
-                            dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[textAreaControl.FileName];
-                            if (dconv != null && dconv.is_compiled)
+                            dconv = WorkbenchServiceFactory.CodeCompletionParserController.GetConverter(textAreaControl.FileName);
+                            if (dconv != null && dconv.IsCompiled)
                             {
-                                currentCompilationUnit = dconv.visitor.entry_scope;
+                                currentCompilationUnit = dconv.EntryScope;
                                 first_comp = true;
                             }
                             if (clicked || tmp)
@@ -250,16 +233,12 @@ namespace VisualPascalABC
                         }
                         if (currentCompilationUnit != null && (clicked || first_comp))
                         {
-                            dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[textAreaControl.FileName];
-                            if (dconv != null && dconv.is_compiled)
+                            dconv = WorkbenchServiceFactory.CodeCompletionParserController.GetConverter(textAreaControl.FileName);
+                            if (dconv != null && dconv.IsCompiled)
                             {
-                                currentCompilationUnit = dconv.visitor.entry_scope;
+                                currentCompilationUnit = dconv.EntryScope;
                                 FillClassComboBox(true);
                             }
-
-                            //FillMembersComboBox();
-                            //UpdateClassComboBox();
-                            //UpdateMembersComboBox();
                         }
                         //lock(clicked)
                         {
@@ -339,34 +318,20 @@ namespace VisualPascalABC
             }*/
 
             autoselect = false;
-            Hashtable ns_list = new Hashtable();
+            Dictionary<ComboBoxItem, int> ns_list = new Dictionary<ComboBoxItem, int>();
             try
             {
-                //if (currentCompilationUnit != null) 
-                //// Alex: when changing between files in different compilation units whole process must be restarted
-                //// happens usually when files are opened from different project(s)
                 for (int i = 0; i < classComboBox.Items.Count; i++)
                 {
                     if (((ComboBoxItem)classComboBox.Items[i]).IsInside(textAreaControl.ActiveTextAreaControl.Caret.Line, textAreaControl.ActiveTextAreaControl.Caret.Column))
                     {
 
                         bool innerClassContainsCaret = false;
-                        if (((ComboBoxItem)classComboBox.Items[i]).Item == null || ((ComboBoxItem)classComboBox.Items[i]).Item.si.kind == SymbolKind.Namespace)
+                        if (((ComboBoxItem)classComboBox.Items[i]).Item == null || ((ComboBoxItem)classComboBox.Items[i]).Item.SymbolInfo.kind == SymbolKind.Namespace)
                         {
                             ns_list[(ComboBoxItem)classComboBox.Items[i]] = i;
                             continue;
                         }
-                        /*for (int j = i + 1; j < classComboBox.Items.Count;j++) {
-                            if (((ComboBoxItem)classComboBox.Items[j]).IsInside(textAreaControl.ActiveTextAreaControl.Caret.Line)) {
-                                if (((ComboBoxItem)classComboBox.Items[j]).Item.si.kind == SymbolKind.Namespace)
-                                {
-                                    ns_list[classComboBox.Items[j]] = j;
-                                    continue;
-                                }
-                                innerClassContainsCaret = true;
-                                break;
-                            }
-                        }*/
                         if (!innerClassContainsCaret)
                         {
                             if ((int)classComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal)) != i)
@@ -409,12 +374,6 @@ namespace VisualPascalABC
                     FillMembersComboBox();
                 classComboBox.Invoke(new Invoke_del(Invoke_Refresh));
                 return;
-
-                if (classComboBoxSelectedMember)
-                {
-                    classComboBox.Invoke(new Invoke_del(Invoke_Refresh));
-                    classComboBoxSelectedMember = false;
-                }
             }
             finally
             {
@@ -423,13 +382,13 @@ namespace VisualPascalABC
             //				classComboBox.SelectedIndex = -1;
         }
 
-        SymScope GetCurrentSelectedClass()
+        IBaseScope GetCurrentSelectedClass()
         {
             try
             {
                 if ((int)classComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal)) >= 0)
                 {
-                    return (SymScope)((ComboBoxItem)classComboBox.Items[(int)classComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal))]).Item;
+                    return (IBaseScope)((ComboBoxItem)classComboBox.Items[(int)classComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal))]).Item;
                 }
             }
             catch (Exception ex)
@@ -439,11 +398,11 @@ namespace VisualPascalABC
             return null;
         }
 
-        SymScope GetCurrentSelectedMember()
+        IBaseScope GetCurrentSelectedMember()
         {
             if ((int)membersComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal)) >= 0)
             {
-                return (SymScope)((ComboBoxItem)membersComboBox.Items[(int)membersComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal))]).Item;
+                return (IBaseScope)((ComboBoxItem)membersComboBox.Items[(int)membersComboBox.Invoke(new Invoke_del_with_ret(GetSelectedClassInternal))]).Item;
             }
             return null;
         }
@@ -474,36 +433,50 @@ namespace VisualPascalABC
 
         void GetGlobalUnitMembers(ArrayList items)
         {
-            foreach (SymScope ss in currentCompilationUnit.members)
+            foreach (IBaseScope ss in currentCompilationUnit.Members)
             {
-                if (ss.si.kind == SymbolKind.Method || ss.si.kind == SymbolKind.Constant || ss.si.kind == SymbolKind.Variable || ss.si.kind == SymbolKind.Event || ss.si.kind == SymbolKind.Field
-                   || ss.si.kind == SymbolKind.Parameter || ss.si.kind == SymbolKind.Property)
+                switch (ss.SymbolInfo.kind)
                 {
-                    items.Add(new ComboBoxItem(ss, ss.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.si), true, false));
+                    case SymbolKind.Method:
+                    case SymbolKind.Constant:
+                    case SymbolKind.Variable:
+                    case SymbolKind.Event:
+                    case SymbolKind.Field:
+                    case SymbolKind.Parameter:
+                    case SymbolKind.Property:
+                        items.Add(new ComboBoxItem(ss, ss.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.SymbolInfo), true, false));
+                        break;
                 }
             }
             int ind = items.Count;
             items.Sort(0, items.Count, new Comparer(System.Globalization.CultureInfo.InvariantCulture));
 
-            if ((currentCompilationUnit as InterfaceUnitScope).impl_scope != null)
+            if ((currentCompilationUnit as IInterfaceUnitScope).ImplementationUnitScope != null)
             {
-                ImplementationUnitScope us = (currentCompilationUnit as InterfaceUnitScope).impl_scope;
+                IImplementationUnitScope us = (currentCompilationUnit as IInterfaceUnitScope).ImplementationUnitScope;
                 //items.Add(new ComboBoxItem(us,"implementation",CodeCompletionProvider.ImagesProvider.GetPictureNum(us.si),true));
-                foreach (SymScope ss in us.members)
+                foreach (IBaseScope ss in us.Members)
                 {
-                    if (ss.si.kind == SymbolKind.Method || ss.si.kind == SymbolKind.Constant || ss.si.kind == SymbolKind.Variable || ss.si.kind == SymbolKind.Event || ss.si.kind == SymbolKind.Field
-                    || ss.si.kind == SymbolKind.Parameter || ss.si.kind == SymbolKind.Property)
+                    switch (ss.SymbolInfo.kind)
                     {
-                        items.Add(new ComboBoxItem(ss, ss.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.si), true, false));
+                        case SymbolKind.Method:
+                        case SymbolKind.Constant:
+                        case SymbolKind.Variable:
+                        case SymbolKind.Event:
+                        case SymbolKind.Field:
+                        case SymbolKind.Parameter:
+                        case SymbolKind.Property:
+                            items.Add(new ComboBoxItem(ss, ss.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.SymbolInfo), true, false));
+                            break;
                     }
                 }
                 items.Sort(ind, items.Count - ind, new Comparer(System.Globalization.CultureInfo.InvariantCulture));
             }
         }
 
-        void GetClassMembers(SymScope ss, ArrayList items)
+        void GetClassMembers(IBaseScope scope, ArrayList items)
         {
-            if (ss != null && ss.members != null)
+            if (scope != null && scope.Members != null)
             {
                 ArrayList meths = new ArrayList();
                 ArrayList fields = new ArrayList();
@@ -511,13 +484,11 @@ namespace VisualPascalABC
                 ArrayList vars = new ArrayList();
                 ArrayList props = new ArrayList();
                 ArrayList consts = new ArrayList();
-                foreach (SymScope el in ss.members)
-                    //if (el.si.kind == SymbolKind.Method || el.si.kind == SymbolKind.Constant || el.si.kind == SymbolKind.Variable || el.si.kind == SymbolKind.Event || el.si.kind == SymbolKind.Field
-                    //|| el.si.kind == SymbolKind.Property)
+                foreach (IBaseScope el in scope.Members)
                     if (el.GetPosition().file_name != null)
                     {
-                        ComboBoxItem cbi = new ComboBoxItem(el, el.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(el.si), true, false);
-                        switch (el.si.kind)
+                        ComboBoxItem cbi = new ComboBoxItem(el, el.GetDescriptionWithoutDoc(), CodeCompletionProvider.ImagesProvider.GetPictureNum(el.SymbolInfo), true, false);
+                        switch (el.SymbolInfo.kind)
                         {
                             case SymbolKind.Method: meths.Add(cbi); break;
                             case SymbolKind.Field: fields.Add(cbi); break;
@@ -546,15 +517,15 @@ namespace VisualPascalABC
         void FillMembersComboBox()
         {
             ArrayList items = new ArrayList();
-            SymScope ss = GetCurrentSelectedClass();
-            if (ss == null)
+            IBaseScope scope = GetCurrentSelectedClass();
+            if (scope == null)
             {
                 GetGlobalUnitMembers(items);
                 //items.Sort(0,items.Count,new Comparer(System.Globalization.CultureInfo.InvariantCulture));
             }
             else
             {
-                GetClassMembers(ss, items);
+                GetClassMembers(scope, items);
                 //items.Sort(0,items.Count,new Comparer(System.Globalization.CultureInfo.InvariantCulture));
             }
             membersComboBox.Invoke(new Invoke_del(Member_Invoke_Update));
@@ -567,7 +538,7 @@ namespace VisualPascalABC
 
         void AddClasses(ArrayList items)
         {
-            ImplementationUnitScope impl = null;
+            IImplementationUnitScope impl = null;
             int ind = 0;
             if (currentCompilationUnit == null)
             {
@@ -576,9 +547,9 @@ namespace VisualPascalABC
             }
             if ((currentCompilationUnit as InterfaceUnitScope).impl_scope != null)
             {
-                items.Add(new ComboBoxItem(currentCompilationUnit, PascalABCCompiler.StringResources.Get("CODE_COMPLETION_INTERFACE"), CodeCompletionProvider.ImagesProvider.GetPictureNum(currentCompilationUnit.si), true, false));
-                impl = (currentCompilationUnit as InterfaceUnitScope).impl_scope;
-                items.Add(new ComboBoxItem(impl, PascalABCCompiler.StringResources.Get("CODE_COMPLETION_IMPLEMENTATION"), CodeCompletionProvider.ImagesProvider.GetPictureNum(impl.si), true, false));
+                items.Add(new ComboBoxItem(currentCompilationUnit, PascalABCCompiler.StringResources.Get("CODE_COMPLETION_INTERFACE"), CodeCompletionProvider.ImagesProvider.GetPictureNum(currentCompilationUnit.SymbolInfo), true, false));
+                impl = (currentCompilationUnit as IInterfaceUnitScope).ImplementationUnitScope;
+                items.Add(new ComboBoxItem(impl, PascalABCCompiler.StringResources.Get("CODE_COMPLETION_IMPLEMENTATION"), CodeCompletionProvider.ImagesProvider.GetPictureNum(impl.SymbolInfo), true, false));
                 ind = 2;
             }
             else
@@ -586,21 +557,35 @@ namespace VisualPascalABC
                 items.Add(new ComboBoxItem(currentCompilationUnit, PascalABCCompiler.StringResources.Get("CODE_COMPLETION_GLOBAL"), CodeCompletionProvider.ImagesProvider.IconNumberUnitNamespace, true, true));
                 ind = 1;
             }
-            foreach (SymScope ss in currentCompilationUnit.members)
+            foreach (IBaseScope ss in currentCompilationUnit.Members)
             {
-                if (ss.si.kind == SymbolKind.Class || ss.si.kind == SymbolKind.Struct || ss.si.kind == SymbolKind.Type || ss.si.kind == SymbolKind.Interface || ss.si.kind == SymbolKind.Enum || ss.si.kind == SymbolKind.Delegate)
+                switch (ss.SymbolInfo.kind)
                 {
-                    if (ss.GetPosition().file_name != null && !ss.si.name.Contains("$"))
-                        items.Add(new ComboBoxItem(ss, ss.si.name, CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.si), true, false));
+                    case SymbolKind.Class:
+                    case SymbolKind.Struct:
+                    case SymbolKind.Type:
+                    case SymbolKind.Enum:
+                    case SymbolKind.Interface:
+                    case SymbolKind.Delegate:
+                        if (ss.GetPosition().file_name != null && !ss.SymbolInfo.name.Contains("$"))
+                            items.Add(new ComboBoxItem(ss, ss.SymbolInfo.name, CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.SymbolInfo), true, false));
+                        break;
                 }
             }
             if (impl != null)
-                foreach (SymScope ss in impl.members)
+                foreach (IBaseScope ss in impl.Members)
                 {
-                    if (ss.si.kind == SymbolKind.Class || ss.si.kind == SymbolKind.Struct || ss.si.kind == SymbolKind.Type || ss.si.kind == SymbolKind.Interface || ss.si.kind == SymbolKind.Enum || ss.si.kind == SymbolKind.Delegate)
+                    switch (ss.SymbolInfo.kind)
                     {
-                        if (!ss.si.name.Contains("$"))
-                            items.Add(new ComboBoxItem(ss, ss.si.name, CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.si), true, false));
+                        case SymbolKind.Class:
+                        case SymbolKind.Struct:
+                        case SymbolKind.Type:
+                        case SymbolKind.Enum:
+                        case SymbolKind.Interface:
+                        case SymbolKind.Delegate:
+                            if (ss.GetPosition().file_name != null && !ss.SymbolInfo.name.Contains("$"))
+                                items.Add(new ComboBoxItem(ss, ss.SymbolInfo.name, CodeCompletionProvider.ImagesProvider.GetPictureNum(ss.SymbolInfo), true, false));
+                            break;
                     }
                 }
             items.Sort(ind, items.Count - ind, new Comparer(System.Globalization.CultureInfo.InvariantCulture));
