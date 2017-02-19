@@ -671,11 +671,6 @@ namespace CodeCompletion
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
             List<SymInfo> lst = new List<SymInfo>();
-            /*foreach (string s in ht.Keys)
-            {
-                SymScope sc = ht[s] as SymScope;
-                if (sc != this) lst.Add(sc.si);
-            }*/
             foreach (SymScope ss in members)
             {
                 if (ss != this && !ss.si.name.StartsWith("$"))
@@ -706,11 +701,6 @@ namespace CodeCompletion
         public virtual SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
         {
             List<SymInfo> lst = new List<SymInfo>();
-            /*foreach (string s in ht.Keys)
-            {
-                SymScope sc = ht[s] as SymScope;
-                lst.Add(sc.si);
-            }*/
             foreach (SymScope ss in members)
             {
                 if (ss != this && !ss.si.name.StartsWith("$"))
@@ -927,10 +917,6 @@ namespace CodeCompletion
                 sc = used_units[i].FindNameOnlyInType(name);
                 if (sc != null) return sc;
             }
-            //Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(name,unl);
-            //if (t != null && !t.IsNested) return new CompiledScope(new SymInfo(t.Name, SymbolKind.Type,t.FullName),t);
-            //if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(name)) 
-            //	return new NamespaceScope(name);
             return null;
         }
 
@@ -963,10 +949,6 @@ namespace CodeCompletion
                 sc = used_units[i].FindNameOnlyInType(name);
                 if (sc != null) return sc;
             }
-            //Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(name,unl);
-            //if (t != null && !t.IsNested) return new CompiledScope(new SymInfo(t.Name, SymbolKind.Type,t.FullName),t);
-            //if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(name)) 
-            //	return new NamespaceScope(name);
             return null;
         }
     }
@@ -1138,11 +1120,6 @@ namespace CodeCompletion
                 if (sc != null) return sc;
             }
             if (topScope != null) return topScope.FindName(name);
-
-            //Type t = PascalABCCompiler.NetHelper.NetHelper.FindType(name,unl);
-            //if (t != null && !t.IsNested) return new CompiledScope(new SymInfo(t.Name, SymbolKind.Type,t.FullName),t);
-            //if (PascalABCCompiler.NetHelper.NetHelper.IsNetNamespace(name)) 
-            //	return new NamespaceScope(name);
             return null;
         }
     }
@@ -1612,6 +1589,14 @@ namespace CodeCompletion
             get
             {
                 return target;
+            }
+        }
+
+        public override bool IsDelegate
+        {
+            get
+            {
+                return true;
             }
         }
 
@@ -2145,14 +2130,6 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            /*ProcScope ps = ts as ProcScope;
-            if (ps == null) return false;
-            if (ps is ProcRealization) ps = (ps as ProcRealization).def_proc;
-            if (this == ps) return true;
-            if (equal_parameters_and_result(ps))
-                return true;
-            if (ps.nextProc != null) return IsEqual(ps.nextProc);
-            return false;*/
             ProcScope ps = ts as ProcScope;
             if (ps == null) return false;
             if (ps is ProcRealization) ps = (ps as ProcRealization).def_proc;
@@ -2445,12 +2422,6 @@ namespace CodeCompletion
             return null;
         }
 
-        //		public override SymInfo[] GetNames(ExpressionVisitor ev)
-        //		{
-        //			//SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-        //			return new SymInfo[0];
-        //		}
-
         public override SymInfo[] GetNamesAsInObject()
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
@@ -2695,11 +2666,6 @@ namespace CodeCompletion
             return actType.GetConstructors(search_in_base);
         }
 
-        //		public override SymInfo[] GetNames(ExpressionVisitor ev)
-        //		{
-        //			return actType.GetNamesAsInObject(ev);
-        //		}
-
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
             return actType.GetNamesAsInObject(ev);
@@ -2861,11 +2827,6 @@ namespace CodeCompletion
         {
             return actType.GetConstructors(search_in_base);
         }
-
-        //		public override SymInfo[] GetNames(ExpressionVisitor ev)
-        //		{
-        //			return actType.GetNamesAsInObject(ev);
-        //		}
 
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
@@ -3068,12 +3029,6 @@ namespace CodeCompletion
             }
             return syms;
         }
-        //		public override SymInfo[] GetNames(ExpressionVisitor ev)
-        //		{
-        //			if (is_dynamic_arr)
-        //			return base.GetNames(ev);
-        //			return new SymInfo[0];
-        //		}
 
         public override SymScope FindName(string name)
         {
@@ -3269,11 +3224,6 @@ namespace CodeCompletion
             return new SymInfo[0];
         }
 
-        //		public override SymInfo[] GetNames(ExpressionVisitor ev)
-        //		{
-        //			//SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-        //			return new SymInfo[0];
-        //		}
 
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
@@ -3393,12 +3343,6 @@ namespace CodeCompletion
             return new SymInfo[0];
         }
 
-        //		public override SymInfo[] GetNames(ExpressionVisitor ev)
-        //		{
-        //			//SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
-        //			return new SymInfo[0];
-        //		}
-
         public override SymInfo[] GetNamesAsInObject(ExpressionVisitor ev)
         {
             //SortedDictionary<string,SymInfo> dict = new SortedDictionary<string,SymInfo>();
@@ -3455,7 +3399,6 @@ namespace CodeCompletion
                 if ((ts as PointerScope).ref_type == null)
                     return true;
             return ref_type == (ts as PointerScope).ref_type;
-            return base.IsEqual(ts);
         }
 
         public override string GetDescription()
@@ -3622,6 +3565,14 @@ namespace CodeCompletion
             get
             {
                 return aliased;
+            }
+        }
+
+        public virtual bool IsDelegate
+        {
+            get
+            {
+                return false;
             }
         }
 
@@ -4695,6 +4646,7 @@ namespace CodeCompletion
             this.si.name = CodeCompletionController.CurrentParser.LanguageInformation.GetShortName(this);
             this.si.kind = get_kind();
             this.si.description = GetDescription();
+            
             if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
             {
                 this.original_type = TypeTable.get_compiled_type(ctn.GetGenericTypeDefinition());
@@ -4755,6 +4707,22 @@ namespace CodeCompletion
                 return typ;
             }
             return TypeTable.get_compiled_type(t);
+        }
+
+        public override bool IsGeneric
+        {
+            get
+            {
+                return original_type != null;
+            }
+        }
+
+        public override bool IsDelegate
+        {
+            get
+            {
+                return ctn == PascalABCCompiler.NetHelper.NetHelper.MulticastDelegateType || ctn.BaseType == PascalABCCompiler.NetHelper.NetHelper.MulticastDelegateType;
+            }
         }
 
         public override int Rank

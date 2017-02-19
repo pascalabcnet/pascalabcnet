@@ -484,7 +484,12 @@ namespace PascalABCCompiler.PCU
                     else if (tn is generic_instance_type_node)
                         tn.Scope.AddSymbol(names[i].name, si);
                     else if (tn is common_type_node)
+                    {
                         (tn as common_type_node).scope.AddSymbol(names[i].name, si);
+                        if (tn.IsDelegate)
+                            SystemLibrary.SystemLibrary.system_delegate_type.Scope.AddSymbol(names[i].name, si);
+                    }
+                        
                     else
                         throw new NotSupportedException();
                 }
@@ -2903,6 +2908,10 @@ namespace PascalABCCompiler.PCU
 			for (int i=0; i<num_nest_funcs; i++)
 				cnfn.functions_nodes_list.AddElement(GetNestedFunction());
 			//br.ReadInt32();//code;
+            if (cnfn.name == "*")
+            {
+
+            }
 			cnfn.loc = ReadDebugInfo();
             cnfn.function_code = (restore_code /*|| cnfn.is_generic_function*/) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
             cnfn.ConnectedToType = ConnectedToType;

@@ -2577,11 +2577,15 @@ namespace CodeCompletion
                 return false;
             }
         }
-        
-        private ProcScope select_method(SymScope[] procs, TypeScope tleft, TypeScope tright, TypeScope obj, params expression[] args)
+
+        private SymScope[] selected_methods = null;
+
+        private ProcScope select_method(SymScope[] meths, TypeScope tleft, TypeScope tright, TypeScope obj, params expression[] args)
         {
         	List<SymScope> arg_types = new List<SymScope>();
             List<TypeScope> arg_types2 = new List<TypeScope>();
+            SymScope[] saved_selected_methods = selected_methods;
+            selected_methods = meths;
             if (tleft != null || tright != null)
             {
                 if (tleft != null)
@@ -2605,18 +2609,19 @@ namespace CodeCompletion
                     arg_types2.Add(returned_scope as TypeScope);
                 }
             }
+            selected_methods = saved_selected_methods;
         	List<ProcScope> good_procs = new List<ProcScope>();
-        	for (int i=0; i<procs.Length; i++)
+        	for (int i=0; i<meths.Length; i++)
         	{
-        		if (procs[i] is ProcScope)
+        		if (meths[i] is ProcScope)
         		{
-        			if (is_good_overload(procs[i] as ProcScope, arg_types))
-        				good_procs.Add(procs[i] as ProcScope);
+        			if (is_good_overload(meths[i] as ProcScope, arg_types))
+        				good_procs.Add(meths[i] as ProcScope);
         		}
-        		else if (procs[i] is ProcType)
+        		else if (meths[i] is ProcType)
         		{
-        			if (is_good_overload((procs[i] as ProcType).target, arg_types))
-        				good_procs.Add((procs[i] as ProcType).target);
+        			if (is_good_overload((meths[i] as ProcType).target, arg_types))
+        				good_procs.Add((meths[i] as ProcType).target);
         		}
         	}
         	if (good_procs.Count > 1)
@@ -4401,7 +4406,19 @@ namespace CodeCompletion
             if (_function_lambda_definition.ident_list != null)
                 foreach (ident id in _function_lambda_definition.ident_list.idents)
                 {
-                    ElementScope es = new ElementScope(new SymInfo(id.name, SymbolKind.Parameter, ""), new UnknownScope(new SymInfo("T", SymbolKind.Type, "T")), ps);
+                    TypeScope param_type = new UnknownScope(new SymInfo("T", SymbolKind.Type, "T"));
+                    /*if (selected_methods != null)
+                    {
+                        foreach (ProcScope meth in selected_methods)
+                        {
+                            if (meth.parameters != null && meth.parameters.Count > 0 && (meth.parameters[1].sc as TypeScope).IsDelegate
+                                && (meth.parameters[1].sc as TypeScope).IsGeneric)
+                            {
+                                
+                            }
+                        }
+                    }*/
+                    ElementScope es = new ElementScope(new SymInfo(id.name, SymbolKind.Parameter, ""), param_type, ps);
                     ps.AddName(id.name, es);
                     ps.AddParameter(es);
                     es.loc = get_location(id);
