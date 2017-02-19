@@ -82,6 +82,22 @@ begin
   f.Close
 end;
 
+//------------------------------------------------------------------------------
+//          Операции для procedure
+//------------------------------------------------------------------------------
+///--
+function operator*(p: procedure; n: integer): procedure; extensionmethod;
+begin
+  Result := () -> for var i:=1 to n do p
+end;
+
+///--
+function operator*(n: integer; p: procedure): procedure; extensionmethod;
+begin
+  Result := () -> for var i:=1 to n do p
+end;
+
+
 {procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
 begin
   foreach var x in vals do

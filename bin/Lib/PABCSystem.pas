@@ -385,6 +385,8 @@ type
     function FullName: string;
     /// Возвращает в виде строки содержимое файла от текущего положения до конца
     function ReadToEnd: string;
+    /// Устанавливает файловый указатель на начало файла
+    procedure Reset;
   end;
   
   /// Тип текстового файла
@@ -1213,8 +1215,27 @@ function Odd(i: uint64): boolean;
 // -----------------------------------------------------
 /// Конструирует комплексное число с вещественной частью re и мнимой частью im
 function Cplx(re,im: real): Complex;
-/// Вычисляет квадратный корень из комплексного числа
+/// Конструирует комплексное число по полярным координатам
+function CplxFromPolar(magnitude,phase: real) : Complex;
+/// Возвращает квадратный корень из комплексного числа
 function Sqrt(c: Complex): Complex;
+/// Возвращает модуль комплексного числа
+function Abs(c: Complex): Complex;
+/// Возвращает комплексно сопряженное число
+function Conjugate(c: Complex): Complex;
+/// Возвращает косинус комплексного числа
+function Cos(c: Complex): Complex;
+/// Возвращает экспоненту комплексного числа
+function Exp(c: Complex): Complex;
+/// Возвращает натуральный логарифм комплексного числа
+function Log(c: Complex): Complex;
+/// Возвращает десятичный логарифм комплексного числа
+function Log10(c: Complex): Complex;
+/// Возвращает степень комплексного числа
+function Power(c,power: Complex): Complex;
+/// Возвращает синус комплексного числа
+function Sin(c: Complex): Complex;
+
 
 // -----------------------------------------------------
 //>>     Процедуры для работы со стандартными множествами # Subroutines for set of T
@@ -5207,6 +5228,12 @@ begin
   Result := sr.ReadToEnd  
 end;
 
+procedure Text.Reset;
+begin
+  PABCSystem.Reset(Self);
+end;
+
+
 // -----------------------------------------------------
 //                AbstractBinaryFile methods
 // -----------------------------------------------------
@@ -7038,16 +7065,27 @@ begin
   result := (i mod 2) <> 0;
 end;
 
-function Cplx(re,im: real): Complex;
-begin
-  Result := new Complex(re,im);
-end;
+function Cplx(re,im: real) := new Complex(re,im);
 
-function Sqrt(c: Complex): Complex;
-begin
-  Result := Complex.Sqrt(c);
-end;
+function CplxFromPolar(magnitude,phase: real) := Complex.FromPolarCoordinates(magnitude,phase);
 
+function Sqrt(c: Complex) := Complex.Sqrt(c);
+
+function Abs(c: Complex) := Complex.Abs(c);
+
+function Conjugate(c: Complex) := Complex.Conjugate(c);
+
+function Cos(c: Complex) := Complex.Cos(c);
+
+function Exp(c: Complex) := Complex.Exp(c);
+
+function Log(c: Complex) := Complex.Log(c);
+
+function Log10(c: Complex) := Complex.Log10(c);
+
+function Power(c,power: Complex) := Complex.Pow(c,power);
+
+function Sin(c: Complex) := Complex.Sin(c);
 
 // -----------------------------------------------------
 //                Dynamic arrays: implementation
@@ -9936,6 +9974,7 @@ function operator<=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extens
 function operator><T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) > 0;
 ///--
 function operator>=<T1,T2,T3,T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := CompareToTup4(Self,v) >= 0;
+
 
 // --------------------------------------------
 //      Методы расширения типа Tuple # Extension methods for Tuple
