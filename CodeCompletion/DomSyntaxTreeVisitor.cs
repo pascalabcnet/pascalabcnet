@@ -314,15 +314,15 @@ namespace CodeCompletion
 
         public override void visit(ident _ident)
         {
-        	if (!search_all)
-        	{
-        		returned_scope = cur_scope.FindName(_ident.name);
-            	if (returned_scope == null) 
-            	{
-            		//cnst_val.prim_val = _ident.name;
-            		cnst_val.prim_val = null;
-            		return;
-            	}
+            if (!search_all)
+            {
+                returned_scope = cur_scope.FindName(_ident.name);
+                if (returned_scope == null)
+                {
+                    //cnst_val.prim_val = _ident.name;
+                    cnst_val.prim_val = null;
+                    return;
+                }
                 if (returned_scope is ElementScope)
                 {
                     cnst_val.prim_val = (returned_scope as ElementScope).cnst_val;
@@ -331,41 +331,52 @@ namespace CodeCompletion
                 }
                 else
                     if (returned_scope is ProcScope)
-                    { 
-                        if ((returned_scope as ProcScope).parameters.Count == 0)
+                {
+                    if ((returned_scope as ProcScope).parameters.Count == 0)
+                    {
+                        if ((returned_scope as ProcScope).return_type != null)
                             returned_scope = (returned_scope as ProcScope).return_type;
                         else
-                        {
-                            returned_scopes = cur_scope.FindOverloadNames(_ident.name);
-                            returned_scope = returned_scopes.Find(x => x is ProcScope && (x as ProcScope).parameters.Count == 0);
-                            if (returned_scope == null)
-                                returned_scope = returned_scopes[0];
-                        }
+                            returned_scope = new ProcType(returned_scope as ProcScope);
                     }
-                    else if (returned_scope is TypeScope)
+                    else
+                    {
+                        returned_scopes = cur_scope.FindOverloadNames(_ident.name);
+                        returned_scope = returned_scopes.Find(x => x is ProcScope && (x as ProcScope).parameters.Count == 0);
+                        if (returned_scope == null)
+                        {
+                            returned_scope = returned_scopes[0];
+                            if (returned_scope is ProcScope && (returned_scope as ProcScope).return_type == null )
+                                returned_scope = new ProcType(returned_scope as ProcScope);
+                        }   
+                        else if (returned_scopes.Count > 0 && returned_scopes[0] is ProcScope && (returned_scopes[0] as ProcScope).return_type == null)
+                            returned_scope = new ProcType(returned_scopes[0] as ProcScope);
+                    }
+                }
+                else if (returned_scope is TypeScope)
+                    is_type = true;
+            }
+            else
+            {
+                returned_scopes = cur_scope.FindOverloadNames(_ident.name);
+                for (int i = 0; i < returned_scopes.Count; i++)
+                {
+                    if (returned_scopes[i] is ElementScope)
+                    {
+                        cnst_val.prim_val = (returned_scopes[i] as ElementScope).cnst_val;
+                        returned_scope = (returned_scopes[i] as ElementScope).sc;
+                        returned_scopes[i] = returned_scope;
+                        return;
+                    }
+                    else
+                    if (returned_scopes[i] is TypeScope)
+                    {
                         is_type = true;
-        	}
-        	else
-        	{
-        		returned_scopes = cur_scope.FindOverloadNames(_ident.name);
-        		for (int i=0; i<returned_scopes.Count; i++)
-        		{
-        			if (returned_scopes[i] is ElementScope)
-            		{
-        				cnst_val.prim_val = (returned_scopes[i] as ElementScope).cnst_val;
-        				returned_scope = (returned_scopes[i] as ElementScope).sc;
-        				returned_scopes[i] = returned_scope;
-            			return;
-        			}
-        			else
-        			if (returned_scopes[i] is TypeScope)
-        			{
-        				is_type = true;
-        			}
-        		}
-        		search_all = false;
-        	}
-           	//cnst_val.prim_val = _ident.name;
+                    }
+                }
+                search_all = false;
+            }
+            //cnst_val.prim_val = _ident.name;
         }
 
         public override void visit(addressed_value _addressed_value)
@@ -2347,7 +2358,7 @@ namespace CodeCompletion
                         TypeScope ts = returned_scope as TypeScope;
                         if (returned_scope is ProcScope)
                             ts = (returned_scope as ProcScope).return_type;
-
+                            
 						returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
                         if (returned_scope == null)
                         {
