@@ -528,12 +528,21 @@ namespace VisualPascalABC
                 GetClassMembers(scope, items);
                 //items.Sort(0,items.Count,new Comparer(System.Globalization.CultureInfo.InvariantCulture));
             }
-            membersComboBox.Invoke(new Invoke_del(Member_Invoke_Update));
-            membersComboBox.Invoke(new Invoke_del(Member_Invoke_Clear));
-            //membersComboBox.Items.AddRange(items.ToArray());
-            membersComboBox.Invoke(new Invoke_param_del(AddItemsToMembersComboboxInternal), items);
-            UpdateMembersComboBox();
-            membersComboBox.Invoke(new Invoke_del(Member_Invoke_EndUpdate));
+            if (NeedtoUpdate(items, membersComboBox))
+            {
+                membersComboBox.Invoke(new Invoke_del(Member_Invoke_Update));
+                membersComboBox.Invoke(new Invoke_del(Member_Invoke_Clear));
+                //membersComboBox.Items.AddRange(items.ToArray());
+                membersComboBox.Invoke(new Invoke_param_del(AddItemsToMembersComboboxInternal), items);
+                UpdateMembersComboBox();
+                membersComboBox.Invoke(new Invoke_del(Member_Invoke_EndUpdate));
+            }
+            else
+            {
+                membersComboBox.Invoke(new Invoke_del(Member_Invoke_Update));
+                UpdateMembersComboBox();
+                membersComboBox.Invoke(new Invoke_del(Member_Invoke_EndUpdate));
+            }
         }
 
         void AddClasses(ArrayList items)
