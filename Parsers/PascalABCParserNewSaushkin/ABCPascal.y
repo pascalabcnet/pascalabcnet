@@ -30,7 +30,7 @@
 %start parse_goal
 
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkQuestionSquareOpen
-%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
+%token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
 %token <ti> tkCycle tkSequence tkYield
@@ -139,7 +139,7 @@
 %type <stn> simple_prim_property_definition simple_property_definition
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
-%type <ex> as_is_expr as_is_constexpr  
+%type <ex> as_is_expr as_is_constexpr is_expr as_expr
 %type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
@@ -168,7 +168,7 @@
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
 %type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_variable_list
 %type <ti> tkAssignOrEqual
-%type <stn> pattern
+%type <stn> pattern match_with pattern_case pattern_cases
 
 %%
 
@@ -2265,6 +2265,8 @@ unlabelled_stmt
 		{ $$ = $1; }
 	| yield_sequence_stmt	
 		{ $$ = $1; }
+    | match_with
+        { $$ = $1; }
     ;
     
 yield_stmt
@@ -2383,6 +2385,31 @@ if_stmt
         }
     ;
 
+match_with
+    : tkMatch expr_l1 tkWith pattern_cases tkEnd
+        { 
+            $$ = new match_with($2, $4 as pattern_cases);
+        }
+    ;
+    
+pattern_cases
+    : pattern_case
+        {
+            $$ = new pattern_cases($1 as pattern_case);
+        }
+    | pattern_cases tkSemiColon pattern_case
+        {
+            $$ = ($1 as pattern_cases).Add($3 as pattern_case);
+        }
+    ;
+    
+pattern_case
+    : pattern tkColon unlabelled_stmt
+        {
+            $$ = new pattern_case($1 as pattern_node, $3 as statement);
+        }
+    ;
+    
 case_stmt
     : tkCase expr_l1 tkOf case_list else_case tkEnd 
         { 
@@ -2391,7 +2418,7 @@ case_stmt
     ;
 
 case_list
-    : case_item                                
+    : case_item
         {
 			if ($1 is empty_statement) 
 				$$ = NewCaseItem($1, null);
@@ -2667,20 +2694,7 @@ expr
     : expr_l1
 		{ $$ = $1; }
     | format_expr
-		{
-            /*var formatExpr = $1 as format_expr;
-            var expr = formatExpr.expr as typecast_node;
-            if (expr != null)
-            {
-                var identifier = (expr.type_def as named_type_reference).names[0];
-                a
-                var type = formatExpr.format1 as ident
-                var pattern = new type_pattern(identifier, , identifier.source_context);
-                $$ = new is_pattern_expr(expr, pattern, formatExpr.source_context);
-            }
-            else*/
-                $$ = $1;
-        }
+		{ $$ = $1; }
     ;
 
 expr_l1
@@ -2832,27 +2846,19 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
-    | as_is_expr tkColon type_ref
+    | is_expr tkRoundOpen identifier tkRoundClose 
         {
-            var asExpr = $1 as typecast_node;
-            var typeDef = asExpr.type_def as named_type_reference;
-            if (typeDef != null && typeDef.names.Count > 0)
-            {
-                var pattern = new type_pattern(typeDef.names[0], $3); 
-                $$ = new is_pattern_expr(asExpr.expr, pattern, @$);
-            }
-            else
-            {
-                parsertools.errors.Add(new unexpected_ident(parsertools.CurrentFileName, new ident(), "", @$, null));
-                $$ = null;
-            }
+            var isTypeCheck = $1 as typecast_node;
+            var typeDef = isTypeCheck.type_def;
+            var pattern = new type_pattern($3, typeDef, typeDef.source_context); 
+            $$ = new is_pattern_expr(isTypeCheck.expr, pattern, @$);
         }
     ;
     
 pattern
-    : identifier tkColon type_ref
+    : simple_or_template_type_reference tkRoundOpen identifier tkRoundClose
         { 
-            $$ = new type_pattern($1, $3); 
+            $$ = new type_pattern($3, $1); 
         }
     ;
     
@@ -2937,12 +2943,26 @@ typecast_op
     ;
 
 as_is_expr
-    : term typecast_op simple_or_template_type_reference     
-        { 
-			$$ = NewAsIsExpr($1, (op_typecast)$2, $3, @$);
-        }
+    : is_expr   
+        { $$ = $1; }
+    | as_expr
+        { $$ = $1; }
 	;
 
+as_expr
+    : term tkAs simple_or_template_type_reference
+        {
+            $$ = NewAsIsExpr($1, op_typecast.as_op, $3, @$);
+        }
+    ;
+    
+is_expr
+    : term tkIs simple_or_template_type_reference
+        {
+            $$ = NewAsIsExpr($1, op_typecast.is_op, $3, @$);
+        }
+    ;
+    
 term
     : factor
 		{ $$ = $1; }

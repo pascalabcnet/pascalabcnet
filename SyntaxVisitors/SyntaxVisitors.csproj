@@ -50,6 +50,7 @@
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\IsPatternVisitor.cs" />
+    <Compile Include="SugarVisitors\MatchWithVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
     <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />

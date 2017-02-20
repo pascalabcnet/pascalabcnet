@@ -468,6 +468,12 @@ namespace PascalABCCompiler.SyntaxTree
 					return new type_pattern();
 				case 223:
 					return new is_pattern_expr();
+				case 224:
+					return new match_with();
+				case 225:
+					return new pattern_case();
+				case 226:
+					return new pattern_cases();
 			}
 			return null;
 		}
@@ -3929,6 +3935,56 @@ namespace PascalABCCompiler.SyntaxTree
 			read_expression(_is_pattern_expr);
 			_is_pattern_expr.left = _read_node() as expression;
 			_is_pattern_expr.right = _read_node() as pattern_node;
+		}
+
+
+		public void visit(match_with _match_with)
+		{
+			read_match_with(_match_with);
+		}
+
+		public void read_match_with(match_with _match_with)
+		{
+			read_statement(_match_with);
+			_match_with.expr = _read_node() as expression;
+			_match_with.case_list = _read_node() as pattern_cases;
+		}
+
+
+		public void visit(pattern_case _pattern_case)
+		{
+			read_pattern_case(_pattern_case);
+		}
+
+		public void read_pattern_case(pattern_case _pattern_case)
+		{
+			read_statement(_pattern_case);
+			_pattern_case.pattern = _read_node() as pattern_node;
+			_pattern_case.case_action = _read_node() as statement;
+		}
+
+
+		public void visit(pattern_cases _pattern_cases)
+		{
+			read_pattern_cases(_pattern_cases);
+		}
+
+		public void read_pattern_cases(pattern_cases _pattern_cases)
+		{
+			read_statement(_pattern_cases);
+			if (br.ReadByte() == 0)
+			{
+				_pattern_cases.elements = null;
+			}
+			else
+			{
+				_pattern_cases.elements = new List<pattern_case>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_pattern_cases.elements.Add(_read_node() as pattern_case);
+				}
+			}
 		}
 
 	}

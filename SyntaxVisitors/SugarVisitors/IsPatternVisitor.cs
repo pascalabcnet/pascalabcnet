@@ -2,6 +2,7 @@
 using PascalABCCompiler.TreeConversion;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -17,11 +18,13 @@ namespace SyntaxVisitors.SugarVisitors
                 DesugarTypePattern(isPatternExpr);
         }
 
-        void DesugarTypePattern(is_pattern_expr isPatternExpr)
+        private void DesugarTypePattern(is_pattern_expr isPatternExpr)
         {
+            Debug.Assert(isPatternExpr.right is type_pattern);
+
             // Замена is_pattern на вызов вспомогательной функции PABCSystem.IsTest 
             expression expression = isPatternExpr.left;
-            type_pattern pattern = isPatternExpr.right as type_pattern;
+            type_pattern pattern = (type_pattern) isPatternExpr.right;
             var isTestFunc = SubtreeCreator.CreateSystemFunctionCall("IsTest", expression, pattern.identifier);
             ReplaceUsingParent(isPatternExpr, isTestFunc);
 
@@ -29,12 +32,9 @@ namespace SyntaxVisitors.SugarVisitors
             for (int i = listNodes.Count - 1; i >= 0; i--)
             {
                 var statements = listNodes[i] as statement_list;
-                if (statements != null)
-                {
-                    statements.InsertBefore(
-                        listNodes[i + 1] as statement, 
-                        new var_statement(pattern.identifier, pattern.type));
-                }
+                statements?.InsertBefore(
+                    listNodes[i + 1] as statement, 
+                    new var_statement(pattern.identifier, pattern.type));
             }
         }
     }

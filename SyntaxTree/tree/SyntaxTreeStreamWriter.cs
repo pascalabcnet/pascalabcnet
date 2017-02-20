@@ -6132,6 +6132,99 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 		}
 
+
+		public void visit(match_with _match_with)
+		{
+			bw.Write((Int16)224);
+			write_match_with(_match_with);
+		}
+
+		public void write_match_with(match_with _match_with)
+		{
+			write_statement(_match_with);
+			if (_match_with.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_match_with.expr.visit(this);
+			}
+			if (_match_with.case_list == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_match_with.case_list.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_case _pattern_case)
+		{
+			bw.Write((Int16)225);
+			write_pattern_case(_pattern_case);
+		}
+
+		public void write_pattern_case(pattern_case _pattern_case)
+		{
+			write_statement(_pattern_case);
+			if (_pattern_case.pattern == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pattern_case.pattern.visit(this);
+			}
+			if (_pattern_case.case_action == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_pattern_case.case_action.visit(this);
+			}
+		}
+
+
+		public void visit(pattern_cases _pattern_cases)
+		{
+			bw.Write((Int16)226);
+			write_pattern_cases(_pattern_cases);
+		}
+
+		public void write_pattern_cases(pattern_cases _pattern_cases)
+		{
+			write_statement(_pattern_cases);
+			if (_pattern_cases.elements == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_pattern_cases.elements.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _pattern_cases.elements.Count; ssyy_i++)
+				{
+					if (_pattern_cases.elements[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_pattern_cases.elements[ssyy_i].visit(this);
+					}
+				}
+			}
+		}
+
 	}
 
 

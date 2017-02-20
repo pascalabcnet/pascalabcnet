@@ -1348,6 +1348,24 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_is_pattern_expr">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(is_pattern_expr _is_pattern_expr);
+		///<summary>
+		///Method to visit match_with.
+		///</summary>
+		///<param name="_match_with">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(match_with _match_with);
+		///<summary>
+		///Method to visit pattern_case.
+		///</summary>
+		///<param name="_pattern_case">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_case _pattern_case);
+		///<summary>
+		///Method to visit pattern_cases.
+		///</summary>
+		///<param name="_pattern_cases">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(pattern_cases _pattern_cases);
 	}
 
 

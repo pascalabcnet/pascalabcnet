@@ -38959,7 +38959,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///
+	///Базовый узел для паттерна
 	///</summary>
 	[Serializable]
 	public partial class pattern_node : syntax_tree_node
@@ -39346,6 +39346,567 @@ namespace PascalABCCompiler.SyntaxTree
 					case 1:
 						right = (pattern_node)value;
 						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class match_with : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public match_with()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public match_with(expression _expr,pattern_cases _case_list)
+		{
+			this._expr=_expr;
+			this._case_list=_case_list;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public match_with(expression _expr,pattern_cases _case_list,SourceContext sc)
+		{
+			this._expr=_expr;
+			this._case_list=_case_list;
+			source_context = sc;
+		}
+		protected expression _expr;
+		protected pattern_cases _case_list;
+
+		///<summary>
+		///
+		///</summary>
+		public expression expr
+		{
+			get
+			{
+				return _expr;
+			}
+			set
+			{
+				_expr=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_cases case_list
+		{
+			get
+			{
+				return _case_list;
+			}
+			set
+			{
+				_case_list=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			match_with copy = new match_with();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (expr != null)
+			{
+				copy.expr = (expression)expr.Clone();
+				copy.expr.Parent = copy;
+			}
+			if (case_list != null)
+			{
+				copy.case_list = (pattern_cases)case_list.Clone();
+				copy.case_list.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new match_with TypedClone()
+		{
+			return Clone() as match_with;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return expr;
+					case 1:
+						return case_list;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						expr = (expression)value;
+						break;
+					case 1:
+						case_list = (pattern_cases)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_case : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_case()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_case(pattern_node _pattern,statement _case_action)
+		{
+			this._pattern=_pattern;
+			this._case_action=_case_action;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_case(pattern_node _pattern,statement _case_action,SourceContext sc)
+		{
+			this._pattern=_pattern;
+			this._case_action=_case_action;
+			source_context = sc;
+		}
+		protected pattern_node _pattern;
+		protected statement _case_action;
+
+		///<summary>
+		///
+		///</summary>
+		public pattern_node pattern
+		{
+			get
+			{
+				return _pattern;
+			}
+			set
+			{
+				_pattern=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public statement case_action
+		{
+			get
+			{
+				return _case_action;
+			}
+			set
+			{
+				_case_action=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_case copy = new pattern_case();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (pattern != null)
+			{
+				copy.pattern = (pattern_node)pattern.Clone();
+				copy.pattern.Parent = copy;
+			}
+			if (case_action != null)
+			{
+				copy.case_action = (statement)case_action.Clone();
+				copy.case_action.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_case TypedClone()
+		{
+			return Clone() as pattern_case;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return pattern;
+					case 1:
+						return case_action;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						pattern = (pattern_node)value;
+						break;
+					case 1:
+						case_action = (statement)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class pattern_cases : statement
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public pattern_cases()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_cases(List<pattern_case> _elements)
+		{
+			this._elements=_elements;
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public pattern_cases(List<pattern_case> _elements,SourceContext sc)
+		{
+			this._elements=_elements;
+			source_context = sc;
+		}
+		public pattern_cases(pattern_case elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		}
+		
+		protected List<pattern_case> _elements=new List<pattern_case>();
+
+		///<summary>
+		///
+		///</summary>
+		public List<pattern_case> elements
+		{
+			get
+			{
+				return _elements;
+			}
+			set
+			{
+				_elements=value;
+			}
+		}
+
+
+		public pattern_cases Add(pattern_case elem, SourceContext sc = null)
+		{
+			elements.Add(elem);
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(pattern_case el)
+		{
+			elements.Insert(0, el);
+		}
+		
+		public void AddFirst(IEnumerable<pattern_case> els)
+		{
+			elements.InsertRange(0, els);
+		}
+		
+		public void AddMany(params pattern_case[] els)
+		{
+			elements.AddRange(els);
+		}
+		
+		private int FindIndexInList(pattern_case el)
+		{
+			var ind = elements.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(pattern_case el, pattern_case newel)
+		{
+			elements.Insert(FindIndexInList(el) + 1, newel);
+		}
+		
+		public void InsertAfter(pattern_case el, IEnumerable<pattern_case> newels)
+		{
+			elements.InsertRange(FindIndexInList(el) + 1, newels);
+		}
+		
+		public void InsertBefore(pattern_case el, pattern_case newel)
+		{
+			elements.Insert(FindIndexInList(el), newel);
+		}
+		
+		public void InsertBefore(pattern_case el, IEnumerable<pattern_case> newels)
+		{
+			elements.InsertRange(FindIndexInList(el), newels);
+		}
+		
+		public bool Remove(pattern_case el)
+		{
+			return elements.Remove(el);
+		}
+		
+		public void ReplaceInList(pattern_case el, pattern_case newel)
+		{
+			elements[FindIndexInList(el)] = newel;
+		}
+		
+		public void ReplaceInList(pattern_case el, IEnumerable<pattern_case> newels)
+		{
+			var ind = FindIndexInList(el);
+			elements.RemoveAt(ind);
+			elements.InsertRange(ind, newels);
+		}
+		
+		public int RemoveAll(Predicate<pattern_case> match)
+		{
+			return elements.RemoveAll(match);
+		}
+		
+		public pattern_case Last()
+		{
+			return elements[elements.Count - 1];
+		}
+		
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			pattern_cases copy = new pattern_cases();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (elements != null)
+			{
+				foreach (pattern_case elem in elements)
+				{
+					if (elem != null)
+					{
+						copy.Add((pattern_case)elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new pattern_cases TypedClone()
+		{
+			return Clone() as pattern_cases;
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 0;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 0 + (elements == null ? 0 : elements.Count);
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(elements != null)
+				{
+					if(index_counter < elements.Count)
+					{
+						return elements[index_counter];
+					}
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(elements != null)
+				{
+					if(index_counter < elements.Count)
+					{
+						elements[index_counter]= (pattern_case)value;
+						return;
+					}
 				}
 			}
 		}

@@ -1797,6 +1797,30 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(match_with _match_with)
+		{
+		}
+
+		public virtual void post_do_visit(match_with _match_with)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_case _pattern_case)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_case _pattern_case)
+		{
+		}
+
+		public virtual void pre_do_visit(pattern_cases _pattern_cases)
+		{
+		}
+
+		public virtual void post_do_visit(pattern_cases _pattern_cases)
+		{
+		}
+
 		public override void visit(syntax_tree_node _syntax_tree_node)
 		{
 			DefaultVisit(_syntax_tree_node);
@@ -3709,6 +3733,33 @@ namespace PascalABCCompiler.SyntaxTree
 			visit(is_pattern_expr.left);
 			visit(is_pattern_expr.right);
 			post_do_visit(_is_pattern_expr);
+		}
+
+		public override void visit(match_with _match_with)
+		{
+			DefaultVisit(_match_with);
+			pre_do_visit(_match_with);
+			visit(match_with.expr);
+			visit(match_with.case_list);
+			post_do_visit(_match_with);
+		}
+
+		public override void visit(pattern_case _pattern_case)
+		{
+			DefaultVisit(_pattern_case);
+			pre_do_visit(_pattern_case);
+			visit(pattern_case.pattern);
+			visit(pattern_case.case_action);
+			post_do_visit(_pattern_case);
+		}
+
+		public override void visit(pattern_cases _pattern_cases)
+		{
+			DefaultVisit(_pattern_cases);
+			pre_do_visit(_pattern_cases);
+			for (int i = 0; i < elements.Count; i++)
+				visit(pattern_cases.elements[i]);
+			post_do_visit(_pattern_cases);
 		}
 	}
 

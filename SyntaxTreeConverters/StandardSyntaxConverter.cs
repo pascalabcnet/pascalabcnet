@@ -40,6 +40,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
             IsPatternVisitor.New.ProcessNode(root);
+            MatchWithVisitor.New.ProcessNode(root);
 
 /*#if DEBUG
             try

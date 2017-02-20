@@ -1127,6 +1127,21 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_is_pattern_expr);
 		}
+
+		public virtual void visit(match_with _match_with)
+		{
+			DefaultVisit(_match_with);
+		}
+
+		public virtual void visit(pattern_case _pattern_case)
+		{
+			DefaultVisit(_pattern_case);
+		}
+
+		public virtual void visit(pattern_cases _pattern_cases)
+		{
+			DefaultVisit(_pattern_cases);
+		}
 	}
 
 

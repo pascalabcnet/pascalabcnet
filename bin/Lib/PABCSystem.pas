@@ -225,7 +225,7 @@ type
   Regex = System.Text.RegularExpressions.Regex;
 
   /// Представляет результаты из отдельного совпадения регулярного выражения
-  Match = System.Text.RegularExpressions.Match;
+  &Match = System.Text.RegularExpressions.&Match;
 
   /// Представляет метод, вызываемый при обнаружении совпадения в Regex.Replace
   MatchEvaluator = System.Text.RegularExpressions.MatchEvaluator;
@@ -9729,21 +9729,21 @@ begin
 end;
 
 /// Заменяет в указанной строке все вхождения регулярного выражения указанным преобразованием замены и возвращает преобразованную строку
-function Replace(Self: string; reg: string; repl: Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+function Replace(Self: string; reg: string; repl: &Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
 	Result := Regex.Replace(Self,reg,repl,options)
 end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности элементов типа Match
-function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of Match; extensionmethod;
+function Matches(Self: string; reg: string; options: RegexOptions := RegexOptions.None): sequence of &Match; extensionmethod;
 begin
-	Result := (new Regex(reg, options)).Matches(Self).Cast&<Match>();
+	Result := (new Regex(reg, options)).Matches(Self).Cast&<&Match>();
 end;
 
 /// Ищет в указанной строке первое вхождение регулярного выражения и возвращает его в виде строки
 function MatchValue(Self: string; reg: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
-	Result := (new Regex(reg, options)).Match(Self).Value;
+	Result := (new Regex(reg, options)).&Match(Self).Value;
 end;
 
 /// Ищет в указанной строке все вхождения регулярного выражения и возвращает их в виде последовательности строк
