@@ -321,7 +321,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <returns></returns>
         public static typed_expression GetTempFunctionNodeForTypeInference(SyntaxTree.function_lambda_definition def, syntax_tree_visitor visitor)
         {
-            var res = new common_namespace_function_node(def.lambda_name, null, null, null);
+            var res = new common_namespace_function_node(def.lambda_name, visitor.get_location(def), null, null);
             if (def.return_type != null)
                 res.return_value_type = visitor.convert_strong(def.return_type);
             else
@@ -332,14 +332,14 @@ namespace PascalABCCompiler.TreeConverter
                 for (int i = 0; i < def.formal_parameters.params_list.Count; i++)
                     for (int j = 0; j < def.formal_parameters.params_list[i].idents.idents.Count; j++)
                     {
-                        var new_param = new common_parameter(null, SemanticTree.parameter_type.value, res, concrete_parameter_type.cpt_none, null);
+                        var new_param = new common_parameter(null, SemanticTree.parameter_type.value, res, concrete_parameter_type.cpt_none, visitor.get_location(def.formal_parameters.params_list[i].idents.idents[0]));
                         new_param.type = visitor.convert_strong(def.formal_parameters.params_list[i].vars_type);
                         res.parameters.AddElement(new_param);
                     }
             }
             var hhh = new delegated_methods();
-            hhh.proper_methods.AddElement(new common_namespace_function_call(res, null));
-            return new typed_expression(hhh, null);
+            hhh.proper_methods.AddElement(new common_namespace_function_call(res, visitor.get_location(def)));
+            return new typed_expression(hhh, visitor.get_location(def));
         }
 
         public static procedure_definition ConvertLambdaNodeToProcDefNode(function_lambda_definition functionLambdaDef)
