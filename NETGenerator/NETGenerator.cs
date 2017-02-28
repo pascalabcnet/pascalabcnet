@@ -711,10 +711,11 @@ namespace PascalABCCompiler.NETGenerator
                     il = cb.GetILGenerator();
                     if (cnn.IsMain) unit_cci = cb;
                     ModulesInitILGenerators.Add(cur_type, il);
-                    //переводим глобальные переменные модуля
-                    ConvertGlobalVariables(cnn.variables);
+                    
                     //перводим константы
                     ConvertNamespaceConstants(cnn.constants);
+                    //переводим глобальные переменные модуля
+                    ConvertGlobalVariables(cnn.variables);
                     ConvertNamespaceEvents(cnn.events);
                     //il.Emit(OpCodes.Ret);
                 }
@@ -725,10 +726,11 @@ namespace PascalABCCompiler.NETGenerator
                     il = entry_meth.GetILGenerator();
                     ModulesInitILGenerators.Add(cur_type, il);
                     il = init_variables_mb.GetILGenerator();
-                    ConvertGlobalVariables(cnn.variables);
+                    
                     il = entry_meth.GetILGenerator();
                     //перводим константы
                     ConvertNamespaceConstants(cnn.constants);
+                    ConvertGlobalVariables(cnn.variables);
                     ConvertNamespaceEvents(cnn.events);
                     //il.Emit(OpCodes.Ret);
                 }
