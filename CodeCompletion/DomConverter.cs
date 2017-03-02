@@ -938,7 +938,9 @@ namespace CodeCompletion
                 }
                 catch (Exception e)
                 {
-
+#if DEBUG
+                    File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                 }
                 RestoreCurrentUsedAssemblies();
                 string description = ss.si.description;

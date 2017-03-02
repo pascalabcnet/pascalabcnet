@@ -60,6 +60,9 @@ namespace CodeCompletion
             }
             catch(Exception e)
             {
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                 throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
@@ -225,6 +228,9 @@ namespace CodeCompletion
             }
             catch (Exception e)
             {
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                 cnst_val.prim_val = null;
                 ev.eval_stack.Clear();
                 returned_scope = null;
@@ -491,8 +497,10 @@ namespace CodeCompletion
         	}
         	catch(Exception e)
         	{
-        		
-        	}
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
+            }
         }
 		
         public document doc;
@@ -2000,79 +2008,79 @@ namespace CodeCompletion
         public override void visit(program_module _program_module)
         {
             //Assembly _as = System.Reflection.Assembly.LoadFrom(get_assembly_path("mscorlib.dll",_program_module.file_name));
-            string path = get_assembly_path("mscorlib.dll",_program_module.file_name);
+            string path = get_assembly_path("mscorlib.dll", _program_module.file_name);
             System.Reflection.Assembly _as = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
             List<string> namespaces = new List<string>();
             PascalABCCompiler.NetHelper.NetHelper.init_namespaces(_as);
-            AssemblyDocCache.Load(_as,path);
-            
+            AssemblyDocCache.Load(_as, path);
+
             namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(_as));
             //List<Scope> netScopes = new List<Scope>();
             //PascalABCCompiler.NetHelper.NetScope ns=new PascalABCCompiler.NetHelper.NetScope(unl,_as,tcst);
             InterfaceUnitScope unit_scope = null;
-            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace,"program"),null);
+            cur_scope = unit_scope = new InterfaceUnitScope(new SymInfo("", SymbolKind.Namespace, "program"), null);
             CodeCompletionController.comp_modules[_program_module.file_name] = this.converter;
             Stack<Position> regions_stack = new Stack<Position>();
             if (CodeCompletionController.comp.CompilerOptions.CurrentProject != null && CodeCompletionController.comp.CompilerOptions.CurrentProject.ContainsSourceFile(_program_module.file_name))
             {
-            	IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
-            	if (_program_module.compiler_directives == null)
-            		_program_module.compiler_directives = new List<PascalABCCompiler.SyntaxTree.compiler_directive>();
-            	foreach (IReferenceInfo ri in refs)
-            	{
-            		_program_module.compiler_directives.Add
-            			(new PascalABCCompiler.SyntaxTree.compiler_directive(new token_info("reference"),new token_info(ri.FullAssemblyName)));
-            	}
+                IReferenceInfo[] refs = CodeCompletionController.comp.CompilerOptions.CurrentProject.References;
+                if (_program_module.compiler_directives == null)
+                    _program_module.compiler_directives = new List<PascalABCCompiler.SyntaxTree.compiler_directive>();
+                foreach (IReferenceInfo ri in refs)
+                {
+                    _program_module.compiler_directives.Add
+                        (new PascalABCCompiler.SyntaxTree.compiler_directive(new token_info("reference"), new token_info(ri.FullAssemblyName)));
+                }
             }
             if (_program_module.compiler_directives != null)
-            foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _program_module.compiler_directives)
-            {
-            	if (dir.Name.text.ToLower() == "reference")
+                foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _program_module.compiler_directives)
                 {
-                    try
+                    if (dir.Name.text.ToLower() == "reference")
                     {
-                		//System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_program_module.file_name));
-                    	path = get_assembly_path(dir.Directive.text,_program_module.file_name);
-                		System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
-                        if (assm != null)
+                        try
                         {
-                            PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
-                            AssemblyDocCache.Load(assm, path);
-                            namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
-                            unit_scope.AddReferencedAssembly(assm);
+                            //System.Reflection.Assembly assm = System.Reflection.Assembly.LoadFrom(get_assembly_path(dir.Directive.text,_program_module.file_name));
+                            path = get_assembly_path(dir.Directive.text, _program_module.file_name);
+                            System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(path);
+                            if (assm != null)
+                            {
+                                PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
+                                AssemblyDocCache.Load(assm, path);
+                                namespaces.AddRange(PascalABCCompiler.NetHelper.NetHelper.GetNamespaces(assm));
+                                unit_scope.AddReferencedAssembly(assm);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+
                         }
                     }
-                    catch (Exception e)
+                    else
+                    if (dir.Name.text.ToLower() == "region")
                     {
-                    	
+                        if (cur_scope.regions == null)
+                            cur_scope.regions = new List<Position>();
+                        regions_stack.Push(new Position(dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, dir.source_context.FileName));
+                    }
+                    else if (dir.Name.text.ToLower() == "endregion")
+                    {
+                        if (regions_stack.Count > 0)
+                        {
+                            Position pos = regions_stack.Pop();
+                            if (cur_scope.regions != null)
+                            {
+                                cur_scope.regions.Add(new Position(pos.end_line, pos.end_column, dir.source_context.end_position.line_num, dir.source_context.end_position.column_num, pos.file_name));
+                            }
+                        }
                     }
                 }
-                else
-                if (dir.Name.text.ToLower() == "region")
-                {
-                	if (cur_scope.regions == null)
-                		cur_scope.regions = new List<Position>();
-                	regions_stack.Push(new Position(dir.source_context.begin_position.line_num,dir.source_context.begin_position.column_num,dir.source_context.end_position.line_num,dir.source_context.end_position.column_num,dir.source_context.FileName));	                   
-                }
-                else if (dir.Name.text.ToLower() == "endregion")
-                {
-                	if (regions_stack.Count > 0)
-                	{
-                		Position pos = regions_stack.Pop();
-                		if (cur_scope.regions != null)
-                		{
-                			cur_scope.regions.Add(new Position(pos.end_line,pos.end_column,dir.source_context.end_position.line_num,dir.source_context.end_position.column_num,pos.file_name));
-                		}
-                	}
-                }
-            }
-            
+
             doc = new document(_program_module.file_name);
             cur_scope.loc = get_location(_program_module);
             entry_scope = cur_scope;
             if (_program_module.program_name != null)
-            	cur_scope.head_loc = get_location(_program_module.program_name);
-            
+                cur_scope.head_loc = get_location(_program_module.program_name);
+
             Hashtable ns_cache = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             bool has_system_unit = false;
             bool has_extensions_unit = false;
@@ -2168,41 +2176,43 @@ namespace CodeCompletion
             }
             if (!has_system_unit)
                 add_system_unit();
-            
+
             if (!has_extensions_unit)
                 add_extensions_unit();
 
             foreach (string s in namespaces)
             {
-            	if (!ns_cache.ContainsKey(s))
-            	{
-            		NamespaceScope ns_scope = new NamespaceScope(s);
-                    cur_scope.AddName(s,ns_scope);
+                if (!ns_cache.ContainsKey(s))
+                {
+                    NamespaceScope ns_scope = new NamespaceScope(s);
+                    cur_scope.AddName(s, ns_scope);
                     ns_cache[s] = s;
-            	}
+                }
             }
-            
-			//PascalABCCompiler.TreeRealization.common_type_node ctn = new ;
-			if (_program_module.program_block.defs != null)
-			foreach (declaration decl in _program_module.program_block.defs.defs)
+
+            //PascalABCCompiler.TreeRealization.common_type_node ctn = new ;
+            if (_program_module.program_block.defs != null)
+                foreach (declaration decl in _program_module.program_block.defs.defs)
+                {
+                    try
+                    {
+                        decl.visit(this);
+                    }
+                    catch (Exception e)
+                    {
+#if DEBUG
+                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
+                    }
+                }
+            if (_program_module.program_block.program_code != null)
             {
-                try
-                {
-					decl.visit(this);
-                }
-                catch(Exception e)
-                {
-                	
-                }
+                cur_scope.body_loc = new location(_program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num,
+                                                  _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num,
+                                                  _program_module.program_block.program_code.source_context.end_position.line_num, _program_module.program_block.program_code.source_context.end_position.column_num,
+                                                 doc);
+                _program_module.program_block.program_code.visit(this);
             }
-			if (_program_module.program_block.program_code != null)
-			{
-				cur_scope.body_loc = new location(_program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num,
-				                                  _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num,
-				                                  _program_module.program_block.program_code.source_context.end_position.line_num,_program_module.program_block.program_code.source_context.end_position.column_num,
-				                                 doc);
-				_program_module.program_block.program_code.visit(this);
-			}
         }
         
         private void add_standart_types(SymScope cur_scope)
@@ -2393,13 +2403,16 @@ namespace CodeCompletion
                         if (returned_scope is ProcScope)
                             ts = (returned_scope as ProcScope).return_type;
                         returned_scopes = returned_scope.FindOverloadNamesOnlyInType((_dot_node.right as ident).name);
-                        List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
-                        if (meths.Count > 0)
+                        if (ts != null)
                         {
-                            if (returned_scopes == null)
-                                returned_scopes = new List<SymScope>();
-                            foreach (ProcScope meth in meths)
-                                returned_scopes.Add(meth);
+                            List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
+                            if (meths.Count > 0)
+                            {
+                                if (returned_scopes == null)
+                                    returned_scopes = new List<SymScope>();
+                                foreach (ProcScope meth in meths)
+                                    returned_scopes.Add(meth);
+                            }
                         }
                         search_all = false;
 					}
@@ -3687,7 +3700,9 @@ namespace CodeCompletion
                                 }
                                 catch (Exception e)
                                 {
-
+#if DEBUG
+                                    File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                                 }
                             }
                         }
@@ -3712,6 +3727,9 @@ namespace CodeCompletion
                     }
                     catch (Exception e)
                     {
+#if DEBUG
+                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                         cur_scope = impl_scope;
                     }
                 }
@@ -3887,13 +3905,12 @@ namespace CodeCompletion
 
         public override void visit(exception_block _exception_block)
         {
-            //throw new Exception("The method or operation is not implemented.");
             if (_exception_block.handlers != null)
-            _exception_block.handlers.visit(this);
+                _exception_block.handlers.visit(this);
             if (_exception_block.stmt_list != null)
-			_exception_block.stmt_list.visit(this);
-			if (_exception_block.else_stmt_list != null)
-			_exception_block.else_stmt_list.visit(this);
+                _exception_block.stmt_list.visit(this);
+            if (_exception_block.else_stmt_list != null)
+                _exception_block.else_stmt_list.visit(this);
         }
 
         public override void visit(try_handler _try_handler)
@@ -3903,23 +3920,20 @@ namespace CodeCompletion
 
         public override void visit(try_handler_finally _try_handler_finally)
         {
-            //throw new Exception("The method or operation is not implemented.");
             _try_handler_finally.stmt_list.visit(this);
         }
 
         public override void visit(try_handler_except _try_handler_except)
         {
-            //throw new Exception("The method or operation is not implemented.");
             _try_handler_except.except_block.visit(this);
         }
 
         public override void visit(try_stmt _try_stmt)
         {
-            //throw new Exception("The method or operation is not implemented.");
             if (_try_stmt.stmt_list != null)
-            _try_stmt.stmt_list.visit(this);
+                _try_stmt.stmt_list.visit(this);
             if (_try_stmt.handler != null)
-            _try_stmt.handler.visit(this);
+                _try_stmt.handler.visit(this);
         }
 
         public override void visit(inherited_message _inherited_message)
@@ -3997,7 +4011,6 @@ namespace CodeCompletion
 
         public override void visit(template_type_reference _template_type_reference)
         {
-            //throw new Exception("The method or operation is not implemented.");
             returned_scope = null;
             converted_template_type = _template_type_reference;
             _template_type_reference.name.visit(this);
@@ -4264,7 +4277,9 @@ namespace CodeCompletion
                     }
                     catch (Exception e)
                     {
-
+#if DEBUG
+                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                     }
                 }
             }

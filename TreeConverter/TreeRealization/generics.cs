@@ -1003,6 +1003,8 @@ namespace PascalABCCompiler.TreeRealization
                 if (deduced[par_num] == null)
                 {
                     //Этот тип-параметр ещё не был выведен.
+                    if (fact_type is delegated_methods && (fact_type as delegated_methods).empty_param_method != null && (fact_type as delegated_methods).empty_param_method.ret_type != null)
+                        fact_type = (fact_type as delegated_methods).empty_param_method.ret_type;
                     deduced[par_num] = fact_type;
                     return true;
                 }

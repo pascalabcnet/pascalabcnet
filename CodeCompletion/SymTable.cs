@@ -4852,7 +4852,8 @@ namespace CodeCompletion
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
                             lst[0] = lst[0].instances[0];
                         sc.instances.Add(this.instances[i].GetInstance(lst));
-                        sc.generic_params.Add(gen_args[i].si.name);
+                        if (i < gen_args.Count)
+                            sc.generic_params.Add(gen_args[i].si.name);
                     }
                     else
                     {
@@ -4861,11 +4862,13 @@ namespace CodeCompletion
                             List<TypeScope> lst = new List<TypeScope>();
                             lst.Add(gen_args[i].elementType);
                             sc.instances.Add(this.instances[i].GetInstance(lst));
-                            sc.generic_params.Add(gen_args[i].elementType.si.name);
+                            if (i < gen_args.Count)
+                                sc.generic_params.Add(gen_args[i].elementType.si.name);
                         }
                         else
                         {
-                            sc.generic_params.Add(gen_args[i].si.name);
+                            if (i < gen_args.Count)
+                                sc.generic_params.Add(gen_args[i].si.name);
                             sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
                         
@@ -4874,7 +4877,8 @@ namespace CodeCompletion
             else
                 for (int i = 0; i < gen_args.Count; i++)
                 {
-                    sc.generic_params.Add(gen_args[i].si.name);
+                    if (i < gen_args.Count)
+                        sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
                 }
             sc.si.description = sc.GetDescription();

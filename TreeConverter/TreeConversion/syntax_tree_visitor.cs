@@ -1186,7 +1186,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             //if (si == null)
             {
-                if (/*si2 == null && */left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
+                if (left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
                 {
                     SymbolInfo saved_si = si;
                     SymbolInfo saved_si2 = si2;
