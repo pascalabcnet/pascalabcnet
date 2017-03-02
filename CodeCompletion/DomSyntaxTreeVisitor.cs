@@ -2205,7 +2205,7 @@ namespace CodeCompletion
 #endif
                     }
                 }
-            if (_program_module.program_block.program_code != null)
+            if (cur_scope != null && _program_module.program_block.program_code != null)
             {
                 cur_scope.body_loc = new location(_program_module.program_block.program_code.left_logical_bracket.source_context.end_position.line_num,
                                                   _program_module.program_block.program_code.left_logical_bracket.source_context.end_position.column_num,
