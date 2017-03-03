@@ -1215,6 +1215,15 @@ namespace PascalABCCompiler.TreeConverter
                     }
                         
                 }
+                else if (left_type.semantic_node_type == semantic_node_type.delegated_method)
+                {
+
+                }
+                else if (si != null && left.semantic_node_type == semantic_node_type.delegated_method)
+                {
+                    SymbolInfo local_si = si;
+
+                }
                 else if (si == null)
                 {
                     if (!no_search_in_extension_methods)

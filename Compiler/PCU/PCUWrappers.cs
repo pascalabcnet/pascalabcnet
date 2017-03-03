@@ -301,7 +301,13 @@ namespace PascalABCCompiler.PCU
         public override SymbolInfo find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
             SymbolInfo si = scope.FindOnlyInType(name, CurrentScope);
-            if (si == null) return si;
+            if (si == null)
+            {
+                if (base_type != null && base_type.IsDelegate)
+                    return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
+                return si;
+            }
+                
             SymbolInfo tsi = si;
             while (tsi != null)
             {
