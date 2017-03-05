@@ -2860,6 +2860,29 @@ namespace CodeFormatters
             if (_slice_expr_question.step != null)
                 visit_node(_slice_expr_question.step);
         }
+
+        public override void visit(is_pattern_expr _is_pattern_expr)
+        {
+            if (_is_pattern_expr.left != null)
+            {
+                add_space_after = true;
+                visit_node(_is_pattern_expr.left);
+            }
+            if (_is_pattern_expr.right != null)
+            {
+                add_space_before = true;
+                visit_node(_is_pattern_expr.right);
+            }
+        }
+
+        public override void visit(type_pattern _type_pattern)
+        {
+            if (_type_pattern.type != null)
+                visit_node(_type_pattern.type);
+            //if (_type_pattern.identifier != null)
+            //    visit_node(_type_pattern.identifier);
+        }
+
         #endregion
     }
 }
