@@ -726,12 +726,11 @@ namespace PascalABCCompiler.NETGenerator
                     il = entry_meth.GetILGenerator();
                     ModulesInitILGenerators.Add(cur_type, il);
                     il = init_variables_mb.GetILGenerator();
-                    
-                    il = entry_meth.GetILGenerator();
                     //перводим константы
                     ConvertNamespaceConstants(cnn.constants);
                     ConvertGlobalVariables(cnn.variables);
                     ConvertNamespaceEvents(cnn.events);
+                    il = entry_meth.GetILGenerator();
                     //il.Emit(OpCodes.Ret);
                 }
 
