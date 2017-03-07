@@ -1,10 +1,10 @@
-/// Модуль электронного задачника PT for Exam
+﻿/// Модуль электронного задачника PT for Exam
 unit PT4Exam;
 
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника PT for Exam
-// Версия 1.1
-// Copyright (c) 2014-2015 М.Э.Абрамян
+// Версия 1.2
+// Copyright (c) 2014-2017 М.Э.Абрамян
 //------------------------------------------------------------------------------
 
 
@@ -12,6 +12,30 @@ interface
 
 procedure Task(name: string);
 procedure FinExam;
+
+//1.2
+procedure Show(S: string); 
+procedure Show(S: string; A: Integer; W: Integer); 
+procedure Show(S: string; A: Real; W: Integer); 
+procedure Show(S: string; A: Integer); 
+procedure Show(S: string; A: Real); 
+procedure Show(A: Integer; W: Integer); 
+procedure Show(A: Real; W: Integer); 
+procedure Show(A: Integer); 
+procedure Show(A: Real); 
+procedure ShowLine; 
+procedure ShowLine(S: string); 
+procedure ShowLine(S: string; A: Integer; W: Integer); 
+procedure ShowLine(S: string; A: Real; W: Integer); 
+procedure ShowLine(S: string; A: Integer); 
+procedure ShowLine(S: string; A: Real); 
+procedure ShowLine(A: Integer; W: Integer); 
+procedure ShowLine(A: Real; W: Integer); 
+procedure ShowLine(A: Integer); 
+procedure ShowLine(A: Real); 
+procedure SetPrecision(N: integer);
+procedure HideTask;
+
 
 implementation
 
@@ -71,6 +95,112 @@ begin
     ToWin(s2);
   NextTask := false;  
 end;
+
+procedure Show(S: string);
+begin
+  PT4.Show(S);
+end;
+
+procedure Show(S: string; A: Integer; W: Integer);
+begin
+  PT4.Show(S, A, W);
+end;
+
+procedure Show(S: string; A: Real; W: Integer);
+begin
+  PT4.Show(S, A, W);
+end;
+
+procedure Show(S: string; A: Integer);
+begin
+  PT4.Show(S, A);
+end;
+
+procedure Show(S: string; A: Real);
+begin
+  PT4.Show(S, A);
+end;
+
+procedure Show(A: Integer; W: Integer);
+begin
+  PT4.Show(A, W);
+end;
+
+procedure Show(A: Real; W: Integer);
+begin
+  PT4.Show(A, W);
+end;
+
+procedure Show(A: Integer);
+begin
+  PT4.Show(A);
+end;
+
+procedure Show(A: Real);
+begin
+  PT4.Show(A);
+end;
+
+procedure ShowLine(S: string);
+begin
+  PT4.ShowLine(S);
+end;
+
+procedure ShowLine;
+begin
+  PT4.ShowLine;
+end;
+
+procedure ShowLine(S: string; A: Integer; W: Integer);
+begin
+  PT4.ShowLine(S, A, W);
+end;
+
+procedure ShowLine(S: string; A: Real; W: Integer);
+begin
+  PT4.ShowLine(S, A, W);
+end;
+
+procedure ShowLine(S: string; A: Integer);
+begin
+  PT4.ShowLine(S, A);
+end;
+
+procedure ShowLine(S: string; A: Real);
+begin
+  PT4.ShowLine(S, A);
+end;
+
+procedure ShowLine(A: Integer; W: Integer);
+begin
+  PT4.ShowLine(A, W);
+end;
+
+procedure ShowLine(A: Real; W: Integer);
+begin
+  PT4.ShowLine(A, W);
+end;
+
+procedure ShowLine(A: Integer);
+begin
+  PT4.ShowLine(A);
+end;
+
+procedure ShowLine(A: Real);
+begin
+  PT4.ShowLine(A);
+end;
+
+procedure HideTask;
+begin
+  PT4.HideTask;
+end;
+
+procedure SetPrecision(N: Integer);
+begin
+  PT4.SetPrecision(N);
+end;
+
 
 initialization
 
