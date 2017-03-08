@@ -2179,6 +2179,10 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (from == to)
                 return 0;
+            if (from is delegated_methods && (from as delegated_methods).empty_param_method != null && (from as delegated_methods).empty_param_method.ret_type != null)
+                from = (from as delegated_methods).empty_param_method.ret_type;
+            if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
+                to = (to as delegated_methods).empty_param_method.ret_type;
             type_compare tc = type_table.compare_types(from, to);
             if (tc == type_compare.non_comparable_type)
                 return 1000;
