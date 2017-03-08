@@ -912,6 +912,8 @@ begin
   if oldBounds.IntersectsWith(newBounds) then
   begin
     r := GRectangle.Union(oldBounds,newBounds);
+    //TextOut(0,0,r.ToString);
+    //r.Width := r.Width + 5;
     drawRect(r);
   end  
   else
