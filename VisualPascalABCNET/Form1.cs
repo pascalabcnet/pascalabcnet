@@ -651,10 +651,19 @@ namespace VisualPascalABC
         {
             get
             {
+                string path = "";
             	if (UserOptions.UseOutputDirectory)
-                    return Path.Combine(UserOptions.OutputDirectory , Path.GetFileNameWithoutExtension(CurrentSourceFileName)) + ".exe";
+                    path = Path.Combine(UserOptions.OutputDirectory, Path.GetFileNameWithoutExtension(CurrentSourceFileName)) + ".exe";
                 else
-                    return Path.ChangeExtension(CurrentSourceFileName, ".exe"); 
+                    path = Path.ChangeExtension(CurrentSourceFileName, ".exe");
+                if (!File.Exists(path) && ActiveCodeFileDocument != null)
+                {
+                    if (UserOptions.UseOutputDirectory)
+                        path = Path.Combine(UserOptions.OutputDirectory, Path.GetFileNameWithoutExtension(ActiveCodeFileDocument.FileName)) + ".exe";
+                    else
+                        path = Path.ChangeExtension(ActiveCodeFileDocument.FileName, ".exe");
+                }
+                return path;
             }
         }
 

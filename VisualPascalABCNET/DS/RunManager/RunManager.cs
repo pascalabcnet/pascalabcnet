@@ -288,18 +288,6 @@ namespace VisualPascalABC
             StartedProcesses.Add(fileName, PRunner);
             StartedFiles.Add(PRunner, fileName);
             string ReadSignalName=null;
-            /*if (redirectIO)
-            {
-                ReadSignalName = Path.GetFileNameWithoutExtension(fileName) + (new Random()).Next(10000).ToString();
-                args = "READSIGNAL" + ReadSignalName + " " + args;
-                ReadSignalNames.Add(ReadSignalName, fileName);
-                ReadSignalNames.Add(fileName, ReadSignalName);
-                ReadSignalList.Add(ReadSignalName);
-            }
-            if (redirectErrors)
-            {
-                //args = "CATCHUNHANDLEDEXCEPTIONS" +" "+ args;
-            }*/
             if (Starting != null)
                 Starting(fileName);
             try
@@ -328,8 +316,6 @@ namespace VisualPascalABC
         {
             StreamObject so = (StreamObject)ar.AsyncState;
             so.stream.EndWrite(ar);
-            //if (OutputStringReceived != null)
-            //    OutputStringReceived(so.id, StreamType.Output, so.text);
             so.stream.Flush();
         }
         class StreamObject
@@ -341,10 +327,6 @@ namespace VisualPascalABC
         public void WritelnStringToProcess(string id, string data)
         {
             Utils.ProcessRunner pr = StartedProcesses[id] as Utils.ProcessRunner;
-            /*string s=StartedProcesses.Count.ToString()+" ";
-            foreach (string ss in StartedProcesses.Keys)
-                s += ss + "|";
-            if (pr == null) throw new Exception("pr==null, " + id + " " + data+" started process"+s);*/
             byte[] buffer = InputEncoding.GetBytes(data + pr.process.StandardInput.NewLine);
             StreamObject so=new StreamObject();
             so.stream = pr.process.StandardInput.BaseStream;
@@ -352,12 +334,6 @@ namespace VisualPascalABC
             so.id = id;
             pr.process.StandardInput.BaseStream.BeginWrite(buffer, 0, buffer.Length, Write_Callback, so);
         }
-
-        /*void PRunner_OutputLineReceived(object sender, global::VisualPascalABC.Utils.LineReceivedEventArgs e)
-        {
-            if (OutputStringReceived != null)
-                OutputStringReceived((string)StartedFiles[sender], e.Line);
-        }*/
 
         public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, bool attachDebugger, bool fictive_attach)
         {
