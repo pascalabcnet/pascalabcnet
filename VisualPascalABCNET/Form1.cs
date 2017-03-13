@@ -602,13 +602,6 @@ namespace VisualPascalABC
                         //CurrentSyntaxEditor.SetText(text);
                     }
                     return true;
-                /*case VisualEnvironmentCompilerAction.SetCurrentSourceFileTextFormatting:
-                    string text2 = (string)obj;
-                    CurrentSyntaxEditor.SelectAll();
-                    Tools.CopyTextToClipboard(text2);
-                    CurrentSyntaxEditor.Paste(false);
-                    //CurrentSyntaxEditor.SetText(text2);
-                    return true;*/
                 case VisualEnvironmentCompilerAction.AddTextToCompilerMessages:
                     AddTextToCompilerMessagesSync((string)obj);
                     return true;

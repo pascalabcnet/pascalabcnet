@@ -9030,7 +9030,7 @@ namespace PascalABCCompiler.TreeConverter
                                     tmp_si = tmp_si.Next;
                                 }
                             function_node fn = convertion_data_and_alghoritms.select_function(pars, si, get_location(id_right));
-                            if (!fn.is_extension_method)
+                            if (!fn.is_extension_method && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                                 return create_not_static_method_call(fn, en, get_location(id_right), false);
                             else
                                 return create_static_method_call_with_params(fn, get_location(id_right), fn.return_value_type, false, pars);

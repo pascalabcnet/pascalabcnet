@@ -368,13 +368,7 @@ namespace VisualPascalABC
                 EventedStreamReaderList.Remove(FileName);
                 StartedFiles.Remove(StartedProcesses[FileName]);
                 StartedProcesses.Remove(FileName);
-                /*if (ReadSignalNames.ContainsKey(FileName))
-                {
-                    ReadSignalList.Remove(ReadSignalNames[FileName]);
-                    ReadSignalNames.Remove(FileName);
-                }*/
             }
-            //messageServer.Disconnect(FileName);
         }
         public void Stop(string fileName)
         {
