@@ -261,6 +261,32 @@ namespace PascalABCCompiler.PCU
         }
     }
 
+    public class wrapped_expression : expression_node
+    {
+        private PCUReader pr;
+
+        public int offset;
+
+        public wrapped_expression(PCUReader pr, int offset)
+        {
+            this.pr = pr;
+            this.offset = offset;
+        }
+
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.wrapped_expression;
+            }
+        }
+
+        public expression_node restore()
+        {
+            return pr.GetExpression(offset);
+        }
+    }
+
     public class wrapped_function_body : wrapped_statement
     {
         private PCUReader pr;

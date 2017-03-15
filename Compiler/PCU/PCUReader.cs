@@ -3319,15 +3319,35 @@ namespace PascalABCCompiler.PCU
             type_node tn = GetTypeReference();
             expression_node initv = null;
             local_block_variable lv = new local_block_variable(name, tn, stmt, null);
-            AddMember(lv, offset);
-            if (CanReadObject())
-                initv = CreateExpressionWithOffset();
-            lv.loc = ReadDebugInfo();
-            lv.inital_value = initv;
+            if (members.ContainsKey(offset))
+            {
+                lv = members[offset] as local_block_variable;
+                if (CanReadObject())
+                    br.ReadInt32();
+                ReadDebugInfo();
+            } 
+            else
+            {
+                AddMember(lv, offset);
+                if (CanReadObject())
+                    initv = CreateExpressionWithOffset();
+                lv.loc = ReadDebugInfo();
+                lv.inital_value = initv;
+            }
+                
             return lv;
             
         }
 		
+        public expression_node GetExpression(int offset)
+        {
+            int tmp = (int)br.BaseStream.Position;
+            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            expression_node expr = CreateExpressionWithOffset();
+            br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            return expr;
+        }
+
 		private statement_node CreateEmpty()
 		{
 			return new empty_statement(null);
@@ -3957,6 +3977,13 @@ namespace PascalABCCompiler.PCU
 
         private local_block_variable GetLocalBlockVariableByOffset(int offset)
         {
+            if (!members.ContainsKey(offset))
+            {
+                int tmp = (int)br.BaseStream.Position;
+                br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
+                var loc_var = CreateLocalBlockVariable(null);
+                br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            }
             return (local_block_variable)members[offset];
         }
 		
