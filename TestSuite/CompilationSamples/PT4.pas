@@ -1457,7 +1457,9 @@ begin
         except
         end;
       if initproc <> nil then
+      begin
         initproc.Invoke(nil,nil);
+      end;  
       solveproc.Invoke(nil,nil);
     except
       on e: Exception do

@@ -327,6 +327,16 @@ namespace VisualPascalABC
         public void WritelnStringToProcess(string id, string data)
         {
             Utils.ProcessRunner pr = StartedProcesses[id] as Utils.ProcessRunner;
+
+            if (pr == null)
+                throw new Exception("pr = null: " + id + " Count = " + StartedProcesses.Count);
+            if (pr.process == null)
+                throw new Exception("pr.process = null");
+            if (pr.process.StandardInput == null)
+                throw new Exception("pr.process.StandardInput = null");
+            if (pr.process.StandardInput.BaseStream == null)
+                throw new Exception("pr.process.StandardInput.BaseStream = null");
+
             byte[] buffer = InputEncoding.GetBytes(data + pr.process.StandardInput.NewLine);
             StreamObject so=new StreamObject();
             so.stream = pr.process.StandardInput.BaseStream;
