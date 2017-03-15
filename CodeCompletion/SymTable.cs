@@ -413,12 +413,25 @@ namespace CodeCompletion
             if (this.used_units != null)
                 for (int i = 0; i < this.used_units.Count; i++)
                 {
-                    if (this.used_units[i] != this)
+            		if (!hasUsesCycle(this))
                         lst.AddRange(this.used_units[i].GetExtensionMethods(ts));
                 }
             return lst;
         }
-
+        
+        private bool hasUsesCycle(SymScope unit)
+        {
+        	if (this.used_units != null)
+        		for (int i = 0; i < this.used_units.Count; i++)
+                {
+                    if (this.used_units[i] == unit)
+                    	return true;
+                    else if (this.used_units[i].hasUsesCycle(unit))
+                    	return true;
+                }
+        	return false;
+        }
+        
         public virtual bool IsAssembliesChanged()
         {
             return false;
