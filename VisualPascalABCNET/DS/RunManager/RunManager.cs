@@ -329,7 +329,14 @@ namespace VisualPascalABC
             Utils.ProcessRunner pr = StartedProcesses[id] as Utils.ProcessRunner;
 
             if (pr == null)
-                throw new Exception("pr = null: " + id + " Count = " + StartedProcesses.Keys[0]);
+            {
+            	string files = "";
+            	foreach (string key in StartedProcesses.Keys)
+            	{
+            		files += key + " ";
+            	}
+            	throw new Exception("pr = null: " + id + " Count = " + StartedProcesses.Count + " Files " + files);
+            }
             if (pr.process == null)
                 throw new Exception("pr.process = null");
             if (pr.process.StandardInput == null)
