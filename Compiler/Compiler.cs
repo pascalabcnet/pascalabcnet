@@ -896,6 +896,16 @@ namespace PascalABCCompiler
             }
         }
 
+        private Dictionary<string, string> sourceFileNamesDictionary = new Dictionary<string, string>();
+
+        public Dictionary<string, string> SourceFileNamesDictionary
+        {
+            get
+            {
+                return sourceFileNamesDictionary;
+            }
+        }
+
         public void AddWarnings(List<CompilerWarning> WarningList)
         {
             foreach (CompilerWarning cw in WarningList)
@@ -1098,6 +1108,7 @@ namespace PascalABCCompiler
 
         internal void Reset()
         {
+            SourceFileNamesDictionary.Clear();
             Warnings.Clear();            
             errorsList.Clear();
             //if (!File.Exists(CompilerOptions.SourceFileName)) throw new SourceFileNotFound(CompilerOptions.SourceFileName);
@@ -2386,12 +2397,25 @@ namespace PascalABCCompiler
         
         public string FindSourceFileName(string UnitName)
         {
+            // Если есть в кеше, то пользуемся кешем
+            if (SourceFileNamesDictionary.ContainsKey(UnitName))
+                return SourceFileNamesDictionary[UnitName];
+
             string d = CompilerOptions.SourceFileDirectory;
             if (CurrentCompilationUnit != null && CurrentCompilationUnit.SyntaxTree != null)
                 d = Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name);
             if (Path.GetDirectoryName(UnitName) != string.Empty)
                 d = Path.GetDirectoryName(UnitName);
-            return FindSourceFileName(UnitName, d, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            string fsfn = null;
+            if (d.Equals(CompilerOptions.SourceFileDirectory))
+                fsfn = FindSourceFileName(UnitName, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+            else fsfn = FindSourceFileName(UnitName, d, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            // Кешируем исходники файлов и их полные имена
+            SourceFileNamesDictionary[UnitName] = fsfn;
+
+            return fsfn;
         }
         
         public string FindSourceFileName(string UnitName, params string[] Dirs)
@@ -2410,7 +2434,11 @@ namespace PascalABCCompiler
 		
         public static string GetReferenceFileName(string FileName)
         {
-        	if (System.IO.File.Exists(FileName))
+            // Вначале - кешированные стандартные dll
+            if (standart_assembly_dict.ContainsKey(FileName))
+                return standart_assembly_dict[FileName];
+
+            if (System.IO.File.Exists(FileName))
             {
                 return FileName;//.ToLower();//? а надо ли tolover?
             }
@@ -3393,10 +3421,6 @@ namespace PascalABCCompiler
         }
         public static string get_assembly_path(string name, bool search_for_intellisense)
         {
-            // Вначале - кешированные стандартные dll
-            if (standart_assembly_dict.ContainsKey(name))
-                return standart_assembly_dict[name];
-
             //если явно задан каталог то ищем только там
             if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
             {
