@@ -3305,41 +3305,9 @@ namespace PascalABCCompiler
                                 UnitsSortedList.AddElement(cun11);*/
 
         static string standartAssemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(string)).ManifestModule.FullyQualifiedName);
-        public static string get_assembly_path(string name, bool search_for_intellisense)
+
+        public static string get_standart_assembly_path(string name)
         {
-            
-            //если явно задан каталог то ищем только там
-            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
-            {
-                if (Path.GetDirectoryName(name) != string.Empty)
-                    if (File.Exists(name))
-                        return name;
-                    else
-                        return null;
-            }
-            if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-            {
-                string SystemDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
-                string SearchDirectory = Path.Combine(SystemDirectory, "Lib");
-                if (File.Exists(Path.Combine(Environment.CurrentDirectory, name)))
-                    return Path.Combine(Environment.CurrentDirectory, name);
-                if (File.Exists(Path.Combine(SearchDirectory, name)))
-                {
-                    File.Copy(Path.Combine(SearchDirectory, name), Path.Combine(Environment.CurrentDirectory, name), true);
-                    return Path.Combine(Environment.CurrentDirectory, name);
-                }
-
-            }
-            if (!search_for_intellisense)
-            {
-                string dir = Environment.CurrentDirectory;
-
-                if (File.Exists(Path.Combine(dir, name)))
-                {
-                    return Path.Combine(dir, name);
-                }
-            }
-
             string ttn = System.IO.Path.GetFileNameWithoutExtension(name);
             string tn = Path.Combine(standartAssemblyPath, name);
             if (File.Exists(tn))
@@ -3414,6 +3382,44 @@ namespace PascalABCCompiler
 
             }
             return tn;
+
+        }
+        public static string get_assembly_path(string name, bool search_for_intellisense)
+        {
+            
+            //если явно задан каталог то ищем только там
+            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
+            {
+                if (Path.GetDirectoryName(name) != string.Empty)
+                    if (File.Exists(name))
+                        return name;
+                    else
+                        return null;
+            }
+            if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+            {
+                string SystemDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+                string SearchDirectory = Path.Combine(SystemDirectory, "Lib");
+                if (File.Exists(Path.Combine(Environment.CurrentDirectory, name)))
+                    return Path.Combine(Environment.CurrentDirectory, name);
+                if (File.Exists(Path.Combine(SearchDirectory, name)))
+                {
+                    File.Copy(Path.Combine(SearchDirectory, name), Path.Combine(Environment.CurrentDirectory, name), true);
+                    return Path.Combine(Environment.CurrentDirectory, name);
+                }
+
+            }
+            if (!search_for_intellisense)
+            {
+                string dir = Environment.CurrentDirectory;
+
+                if (File.Exists(Path.Combine(dir, name)))
+                {
+                    return Path.Combine(dir, name);
+                }
+            }
+
+            return get_standart_assembly_path(name);
         }
 		
 		
