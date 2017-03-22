@@ -196,6 +196,7 @@ namespace PascalABCCompiler.TreeRealization
     }
 
     //Вспомогательный класс для создания псевдо-инстанций generic-типов.
+    //TODO: sdelat singletonom. staticheskie klassy eto gadost
     public static class generic_convertions
     {
         //Список, хранящий все псевдо-инстанции generic-типов, нужен для NetGenerator.
@@ -206,6 +207,8 @@ namespace PascalABCCompiler.TreeRealization
             new List<SemanticTree.IGenericFunctionInstance>();
 
         public static Hashtable generic_instances = new Hashtable();
+
+        public static syntax_tree_visitor visitor;
 
         public static List<generic_type_instance_info> get_type_instances(type_node original_generic_type)
         {
@@ -1005,12 +1008,23 @@ namespace PascalABCCompiler.TreeRealization
                     //Этот тип-параметр ещё не был выведен.
                     if (fact_type is delegated_methods && (fact_type as delegated_methods).empty_param_method != null && (fact_type as delegated_methods).empty_param_method.ret_type != null)
                         fact_type = (fact_type as delegated_methods).empty_param_method.ret_type;
+                    //if (fact_type is delegated_methods)
+                    //    fact_type = visitor.CreateDelegate((fact_type as delegated_methods).proper_methods[0].simple_function_node);
                     deduced[par_num] = fact_type;
                     return true;
                 }
                 //Этот тип-параметр уже был выведен. Сравниваем с выведенным.
                 if (!convertion_data_and_alghoritms.eq_type_nodes(fact_type, deduced[par_num], true))
                 {
+                    if (fact_type is delegated_methods && deduced[par_num].IsDelegate)
+                    {
+                        delegate_internal_interface d1 = deduced[par_num].get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
+                        return convertion_data_and_alghoritms.function_eq_params_and_result((fact_type as delegated_methods).proper_methods[0].simple_function_node, d1.invoke_method);
+                    }
+                    else if (fact_type is delegated_methods && deduced[par_num] is delegated_methods)
+                    {
+                        return convertion_data_and_alghoritms.function_eq_params_and_result((fact_type as delegated_methods).proper_methods[0].simple_function_node, (deduced[par_num] as delegated_methods).proper_methods[0].simple_function_node);
+                    }
                     return false;
                 }
                 return true;
