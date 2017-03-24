@@ -168,6 +168,7 @@ namespace PascalABCCompiler.TreeConverter
                 init_properties);
             SystemLibrary.SystemLibrary.system_unit = _system_unit;
             generic_convertions.reset_generics();
+            generic_convertions.visitor = this;
             _record_created = false;
             RefTypesForCheckPointersTypeForDotNetFramework.Clear();
             reset_for_interface();
