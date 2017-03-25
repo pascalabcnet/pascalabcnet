@@ -2391,9 +2391,16 @@ namespace PascalABCCompiler
 
         public string FindPCUFileName(string UnitName)
         {
-            return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+            if (PCUFileNamesDictionary.ContainsKey(UnitName))
+                return PCUFileNamesDictionary[UnitName];
+
+            string fpfn = null;
+            fpfn = FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            PCUFileNamesDictionary[UnitName] = fpfn;
+            return fpfn;
         }
-		
+
         public string FindPCUFileNameWithoutSources(string UnitName, string FileDir)
         {
         	return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, FileDir, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
