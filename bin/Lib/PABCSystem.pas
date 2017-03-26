@@ -9047,6 +9047,23 @@ begin
     yield Self[i,j]
 end;
 
+/// Преобразует элементы двумерного массива и возвращает преобразованный массив
+function ConvertAll<T,T1>(Self: array [,] of T; converter: T -> T1): array [,] of T1; extensionmethod;
+begin
+  Result := new T1[Self.RowCount,Self.ColCount];
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    Result[i,j] := converter(Self[i,j]);  
+end;
+
+/// Преобразует элементы двумерного массива по заданному правилу
+procedure Transform<T>(Self: array [,] of T; f: T -> T); extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    Self[i,j] := f(Self[i,j]);
+end;
+
 // Реализация операций с матрицами - только после введения RowCount и ColCount
 function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
 begin
@@ -9353,10 +9370,10 @@ begin
   Result := System.Array.BinarySearch(self,x);  
 end;
 
-/// Преобразует массив одного типа в массив другого типа
-function ConvertAll<T,T1>(self: array of T; converter: System.Converter<T,T1>): array of T1; extensionmethod;
+/// Преобразует элементы массива и возвращает преобразованный массив
+function ConvertAll<T,T1>(self: array of T; converter: T -> T1): array of T1; extensionmethod;
 begin
-  Result := System.Array.ConvertAll(self,converter);  
+  Result := System.Array.ConvertAll(self,t->converter(t));  
 end;
 
 /// Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
