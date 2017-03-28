@@ -906,6 +906,17 @@ namespace PascalABCCompiler
             }
         }
 
+        private Dictionary<string, string> pcuFileNamesDictionary = new Dictionary<string, string>();
+
+        public Dictionary<string, string> PCUFileNamesDictionary
+        {
+            get
+            {
+                return pcuFileNamesDictionary;
+            }
+        }
+
+
         public void AddWarnings(List<CompilerWarning> WarningList)
         {
             foreach (CompilerWarning cw in WarningList)
@@ -1109,6 +1120,7 @@ namespace PascalABCCompiler
         internal void Reset()
         {
             SourceFileNamesDictionary.Clear();
+            PCUFileNamesDictionary.Clear();
             Warnings.Clear();            
             errorsList.Clear();
             //if (!File.Exists(CompilerOptions.SourceFileName)) throw new SourceFileNotFound(CompilerOptions.SourceFileName);
@@ -2379,9 +2391,16 @@ namespace PascalABCCompiler
 
         public string FindPCUFileName(string UnitName)
         {
-            return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+            if (PCUFileNamesDictionary.ContainsKey(UnitName))
+                return PCUFileNamesDictionary[UnitName];
+
+            string fpfn = null;
+            fpfn = FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            PCUFileNamesDictionary[UnitName] = fpfn;
+            return fpfn;
         }
-		
+
         public string FindPCUFileNameWithoutSources(string UnitName, string FileDir)
         {
         	return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, FileDir, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
@@ -2389,10 +2408,17 @@ namespace PascalABCCompiler
         
         public string FindPCUFileName(string UnitName, string SourceFileName)
         {
+            if (PCUFileNamesDictionary.ContainsKey(UnitName))
+                return PCUFileNamesDictionary[UnitName];
+
+            string fpfn = null;
             if (SourceFileName == null)
-                return FindPCUFileName(UnitName);
+                fpfn = FindPCUFileName(UnitName);
             else
-                return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, Path.GetDirectoryName(SourceFileName));
+                fpfn = FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, Path.GetDirectoryName(SourceFileName));
+
+            PCUFileNamesDictionary[UnitName] = fpfn;
+            return fpfn;
         }
         
         public string FindSourceFileName(string UnitName)
@@ -2450,6 +2476,10 @@ namespace PascalABCCompiler
         
         private string GetReferenceFileName(string FileName, SyntaxTree.SourceContext sc)
         {
+            if (standart_assembly_dict.ContainsKey(FileName))
+                return standart_assembly_dict[FileName];
+
+            // Наверное, этот код MikhailoMMX лишний
             //MikhailoMMX PABCRtl.dll будем искать сначала в GAC, а потом в папке с программой
             if (FileName == TreeConverter.compiler_string_consts.pabc_rtl_dll_name)
             {
@@ -3337,7 +3367,7 @@ namespace PascalABCCompiler
         public static Dictionary<string, string> standart_assembly_dict = new Dictionary<string, string>();
         static Compiler()
         {
-            string[] ss = new string[] { "mscorlib.dll","System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll" };
+            string[] ss = new string[] { "mscorlib.dll","System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "PABCRtl.dll", "PABCRtl32.dll" };
             foreach (var x in ss)
                 standart_assembly_dict[x] = get_standart_assembly_path(x);
         }

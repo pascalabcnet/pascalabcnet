@@ -20,18 +20,14 @@ namespace VisualPascalABC.OptionsContent
         {
             var sl = 50;
             this.contentEngine = contentEngine;
-            System.Threading.Thread.Sleep(sl); // SSM 07.11.16 поставил на всякий случай задержки - иногда окно опций при открытии неактивное
             InitializeComponent();
-            System.Threading.Thread.Sleep(sl);
             foreach (IOptionsContent content in contentEngine.ContentList)
             {
                 TreeNode tn = new TreeNode(content.ContentName);
                 tvContentList.Nodes.Add(tn);
                 nodes.Add(tn, content);
             }
-            System.Threading.Thread.Sleep(sl); 
             PascalABCCompiler.StringResources.SetTextForAllObjects(this, strprefix);
-            System.Threading.Thread.Sleep(sl);
         }
 
         private void btOk_Click(object sender, EventArgs e)

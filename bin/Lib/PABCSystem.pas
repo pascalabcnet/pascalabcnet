@@ -1675,6 +1675,11 @@ function MatrFill<T>(m,n: integer; x: T): array [,] of T;
 function MatrGen<T>(m,n: integer; gen: (integer,integer)->T): array [,] of T;
 /// Транспонирует двумерный массив 
 function Transpose<T>(a: array [,] of T): array [,] of T;
+/// Возвращает матрицу m на n целых, введенных с клавиатуры
+function ReadMatrInteger(m,n: integer): array [,] of integer;
+/// Возвращает матрицу m на n вещественных, введенных с клавиатуры
+function ReadMatrReal(m,n: integer): array [,] of real;
+
 
 // -----------------------------------------------------
 //>>     Подпрограммы для создания кортежей # Subroutines for tuple generation
@@ -1968,6 +1973,7 @@ const
   PARAMETER_STEP_MUST_BE_GREATER_0 = 'Параметр step должен быть > 0!!The step parameter must be not greater than 0';
   PARAMETER_FROM_OUT_OF_RANGE = 'Параметр from за пределами диапазона!!The from parameter out of bounds';
   PARAMETER_TO_OUT_OF_RANGE = 'Параметр to за пределами диапазона!!The to parameter out of bounds';
+  ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE = 'Размер одномерного массива не согласован с размером двумерного массива!!The 1-dim array length does not match 2-dim array size';
 
 // -----------------------------------------------------
 //                  WINAPI
@@ -8883,6 +8889,7 @@ function SystemSliceQuestion<T>(Self: List<T>; situation: integer; from,&to,step
 begin
   Result := SystemSliceListImplQuestion(Self,situation,from,&to,step);
 end;
+
 // -----------------------------------------------------
 //>>     Методы расширения типа array [,] of T # Extension methods for array [,] of T
 // -----------------------------------------------------
@@ -8998,6 +9005,64 @@ begin
     Swap(Self[i,k1],Self[i,k2])
 end;
 
+/// Меняет строку k двумерного массива на другую строку
+procedure SetRow<T>(Self: array [,] of T; k: integer; a: array of T); extensionmethod;
+begin
+  if a.Length<>Self.ColCount then
+    raise new System.ArgumentException(GetTranslation(ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE));
+  for var j:=0 to Self.ColCount-1 do
+    Self[k,j] := a[j]
+end;
+
+/// Меняет столбец k двумерного массива на другой столбец
+procedure SetCol<T>(Self: array [,] of T; k: integer; a: array of T); extensionmethod;
+begin
+  if a.Length<>Self.RowCount then
+    raise new System.ArgumentException(GetTranslation(ARR_LENGTH_MUST_BE_MATCH_TO_MATR_SIZE));
+  for var i:=0 to Self.RowCount-1 do
+    Self[i,k] := a[i]
+end;
+
+/// Возвращает по заданному двумерному массиву последовательность (i,j,a[i,j])
+function ElementsWithIndexes<T>(Self: array [,] of T): sequence of (integer,integer,T); extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    yield (i,j,Self[i,j])
+end;
+
+/// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
+function ElementsByRow<T>(Self: array [,] of T): sequence of T; extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    yield Self[i,j]
+end;
+
+/// Возвращает по заданному двумерному массиву последовательность его элементов по столбцам
+function ElementsByCol<T>(Self: array [,] of T): sequence of T; extensionmethod;
+begin
+  for var j:=0 to Self.ColCount-1 do
+  for var i:=0 to Self.RowCount-1 do
+    yield Self[i,j]
+end;
+
+/// Преобразует элементы двумерного массива и возвращает преобразованный массив
+function ConvertAll<T,T1>(Self: array [,] of T; converter: T -> T1): array [,] of T1; extensionmethod;
+begin
+  Result := new T1[Self.RowCount,Self.ColCount];
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    Result[i,j] := converter(Self[i,j]);  
+end;
+
+/// Преобразует элементы двумерного массива по заданному правилу
+procedure Transform<T>(Self: array [,] of T; f: T -> T); extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    Self[i,j] := f(Self[i,j]);
+end;
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount
 function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
@@ -9048,6 +9113,22 @@ begin
   for var i:=0 to Result.RowCount-1 do
   for var j:=0 to Result.ColCount-1 do
     Result[i,j] := a[j,i]
+end;
+
+function ReadMatrInteger(m,n: integer): array [,] of integer;
+begin
+  Result := new integer[m,n];
+  for var i:=0 to m-1 do
+  for var j:=0 to n-1 do
+    Result[i,j] := ReadInteger;
+end;
+
+function ReadMatrReal(m,n: integer): array [,] of real;
+begin
+  Result := new real[m,n];
+  for var i:=0 to m-1 do
+  for var j:=0 to n-1 do
+    Result[i,j] := ReadReal;
 end;
 
 // -----------------------------------------------------
@@ -9289,10 +9370,10 @@ begin
   Result := System.Array.BinarySearch(self,x);  
 end;
 
-/// Преобразует массив одного типа в массив другого типа
-function ConvertAll<T,T1>(self: array of T; converter: System.Converter<T,T1>): array of T1; extensionmethod;
+/// Преобразует элементы массива и возвращает преобразованный массив
+function ConvertAll<T,T1>(self: array of T; converter: T -> T1): array of T1; extensionmethod;
 begin
-  Result := System.Array.ConvertAll(self,converter);  
+  Result := System.Array.ConvertAll(self,t->converter(t));  
 end;
 
 /// Выполняет поиск первого элемента в массиве, удовлетворяющего предикату. Если не найден, возвращается нулевое значение соответствующего типа
@@ -9739,6 +9820,9 @@ function MatchValues(Self: string; reg: string; options: RegexOptions := RegexOp
 begin
 	Result := Self.Matches(reg,options).Select(m->m.Value);
 end;
+
+/// Удовлетворяет ли строка регулярному выражению
+function IsMatch(Self: string; reg: string; options: RegexOptions := RegexOptions.None): boolean; extensionmethod := Regex.IsMatch(Self, reg, options);
 
 /// Удаляет в строке все вхождения указанных строк
 function Remove(Self: string; params targets: array of string): string; extensionmethod;

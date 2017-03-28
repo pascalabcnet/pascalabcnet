@@ -77,7 +77,7 @@ namespace VisualPascalABC
                     Workbench.WidgetController.SetStopEnabled(false);
                     Workbench.WidgetController.SetCompilingButtonsEnabled(true);
                     Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                    if (IsOneProgramStarted())
+                    //if (IsOneProgramStarted())
                         Workbench.WidgetController.SetOptionsEnabled(true);
                 }
             }
@@ -86,7 +86,7 @@ namespace VisualPascalABC
                 Workbench.WidgetController.SetStopEnabled(false);
                 Workbench.WidgetController.SetCompilingButtonsEnabled(true);
                 Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                if (IsOneProgramStarted())
+                //if (IsOneProgramStarted())
                     Workbench.WidgetController.SetOptionsEnabled(true);
             }
             RunTabs[fileName].Run = false;
