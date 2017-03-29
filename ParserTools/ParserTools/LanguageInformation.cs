@@ -546,7 +546,7 @@ namespace PascalABCCompiler.Parsers
             {
                 if (instance == null)
                     instance = new DOMService();
-                return Instance;
+                return instance;
             }
         }
     }
