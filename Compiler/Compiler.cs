@@ -3509,8 +3509,19 @@ namespace PascalABCCompiler
 
                 return cu;
             }
+            catch (ReflectionTypeLoadException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                foreach (var eLoaderException in e.LoaderExceptions)
+                {
+                    Console.Error.WriteLine(eLoaderException.Message);
+                }
+
+                return null;
+            }
             catch (Exception e)
             {
+                Console.Error.WriteLine(e.Message);
                 return null;
             }
 		}
