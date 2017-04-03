@@ -2684,13 +2684,13 @@ namespace PascalABCCompiler
                 directives = ConvertDirectives(Unit.SyntaxTree);
             if (CompilerOptions.UseDllForSystemUnits)
             {
-                directives.Add(new TreeRealization.compiler_directive("reference", "PABCRtl.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "mscorlib.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Core.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Numerics.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Windows.Forms.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Drawing.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PABCRtl.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\mscorlib.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Core.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Numerics.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Drawing.dll", null));
             }
             foreach (TreeRealization.compiler_directive cd in directives)
             {
@@ -3373,6 +3373,7 @@ namespace PascalABCCompiler
         }
         public static string get_standart_assembly_path(string name)
         {
+            name = name.Replace("%GAC%\\", "");
             string ttn = System.IO.Path.GetFileNameWithoutExtension(name);
             string tn = Path.Combine(standartAssemblyPath, name);
             if (File.Exists(tn))
@@ -3452,7 +3453,7 @@ namespace PascalABCCompiler
         public static string get_assembly_path(string name, bool search_for_intellisense)
         {
             //если явно задан каталог то ищем только там
-            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
+            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX && !name.StartsWith("%GAC%\\"))
             {
                 if (Path.GetDirectoryName(name) != string.Empty)
                     if (File.Exists(name))
@@ -3473,7 +3474,7 @@ namespace PascalABCCompiler
                 }
 
             }
-            if (!search_for_intellisense)
+            if (!search_for_intellisense && !name.StartsWith("%GAC%\\"))
             {
                 string dir = Environment.CurrentDirectory;
 

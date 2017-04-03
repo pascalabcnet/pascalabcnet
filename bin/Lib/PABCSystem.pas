@@ -12,10 +12,10 @@ unit PABCSystem;
 // Default Application type
 {$apptype console}
 
-{$reference 'System.dll'}
-{$reference 'mscorlib.dll'}
-{$reference 'System.Core.dll'}
-{$reference 'System.Numerics.dll'}
+{$reference '%GAC%\System.dll'}
+{$reference '%GAC%\mscorlib.dll'}
+{$reference '%GAC%\System.Core.dll'}
+{$reference '%GAC%\System.Numerics.dll'}
 
 interface
 

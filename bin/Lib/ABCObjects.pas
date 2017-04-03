@@ -8,8 +8,8 @@
 unit ABCObjects;
 
 //{$apptype windows}
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$reference '%GAC%\System.Windows.Forms.dll'}
+{$reference '%GAC%\System.Drawing.dll'}
 {$gendoc true}
 
 interface
