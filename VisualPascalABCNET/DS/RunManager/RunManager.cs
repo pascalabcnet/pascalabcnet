@@ -128,7 +128,9 @@ namespace VisualPascalABC
                         StackTraceItem StackTraceItem = new StackTraceItem();
                         string str = StackItemData.TrimStart(' ');
                         int beg = str.IndexOf(' ');
-                        int end = str.IndexOf(')');
+                        int end = str.IndexOf(") ");
+                        if (end == -1)
+                            end = str.IndexOf(")");
                         StackTraceItem.FunctionName = str.Substring(beg + 1, end - beg);
                         if (end + 1 < str.Length)
                         {
@@ -137,6 +139,8 @@ namespace VisualPascalABC
                             beg = str.IndexOf(' ');
                             end = str.IndexOf(':');
                             end = str.IndexOf(':', end + 1);
+                            if (end == -1)
+                                continue;
                             StackTraceItem.SourceFileName = str.Substring(beg + 1, end - beg-1);
                             beg = str.IndexOf(' ',end);
                             if (beg > 0)
@@ -150,33 +154,6 @@ namespace VisualPascalABC
                                 }
                             }
                         }
-                        /*int RuntimeExceptionInIdentIndex = StackItemData.IndexOf(RuntimeExceptionInIdent);
-                        int FunctionNameBegin = StackItemData.IndexOf(RuntimeExceptionAtIdent) + RuntimeExceptionAtIdent.Length;
-                        if (RuntimeExceptionInIdentIndex > 0)
-                        {
-                            StackTraceItem.FunctionName = StackItemData.Substring(FunctionNameBegin, RuntimeExceptionInIdentIndex - FunctionNameBegin);
-                            int RuntimeExceptionLineIdentIndex = StackItemData.IndexOf(RuntimeExceptionLineIdent);
-                            int RuntimeExceptionInIdentEndPos = RuntimeExceptionInIdentIndex + RuntimeExceptionInIdent.Length;
-                            StackTraceItem.SourceFileName = StackItemData.Substring(RuntimeExceptionInIdentEndPos, RuntimeExceptionLineIdentIndex - RuntimeExceptionInIdentEndPos);
-                            int LineNumberStartPos = RuntimeExceptionLineIdentIndex + RuntimeExceptionLineIdent.Length;
-                            int LineNumberLength = 0;
-                            int i = LineNumberStartPos;
-                            while (i < StackItemData.Length && !char.IsWhiteSpace(StackItemData[i]))
-                            {
-                                LineNumberLength++;
-                                i++;
-                            }
-                            StackTraceItem.LineNumber = Convert.ToInt32(StackItemData.Substring(LineNumberStartPos, LineNumberLength));
-                            if (StackTraceItem.LineNumber >= 16777214)
-                            {
-                                StackTraceItem.LineNumber = 0;
-                                StackTraceItem.SourceFileName = null;
-                            }
-                        }
-                        else
-                        {
-                            StackTraceItem.FunctionName = StackItemData.Substring(FunctionNameBegin, StackItemData.Length - FunctionNameBegin);
-                        }*/
                         StackTrace.Add(StackTraceItem);
                     }
                     RunnerManagerUnhanledRuntimeException(id, ExceptionType, ExceptionMessage, StackTraceData, StackTrace);
