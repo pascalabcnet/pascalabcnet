@@ -1455,6 +1455,11 @@ namespace VisualPascalABC
             WorkbenchServiceFactory.UpdateService.CheckForUpdates();
         }
 
+        private void cmCollapseRegions_Click(object sender, EventArgs e)
+        {
+            WorkbenchServiceFactory.EditorService.CollapseRegions();
+        }
+
         private void tsHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using ICSharpCode.TextEditor.Document;
 
 namespace VisualPascalABC
 {
@@ -104,6 +105,18 @@ namespace VisualPascalABC
 			CodeCompletionParserController.open_files[this.FileName] = true;
 		}
 		
+        public void CollapseRegions()
+        {
+            foreach (FoldMarker marker in Document.FoldingManager.FoldMarker)
+            {
+                if (marker is RegionFoldMarker && !marker.IsFolded)
+                    marker.IsFolded = true;
+            }
+            refresh_Folding();
+            ActiveTextAreaControl.TextArea.Refresh();
+            refresh_Folding();
+        }
+
 		public void UpdateFolding(object parseInfo, string fileName)
 		{
 			try

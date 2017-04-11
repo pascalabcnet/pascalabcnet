@@ -126,6 +126,7 @@ M_FIND_ALL_REFERENCES=Find References
 M_RENAME=Rename
 M_FORMAT=Format Code
 M_SAMPLES=Samples
+M_COLLAPSE_REGIONS=Collapse regions
 
 TP_WARNINGLIST=Warnings
 TP_VARLIST=Local Variables

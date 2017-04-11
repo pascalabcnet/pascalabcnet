@@ -371,6 +371,7 @@ namespace VisualPascalABCPlugins
         void ExecFindNext();
         void ExecUndo();
         void ExecRedo();
+        void CollapseRegions();
     }
 
     public interface IWorkbenchDebuggerOperationsService

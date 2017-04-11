@@ -126,6 +126,7 @@ M_FIND_ALL_REFERENCES=Найти все ссылки
 M_RENAME=Переименовать
 M_FORMAT=Форматировать код
 M_SAMPLES=Примеры
+M_COLLAPSE_REGIONS=Свернуть все регионы
 
 TP_WARNINGLIST=Предупреждения
 TP_VARLIST=Локальные переменные
