@@ -896,6 +896,27 @@ namespace PascalABCCompiler
             }
         }
 
+        private Dictionary<string, string> sourceFileNamesDictionary = new Dictionary<string, string>();
+
+        public Dictionary<string, string> SourceFileNamesDictionary
+        {
+            get
+            {
+                return sourceFileNamesDictionary;
+            }
+        }
+
+        private Dictionary<string, string> pcuFileNamesDictionary = new Dictionary<string, string>();
+
+        public Dictionary<string, string> PCUFileNamesDictionary
+        {
+            get
+            {
+                return pcuFileNamesDictionary;
+            }
+        }
+
+
         public void AddWarnings(List<CompilerWarning> WarningList)
         {
             foreach (CompilerWarning cw in WarningList)
@@ -1098,6 +1119,8 @@ namespace PascalABCCompiler
 
         internal void Reset()
         {
+            SourceFileNamesDictionary.Clear();
+            PCUFileNamesDictionary.Clear();
             Warnings.Clear();            
             errorsList.Clear();
             //if (!File.Exists(CompilerOptions.SourceFileName)) throw new SourceFileNotFound(CompilerOptions.SourceFileName);
@@ -2368,9 +2391,16 @@ namespace PascalABCCompiler
 
         public string FindPCUFileName(string UnitName)
         {
-            return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+            if (PCUFileNamesDictionary.ContainsKey(UnitName))
+                return PCUFileNamesDictionary[UnitName];
+
+            string fpfn = null;
+            fpfn = FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            PCUFileNamesDictionary[UnitName] = fpfn;
+            return fpfn;
         }
-		
+
         public string FindPCUFileNameWithoutSources(string UnitName, string FileDir)
         {
         	return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, FileDir, CompilerOptions.OutputDirectory, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
@@ -2378,20 +2408,40 @@ namespace PascalABCCompiler
         
         public string FindPCUFileName(string UnitName, string SourceFileName)
         {
+            if (PCUFileNamesDictionary.ContainsKey(UnitName))
+                return PCUFileNamesDictionary[UnitName];
+
+            string fpfn = null;
             if (SourceFileName == null)
-                return FindPCUFileName(UnitName);
+                fpfn = FindPCUFileName(UnitName);
             else
-                return FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, Path.GetDirectoryName(SourceFileName));
+                fpfn = FindFileInDirectories(UnitName + CompilerOptions.CompiledUnitExtension, Path.GetDirectoryName(SourceFileName));
+
+            PCUFileNamesDictionary[UnitName] = fpfn;
+            return fpfn;
         }
         
         public string FindSourceFileName(string UnitName)
         {
+            // Если есть в кеше, то пользуемся кешем
+            if (SourceFileNamesDictionary.ContainsKey(UnitName))
+                return SourceFileNamesDictionary[UnitName];
+
             string d = CompilerOptions.SourceFileDirectory;
             if (CurrentCompilationUnit != null && CurrentCompilationUnit.SyntaxTree != null)
                 d = Path.GetDirectoryName(CurrentCompilationUnit.SyntaxTree.file_name);
             if (Path.GetDirectoryName(UnitName) != string.Empty)
                 d = Path.GetDirectoryName(UnitName);
-            return FindSourceFileName(UnitName, d, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            string fsfn = null;
+            if (d.Equals(CompilerOptions.SourceFileDirectory))
+                fsfn = FindSourceFileName(UnitName, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+            else fsfn = FindSourceFileName(UnitName, d, CompilerOptions.SourceFileDirectory, CompilerOptions.SearchDirectory);
+
+            // Кешируем исходники файлов и их полные имена
+            SourceFileNamesDictionary[UnitName] = fsfn;
+
+            return fsfn;
         }
         
         public string FindSourceFileName(string UnitName, params string[] Dirs)
@@ -2410,7 +2460,11 @@ namespace PascalABCCompiler
 		
         public static string GetReferenceFileName(string FileName)
         {
-        	if (System.IO.File.Exists(FileName))
+            // Вначале - кешированные стандартные dll
+            if (standart_assembly_dict.ContainsKey(FileName))
+                return standart_assembly_dict[FileName];
+
+            if (System.IO.File.Exists(FileName))
             {
                 return FileName;//.ToLower();//? а надо ли tolover?
             }
@@ -2422,6 +2476,10 @@ namespace PascalABCCompiler
         
         private string GetReferenceFileName(string FileName, SyntaxTree.SourceContext sc)
         {
+            if (standart_assembly_dict.ContainsKey(FileName))
+                return standart_assembly_dict[FileName];
+
+            // Наверное, этот код MikhailoMMX лишний
             //MikhailoMMX PABCRtl.dll будем искать сначала в GAC, а потом в папке с программой
             if (FileName == TreeConverter.compiler_string_consts.pabc_rtl_dll_name)
             {
@@ -2626,13 +2684,13 @@ namespace PascalABCCompiler
                 directives = ConvertDirectives(Unit.SyntaxTree);
             if (CompilerOptions.UseDllForSystemUnits)
             {
-                directives.Add(new TreeRealization.compiler_directive("reference", "PABCRtl.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "mscorlib.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Core.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Numerics.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Windows.Forms.dll", null));
-                directives.Add(new TreeRealization.compiler_directive("reference", "System.Drawing.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PABCRtl.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\mscorlib.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Core.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Numerics.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Windows.Forms.dll", null));
+                directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\System.Drawing.dll", null));
             }
             foreach (TreeRealization.compiler_directive cd in directives)
             {
@@ -3305,41 +3363,17 @@ namespace PascalABCCompiler
                                 UnitsSortedList.AddElement(cun11);*/
 
         static string standartAssemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(string)).ManifestModule.FullyQualifiedName);
-        public static string get_assembly_path(string name, bool search_for_intellisense)
+
+        public static Dictionary<string, string> standart_assembly_dict = new Dictionary<string, string>();
+        static Compiler()
         {
-            
-            //если явно задан каталог то ищем только там
-            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX)
-            {
-                if (Path.GetDirectoryName(name) != string.Empty)
-                    if (File.Exists(name))
-                        return name;
-                    else
-                        return null;
-            }
-            if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
-            {
-                string SystemDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
-                string SearchDirectory = Path.Combine(SystemDirectory, "Lib");
-                if (File.Exists(Path.Combine(Environment.CurrentDirectory, name)))
-                    return Path.Combine(Environment.CurrentDirectory, name);
-                if (File.Exists(Path.Combine(SearchDirectory, name)))
-                {
-                    File.Copy(Path.Combine(SearchDirectory, name), Path.Combine(Environment.CurrentDirectory, name), true);
-                    return Path.Combine(Environment.CurrentDirectory, name);
-                }
-
-            }
-            if (!search_for_intellisense)
-            {
-                string dir = Environment.CurrentDirectory;
-
-                if (File.Exists(Path.Combine(dir, name)))
-                {
-                    return Path.Combine(dir, name);
-                }
-            }
-
+            string[] ss = new string[] { "mscorlib.dll","System.dll", "System.Core.dll", "System.Numerics.dll", "System.Windows.Forms.dll", "PABCRtl.dll", "PABCRtl32.dll" };
+            foreach (var x in ss)
+                standart_assembly_dict[x] = get_standart_assembly_path(x);
+        }
+        public static string get_standart_assembly_path(string name)
+        {
+            name = name.Replace("%GAC%\\", "");
             string ttn = System.IO.Path.GetFileNameWithoutExtension(name);
             string tn = Path.Combine(standartAssemblyPath, name);
             if (File.Exists(tn))
@@ -3414,6 +3448,43 @@ namespace PascalABCCompiler
 
             }
             return tn;
+
+        }
+        public static string get_assembly_path(string name, bool search_for_intellisense)
+        {
+            //если явно задан каталог то ищем только там
+            if (Environment.OSVersion.Platform != PlatformID.Unix && Environment.OSVersion.Platform != PlatformID.MacOSX && !name.StartsWith("%GAC%\\"))
+            {
+                if (Path.GetDirectoryName(name) != string.Empty)
+                    if (File.Exists(name))
+                        return name;
+                    else
+                        return null;
+            }
+            if (Environment.OSVersion.Platform == PlatformID.Unix || Environment.OSVersion.Platform == PlatformID.MacOSX)
+            {
+                string SystemDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().ManifestModule.FullyQualifiedName);
+                string SearchDirectory = Path.Combine(SystemDirectory, "Lib");
+                if (File.Exists(Path.Combine(Environment.CurrentDirectory, name)))
+                    return Path.Combine(Environment.CurrentDirectory, name);
+                if (File.Exists(Path.Combine(SearchDirectory, name)))
+                {
+                    File.Copy(Path.Combine(SearchDirectory, name), Path.Combine(Environment.CurrentDirectory, name), true);
+                    return Path.Combine(Environment.CurrentDirectory, name);
+                }
+
+            }
+            if (!search_for_intellisense && !name.StartsWith("%GAC%\\"))
+            {
+                string dir = Environment.CurrentDirectory;
+
+                if (File.Exists(Path.Combine(dir, name)))
+                {
+                    return Path.Combine(dir, name);
+                }
+            }
+
+            return get_standart_assembly_path(name);
         }
 		
 		
@@ -3439,8 +3510,19 @@ namespace PascalABCCompiler
 
                 return cu;
             }
+            catch (ReflectionTypeLoadException e)
+            {
+                Console.Error.WriteLine(e.Message);
+                foreach (var eLoaderException in e.LoaderExceptions)
+                {
+                    Console.Error.WriteLine(eLoaderException.Message);
+                }
+
+                return null;
+            }
             catch (Exception e)
             {
+                Console.Error.WriteLine(e.Message);
                 return null;
             }
 		}

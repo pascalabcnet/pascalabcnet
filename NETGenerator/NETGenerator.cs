@@ -711,10 +711,11 @@ namespace PascalABCCompiler.NETGenerator
                     il = cb.GetILGenerator();
                     if (cnn.IsMain) unit_cci = cb;
                     ModulesInitILGenerators.Add(cur_type, il);
-                    //переводим глобальные переменные модуля
-                    ConvertGlobalVariables(cnn.variables);
+                    
                     //перводим константы
                     ConvertNamespaceConstants(cnn.constants);
+                    //переводим глобальные переменные модуля
+                    ConvertGlobalVariables(cnn.variables);
                     ConvertNamespaceEvents(cnn.events);
                     //il.Emit(OpCodes.Ret);
                 }
@@ -725,11 +726,11 @@ namespace PascalABCCompiler.NETGenerator
                     il = entry_meth.GetILGenerator();
                     ModulesInitILGenerators.Add(cur_type, il);
                     il = init_variables_mb.GetILGenerator();
-                    ConvertGlobalVariables(cnn.variables);
-                    il = entry_meth.GetILGenerator();
                     //перводим константы
                     ConvertNamespaceConstants(cnn.constants);
+                    ConvertGlobalVariables(cnn.variables);
                     ConvertNamespaceEvents(cnn.events);
+                    il = entry_meth.GetILGenerator();
                     //il.Emit(OpCodes.Ret);
                 }
 
@@ -5113,14 +5114,14 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(SemanticTree.ICompiledFieldReferenceNode value)
         {
             bool tmp_dot = is_dot_expr;
-            if (tmp_dot == false)
+            if (!tmp_dot)
                 is_dot_expr = true;
             if (value.field.compiled_field.IsLiteral == false)
             {
                 value.obj.visit(this);
-                if (is_addr == false)
+                if (!is_addr)
                 {
-                    if (tmp_dot == true && value.field.compiled_field.FieldType.IsValueType)
+                    if (tmp_dot && value.field.compiled_field.FieldType.IsValueType)
                     {
                         il.Emit(OpCodes.Ldflda, value.field.compiled_field);
                     }
@@ -5144,24 +5145,38 @@ namespace PascalABCCompiler.NETGenerator
 
         public override void visit(SemanticTree.IStaticCommonClassFieldReferenceNode value)
         {
-            FieldInfo fi = helper.GetField(value.static_field).fi;
-            if (is_addr == false)
-                il.Emit(OpCodes.Ldsfld, fi);
+            bool tmp_dot = is_dot_expr;
+            FldInfo fi_info = helper.GetField(value.static_field);
+            FieldInfo fi = fi_info.fi;
+            if (!is_addr)
+            {
+                if (tmp_dot)
+                {
+                    if (fi_info.field_type.IsValueType || fi_info.field_type.IsGenericParameter)
+                    {
+                        il.Emit(OpCodes.Ldsflda, fi);
+                    }
+                    else
+                        il.Emit(OpCodes.Ldsfld, fi);
+                }
+                else
+                    il.Emit(OpCodes.Ldsfld, fi);
+            }
             else
                 il.Emit(OpCodes.Ldsflda, fi);
-            if (is_dot_expr)
+            /*if (is_dot_expr)
             {
                 //здесь в условии ошибка
                 //(ssyy) интересно, какая:) Добавил проверку для generics
                 if (fi.FieldType.IsValueType && fi.FieldType.IsPrimitive || fi.FieldType.IsGenericParameter)
                     il.Emit(OpCodes.Box, fi.FieldType);
-            }
+            }*/
         }
 
         public override void visit(SemanticTree.ICommonClassFieldReferenceNode value)
         {
             bool tmp_dot = is_dot_expr;
-            if (tmp_dot == false)
+            if (!tmp_dot)
                 is_dot_expr = true;
             bool temp_is_addr = is_addr;
             is_addr = false;
@@ -5170,21 +5185,24 @@ namespace PascalABCCompiler.NETGenerator
             is_addr = temp_is_addr;
             FldInfo fi_info = helper.GetField(value.field);
             FieldInfo fi = fi_info.fi;
-            if (is_addr == false)
+            if (!is_addr)
             {
-                if (tmp_dot == true)
+                if (tmp_dot)
                 {
-                    if (fi_info.field_type.IsValueType == true || fi_info.field_type.IsGenericParameter)
+                    if (fi_info.field_type.IsValueType || fi_info.field_type.IsGenericParameter)
                     {
                         il.Emit(OpCodes.Ldflda, fi);
                     }
-                    else il.Emit(OpCodes.Ldfld, fi);
+                    else
+                        il.Emit(OpCodes.Ldfld, fi);
                 }
-                else il.Emit(OpCodes.Ldfld, fi);
+                else
+                    il.Emit(OpCodes.Ldfld, fi);
             }
-            else il.Emit(OpCodes.Ldflda, fi);
+            else
+                il.Emit(OpCodes.Ldflda, fi);
 
-            if (tmp_dot == false)
+            if (!tmp_dot)
             {
                 is_dot_expr = false;
             }

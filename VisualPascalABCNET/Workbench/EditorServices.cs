@@ -235,5 +235,10 @@ namespace VisualPascalABC
             tp.TextEditor.ActiveTextAreaControl.TextArea.Click -= DefinitionByMouseClickManager.DefinitionByMouseClickManager_TextAreaMouseDown;
             //tp.TextEditor.RemoveMouseMoveHandler(DefinitionByMouseClickManager.DefinitionByMouseClickManager_TextAreaMouseDown);
         }
+
+        public void CollapseRegions()
+        {
+            CurrentCodeFileDocument.TextEditor.CollapseRegions();
+        }
     }
 }

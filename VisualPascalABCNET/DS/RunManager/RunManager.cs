@@ -128,7 +128,9 @@ namespace VisualPascalABC
                         StackTraceItem StackTraceItem = new StackTraceItem();
                         string str = StackItemData.TrimStart(' ');
                         int beg = str.IndexOf(' ');
-                        int end = str.IndexOf(')');
+                        int end = str.IndexOf(") ");
+                        if (end == -1)
+                            end = str.IndexOf(")");
                         StackTraceItem.FunctionName = str.Substring(beg + 1, end - beg);
                         if (end + 1 < str.Length)
                         {
@@ -137,6 +139,8 @@ namespace VisualPascalABC
                             beg = str.IndexOf(' ');
                             end = str.IndexOf(':');
                             end = str.IndexOf(':', end + 1);
+                            if (end == -1)
+                                continue;
                             StackTraceItem.SourceFileName = str.Substring(beg + 1, end - beg-1);
                             beg = str.IndexOf(' ',end);
                             if (beg > 0)
@@ -150,33 +154,6 @@ namespace VisualPascalABC
                                 }
                             }
                         }
-                        /*int RuntimeExceptionInIdentIndex = StackItemData.IndexOf(RuntimeExceptionInIdent);
-                        int FunctionNameBegin = StackItemData.IndexOf(RuntimeExceptionAtIdent) + RuntimeExceptionAtIdent.Length;
-                        if (RuntimeExceptionInIdentIndex > 0)
-                        {
-                            StackTraceItem.FunctionName = StackItemData.Substring(FunctionNameBegin, RuntimeExceptionInIdentIndex - FunctionNameBegin);
-                            int RuntimeExceptionLineIdentIndex = StackItemData.IndexOf(RuntimeExceptionLineIdent);
-                            int RuntimeExceptionInIdentEndPos = RuntimeExceptionInIdentIndex + RuntimeExceptionInIdent.Length;
-                            StackTraceItem.SourceFileName = StackItemData.Substring(RuntimeExceptionInIdentEndPos, RuntimeExceptionLineIdentIndex - RuntimeExceptionInIdentEndPos);
-                            int LineNumberStartPos = RuntimeExceptionLineIdentIndex + RuntimeExceptionLineIdent.Length;
-                            int LineNumberLength = 0;
-                            int i = LineNumberStartPos;
-                            while (i < StackItemData.Length && !char.IsWhiteSpace(StackItemData[i]))
-                            {
-                                LineNumberLength++;
-                                i++;
-                            }
-                            StackTraceItem.LineNumber = Convert.ToInt32(StackItemData.Substring(LineNumberStartPos, LineNumberLength));
-                            if (StackTraceItem.LineNumber >= 16777214)
-                            {
-                                StackTraceItem.LineNumber = 0;
-                                StackTraceItem.SourceFileName = null;
-                            }
-                        }
-                        else
-                        {
-                            StackTraceItem.FunctionName = StackItemData.Substring(FunctionNameBegin, StackItemData.Length - FunctionNameBegin);
-                        }*/
                         StackTrace.Add(StackTraceItem);
                     }
                     RunnerManagerUnhanledRuntimeException(id, ExceptionType, ExceptionMessage, StackTraceData, StackTrace);
@@ -288,18 +265,6 @@ namespace VisualPascalABC
             StartedProcesses.Add(fileName, PRunner);
             StartedFiles.Add(PRunner, fileName);
             string ReadSignalName=null;
-            /*if (redirectIO)
-            {
-                ReadSignalName = Path.GetFileNameWithoutExtension(fileName) + (new Random()).Next(10000).ToString();
-                args = "READSIGNAL" + ReadSignalName + " " + args;
-                ReadSignalNames.Add(ReadSignalName, fileName);
-                ReadSignalNames.Add(fileName, ReadSignalName);
-                ReadSignalList.Add(ReadSignalName);
-            }
-            if (redirectErrors)
-            {
-                //args = "CATCHUNHANDLEDEXCEPTIONS" +" "+ args;
-            }*/
             if (Starting != null)
                 Starting(fileName);
             try
@@ -328,8 +293,6 @@ namespace VisualPascalABC
         {
             StreamObject so = (StreamObject)ar.AsyncState;
             so.stream.EndWrite(ar);
-            //if (OutputStringReceived != null)
-            //    OutputStringReceived(so.id, StreamType.Output, so.text);
             so.stream.Flush();
         }
         class StreamObject
@@ -341,10 +304,23 @@ namespace VisualPascalABC
         public void WritelnStringToProcess(string id, string data)
         {
             Utils.ProcessRunner pr = StartedProcesses[id] as Utils.ProcessRunner;
-            /*string s=StartedProcesses.Count.ToString()+" ";
-            foreach (string ss in StartedProcesses.Keys)
-                s += ss + "|";
-            if (pr == null) throw new Exception("pr==null, " + id + " " + data+" started process"+s);*/
+
+            if (pr == null)
+            {
+            	string files = "";
+            	foreach (string key in StartedProcesses.Keys)
+            	{
+            		files += key + " ";
+            	}
+            	throw new Exception("pr = null: " + id + " Count = " + StartedProcesses.Count + " Files " + files);
+            }
+            if (pr.process == null)
+                throw new Exception("pr.process = null");
+            if (pr.process.StandardInput == null)
+                throw new Exception("pr.process.StandardInput = null");
+            if (pr.process.StandardInput.BaseStream == null)
+                throw new Exception("pr.process.StandardInput.BaseStream = null");
+
             byte[] buffer = InputEncoding.GetBytes(data + pr.process.StandardInput.NewLine);
             StreamObject so=new StreamObject();
             so.stream = pr.process.StandardInput.BaseStream;
@@ -352,12 +328,6 @@ namespace VisualPascalABC
             so.id = id;
             pr.process.StandardInput.BaseStream.BeginWrite(buffer, 0, buffer.Length, Write_Callback, so);
         }
-
-        /*void PRunner_OutputLineReceived(object sender, global::VisualPascalABC.Utils.LineReceivedEventArgs e)
-        {
-            if (OutputStringReceived != null)
-                OutputStringReceived((string)StartedFiles[sender], e.Line);
-        }*/
 
         public void Run(string fileName, bool redirectIO, string ModeName, bool RunWithPause, string WorkingDirectory, bool attachDebugger, bool fictive_attach)
         {
@@ -392,13 +362,7 @@ namespace VisualPascalABC
                 EventedStreamReaderList.Remove(FileName);
                 StartedFiles.Remove(StartedProcesses[FileName]);
                 StartedProcesses.Remove(FileName);
-                /*if (ReadSignalNames.ContainsKey(FileName))
-                {
-                    ReadSignalList.Remove(ReadSignalNames[FileName]);
-                    ReadSignalNames.Remove(FileName);
-                }*/
             }
-            //messageServer.Disconnect(FileName);
         }
         public void Stop(string fileName)
         {

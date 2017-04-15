@@ -1680,6 +1680,37 @@
               <i Type="Field">MaxDouble = real . MaxValue</i>
             </ICtx>
           </Node>
+          <Node Name="Методы расширения типа array [,] of T">
+            <FileName>\PABCSystem.pas</FileName>
+            <Text>//&gt;&gt;     Методы расширения типа array [,] of T # Extension methods for array [,] of T</Text>
+            <OCtx>
+              <i Type="Method">function Sin ( c : Complex ) : = Complex . Sin ( c )</i>
+              <i Type="Method">function Power ( c , power : Complex ) : = Complex . Pow ( c , power )</i>
+              <i Type="Method">function Log10 ( c : Complex ) : = Complex . Log10 ( c )</i>
+              <i Type="Method">function Log ( c : Complex ) : = Complex . Log ( c )</i>
+              <i Type="Method">function Exp ( c : Complex ) : = Complex . Exp ( c )</i>
+              <i Type="Method">function Cos ( c : Complex ) : = Complex . Cos ( c )</i>
+              <i Type="Method">function Conjugate ( c : Complex ) : = Complex . Conjugate ( c )</i>
+              <i Type="Method">function Abs ( c : Complex ) : = Complex . Abs ( c )</i>
+              <i Type="Method">function Sqrt ( c : Complex ) : = Complex . Sqrt ( c )</i>
+              <i Type="Method">function CplxFromPolar ( magnitude , phase : real ) : = Complex . FromPolarCoordinates ( magnitude , phase )</i>
+              <i Type="Method">function Cplx ( re , im : real ) : = new Complex ( re , im )</i>
+              <i Type="PAS_TreeNode">
+              </i>
+            </OCtx>
+            <ICtx>
+              <i Type="Method">function Low ( i : System . Array ) : integer</i>
+              <i Type="Method">function High ( i : System . Array ) : integer</i>
+              <i Type="Method">function Length ( a : &amp;Array ) : integer</i>
+              <i Type="Method">function Length ( a : &amp;Array ; dim : integer ) : integer</i>
+              <i Type="Method">function Copy ( a : &amp;Array ) : &amp;Array</i>
+              <i Type="Method">procedure Sort &lt; T &gt; ( a : array of T )</i>
+              <i Type="Method">procedure Sort &lt; T &gt; ( a : array of T ; cmp : ( T , T ) - &gt; integer )</i>
+              <i Type="Method">procedure Sort &lt; T &gt; ( a : array of T ; less : ( T , T ) - &gt; boolean )</i>
+              <i Type="Method">procedure Sort &lt; T &gt; ( l : List &lt; T &gt; )</i>
+              <i Type="Method">procedure Sort &lt; T &gt; ( l : List &lt; T &gt; ; cmp : ( T , T ) - &gt; integer )</i>
+            </ICtx>
+          </Node>
           <Node Name="Методы расширения типа integer">
             <FileName>\PABCSystem.pas</FileName>
             <Text>//&gt;&gt;     Методы расширения типа integer # Extension methods for integer</Text>

@@ -8,8 +8,8 @@
 unit ABCObjects;
 
 //{$apptype windows}
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$reference '%GAC%\System.Windows.Forms.dll'}
+{$reference '%GAC%\System.Drawing.dll'}
 {$gendoc true}
 
 interface
@@ -912,6 +912,8 @@ begin
   if oldBounds.IntersectsWith(newBounds) then
   begin
     r := GRectangle.Union(oldBounds,newBounds);
+    //TextOut(0,0,r.ToString);
+    //r.Width := r.Width + 5;
     drawRect(r);
   end  
   else

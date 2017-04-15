@@ -126,6 +126,7 @@ M_FIND_ALL_REFERENCES=Find References
 M_RENAME=Rename
 M_FORMAT=Format Code
 M_SAMPLES=Samples
+M_COLLAPSE_REGIONS=Collapse regions
 
 TP_WARNINGLIST=Warnings
 TP_VARLIST=Local Variables
@@ -332,6 +333,8 @@ PRJ_COPYRIGHT=Copyright
 PRJ_GENERATE_XML_DOC=Generate XML doc
 VERSION_IS_UP_DO_DATE=PascalABC.NET is up to date
 UPDATE_AVAILABLE=New version of PascalABC.NET is available. Do you want to visit the download page?
+UPDATE_AVAILABLE_CURRENT_VESION{0}=Installed version: {0}
+UPDATE_AVAILABLE_NEW_VESION{0}=Available version: {0}
 UPDATE_CHECK_ERROR=An error occurred while checking for updates
 UPDATE_CHECK=Checking for updates
 PABC_DOWNLOAD_PAGE=http://pascalabc.net/en/download

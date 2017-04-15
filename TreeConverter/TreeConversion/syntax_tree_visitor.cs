@@ -168,6 +168,7 @@ namespace PascalABCCompiler.TreeConverter
                 init_properties);
             SystemLibrary.SystemLibrary.system_unit = _system_unit;
             generic_convertions.reset_generics();
+            generic_convertions.visitor = this;
             _record_created = false;
             RefTypesForCheckPointersTypeForDotNetFramework.Clear();
             reset_for_interface();
@@ -1186,7 +1187,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             //if (si == null)
             {
-                if (/*si2 == null && */left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
+                if (left_type.semantic_node_type == semantic_node_type.delegated_method && right_type.semantic_node_type == semantic_node_type.delegated_method)
                 {
                     SymbolInfo saved_si = si;
                     SymbolInfo saved_si2 = si2;
@@ -1214,6 +1215,15 @@ namespace PascalABCCompiler.TreeConverter
                             return find_operator(name, left, right, loc, false);
                     }
                         
+                }
+                else if (left_type.semantic_node_type == semantic_node_type.delegated_method)
+                {
+
+                }
+                else if (si != null && left.semantic_node_type == semantic_node_type.delegated_method)
+                {
+                    SymbolInfo local_si = si;
+
                 }
                 else if (si == null)
                 {
@@ -9021,7 +9031,7 @@ namespace PascalABCCompiler.TreeConverter
                                     tmp_si = tmp_si.Next;
                                 }
                             function_node fn = convertion_data_and_alghoritms.select_function(pars, si, get_location(id_right));
-                            if (!fn.is_extension_method)
+                            if (!fn.is_extension_method && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
                                 return create_not_static_method_call(fn, en, get_location(id_right), false);
                             else
                                 return create_static_method_call_with_params(fn, get_location(id_right), fn.return_value_type, false, pars);

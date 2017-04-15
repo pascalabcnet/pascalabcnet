@@ -188,7 +188,7 @@ namespace VisualPascalABC
                 if ((value = (string)Options[OptionsItemNameRedirectConsoleIO]) != null)
                     UserOptions.RedirectConsoleIO = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameConvertTabsToSpaces]) != null)
-                    UserOptions.ConverTabsToSpaces = Convert.ToBoolean(value);
+                    UserOptions.ConverTabsToSpaces = true;// Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameGenerateDebugInfo]) != null)
                     WorkbenchServiceFactory.BuildService.CompilerOptions.Debug = Convert.ToBoolean(value);
                 if ((value = (string)Options[OptionsItemNameTabIdent]) != null)
@@ -328,6 +328,7 @@ namespace VisualPascalABC
                     si.FontSize = UserOptions.EditorFontSize;
                 if (si.TextEditor.ConvertTabsToSpaces != UserOptions.ConverTabsToSpaces)
                     si.TextEditor.ConvertTabsToSpaces = UserOptions.ConverTabsToSpaces;
+                si.TextEditor.ConvertTabsToSpaces = true;
                 if (si.TextEditor.TabIndent != UserOptions.TabIndent)
                 {
                     si.TextEditor.TabIndent = UserOptions.TabIndent;

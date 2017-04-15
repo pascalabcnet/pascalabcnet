@@ -109,7 +109,9 @@ namespace CodeCompletion
             }
             catch (Exception e)
             {
-
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
             DomConverter dconv = new DomConverter(this);
             if (cu != null)
@@ -144,7 +146,9 @@ namespace CodeCompletion
                 }
                 catch (Exception e)
                 {
-
+#if DEBUG
+                    File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                 }
                 if (cu != null)
                 {

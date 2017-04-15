@@ -2117,7 +2117,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (ct1.IsGenericType && ct1.FullName.StartsWith("System.Func"))
                             {
                                 var c = ct1.GetGenericArguments().Length;
-                                if (c != 0 && ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                if (c != 0 && (ct1.GetGenericArguments().Last().FullName == null || ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable")))
                                     return f2;
                             }
 
@@ -2125,7 +2125,7 @@ namespace PascalABCCompiler.TreeConverter
                             if (ct2.IsGenericType && ct2.FullName.StartsWith("System.Func"))
                             {
                                 var c = ct2.GetGenericArguments().Length;
-                                if (c != 0 && ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
+                                if (c != 0 && (ct2.GetGenericArguments().Last().FullName == null || ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable")))
                                     return f1;
                             }
                         }
@@ -2179,6 +2179,10 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (from == to)
                 return 0;
+            if (from is delegated_methods && (from as delegated_methods).empty_param_method != null && (from as delegated_methods).empty_param_method.ret_type != null)
+                from = (from as delegated_methods).empty_param_method.ret_type;
+            if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
+                to = (to as delegated_methods).empty_param_method.ret_type;
             type_compare tc = type_table.compare_types(from, to);
             if (tc == type_compare.non_comparable_type)
                 return 1000;

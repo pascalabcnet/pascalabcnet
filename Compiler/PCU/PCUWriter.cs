@@ -670,7 +670,9 @@ namespace PascalABCCompiler.PCU
         //получение смещения сущности в модуле
 		private int GetMemberOffset(definition_node dn)
 		{
-			return members[dn];
+            int off = members[dn];
+
+            return members[dn];
 		}
 		
         //получения индекса в таблице интерфейсных имен
