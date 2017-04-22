@@ -7,8 +7,8 @@ unit GraphABC;
 //ne udaljat, IB 7.10.08 
 //с дополнениями 2015.01 (mabr) 
 {$apptype windows} 
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$reference '%GAC%\System.Windows.Forms.dll'}
+{$reference '%GAC%\System.Drawing.dll'}
 {$gendoc true}
 
 interface
@@ -531,6 +531,9 @@ function WindowTitle: string;
 procedure SetWindowCaption(s: string);
 /// Устанавливает заголовок графического окна
 procedure SetWindowTitle(s: string);
+
+//procedure AddStatusBar;
+
 
 /// Устанавливает ширину и высоту клиентской части графического окна в пикселах
 procedure InitWindow(Left,Top,Width,Height: integer; BackColor: Color := clWhite);
@@ -1958,9 +1961,9 @@ begin
   //(x+w/2, y+h/2) - центр масштабированного изображения
   //(x+new_w/2, y+new_h/2) - центр масштабированного и повернутого изображения
   if NotLockDrawing then
-  gr.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
+    gr.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
   if DrawInBuffer then
-  gbmp.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
+    gbmp.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
   Monitor.Exit(f);
 end;     
 
@@ -3334,10 +3337,19 @@ begin
 end;
 
 procedure SetWindowTitle(s: string);
-var p: Proc1String;
 begin
-  p := ChangeFormTitle;
-  f.Invoke(p,s);
+  f.Invoke(ChangeFormTitle,s);
+end;
+
+procedure AddStatusBarP;
+begin
+  var c := new System.Windows.Forms.StatusBar;
+  MainForm.Controls.Add(c);
+end;
+
+procedure AddStatusBar;
+begin
+  f.Invoke(AddStatusBarP);
 end;
 
 procedure SetWindowCaption(s: string);

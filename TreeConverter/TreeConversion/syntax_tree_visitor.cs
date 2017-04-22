@@ -3528,8 +3528,8 @@ namespace PascalABCCompiler.TreeConverter
                         List<SyntaxTree.type_definition> types = new List<SyntaxTree.type_definition>();
                         if (((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Auto) == class_attribute.Auto))
                         {
-                            if (_class_definition.class_parents!=null)
-                                AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));
+                            /*if (_class_definition.class_parents!=null)
+                                AddError(new AutoClassMustNotHaveParents(get_location(_class_definition)));*/
                             // добавление членов автоклассов. Не забыть сделать, что от автоклассов нельзя наследовать
                             SyntaxTreeBuilder.AddMembersForAutoClass(_class_definition,ref names,ref types);
                             for (var i = 0; i < types.Count; i++)

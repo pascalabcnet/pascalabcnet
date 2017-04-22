@@ -12,10 +12,10 @@ unit PABCSystem;
 // Default Application type
 {$apptype console}
 
-{$reference 'System.dll'}
-{$reference 'mscorlib.dll'}
-{$reference 'System.Core.dll'}
-{$reference 'System.Numerics.dll'}
+{$reference '%GAC%\System.dll'}
+{$reference '%GAC%\mscorlib.dll'}
+{$reference '%GAC%\System.Core.dll'}
+{$reference '%GAC%\System.Numerics.dll'}
 
 interface
 
@@ -359,6 +359,8 @@ type
     function ReadlnString: string;
     /// Возвращает значение типа boolean, введенное из текстового файла, и переходит на следующую строку
     function ReadlnBoolean: boolean;
+    /// Переходит в файле на следующую строку
+    procedure Readln;
     /// Записывает в текстовый файл значения
     procedure Write(params o: array of Object);
     /// Записывает в текстовый файл значения и переходит на следующую строку
@@ -5177,6 +5179,11 @@ begin
   Result := PABCSystem.ReadlnBoolean(Self);
 end;
 
+procedure Text.Readln;
+begin
+  PABCSystem.Readln(Self);  
+end;
+
 procedure Text.Write(params o: array of Object);
 begin
   PABCSystem.Write(Self,o);
@@ -9064,6 +9071,15 @@ begin
     Self[i,j] := f(Self[i,j]);
 end;
 
+/// Заполняет элементы двумерного массива значениями, вычисляемыми по некоторому правилу
+procedure Fill<T>(Self: array [,] of T; f: (integer,integer) -> T); extensionmethod;
+begin
+  for var i:=0 to Self.RowCount-1 do
+  for var j:=0 to Self.ColCount-1 do
+    Self[i,j] := f(i,j);
+end;
+
+
 // Реализация операций с матрицами - только после введения RowCount и ColCount
 function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
 begin
@@ -9363,6 +9379,14 @@ begin
   for var i:=0 to self.Length-1 do
     self[i] := f(self[i]);
 end;
+
+/// Заполняет элементы массива значениями, вычисляемыми по некоторому правилу
+procedure Fill<T>(Self: array of T; f: integer -> T); extensionmethod;
+begin
+  for var i:=0 to Self.Length-1 do
+    Self[i] := f(i);
+end;
+
 
 /// Выполняет бинарный поиск в отсортированном массиве
 function BinarySearch<T>(self: array of T; x: T): integer; extensionmethod;
