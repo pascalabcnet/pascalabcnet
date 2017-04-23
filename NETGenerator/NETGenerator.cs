@@ -7173,9 +7173,6 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Stind_Ref);
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Ldind_Ref);
-                        //il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
-                        //						il.Emit(OpCodes.Call,typeof(GCHandle).GetMethod("Alloc",new Type[1]{TypeFactory.ObjectType/*,typeof(GCHandleType)*/}));
-                        //						il.Emit(OpCodes.Pop);
                         FixPointer();
                     }
                     else if (tn.type_special_kind == type_special_kind.set_type)
@@ -7200,9 +7197,6 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Stind_Ref);
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Ldind_Ref);
-                        //il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
-                        //						il.Emit(OpCodes.Call,TypeFactory.GCHandleAlloc);//typeof(GCHandle).GetMethod("Alloc",new Type[1]{TypeFactory.ObjectType/*,typeof(GCHandleType)*/}));
-                        //						il.Emit(OpCodes.Pop);
                         FixPointer();
                     }
                     else if (tn.type_special_kind == type_special_kind.typed_file)
@@ -7212,9 +7206,6 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Stind_Ref);
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Ldind_Ref);
-                        //il.Emit(OpCodes.Ldc_I4, (int)GCHandleType.Pinned);
-                        //il.Emit(OpCodes.Call,typeof(GCHandle).GetMethod("Alloc",new Type[1]{TypeFactory.ObjectType/*,typeof(GCHandleType)*/}));
-                        //il.Emit(OpCodes.Pop);
                         FixPointer();
                     }
                     else if (tn.type_special_kind == type_special_kind.short_string)
@@ -7224,8 +7215,6 @@ namespace PascalABCCompiler.NETGenerator
                         il.Emit(OpCodes.Stind_Ref);
                         real_parameters[0].visit(this);
                         il.Emit(OpCodes.Ldind_Ref);
-                        //il.Emit(OpCodes.Call,typeof(GCHandle).GetMethod("Alloc",new Type[1]{TypeFactory.ObjectType/*,typeof(GCHandleType)*/}));
-                        //il.Emit(OpCodes.Pop);
                         FixPointer();
                     }
                     else if (tn.is_value_type && tn is ICommonTypeNode)
@@ -7278,13 +7267,10 @@ namespace PascalABCCompiler.NETGenerator
                 CallCloneIfNeed(il, parameters[i], real_parameters[i]);
                 if (box_awaited)
                 {
-                    //if (save_debug_info) MarkSequencePoint(il, 0xFeeFee, 1, 0xFeeFee, 1);
                     il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
                 }
                 is_addr = false;
             }
-            //if (save_debug_info && need_fee)
-            //  MarkSequencePoint(il,value.Location);
             il.EmitCall(OpCodes.Call, mi, null);
             EmitFreePinnedVariables();
             if (tmp_dot == true)
@@ -7657,8 +7643,8 @@ namespace PascalABCCompiler.NETGenerator
             TypeInfo ti = helper.GetTypeReference(to.type);
             if (to.type.is_value_type)
             {
-                //ti = helper.GetTypeReference(to.type);
-                if (ti.assign_meth != null) il.Emit(OpCodes.Ldflda, fi);
+                if (ti.assign_meth != null)
+                    il.Emit(OpCodes.Ldflda, fi);
             }
             else if (to.type.type_special_kind == type_special_kind.set_type && !in_var_init)
             {
@@ -7673,21 +7659,30 @@ namespace PascalABCCompiler.NETGenerator
             if (ti != null && ti.assign_meth != null)
             {
                 il.Emit(OpCodes.Call, ti.assign_meth);
-                if (ti.fix_meth != null && has_dereferences_tmp)
+                if (has_dereferences_tmp)
                 {
-                    is_dot_expr = true;
-                    value.obj.visit(this);
-                    is_dot_expr = false;
-                    il.Emit(OpCodes.Ldflda, fi);
-
-                    il.Emit(OpCodes.Call, ti.fix_meth);
+                    if (ti.fix_meth != null)
+                    {
+                        is_dot_expr = true;
+                        value.obj.visit(this);
+                        is_dot_expr = false;
+                        il.Emit(OpCodes.Ldflda, fi);
+                        il.Emit(OpCodes.Call, ti.fix_meth);
+                    }
                 }
                 return;
             }
             EmitBox(from, fi_info.field_type);
             CheckArrayAssign(to, from, il);
             il.Emit(OpCodes.Stfld, fi);
-
+            if (has_dereferences_tmp && TypeNeedToFix(to.type))
+            {
+                is_dot_expr = true;
+                value.obj.visit(this);
+                is_dot_expr = false;
+                il.Emit(OpCodes.Ldfld, fi);
+                FixPointer();
+            }
         }
 
         //присвоение статическому полю
