@@ -5240,8 +5240,6 @@ namespace PascalABCCompiler.TreeConverter
                                                         ThrowCompilationError = true;
                                                         throw LastError();
                                                     }
-                                                    //                                                    else
-                                                    //                                                        RemoveLastError(); // ошибка уже убрана чуть выше
                                                 }
                                             }
                                             catch (Exception ex)
@@ -5345,10 +5343,6 @@ namespace PascalABCCompiler.TreeConverter
                             case general_node_type.type_node:
                                 {
                                     type_node tn = (type_node)sn;
-                                    /*if (tn == SystemLibrary.SystemLibrary.void_type)
-                                    {
-                                        throw new VoidNotValid(get_location(id_right));
-                                    }*/
                                     check_for_type_allowed(tn, get_location(id_right));
                                     SyntaxTree.operator_name_ident oni_right = id_right as SyntaxTree.operator_name_ident;
                                     if (oni_right != null)
@@ -5629,15 +5623,6 @@ namespace PascalABCCompiler.TreeConverter
                                         #endregion
 
                                         function_node fn = convertion_data_and_alghoritms.select_function(exprs, si, subloc, syntax_nodes_parameters);
-                                        if (!debug && fn == SystemLibrary.SystemLibrary.assert_method)
-                                        {
-                                            //                                        	return_value(new empty_statement(null));
-                                            //                                        	return;
-                                        }
-                                        /*if ((proc_wait==false)&&(fn.return_value_type==null))
-                                        {
-                                            throw new FunctionExpectedProcedureMeet(fn,get_location(id_right));
-                                        }*/
 
                                         base_function_call bfc2 = null;
                                         if (exp == null)
@@ -5678,7 +5663,6 @@ namespace PascalABCCompiler.TreeConverter
                         SyntaxTree.expression expr = deref_value as SyntaxTree.expression;
                         if (expr != null)
                         {
-                            //throw new CompilerInternalError("Not supported");
                             expression_node exp_int = convert_strong(expr);
                             location sloc = get_location(expr);
                             internal_interface ii = exp_int.type.get_internal_interface(internal_interface_kind.delegate_interface);
@@ -9164,12 +9148,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.expression_evaluation:
                     {
-                        //en = expression_value_reciving(id_right, si, en, true);
-                        //try_convert_typed_expression_to_function_call(ref en);
-                        //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
-                            || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
-                            || si.sym_info is compiled_constructor_node)
+                        if (can_convert_to_method_call(si))
                         {
                             //dot_node dnode = new dot_node(syntax_node, template_id_right);
                             template_id_right.name = new dot_node(syntax_node, id_right);
@@ -9212,12 +9191,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.expression_evaluation:
                     {
-                        //en = expression_value_reciving(id_right, si, en, true);
-                        //try_convert_typed_expression_to_function_call(ref en);
-                        //return_value(en);
-                        if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
-                            || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
-                            || si.sym_info is compiled_constructor_node)
+                        if (can_convert_to_method_call(si))
                         {
                             dot_node dnode = new dot_node(syntax_node, id_right);
                             method_call mc = new method_call(dnode, new expression_list());
@@ -9301,6 +9275,19 @@ namespace PascalABCCompiler.TreeConverter
                     }
             }
             throw new CompilerInternalError("Invalid left dot node kind");
+        }
+
+        private bool can_convert_to_method_call(SymbolInfo si)
+        {
+            while (si != null)
+            {
+                if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
+                           || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
+                           || si.sym_info is compiled_constructor_node)
+                    return true;
+                si = si.Next;
+            }
+            return false;
         }
 
         public override void visit(SyntaxTree.dot_node _dot_node)
