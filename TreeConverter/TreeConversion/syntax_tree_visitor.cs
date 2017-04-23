@@ -14800,7 +14800,14 @@ namespace PascalABCCompiler.TreeConverter
             {
                 if (tn == null)
                     return expr;
-                if (expr is SyntaxTree.bracket_expr && (tn.type_special_kind == SemanticTree.type_special_kind.array_kind || tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper))
+                if (expr is SyntaxTree.array_const && tn.full_name != null && tn.full_name.StartsWith("System.Tuple"))
+                {
+                    method_call mc = new method_call();
+                    mc.parameters = (expr as SyntaxTree.array_const).elements;
+                    mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
+                    return mc;
+                }
+                else if (expr is SyntaxTree.bracket_expr && (tn.type_special_kind == SemanticTree.type_special_kind.array_kind || tn.type_special_kind == SemanticTree.type_special_kind.array_wrapper))
                 {
                     array_internal_interface aii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface) as array_internal_interface;
                     if (aii != null && aii.rank > 1)
