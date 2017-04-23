@@ -2500,7 +2500,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.block _block)
         {
-            if (context.converting_block() != block_type.namespace_block && _block.defs != null && _block.defs.defs != null)
+            List<declaration> declarations_with_lambdas = new List<declaration>();
+            if (/*context.converting_block() != block_type.namespace_block && */_block.defs != null && _block.defs.defs != null)
             {
                 foreach (var def in _block.defs.defs.Where(d => d is const_definition ||
                                                                 d is consts_definitions_list ||
@@ -2509,7 +2510,26 @@ namespace PascalABCCompiler.TreeConverter
                     var lambdaSearcher = new LambdaSearcher(def);
                     if (lambdaSearcher.CheckIfContainsLambdas())
                     {
-                        AddError(new LambdasNotAllowedInDeclarationsSection(get_location(lambdaSearcher.FoundLambda)));     // SSM 6.06.15 - Хочется убрать это. В разделе описаний лямбды нужны - пусть и без замыканий. Если внутри подпрограммы - не нужны, но Вы же запретили везде!
+                        if (context.converting_block() != block_type.namespace_block || !(def is variable_definitions))
+                            AddError(new LambdasNotAllowedInDeclarationsSection(get_location(lambdaSearcher.FoundLambda)));     // SSM 6.06.15 - Хочется убрать это. В разделе описаний лямбды нужны - пусть и без замыканий. Если внутри подпрограммы - не нужны, но Вы же запретили везде!
+                        else
+                            declarations_with_lambdas.Add(def as variable_definitions);
+                    }
+                }
+            }
+            int lambda_init_index = 0;
+            foreach (variable_definitions vd in declarations_with_lambdas)
+            {
+                foreach (var_def_statement vds in vd.list)
+                {
+                    var lambdaSearcher = new LambdaSearcher(vds);
+                    if (lambdaSearcher.CheckIfContainsLambdas())
+                    {
+                        procedure_definition func = new short_func_definition(SyntaxTreeBuilder.BuildShortFuncDefinition(new formal_parameters(), new procedure_attributes_list(), new method_name("<>lambda_initializer" + lambda_init_index), null, vds.inital_value, null));
+                        
+                        vds.inital_value = new method_call(new ident("<>lambda_initializer"+lambda_init_index), new expression_list());
+                        _block.defs.InsertBefore(vd, func);
+                        lambda_init_index++;
                     }
                 }
             }
