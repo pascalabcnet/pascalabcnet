@@ -615,6 +615,10 @@ namespace TreeConverter.LambdaExpressions.Closure
             ProcessNode(nae.expr);
         }
 
+        public override void visit(with_statement _with_statement)
+        {
+            _visitor.AddError(_visitor.get_location(_with_statement), "WITH_AND_LAMBDAS_NOT_ALLOWED");
+        }
 
         private void VisitProcParameters(formal_parameters procParametres)
         {

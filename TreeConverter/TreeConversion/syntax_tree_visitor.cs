@@ -8091,12 +8091,12 @@ namespace PascalABCCompiler.TreeConverter
 
         internal expression_node GetCurrentObjectReference(SymbolTable.Scope scope, definition_node dn, location loc)
         {
-            if (WithSection)
+            if (context.WithSection)
                 if (scope != null)
-                    if (WithVariables.ContainsKey(scope))
-                        return WithVariables[scope];
+                    if (context.WithVariables.ContainsKey(scope))
+                        return context.WithVariables[scope];
             		else
-            if (WithTypes.Contains(scope))
+            if (context.WithTypes.Contains(scope))
             {
             	switch (dn.semantic_node_type)
             	{
@@ -8116,9 +8116,7 @@ namespace PascalABCCompiler.TreeConverter
             else
                 return new this_node(context.converted_type, loc);
         }
-        bool WithSection = false;
-        Dictionary<SymbolTable.Scope, expression_node> WithVariables = new Dictionary<SymbolTable.Scope, expression_node>();
-		Stack<SymbolTable.Scope> WithTypes = new Stack<SymbolTable.Scope>();
+        
         
 		private expression_node create_with_expression(expression_node expr)
 		{
@@ -8158,7 +8156,7 @@ namespace PascalABCCompiler.TreeConverter
 		
 		public override void visit(SyntaxTree.with_statement _with_statement)
         {
-            WithSection = true;
+            context.WithSection = true;
             List<SymbolTable.Scope> Withs = new List<SymbolTable.Scope>();
             List<expression_node> VarRefs = new List<expression_node>();
             List<SymbolTable.Scope> WithTypesList = new List<SymbolTable.Scope>();
@@ -8235,20 +8233,20 @@ namespace PascalABCCompiler.TreeConverter
             Dictionary<SymbolTable.Scope, expression_node> OldWithVariables = new Dictionary<SymbolTable.Scope, expression_node>();
             foreach (expression_node vr in VarRefs)
             {
-                if (WithVariables.ContainsKey(vr.type.Scope))
+                if (context.WithVariables.ContainsKey(vr.type.Scope))
                 {
                     //перекрытие области
                     if (OldWithVariables.ContainsKey(vr.type.Scope))
                         //Это локальные перекрытия
-                        OldWithVariables[vr.type.Scope] = WithVariables[vr.type.Scope];
+                        OldWithVariables[vr.type.Scope] = context.WithVariables[vr.type.Scope];
                     else
-                        OldWithVariables.Add(vr.type.Scope, WithVariables[vr.type.Scope]);
-                    WithVariables[vr.type.Scope] = vr;
+                        OldWithVariables.Add(vr.type.Scope, context.WithVariables[vr.type.Scope]);
+                    context.WithVariables[vr.type.Scope] = vr;
                 }
                 else
                 {
                     //добавляем текущие with
-                    WithVariables.Add(vr.type.Scope, vr);
+                    context.WithVariables.Add(vr.type.Scope, vr);
                     
                 }
                 //ivan dobavil dlja bazovyh klassov
@@ -8260,16 +8258,16 @@ namespace PascalABCCompiler.TreeConverter
                     		(tn as compiled_type_node).init_scope();
                     	}
                     	if (tn.Scope != null)
-                    	if (!WithVariables.ContainsKey(tn.Scope))
-                    		WithVariables.Add(tn.Scope, vr);
+                    	if (!context.WithVariables.ContainsKey(tn.Scope))
+                    		context.WithVariables.Add(tn.Scope, vr);
                     	else
                     	{
                     		if (OldWithVariables.ContainsKey(tn.Scope))
                         	//Это локальные перекрытия
-                        		OldWithVariables[tn.Scope] = WithVariables[tn.Scope];
+                        		OldWithVariables[tn.Scope] = context.WithVariables[tn.Scope];
                     		else
-                        		OldWithVariables.Add(tn.Scope, WithVariables[tn.Scope]);
-                    		WithVariables[tn.Scope] = vr;
+                        		OldWithVariables.Add(tn.Scope, context.WithVariables[tn.Scope]);
+                    		context.WithVariables[tn.Scope] = vr;
                     	}
                     	tn = tn.base_type;
                     }
@@ -8279,33 +8277,33 @@ namespace PascalABCCompiler.TreeConverter
             
             foreach (SymbolTable.Scope sc in WithTypesList)
             {
-            	if (!WithTypes.Contains(sc))
-            	WithTypes.Push(sc);
+            	if (!context.WithTypes.Contains(sc))
+            	    context.WithTypes.Push(sc);
             }
                 
             stl.statements.AddElement(ret.visit(_with_statement.what_do));
 
             //восстанавливаем перекрытия
             foreach (SymbolTable.Scope sc in OldWithVariables.Keys)
-                WithVariables[sc] = OldWithVariables[sc];
+                context.WithVariables[sc] = OldWithVariables[sc];
             //удаляем текущие with
             foreach (expression_node vr in VarRefs)
             {
-                WithVariables.Remove(vr.type.Scope);
+                context.WithVariables.Remove(vr.type.Scope);
                 type_node tn = vr.type.base_type;
                 while (tn != null)
                 {
-                	if (tn.Scope != null && WithVariables.ContainsKey(tn.Scope))
-                		WithVariables.Remove(tn.Scope);
+                	if (tn.Scope != null && context.WithVariables.ContainsKey(tn.Scope))
+                        context.WithVariables.Remove(tn.Scope);
                 	tn = tn.base_type;
                 }
             }
             foreach (SymbolTable.Scope sc in WithTypesList)
             {
-            	WithTypes.Pop();
+                context.WithTypes.Pop();
             }
-            
-            WithSection = WithVariables.Count > 0;
+
+            context.WithSection = context.WithVariables.Count > 0;
 
             convertion_data_and_alghoritms.statement_list_stack_pop();
             return_value(stl);

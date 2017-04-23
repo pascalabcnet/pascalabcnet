@@ -41,7 +41,11 @@ namespace PascalABCCompiler.TreeConverter
         public Stack<common_type_node> type_stack; // Для вложенных типов
         public statement_list_stack stlist_stack;
         public semantic_node ret_value; // Возвращаемое значение класса returner
+        public bool WithSection;
+        public Dictionary<SymbolTable.Scope, expression_node> WithVariables;
+        public Stack<SymbolTable.Scope> WithTypes;
         //LambdaHelper.Reset(); // Пока не знаю, что с этим делать
+
     }
 	
 	public class compilation_context
@@ -96,6 +100,9 @@ namespace PascalABCCompiler.TreeConverter
             SavedContext.member_decls = member_decls;
             SavedContext.types_predefined = _types_predefined;
             SavedContext.ret_value = syntax_tree_visitor.ret.get_result();
+            SavedContext.WithTypes = WithTypes;
+            SavedContext.WithSection = WithSection;
+            SavedContext.WithVariables = WithVariables;
 
             SavedContextStack.Push(SavedContext);
             // SavedContext.type_stack = type_stack;
@@ -152,6 +159,9 @@ namespace PascalABCCompiler.TreeConverter
             _fal = SavedContext._fal;
             member_decls = SavedContext.member_decls;
             _types_predefined = SavedContext.types_predefined;
+            WithTypes = SavedContext.WithTypes;
+            WithVariables = SavedContext.WithVariables;
+            WithSection = SavedContext.WithSection;
             syntax_tree_visitor.ret.return_value(SavedContext.ret_value);
 
             if (SavedContextStack.Count == 0)
@@ -164,6 +174,9 @@ namespace PascalABCCompiler.TreeConverter
 		public common_type_node _ctn; // SSM - пытаюсь выходить из класса и входить заново
 		private common_function_node_stack _func_stack=new common_function_node_stack();
         private type_node _explicit_interface_type;
+        internal bool WithSection = false;
+        internal Dictionary<SymbolTable.Scope, expression_node> WithVariables = new Dictionary<SymbolTable.Scope, expression_node>();
+        internal Stack<SymbolTable.Scope> WithTypes = new Stack<SymbolTable.Scope>();
 
         internal common_function_node_stack func_stack
         {
