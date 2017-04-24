@@ -173,7 +173,8 @@ namespace PascalABCCompiler.TreeConverter
             RefTypesForCheckPointersTypeForDotNetFramework.Clear();
             reset_for_interface();
             _is_interface_part = false;
-            with_class_name=false;
+            with_class_name = false;
+            disable_order_independ = false;
             generic_param_abilities.Clear();
             current_converted_method_not_in_class_defined = false;
             assign_is_converting = false;

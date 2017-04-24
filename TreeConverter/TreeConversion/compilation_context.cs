@@ -3071,7 +3071,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (finded_method.is_constructor == false)
                         {
-                            AddError(compiled_meth.loc, "CONSTRUCTOR_MUST_BE_REALIZED_WITH_CONSTRUCTOR_KEYWORD");
+                            AddError(finded_method.loc, "CONSTRUCTOR_MUST_BE_REALIZED_WITH_CONSTRUCTOR_KEYWORD");
                         }
                         compiled_meth.return_value_type = finded_method.return_value_type;
                         convertion_data_and_alghoritms.create_function_return_variable(finded_method,null);
