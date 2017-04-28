@@ -42,7 +42,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 /*#if DEBUG
             try
             {
-                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz3.txt"));
+                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
             }
             catch
             {
