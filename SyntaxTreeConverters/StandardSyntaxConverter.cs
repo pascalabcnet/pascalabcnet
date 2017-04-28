@@ -39,17 +39,17 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
-#if DEBUG
+/*#if DEBUG
             try
             {
-                root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz3.txt"));
+                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz3.txt"));
             }
             catch
             {
 
             }
 
-#endif
+#endif*/
 
             return root;
         }
