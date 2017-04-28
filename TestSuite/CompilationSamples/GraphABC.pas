@@ -532,9 +532,6 @@ procedure SetWindowCaption(s: string);
 /// Устанавливает заголовок графического окна
 procedure SetWindowTitle(s: string);
 
-procedure AddStatusBar;
-
-
 /// Устанавливает ширину и высоту клиентской части графического окна в пикселах
 procedure InitWindow(Left,Top,Width,Height: integer; BackColor: Color := clWhite);
 
@@ -2447,10 +2444,9 @@ begin
 end;
 
 procedure ResizeHelper;
-var t: SmoothingMode;
 begin
   Monitor.Enter(f);
-  t := gr.SmoothingMode;
+  var t := gr.SmoothingMode;
   var m := gr.Transform;
   gr := Graphics.FromHwnd(f.Handle);
   gr.Transform := m;
@@ -3403,10 +3399,8 @@ begin
 end;
 
 procedure SetWindowPos(l,t: integer);
-var p: Proc2Integer;
 begin
-  p := ChangeFormPos;
-  f.Invoke(p,l,t);
+  f.Invoke(ChangeFormPos,l,t);
 end;
 
 procedure ChangeFormClientSize(w,h: integer); // вспомогательная
@@ -3416,11 +3410,8 @@ begin
 end;
 
 procedure SetWindowSize(w,h: integer);
-var p: Proc2Integer;
 begin
-  p := ChangeFormClientSize;
-  f.Invoke(p,w,h);
-  //ResizeHelper;
+  f.Invoke(ChangeFormClientSize,w,h);
 end;
 
 function GraphBoxWidth: integer;
