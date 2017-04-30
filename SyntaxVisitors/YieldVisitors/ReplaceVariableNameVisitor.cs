@@ -31,7 +31,7 @@ namespace SyntaxVisitors
 
             var upperNode = UpperNode();
             if (
-                (object)upperNode != null && (object)(upperNode as dot_node) == null)
+                upperNode != null /*&& (upperNode as dot_node) == null*/) // Я не знаю, зачем вообще было второе условие. Видимо, это всё надо убрать
             {
                 //Replace(id, _newName);
                 // заменяются только строки, а сами идентификаторы как объекты не меняются!

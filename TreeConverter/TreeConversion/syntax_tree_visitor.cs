@@ -15931,6 +15931,7 @@ namespace PascalABCCompiler.TreeConverter
                 // SSM 26.06.16 - правка в связи с автовыведением типов в yieldах
                 if (to.type is auto_type)
                 {
+                    try_convert_typed_expression_to_function_call(ref from);
                     if (to is class_field_reference)
                     {
                         var cfr = to as class_field_reference;
