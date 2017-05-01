@@ -9167,7 +9167,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.expression_evaluation:
                     {
-                        if (can_convert_to_method_call(si))
+                        if (can_convert_to_method_call(ref si))
                         {
                             //dot_node dnode = new dot_node(syntax_node, template_id_right);
                             template_id_right.name = new dot_node(syntax_node, id_right);
@@ -9210,7 +9210,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 case motivation.expression_evaluation:
                     {
-                        if (can_convert_to_method_call(si))
+                        if (can_convert_to_method_call(ref si))
                         {
                             dot_node dnode = new dot_node(syntax_node, id_right);
                             method_call mc = new method_call(dnode, new expression_list());
@@ -9296,15 +9296,16 @@ namespace PascalABCCompiler.TreeConverter
             throw new CompilerInternalError("Invalid left dot node kind");
         }
 
-        private bool can_convert_to_method_call(SymbolInfo si)
+        private bool can_convert_to_method_call(ref SymbolInfo si)
         {
-            while (si != null)
+            SymbolInfo tmp_si = si;
+            while (tmp_si != null)
             {
-                if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method && !has_property(ref si)
-                           || si.sym_info is common_method_node && (si.sym_info as common_method_node).is_constructor
-                           || si.sym_info is compiled_constructor_node)
+                if (tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref si)
+                           || tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor
+                           || tmp_si.sym_info is compiled_constructor_node)
                     return true;
-                si = si.Next;
+                tmp_si = tmp_si.Next;
             }
             return false;
         }
