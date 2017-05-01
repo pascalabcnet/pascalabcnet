@@ -3859,7 +3859,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
 			read_statement(_semantic_check_sugared_statement_node);
-			_semantic_check_sugared_statement_node.stat = (object)br.ReadByte();
+			_semantic_check_sugared_statement_node.typ = (object)br.ReadByte();
+			if (br.ReadByte() == 0)
+			{
+				_semantic_check_sugared_statement_node.lst = null;
+			}
+			else
+			{
+				_semantic_check_sugared_statement_node.lst = new List<syntax_tree_node>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_semantic_check_sugared_statement_node.lst.Add(_read_node() as syntax_tree_node);
+				}
+			}
 		}
 
 

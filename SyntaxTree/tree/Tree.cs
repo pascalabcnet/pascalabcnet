@@ -38543,37 +38543,138 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public semantic_check_sugared_statement_node(object _stat)
+		public semantic_check_sugared_statement_node(object _typ,List<syntax_tree_node> _lst)
 		{
-			this._stat=_stat;
+			this._typ=_typ;
+			this._lst=_lst;
 		}
 
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public semantic_check_sugared_statement_node(object _stat,SourceContext sc)
+		public semantic_check_sugared_statement_node(object _typ,List<syntax_tree_node> _lst,SourceContext sc)
 		{
-			this._stat=_stat;
+			this._typ=_typ;
+			this._lst=_lst;
 			source_context = sc;
 		}
-		protected object _stat;
+		public semantic_check_sugared_statement_node(syntax_tree_node elem, SourceContext sc = null)
+		{
+			Add(elem, sc);
+		}
+		
+		protected object _typ;
+		protected List<syntax_tree_node> _lst=new List<syntax_tree_node>();
 
 		///<summary>
 		///
 		///</summary>
-		public object stat
+		public object typ
 		{
 			get
 			{
-				return _stat;
+				return _typ;
 			}
 			set
 			{
-				_stat=value;
+				_typ=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public List<syntax_tree_node> lst
+		{
+			get
+			{
+				return _lst;
+			}
+			set
+			{
+				_lst=value;
 			}
 		}
 
 
+		public semantic_check_sugared_statement_node Add(syntax_tree_node elem, SourceContext sc = null)
+		{
+			lst.Add(elem);
+			if (sc != null)
+				source_context = sc;
+			return this;
+		}
+		
+		public void AddFirst(syntax_tree_node el)
+		{
+			lst.Insert(0, el);
+		}
+		
+		public void AddFirst(IEnumerable<syntax_tree_node> els)
+		{
+			lst.InsertRange(0, els);
+		}
+		
+		public void AddMany(params syntax_tree_node[] els)
+		{
+			lst.AddRange(els);
+		}
+		
+		private int FindIndexInList(syntax_tree_node el)
+		{
+			var ind = lst.FindIndex(x => x == el);
+			if (ind == -1)
+				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
+			return ind;
+		}
+		
+		public void InsertAfter(syntax_tree_node el, syntax_tree_node newel)
+		{
+			lst.Insert(FindIndexInList(el) + 1, newel);
+		}
+		
+		public void InsertAfter(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		{
+			lst.InsertRange(FindIndexInList(el) + 1, newels);
+		}
+		
+		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
+		{
+			lst.Insert(FindIndexInList(el), newel);
+		}
+		
+		public void InsertBefore(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		{
+			lst.InsertRange(FindIndexInList(el), newels);
+		}
+		
+		public bool Remove(syntax_tree_node el)
+		{
+			return lst.Remove(el);
+		}
+		
+		public void ReplaceInList(syntax_tree_node el, syntax_tree_node newel)
+		{
+			lst[FindIndexInList(el)] = newel;
+		}
+		
+		public void ReplaceInList(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
+		{
+			var ind = FindIndexInList(el);
+			lst.RemoveAt(ind);
+			lst.InsertRange(ind, newels);
+		}
+		
+		public int RemoveAll(Predicate<syntax_tree_node> match)
+		{
+			return lst.RemoveAll(match);
+		}
+		
+		public syntax_tree_node Last()
+		{
+			return lst[lst.Count - 1];
+		}
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -38586,7 +38687,20 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.attributes = (attribute_list)attributes.Clone();
 				copy.attributes.Parent = copy;
 			}
-			copy.stat = stat;
+			copy.typ = typ;
+			if (lst != null)
+			{
+				foreach (syntax_tree_node elem in lst)
+				{
+					if (elem != null)
+					{
+						copy.Add(elem.Clone());
+						copy.Last().Parent = copy;
+					}
+					else
+						copy.Add(null);
+				}
+			}
 			return copy;
 		}
 
@@ -38613,7 +38727,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 0;
+				return 0 + (lst == null ? 0 : lst.Count);
 			}
 		}
 		///<summary>
@@ -38625,12 +38739,29 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(lst != null)
+				{
+					if(index_counter < lst.Count)
+					{
+						return lst[index_counter];
+					}
+				}
 				return null;
 			}
 			set
 			{
 				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
 					throw new IndexOutOfRangeException();
+				Int32 index_counter=ind - 0;
+				if(lst != null)
+				{
+					if(index_counter < lst.Count)
+					{
+						lst[index_counter]= (syntax_tree_node)value;
+						return;
+					}
+				}
 			}
 		}
 		///<summary>

@@ -13,33 +13,40 @@ namespace SyntaxVisitors
 {
     public class ReplaceVariableNameVisitor : BaseChangeVisitor
     {
-        private ident _oldName;
-        private ident _newName;
+        private string _oldName;
+        private string _newName;
 
         public ReplaceVariableNameVisitor(ident oldName, ident newName)
         {
-            _oldName = oldName;
-            _newName = newName;
+            _oldName = oldName.name;
+            _newName = newName.name;
         }
+
+        // Этот алгоритм маломощный и меняет всё внутри лямбды. 
+        // Например, если переименовывается x, то 
+        // в записи     t := y->begin var x := '4'; Result := x*2 end;
+        // и в записи   t := x->x;
+        // все x будут переименованы. Но это нестрашно, хотя неэффективно
 
         public override void visit(ident id)
         {
-            if (id.name != _oldName.name)
+            if (id.name != _oldName)
             {
                 return;
             }
 
-            var upperNode = UpperNode();
-            if (
-                upperNode != null /*&& (upperNode as dot_node) == null*/) // Я не знаю, зачем вообще было второе условие. Видимо, это всё надо убрать
-            {
+            //var upperNode = UpperNode();
+            //if (
+            //    upperNode != null /*&& (upperNode as dot_node) == null*/) // Я не знаю, зачем вообще было второе условие. Видимо, это всё надо убрать SSM
+            //{
                 //Replace(id, _newName);
                 // заменяются только строки, а сами идентификаторы как объекты не меняются!
-                id.name = _newName.name;
-            }
+            id.name = _newName;
+            //}
         }
 
-        // frninja 11/03/16 - оно тут вообще надо???
+        // SSM 29/04/17 - В записи x.x обходится (и заменяется если надо) только первое x
+        // Важно что в записи x.x.y всё разбивается на части так: x.x и y
         public override void visit(dot_node dn)
         {
             ProcessNode(dn.left);

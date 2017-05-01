@@ -3643,6 +3643,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_semantic_check_sugared_statement_node);
 			pre_do_visit(_semantic_check_sugared_statement_node);
+			for (int i = 0; i < lst.Count; i++)
+				visit(semantic_check_sugared_statement_node.lst[i]);
 			post_do_visit(_semantic_check_sugared_statement_node);
 		}
 

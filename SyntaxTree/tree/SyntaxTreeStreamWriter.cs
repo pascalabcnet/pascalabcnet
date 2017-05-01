@@ -6013,7 +6013,28 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
 			write_statement(_semantic_check_sugared_statement_node);
-			bw.Write((byte)_semantic_check_sugared_statement_node.stat);
+			bw.Write((byte)_semantic_check_sugared_statement_node.typ);
+			if (_semantic_check_sugared_statement_node.lst == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_semantic_check_sugared_statement_node.lst.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _semantic_check_sugared_statement_node.lst.Count; ssyy_i++)
+				{
+					if (_semantic_check_sugared_statement_node.lst[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_semantic_check_sugared_statement_node.lst[ssyy_i].visit(this);
+					}
+				}
+			}
 		}
 
 

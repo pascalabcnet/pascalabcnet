@@ -10,10 +10,10 @@ namespace PascalABCCompiler.TreeConverter
 {
     public partial class syntax_tree_visitor
     {
-        public void semantic_check_assign_tuple(SyntaxTree.assign_tuple asstup) // подходит и для assign_var_tuple
+        public void semantic_check_assign_tuple(addressed_value_list vars, expression ex) // подходит и для assign_var_tuple
         {
             // Проверить, что справа - Tuple
-            var expr = convert_strong(asstup.expr);
+            var expr = convert_strong(ex);
             expr = convert_if_typed_expression_to_function_call(expr);
 
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
@@ -23,9 +23,9 @@ namespace PascalABCCompiler.TreeConverter
             if (!t.FullName.StartsWith("System.Tuple"))
                 AddError(expr.location, "TUPLE_EXPECTED");
 
-            var n = asstup.vars.variables.Count();
+            var n = vars.variables.Count();
             if (n > t.GetGenericArguments().Count())
-                AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
         }
 
         void semantic_check_method_call_as_slice_expr(SyntaxTree.method_call mc)
