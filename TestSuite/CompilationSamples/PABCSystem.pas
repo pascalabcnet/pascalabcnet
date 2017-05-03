@@ -9813,16 +9813,16 @@ begin
   Result := sb.ToString;
 end;
 
-// Дополнения февраль 2016: Matches, MatchValues, Replace, Remove, Right, Left
+// Дополнения февраль 2016: Matches, MatchValue, MatchValues, IsMatch, RegexReplace, Remove, Right, Left
 
 /// Заменяет в указанной строке все вхождения регулярного выражения указанной строкой замены и возвращает преобразованную строку
-function Replace(Self: string; reg,repl: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+function RegexReplace(Self: string; reg,repl: string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
 	Result := Regex.Replace(Self,reg,repl,options)
 end;
 
 /// Заменяет в указанной строке все вхождения регулярного выражения указанным преобразованием замены и возвращает преобразованную строку
-function Replace(Self: string; reg: string; repl: Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
+function RegexReplace(Self: string; reg: string; repl: Match -> string; options: RegexOptions := RegexOptions.None): string; extensionmethod;
 begin
 	Result := Regex.Replace(Self,reg,repl,options)
 end;
