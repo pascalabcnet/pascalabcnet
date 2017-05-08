@@ -1542,9 +1542,10 @@ namespace CodeFormatters
         {
             sb.Append("with");
             SetKeywordOffset("with");
+            multiline_stack_push(_with_statement.do_with);
             visit_node(_with_statement.do_with);
+            multiline_stack_pop(_with_statement.do_with);
             //sb.Append(" do");
-            add_newline_after = true;
             add_space_before = true;
             bool need_off = !(_with_statement.what_do is statement_list);
             if (need_off)
