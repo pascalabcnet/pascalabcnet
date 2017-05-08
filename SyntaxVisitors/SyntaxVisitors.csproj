@@ -49,6 +49,7 @@
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
+    <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />
     <Compile Include="YieldVisitors\ObjectCopier\ObjectCopier.cs" />

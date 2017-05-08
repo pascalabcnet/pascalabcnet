@@ -78,7 +78,7 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -3005,17 +3005,16 @@ literal_or_number
     ;
 
 
-/*var_question_colon
+var_question_point
 	: variable tkQuestionPoint variable
 	{
 		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
 	}
-	| variable tkQuestionPoint var_question_colon 
+	| variable tkQuestionPoint var_question_point 
 	{
 		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
 	}
 	;
-*/	
 
 var_reference
     : var_address variable                   
@@ -3024,8 +3023,8 @@ var_reference
 		}
     | variable 
 		{ $$ = $1; }
-    /*| var_question_colon 
-		{ $$ = $1; }*/
+    | var_question_point 
+		{ $$ = $1; }
     ;
  
 var_address
@@ -3111,7 +3110,7 @@ variable
         }
     /*| variable tkQuestionPoint identifier_keyword_operatorname                
         {
-			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+			$$ = new dot_question_node($1 as addressed_value, $3 as addressed_value, @$);
         }*/
     | variable tkDeref              
         {

@@ -3102,7 +3102,8 @@ begin
             sb.Insert(1,StructuredObjectToString(ff[i].GetValue(o),n+1)+',');
     
           for var i:=pp.Length-1 downto 0 do
-            sb.Insert(1,StructuredObjectToString(pp[i].GetValue(o, nil),n+1)+',');
+            if pp[i].GetIndexParameters.Length = 0 then
+              sb.Insert(1,StructuredObjectToString(pp[i].GetValue(o, nil),n+1)+',');
     
           t := t.BaseType;
         end; 
