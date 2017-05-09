@@ -19355,22 +19355,13 @@ namespace PascalABCCompiler.TreeConverter
             t.visit(this);
         }
 
-        /*public SyntaxTree.question_colon_expression ConvertToQCE(dot_question_node dqn)
-        {
-            // Неверно работает. Пока не используется. Доделать
-            addressed_value left = dqn.left;
-            addressed_value right = dqn.right;
-            var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
-            var dn = new dot_node(left, right, dqn.source_context);
-            var q = new SyntaxTree.question_colon_expression(eq, new nil_const(), dn, dqn.source_context);
-            return q;
-        }
         public override void visit(SyntaxTree.dot_question_node dqn)
         {
             // a?.b
-            var q = ConvertToQCE(dqn);
-            visit(q);
-        }*/
+            AddError(get_location(dqn), "SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR", dqn.GetType().Name);
+            //var q = ConvertToQCE(dqn);
+            //visit(q);
+        }
 
         public override void visit(SyntaxTree.semantic_check_sugared_statement_node st)
         {

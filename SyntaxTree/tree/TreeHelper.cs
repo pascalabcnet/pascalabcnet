@@ -1688,6 +1688,15 @@ namespace PascalABCCompiler.SyntaxTree
 
     }
 
+    public partial class question_colon_expression
+    {
+        public override string ToString() => this.condition + "?" + this.ret_if_true + ":" + this.ret_if_false;
+    }
+
+    public partial class dot_question_node
+    {
+        public override string ToString() => left.ToString() + "?." + right.ToString();
+    }
 
 }
 
