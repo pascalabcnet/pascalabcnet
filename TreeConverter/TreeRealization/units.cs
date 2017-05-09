@@ -70,7 +70,10 @@ namespace PascalABCCompiler.TreeRealization
 
         public override PascalABCCompiler.TreeConverter.SymbolInfo find_only_in_namespace(string name)
         {
-            return _dotNetScope.Find(name);
+            var temp = _dotNetScope.Find(name);
+            if (temp != null)
+                return temp.ToSymbolInfo();
+            return null;
         }
     }
 
@@ -145,7 +148,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public void add_unit_name_to_namespace()
         {
-            this.scope.AddSymbol(unit_name, new TreeConverter.SymbolInfo(this));
+            this.scope.AddSymbol(unit_name, new TreeConverter.SymbolInfoUnit(this));
         }
 
         public string unit_name
@@ -236,7 +239,10 @@ namespace PascalABCCompiler.TreeRealization
 
         public override PascalABCCompiler.TreeConverter.SymbolInfo find_only_in_namespace(string name)
 		{
-			return _scope.FindOnlyInScope(name);
+			var temp = _scope.FindOnlyInScope(name);
+            if (temp != null)
+                return temp.ToSymbolInfo();
+            return null;
 		}
 	}
 

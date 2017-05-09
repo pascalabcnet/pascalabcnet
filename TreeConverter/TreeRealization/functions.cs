@@ -786,7 +786,10 @@ namespace PascalABCCompiler.TreeRealization
         /// <returns>Информация о найленном символе. null, если ни чего не найдено.</returns>
         public PascalABCCompiler.TreeConverter.SymbolInfo find(string name, SymbolTable.Scope CurrentScope)
         {
-            return _scope.Find(name, CurrentScope);//y
+            var temp = _scope.Find(name, CurrentScope);
+            if (temp != null)
+                return temp.ToSymbolInfo();
+            return null;//y
         }
 
         /// <summary>

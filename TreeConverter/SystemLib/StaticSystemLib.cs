@@ -956,18 +956,20 @@ namespace PascalABCCompiler.SystemLibrary
             basic_function_node inc_var = create_oti_method(vinc, type, SemanticTree.parameter_type.var);
             basic_function_node dec_var = create_oti_method(vdec, type, SemanticTree.parameter_type.var);
 
-            SymbolInfo si = type.find_in_type(compiler_string_consts.greq_name);
-            basic_function_node greq = (basic_function_node)si.sym_info;
+            SymbolInfoList si = type.find_in_type(compiler_string_consts.greq_name);
+            basic_function_node greq = (basic_function_node)si.First().sym_info;
         
             si = type.find(compiler_string_consts.smeq_name);
-            basic_function_node loeq = (basic_function_node)si.sym_info;
+            basic_function_node loeq = (basic_function_node)si.First().sym_info;
+            
 			
             si = type.find(compiler_string_consts.sm_name);
-            basic_function_node lo = (basic_function_node)si.sym_info;
+            basic_function_node lo = (basic_function_node)si.First().sym_info;
             
+
             si = type.find(compiler_string_consts.gr_name);
-            basic_function_node gr = (basic_function_node)si.sym_info;
-            
+            basic_function_node gr = (basic_function_node)si.First().sym_info;
+
             ordinal_type_interface oti = new ordinal_type_interface(inc_value, dec_value, inc_var, dec_var,
                 loeq, greq, lo, gr, lower_value, upper_value, t2i, t2i_comp);
 

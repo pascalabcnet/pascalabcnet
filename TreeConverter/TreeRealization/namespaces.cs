@@ -448,11 +448,17 @@ namespace PascalABCCompiler.TreeRealization
         /// <returns>Информация о найденом символе. null, если ни чего не найдена.</returns>
 		public override SymbolInfo find(string name)
 		{
-			return _scope.Find(name);//c,cc,c,cc
-		}
+            var temp = _scope.Find(name);//c,cc,c,cc
+            if (temp != null)
+                return temp.ToSymbolInfo();
+            return null;
+        }
         public SymbolInfo findOnlyInNamespace(string name)
         {
-            return _scope.FindOnlyInScope(name);//c,cc,c,cc
+            var temp = _scope.FindOnlyInScope(name);//c,cc,c,cc
+            if (temp != null)
+                return temp.ToSymbolInfo();
+            return null;
         }
 
         /// <summary>
@@ -662,7 +668,11 @@ namespace PascalABCCompiler.TreeRealization
                 	t = NetHelper.NetHelper.FindType(_name+"."+_name);
                 	if (t != null && NetHelper.NetHelper.IsEntryType(t))
                 	{
-                		si = NetHelper.NetHelper.FindName(t,name);
+                		var temp = NetHelper.NetHelper.FindName(t,name);
+                        if (temp != null)
+                            si = temp.ToSymbolInfo();
+                        else
+                            si = null;
                         if (si == null)
                         {
                             type_node tn = NetHelper.NetHelper.FindCompiledPascalType(_name + "." + name);

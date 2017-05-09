@@ -467,9 +467,14 @@ namespace PascalABCCompiler.PCU
                 {
                     //PCUReturner.AddPCUReader((wrapped_definition_node)si.sym_info, this);
                     //si.access_level = access_level.al_public;
-                    SymbolInfo si2 = (cun.scope as WrappedUnitInterfaceScope).FindWithoutCreation(names[i].name);
+                    SymbolInfo si2;
+                    var temp = (cun.scope as WrappedUnitInterfaceScope).FindWithoutCreation(names[i].name);
+                    if (temp != null)
+                        si2 = temp.ToSymbolInfo();
+                    else
+                        si2 = null;
                     si.Next = si2;
-                    Scope.AddSymbol(names[i].name, si);
+                    Scope.AddSymbol(names[i].name, new SymbolInfoUnit(si));
                 }
                 else
                 {
@@ -479,17 +484,12 @@ namespace PascalABCCompiler.PCU
                     {
                         if ((tn as compiled_type_node).scope == null)
                             (tn as compiled_type_node).init_scope();
-                        (tn as compiled_type_node).scope.AddSymbol(names[i].name, si);
+                        (tn as compiled_type_node).scope.AddSymbol(names[i].name, new SymbolInfoUnit(si));
                     }
                     else if (tn is generic_instance_type_node)
-                        tn.Scope.AddSymbol(names[i].name, si);
+                        tn.Scope.AddSymbol(names[i].name, new SymbolInfoUnit(si));
                     else if (tn is common_type_node)
-                    {
-                        (tn as common_type_node).scope.AddSymbol(names[i].name, si);
-                        if (tn.IsDelegate)
-                            SystemLibrary.SystemLibrary.system_delegate_type.Scope.AddSymbol(names[i].name, si);
-                    }
-                        
+                        (tn as common_type_node).scope.AddSymbol(names[i].name, new SymbolInfoUnit(si));
                     else
                         throw new NotSupportedException();
                 }
@@ -2226,10 +2226,10 @@ namespace PascalABCCompiler.PCU
 
             if (type_is_delegate)
             {
-                SymbolInfo sim = ctn.find_in_type(compiler_string_consts.invoke_method_name);
-                common_method_node invoke_method = sim.sym_info as common_method_node;
+                SymbolInfoList sim = ctn.find_in_type(compiler_string_consts.invoke_method_name);
+                common_method_node invoke_method = sim.First().sym_info as common_method_node;
                 sim = ctn.find_in_type(compiler_string_consts.default_constructor_name);
-                common_method_node constructor = sim.sym_info as common_method_node;
+                common_method_node constructor = sim.First().sym_info as common_method_node;
                 delegate_internal_interface dii = new delegate_internal_interface(invoke_method.return_value_type, invoke_method, constructor);
                 dii.parameters.AddRange(invoke_method.parameters);
                 ctn.add_internal_interface(dii);
@@ -2252,10 +2252,10 @@ namespace PascalABCCompiler.PCU
             {
                 foreach (common_type_node par in ctn.generic_params)
                 {
-                    SymbolInfo tsi = ctn.find_in_type(compiler_string_consts.generic_param_kind_prefix + par.name);
+                    SymbolInfoList tsi = ctn.find_in_type(compiler_string_consts.generic_param_kind_prefix + par.name);
                     if (tsi != null)
                     {
-                        par.runtime_initialization_marker = tsi.sym_info as class_field;
+                        par.runtime_initialization_marker = tsi.First().sym_info as class_field;
                     }
                 }
             }
@@ -2402,7 +2402,7 @@ namespace PascalABCCompiler.PCU
             //members[offset] = tc;
             AddMember(tc, offset);
             
-            cun.namespaces[0].scope.AddSymbol(name, new SymbolInfo(tc));
+            cun.namespaces[0].scope.AddSymbol(name, new SymbolInfoUnit(tc));
 
             return tc;
         }
@@ -2446,7 +2446,7 @@ namespace PascalABCCompiler.PCU
                 wrapped_type_synonym wts = CreateTypeSynonym();
                 SymbolInfo si = new SymbolInfo();
                 si.sym_info = wts;
-                scope.AddSymbol(wts.name, si);
+                scope.AddSymbol(wts.name, new SymbolInfoUnit(si));
             }
             br.BaseStream.Seek(pos, SeekOrigin.Begin);
         }
@@ -2563,7 +2563,7 @@ namespace PascalABCCompiler.PCU
                 //Вроде это ненужно
                 //SymbolInfo si2 = scope.FindWithoutCreation(name);
                 //si.Next = si2;
-                scope.AddSymbol(name, si);
+                scope.AddSymbol(name, new SymbolInfoUnit(si));
                 names[i] = name;
             }
             return names;
@@ -2807,19 +2807,13 @@ namespace PascalABCCompiler.PCU
 			int_members.Add(cnfn);
             cnfn.ConnectedToType = ConnectedToType;
             if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && cnfn.ConnectedToType.element_type.is_generic_parameter)
-                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.is_generic_parameter)
-                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
-            {
-                cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-                if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
-                    compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-            }
+                cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
-                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && cnfn.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
-                (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             return cnfn;
 		}
 
@@ -2908,27 +2902,15 @@ namespace PascalABCCompiler.PCU
 			for (int i=0; i<num_nest_funcs; i++)
 				cnfn.functions_nodes_list.AddElement(GetNestedFunction());
 			//br.ReadInt32();//code;
-            if (cnfn.name == "*")
-            {
-
-            }
 			cnfn.loc = ReadDebugInfo();
             cnfn.function_code = (restore_code /*|| cnfn.is_generic_function*/) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
             cnfn.ConnectedToType = ConnectedToType;
             if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.array_kind && cnfn.ConnectedToType.element_type.is_generic_parameter)
-                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.is_generic_parameter)
-                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
-            {
-                cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-                if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
-                    compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-            }
-            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
-                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
-            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && (cnfn.ConnectedToType.element_type == null || cnfn.ConnectedToType.element_type.is_generic_parameter) && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
-                (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfoUnit(cnfn));
             br.BaseStream.Seek(pos,SeekOrigin.Begin);
 			return cnfn;
 		}
@@ -3319,35 +3301,15 @@ namespace PascalABCCompiler.PCU
             type_node tn = GetTypeReference();
             expression_node initv = null;
             local_block_variable lv = new local_block_variable(name, tn, stmt, null);
-            if (members.ContainsKey(offset))
-            {
-                lv = members[offset] as local_block_variable;
-                if (CanReadObject())
-                    br.ReadInt32();
-                ReadDebugInfo();
-            } 
-            else
-            {
-                AddMember(lv, offset);
-                if (CanReadObject())
-                    initv = CreateExpressionWithOffset();
-                lv.loc = ReadDebugInfo();
-                lv.inital_value = initv;
-            }
-                
+            AddMember(lv, offset);
+            if (CanReadObject())
+                initv = CreateExpressionWithOffset();
+            lv.loc = ReadDebugInfo();
+            lv.inital_value = initv;
             return lv;
             
         }
 		
-        public expression_node GetExpression(int offset)
-        {
-            int tmp = (int)br.BaseStream.Position;
-            br.BaseStream.Seek(offset, SeekOrigin.Begin);
-            expression_node expr = CreateExpressionWithOffset();
-            br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            return expr;
-        }
-
 		private statement_node CreateEmpty()
 		{
 			return new empty_statement(null);
@@ -3977,13 +3939,6 @@ namespace PascalABCCompiler.PCU
 
         private local_block_variable GetLocalBlockVariableByOffset(int offset)
         {
-            if (!members.ContainsKey(offset))
-            {
-                int tmp = (int)br.BaseStream.Position;
-                br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
-                var loc_var = CreateLocalBlockVariable(null);
-                br.BaseStream.Seek(tmp, SeekOrigin.Begin);
-            }
             return (local_block_variable)members[offset];
         }
 		

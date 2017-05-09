@@ -43,7 +43,7 @@ namespace SymbolTable
 			while (data[i].Area<node.Area) i++;
 			if (data[i].Area==node.Area) 
 			{
-				data[i].InfoList.Add(node.InfoList[0]);
+				data[i].Add(node.InfoList[0]);
                 //data[i].InfoList[0].Next = node.InfoList[0];
 				return;
 				//throw new Exception("Ошибка при добавлении области видимости к идентефикатору: такая область уже существует");

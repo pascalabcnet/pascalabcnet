@@ -36,12 +36,11 @@ namespace PascalABCCompiler.PCU
             this.pr = pr;
         }
 
-        public override SymbolInfo Find(string name)
+        public override SymbolInfoList Find(string name)
         {
-            SymbolInfo si = SymbolTable.Find(this, name);
-            if (si == null) return si;
-            SymbolInfo tsi=si;
-            while (tsi != null)
+            SymbolInfoList si = SymbolTable.Find(this, name);
+            if (si == null) return null;
+            foreach(SymbolInfoUnit tsi in si.InfoUnitList)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -51,33 +50,31 @@ namespace PascalABCCompiler.PCU
                     else
                     	tsi.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset, name);
                 }
-                tsi = tsi.Next;
             }
             return si;
         }
 
-        public override SymbolInfo FindOnlyInScope(string name)
+        public override SymbolInfoList FindOnlyInScope(string name)
         {
-            SymbolInfo si = SymbolTable.FindOnlyInScope(this, name, false);
+            SymbolInfoList si = SymbolTable.FindOnlyInScope(this, name, false);
+            
             if (si == null) return si;
-            SymbolInfo tsi = si;
-            while (tsi != null)
+            foreach(SymbolInfoUnit tsi in si.InfoUnitList)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
                     wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                     if (wdn.is_synonim)
-                    	tsi.sym_info = wdn.PCUReader.CreateTypeSynonim(wdn.offset, name);
+                        tsi.sym_info = wdn.PCUReader.CreateTypeSynonim(wdn.offset, name);
                     else
-                    	tsi.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset,name);
+                        tsi.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset, name);
                 }
-                tsi = tsi.Next;
             }
             return si;
         }
 
         //нужно для перегруженных методов
-        public SymbolInfo FindWithoutCreation(string name)
+        public SymbolInfoList FindWithoutCreation(string name)
         {
             return SymbolTable.FindOnlyInType(this, name);
         }
@@ -94,12 +91,11 @@ namespace PascalABCCompiler.PCU
             this.pr = pr;
         }
 
-        public override SymbolInfo Find(string name)
+        public override SymbolInfoList Find(string name)
         {
-            SymbolInfo si = SymbolTable.Find(this, name);
-            if (si == null) return si;
-            SymbolInfo tsi = si;
-            while (tsi != null)
+            SymbolInfoList si = SymbolTable.Find(this, name);
+            if (si == null) return null;
+            foreach(SymbolInfoUnit tsi in si.InfoUnitList)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
@@ -109,33 +105,31 @@ namespace PascalABCCompiler.PCU
                     else
                     	tsi.sym_info = wdn.PCUReader.CreateImplementationMember(wdn.offset);
                 }
-                tsi = tsi.Next;
             }
             return si;
         }
 
-        public override SymbolInfo FindOnlyInScope(string name)
+        public override SymbolInfoList FindOnlyInScope(string name)
         {
-            SymbolInfo si = SymbolTable.FindOnlyInScope(this, name, false);
+            SymbolInfoList si = SymbolTable.FindOnlyInScope(this, name, false);
+
             if (si == null) return si;
-            SymbolInfo tsi = si;
-            while (tsi != null)
+            foreach(SymbolInfoUnit tsi in si.InfoUnitList)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
                     wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                     if (wdn.is_synonim)
-                    	tsi.sym_info = wdn.PCUReader.CreateTypeSynonim(wdn.offset, name);
+                        tsi.sym_info = wdn.PCUReader.CreateTypeSynonim(wdn.offset, name);
                     else
-                    	tsi.sym_info = wdn.PCUReader.CreateImplementationMember(wdn.offset);
+                        tsi.sym_info = wdn.PCUReader.CreateImplementationMember(wdn.offset);
                 }
-                tsi = tsi.Next;
             }
             return si;
         }
 
         //нужно для перегруженных методов
-        public SymbolInfo FindWithoutCreation(string name)
+        public SymbolInfoList FindWithoutCreation(string name)
         {
             return SymbolTable.FindOnlyInType(this, name);
         }
@@ -153,45 +147,40 @@ namespace PascalABCCompiler.PCU
             this.pr = pr;
         }
 
-        public override SymbolInfo Find(string name)
+        public override SymbolInfoList Find(string name)
         {
-            SymbolInfo si = SymbolTable.Find(this, name);
+            SymbolInfoList si = SymbolTable.Find(this, name);
             if (PartialScope != null)
             {
                 if (si == null)
                     si = SymbolTable.Find(PartialScope, name);
                 else
                 {
-                    SymbolInfo tmp_si = si;
-                    while (tmp_si.Next != null)
-                        tmp_si = tmp_si.Next;
-                    tmp_si.Next = SymbolTable.Find(PartialScope, name);
+                    si.Add(SymbolTable.Find(PartialScope, name));
                 }
             }
-            if (si == null) return si;
+            if (si == null) return null;
             //если это заглушка, то разворачиваем сущность
-            SymbolInfo tsi=si;
-            while (tsi != null)
+            foreach (SymbolInfoUnit tsi in si.InfoUnitList)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
                     wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                     tsi.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
                 }
-                tsi = tsi.Next;
             }
             return si;
         }
 
         public void RestoreMembers(string name)
         {
-            SymbolInfo tsi = SymbolTable.FindOnlyInThisClass(this, name);
+            SymbolInfoList si = SymbolTable.FindOnlyInThisClass(this, name);
             //если это заглушка, то разворачиваем сущность
-            while (tsi != null)
+            foreach(SymbolInfoUnit tsi in si.InfoUnitList)
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
-                    PCUSymbolInfo pcu_tsi = tsi as PCUSymbolInfo;
+                    PCUSymbolInfo pcu_tsi = tsi.ToSymbolInfo() as PCUSymbolInfo;
                     if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) || pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary)
                     {
                         wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
@@ -202,18 +191,17 @@ namespace PascalABCCompiler.PCU
 
                     }
                 }
-                tsi = tsi.Next;
             }
         }
 
-        public override SymbolInfo Find(string name, Scope CurrentScope)
+        public override SymbolInfoList Find(string name, Scope CurrentScope)
         {
             return Find(name);
         }
 
-        public SymbolInfo FindWithoutCreation(string name)
+        public SymbolInfoList FindWithoutCreation(string name)
         {
-            return SymbolTable.FindOnlyInScope(this,name, false);
+            return SymbolTable.FindOnlyInScope(this, name, false);
         }
 
     }
@@ -261,32 +249,6 @@ namespace PascalABCCompiler.PCU
         }
     }
 
-    public class wrapped_expression : expression_node
-    {
-        private PCUReader pr;
-
-        public int offset;
-
-        public wrapped_expression(PCUReader pr, int offset)
-        {
-            this.pr = pr;
-            this.offset = offset;
-        }
-
-        public override semantic_node_type semantic_node_type
-        {
-            get
-            {
-                return semantic_node_type.wrapped_expression;
-            }
-        }
-
-        public expression_node restore()
-        {
-            return pr.GetExpression(offset);
-        }
-    }
-
     public class wrapped_function_body : wrapped_statement
     {
         private PCUReader pr;
@@ -320,20 +282,22 @@ namespace PascalABCCompiler.PCU
             this.offset = offset;
         }
 
-        public override SymbolInfo find_in_type(string name, bool no_search_in_extension_methods = false)
+        public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            return find_in_type(name, null, no_search_in_extension_methods);
+            var temp = find_in_type(name, null, no_search_in_extension_methods);
+            if (temp != null)
+                return new SymbolInfoList(temp);
+            return null;
         }
         public override SymbolInfo find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfo si = scope.FindOnlyInType(name, CurrentScope);
-            if (si == null)
-            {
-                if (base_type != null && base_type.IsDelegate)
-                    return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
-                return si;
-            }
-                
+            SymbolInfo si;
+            var temp = scope.FindOnlyInType(name, CurrentScope);
+            if (temp != null)
+                si = temp.ToSymbolInfo();
+            else
+                si = null;
+            if (si == null) return si;
             SymbolInfo tsi = si;
             while (tsi != null)
             {
@@ -341,7 +305,6 @@ namespace PascalABCCompiler.PCU
                 {
                     wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
                     tsi.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
-
                 }
                 tsi = tsi.Next;
             }
