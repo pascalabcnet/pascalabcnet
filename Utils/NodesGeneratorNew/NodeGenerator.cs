@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace NodeGenerator
@@ -711,6 +712,19 @@ namespace NodeGenerator
             writer.CloseBlock();
         }
 
+	    public virtual void generate_parent_filler(NodeWriter writer)
+	    {
+	        writer.WriteLine($"if ({field_name} != null)");
+	        writer.Indent++;
+	        writer.WriteLine($"{field_name}.Parent = this;");
+	        writer.Indent--;
+	    }
+
+	    public virtual void generate_parent_filler_call(NodeWriter writer)
+	    {
+	        writer.WriteLine($"{field_name}?.FillParentsInAllChilds();");
+	    }
+
         /// <summary>
         /// Получает эквивалент поля для модели XML
         /// </summary>
@@ -889,7 +903,37 @@ namespace NodeGenerator
                 writer.WriteLine($"{destination} = {field_name};");
         }
 
-        public override SyntaxField XmlField()
+	    public override void generate_parent_filler(NodeWriter writer)
+	    {
+	        if (list_type != "")
+	        {
+	            writer.WriteLine($"if ({field_name} != null)");
+                writer.OpenBlock();
+                writer.WriteLine($"foreach (var child in {field_name})");
+	            writer.Indent++;
+                writer.WriteLine("if (child != null)");
+	            writer.Indent++;
+                writer.WriteLine("child.Parent = this;");
+	            writer.Indent -= 2;
+                writer.CloseBlock();
+	        }
+	    }
+
+	    public override void generate_parent_filler_call(NodeWriter writer)
+	    {
+	        if (list_type != "")
+	        {
+	            writer.WriteLine($"if ({field_name} != null)");
+	            writer.OpenBlock();
+	            writer.WriteLine($"foreach (var child in {field_name})");
+	            writer.Indent++;
+	            writer.WriteLine("child?.FillParentsInAllChilds();");
+	            writer.Indent--;
+	            writer.CloseBlock();
+	        }
+	    }
+
+	    public override SyntaxField XmlField()
         {
             return new ExtendedField(this);
         }
@@ -1098,6 +1142,8 @@ namespace NodeGenerator
             {
                 sw.WriteLine(text_consts.tab+text_consts.tab+text_consts.tab+"source_context = sc;");
             }
+
+            sw.WriteLine(text_consts.tab3 + "FillParentsInDirectChilds();");
 
 			sw.WriteLine(text_consts.tab+text_consts.tab+text_consts.close_figure);
 
@@ -3240,6 +3286,37 @@ namespace NodeGenerator
             }
         }
 
+	    private void generate_fill_parents_in_direct_childs(StreamWriter sw)
+	    {
+	        var writer = new NodeWriter(sw, 2);
+	        string inheritModifier = node_name == "syntax_tree_node" ? "virtual" : "override";
+
+            writer.WriteLine("///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>");
+            writer.WriteLine($"public {inheritModifier} void FillParentsInDirectChilds()");
+            writer.OpenBlock();
+	        foreach (var nodeFieldInfo in collect_subnodes(true, true, false))
+	        {
+	            nodeFieldInfo.generate_parent_filler(writer);
+	        }
+            writer.CloseBlock();
+        }
+
+	    private void generate_fill_parents_in_all_childs(StreamWriter sw)
+	    {
+	        var writer = new NodeWriter(sw, 2);
+	        string inheritModifier = node_name == "syntax_tree_node" ? "virtual" : "override";
+
+	        writer.WriteLine("///<summary> Заполняет поля Parent во всем поддереве </summary>");
+	        writer.WriteLine($"public {inheritModifier} void FillParentsInAllChilds()");
+	        writer.OpenBlock();
+            writer.WriteLine("FillParentsInDirectChilds();");
+	        foreach (var nodeFieldInfo in collect_subnodes(true, true, false))
+	        {
+	            nodeFieldInfo.generate_parent_filler_call(writer);
+	        }
+	        writer.CloseBlock();
+        }
+
         public void generate_code(StreamWriter sw,HelpStorage hst, SyntaxTemplateManager manager)
 		{
 			//sw.WriteLine();
@@ -3311,6 +3388,12 @@ namespace NodeGenerator
             generate_list_methods(sw, manager);
 
             generate_clone_method(sw);
+            sw.WriteLine();
+
+            generate_fill_parents_in_direct_childs(sw);
+		    sw.WriteLine();
+
+            generate_fill_parents_in_all_childs(sw);
             sw.WriteLine();
 
             //generate_with_methods(sw);

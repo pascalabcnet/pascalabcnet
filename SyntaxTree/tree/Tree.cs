@@ -26,6 +26,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public syntax_tree_node(SourceContext _source_context)
 		{
 			this._source_context=_source_context;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35,6 +36,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._source_context=_source_context;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected SourceContext _source_context;
 
@@ -68,6 +70,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual syntax_tree_node TypedClone()
 		{
 			return Clone() as syntax_tree_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public virtual void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public virtual void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -156,6 +169,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as expression;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -242,6 +269,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as statement;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -316,6 +357,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left_logical_bracket=_left_logical_bracket;
 			this._right_logical_bracket=_right_logical_bracket;
 			this._expr_lambda_body=_expr_lambda_body;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -328,6 +370,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right_logical_bracket=_right_logical_bracket;
 			this._expr_lambda_body=_expr_lambda_body;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public statement_list(statement elem, SourceContext sc = null)
 		{
@@ -523,6 +566,37 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as statement_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (subnodes != null)
+			{
+				foreach (var child in subnodes)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (left_logical_bracket != null)
+				left_logical_bracket.Parent = this;
+			if (right_logical_bracket != null)
+				right_logical_bracket.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (subnodes != null)
+			{
+				foreach (var child in subnodes)
+					child?.FillParentsInAllChilds();
+			}
+			left_logical_bracket?.FillParentsInAllChilds();
+			right_logical_bracket?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -627,6 +701,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public ident(string _name)
 		{
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -636,6 +711,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected string _name;
 
@@ -675,6 +751,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new ident TypedClone()
 		{
 			return Clone() as ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -750,6 +840,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._to=_to;
 			this._from=_from;
 			this._operator_type=_operator_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -761,6 +852,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._from=_from;
 			this._operator_type=_operator_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _to;
 		protected expression _from;
@@ -842,6 +934,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new assign TypedClone()
 		{
 			return Clone() as assign;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (to != null)
+				to.Parent = this;
+			if (from != null)
+				from.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			to?.FillParentsInAllChilds();
+			from?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -933,6 +1045,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			this._operation_type=_operation_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -944,6 +1057,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._right=_right;
 			this._operation_type=_operation_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _left;
 		protected expression _right;
@@ -1025,6 +1139,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new bin_expr TypedClone()
 		{
 			return Clone() as bin_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -1115,6 +1249,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._subnode=_subnode;
 			this._operation_type=_operation_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -1125,6 +1260,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._subnode=_subnode;
 			this._operation_type=_operation_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _subnode;
 		protected Operators _operation_type;
@@ -1185,6 +1321,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new un_expr TypedClone()
 		{
 			return Clone() as un_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (subnode != null)
+				subnode.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			subnode?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -1284,6 +1437,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as const_node;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1355,6 +1522,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public bool_const(bool _val)
 		{
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -1364,6 +1532,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected bool _val;
 
@@ -1403,6 +1572,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new bool_const TypedClone()
 		{
 			return Clone() as bool_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -1476,6 +1659,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public int32_const(Int32 _val)
 		{
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -1485,6 +1669,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected Int32 _val;
 
@@ -1524,6 +1709,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new int32_const TypedClone()
 		{
 			return Clone() as int32_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -1597,6 +1796,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public double_const(double _val)
 		{
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -1606,6 +1806,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected double _val;
 
@@ -1645,6 +1846,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new double_const TypedClone()
 		{
 			return Clone() as double_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -1719,6 +1934,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._subprogram_code=_subprogram_code;
 			this._subprogram_defs=_subprogram_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -1729,6 +1945,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._subprogram_code=_subprogram_code;
 			this._subprogram_defs=_subprogram_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement_list _subprogram_code;
 		protected declarations _subprogram_defs;
@@ -1788,6 +2005,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new subprogram_body TypedClone()
 		{
 			return Clone() as subprogram_body;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (subprogram_code != null)
+				subprogram_code.Parent = this;
+			if (subprogram_defs != null)
+				subprogram_defs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			subprogram_code?.FillParentsInAllChilds();
+			subprogram_defs?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -1892,6 +2126,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as addressed_value;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -1963,6 +2211,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public type_definition(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -1972,6 +2221,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition_attr_list _attr_list;
 
@@ -2015,6 +2265,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new type_definition TypedClone()
 		{
 			return Clone() as type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -2100,6 +2367,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public roof_dereference(addressed_value _dereferencing_value)
 		{
 			this._dereferencing_value=_dereferencing_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2109,6 +2377,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -2134,6 +2403,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new roof_dereference TypedClone()
 		{
 			return Clone() as roof_dereference;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -2218,6 +2504,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public named_type_reference(List<ident> _names)
 		{
 			this._names=_names;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2227,6 +2514,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._names=_names;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2236,6 +2524,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._names=_names;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2246,6 +2535,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._names=_names;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public named_type_reference(ident elem, SourceContext sc = null)
 		{
@@ -2387,6 +2677,34 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as named_type_reference;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (names != null)
+			{
+				foreach (var child in names)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			if (names != null)
+			{
+				foreach (var child in names)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -2486,6 +2804,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public variable_definitions(List<var_def_statement> _var_definitions)
 		{
 			this._var_definitions=_var_definitions;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2495,6 +2814,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._var_definitions=_var_definitions;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public variable_definitions(var_def_statement elem, SourceContext sc = null)
 		{
@@ -2631,6 +2951,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as variable_definitions;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (var_definitions != null)
+			{
+				foreach (var child in var_definitions)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (var_definitions != null)
+			{
+				foreach (var child in var_definitions)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -2719,6 +3064,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public ident_list(List<ident> _idents)
 		{
 			this._idents=_idents;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2728,6 +3074,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._idents=_idents;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public ident_list(ident elem, SourceContext sc = null)
 		{
@@ -2859,6 +3206,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as ident_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (idents != null)
+			{
+				foreach (var child in idents)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (idents != null)
+			{
+				foreach (var child in idents)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -2952,6 +3321,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._inital_value=_inital_value;
 			this._var_attr=_var_attr;
 			this._is_event=_is_event;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -2965,6 +3335,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._var_attr=_var_attr;
 			this._is_event=_is_event;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _vars;
 		protected type_definition _vars_type;
@@ -3086,6 +3457,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as var_def_statement;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (vars != null)
+				vars.Parent = this;
+			if (vars_type != null)
+				vars_type.Parent = this;
+			if (inital_value != null)
+				inital_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			vars?.FillParentsInAllChilds();
+			vars_type?.FillParentsInAllChilds();
+			inital_value?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3178,6 +3572,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public declaration(attribute_list _attributes)
 		{
 			this._attributes=_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -3187,6 +3582,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attributes=_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected attribute_list _attributes;
 
@@ -3225,6 +3621,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new declaration TypedClone()
 		{
 			return Clone() as declaration;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -3309,6 +3719,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public declarations(List<declaration> _defs)
 		{
 			this._defs=_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -3318,6 +3729,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._defs=_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public declarations(declaration elem, SourceContext sc = null)
 		{
@@ -3449,6 +3861,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as declarations;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3537,6 +3971,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public program_tree(List<compilation_unit> _compilation_units)
 		{
 			this._compilation_units=_compilation_units;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -3546,6 +3981,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._compilation_units=_compilation_units;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public program_tree(compilation_unit elem, SourceContext sc = null)
 		{
@@ -3677,6 +4113,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as program_tree;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (compilation_units != null)
+			{
+				foreach (var child in compilation_units)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (compilation_units != null)
+			{
+				foreach (var child in compilation_units)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -3765,6 +4223,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public program_name(ident _prog_name)
 		{
 			this._prog_name=_prog_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -3774,6 +4233,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._prog_name=_prog_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _prog_name;
 
@@ -3812,6 +4272,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new program_name TypedClone()
 		{
 			return Clone() as program_name;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (prog_name != null)
+				prog_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			prog_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -3896,6 +4370,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public string_const(string _Value)
 		{
 			this._Value=_Value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -3905,6 +4380,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._Value=_Value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected string _Value;
 
@@ -3944,6 +4420,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new string_const TypedClone()
 		{
 			return Clone() as string_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -4017,6 +4507,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public expression_list(List<expression> _expressions)
 		{
 			this._expressions=_expressions;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4026,6 +4517,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._expressions=_expressions;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public expression_list(expression elem, SourceContext sc = null)
 		{
@@ -4157,6 +4649,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as expression_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (expressions != null)
+			{
+				foreach (var child in expressions)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (expressions != null)
+			{
+				foreach (var child in expressions)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -4245,6 +4759,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public dereference(addressed_value _dereferencing_value)
 		{
 			this._dereferencing_value=_dereferencing_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4254,6 +4769,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _dereferencing_value;
 
@@ -4297,6 +4813,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new dereference TypedClone()
 		{
 			return Clone() as dereference;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -4381,6 +4914,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public indexer(expression_list _indexes)
 		{
 			this._indexes=_indexes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4390,6 +4924,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._indexes=_indexes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4399,6 +4934,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._indexes=_indexes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4409,6 +4945,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._dereferencing_value=_dereferencing_value;
 			this._indexes=_indexes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _indexes;
 
@@ -4457,6 +4994,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new indexer TypedClone()
 		{
 			return Clone() as indexer;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+			if (indexes != null)
+				indexes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
+			indexes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -4553,6 +5110,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._increment_value=_increment_value;
 			this._type_name=_type_name;
 			this._create_loop_variable=_create_loop_variable;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4569,6 +5127,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			this._create_loop_variable=_create_loop_variable;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _loop_variable;
 		protected expression _initial_value;
@@ -4753,6 +5312,38 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as for_node;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (loop_variable != null)
+				loop_variable.Parent = this;
+			if (initial_value != null)
+				initial_value.Parent = this;
+			if (finish_value != null)
+				finish_value.Parent = this;
+			if (statements != null)
+				statements.Parent = this;
+			if (increment_value != null)
+				increment_value.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			loop_variable?.FillParentsInAllChilds();
+			initial_value?.FillParentsInAllChilds();
+			finish_value?.FillParentsInAllChilds();
+			statements?.FillParentsInAllChilds();
+			increment_value?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -4861,6 +5452,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._statements=_statements;
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -4871,6 +5463,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._statements=_statements;
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement _statements;
 		protected expression _expr;
@@ -4935,6 +5528,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new repeat_node TypedClone()
 		{
 			return Clone() as repeat_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (statements != null)
+				statements.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			statements?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -5026,6 +5639,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			this._statements=_statements;
 			this._CycleType=_CycleType;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5037,6 +5651,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._statements=_statements;
 			this._CycleType=_CycleType;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 		protected statement _statements;
@@ -5118,6 +5733,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new while_node TypedClone()
 		{
 			return Clone() as while_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+			if (statements != null)
+				statements.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+			statements?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -5209,6 +5844,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._condition=_condition;
 			this._then_body=_then_body;
 			this._else_body=_else_body;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5220,6 +5856,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._then_body=_then_body;
 			this._else_body=_else_body;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _condition;
 		protected statement _then_body;
@@ -5305,6 +5942,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new if_node TypedClone()
 		{
 			return Clone() as if_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (condition != null)
+				condition.Parent = this;
+			if (then_body != null)
+				then_body.Parent = this;
+			if (else_body != null)
+				else_body.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			condition?.FillParentsInAllChilds();
+			then_body?.FillParentsInAllChilds();
+			else_body?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -5399,6 +6059,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public ref_type(type_definition _pointed_to)
 		{
 			this._pointed_to=_pointed_to;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5408,6 +6069,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._pointed_to=_pointed_to;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5417,6 +6079,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._pointed_to=_pointed_to;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5427,6 +6090,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._pointed_to=_pointed_to;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _pointed_to;
 
@@ -5475,6 +6139,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new ref_type TypedClone()
 		{
 			return Clone() as ref_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (pointed_to != null)
+				pointed_to.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			pointed_to?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -5565,6 +6249,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5575,6 +6260,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5585,6 +6271,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5596,6 +6283,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _left;
 		protected expression _right;
@@ -5665,6 +6353,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new diapason TypedClone()
 		{
 			return Clone() as diapason;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -5759,6 +6470,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public indexers_types(List<type_definition> _indexers)
 		{
 			this._indexers=_indexers;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5768,6 +6480,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._indexers=_indexers;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5777,6 +6490,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._indexers=_indexers;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -5787,6 +6501,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._indexers=_indexers;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public indexers_types(type_definition elem, SourceContext sc = null)
 		{
@@ -5928,6 +6643,34 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as indexers_types;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (indexers != null)
+			{
+				foreach (var child in indexers)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			if (indexers != null)
+			{
+				foreach (var child in indexers)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6028,6 +6771,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._indexers=_indexers;
 			this._elements_type=_elements_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6038,6 +6782,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._indexers=_indexers;
 			this._elements_type=_elements_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6048,6 +6793,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._indexers=_indexers;
 			this._elements_type=_elements_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6059,6 +6805,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._indexers=_indexers;
 			this._elements_type=_elements_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected indexers_types _indexers;
 		protected type_definition _elements_type;
@@ -6128,6 +6875,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new array_type TypedClone()
 		{
 			return Clone() as array_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (indexers != null)
+				indexers.Parent = this;
+			if (elements_type != null)
+				elements_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			indexers?.FillParentsInAllChilds();
+			elements_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -6222,6 +6992,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public label_definitions(ident_list _labels)
 		{
 			this._labels=_labels;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6231,6 +7002,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._labels=_labels;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _labels;
 
@@ -6274,6 +7046,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new label_definitions TypedClone()
 		{
 			return Clone() as label_definitions;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (labels != null)
+				labels.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			labels?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -6358,6 +7147,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public procedure_attribute(proc_attribute _attribute_type)
 		{
 			this._attribute_type=_attribute_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6367,6 +7157,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attribute_type=_attribute_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6376,6 +7167,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._attribute_type=_attribute_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6386,6 +7178,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._attribute_type=_attribute_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected proc_attribute _attribute_type;
 
@@ -6426,6 +7219,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new procedure_attribute TypedClone()
 		{
 			return Clone() as procedure_attribute;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -6502,6 +7309,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars_type=_vars_type;
 			this._param_kind=_param_kind;
 			this._inital_value=_inital_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6514,6 +7322,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._param_kind=_param_kind;
 			this._inital_value=_inital_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _idents;
 		protected type_definition _vars_type;
@@ -6618,6 +7427,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as typed_parameters;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (idents != null)
+				idents.Parent = this;
+			if (vars_type != null)
+				vars_type.Parent = this;
+			if (inital_value != null)
+				inital_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			idents?.FillParentsInAllChilds();
+			vars_type?.FillParentsInAllChilds();
+			inital_value?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6710,6 +7542,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public formal_parameters(List<typed_parameters> _params_list)
 		{
 			this._params_list=_params_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6719,6 +7552,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._params_list=_params_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public formal_parameters(typed_parameters elem, SourceContext sc = null)
 		{
@@ -6850,6 +7684,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as formal_parameters;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (params_list != null)
+			{
+				foreach (var child in params_list)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (params_list != null)
+			{
+				foreach (var child in params_list)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -6938,6 +7794,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public procedure_attributes_list(List<procedure_attribute> _proc_attributes)
 		{
 			this._proc_attributes=_proc_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -6947,6 +7804,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._proc_attributes=_proc_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public procedure_attributes_list(procedure_attribute elem, SourceContext sc = null)
 		{
@@ -7078,6 +7936,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as procedure_attributes_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (proc_attributes != null)
+			{
+				foreach (var child in proc_attributes)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (proc_attributes != null)
+			{
+				foreach (var child in proc_attributes)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -7172,6 +8052,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_keyword=_class_keyword;
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7187,6 +8068,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7202,6 +8084,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_keyword=_class_keyword;
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7218,6 +8101,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected formal_parameters _parameters;
 		protected procedure_attributes_list _proc_attributes;
@@ -7386,6 +8270,38 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as procedure_header;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+			if (proc_attributes != null)
+				proc_attributes.Parent = this;
+			if (name != null)
+				name.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+			if (where_defs != null)
+				where_defs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
+			proc_attributes?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
+			where_defs?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -7493,6 +8409,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public function_header(type_definition _return_type)
 		{
 			this._return_type=_return_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7502,6 +8419,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._return_type=_return_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7518,6 +8436,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			this._return_type=_return_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7535,6 +8454,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_defs=_where_defs;
 			this._return_type=_return_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _return_type;
 
@@ -7610,6 +8530,41 @@ namespace PascalABCCompiler.SyntaxTree
 		public new function_header TypedClone()
 		{
 			return Clone() as function_header;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+			if (proc_attributes != null)
+				proc_attributes.Parent = this;
+			if (name != null)
+				name.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+			if (where_defs != null)
+				where_defs.Parent = this;
+			if (return_type != null)
+				return_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
+			proc_attributes?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
+			where_defs?.FillParentsInAllChilds();
+			return_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -7726,6 +8681,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._proc_header=_proc_header;
 			this._proc_body=_proc_body;
 			this._is_short_definition=_is_short_definition;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7737,6 +8693,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._proc_body=_proc_body;
 			this._is_short_definition=_is_short_definition;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected procedure_header _proc_header;
 		protected proc_block _proc_body;
@@ -7818,6 +8775,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new procedure_definition TypedClone()
 		{
 			return Clone() as procedure_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (proc_header != null)
+				proc_header.Parent = this;
+			if (proc_body != null)
+				proc_body.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			proc_header?.FillParentsInAllChilds();
+			proc_body?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -7908,6 +8885,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type_name=_type_name;
 			this._type_def=_type_def;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -7918,6 +8896,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			this._type_def=_type_def;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _type_name;
 		protected type_definition _type_def;
@@ -7982,6 +8961,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new type_declaration TypedClone()
 		{
 			return Clone() as type_declaration;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+			if (type_def != null)
+				type_def.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
+			type_def?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -8071,6 +9070,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public type_declarations(List<type_declaration> _types_decl)
 		{
 			this._types_decl=_types_decl;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8080,6 +9080,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._types_decl=_types_decl;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public type_declarations(type_declaration elem, SourceContext sc = null)
 		{
@@ -8216,6 +9217,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as type_declarations;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (types_decl != null)
+			{
+				foreach (var child in types_decl)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (types_decl != null)
+			{
+				foreach (var child in types_decl)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -8306,6 +9332,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._const_name=_const_name;
 			this._const_value=_const_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8316,6 +9343,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_name=_const_name;
 			this._const_value=_const_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -8346,6 +9374,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new simple_const_definition TypedClone()
 		{
 			return Clone() as simple_const_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (const_name != null)
+				const_name.Parent = this;
+			if (const_value != null)
+				const_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			const_name?.FillParentsInAllChilds();
+			const_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -8435,6 +9483,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public typed_const_definition(type_definition _const_type)
 		{
 			this._const_type=_const_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8444,6 +9493,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._const_type=_const_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8454,6 +9504,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_name=_const_name;
 			this._const_value=_const_value;
 			this._const_type=_const_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8465,6 +9516,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_value=_const_value;
 			this._const_type=_const_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _const_type;
 
@@ -8518,6 +9570,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new typed_const_definition TypedClone()
 		{
 			return Clone() as typed_const_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (const_name != null)
+				const_name.Parent = this;
+			if (const_value != null)
+				const_value.Parent = this;
+			if (const_type != null)
+				const_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			const_name?.FillParentsInAllChilds();
+			const_value?.FillParentsInAllChilds();
+			const_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -8613,6 +9688,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._const_name=_const_name;
 			this._const_value=_const_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8623,6 +9699,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._const_name=_const_name;
 			this._const_value=_const_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _const_name;
 		protected expression _const_value;
@@ -8687,6 +9764,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new const_definition TypedClone()
 		{
 			return Clone() as const_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (const_name != null)
+				const_name.Parent = this;
+			if (const_value != null)
+				const_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			const_name?.FillParentsInAllChilds();
+			const_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -8776,6 +9873,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public consts_definitions_list(List<const_definition> _const_defs)
 		{
 			this._const_defs=_const_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -8785,6 +9883,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._const_defs=_const_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public consts_definitions_list(const_definition elem, SourceContext sc = null)
 		{
@@ -8921,6 +10020,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as consts_definitions_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (const_defs != null)
+			{
+				foreach (var child in const_defs)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (const_defs != null)
+			{
+				foreach (var child in const_defs)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9010,6 +10134,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._idunit_name=_idunit_name;
 			this._HeaderKeyword=_HeaderKeyword;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9020,6 +10145,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._idunit_name=_idunit_name;
 			this._HeaderKeyword=_HeaderKeyword;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _idunit_name;
 		protected UnitHeaderKeyword _HeaderKeyword;
@@ -9075,6 +10201,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new unit_name TypedClone()
 		{
 			return Clone() as unit_name;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (idunit_name != null)
+				idunit_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			idunit_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -9159,6 +10299,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public unit_or_namespace(ident_list _name)
 		{
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9168,6 +10309,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _name;
 
@@ -9206,6 +10348,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new unit_or_namespace TypedClone()
 		{
 			return Clone() as unit_or_namespace;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (name != null)
+				name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -9290,6 +10446,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public uses_unit_in(string_const _in_file)
 		{
 			this._in_file=_in_file;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9299,6 +10456,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._in_file=_in_file;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9308,6 +10466,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._in_file=_in_file;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9318,6 +10477,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._in_file=_in_file;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected string_const _in_file;
 
@@ -9361,6 +10521,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new uses_unit_in TypedClone()
 		{
 			return Clone() as uses_unit_in;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (name != null)
+				name.Parent = this;
+			if (in_file != null)
+				in_file.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			name?.FillParentsInAllChilds();
+			in_file?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -9450,6 +10627,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public uses_list(List<unit_or_namespace> _units)
 		{
 			this._units=_units;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9459,6 +10637,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._units=_units;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public uses_list(unit_or_namespace elem, SourceContext sc = null)
 		{
@@ -9590,6 +10769,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as uses_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (units != null)
+			{
+				foreach (var child in units)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (units != null)
+			{
+				foreach (var child in units)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9681,6 +10882,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._program_definitions=_program_definitions;
 			this._program_code=_program_code;
 			this._using_list=_using_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9693,6 +10895,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._program_code=_program_code;
 			this._using_list=_using_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected uses_list _used_units;
 		protected declarations _program_definitions;
@@ -9796,6 +10999,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as program_body;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (used_units != null)
+				used_units.Parent = this;
+			if (program_definitions != null)
+				program_definitions.Parent = this;
+			if (program_code != null)
+				program_code.Parent = this;
+			if (using_list != null)
+				using_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			used_units?.FillParentsInAllChilds();
+			program_definitions?.FillParentsInAllChilds();
+			program_code?.FillParentsInAllChilds();
+			using_list?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -9895,6 +11121,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._file_name=_file_name;
 			this._compiler_directives=_compiler_directives;
 			this._Language=_Language;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -9906,6 +11133,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._compiler_directives=_compiler_directives;
 			this._Language=_Language;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public compilation_unit(compiler_directive elem, SourceContext sc = null)
 		{
@@ -10071,6 +11299,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as compilation_unit;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -10164,6 +11414,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._initialization_part=_initialization_part;
 			this._finalization_part=_finalization_part;
 			this._attributes=_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10178,6 +11429,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._finalization_part=_finalization_part;
 			this._attributes=_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10194,6 +11446,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._initialization_part=_initialization_part;
 			this._finalization_part=_finalization_part;
 			this._attributes=_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10211,6 +11464,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._finalization_part=_finalization_part;
 			this._attributes=_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected unit_name _unit_name;
 		protected interface_node _interface_part;
@@ -10371,6 +11625,46 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as unit_module;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (unit_name != null)
+				unit_name.Parent = this;
+			if (interface_part != null)
+				interface_part.Parent = this;
+			if (implementation_part != null)
+				implementation_part.Parent = this;
+			if (initialization_part != null)
+				initialization_part.Parent = this;
+			if (finalization_part != null)
+				finalization_part.Parent = this;
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					child?.FillParentsInAllChilds();
+			}
+			unit_name?.FillParentsInAllChilds();
+			interface_part?.FillParentsInAllChilds();
+			implementation_part?.FillParentsInAllChilds();
+			initialization_part?.FillParentsInAllChilds();
+			finalization_part?.FillParentsInAllChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -10498,6 +11792,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._used_units=_used_units;
 			this._program_block=_program_block;
 			this._using_namespaces=_using_namespaces;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10510,6 +11805,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._program_block=_program_block;
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10524,6 +11820,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._used_units=_used_units;
 			this._program_block=_program_block;
 			this._using_namespaces=_using_namespaces;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10539,6 +11836,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._program_block=_program_block;
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected program_name _program_name;
 		protected uses_list _used_units;
@@ -10657,6 +11955,40 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as program_module;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (program_name != null)
+				program_name.Parent = this;
+			if (used_units != null)
+				used_units.Parent = this;
+			if (program_block != null)
+				program_block.Parent = this;
+			if (using_namespaces != null)
+				using_namespaces.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					child?.FillParentsInAllChilds();
+			}
+			program_name?.FillParentsInAllChilds();
+			used_units?.FillParentsInAllChilds();
+			program_block?.FillParentsInAllChilds();
+			using_namespaces?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -10772,6 +12104,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public hex_constant(Int64 _val)
 		{
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10781,6 +12114,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -10802,6 +12136,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new hex_constant TypedClone()
 		{
 			return Clone() as hex_constant;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -10875,6 +12223,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public get_address(addressed_value _address_of)
 		{
 			this._address_of=_address_of;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -10884,6 +12233,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._address_of=_address_of;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _address_of;
 
@@ -10927,6 +12277,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new get_address TypedClone()
 		{
 			return Clone() as get_address;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (address_of != null)
+				address_of.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			address_of?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -11012,6 +12379,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._conditions=_conditions;
 			this._exec_if_true=_exec_if_true;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -11022,6 +12390,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._conditions=_conditions;
 			this._exec_if_true=_exec_if_true;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _conditions;
 		protected statement _exec_if_true;
@@ -11086,6 +12455,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new case_variant TypedClone()
 		{
 			return Clone() as case_variant;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (conditions != null)
+				conditions.Parent = this;
+			if (exec_if_true != null)
+				exec_if_true.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			conditions?.FillParentsInAllChilds();
+			exec_if_true?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -11177,6 +12566,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._param=_param;
 			this._conditions=_conditions;
 			this._else_statement=_else_statement;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -11188,6 +12578,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._conditions=_conditions;
 			this._else_statement=_else_statement;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _param;
 		protected case_variants _conditions;
@@ -11273,6 +12664,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new case_node TypedClone()
 		{
 			return Clone() as case_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (param != null)
+				param.Parent = this;
+			if (conditions != null)
+				conditions.Parent = this;
+			if (else_statement != null)
+				else_statement.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			param?.FillParentsInAllChilds();
+			conditions?.FillParentsInAllChilds();
+			else_statement?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -11370,6 +12784,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_name=_class_name;
 			this._meth_name=_meth_name;
 			this._explicit_interface_name=_explicit_interface_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -11382,6 +12797,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._meth_name=_meth_name;
 			this._explicit_interface_name=_explicit_interface_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public method_name(ident elem, SourceContext sc = null)
 		{
@@ -11576,6 +12992,37 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as method_name;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (ln != null)
+			{
+				foreach (var child in ln)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (class_name != null)
+				class_name.Parent = this;
+			if (meth_name != null)
+				meth_name.Parent = this;
+			if (explicit_interface_name != null)
+				explicit_interface_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (ln != null)
+			{
+				foreach (var child in ln)
+					child?.FillParentsInAllChilds();
+			}
+			class_name?.FillParentsInAllChilds();
+			meth_name?.FillParentsInAllChilds();
+			explicit_interface_name?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -11686,6 +13133,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -11696,6 +13144,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _left;
 		protected addressed_value _right;
@@ -11760,6 +13209,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new dot_node TypedClone()
 		{
 			return Clone() as dot_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -11864,6 +13333,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as empty_statement;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -11935,6 +13418,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public goto_statement(ident _label)
 		{
 			this._label=_label;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -11944,6 +13428,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._label=_label;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _label;
 
@@ -11987,6 +13472,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new goto_statement TypedClone()
 		{
 			return Clone() as goto_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (label != null)
+				label.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			label?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12072,6 +13574,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._label_name=_label_name;
 			this._to_statement=_to_statement;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12082,6 +13585,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._label_name=_label_name;
 			this._to_statement=_to_statement;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _label_name;
 		protected statement _to_statement;
@@ -12146,6 +13650,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new labeled_statement TypedClone()
 		{
 			return Clone() as labeled_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (label_name != null)
+				label_name.Parent = this;
+			if (to_statement != null)
+				to_statement.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			label_name?.FillParentsInAllChilds();
+			to_statement?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12236,6 +13760,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._what_do=_what_do;
 			this._do_with=_do_with;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12246,6 +13771,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._what_do=_what_do;
 			this._do_with=_do_with;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement _what_do;
 		protected expression_list _do_with;
@@ -12310,6 +13836,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new with_statement TypedClone()
 		{
 			return Clone() as with_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (what_do != null)
+				what_do.Parent = this;
+			if (do_with != null)
+				do_with.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			what_do?.FillParentsInAllChilds();
+			do_with?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12399,6 +13945,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public method_call(expression_list _parameters)
 		{
 			this._parameters=_parameters;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12408,6 +13955,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._parameters=_parameters;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12417,6 +13965,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._parameters=_parameters;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12427,6 +13976,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._dereferencing_value=_dereferencing_value;
 			this._parameters=_parameters;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _parameters;
 
@@ -12475,6 +14025,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new method_call TypedClone()
 		{
 			return Clone() as method_call;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12564,6 +14134,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public pascal_set_constant(expression_list _values)
 		{
 			this._values=_values;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12573,6 +14144,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._values=_values;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _values;
 
@@ -12616,6 +14188,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new pascal_set_constant TypedClone()
 		{
 			return Clone() as pascal_set_constant;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (values != null)
+				values.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			values?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12700,6 +14289,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public array_const(expression_list _elements)
 		{
 			this._elements=_elements;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12709,6 +14299,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._elements=_elements;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _elements;
 
@@ -12752,6 +14343,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new array_const TypedClone()
 		{
 			return Clone() as array_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (elements != null)
+				elements.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			elements?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12836,6 +14444,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public write_accessor_name(ident _accessor_name)
 		{
 			this._accessor_name=_accessor_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12845,6 +14454,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._accessor_name=_accessor_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _accessor_name;
 
@@ -12883,6 +14493,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new write_accessor_name TypedClone()
 		{
 			return Clone() as write_accessor_name;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (accessor_name != null)
+				accessor_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			accessor_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -12967,6 +14591,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public read_accessor_name(ident _accessor_name)
 		{
 			this._accessor_name=_accessor_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -12976,6 +14601,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._accessor_name=_accessor_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _accessor_name;
 
@@ -13014,6 +14640,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new read_accessor_name TypedClone()
 		{
 			return Clone() as read_accessor_name;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (accessor_name != null)
+				accessor_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			accessor_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -13099,6 +14739,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._read_accessor=_read_accessor;
 			this._write_accessor=_write_accessor;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -13109,6 +14750,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._read_accessor=_read_accessor;
 			this._write_accessor=_write_accessor;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected read_accessor_name _read_accessor;
 		protected write_accessor_name _write_accessor;
@@ -13168,6 +14810,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new property_accessors TypedClone()
 		{
 			return Clone() as property_accessors;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (read_accessor != null)
+				read_accessor.Parent = this;
+			if (write_accessor != null)
+				write_accessor.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			read_accessor?.FillParentsInAllChilds();
+			write_accessor?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -13263,6 +14922,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._array_default=_array_default;
 			this._parameter_list=_parameter_list;
 			this._attr=_attr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -13278,6 +14938,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameter_list=_parameter_list;
 			this._attr=_attr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _property_name;
 		protected type_definition _property_type;
@@ -13445,6 +15106,38 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as simple_property;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (property_name != null)
+				property_name.Parent = this;
+			if (property_type != null)
+				property_type.Parent = this;
+			if (index_expression != null)
+				index_expression.Parent = this;
+			if (accessors != null)
+				accessors.Parent = this;
+			if (array_default != null)
+				array_default.Parent = this;
+			if (parameter_list != null)
+				parameter_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			property_name?.FillParentsInAllChilds();
+			property_type?.FillParentsInAllChilds();
+			index_expression?.FillParentsInAllChilds();
+			accessors?.FillParentsInAllChilds();
+			array_default?.FillParentsInAllChilds();
+			parameter_list?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -13553,6 +15246,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -13563,6 +15257,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -13579,6 +15274,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr=_attr;
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -13596,6 +15292,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._property_parametres=_property_parametres;
 			this._is_default=_is_default;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected formal_parameters _property_parametres;
 		protected default_indexer_property_node _is_default;
@@ -13691,6 +15388,44 @@ namespace PascalABCCompiler.SyntaxTree
 		public new index_property TypedClone()
 		{
 			return Clone() as index_property;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (property_name != null)
+				property_name.Parent = this;
+			if (property_type != null)
+				property_type.Parent = this;
+			if (index_expression != null)
+				index_expression.Parent = this;
+			if (accessors != null)
+				accessors.Parent = this;
+			if (array_default != null)
+				array_default.Parent = this;
+			if (parameter_list != null)
+				parameter_list.Parent = this;
+			if (property_parametres != null)
+				property_parametres.Parent = this;
+			if (is_default != null)
+				is_default.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			property_name?.FillParentsInAllChilds();
+			property_type?.FillParentsInAllChilds();
+			index_expression?.FillParentsInAllChilds();
+			accessors?.FillParentsInAllChilds();
+			array_default?.FillParentsInAllChilds();
+			parameter_list?.FillParentsInAllChilds();
+			property_parametres?.FillParentsInAllChilds();
+			is_default?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -13811,6 +15546,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._members=_members;
 			this._access_mod=_access_mod;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -13821,6 +15557,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._members=_members;
 			this._access_mod=_access_mod;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public class_members(declaration elem, SourceContext sc = null)
 		{
@@ -13973,6 +15710,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as class_members;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (members != null)
+			{
+				foreach (var child in members)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (access_mod != null)
+				access_mod.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (members != null)
+			{
+				foreach (var child in members)
+					child?.FillParentsInAllChilds();
+			}
+			access_mod?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14072,6 +15834,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public access_modifer_node(access_modifer _access_level)
 		{
 			this._access_level=_access_level;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14081,6 +15844,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._access_level=_access_level;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected access_modifer _access_level;
 
@@ -14115,6 +15879,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public new access_modifer_node TypedClone()
 		{
 			return Clone() as access_modifer_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14188,6 +15963,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public class_body(List<class_members> _class_def_blocks)
 		{
 			this._class_def_blocks=_class_def_blocks;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14197,6 +15973,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._class_def_blocks=_class_def_blocks;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public class_body(class_members elem, SourceContext sc = null)
 		{
@@ -14328,6 +16105,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as class_body;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (class_def_blocks != null)
+			{
+				foreach (var child in class_def_blocks)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (class_def_blocks != null)
+			{
+				foreach (var child in class_def_blocks)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14422,6 +16221,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_section=_where_section;
 			this._attribute=_attribute;
 			this._is_auto=_is_auto;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14437,6 +16237,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attribute=_attribute;
 			this._is_auto=_is_auto;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14452,6 +16253,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._where_section=_where_section;
 			this._attribute=_attribute;
 			this._is_auto=_is_auto;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14468,6 +16270,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attribute=_attribute;
 			this._is_auto=_is_auto;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected named_type_reference_list _class_parents;
 		protected class_body _body;
@@ -14632,6 +16435,35 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as class_definition;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (class_parents != null)
+				class_parents.Parent = this;
+			if (body != null)
+				body.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+			if (where_section != null)
+				where_section.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			class_parents?.FillParentsInAllChilds();
+			body?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
+			where_section?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14744,6 +16576,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as default_indexer_property_node;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -14816,6 +16659,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._tp=_tp;
 			this._unit_name=_unit_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14826,6 +16670,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._tp=_tp;
 			this._unit_name=_unit_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14836,6 +16681,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._tp=_tp;
 			this._unit_name=_unit_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -14847,6 +16693,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._tp=_tp;
 			this._unit_name=_unit_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected known_type _tp;
 		protected ident _unit_name;
@@ -14912,6 +16759,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new known_type_definition TypedClone()
 		{
 			return Clone() as known_type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (unit_name != null)
+				unit_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			unit_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15001,6 +16868,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public set_type_definition(type_definition _of_type)
 		{
 			this._of_type=_of_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15010,6 +16878,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._of_type=_of_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15019,6 +16888,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._of_type=_of_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15029,6 +16899,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._of_type=_of_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _of_type;
 
@@ -15077,6 +16948,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new set_type_definition TypedClone()
 		{
 			return Clone() as set_type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (of_type != null)
+				of_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			of_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15167,6 +17058,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15177,6 +17069,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _name;
 		protected expression _val;
@@ -15241,6 +17134,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new record_const_definition TypedClone()
 		{
 			return Clone() as record_const_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (name != null)
+				name.Parent = this;
+			if (val != null)
+				val.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
+			val?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15330,6 +17243,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public record_const(List<record_const_definition> _rec_consts)
 		{
 			this._rec_consts=_rec_consts;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15339,6 +17253,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._rec_consts=_rec_consts;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public record_const(record_const_definition elem, SourceContext sc = null)
 		{
@@ -15475,6 +17390,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as record_const;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (rec_consts != null)
+			{
+				foreach (var child in rec_consts)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (rec_consts != null)
+			{
+				foreach (var child in rec_consts)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -15564,6 +17504,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._parts=_parts;
 			this._base_type=_base_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15574,6 +17515,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parts=_parts;
 			this._base_type=_base_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15584,6 +17526,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._parts=_parts;
 			this._base_type=_base_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15595,6 +17538,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parts=_parts;
 			this._base_type=_base_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected record_type_parts _parts;
 		protected type_definition _base_type;
@@ -15664,6 +17608,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new record_type TypedClone()
 		{
 			return Clone() as record_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (parts != null)
+				parts.Parent = this;
+			if (base_type != null)
+				base_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			parts?.FillParentsInAllChilds();
+			base_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15758,6 +17725,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public enum_type_definition(enumerator_list _enumerators)
 		{
 			this._enumerators=_enumerators;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15767,6 +17735,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._enumerators=_enumerators;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15776,6 +17745,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._enumerators=_enumerators;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15786,6 +17756,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._enumerators=_enumerators;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected enumerator_list _enumerators;
 
@@ -15834,6 +17805,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new enum_type_definition TypedClone()
 		{
 			return Clone() as enum_type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (enumerators != null)
+				enumerators.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			enumerators?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -15923,6 +17914,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public char_const(char _cconst)
 		{
 			this._cconst=_cconst;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -15932,6 +17924,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._cconst=_cconst;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected char _cconst;
 
@@ -15971,6 +17964,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new char_const TypedClone()
 		{
 			return Clone() as char_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -16044,6 +18051,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public raise_statement(expression _excep)
 		{
 			this._excep=_excep;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16053,6 +18061,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._excep=_excep;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _excep;
 
@@ -16096,6 +18105,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new raise_statement TypedClone()
 		{
 			return Clone() as raise_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (excep != null)
+				excep.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			excep?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -16180,6 +18206,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public sharp_char_const(int _char_num)
 		{
 			this._char_num=_char_num;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16189,6 +18216,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._char_num=_char_num;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected int _char_num;
 
@@ -16228,6 +18256,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new sharp_char_const TypedClone()
 		{
 			return Clone() as sharp_char_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -16301,6 +18343,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public literal_const_line(List<literal> _literals)
 		{
 			this._literals=_literals;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16310,6 +18353,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._literals=_literals;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public literal_const_line(literal elem, SourceContext sc = null)
 		{
@@ -16446,6 +18490,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as literal_const_line;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (literals != null)
+			{
+				foreach (var child in literals)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (literals != null)
+			{
+				foreach (var child in literals)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -16535,6 +18604,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._num_of_symbols=_num_of_symbols;
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16545,6 +18615,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._num_of_symbols=_num_of_symbols;
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16555,6 +18626,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._num_of_symbols=_num_of_symbols;
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16566,6 +18638,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._num_of_symbols=_num_of_symbols;
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _num_of_symbols;
 		protected ident _name;
@@ -16635,6 +18708,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new string_num_definition TypedClone()
 		{
 			return Clone() as string_num_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (num_of_symbols != null)
+				num_of_symbols.Parent = this;
+			if (name != null)
+				name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			num_of_symbols?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -16730,6 +18826,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._vars=_vars;
 			this._vars_type=_vars_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16740,6 +18837,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			this._vars_type=_vars_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _vars;
 		protected type_definition _vars_type;
@@ -16799,6 +18897,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new variant TypedClone()
 		{
 			return Clone() as variant;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (vars != null)
+				vars.Parent = this;
+			if (vars_type != null)
+				vars_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			vars?.FillParentsInAllChilds();
+			vars_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -16888,6 +19003,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public variant_list(List<variant> _vars)
 		{
 			this._vars=_vars;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -16897,6 +19013,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._vars=_vars;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public variant_list(variant elem, SourceContext sc = null)
 		{
@@ -17028,6 +19145,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as variant_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (vars != null)
+			{
+				foreach (var child in vars)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (vars != null)
+			{
+				foreach (var child in vars)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -17117,6 +19256,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._case_exprs=_case_exprs;
 			this._parts=_parts;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17127,6 +19267,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._case_exprs=_case_exprs;
 			this._parts=_parts;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _case_exprs;
 		protected record_type_parts _parts;
@@ -17186,6 +19327,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new variant_type TypedClone()
 		{
 			return Clone() as variant_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (case_exprs != null)
+				case_exprs.Parent = this;
+			if (parts != null)
+				parts.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			case_exprs?.FillParentsInAllChilds();
+			parts?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -17275,6 +19433,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public variant_types(List<variant_type> _vars)
 		{
 			this._vars=_vars;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17284,6 +19443,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._vars=_vars;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public variant_types(variant_type elem, SourceContext sc = null)
 		{
@@ -17415,6 +19575,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as variant_types;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (vars != null)
+			{
+				foreach (var child in vars)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (vars != null)
+			{
+				foreach (var child in vars)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -17505,6 +19687,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._var_name=_var_name;
 			this._var_type=_var_type;
 			this._vars=_vars;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17516,6 +19699,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._var_type=_var_type;
 			this._vars=_vars;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _var_name;
 		protected type_definition _var_type;
@@ -17596,6 +19780,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new variant_record_type TypedClone()
 		{
 			return Clone() as variant_record_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (var_name != null)
+				var_name.Parent = this;
+			if (var_type != null)
+				var_type.Parent = this;
+			if (vars != null)
+				vars.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			var_name?.FillParentsInAllChilds();
+			var_type?.FillParentsInAllChilds();
+			vars?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -17690,6 +19894,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public procedure_call(addressed_value _func_name)
 		{
 			this._func_name=_func_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17699,6 +19904,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._func_name=_func_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _func_name;
 
@@ -17742,6 +19948,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new procedure_call TypedClone()
 		{
 			return Clone() as procedure_call;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (func_name != null)
+				func_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			func_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -17826,6 +20049,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public class_predefinition(ident _class_name)
 		{
 			this._class_name=_class_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17835,6 +20059,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._class_name=_class_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17845,6 +20070,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			this._type_def=_type_def;
 			this._class_name=_class_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -17856,6 +20082,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_def=_type_def;
 			this._class_name=_class_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _class_name;
 
@@ -17909,6 +20136,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new class_predefinition TypedClone()
 		{
 			return Clone() as class_predefinition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+			if (type_def != null)
+				type_def.Parent = this;
+			if (class_name != null)
+				class_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
+			type_def?.FillParentsInAllChilds();
+			class_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -18018,6 +20268,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as nil_const;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -18089,6 +20353,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public file_type_definition(type_definition _elem_type)
 		{
 			this._elem_type=_elem_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18098,6 +20363,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._elem_type=_elem_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18107,6 +20373,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._elem_type=_elem_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18117,6 +20384,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._elem_type=_elem_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _elem_type;
 
@@ -18165,6 +20433,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new file_type_definition TypedClone()
 		{
 			return Clone() as file_type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (elem_type != null)
+				elem_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			elem_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -18262,6 +20550,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_keyword=_class_keyword;
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18278,6 +20567,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -18330,6 +20620,38 @@ namespace PascalABCCompiler.SyntaxTree
 		public new constructor TypedClone()
 		{
 			return Clone() as constructor;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+			if (proc_attributes != null)
+				proc_attributes.Parent = this;
+			if (name != null)
+				name.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+			if (where_defs != null)
+				where_defs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
+			proc_attributes?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
+			where_defs?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -18447,6 +20769,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._class_keyword=_class_keyword;
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18463,6 +20786,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._where_defs=_where_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -18515,6 +20839,38 @@ namespace PascalABCCompiler.SyntaxTree
 		public new destructor TypedClone()
 		{
 			return Clone() as destructor;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+			if (proc_attributes != null)
+				proc_attributes.Parent = this;
+			if (name != null)
+				name.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+			if (where_defs != null)
+				where_defs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
+			proc_attributes?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
+			where_defs?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -18625,6 +20981,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._method_name=_method_name;
 			this._exprs=_exprs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18635,6 +20992,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._method_name=_method_name;
 			this._exprs=_exprs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _method_name;
 		protected expression_list _exprs;
@@ -18699,6 +21057,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new inherited_method_call TypedClone()
 		{
 			return Clone() as inherited_method_call;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (method_name != null)
+				method_name.Parent = this;
+			if (exprs != null)
+				exprs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			method_name?.FillParentsInAllChilds();
+			exprs?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -18790,6 +21168,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			this._type_def=_type_def;
 			this._cast_op=_cast_op;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18801,6 +21180,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_def=_type_def;
 			this._cast_op=_cast_op;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _expr;
 		protected type_definition _type_def;
@@ -18882,6 +21262,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new typecast_node TypedClone()
 		{
 			return Clone() as typecast_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+			if (type_def != null)
+				type_def.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+			type_def?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -18973,6 +21373,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._interface_definitions=_interface_definitions;
 			this._uses_modules=_uses_modules;
 			this._using_namespaces=_using_namespaces;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -18984,6 +21385,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._uses_modules=_uses_modules;
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected declarations _interface_definitions;
 		protected uses_list _uses_modules;
@@ -19064,6 +21466,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new interface_node TypedClone()
 		{
 			return Clone() as interface_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (interface_definitions != null)
+				interface_definitions.Parent = this;
+			if (uses_modules != null)
+				uses_modules.Parent = this;
+			if (using_namespaces != null)
+				using_namespaces.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			interface_definitions?.FillParentsInAllChilds();
+			uses_modules?.FillParentsInAllChilds();
+			using_namespaces?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -19160,6 +21582,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._uses_modules=_uses_modules;
 			this._implementation_definitions=_implementation_definitions;
 			this._using_namespaces=_using_namespaces;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19171,6 +21594,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._implementation_definitions=_implementation_definitions;
 			this._using_namespaces=_using_namespaces;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected uses_list _uses_modules;
 		protected declarations _implementation_definitions;
@@ -19251,6 +21675,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new implementation_node TypedClone()
 		{
 			return Clone() as implementation_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (uses_modules != null)
+				uses_modules.Parent = this;
+			if (implementation_definitions != null)
+				implementation_definitions.Parent = this;
+			if (using_namespaces != null)
+				using_namespaces.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			uses_modules?.FillParentsInAllChilds();
+			implementation_definitions?.FillParentsInAllChilds();
+			using_namespaces?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -19346,6 +21790,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19356,6 +21801,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _left;
 		protected expression _right;
@@ -19420,6 +21866,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new diap_expr TypedClone()
 		{
 			return Clone() as diap_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -19510,6 +21976,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._defs=_defs;
 			this._program_code=_program_code;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19520,6 +21987,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._program_code=_program_code;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected declarations _defs;
 		protected statement_list _program_code;
@@ -19579,6 +22047,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new block TypedClone()
 		{
 			return Clone() as block;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (defs != null)
+				defs.Parent = this;
+			if (program_code != null)
+				program_code.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			defs?.FillParentsInAllChilds();
+			program_code?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -19678,6 +22163,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as proc_block;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -19749,6 +22245,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public array_of_named_type_definition(named_type_reference _type_name)
 		{
 			this._type_name=_type_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19758,6 +22255,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type_name=_type_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19767,6 +22265,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._type_name=_type_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19777,6 +22276,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._type_name=_type_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected named_type_reference _type_name;
 
@@ -19825,6 +22325,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new array_of_named_type_definition TypedClone()
 		{
 			return Clone() as array_of_named_type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -19915,6 +22435,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public array_of_const_type_definition(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -19924,6 +22445,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -19949,6 +22471,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new array_of_const_type_definition TypedClone()
 		{
 			return Clone() as array_of_const_type_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -20048,6 +22587,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as literal;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20119,6 +22672,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public case_variants(List<case_variant> _variants)
 		{
 			this._variants=_variants;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -20128,6 +22682,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._variants=_variants;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public case_variants(case_variant elem, SourceContext sc = null)
 		{
@@ -20259,6 +22814,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as case_variants;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (variants != null)
+			{
+				foreach (var child in variants)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (variants != null)
+			{
+				foreach (var child in variants)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20348,6 +22925,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -20358,6 +22936,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _left;
 		protected expression _right;
@@ -20422,6 +23001,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new diapason_expr TypedClone()
 		{
 			return Clone() as diapason_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -20511,6 +23110,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public var_def_list_for_record(List<var_def_statement> _vars)
 		{
 			this._vars=_vars;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -20520,6 +23120,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._vars=_vars;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public var_def_list_for_record(var_def_statement elem, SourceContext sc = null)
 		{
@@ -20651,6 +23252,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as var_def_list_for_record;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (vars != null)
+			{
+				foreach (var child in vars)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (vars != null)
+			{
+				foreach (var child in vars)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20740,6 +23363,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._fixed_part=_fixed_part;
 			this._variant_part=_variant_part;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -20750,6 +23374,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._fixed_part=_fixed_part;
 			this._variant_part=_variant_part;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected var_def_list_for_record _fixed_part;
 		protected variant_record_type _variant_part;
@@ -20809,6 +23434,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new record_type_parts TypedClone()
 		{
 			return Clone() as record_type_parts;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (fixed_part != null)
+				fixed_part.Parent = this;
+			if (variant_part != null)
+				variant_part.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			fixed_part?.FillParentsInAllChilds();
+			variant_part?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -20908,6 +23550,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as property_array_default;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -20981,6 +23634,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameter_list=_parameter_list;
 			this._property_type=_property_type;
 			this._index_expression=_index_expression;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -20992,6 +23646,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._property_type=_property_type;
 			this._index_expression=_index_expression;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected property_parameter_list _parameter_list;
 		protected type_definition _property_type;
@@ -21072,6 +23727,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new property_interface TypedClone()
 		{
 			return Clone() as property_interface;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (parameter_list != null)
+				parameter_list.Parent = this;
+			if (property_type != null)
+				property_type.Parent = this;
+			if (index_expression != null)
+				index_expression.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			parameter_list?.FillParentsInAllChilds();
+			property_type?.FillParentsInAllChilds();
+			index_expression?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -21167,6 +23842,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._names=_names;
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -21177,6 +23853,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._names=_names;
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _names;
 		protected type_definition _type;
@@ -21236,6 +23913,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new property_parameter TypedClone()
 		{
 			return Clone() as property_parameter;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (names != null)
+				names.Parent = this;
+			if (type != null)
+				type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			names?.FillParentsInAllChilds();
+			type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -21325,6 +24019,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public property_parameter_list(List<property_parameter> _parameters)
 		{
 			this._parameters=_parameters;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -21334,6 +24029,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._parameters=_parameters;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public property_parameter_list(property_parameter elem, SourceContext sc = null)
 		{
@@ -21465,6 +24161,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as property_parameter_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -21554,6 +24272,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public inherited_ident(string _name)
 		{
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -21563,6 +24282,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -21584,6 +24304,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new inherited_ident TypedClone()
 		{
 			return Clone() as inherited_ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -21659,6 +24393,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			this._format1=_format1;
 			this._format2=_format2;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -21670,6 +24405,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._format1=_format1;
 			this._format2=_format2;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 		protected expression _format1;
@@ -21755,6 +24491,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new format_expr TypedClone()
 		{
 			return Clone() as format_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+			if (format1 != null)
+				format1.Parent = this;
+			if (format2 != null)
+				format2.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+			format1?.FillParentsInAllChilds();
+			format2?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -21850,6 +24609,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._initialization_sect=_initialization_sect;
 			this._finalization_sect=_finalization_sect;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -21860,6 +24620,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._initialization_sect=_initialization_sect;
 			this._finalization_sect=_finalization_sect;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement_list _initialization_sect;
 		protected statement_list _finalization_sect;
@@ -21919,6 +24680,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new initfinal_part TypedClone()
 		{
 			return Clone() as initfinal_part;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (initialization_sect != null)
+				initialization_sect.Parent = this;
+			if (finalization_sect != null)
+				finalization_sect.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			initialization_sect?.FillParentsInAllChilds();
+			finalization_sect?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -22008,6 +24786,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public token_info(string _text)
 		{
 			this._text=_text;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22017,6 +24796,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._text=_text;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected string _text;
 
@@ -22051,6 +24831,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public new token_info TypedClone()
 		{
 			return Clone() as token_info;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22125,6 +24916,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._expr=_expr;
 			this._address=_address;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22135,6 +24927,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			this._address=_address;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 		protected expression _address;
@@ -22199,6 +24992,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new raise_stmt TypedClone()
 		{
 			return Clone() as raise_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+			if (address != null)
+				address.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
+			address?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -22288,6 +25101,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public op_type_node(Operators _type)
 		{
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22297,6 +25111,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22306,6 +25121,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._text=_text;
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22316,6 +25132,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._text=_text;
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected Operators _type;
 
@@ -22351,6 +25168,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public new op_type_node TypedClone()
 		{
 			return Clone() as op_type_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22424,6 +25252,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public file_type(type_definition _file_of_type)
 		{
 			this._file_of_type=_file_of_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22433,6 +25262,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._file_of_type=_file_of_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22442,6 +25272,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._file_of_type=_file_of_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22452,6 +25283,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._file_of_type=_file_of_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _file_of_type;
 
@@ -22500,6 +25332,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new file_type TypedClone()
 		{
 			return Clone() as file_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (file_of_type != null)
+				file_of_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			file_of_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -22589,6 +25441,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public known_type_ident(known_type _type)
 		{
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22598,6 +25451,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22607,6 +25461,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22617,6 +25472,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected known_type _type;
 
@@ -22657,6 +25513,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new known_type_ident TypedClone()
 		{
 			return Clone() as known_type_ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -22732,6 +25602,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._variable=_variable;
 			this._type_name=_type_name;
 			this._statements=_statements;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22743,6 +25614,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			this._statements=_statements;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _variable;
 		protected named_type_reference _type_name;
@@ -22823,6 +25695,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new exception_handler TypedClone()
 		{
 			return Clone() as exception_handler;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (variable != null)
+				variable.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+			if (statements != null)
+				statements.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			variable?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
+			statements?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -22918,6 +25810,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._variable=_variable;
 			this._type_name=_type_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -22928,6 +25821,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._variable=_variable;
 			this._type_name=_type_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _variable;
 		protected named_type_reference _type_name;
@@ -22987,6 +25881,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new exception_ident TypedClone()
 		{
 			return Clone() as exception_ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (variable != null)
+				variable.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			variable?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -23076,6 +25987,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public exception_handler_list(List<exception_handler> _handlers)
 		{
 			this._handlers=_handlers;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -23085,6 +25997,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._handlers=_handlers;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public exception_handler_list(exception_handler elem, SourceContext sc = null)
 		{
@@ -23216,6 +26129,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as exception_handler_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (handlers != null)
+			{
+				foreach (var child in handlers)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (handlers != null)
+			{
+				foreach (var child in handlers)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -23306,6 +26241,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt_list=_stmt_list;
 			this._handlers=_handlers;
 			this._else_stmt_list=_else_stmt_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -23317,6 +26253,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._handlers=_handlers;
 			this._else_stmt_list=_else_stmt_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement_list _stmt_list;
 		protected exception_handler_list _handlers;
@@ -23397,6 +26334,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new exception_block TypedClone()
 		{
 			return Clone() as exception_block;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (stmt_list != null)
+				stmt_list.Parent = this;
+			if (handlers != null)
+				handlers.Parent = this;
+			if (else_stmt_list != null)
+				else_stmt_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			stmt_list?.FillParentsInAllChilds();
+			handlers?.FillParentsInAllChilds();
+			else_stmt_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -23501,6 +26458,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as try_handler;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -23572,6 +26540,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public try_handler_finally(statement_list _stmt_list)
 		{
 			this._stmt_list=_stmt_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -23581,6 +26550,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._stmt_list=_stmt_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement_list _stmt_list;
 
@@ -23619,6 +26589,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new try_handler_finally TypedClone()
 		{
 			return Clone() as try_handler_finally;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (stmt_list != null)
+				stmt_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			stmt_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -23703,6 +26687,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public try_handler_except(exception_block _except_block)
 		{
 			this._except_block=_except_block;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -23712,6 +26697,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._except_block=_except_block;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected exception_block _except_block;
 
@@ -23750,6 +26736,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new try_handler_except TypedClone()
 		{
 			return Clone() as try_handler_except;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (except_block != null)
+				except_block.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			except_block?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -23835,6 +26835,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._stmt_list=_stmt_list;
 			this._handler=_handler;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -23845,6 +26846,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt_list=_stmt_list;
 			this._handler=_handler;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement_list _stmt_list;
 		protected try_handler _handler;
@@ -23909,6 +26911,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new try_stmt TypedClone()
 		{
 			return Clone() as try_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (stmt_list != null)
+				stmt_list.Parent = this;
+			if (handler != null)
+				handler.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			stmt_list?.FillParentsInAllChilds();
+			handler?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -24013,6 +27035,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as inherited_message;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -24085,6 +27121,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._modulename=_modulename;
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -24095,6 +27132,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._modulename=_modulename;
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _modulename;
 		protected expression _name;
@@ -24154,6 +27192,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new external_directive TypedClone()
 		{
 			return Clone() as external_directive;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (modulename != null)
+				modulename.Parent = this;
+			if (name != null)
+				name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			modulename?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -24243,6 +27298,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public using_list(List<unit_or_namespace> _namespaces)
 		{
 			this._namespaces=_namespaces;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -24252,6 +27308,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._namespaces=_namespaces;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public using_list(unit_or_namespace elem, SourceContext sc = null)
 		{
@@ -24383,6 +27440,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as using_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (namespaces != null)
+			{
+				foreach (var child in namespaces)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (namespaces != null)
+			{
+				foreach (var child in namespaces)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -24472,6 +27551,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._expr=_expr;
 			this._JumpType=_JumpType;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -24482,6 +27562,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr=_expr;
 			this._JumpType=_JumpType;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 		protected JumpStmtType _JumpType;
@@ -24542,6 +27623,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new jump_stmt TypedClone()
 		{
 			return Clone() as jump_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -24626,6 +27724,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public loop_stmt(statement _stmt)
 		{
 			this._stmt=_stmt;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -24635,6 +27734,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._stmt=_stmt;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement _stmt;
 
@@ -24678,6 +27778,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new loop_stmt TypedClone()
 		{
 			return Clone() as loop_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -24765,6 +27882,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_name=_type_name;
 			this._in_what=_in_what;
 			this._stmt=_stmt;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -24777,6 +27895,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._in_what=_in_what;
 			this._stmt=_stmt;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _identifier;
 		protected type_definition _type_name;
@@ -24883,6 +28002,32 @@ namespace PascalABCCompiler.SyntaxTree
 		public new foreach_stmt TypedClone()
 		{
 			return Clone() as foreach_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (identifier != null)
+				identifier.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+			if (in_what != null)
+				in_what.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			identifier?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
+			in_what?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -24997,6 +28142,20 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as addressed_value_funcname;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -25068,6 +28227,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public named_type_reference_list(List<named_type_reference> _types)
 		{
 			this._types=_types;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25077,6 +28237,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._types=_types;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public named_type_reference_list(named_type_reference elem, SourceContext sc = null)
 		{
@@ -25208,6 +28369,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as named_type_reference_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (types != null)
+			{
+				foreach (var child in types)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (types != null)
+			{
+				foreach (var child in types)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -25296,6 +28479,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public template_param_list(List<type_definition> _params_list)
 		{
 			this._params_list=_params_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25305,6 +28489,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._params_list=_params_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25314,6 +28499,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._dereferencing_value=_dereferencing_value;
 			this._params_list=_params_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25324,6 +28510,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._dereferencing_value=_dereferencing_value;
 			this._params_list=_params_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public template_param_list(type_definition elem, SourceContext sc = null)
 		{
@@ -25465,6 +28652,34 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as template_param_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+			if (params_list != null)
+			{
+				foreach (var child in params_list)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
+			if (params_list != null)
+			{
+				foreach (var child in params_list)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -25565,6 +28780,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._params_list=_params_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25575,6 +28791,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._params_list=_params_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25586,6 +28803,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._names=_names;
 			this._name=_name;
 			this._params_list=_params_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25598,6 +28816,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._params_list=_params_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected named_type_reference _name;
 		protected template_param_list _params_list;
@@ -25680,6 +28899,40 @@ namespace PascalABCCompiler.SyntaxTree
 		public new template_type_reference TypedClone()
 		{
 			return Clone() as template_type_reference;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (names != null)
+			{
+				foreach (var child in names)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (name != null)
+				name.Parent = this;
+			if (params_list != null)
+				params_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			if (names != null)
+			{
+				foreach (var child in names)
+					child?.FillParentsInAllChilds();
+			}
+			name?.FillParentsInAllChilds();
+			params_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -25791,6 +29044,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public int64_const(Int64 _val)
 		{
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25800,6 +29054,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected Int64 _val;
 
@@ -25839,6 +29094,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new int64_const TypedClone()
 		{
 			return Clone() as int64_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -25912,6 +29181,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public uint64_const(UInt64 _val)
 		{
 			this._val=_val;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -25921,6 +29191,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._val=_val;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected UInt64 _val;
 
@@ -25960,6 +29231,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new uint64_const TypedClone()
 		{
 			return Clone() as uint64_const;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -26036,6 +29321,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._params_list=_params_list;
 			this._new_array=_new_array;
 			this._array_init_expr=_array_init_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -26048,6 +29334,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._new_array=_new_array;
 			this._array_init_expr=_array_init_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _type;
 		protected expression_list _params_list;
@@ -26152,6 +29439,29 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as new_expr;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (type != null)
+				type.Parent = this;
+			if (params_list != null)
+				params_list.Parent = this;
+			if (array_init_expr != null)
+				array_init_expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			type?.FillParentsInAllChilds();
+			params_list?.FillParentsInAllChilds();
+			array_init_expr?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26244,6 +29554,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public where_type_specificator_list(List<type_definition> _defs)
 		{
 			this._defs=_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -26253,6 +29564,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._defs=_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public where_type_specificator_list(type_definition elem, SourceContext sc = null)
 		{
@@ -26384,6 +29696,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as where_type_specificator_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26473,6 +29807,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._names=_names;
 			this._types=_types;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -26483,6 +29818,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._names=_names;
 			this._types=_types;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _names;
 		protected where_type_specificator_list _types;
@@ -26542,6 +29878,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new where_definition TypedClone()
 		{
 			return Clone() as where_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (names != null)
+				names.Parent = this;
+			if (types != null)
+				types.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			names?.FillParentsInAllChilds();
+			types?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -26631,6 +29984,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public where_definition_list(List<where_definition> _defs)
 		{
 			this._defs=_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -26640,6 +29994,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._defs=_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public where_definition_list(where_definition elem, SourceContext sc = null)
 		{
@@ -26771,6 +30126,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as where_definition_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -26860,6 +30237,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type_def=_type_def;
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -26870,6 +30248,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type_def=_type_def;
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _type_def;
 		protected expression _expr;
@@ -26934,6 +30313,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new sizeof_operator TypedClone()
 		{
 			return Clone() as sizeof_operator;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (type_def != null)
+				type_def.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			type_def?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27023,6 +30422,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public typeof_operator(named_type_reference _type_name)
 		{
 			this._type_name=_type_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27032,6 +30432,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type_name=_type_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected named_type_reference _type_name;
 
@@ -27075,6 +30476,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new typeof_operator TypedClone()
 		{
 			return Clone() as typeof_operator;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27160,6 +30578,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._Name=_Name;
 			this._Directive=_Directive;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27170,6 +30589,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Name=_Name;
 			this._Directive=_Directive;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected token_info _Name;
 		protected token_info _Directive;
@@ -27229,6 +30649,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new compiler_directive TypedClone()
 		{
 			return Clone() as compiler_directive;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (Name != null)
+				Name.Parent = this;
+			if (Directive != null)
+				Directive.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			Name?.FillParentsInAllChilds();
+			Directive?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27318,6 +30755,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public operator_name_ident(Operators _operator_type)
 		{
 			this._operator_type=_operator_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27327,6 +30765,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._operator_type=_operator_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27336,6 +30775,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._operator_type=_operator_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27346,6 +30786,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._operator_type=_operator_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected Operators _operator_type;
 
@@ -27386,6 +30827,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new operator_name_ident TypedClone()
 		{
 			return Clone() as operator_name_ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27459,6 +30914,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public var_statement(var_def_statement _var_def)
 		{
 			this._var_def=_var_def;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27468,6 +30924,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._var_def=_var_def;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected var_def_statement _var_def;
 
@@ -27511,6 +30968,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new var_statement TypedClone()
 		{
 			return Clone() as var_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (var_def != null)
+				var_def.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			var_def?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27597,6 +31071,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._condition=_condition;
 			this._ret_if_true=_ret_if_true;
 			this._ret_if_false=_ret_if_false;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27608,6 +31083,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._ret_if_true=_ret_if_true;
 			this._ret_if_false=_ret_if_false;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _condition;
 		protected expression _ret_if_true;
@@ -27693,6 +31169,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new question_colon_expression TypedClone()
 		{
 			return Clone() as question_colon_expression;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (condition != null)
+				condition.Parent = this;
+			if (ret_if_true != null)
+				ret_if_true.Parent = this;
+			if (ret_if_false != null)
+				ret_if_false.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			condition?.FillParentsInAllChilds();
+			ret_if_true?.FillParentsInAllChilds();
+			ret_if_false?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27787,6 +31286,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public expression_as_statement(expression _expr)
 		{
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27796,6 +31296,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 
@@ -27839,6 +31340,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new expression_as_statement TypedClone()
 		{
 			return Clone() as expression_as_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -27924,6 +31442,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._scalar_name=_scalar_name;
 			this._sign=_sign;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27934,6 +31453,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._scalar_name=_scalar_name;
 			this._sign=_sign;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27944,6 +31464,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._scalar_name=_scalar_name;
 			this._sign=_sign;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -27955,6 +31476,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._scalar_name=_scalar_name;
 			this._sign=_sign;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected c_scalar_type_name _scalar_name;
 		protected c_scalar_sign _sign;
@@ -28016,6 +31538,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new c_scalar_type TypedClone()
 		{
 			return Clone() as c_scalar_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -28101,6 +31640,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._defs=_defs;
 			this._used_units=_used_units;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28111,6 +31651,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._used_units=_used_units;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28123,6 +31664,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Language=_Language;
 			this._defs=_defs;
 			this._used_units=_used_units;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28136,6 +31678,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._defs=_defs;
 			this._used_units=_used_units;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected declarations _defs;
 		protected uses_list _used_units;
@@ -28210,6 +31753,34 @@ namespace PascalABCCompiler.SyntaxTree
 		public new c_module TypedClone()
 		{
 			return Clone() as c_module;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (defs != null)
+				defs.Parent = this;
+			if (used_units != null)
+				used_units.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (compiler_directives != null)
+			{
+				foreach (var child in compiler_directives)
+					child?.FillParentsInAllChilds();
+			}
+			defs?.FillParentsInAllChilds();
+			used_units?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -28316,6 +31887,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public declarations_as_statement(declarations _defs)
 		{
 			this._defs=_defs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28325,6 +31897,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._defs=_defs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected declarations _defs;
 
@@ -28368,6 +31941,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new declarations_as_statement TypedClone()
 		{
 			return Clone() as declarations_as_statement;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (defs != null)
+				defs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			defs?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -28452,6 +32042,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public array_size(expression _max_value)
 		{
 			this._max_value=_max_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28461,6 +32052,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._max_value=_max_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28470,6 +32062,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._max_value=_max_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28480,6 +32073,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._max_value=_max_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _max_value;
 
@@ -28528,6 +32122,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new array_size TypedClone()
 		{
 			return Clone() as array_size;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (max_value != null)
+				max_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			max_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -28618,6 +32232,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._value=_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28628,6 +32243,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._value=_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _name;
 		protected expression _value;
@@ -28687,6 +32303,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new enumerator TypedClone()
 		{
 			return Clone() as enumerator;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (name != null)
+				name.Parent = this;
+			if (value != null)
+				value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			name?.FillParentsInAllChilds();
+			value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -28776,6 +32409,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public enumerator_list(List<enumerator> _enumerators)
 		{
 			this._enumerators=_enumerators;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -28785,6 +32419,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._enumerators=_enumerators;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public enumerator_list(enumerator elem, SourceContext sc = null)
 		{
@@ -28916,6 +32551,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as enumerator_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (enumerators != null)
+			{
+				foreach (var child in enumerators)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (enumerators != null)
+			{
+				foreach (var child in enumerators)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29007,6 +32664,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr2=_expr2;
 			this._expr3=_expr3;
 			this._stmt=_stmt;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29019,6 +32677,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._expr3=_expr3;
 			this._stmt=_stmt;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected statement _expr1;
 		protected expression _expr2;
@@ -29127,6 +32786,32 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as c_for_cycle;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr1 != null)
+				expr1.Parent = this;
+			if (expr2 != null)
+				expr2.Parent = this;
+			if (expr3 != null)
+				expr3.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr1?.FillParentsInAllChilds();
+			expr2?.FillParentsInAllChilds();
+			expr3?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29226,6 +32911,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._condition=_condition;
 			this._stmt=_stmt;
 			this._Part=_Part;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29237,6 +32923,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._stmt=_stmt;
 			this._Part=_Part;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _condition;
 		protected statement _stmt;
@@ -29318,6 +33005,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new switch_stmt TypedClone()
 		{
 			return Clone() as switch_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (condition != null)
+				condition.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			condition?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -29407,6 +33114,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public type_definition_attr_list(List<type_definition_attr> _attributes)
 		{
 			this._attributes=_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29416,6 +33124,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attributes=_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public type_definition_attr_list(type_definition_attr elem, SourceContext sc = null)
 		{
@@ -29547,6 +33256,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as type_definition_attr_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+			{
+				foreach (var child in attributes)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (attributes != null)
+			{
+				foreach (var child in attributes)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -29635,6 +33366,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public type_definition_attr(definition_attribute _attr)
 		{
 			this._attr=_attr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29644,6 +33376,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr=_attr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29653,6 +33386,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._attr=_attr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29663,6 +33397,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._attr=_attr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected definition_attribute _attr;
 
@@ -29707,6 +33442,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new type_definition_attr TypedClone()
 		{
 			return Clone() as type_definition_attr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -29792,6 +33544,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._lock_object=_lock_object;
 			this._stmt=_stmt;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29802,6 +33555,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._lock_object=_lock_object;
 			this._stmt=_stmt;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _lock_object;
 		protected statement _stmt;
@@ -29866,6 +33620,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new lock_stmt TypedClone()
 		{
 			return Clone() as lock_stmt;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (lock_object != null)
+				lock_object.Parent = this;
+			if (stmt != null)
+				stmt.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			lock_object?.FillParentsInAllChilds();
+			stmt?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -29955,6 +33729,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public compiler_directive_list(List<compiler_directive> _directives)
 		{
 			this._directives=_directives;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29964,6 +33739,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._directives=_directives;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29974,6 +33750,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Name=_Name;
 			this._Directive=_Directive;
 			this._directives=_directives;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -29985,6 +33762,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Directive=_Directive;
 			this._directives=_directives;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public compiler_directive_list(compiler_directive elem, SourceContext sc = null)
 		{
@@ -30126,6 +33904,34 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as compiler_directive_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (Name != null)
+				Name.Parent = this;
+			if (Directive != null)
+				Directive.Parent = this;
+			if (directives != null)
+			{
+				foreach (var child in directives)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			Name?.FillParentsInAllChilds();
+			Directive?.FillParentsInAllChilds();
+			if (directives != null)
+			{
+				foreach (var child in directives)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -30231,6 +34037,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._if_part=_if_part;
 			this._elseif_part=_elseif_part;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -30241,6 +34048,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._if_part=_if_part;
 			this._elseif_part=_elseif_part;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -30252,6 +34060,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._Directive=_Directive;
 			this._if_part=_if_part;
 			this._elseif_part=_elseif_part;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -30264,6 +34073,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._if_part=_if_part;
 			this._elseif_part=_elseif_part;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected compiler_directive _if_part;
 		protected compiler_directive _elseif_part;
@@ -30333,6 +34143,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new compiler_directive_if TypedClone()
 		{
 			return Clone() as compiler_directive_if;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (Name != null)
+				Name.Parent = this;
+			if (Directive != null)
+				Directive.Parent = this;
+			if (if_part != null)
+				if_part.Parent = this;
+			if (elseif_part != null)
+				elseif_part.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			Name?.FillParentsInAllChilds();
+			Directive?.FillParentsInAllChilds();
+			if_part?.FillParentsInAllChilds();
+			elseif_part?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -30432,6 +34265,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public documentation_comment_list(List<documentation_comment_section> _sections)
 		{
 			this._sections=_sections;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -30441,6 +34275,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._sections=_sections;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public documentation_comment_list(documentation_comment_section elem, SourceContext sc = null)
 		{
@@ -30572,6 +34407,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as documentation_comment_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (sections != null)
+			{
+				foreach (var child in sections)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (sections != null)
+			{
+				foreach (var child in sections)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -30662,6 +34519,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._parameters=_parameters;
 			this._text=_text;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -30673,6 +34531,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._parameters=_parameters;
 			this._text=_text;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public documentation_comment_tag(documentation_comment_tag_param elem, SourceContext sc = null)
 		{
@@ -30838,6 +34697,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as documentation_comment_tag;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (parameters != null)
+			{
+				foreach (var child in parameters)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -30927,6 +34808,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._value=_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -30937,6 +34819,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._value=_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected string _name;
 		protected string _value;
@@ -30988,6 +34871,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public new documentation_comment_tag_param TypedClone()
 		{
 			return Clone() as documentation_comment_tag_param;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31062,6 +34956,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._tags=_tags;
 			this._text=_text;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31072,6 +34967,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._tags=_tags;
 			this._text=_text;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public documentation_comment_section(documentation_comment_tag elem, SourceContext sc = null)
 		{
@@ -31220,6 +35116,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as documentation_comment_section;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (tags != null)
+			{
+				foreach (var child in tags)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (tags != null)
+			{
+				foreach (var child in tags)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -31308,6 +35226,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public token_taginfo(object _tag)
 		{
 			this._tag=_tag;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31317,6 +35236,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._tag=_tag;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31326,6 +35246,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._text=_text;
 			this._tag=_tag;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31336,6 +35257,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._text=_text;
 			this._tag=_tag;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected object _tag;
 
@@ -31371,6 +35293,17 @@ namespace PascalABCCompiler.SyntaxTree
 		public new token_taginfo TypedClone()
 		{
 			return Clone() as token_taginfo;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31445,6 +35378,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._specificator=_specificator;
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31455,6 +35389,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._specificator=_specificator;
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31465,6 +35400,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._specificator=_specificator;
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31476,6 +35412,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._specificator=_specificator;
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected DeclarationSpecificator _specificator;
 		protected string _name;
@@ -31537,6 +35474,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new declaration_specificator TypedClone()
 		{
 			return Clone() as declaration_specificator;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -31622,6 +35576,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._template_params=_template_params;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31632,6 +35587,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._template_params=_template_params;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _name;
 		protected template_param_list _template_params;
@@ -31696,6 +35652,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new ident_with_templateparams TypedClone()
 		{
 			return Clone() as ident_with_templateparams;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (name != null)
+				name.Parent = this;
+			if (template_params != null)
+				template_params.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			name?.FillParentsInAllChilds();
+			template_params?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -31785,6 +35761,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public template_type_name(ident_list _template_args)
 		{
 			this._template_args=_template_args;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31794,6 +35771,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._template_args=_template_args;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31803,6 +35781,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._template_args=_template_args;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31813,6 +35792,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._template_args=_template_args;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident_list _template_args;
 
@@ -31857,6 +35837,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new template_type_name TypedClone()
 		{
 			return Clone() as template_type_name;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -31941,6 +35938,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public default_operator(named_type_reference _type_name)
 		{
 			this._type_name=_type_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -31950,6 +35948,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type_name=_type_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected named_type_reference _type_name;
 
@@ -31993,6 +35992,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new default_operator TypedClone()
 		{
 			return Clone() as default_operator;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (type_name != null)
+				type_name.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			type_name?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -32077,6 +36093,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public bracket_expr(expression _expr)
 		{
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -32086,6 +36103,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _expr;
 
@@ -32129,6 +36147,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new bracket_expr TypedClone()
 		{
 			return Clone() as bracket_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -32215,6 +36250,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._qualifier=_qualifier;
 			this._type=_type;
 			this._arguments=_arguments;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -32226,6 +36262,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._type=_type;
 			this._arguments=_arguments;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _qualifier;
 		protected named_type_reference _type;
@@ -32306,6 +36343,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new attribute TypedClone()
 		{
 			return Clone() as attribute;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (qualifier != null)
+				qualifier.Parent = this;
+			if (type != null)
+				type.Parent = this;
+			if (arguments != null)
+				arguments.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			qualifier?.FillParentsInAllChilds();
+			type?.FillParentsInAllChilds();
+			arguments?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -32400,6 +36457,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public simple_attribute_list(List<attribute> _attributes)
 		{
 			this._attributes=_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -32409,6 +36467,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attributes=_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public simple_attribute_list(attribute elem, SourceContext sc = null)
 		{
@@ -32540,6 +36599,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as simple_attribute_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+			{
+				foreach (var child in attributes)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (attributes != null)
+			{
+				foreach (var child in attributes)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -32628,6 +36709,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public attribute_list(List<simple_attribute_list> _attributes)
 		{
 			this._attributes=_attributes;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -32637,6 +36719,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attributes=_attributes;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public attribute_list(simple_attribute_list elem, SourceContext sc = null)
 		{
@@ -32768,6 +36851,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as attribute_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+			{
+				foreach (var child in attributes)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (attributes != null)
+			{
+				foreach (var child in attributes)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -32866,6 +36971,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._lambda_visit_mode=_lambda_visit_mode;
 			this._substituting_node=_substituting_node;
 			this._usedkeyword=_usedkeyword;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -32885,6 +36991,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._substituting_node=_substituting_node;
 			this._usedkeyword=_usedkeyword;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public function_lambda_definition(declaration elem, SourceContext sc = null)
 		{
@@ -33219,6 +37326,52 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as function_lambda_definition;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (ident_list != null)
+				ident_list.Parent = this;
+			if (return_type != null)
+				return_type.Parent = this;
+			if (formal_parameters != null)
+				formal_parameters.Parent = this;
+			if (proc_body != null)
+				proc_body.Parent = this;
+			if (proc_definition != null)
+				proc_definition.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (substituting_node != null)
+				substituting_node.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			ident_list?.FillParentsInAllChilds();
+			return_type?.FillParentsInAllChilds();
+			formal_parameters?.FillParentsInAllChilds();
+			proc_body?.FillParentsInAllChilds();
+			proc_definition?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
+			if (defs != null)
+			{
+				foreach (var child in defs)
+					child?.FillParentsInAllChilds();
+			}
+			substituting_node?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -33349,6 +37502,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._f_lambda_def=_f_lambda_def;
 			this._parameters=_parameters;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33359,6 +37513,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._f_lambda_def=_f_lambda_def;
 			this._parameters=_parameters;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected function_lambda_definition _f_lambda_def;
 		protected expression_list _parameters;
@@ -33423,6 +37578,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new function_lambda_call TypedClone()
 		{
 			return Clone() as function_lambda_call;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (f_lambda_def != null)
+				f_lambda_def.Parent = this;
+			if (parameters != null)
+				parameters.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			f_lambda_def?.FillParentsInAllChilds();
+			parameters?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -33514,6 +37689,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._CheckName=_CheckName;
 			this._param=_param;
 			this._fictive=_fictive;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33525,6 +37701,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._param=_param;
 			this._fictive=_fictive;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public semantic_check(syntax_tree_node elem, SourceContext sc = null)
 		{
@@ -33695,6 +37872,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as semantic_check;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (param != null)
+			{
+				foreach (var child in param)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (param != null)
+			{
+				foreach (var child in param)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -33783,6 +37985,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public lambda_inferred_type(object _real_type)
 		{
 			this._real_type=_real_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33792,6 +37995,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._real_type=_real_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33801,6 +38005,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._real_type=_real_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33811,6 +38016,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._real_type=_real_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected object _real_type;
 
@@ -33855,6 +38061,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new lambda_inferred_type TypedClone()
 		{
 			return Clone() as lambda_inferred_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -33939,6 +38162,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public same_type_node(expression _ex)
 		{
 			this._ex=_ex;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33948,6 +38172,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._ex=_ex;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33957,6 +38182,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._ex=_ex;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -33967,6 +38193,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._ex=_ex;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _ex;
 
@@ -34015,6 +38242,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new same_type_node TypedClone()
 		{
 			return Clone() as same_type_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (ex != null)
+				ex.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			ex?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -34105,6 +38352,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34115,6 +38363,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected ident _name;
 		protected expression _expr;
@@ -34174,6 +38423,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new name_assign_expr TypedClone()
 		{
 			return Clone() as name_assign_expr;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (name != null)
+				name.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			name?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -34263,6 +38529,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public name_assign_expr_list(List<name_assign_expr> _name_expr)
 		{
 			this._name_expr=_name_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34272,6 +38539,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name_expr=_name_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public name_assign_expr_list(name_assign_expr elem, SourceContext sc = null)
 		{
@@ -34403,6 +38671,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as name_assign_expr_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (name_expr != null)
+			{
+				foreach (var child in name_expr)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (name_expr != null)
+			{
+				foreach (var child in name_expr)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -34495,6 +38785,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._ne_list=_ne_list;
 			this._is_class=_is_class;
 			this._new_ex=_new_ex;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34506,6 +38797,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._is_class=_is_class;
 			this._new_ex=_new_ex;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected name_assign_expr_list _ne_list;
 		protected bool _is_class;
@@ -34587,6 +38879,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new unnamed_type_object TypedClone()
 		{
 			return Clone() as unnamed_type_object;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (ne_list != null)
+				ne_list.Parent = this;
+			if (new_ex != null)
+				new_ex.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			ne_list?.FillParentsInAllChilds();
+			new_ex?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -34676,6 +38988,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public semantic_type_node(Object _type)
 		{
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34685,6 +38998,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34694,6 +39008,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._type=_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34704,6 +39019,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._type=_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected Object _type;
 
@@ -34748,6 +39064,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new semantic_type_node TypedClone()
 		{
 			return Clone() as semantic_type_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -34832,6 +39165,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public short_func_definition(procedure_definition _procdef)
 		{
 			this._procdef=_procdef;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34841,6 +39175,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._procdef=_procdef;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34852,6 +39187,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._proc_body=_proc_body;
 			this._is_short_definition=_is_short_definition;
 			this._procdef=_procdef;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -34864,6 +39200,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._is_short_definition=_is_short_definition;
 			this._procdef=_procdef;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected procedure_definition _procdef;
 
@@ -34918,6 +39255,29 @@ namespace PascalABCCompiler.SyntaxTree
 		public new short_func_definition TypedClone()
 		{
 			return Clone() as short_func_definition;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (proc_header != null)
+				proc_header.Parent = this;
+			if (proc_body != null)
+				proc_body.Parent = this;
+			if (procdef != null)
+				procdef.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			proc_header?.FillParentsInAllChilds();
+			proc_body?.FillParentsInAllChilds();
+			procdef?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35013,6 +39373,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public no_type_foreach(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35022,6 +39383,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -35047,6 +39409,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new no_type_foreach TypedClone()
 		{
 			return Clone() as no_type_foreach;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35132,6 +39511,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35142,6 +39522,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _left;
 		protected expression _right;
@@ -35206,6 +39587,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new matching_expression TypedClone()
 		{
 			return Clone() as matching_expression;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35295,6 +39696,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public closure_substituting_node(dot_node _substitution)
 		{
 			this._substitution=_substitution;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35304,6 +39706,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._substitution=_substitution;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35313,6 +39716,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			this._substitution=_substitution;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35323,6 +39727,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._substitution=_substitution;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected dot_node _substitution;
 
@@ -35367,6 +39772,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new closure_substituting_node TypedClone()
 		{
 			return Clone() as closure_substituting_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (substitution != null)
+				substitution.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			substitution?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35451,6 +39873,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public sequence_type(type_definition _elements_type)
 		{
 			this._elements_type=_elements_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35460,6 +39883,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._elements_type=_elements_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35469,6 +39893,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			this._elements_type=_elements_type;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35479,6 +39904,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._attr_list=_attr_list;
 			this._elements_type=_elements_type;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _elements_type;
 
@@ -35527,6 +39953,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new sequence_type TypedClone()
 		{
 			return Clone() as sequence_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (elements_type != null)
+				elements_type.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			elements_type?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35618,6 +40064,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._aloneparam=_aloneparam;
 			this._el=_el;
 			this._res=_res;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35629,6 +40076,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._el=_el;
 			this._res=_res;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35640,6 +40088,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._aloneparam=_aloneparam;
 			this._el=_el;
 			this._res=_res;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35652,6 +40101,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._el=_el;
 			this._res=_res;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _aloneparam;
 		protected enumerator_list _el;
@@ -35742,6 +40192,32 @@ namespace PascalABCCompiler.SyntaxTree
 		public new modern_proc_type TypedClone()
 		{
 			return Clone() as modern_proc_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+			if (aloneparam != null)
+				aloneparam.Parent = this;
+			if (el != null)
+				el.Parent = this;
+			if (res != null)
+				res.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
+			aloneparam?.FillParentsInAllChilds();
+			el?.FillParentsInAllChilds();
+			res?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35841,6 +40317,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public yield_node(expression _ex)
 		{
 			this._ex=_ex;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35850,6 +40327,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._ex=_ex;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _ex;
 
@@ -35893,6 +40371,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new yield_node TypedClone()
 		{
 			return Clone() as yield_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (ex != null)
+				ex.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			ex?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -35977,6 +40472,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public template_operator_name(operator_name_ident _opname)
 		{
 			this._opname=_opname;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35986,6 +40482,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._opname=_opname;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -35996,6 +40493,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._name=_name;
 			this._template_args=_template_args;
 			this._opname=_opname;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36007,6 +40505,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._template_args=_template_args;
 			this._opname=_opname;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected operator_name_ident _opname;
 
@@ -36056,6 +40555,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new template_operator_name TypedClone()
 		{
 			return Clone() as template_operator_name;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (template_args != null)
+				template_args.Parent = this;
+			if (opname != null)
+				opname.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			template_args?.FillParentsInAllChilds();
+			opname?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -36145,6 +40664,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public semantic_addr_value(Object _expr)
 		{
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36154,6 +40674,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected Object _expr;
 
@@ -36193,6 +40714,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new semantic_addr_value TypedClone()
 		{
 			return Clone() as semantic_addr_value;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -36267,6 +40802,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._tn=_tn;
 			this._exprs=_exprs;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36277,6 +40813,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._tn=_tn;
 			this._exprs=_exprs;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected type_definition _tn;
 		protected statement_list _exprs;
@@ -36336,6 +40873,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new pair_type_stlist TypedClone()
 		{
 			return Clone() as pair_type_stlist;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (tn != null)
+				tn.Parent = this;
+			if (exprs != null)
+				exprs.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			tn?.FillParentsInAllChilds();
+			exprs?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -36426,6 +40980,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._vars=_vars;
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36436,6 +40991,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value_list _vars;
 		protected expression _expr;
@@ -36500,6 +41056,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new assign_tuple TypedClone()
 		{
 			return Clone() as assign_tuple;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (vars != null)
+				vars.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			vars?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -36589,6 +41165,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public addressed_value_list(List<addressed_value> _variables)
 		{
 			this._variables=_variables;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36598,6 +41175,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._variables=_variables;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public addressed_value_list(addressed_value elem, SourceContext sc = null)
 		{
@@ -36729,6 +41307,28 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as addressed_value_list;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (variables != null)
+			{
+				foreach (var child in variables)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (variables != null)
+			{
+				foreach (var child in variables)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -36817,6 +41417,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public tuple_node(expression_list _el)
 		{
 			this._el=_el;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36826,6 +41427,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._el=_el;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression_list _el;
 
@@ -36869,6 +41471,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new tuple_node TypedClone()
 		{
 			return Clone() as tuple_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (el != null)
+				el.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			el?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -36953,6 +41572,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public uses_closure(List<uses_list> _listunitsections)
 		{
 			this._listunitsections=_listunitsections;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36962,6 +41582,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._listunitsections=_listunitsections;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36971,6 +41592,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._units=_units;
 			this._listunitsections=_listunitsections;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -36981,6 +41603,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._units=_units;
 			this._listunitsections=_listunitsections;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public uses_closure(uses_list elem, SourceContext sc = null)
 		{
@@ -37125,6 +41748,39 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as uses_closure;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (units != null)
+			{
+				foreach (var child in units)
+					if (child != null)
+						child.Parent = this;
+			}
+			if (listunitsections != null)
+			{
+				foreach (var child in listunitsections)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			if (units != null)
+			{
+				foreach (var child in units)
+					child?.FillParentsInAllChilds();
+			}
+			if (listunitsections != null)
+			{
+				foreach (var child in listunitsections)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -37233,6 +41889,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._left=_left;
 			this._right=_right;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37243,6 +41900,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _left;
 		protected addressed_value _right;
@@ -37307,6 +41965,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new dot_question_node TypedClone()
 		{
 			return Clone() as dot_question_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -37399,6 +42077,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37411,6 +42090,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._to=_to;
 			this._step=_step;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37423,6 +42103,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37436,6 +42117,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._to=_to;
 			this._step=_step;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected addressed_value _v;
 		protected expression _from;
@@ -37549,6 +42231,35 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as slice_expr;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+			if (v != null)
+				v.Parent = this;
+			if (from != null)
+				from.Parent = this;
+			if (to != null)
+				to.Parent = this;
+			if (step != null)
+				step.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
+			v?.FillParentsInAllChilds();
+			from?.FillParentsInAllChilds();
+			to?.FillParentsInAllChilds();
+			step?.FillParentsInAllChilds();
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -37652,6 +42363,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public no_type(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37661,6 +42373,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -37686,6 +42399,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new no_type TypedClone()
 		{
 			return Clone() as no_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -37771,6 +42501,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public yield_unknown_ident(string _name)
 		{
 			this._name=_name;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37780,6 +42511,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._name=_name;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -37801,6 +42533,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public new yield_unknown_ident TypedClone()
 		{
 			return Clone() as yield_unknown_ident;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -37875,6 +42621,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public yield_unknown_expression_type(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -37884,6 +42631,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -37909,6 +42657,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new yield_unknown_expression_type TypedClone()
 		{
 			return Clone() as yield_unknown_expression_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -37994,6 +42759,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public yield_unknown_foreach_type(type_definition_attr_list _attr_list)
 		{
 			this._attr_list=_attr_list;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38003,6 +42769,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._attr_list=_attr_list;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -38028,6 +42795,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new yield_unknown_foreach_type TypedClone()
 		{
 			return Clone() as yield_unknown_foreach_type;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (attr_list != null)
+				attr_list.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			attr_list?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -38112,6 +42896,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public yield_sequence_node(expression _ex)
 		{
 			this._ex=_ex;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38121,6 +42906,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._ex=_ex;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected expression _ex;
 
@@ -38164,6 +42950,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new yield_sequence_node TypedClone()
 		{
 			return Clone() as yield_sequence_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (ex != null)
+				ex.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			ex?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -38250,6 +43053,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._vars=_vars;
 			this._expr=_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38260,6 +43064,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._vars=_vars;
 			this._expr=_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -38290,6 +43095,26 @@ namespace PascalABCCompiler.SyntaxTree
 		public new assign_var_tuple TypedClone()
 		{
 			return Clone() as assign_var_tuple;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (vars != null)
+				vars.Parent = this;
+			if (expr != null)
+				expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			vars?.FillParentsInAllChilds();
+			expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -38384,6 +43209,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._from=_from;
 			this._to=_to;
 			this._step=_step;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38397,6 +43223,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._to=_to;
 			this._step=_step;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -38442,6 +43269,35 @@ namespace PascalABCCompiler.SyntaxTree
 		public new slice_expr_question TypedClone()
 		{
 			return Clone() as slice_expr_question;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (dereferencing_value != null)
+				dereferencing_value.Parent = this;
+			if (v != null)
+				v.Parent = this;
+			if (from != null)
+				from.Parent = this;
+			if (to != null)
+				to.Parent = this;
+			if (step != null)
+				step.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			dereferencing_value?.FillParentsInAllChilds();
+			v?.FillParentsInAllChilds();
+			from?.FillParentsInAllChilds();
+			to?.FillParentsInAllChilds();
+			step?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -38547,6 +43403,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._typ=_typ;
 			this._lst=_lst;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38557,6 +43414,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._typ=_typ;
 			this._lst=_lst;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		public semantic_check_sugared_statement_node(syntax_tree_node elem, SourceContext sc = null)
 		{
@@ -38710,6 +43568,31 @@ namespace PascalABCCompiler.SyntaxTree
 			return Clone() as semantic_check_sugared_statement_node;
 		}
 
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (lst != null)
+			{
+				foreach (var child in lst)
+					if (child != null)
+						child.Parent = this;
+			}
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			if (lst != null)
+			{
+				foreach (var child in lst)
+					child?.FillParentsInAllChilds();
+			}
+		}
+
 		///<summary>
 		///Свойство для получения количества всех подузлов без элементов поля типа List
 		///</summary>
@@ -38799,6 +43682,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._sugared_expr=_sugared_expr;
 			this._new_expr=_new_expr;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38809,6 +43693,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._sugared_expr=_sugared_expr;
 			this._new_expr=_new_expr;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected object _sugared_expr;
 		protected expression _new_expr;
@@ -38869,6 +43754,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new sugared_expression TypedClone()
 		{
 			return Clone() as sugared_expression;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (new_expr != null)
+				new_expr.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			new_expr?.FillParentsInAllChilds();
 		}
 
 		///<summary>
@@ -38954,6 +43856,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			this._sugared_expr=_sugared_expr;
 			this._new_addr_value=_new_addr_value;
+			FillParentsInDirectChilds();
 		}
 
 		///<summary>
@@ -38964,6 +43867,7 @@ namespace PascalABCCompiler.SyntaxTree
 			this._sugared_expr=_sugared_expr;
 			this._new_addr_value=_new_addr_value;
 			source_context = sc;
+			FillParentsInDirectChilds();
 		}
 		protected object _sugared_expr;
 		protected addressed_value _new_addr_value;
@@ -39024,6 +43928,23 @@ namespace PascalABCCompiler.SyntaxTree
 		public new sugared_addressed_value TypedClone()
 		{
 			return Clone() as sugared_addressed_value;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (new_addr_value != null)
+				new_addr_value.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			new_addr_value?.FillParentsInAllChilds();
 		}
 
 		///<summary>
