@@ -2913,7 +2913,9 @@
       <HelpData Key="type_declarations.type_declarations Add(type_declaration _type_declaration)" Value="" />
       <HelpData Key="jump_stmt.expr" Value="" />
       <HelpData Key="template_type_name" Value="" />
+      <HelpData Key="oberon_procedure_receiver" Value="" />
       <HelpData Key="variable_definitions.void Add(var_def_statement v)" Value="" />
+      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition type): this(idents, type)" Value="" />
       <HelpData Key="variant_type.parts" Value="" />
       <HelpData Key="declarations_as_statement.defs" Value="" />
       <HelpData Key="type_declaration.type_def" Value="" />
@@ -2931,15 +2933,16 @@
       <HelpData Key=".aloneparam" Value="" />
       <HelpData Key="class_definition.template_args" Value="" />
       <HelpData Key="typed_parameters.idents" Value="" />
+      <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
       <HelpData Key="slice_expr" Value="" />
       <HelpData Key="record_type.var_part" Value="" />
       <HelpData Key="return_stmt" Value="" />
-      <HelpData Key="variant_types" Value="" />
       <HelpData Key="dotdot_node.right" Value="" />
       <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block)" Value="" />
       <HelpData Key="double_const." Value="" />
       <HelpData Key="expression_list.override string ToString()" Value="" />
       <HelpData Key="raise_statement.excep" Value="Выкидываемое исключение." />
+      <HelpData Key="typeof_operator." Value="" />
       <HelpData Key="typeof_operator.type_name" Value="" />
       <HelpData Key="try_stmt.handler" Value="" />
       <HelpData Key="diap_expr.left" Value="" />
@@ -2955,12 +2958,12 @@
       <HelpData Key="typedef_and_expr" Value="" />
       <HelpData Key="procedure_header.parameters" Value="" />
       <HelpData Key="compiler_directive_list.directives" Value="" />
-      <HelpData Key="yield_variable_definitions_with_unknown_type.vars" Value="" />
       <HelpData Key="array_type.size" Value="" />
       <HelpData Key="simple_attribute_list.attributes" Value="" />
       <HelpData Key="template_type_reference.params_list" Value="" />
       <HelpData Key="uses_unit.unit_name" Value="" />
       <HelpData Key="function_lambda_call.parameters" Value="" />
+      <HelpData Key="indexers_types.indexers_types(type_definition _type_definition, SourceContext sc)" Value="" />
       <HelpData Key="raise_stmt" Value="raise [expr [at address]]" />
       <HelpData Key="ident_with_templateparams" Value="" />
       <HelpData Key="array_const" Value="" />
@@ -2979,7 +2982,7 @@
       <HelpData Key=".types" Value="" />
       <HelpData Key="typedef_declaration" Value="" />
       <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header, proc_block proc_body, SourceContext sc)" Value="" />
-      <HelpData Key="documentation_comment_tag_param.value" Value="" />
+      <HelpData Key="c_type_def." Value="" />
       <HelpData Key="assign.assign(addressed_value left,expression ex): this(left,ex,Operators.Assignment)" Value="" />
       <HelpData Key="semantic_check.CheckName" Value="Тип проверки. Пока строковый. Например, является ли выражение целым" />
       <HelpData Key="property_interface.parameter_list" Value="" />
@@ -2998,6 +3001,7 @@
       <HelpData Key="on_exception.stat" Value="" />
       <HelpData Key="documentation_comment_list.documentation_comment_list(documentation_comment_section _documentation_comment_section, SourceContext sc)" Value="" />
       <HelpData Key="type_declarations.type_declarations(type_declaration _type_declaration, SourceContext sc)" Value="" />
+      <HelpData Key="assign.assign(ident left,expression ex): this(left,ex)" Value="" />
       <HelpData Key="case_node" Value="" />
       <HelpData Key="record_const.record_const(record_const_definition _record_const_definition, SourceContext sc)" Value="" />
       <HelpData Key="named_type_reference.named_type_reference(ident _ident, SourceContext sc)" Value="" />
@@ -3005,7 +3009,6 @@
       <HelpData Key="exception_handler." Value="" />
       <HelpData Key="function_header.public procedure_header(formal_parameters _parameters,procedure_attributes_list _proc_attributes,method_name _name,where_definition_list _where_defs)" Value="" />
       <HelpData Key="enumerator_list.List&lt;enumerator&gt;" Value="" />
-      <HelpData Key="const_definition.const_name" Value="" />
       <HelpData Key="type_declarations.void Add(type_declaration typeDecl, SourceContext sc)" Value="" />
       <HelpData Key="diap_expr" Value="" />
       <HelpData Key="declaration" Value="Описание" />
@@ -3013,7 +3016,6 @@
       <HelpData Key="no_type_foreach" Value="" />
       <HelpData Key="program_name.prog_name" Value="Идентификатор - имя программы" />
       <HelpData Key="oberon_withstmt_guardstat.name" Value="" />
-      <HelpData Key="named_type_reference.named_type_reference Add(ident _ident)" Value="" />
       <HelpData Key="semantic_expr_node.expr" Value="" />
       <HelpData Key="unnamed_type_object" Value="Это - сахарная конструкция.&#xD;&#xA;/// Объект безымянного класса. Например: new class(Name := 'Иванов'; Age := 25);&#xD;&#xA;/// ne - это узел для генерации кода, основной узел предназначен для форматирования" />
       <HelpData Key="oberon_module" Value="" />
@@ -3047,7 +3049,6 @@
       <HelpData Key="documentation_comment_section.documentation_comment_section Add(documentation_comment_tag _documentation_comment_tag, SourceContext sc)" Value="" />
       <HelpData Key="attribute_list.attribute_list(" Value="" />
       <HelpData Key="string_num_definition" Value="Представление для класса строки вида string[256]." />
-      <HelpData Key="implementation_node" Value="" />
       <HelpData Key="dot_question_node.left" Value="" />
       <HelpData Key="statement_list" Value="Блок операторов" />
       <HelpData Key="property_interface.property_type" Value="" />
@@ -3065,6 +3066,7 @@
       <HelpData Key="file_type_definition." Value="" />
       <HelpData Key="unit_module.interface_part" Value="" />
       <HelpData Key="expression_list." Value="" />
+      <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition type)" Value="" />
       <HelpData Key="assign.assign(ident left,expression ex): this(new ident_list(left),ex)" Value="" />
       <HelpData Key="nil_const" Value="" />
       <HelpData Key="slice_expr.v" Value="" />
@@ -3082,9 +3084,9 @@
       <HelpData Key="indexer.indexes" Value="Список индексов" />
       <HelpData Key="goto_statement.goto_statement(string name, SourceContext sc)" Value="" />
       <HelpData Key="known_type_definition" Value="" />
+      <HelpData Key="record_type.fixed_part" Value="" />
       <HelpData Key="property_accessors" Value="" />
       <HelpData Key="format_expr.format1" Value="" />
-      <HelpData Key="question_colon_expression." Value="" />
       <HelpData Key="named_type_reference.override string ToString()" Value="" />
       <HelpData Key="variant_list.variant_list Add(variant _variant)" Value="" />
       <HelpData Key="inherited_ident" Value="" />
@@ -3103,9 +3105,7 @@
       <HelpData Key="var_def_statement.field_attr" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list Add(procedure_attribute _procedure_attribute)" Value="" />
       <HelpData Key="named_type_reference_list.named_type_reference_list Add(named_type_reference _named_type_reference, SourceContext sc)" Value="" />
-      <HelpData Key="attribute.qualifier" Value="" />
       <HelpData Key="short_proc_func_definition" Value="" />
-      <HelpData Key="array_of_const_type_defenition" Value="array of const" />
       <HelpData Key="record_type_fields.fixed_part" Value="" />
       <HelpData Key="byte_const.value" Value="" />
       <HelpData Key="compiler_directive" Value="" />
@@ -3115,13 +3115,12 @@
       <HelpData Key="record_type_fields" Value="" />
       <HelpData Key=".tn" Value="" />
       <HelpData Key=".to" Value="" />
-      <HelpData Key="var_def_statement.var_def_statement(ident_list vars,type_definition vars_type): this(vars, vars_type, null, definition_attribute.None, false)" Value="" />
-      <HelpData Key="oberon_module." Value="" />
+      <HelpData Key="variant_type.case_exprs" Value="" />
+      <HelpData Key="subprogram_body.subprogram_code" Value="Блок операторов подпрограммы" />
       <HelpData Key="op_type_node" Value="" />
-      <HelpData Key="simple_property.array_default" Value="" />
       <HelpData Key="try_except_statement.else_statements" Value="" />
       <HelpData Key="enum_type_definition." Value="" />
-      <HelpData Key="try_finally_statement.finally_statements" Value="" />
+      <HelpData Key="documentation_comment_tag_param.value" Value="" />
       <HelpData Key="variable_definitions.var_definitions" Value="Список описаний переменных" />
       <HelpData Key="name_assign_expr_list.name_assign_expr_list Add(name_assign_expr ne)" Value="" />
       <HelpData Key="type_definition_attr_list.attributes" Value="" />
@@ -3141,6 +3140,7 @@
       <HelpData Key="diapason_expr.right" Value="" />
       <HelpData Key="array_size." Value="" />
       <HelpData Key="statement_list.expr_lambda_body" Value="Поле, показывающее, что это - тело лямбда-выражения из одного выражения (созданное вызовом NewLambdaBody)" />
+      <HelpData Key="int32_const.override string ToString()" Value="" />
       <HelpData Key="sugared_expression.new_expr" Value="" />
       <HelpData Key="attribute_list.attribute_list Add(simple_attribute_list _simple_attribute_list)" Value="" />
       <HelpData Key="const_method_call.method_name" Value="" />
@@ -3155,7 +3155,6 @@
       <HelpData Key="short_func_definition.def" Value="" />
       <HelpData Key="compiler_directive_if." Value="" />
       <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,SourceContext sc)" Value="" />
-      <HelpData Key="type_definition_attr.attr" Value="" />
       <HelpData Key="function_lambda_call.parametres" Value="" />
       <HelpData Key="sugared_addressed_value.sugared_expr" Value="" />
       <HelpData Key="file_type.file_of_type" Value="" />
@@ -3166,6 +3165,7 @@
       <HelpData Key="interface_node.using_namespaces" Value="" />
       <HelpData Key="long_const" Value="" />
       <HelpData Key="new_expr.name" Value="" />
+      <HelpData Key="new_expr.params" Value="" />
       <HelpData Key="simple_attribute_list." Value="" />
       <HelpData Key="indexers_types." Value="" />
       <HelpData Key="consts_definitions_list.void Add(const_definition cd)" Value="" />
@@ -3187,6 +3187,7 @@
       <HelpData Key="var_attribute_node.var_attr" Value="" />
       <HelpData Key="property_interface." Value="" />
       <HelpData Key="new_expr." Value="" />
+      <HelpData Key="variable_definitions.void Add1(var_def_statement v)" Value="" />
       <HelpData Key="array_of_named_type_reference" Value="" />
       <HelpData Key="un_expr.subnode" Value="" />
       <HelpData Key="property_parameter_list.property_parameter_list Add(property_parameter _property_parameter, SourceContext sc)" Value="" />
@@ -3205,8 +3206,7 @@
       <HelpData Key="type_definition_attr_list.type_definition_attr_list Add(type_definition_attr _type_definition_attr, SourceContext sc)" Value="" />
       <HelpData Key="int32_const.val" Value="Значение" />
       <HelpData Key="uses_closure" Value="" />
-      <HelpData Key="c_type_def." Value="" />
-      <HelpData Key="declaration." Value="" />
+      <HelpData Key="oberon_module." Value="" />
       <HelpData Key="external_directr." Value="" />
       <HelpData Key="where_definition.constructor_specific_params" Value="" />
       <HelpData Key="property_parameter.type" Value="" />
@@ -3229,11 +3229,12 @@
       <HelpData Key="diapason_expr.left" Value="" />
       <HelpData Key="oberon_procedure_header.first_name" Value="" />
       <HelpData Key="for_node.create_loop_variable" Value="" />
-      <HelpData Key="switch_stmt.SwitchPartType" Value="" />
-      <HelpData Key="subprogram_body.subprogram_code" Value="Блок операторов подпрограммы" />
+      <HelpData Key="var_def_statement.var_def_statement(ident_list vars,type_definition vars_type): this(vars, vars_type, null, definition_attribute.None, false)" Value="" />
+      <HelpData Key="as_node.right" Value="" />
       <HelpData Key="return_stmt." Value="" />
       <HelpData Key="oberon_withstmt" Value="" />
       <HelpData Key="exception_ident.variable" Value="" />
+      <HelpData Key="yield_var_def_statement_with_unknown_type.vars" Value="" />
       <HelpData Key="byte_const." Value="" />
       <HelpData Key="procedure_header.template_params" Value="" />
       <HelpData Key="labeled_statement.labeled_statement(string name, statement st, SourceContext sc)" Value="" />
@@ -3243,8 +3244,7 @@
       <HelpData Key="class_members.class_members(declaration _declaration, SourceContext sc)" Value="" />
       <HelpData Key="method_name.ln" Value="" />
       <HelpData Key="variant_types.variant_types Add(variant_type _variant_type)" Value="" />
-      <HelpData Key="program_tree" Value="" />
-      <HelpData Key="record_const" Value="" />
+      <HelpData Key="assign.p()" Value="" />
       <HelpData Key="roof_dereference" Value="" />
       <HelpData Key="method_name.explicit_interface_name" Value="" />
       <HelpData Key="external_directive.modulename" Value="" />
@@ -3253,7 +3253,6 @@
       <HelpData Key="for_node.type_name" Value="" />
       <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces)" Value="" />
       <HelpData Key="template_param_list" Value="" />
-      <HelpData Key="ident_list.ident_list(ident id, SourceContext sc)" Value="" />
       <HelpData Key="simple_const_definition." Value="" />
       <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition type): this(new ident_list(id),type)" Value="" />
       <HelpData Key="uses_list.units" Value="" />
@@ -3282,6 +3281,7 @@
       <HelpData Key="documentation_comment_section.params" Value="" />
       <HelpData Key="known_type_ident.type" Value="" />
       <HelpData Key="unnamed_type_object.ne" Value="" />
+      <HelpData Key="try_finally_statement.finally_statements" Value="" />
       <HelpData Key="new_expr.parameters" Value="" />
       <HelpData Key=".ClassName" Value="" />
       <HelpData Key="addressed_value_funcname" Value="" />
@@ -3310,6 +3310,7 @@
       <HelpData Key="named_type_reference.void Add(ident id)" Value="" />
       <HelpData Key="initfinal_part.initialization_sect" Value="" />
       <HelpData Key="function_lambda_definition.return_type" Value="" />
+      <HelpData Key="oberon_module_name" Value="" />
       <HelpData Key=".override string ToString()" Value="" />
       <HelpData Key="while_node.expr" Value="Условие цикла" />
       <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition vars_type): this(idents, vars_type)" Value="" />
@@ -3335,7 +3336,7 @@
       <HelpData Key="class_definition.where_section" Value="" />
       <HelpData Key="uses_lists" Value="" />
       <HelpData Key="typedef_and_expr.expr" Value="" />
-      <HelpData Key="variant_type.case_exprs" Value="" />
+      <HelpData Key="simple_property.array_default" Value="" />
       <HelpData Key="goto_statement.goto_statement(string name)" Value="" />
       <HelpData Key=".List&lt;enumerator&gt;" Value="" />
       <HelpData Key="indexer" Value="Индекс или индексы" />
@@ -3344,17 +3345,14 @@
       <HelpData Key="oberon_import_module." Value="" />
       <HelpData Key="external_directr" Value="expression может быть literal или ident" />
       <HelpData Key="c_for_cycle.expr3" Value="" />
-      <HelpData Key="program_tree.compilation_units" Value="Список подключенных модулей" />
       <HelpData Key="class_body.class_body Add(class_members _class_members, SourceContext sc)" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute)" Value="" />
       <HelpData Key=".vlist" Value="" />
       <HelpData Key="slice_expr_question" Value="" />
-      <HelpData Key="typed_parametres" Value="" />
       <HelpData Key="oberon_module.first_name" Value="" />
       <HelpData Key="bracket_expr." Value="" />
       <HelpData Key="ident_with_templateparams.name" Value="" />
       <HelpData Key="property_accessors.write_accessor" Value="" />
-      <HelpData Key="var_def_statement.vars" Value="Список имен переменных" />
       <HelpData Key="simple_attribute_list.simple_attribute_list(attribute _attribute, SourceContext sc)" Value="" />
       <HelpData Key="var_statement." Value="" />
       <HelpData Key="unit_module.unit_name" Value="" />
@@ -3363,7 +3361,6 @@
       <HelpData Key="known_type_definition.unit_name" Value="" />
       <HelpData Key="attribute" Value="" />
       <HelpData Key="procedure_header.parametres" Value="" />
-      <HelpData Key="function_lambda_definition.function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)" Value="" />
       <HelpData Key="statement_list.abc&#xA;{&#xA;&#xA;}" Value="" />
       <HelpData Key="oberon_withstmt_guardstat." Value="" />
       <HelpData Key="type_definition_attr_list" Value="" />
@@ -3377,7 +3374,7 @@
       <HelpData Key="try_handler_except.except_block" Value="" />
       <HelpData Key="while_node." Value="" />
       <HelpData Key="with_statement.what_do" Value="Что делать." />
-      <HelpData Key=".stat" Value="" />
+      <HelpData Key="case_node.param" Value="" />
       <HelpData Key=".MapHelper" Value="" />
       <HelpData Key="sugared_expression" Value="Обёртка для сахарного выражения, хранящего сахарный узел для семантических проверок и новое выражение после удаления синтаксического сахара" />
       <HelpData Key=".usings" Value="" />
@@ -3398,12 +3395,15 @@
       <HelpData Key="documentation_comment_tag.parameters" Value="" />
       <HelpData Key="semantic_addr_value" Value="" />
       <HelpData Key=".tag" Value="" />
+      <HelpData Key="program_tree" Value="" />
       <HelpData Key="look_stmt" Value="" />
       <HelpData Key="program_module.program_block" Value="" />
       <HelpData Key="addressed_value_list.addressed_value_list()" Value="" />
       <HelpData Key="matching_expression.left" Value="" />
       <HelpData Key="record_type.parts" Value="" />
+      <HelpData Key="program_module." Value="" />
       <HelpData Key="block." Value="" />
+      <HelpData Key="name_space." Value="" />
       <HelpData Key="sequence_type" Value="" />
       <HelpData Key="syntax_tree_node" Value="Базовый класс для всех классов синтаксического дерева" />
       <HelpData Key="closure_substituting_node" Value="" />
@@ -3428,11 +3428,12 @@
       <HelpData Key="name_assign_expr_list" Value="" />
       <HelpData Key="ident_with_inital_value.ident" Value="" />
       <HelpData Key="dot_node.override string ToString()" Value="" />
-      <HelpData Key="uses_list" Value="" />
+      <HelpData Key="exception_identifier" Value="" />
       <HelpData Key="template_type_reference.name" Value="" />
       <HelpData Key="labeled_statement.to_statement" Value="" />
       <HelpData Key="unit_module.public unit_module(LanguageId _Language,unit_name _unit_name,interface_node _interface_part,implementation_node _implementation_part,statement_list _initialization_part,statement_list _finalization_part,SourceContext sc)" Value="" />
       <HelpData Key="int_const" Value="" />
+      <HelpData Key="block.block(statement_list code): this(null,code)" Value="" />
       <HelpData Key="record_const_definition.val" Value="" />
       <HelpData Key="record_const.void Add(record_const_definition rcd, SourceContext sc)" Value="" />
       <HelpData Key="record_type_parts.variant_part" Value="" />
@@ -3451,10 +3452,12 @@
       <HelpData Key="block.block(declarations decls,statement_list code): this(defs,code)" Value="" />
       <HelpData Key="token_info.text" Value="" />
       <HelpData Key="oberon_exit_stmt" Value="" />
-      <HelpData Key="un_expr" Value="Унарное выражение" />
+      <HelpData Key="uses_list" Value="" />
+      <HelpData Key="switch_stmt.SwitchPartType" Value="" />
       <HelpData Key="type_declarations.type_declarations(type_declaration typeDecl, SourceContext sc)" Value="" />
       <HelpData Key="simple_const_definition.simple_const_definition(ident name, expression value, SourceContext sc)" Value="" />
       <HelpData Key="unknown_expression_type.Vds" Value="" />
+      <HelpData Key="method_name" Value="" />
       <HelpData Key="enumerator_list." Value="" />
       <HelpData Key="literal_const_line.literal_const_line Add(literal _literal)" Value="" />
       <HelpData Key="known_type_definition.tp" Value="" />
@@ -3465,15 +3468,13 @@
       <HelpData Key="variant_types." Value="" />
       <HelpData Key="type_declarations." Value="" />
       <HelpData Key="inherited_method_call.method_name" Value="" />
+      <HelpData Key=".Directive" Value="" />
       <HelpData Key="string_num_definition.num_of_symbols" Value="Число символов в строке вида string[256]." />
       <HelpData Key="lock_stmt.stmt" Value="" />
-      <HelpData Key="dot_node" Value="" />
+      <HelpData Key="oberon_procedure_header.receiver" Value="" />
       <HelpData Key="program_body.used_units" Value="" />
       <HelpData Key="oberon_withstmt." Value="" />
-      <HelpData Key="question_colon_expression.ret_if_false" Value="" />
       <HelpData Key="record_type.rec_vars" Value="" />
-      <HelpData Key="dotdot_node." Value="" />
-      <HelpData Key="oberon_procedure_header.parametres" Value="" />
       <HelpData Key=".params" Value="" />
       <HelpData Key="property_interface" Value="" />
       <HelpData Key="oberon_procedure_receiver." Value="" />
@@ -3492,6 +3493,7 @@
       <HelpData Key="unknown_ident.UnknownID" Value="" />
       <HelpData Key="array_of_named_type_reference." Value="" />
       <HelpData Key="attribute.type" Value="" />
+      <HelpData Key="un_expr" Value="Унарное выражение" />
       <HelpData Key="method_name.meth_name" Value="" />
       <HelpData Key="new_expr.new_expr(type_definition type,expression_list pars): this(type,pars,false,null)" Value="" />
       <HelpData Key="tuple_node" Value="" />
@@ -3502,7 +3504,8 @@
       <HelpData Key="simple_property." Value="" />
       <HelpData Key="compiler_directive_list" Value="" />
       <HelpData Key="unit_or_namespace.unit_or_namespace(string name)" Value="" />
-      <HelpData Key="assign.assign(ident left,expression ex): this(left,ex)" Value="" />
+      <HelpData Key="inherited_method_call.exprs" Value="" />
+      <HelpData Key="attribute.qualifier" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".sugared" Value="" />
       <HelpData Key="declarations_as_statement" Value="" />
@@ -3548,13 +3551,12 @@
       <HelpData Key="program_body.program_code" Value="" />
       <HelpData Key="int_const.val" Value="" />
       <HelpData Key="lambda_inferred_type" Value="" />
-      <HelpData Key=".variants" Value="" />
+      <HelpData Key="uses_unit.name" Value="" />
       <HelpData Key="uses_unit_in.in_file" Value="" />
       <HelpData Key="procedure_definition.has_yield" Value="" />
       <HelpData Key="procedure_call.override string ToString()" Value="" />
       <HelpData Key="bool_const" Value="Логическая константа" />
       <HelpData Key="semantic_type_node.type" Value="" />
-      <HelpData Key="exception_identifier" Value="" />
       <HelpData Key="try_stmt.stmt_list" Value="" />
       <HelpData Key="inherited_node" Value="" />
       <HelpData Key="procedure_header.class_keyword" Value="class procedure..." />
@@ -3565,10 +3567,8 @@
       <HelpData Key="semantic_check_statement" Value="" />
       <HelpData Key="semantic_check_sugared_statement" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
       <HelpData Key="exception_handler_list.handlers" Value="" />
-      <HelpData Key="tuple_node_for_formatter" Value="" />
       <HelpData Key="documentation_comment_section.parameters" Value="" />
       <HelpData Key="declarations.declarations Add(declaration _declaration, SourceContext sc)" Value="" />
-      <HelpData Key="named_type_reference.void Add(string name)" Value="" />
       <HelpData Key="method_call.func_name" Value="" />
       <HelpData Key="exception_block" Value="" />
       <HelpData Key="record_type." Value="" />
@@ -3579,9 +3579,10 @@
       <HelpData Key="try_except_statement" Value="" />
       <HelpData Key="function_header.override string ToString()" Value="" />
       <HelpData Key="yield_sequence_node" Value="" />
-      <HelpData Key="typeof_operator." Value="" />
+      <HelpData Key="formal_parametres" Value="" />
       <HelpData Key="external_directive.name" Value="" />
       <HelpData Key="double_const" Value="Вещественная константа" />
+      <HelpData Key="for_node.loop_variable" Value="Переменная цикла for" />
       <HelpData Key="compiler_directive_if.elseif_part" Value="" />
       <HelpData Key="exception_handler.variable" Value="" />
       <HelpData Key="external_directr.name" Value="" />
@@ -3597,14 +3598,15 @@
       <HelpData Key="slice_expr_question.n" Value="" />
       <HelpData Key="typecast_node.left" Value="" />
       <HelpData Key="documentation_comment_list.documentation_comment_list Add(documentation_comment_section _documentation_comment_section, SourceContext sc)" Value="" />
+      <HelpData Key="addressed_value_list" Value="" />
       <HelpData Key="lambda_inferred_type._realType" Value="" />
-      <HelpData Key="yield_var_def_statement_with_unknown_type.vars" Value="" />
+      <HelpData Key="yield_variable_definitions_with_unknown_type.vars" Value="" />
       <HelpData Key="initfinal_part.finalization_sect" Value="" />
       <HelpData Key="method_name.method_name(string name): base(null,name,null)" Value="" />
       <HelpData Key="indexers_types" Value="Типы индексов" />
       <HelpData Key="typeof_operator.type" Value="" />
-      <HelpData Key="ident_list.ident_list(string name)" Value="" />
-      <HelpData Key="using_clause.name_space_parts" Value="" />
+      <HelpData Key="oberon_procedure_header.parametres" Value="" />
+      <HelpData Key="record_const" Value="" />
       <HelpData Key="c_module.defs" Value="" />
       <HelpData Key="statement_list.statement_list Add(statement _statement)" Value="" />
       <HelpData Key="goto_statement.label" Value="" />
@@ -3612,7 +3614,7 @@
       <HelpData Key="compiler_directive_list.compiler_directive_list Add(compiler_directive _compiler_directive, SourceContext sc)" Value="" />
       <HelpData Key="consts_definitions_list" Value="" />
       <HelpData Key="typecast_expr." Value="" />
-      <HelpData Key="formal_parametres" Value="" />
+      <HelpData Key="semantic_check_sugared_statement_node" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
       <HelpData Key="declaration_as_statement.defs" Value="" />
       <HelpData Key="subprogram_definitions_as_statement" Value="" />
       <HelpData Key="index_property" Value="" />
@@ -3620,7 +3622,7 @@
       <HelpData Key="array_of_named_type_definition" Value="array of type_name" />
       <HelpData Key="statement" Value="Оператор" />
       <HelpData Key="c_type_def.name" Value="" />
-      <HelpData Key="method_name" Value="" />
+      <HelpData Key="class_definition.is_auto" Value="" />
       <HelpData Key="new_expr.new_expr(type_definition type,expression_list pars,SourceContext sc): this(type,pars,false,null,sc)" Value="" />
       <HelpData Key="with_statement." Value="" />
       <HelpData Key="initfinal_part" Value="" />
@@ -3648,12 +3650,11 @@
       <HelpData Key="bracket_expr.override string ToString()" Value="" />
       <HelpData Key="variable_definitions_as_statement.var_defs" Value="" />
       <HelpData Key="procedure_header.override string ToString()" Value="" />
-      <HelpData Key="for_node.loop_variable" Value="Переменная цикла for" />
+      <HelpData Key="named_type_reference.type_name" Value="" />
       <HelpData Key="class_body.class_def_blocks" Value="" />
       <HelpData Key="yield_unknown_foreach_type.unknown_foreach" Value="" />
-      <HelpData Key="typecast_expr" Value="" />
-      <HelpData Key="switch_stmt.condition" Value="" />
       <HelpData Key="oberon_withstmt_guardstat" Value="" />
+      <HelpData Key="compilation_unit." Value="" />
       <HelpData Key="constructor" Value="" />
       <HelpData Key="ref_type" Value="" />
       <HelpData Key="raise_stmt.address" Value="" />
@@ -3662,10 +3663,8 @@
       <HelpData Key="enumerator" Value="" />
       <HelpData Key=".def" Value="" />
       <HelpData Key="unit_name" Value="" />
-      <HelpData Key="try_handler_finally" Value="" />
       <HelpData Key="yield_node.override string ToString()" Value="" />
       <HelpData Key="class_body" Value="" />
-      <HelpData Key="enum_type_definition.name" Value="" />
       <HelpData Key="sharp_const_line" Value="Представляет в синтаксическом дереве строку вида #123#124#125." />
       <HelpData Key="pair_type_stlist.exprs" Value="" />
       <HelpData Key="oberon_module_name.second_name" Value="" />
@@ -3676,7 +3675,6 @@
       <HelpData Key="lock_stmt" Value="" />
       <HelpData Key="operator_name_ident.type" Value="" />
       <HelpData Key="attribute_list.w" Value="" />
-      <HelpData Key="inherited_message" Value="" />
       <HelpData Key="unit_module" Value="" />
       <HelpData Key="literal_const_line.literals" Value="" />
       <HelpData Key="template_type_name." Value="" />
@@ -3684,7 +3682,7 @@
       <HelpData Key="simple_property.simple_property(ident name, type_definition type, property_accessors accessors): this(name, type, null, accessors, null, null, definition_attribute.None)" Value="" />
       <HelpData Key="sizeof_operator." Value="" />
       <HelpData Key=".type" Value="" />
-      <HelpData Key=".Directive" Value="" />
+      <HelpData Key="assign.assign(string left,expression ex, SourceContext sc): this(new ident(left),ex,sc)" Value="" />
       <HelpData Key="case_variant.conditions" Value="" />
       <HelpData Key="ident.override string ToString()" Value="" />
       <HelpData Key="token_info.override string ToString()" Value="" />
@@ -3696,9 +3694,9 @@
       <HelpData Key="typed_const_definition.const_type" Value="" />
       <HelpData Key="initfinal_part.initfinal_part(statement_list init,statement_list fin,SourceContext sc)" Value="" />
       <HelpData Key="syntax_tree_node.f" Value="" />
-      <HelpData Key="bracket_expr" Value="" />
+      <HelpData Key="ident_list.ident_list(string name)" Value="" />
       <HelpData Key="array_const.elements" Value="" />
-      <HelpData Key="oberon_module_name" Value="" />
+      <HelpData Key="dereference.dereferencing_value" Value="" />
       <HelpData Key="method_name.dotted_namespace" Value="" />
       <HelpData Key=".char_num" Value="Номер символа." />
       <HelpData Key="inherited_method_call." Value="" />
@@ -3710,7 +3708,7 @@
       <HelpData Key="switch_stmt.Part" Value="" />
       <HelpData Key="function_lambda_definition.lambda_name" Value="" />
       <HelpData Key="bin_expr" Value="Бинарное выражение" />
-      <HelpData Key="oberon_procedure_header.receiver" Value="" />
+      <HelpData Key="question_colon_expression." Value="" />
       <HelpData Key="program_body.using_list" Value="" />
       <HelpData Key="try_handler_except." Value="" />
       <HelpData Key="subprogram_body.subprogram_defs" Value="Описания подпрограммы" />
@@ -3735,10 +3733,12 @@
       <HelpData Key="uses_list.uses_list Add(unit_or_namespace _unit_or_namespace, SourceContext sc)" Value="" />
       <HelpData Key="template_param_list.template_param_list(type_definition td, SourceContext sc)" Value="" />
       <HelpData Key="uint64_const.val" Value="" />
+      <HelpData Key="dereference.override string ToString()" Value="" />
+      <HelpData Key="bracket_expr" Value="" />
       <HelpData Key="look_stmt." Value="" />
       <HelpData Key="assign.assign(ident left,expression ex): this(left,ex,Operators.Assignment)" Value="" />
       <HelpData Key="format_expr." Value="" />
-      <HelpData Key="uses_list.uses_list(unit_or_namespace _unit_or_namespace, SourceContext sc)" Value="" />
+      <HelpData Key="implementation_node" Value="" />
       <HelpData Key="same_type_node.ex" Value="" />
       <HelpData Key=".left" Value="" />
       <HelpData Key=".sugared_expr" Value="" />
@@ -3750,7 +3750,7 @@
       <HelpData Key="enumerator_list.enumerator_list(enumerator en, SourceContext sc)" Value="" />
       <HelpData Key="simple_property.parameter_list" Value="" />
       <HelpData Key="typed_parametres.vars_type" Value="" />
-      <HelpData Key="ident_list.ident_list Add(ident _ident, SourceContext sc)" Value="" />
+      <HelpData Key="type_def_attr_list.attributes" Value="" />
       <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition _vars_type,parametr_kind _param_kind,expression _inital_value)" Value="" />
       <HelpData Key="unit_or_namespace." Value="" />
       <HelpData Key="" Value="" />
@@ -3788,15 +3788,15 @@
       <HelpData Key="c_for_cycle" Value="" />
       <HelpData Key="definition_specificator.name" Value="" />
       <HelpData Key="sharp_const_line.sharp_consts" Value="" />
-      <HelpData Key="typeof_operator" Value="" />
-      <HelpData Key="new_expr.params" Value="" />
+      <HelpData Key="named_type_reference.named_type_reference Add(ident _ident)" Value="" />
       <HelpData Key="double_const.override string ToString()" Value="" />
       <HelpData Key="program_tree.program_tree(compilation_unit _compilation_unit, SourceContext sc)" Value="" />
-      <HelpData Key="c_for_cycle." Value="" />
+      <HelpData Key="dotdot_node." Value="" />
       <HelpData Key=".new_expr" Value="" />
       <HelpData Key="foreach_stmt.stmt" Value="" />
       <HelpData Key="class_body.class_body Add(class_members _class_members)" Value="" />
       <HelpData Key="unit_or_namespace.name" Value="" />
+      <HelpData Key="declaration." Value="" />
       <HelpData Key="simple_property.property_type" Value="" />
       <HelpData Key="function_header.function_header(formal_parameters fp, procedure_attributes_list pal, string name, string returntype)" Value="for sugar" />
       <HelpData Key="exception_identifier." Value="" />
@@ -3815,6 +3815,7 @@
       <HelpData Key="expression_list.expression_list(expression e, SourceContext sc)" Value="" />
       <HelpData Key="variant_type" Value="" />
       <HelpData Key="labelname_list.names" Value="" />
+      <HelpData Key="enumerator_list.enumerators" Value="" />
       <HelpData Key="oberon_procedure_receiver.reciver_type" Value="" />
       <HelpData Key="property_accessors.property_accessors(ident read_accessor, ident write_accessor): this(new read_accessor_name(read_accessor), new write_accessor_name(write_accessor))" Value="" />
       <HelpData Key="try_handler_finally." Value="" />
@@ -3824,13 +3825,13 @@
       <HelpData Key="dotdot_node" Value="" />
       <HelpData Key="int64_const.val" Value="" />
       <HelpData Key="diapason.right" Value="Верхняя граница диапазона" />
-      <HelpData Key="assign.p()" Value="" />
+      <HelpData Key="class_definition.class_name" Value="" />
       <HelpData Key="operator_name." Value="" />
       <HelpData Key="sizeof_operator.type_name" Value="" />
       <HelpData Key="array_of_const_type" Value="array of const" />
       <HelpData Key="array_type." Value="" />
       <HelpData Key="semantic_addr_value.expr" Value="" />
-      <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)" Value="" />
+      <HelpData Key="array_of_const_type_defenition" Value="array of const" />
       <HelpData Key="array_type.elements_type" Value="Тип элементов массива" />
       <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)" Value="" />
       <HelpData Key="for_node.statements" Value="Тело цикла" />
@@ -3839,10 +3840,11 @@
       <HelpData Key="addressed_value_list.variables" Value="" />
       <HelpData Key="using_clause.namespace_parts" Value="" />
       <HelpData Key="procedure_definition" Value="" />
-      <HelpData Key="no_type_foreach.no_type_foreach()" Value="" />
+      <HelpData Key="sizeof_operator.expr" Value="" />
       <HelpData Key="double_const.val" Value="Значение вещественной константы" />
       <HelpData Key="c_scalar_type.sign" Value="" />
-      <HelpData Key="interface_node" Value="" />
+      <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header, proc_block proc_body)" Value="" />
+      <HelpData Key="typecast_expr" Value="" />
       <HelpData Key="case_variants.case_variants Add(case_variant _case_variant)" Value="" />
       <HelpData Key="program_tree.program_tree Add(compilation_unit _compilation_unit)" Value="" />
       <HelpData Key="var_def_list_for_record.vars" Value="" />
@@ -3859,24 +3861,22 @@
       <HelpData Key="semantic_check.semantic_check(string name, params syntax_tree_node[] pars)" Value="" />
       <HelpData Key="foreach_stmt.type_name" Value="" />
       <HelpData Key="uses_unit_in" Value="" />
-      <HelpData Key="case_node.param" Value="" />
-      <HelpData Key="consts_definitions_list.void Add(const_definition cd, SourceContext sc)" Value="" />
+      <HelpData Key="string_const.override string ToString()" Value="" />
       <HelpData Key="procedure_header.proc_attributes" Value="" />
-      <HelpData Key="write_accessor_name.accessor_name" Value="" />
       <HelpData Key="assign.assign(ident left,expression ex): this(new ident_list(left),ex,Operators.Assignment)" Value="" />
       <HelpData Key="assign_tuple.expr" Value="" />
       <HelpData Key="where_type_specificator_list.defs" Value="" />
       <HelpData Key="return_stmt.JumpType" Value="" />
       <HelpData Key="template_param_list." Value="" />
       <HelpData Key="documentation_comment_section.tags" Value="" />
-      <HelpData Key="name_space." Value="" />
+      <HelpData Key="enum_type_definition.name" Value="" />
       <HelpData Key="typecast_expr.type_def" Value="" />
       <HelpData Key="matching_expression.right" Value="" />
-      <HelpData Key="int32_const.override string ToString()" Value="" />
+      <HelpData Key="subprogram_definitions_as_statement.defs" Value="" />
       <HelpData Key="sugared_addressed_value" Value="Обёртка для сахарного адресуемого значения, хранящего сахарный узел для семантических проверок и новое выражение после удаления синтаксического сахара" />
       <HelpData Key="known_type_definition." Value="" />
       <HelpData Key="using_namespaces.usings" Value="" />
-      <HelpData Key="variable_definitions.void Add1(var_def_statement v)" Value="" />
+      <HelpData Key="case_variant.exec_if_true" Value="" />
       <HelpData Key="tuple_node.el" Value="" />
       <HelpData Key="enumerator_list" Value="" />
       <HelpData Key=".name" Value="" />
@@ -3886,24 +3886,25 @@
       <HelpData Key="type_def_attr_list" Value="" />
       <HelpData Key=".specificator" Value="" />
       <HelpData Key="fptype_and_expr." Value="" />
+      <HelpData Key="typecast_node.cast_op" Value="" />
       <HelpData Key="while_node.CycleType" Value="Тип цикла ПОКА" />
       <HelpData Key="typedef_declaration.defs" Value="" />
       <HelpData Key=".directives" Value="" />
       <HelpData Key="oberon_module.definitions" Value="" />
       <HelpData Key="c_module.used_units" Value="" />
-      <HelpData Key="indexers_types.indexers_types(type_definition _type_definition, SourceContext sc)" Value="" />
+      <HelpData Key="try_handler_finally" Value="" />
       <HelpData Key="record_const.record_const(record_const_definition rcd, SourceContext sc)" Value="" />
-      <HelpData Key="switch_stmt" Value="" />
+      <HelpData Key="interface_node" Value="" />
       <HelpData Key="unit_or_namespace" Value="" />
-      <HelpData Key="uses_unit.name" Value="" />
+      <HelpData Key="named_type_reference.void Add(string name)" Value="" />
       <HelpData Key="method_name." Value="" />
       <HelpData Key="semantic_check.semantic_check(string name, params syntax_node[] pars)" Value="" />
       <HelpData Key="implementation_node.using_namespaces" Value="" />
-      <HelpData Key="program_module." Value="" />
+      <HelpData Key="dot_node" Value="" />
       <HelpData Key="function_header" Value="" />
       <HelpData Key="yield_sequence_node.ex" Value="" />
       <HelpData Key="method_call.parametres" Value="" />
-      <HelpData Key="enumerator_list.enumerators" Value="" />
+      <HelpData Key="tuple_node_for_formatter" Value="" />
       <HelpData Key="uses_list." Value="" />
       <HelpData Key="variable_definitions.variable_definitions Add(var_def_statement _var_def_statement)" Value="" />
       <HelpData Key="variable_definitions.void Add(var_def_statement v, SourceContext sc)" Value="" />
@@ -3919,7 +3920,7 @@
       <HelpData Key="exception_handler.statements" Value="" />
       <HelpData Key="method_name.method_name(string name): base(null,new ident(name),null)" Value="" />
       <HelpData Key="method_call.override string ToString()" Value="" />
-      <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header, proc_block proc_body)" Value="" />
+      <HelpData Key="tree_node" Value="Базовый класс для всех классов синтаксического дерева" />
       <HelpData Key="with_statement.do_with" Value="Список объектов, с которыми производить действия." />
       <HelpData Key="procedure_header" Value="" />
       <HelpData Key="for_node.increment_value" Value="Шаг переменной цикла" />
@@ -3947,20 +3948,20 @@
       <HelpData Key="record_type.base_type" Value="in oberon2" />
       <HelpData Key="variant" Value="" />
       <HelpData Key="typed_parametres.inital_value" Value="" />
-      <HelpData Key="known_type_indent.type" Value="" />
       <HelpData Key="string_num_definition." Value="" />
       <HelpData Key="diapason" Value="Диапазон" />
       <HelpData Key="program_name.override string ToString()" Value="" />
-      <HelpData Key="case_variant.exec_if_true" Value="" />
+      <HelpData Key="ident_list.ident_list(ident id, SourceContext sc)" Value="" />
       <HelpData Key="compilation_unit.Language" Value="" />
       <HelpData Key="oberon_procedure_receiver.receiver_name" Value="" />
       <HelpData Key="goto_statement.override string ToString()" Value="" />
       <HelpData Key="using_list.namespaces" Value="" />
       <HelpData Key="procedure_header.where_defs" Value="" />
+      <HelpData Key="file_type_definition.elem_type" Value="" />
       <HelpData Key="property_parameter_list.names" Value="" />
       <HelpData Key="subprogram_definition" Value="" />
       <HelpData Key="compiler_directive_if" Value="" />
-      <HelpData Key="interface_node.uses_modules" Value="" />
+      <HelpData Key="function_lambda_definition.function_lambda_definition(string name, formal_parameters formalPars, type_definition returnType, statement_list body, SourceContext sc)" Value="" />
       <HelpData Key="oberon_exit_reservedword." Value="" />
       <HelpData Key="compilation_unit.file_name" Value="" />
       <HelpData Key="exception_ident.type_name" Value="" />
@@ -3971,12 +3972,12 @@
       <HelpData Key="simple_property.simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr)" Value="" />
       <HelpData Key="class_definition.IsInterface" Value="" />
       <HelpData Key="procedure_definition.is_short_definition" Value="" />
-      <HelpData Key="block.block(statement_list code): this(null,code)" Value="" />
+      <HelpData Key="const_definition.const_name" Value="" />
       <HelpData Key="named_type_reference.named_type_reference(string name, SourceContext sc)" Value="" />
       <HelpData Key="repeat_node.statements" Value="Тело цикла" />
       <HelpData Key="block.where_defs" Value="" />
       <HelpData Key="id_expr_node" Value="" />
-      <HelpData Key="assign.assign(string left,expression ex, SourceContext sc): this(new ident(left),ex,sc)" Value="" />
+      <HelpData Key=".stat" Value="" />
       <HelpData Key="yield_variable_definitions_with_unknown_type" Value="Узел-обертка для yield для определения типов локальных переменных в variable_definitions" />
       <HelpData Key="try_handler_finally.stmt_list" Value="" />
       <HelpData Key="string_const.Value" Value="Значенеи строковой константы" />
@@ -3992,7 +3993,7 @@
       <HelpData Key="type_declaration.type_declaration(string name, type_definition type, SourceContext sc): this(new ident(name),type,sc)" Value="" />
       <HelpData Key="constructor.constructor(formal_parameters fp,SourceContext sc): this(null, fp, new procedure_attributes_list(proc_attribute.attr_overload), null, false, false, null, null)" Value="" />
       <HelpData Key="ident.public override string ToString()" Value="" />
-      <HelpData Key="typecast_node.cast_op" Value="" />
+      <HelpData Key="documentation_comment_tag_param" Value="" />
       <HelpData Key="expression_list.expression_list(expression _expression, SourceContext sc)" Value="" />
       <HelpData Key=".right" Value="" />
       <HelpData Key="template_operator_name" Value="" />
@@ -4010,23 +4011,22 @@
       <HelpData Key="statement_list.subnodes" Value="Список операторов" />
       <HelpData Key="procedure_attribute" Value="" />
       <HelpData Key="typecast_node.type_def" Value="" />
-      <HelpData Key="modern_proc_type.el" Value="" />
       <HelpData Key="new_expr.array_init_expr" Value="" />
       <HelpData Key="subprogram_definitions.defs" Value="" />
       <HelpData Key="declaration_specificator" Value="" />
-      <HelpData Key="class_definition.is_auto" Value="" />
+      <HelpData Key="switch_stmt.condition" Value="" />
       <HelpData Key="type_declarations.void Add(type_declaration typeDecl)" Value="Добавляет в список определение типа" />
-      <HelpData Key="typed_parameters.public typed_parameters(ident_list idents,type_definition type): this(idents, type)" Value="" />
+      <HelpData Key="question_colon_expression.ret_if_false" Value="" />
       <HelpData Key="slice_expr.from" Value="" />
       <HelpData Key="c_module" Value="" />
-      <HelpData Key="semantic_check_sugared_statement_node" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
+      <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces)" Value="" />
       <HelpData Key="named_type_reference.unit_name" Value="" />
       <HelpData Key="var_def_list.vars" Value="" />
       <HelpData Key="compiler_directive_list.compiler_directive_list(compiler_directive _compiler_directive, SourceContext sc)" Value="" />
       <HelpData Key="expression_as_statement." Value="" />
       <HelpData Key="statement_list.statement_list(statement _statement)" Value="" />
       <HelpData Key="compiler_directive.Directive" Value="" />
-      <HelpData Key="var_def_list.var_def_list Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
+      <HelpData Key="program_module.static program_module create(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces,SourceContext sc)" Value="" />
       <HelpData Key="formal_parameters" Value="" />
       <HelpData Key="block.defs" Value="" />
       <HelpData Key=".parameters" Value="" />
@@ -4037,7 +4037,7 @@
       <HelpData Key="on_exception_list" Value="" />
       <HelpData Key="sequence_type.elements_type" Value="Тип элементов" />
       <HelpData Key="c_for_cycle.stmt" Value="" />
-      <HelpData Key="addressed_value_list" Value="" />
+      <HelpData Key="oberon_exit_reservedword.text" Value="" />
       <HelpData Key="procedure_attributes_list" Value="" />
       <HelpData Key="variable_definitions.variable_definitions Add(var_def_statement _var_def_statement, SourceContext sc)" Value="" />
       <HelpData Key="semantic_check.param" Value="Параметры - синтаксические узлы для проверки" />
@@ -4055,7 +4055,7 @@
       <HelpData Key="lock_stmt.name" Value="" />
       <HelpData Key="const_definition.const_value" Value="" />
       <HelpData Key=".opname" Value="" />
-      <HelpData Key="ident_list.void Add(ident id)" Value="" />
+      <HelpData Key="uses_list.uses_list(unit_or_namespace _unit_or_namespace, SourceContext sc)" Value="" />
       <HelpData Key="array_type" Value="Тип массива" />
       <HelpData Key="function_lambda_definition.substituting_node" Value="" />
       <HelpData Key="variable_definitions." Value="" />
@@ -4064,15 +4064,16 @@
       <HelpData Key=".res" Value="" />
       <HelpData Key="name_assign_expr_list.name_expr" Value="" />
       <HelpData Key=".names" Value="" />
+      <HelpData Key=".variants" Value="" />
       <HelpData Key="assign.assign(addressed_value left,expression ex, SourceContext sc): this(left,ex,Operators.Assignment,sc)" Value="" />
-      <HelpData Key="uses_list.void Add(unit_or_namespace un, SouceContext sc)" Value="" />
+      <HelpData Key="consts_definitions_list.void Add(const_definition cd, SourceContext sc)" Value="" />
       <HelpData Key="procedure_definition.procedure_definition(procedure_header proc_header,proc_block body)" Value="" />
       <HelpData Key="CompilerDirective" Value="" />
       <HelpData Key="write_accessor_name" Value="" />
       <HelpData Key="variant_list.variant_list Add(variant _variant, SourceContext sc)" Value="" />
       <HelpData Key="property_parameters" Value="" />
-      <HelpData Key="sizeof_operator.expr" Value="" />
-      <HelpData Key="named_type_reference.type_name" Value="" />
+      <HelpData Key="inherited_message" Value="" />
+      <HelpData Key="class_predefinition." Value="" />
       <HelpData Key="statement_list.left_logical_bracket" Value="Левая операторная скобка" />
       <HelpData Key="documentation_comment_section" Value="" />
       <HelpData Key="template_param_list.template_param_list Add(type_definition _type_definition, SourceContext sc)" Value="" />
@@ -4082,13 +4083,13 @@
       <HelpData Key="type_declaration.type_name" Value="" />
       <HelpData Key="yield_unknown_foreach_type_ident.unknown_foreach" Value="" />
       <HelpData Key="method_call." Value="" />
-      <HelpData Key="compilation_unit." Value="" />
+      <HelpData Key="property_parameter" Value="" />
       <HelpData Key="typed_parametres.idents" Value="" />
       <HelpData Key="slice_expr_question.to" Value="" />
       <HelpData Key="var_def_statement.override string ToString()" Value="" />
       <HelpData Key="sizeof_operator" Value="" />
       <HelpData Key="byte_const" Value="" />
-      <HelpData Key="inherited_method_call.exprs" Value="" />
+      <HelpData Key="declarations.declarations Add(declaration _declaration)" Value="" />
       <HelpData Key="for_node.initial_value" Value="Начальное значение переменной цикла" />
       <HelpData Key="un_expr.operation_type" Value="" />
       <HelpData Key="procedure_call.parametres" Value="" />
@@ -4112,25 +4113,24 @@
       <HelpData Key="labeled_statement" Value="" />
       <HelpData Key="while_type_specificator_list" Value="" />
       <HelpData Key="file_type_definition" Value="" />
-      <HelpData Key="file_type_definition.elem_type" Value="" />
+      <HelpData Key="no_type_foreach.no_type_foreach()" Value="" />
       <HelpData Key="short_proc_definition" Value="" />
       <HelpData Key="name_assign_expr.expr" Value="" />
       <HelpData Key="const_method_call.unit_name" Value="" />
       <HelpData Key="sugared_expression.sugared_expr" Value="" />
-      <HelpData Key="function_lambda_call.f_lambda_def" Value="" />
+      <HelpData Key="var_def_statement.vars" Value="Список имен переменных" />
       <HelpData Key="enumerator_list.enumerator_list(enumerator _enumerator, SourceContext sc)" Value="" />
       <HelpData Key="consts_definitions_list.consts_definitions_list Add(const_definition _const_definition, SourceContext sc)" Value="" />
       <HelpData Key="program_body." Value="" />
       <HelpData Key="template_param_list.template_param_list(type_definition _type_definition, SourceContext sc)" Value="" />
-      <HelpData Key="program_module.program_module(ident id,uses_list _used_units,block _program_block,using_list _using_namespaces)" Value="" />
+      <HelpData Key="modern_proc_type.el" Value="" />
       <HelpData Key="variant.vars_type" Value="" />
-      <HelpData Key="documentation_comment_tag_param" Value="" />
       <HelpData Key="record_type.variant_part" Value="" />
       <HelpData Key="variable_definitions.variable_definitions(" Value="" />
       <HelpData Key="literal_const_line.literal_const_line Add(literal _literal, SourceContext sc)" Value="" />
       <HelpData Key="set_type_definition.of_type" Value="" />
       <HelpData Key="class_definition.keyword" Value="" />
-      <HelpData Key="tree_node" Value="Базовый класс для всех классов синтаксического дерева" />
+      <HelpData Key="typeof_operator" Value="" />
       <HelpData Key="oberon_withstmt_guardstat.type_name" Value="" />
       <HelpData Key="operator_name_ident" Value="" />
       <HelpData Key="statement_list.right_logical_bracket" Value="Правая операторная скобка" />
@@ -4144,7 +4144,7 @@
       <HelpData Key="var_statement" Value="Однострочное описание переменной внутри begin-end. Хранит внутри var_def_statement" />
       <HelpData Key="class_definition.attribute" Value="" />
       <HelpData Key=".value" Value="" />
-      <HelpData Key="as_node.right" Value="" />
+      <HelpData Key="type_definition_attr.attr" Value="" />
       <HelpData Key="oberon_module.second_name" Value="" />
       <HelpData Key="hex_constant" Value="" />
       <HelpData Key="sizeof_operator.type_decl" Value="" />
@@ -4153,25 +4153,25 @@
       <HelpData Key="type_definition" Value="Определение типа" />
       <HelpData Key="indexers_types.indexers_types Add(type_definition _type_definition, SourceContext sc)" Value="" />
       <HelpData Key="variant_list.vars" Value="" />
-      <HelpData Key="property_parameter" Value="" />
+      <HelpData Key="interface_node.uses_modules" Value="" />
       <HelpData Key="documentation_comment_list.sections" Value="" />
       <HelpData Key="assign." Value="" />
       <HelpData Key="var_def_list_for_record" Value="" />
-      <HelpData Key="record_type.fixed_part" Value="" />
+      <HelpData Key="using_clause.name_space_parts" Value="" />
       <HelpData Key="implementation_node.uses_modules" Value="" />
       <HelpData Key="function_lambda_definition.proc_definition" Value="" />
       <HelpData Key="dot_node.right" Value="" />
       <HelpData Key="read_accessor_name.accessor_name" Value="" />
-      <HelpData Key="declarations.declarations Add(declaration _declaration)" Value="" />
+      <HelpData Key="write_accessor_name.accessor_name" Value="" />
       <HelpData Key="var_def_statement" Value="Описание переменных одной строкой. Не содержит var, т.к. встречается исключительно внутри другой конструкции.Может встречаться как до beginа (внутри variable_definitions), так и как внутриблочное описание (внутри var_statement).&#xD;&#xA;" />
       <HelpData Key="named_type_reference.named_type_reference(string name)" Value="" />
       <HelpData Key="where_definition.types" Value="" />
       <HelpData Key="literal_const_line" Value="Представляет в синтаксическом дереве строку вида #123'abc'#124#125." />
       <HelpData Key="exception_identifier.variable" Value="" />
       <HelpData Key="type_definition_list.type_definition_list(type_definition _type_definition, SourceContext sc)" Value="" />
-      <HelpData Key="dereference.override string ToString()" Value="" />
+      <HelpData Key="variant_types" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.typ" Value="" />
-      <HelpData Key="dereference.dereferencing_value" Value="" />
+      <HelpData Key="uses_list.void Add(unit_or_namespace un, SouceContext sc)" Value="" />
       <HelpData Key="formal_parameters.formal_parameters Add(typed_parameters _typed_parameters, SourceContext sc)" Value="" />
       <HelpData Key=".ex" Value="" />
       <HelpData Key="indexers_types.indexers" Value="Список типов индексов" />
@@ -4181,25 +4181,25 @@
       <HelpData Key="ident_with_templateparams.template_params" Value="" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list(procedure_attribute _procedure_attribute, SourceContext sc)" Value="" />
       <HelpData Key="semantic_check." Value="" />
-      <HelpData Key="oberon_exit_reservedword.text" Value="" />
+      <HelpData Key="ident_list.ident_list Add(ident _ident, SourceContext sc)" Value="" />
       <HelpData Key="for_node" Value="Цикл for" />
       <HelpData Key="array_of_named_type_reference.name_type" Value="" />
       <HelpData Key="procedure_of_object" Value="... of object" />
       <HelpData Key="label_definitions" Value="Описание меток" />
       <HelpData Key=".lists" Value="" />
       <HelpData Key=".unknown_foreach" Value="" />
-      <HelpData Key="class_predefinition." Value="" />
+      <HelpData Key="c_for_cycle." Value="" />
       <HelpData Key=".expr" Value="" />
       <HelpData Key="addressed_value" Value="Значение, имеющее адрес" />
       <HelpData Key="dot_question_node.right" Value="" />
       <HelpData Key="ident_with_inital_value" Value="" />
       <HelpData Key="as_node." Value="" />
       <HelpData Key="ident_with_templateparams." Value="" />
-      <HelpData Key="oberon_procedure_receiver" Value="" />
+      <HelpData Key="function_lambda_call.f_lambda_def" Value="" />
       <HelpData Key="template_type_reference" Value="" />
       <HelpData Key="yield_unknown_expression_type" Value="Узел для вычисления типа выражения используемого в теле функции-итератора (с yield). Используется для описаний всех переменных с автовыводом типов в теле yield: например, для var a := 1; Дело в том, что эти переменные становятся полями класса, а для описания полей класса нужен тип" />
       <HelpData Key=".no_type_foreach()" Value="" />
-      <HelpData Key="var_def_statement.var_def_statement(ident id, type_definition type)" Value="" />
+      <HelpData Key="ident_list.void Add(ident id)" Value="" />
       <HelpData Key="exception_handler_list.exception_handler_list Add(exception_handler _exception_handler, SourceContext sc)" Value="" />
       <HelpData Key=".Vds" Value="" />
       <HelpData Key="string_num_definition.name" Value="" />
@@ -4207,7 +4207,7 @@
       <HelpData Key="loop_stmt." Value="" />
       <HelpData Key="on_exception_list.on_exception_list Add(on_exception _on_exception)" Value="" />
       <HelpData Key="definition_specificator" Value="" />
-      <HelpData Key="string_const.override string ToString()" Value="" />
+      <HelpData Key="typed_parametres" Value="" />
       <HelpData Key="unnamed_type_object.ne_list" Value="" />
       <HelpData Key="compiler_directive." Value="" />
       <HelpData Key="int64_const" Value="" />
@@ -4222,7 +4222,7 @@
       <HelpData Key="oberon_procedure_receiver.param_kind" Value="" />
       <HelpData Key="if_node.condition" Value="Условие" />
       <HelpData Key="record_const.rec_consts" Value="" />
-      <HelpData Key="type_def_attr_list.attributes" Value="" />
+      <HelpData Key="expression_list.void Add(expression ex)" Value="" />
       <HelpData Key="unknown_expression_type" Value="" />
       <HelpData Key="documentation_comment_section.sectinos" Value="" />
       <HelpData Key="simple_attribute_list.void Add(attribute a, SourceContext sc)" Value="" />
@@ -4242,9 +4242,9 @@
       <HelpData Key="typed_parametres.param_kind" Value="" />
       <HelpData Key="ident_with_inital_value.inital_value" Value="" />
       <HelpData Key="var_statement.override string ToString()" Value="" />
-      <HelpData Key="class_definition.class_name" Value="" />
-      <HelpData Key="subprogram_definitions_as_statement.defs" Value="" />
-      <HelpData Key="expression_list.void Add(expression ex)" Value="" />
+      <HelpData Key="switch_stmt" Value="" />
+      <HelpData Key="known_type_indent.type" Value="" />
+      <HelpData Key="program_tree.compilation_units" Value="Список подключенных модулей" />
       <HelpData Key="procedure_attributes_list.procedure_attributes_list Add(procedure_attribute _procedure_attribute, SourceContext sc)" Value="" />
       <HelpData Key="oberon_module.module_code" Value="" />
       <HelpData Key="case_variant" Value="" />
