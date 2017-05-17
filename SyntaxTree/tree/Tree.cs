@@ -43382,7 +43382,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 
 	///<summary>
-	///узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось
+	///Узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось
 	///</summary>
 	[Serializable]
 	public partial class semantic_check_sugared_statement_node : statement

@@ -3826,7 +3826,7 @@
       <HelpData Key="semantic_check_statement.stat" Value="" />
       <HelpData Key="semantic_check_sugared_statement" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
       <HelpData Key="semantic_check_sugared_statement.stat" Value="" />
-      <HelpData Key="semantic_check_sugared_statement_node" Value="узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
+      <HelpData Key="semantic_check_sugared_statement_node" Value="Узел, не генерирующий кода, но осуществляющий семантические проверки сахарных узлов. stat - это на самом деле statement. stat сделано типа object - чтобы оно автоматически не обходилось" />
       <HelpData Key="semantic_check_sugared_statement_node.lst" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.stat" Value="" />
       <HelpData Key="semantic_check_sugared_statement_node.typ" Value="" />

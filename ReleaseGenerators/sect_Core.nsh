@@ -12,7 +12,6 @@
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
     File "..\bin\SyntaxVisitors.dll"
-    File "..\bin\YieldConversionSyntax.dll"
     File "..\bin\YieldHelpers.dll"
 	File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
@@ -50,7 +49,6 @@
     ${AddFile} "SyntaxTreeConverters.dll"
     ${AddFile} "YieldHelpers.dll"
     ${AddFile} "SyntaxVisitors.dll"
-    ${AddFile} "YieldConversionSyntax.dll"
 	${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
@@ -106,6 +104,7 @@
     File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
+    File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
@@ -153,6 +152,7 @@
     ${AddFile} "ClientServer.pcu"
     ${AddFile} "OpenGL.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
+    ${AddFile} "Speech.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -201,6 +201,7 @@
     File ..\bin\Lib\ClientServer.pas
     File ..\bin\Lib\OpenGL.pas
     File ..\bin\Lib\PT4MakerNetX.pas
+    File ..\bin\Lib\Speech.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -247,6 +248,7 @@
     ${AddFile} "ClientServer.pas"
     ${AddFile} "OpenGL.pas"
     ${AddFile} "PT4MakerNetX.pas"
+    ${AddFile} "Speech.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
@@ -254,8 +256,6 @@
     Push "OptimizerConversion.dll"
     Call NGEN
 	Push "SyntaxVisitors.dll"
-    Call NGEN
-    Push "YieldConversionSyntax.dll"
     Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"
