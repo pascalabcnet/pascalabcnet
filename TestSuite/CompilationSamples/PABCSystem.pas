@@ -6310,7 +6310,7 @@ end;
 // -----------------------------------------------------
 function PascalABCVersion: string;
 begin
-  Result := '3.2.0.1364';
+  Result := '3.2.0.1364'{PABC_VERSION};
 end;
 
 function ParamCount: integer;
