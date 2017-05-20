@@ -271,7 +271,7 @@ namespace PascalABCCompiler.TreeConverter
 			                                                 return_value_type,loc,ctn,SemanticTree.polymorphic_state.ps_virtual,
 			                                                 SemanticTree.field_access_level.fal_public,
 			                                                 convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.invoke_method_name,new SymbolInfo(invoke));
+			ctn.add_name(compiler_string_consts.invoke_method_name,new SymbolInfoUnit(invoke));
 			for (int i=0; i<parameters.Count; i++)
 			{
 				if (parameters[i] is compiled_parameter)
@@ -286,7 +286,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node begin_invoke = new common_method_node(compiler_string_consts.begin_invoke_method_name,
 			                                                         begin_invoke_result_type, loc, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public,
 			                                                         convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.begin_invoke_method_name,new SymbolInfo(begin_invoke));
+			ctn.add_name(compiler_string_consts.begin_invoke_method_name,new SymbolInfoUnit(begin_invoke));
 			parameter_list begin_invoke_params=new parameter_list();
 			begin_invoke_params.AddRange(parameters);
 			common_parameter cp=new common_parameter(compiler_string_consts.callback_string,begin_invoke_parameter_type,
@@ -303,7 +303,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node end_invoke = new common_method_node(compiler_string_consts.end_invoke_method_name,
 			                                                       return_value_type, loc, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public,
 			                                                       convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.end_invoke_method_name,new SymbolInfo(end_invoke));
+			ctn.add_name(compiler_string_consts.end_invoke_method_name,new SymbolInfoUnit(end_invoke));
 			cp = new common_parameter(compiler_string_consts.result_string, begin_invoke_result_type,
 			                          SemanticTree.parameter_type.value, end_invoke, concrete_parameter_type.cpt_none,
 			                          null, loc);
@@ -683,13 +683,13 @@ namespace PascalABCCompiler.TreeConverter
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
-				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			else if (element_type.IsEnum)
 			{
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			}
 			
 			if (element_type == SystemLibrary.SystemLibrary.integer_type)
@@ -1185,7 +1185,7 @@ namespace PascalABCCompiler.TreeConverter
 			
 			if (element_type != SystemLibrary.SystemLibrary.char_type && element_type != SystemLibrary.SystemLibrary.bool_type)
 			{
-				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 				/*element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
@@ -1195,13 +1195,13 @@ namespace PascalABCCompiler.TreeConverter
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			else if (element_type.IsEnum)
 			{
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			}
 			if (element_type == SystemLibrary.SystemLibrary.integer_type)
 			{

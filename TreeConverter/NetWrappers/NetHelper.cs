@@ -127,8 +127,8 @@ namespace PascalABCCompiler.NetHelper
                 _unar = value;
             }
 		}
-
-        /*public override base_scope top_scope
+		
+		/*public override base_scope top_scope
 		{
 			get
 			{
@@ -206,8 +206,8 @@ namespace PascalABCCompiler.NetHelper
                     }
                 }
             }
-            return si;
-        }
+			return si;
+		}
 
         private Type in_type_list(string name)
         {
@@ -381,8 +381,9 @@ namespace PascalABCCompiler.NetHelper
 				byte[] buf = new byte[fs.Length];
            		fs.Read(buf, 0, (int)fs.Length);
             	fs.Close();
-                a = System.Reflection.Assembly.Load(buf);      
                 curr_inited_assm_path = name;
+                a = System.Reflection.Assembly.Load(buf);      
+                
                 a.GetTypes();
             	buf = null;
             	//Thread th = new Thread(new ThreadStart(collect_internal));
@@ -419,13 +420,6 @@ namespace PascalABCCompiler.NetHelper
             {
 
                 Type[] tarr = _assembly.GetTypes();
-                /*if (_assembly.ManifestModule.ScopeName == "System.Core.dll")
-                {
-                    ExtensionAttributeType = _assembly.GetType("System.Runtime.CompilerServices.ExtensionAttribute");
-                    SystemCoreAssembly =  _assembly;
-                    members.Clear();
-                    
-                }*/
                 //Hashtable ns_ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
                 Hashtable ns_ht = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
                 foreach (Type t in tarr)
@@ -899,14 +893,18 @@ namespace PascalABCCompiler.NetHelper
         {
             try
             {
-                Assembly assm = null;
-                string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(curr_inited_assm_path),args.Name.Substring(0,args.Name.IndexOf(","))+".dll");
-                if (System.IO.File.Exists(path))
-                    assm = LoadAssembly(path);
-                curr_inited_assm_path = null;
-           
-                //return LoadAssembly(args.Name);
-                return assm;
+                if (curr_inited_assm_path != null)
+                {
+                    Assembly assm = null;
+                    string path = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(curr_inited_assm_path), args.Name.Substring(0, args.Name.IndexOf(",")) + ".dll");
+                    if (System.IO.File.Exists(path))
+                        assm = LoadAssembly(path);
+                    curr_inited_assm_path = null;
+
+                    //return LoadAssembly(args.Name);
+                    return assm;
+                }
+                return null;
             }
             catch
             {
@@ -1350,23 +1348,18 @@ namespace PascalABCCompiler.NetHelper
             return curr_type != null && type_table.is_derived(comp_node, curr_type);
         }
 		
-        public static SymbolInfo GetConstructor(Type t)
+        public static SymbolInfoList GetConstructor(Type t)
         {
         	ConstructorInfo[] constrs = t.GetConstructors(BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic);
-        	SymbolInfo si = null;
-        	SymbolInfo res_si = null;
-        	SymbolInfo tmp = null;
+        	SymbolInfoUnit si = null;
+        	SymbolInfoList res_si = null;
         	foreach (ConstructorInfo ci in constrs)
         	{
         		field_access_level fal = get_access_level(ci);
             	if (fal != field_access_level.fal_private && fal != field_access_level.fal_internal)
                 {
-            		si = new SymbolInfo(compiled_constructor_node.get_compiled_constructor(ci));
-            		if (tmp != null)
-            			tmp.Next = si;
-            		else
-            			res_si = si;
-            		tmp = si;
+            		si = new SymbolInfoUnit(compiled_constructor_node.get_compiled_constructor(ci));
+                    res_si.Add(si);
             	}
         	}
         	return res_si;
@@ -1387,7 +1380,7 @@ namespace PascalABCCompiler.NetHelper
         	return FindType(name) != null;
         }
         
-        public static SymbolInfo FindNameIncludeProtected(Type t, string name)
+        public static SymbolInfoList FindNameIncludeProtected(Type t, string name)
         {
         	if (name == null) return null;
 			if (name == compiler_string_consts.assign_name) return null;
@@ -1397,7 +1390,7 @@ namespace PascalABCCompiler.NetHelper
 				if (IsStandType(t)) return null;
 				name = s;
 			}
-			SymbolInfo si=null;
+			SymbolInfoList si=null;
 			List<MemberInfo> mis = GetMembers(t,name);
         	
             foreach (MemberInfo mi in mis)
@@ -1407,29 +1400,30 @@ namespace PascalABCCompiler.NetHelper
             	field_access_level fal = get_access_level(mi);
             	if (fal != field_access_level.fal_private && fal != field_access_level.fal_internal)
                 {
-                    SymbolInfo temp = null;
+                    SymbolInfoUnit temp = null;
                     switch (mi.MemberType)
                     {
                         case MemberTypes.Method:
-                            temp = new SymbolInfo(compiled_function_node.get_compiled_method((MethodInfo)mi));
+                            temp = new SymbolInfoUnit(compiled_function_node.get_compiled_method((MethodInfo)mi));
                             break;
                         case MemberTypes.Constructor:
-                            temp = new SymbolInfo(compiled_constructor_node.get_compiled_constructor((ConstructorInfo)mi));
+                            temp = new SymbolInfoUnit(compiled_constructor_node.get_compiled_constructor((ConstructorInfo)mi));
                             break;
                         case MemberTypes.Property:
-                            temp = new SymbolInfo(GetPropertyNode((PropertyInfo)mi));
+                            temp = new SymbolInfoUnit(GetPropertyNode((PropertyInfo)mi));
                             break;
                         case MemberTypes.Field:
-                            temp = GetSymbolInfoForFieldNode((FieldInfo)mi).ToSymbolInfo();
+                            temp = GetSymbolInfoForFieldNode((FieldInfo)mi);
                             break;
                         case MemberTypes.Event:
-                            temp = new SymbolInfo(GetEvent((EventInfo)mi));
+                            temp = new SymbolInfoUnit(GetEvent((EventInfo)mi));
                             break;
                         default:
                             continue;
                     }
-                    temp.Next = si;
-                    si = temp;
+                    if (si == null)
+                        si = new SymbolInfoList();
+                    si.InfoUnitList.Insert(0, temp);
                 }
         	}
             Type nested_t = null;
@@ -1443,9 +1437,10 @@ namespace PascalABCCompiler.NetHelper
             }
             if (nested_t != null)
             {
-            	SymbolInfo temp = new SymbolInfo(compiled_type_node.get_type_node(nested_t));
-            	temp.Next = si;
-            	si = temp;
+            	SymbolInfoUnit temp = new SymbolInfoUnit(compiled_type_node.get_type_node(nested_t));
+                if (si == null)
+                    si = new SymbolInfoList();
+                si.InfoUnitList.Insert(0, temp);
             }
             return si;
         }
@@ -1553,7 +1548,7 @@ namespace PascalABCCompiler.NetHelper
 		}
 		*/
 
-        public static compiled_property_node GetPropertyNode(PropertyInfo pi)
+		public static compiled_property_node GetPropertyNode(PropertyInfo pi)
 		{
             compiled_property_node cpn = null;
             if (prop_nodes.TryGetValue(pi, out cpn))

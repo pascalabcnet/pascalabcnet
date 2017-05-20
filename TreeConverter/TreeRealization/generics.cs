@@ -54,7 +54,7 @@ namespace PascalABCCompiler.TreeRealization
                 SemanticTree.field_access_level.fal_public, null);
             cnode.is_constructor = true;
             param.methods.AddElement(cnode);
-            param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfo(cnode));
+            param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfoUnit(cnode));
             param.has_default_constructor = true;
         }
 
@@ -196,6 +196,7 @@ namespace PascalABCCompiler.TreeRealization
     }
 
     //Вспомогательный класс для создания псевдо-инстанций generic-типов.
+    //TODO: sdelat singletonom. staticheskie klassy eto gadost
     public static class generic_convertions
     {
         //Список, хранящий все псевдо-инстанции generic-типов, нужен для NetGenerator.
@@ -206,6 +207,8 @@ namespace PascalABCCompiler.TreeRealization
             new List<SemanticTree.IGenericFunctionInstance>();
 
         public static Hashtable generic_instances = new Hashtable();
+
+        public static syntax_tree_visitor visitor;
 
         public static List<generic_type_instance_info> get_type_instances(type_node original_generic_type)
         {
@@ -841,6 +844,9 @@ namespace PascalABCCompiler.TreeRealization
 
                 for (int i = 0; i < count_params_to_see; ++i)
                 {
+                    if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null && DeduceInstanceTypes(formal[i].type, (fact[i].type as delegated_methods).empty_param_method.type, deduced, nils))
+                        continue;
+                    else
                     if (!DeduceInstanceTypes(formal[i].type, fact[i].type, deduced, nils))
                     {
                         if (alone && fact[i].type is delegated_methods && (fact[i].type as delegated_methods).empty_param_method != null)
@@ -979,6 +985,8 @@ namespace PascalABCCompiler.TreeRealization
         //Выведение типов
         public static bool DeduceInstanceTypes(type_node formal_type, type_node fact_type, type_node[] deduced, List<int> nils)
         {
+            if (fact_type == null)//issue #347
+                return false;
             if (formal_type.generic_function_container == null && fact_type.generic_function_container != null)
             {
                 //swap
@@ -998,12 +1006,25 @@ namespace PascalABCCompiler.TreeRealization
                 if (deduced[par_num] == null)
                 {
                     //Этот тип-параметр ещё не был выведен.
+                    if (fact_type is delegated_methods && (fact_type as delegated_methods).empty_param_method != null && (fact_type as delegated_methods).empty_param_method.ret_type != null)
+                        fact_type = (fact_type as delegated_methods).empty_param_method.ret_type;
+                    //if (fact_type is delegated_methods)
+                    //    fact_type = visitor.CreateDelegate((fact_type as delegated_methods).proper_methods[0].simple_function_node);
                     deduced[par_num] = fact_type;
                     return true;
                 }
                 //Этот тип-параметр уже был выведен. Сравниваем с выведенным.
                 if (!convertion_data_and_alghoritms.eq_type_nodes(fact_type, deduced[par_num], true))
                 {
+                    if (fact_type is delegated_methods && deduced[par_num].IsDelegate)
+                    {
+                        delegate_internal_interface d1 = deduced[par_num].get_internal_interface(internal_interface_kind.delegate_interface) as delegate_internal_interface;
+                        return convertion_data_and_alghoritms.function_eq_params_and_result((fact_type as delegated_methods).proper_methods[0].simple_function_node, d1.invoke_method);
+                    }
+                    else if (fact_type is delegated_methods && deduced[par_num] is delegated_methods)
+                    {
+                        return convertion_data_and_alghoritms.function_eq_params_and_result((fact_type as delegated_methods).proper_methods[0].simple_function_node, (deduced[par_num] as delegated_methods).proper_methods[0].simple_function_node);
+                    }
                     return false;
                 }
                 return true;
@@ -1233,25 +1254,27 @@ namespace PascalABCCompiler.TreeRealization
 
         public static bool type_has_default_ctor(type_node tn, bool find_protected_ctors)
         {
-            SymbolInfo si = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
-            while (si != null)
+            SymbolInfoList si = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
+            if (si != null)
             {
-                function_node fn = si.sym_info as function_node;
-                if (find_protected_ctors ||
-                    fn.field_access_level == PascalABCCompiler.SemanticTree.field_access_level.fal_public)
+                foreach (SymbolInfoUnit si_unit in si.InfoUnitList)
                 {
-                    compiled_constructor_node pconstr = fn as compiled_constructor_node;
-                    common_method_node mconstr = fn as common_method_node;
-                    if ((pconstr != null ||
-                        mconstr != null && mconstr.is_constructor) &&
-                        (fn.parameters.Count == 0 || fn.parameters[0].default_value != null)
-                        )
+                    function_node fn = si_unit.sym_info as function_node;
+                    if (find_protected_ctors ||
+                        fn.field_access_level == PascalABCCompiler.SemanticTree.field_access_level.fal_public)
                     {
-                        //Нашли конструктор по умолчанию у предка
-                        return true;
+                        compiled_constructor_node pconstr = fn as compiled_constructor_node;
+                        common_method_node mconstr = fn as common_method_node;
+                        if ((pconstr != null ||
+                            mconstr != null && mconstr.is_constructor) &&
+                            (fn.parameters.Count == 0 || fn.parameters[0].default_value != null)
+                            )
+                        {
+                            //Нашли конструктор по умолчанию у предка
+                            return true;
+                        }
                     }
                 }
-                si = si.Next;
             }
             return false;
         }
@@ -1384,9 +1407,9 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        private List<SymbolInfo> temp_names = new List<SymbolInfo>(3);
+        private List<SymbolInfoUnit> temp_names = new List<SymbolInfoUnit>(3);
 
-        public override void add_name(string name, SymbolInfo si)
+        public override void add_name(string name, SymbolInfoUnit si)
         {
             temp_names.Add(si);
         }
@@ -1704,31 +1727,27 @@ namespace PascalABCCompiler.TreeRealization
             return rez_node;
         }
 
-        public SymbolInfo ConvertSymbolInfo(SymbolInfo start)
+        public SymbolInfoList ConvertSymbolInfo(SymbolInfoList start)
         {
-            SymbolInfo si = start;
-            SymbolInfo rez_start = null;
-            SymbolInfo rez_si = null;
-            SymbolInfo rez_prev = null;
-            while (si != null)
+            SymbolInfoList rez_start = null;
+            SymbolInfoUnit rez_si = null;
+            if (start != null)
             {
-                definition_node dnode = ConvertMember(si.sym_info);
-                rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
-                //Дополняем список SymbolInfo преобразованным значением
-                if (rez_start == null)
+                foreach (SymbolInfoUnit si_unit in start.InfoUnitList)
                 {
-                    rez_start = rez_si;
+                    definition_node dnode = ConvertMember(si_unit.sym_info);
+                    rez_si = new SymbolInfoUnit(dnode, si_unit.access_level, si_unit.symbol_kind);
+                    //Дополняем список SymbolInfo преобразованным значением
+                    if (rez_start == null)
+                    {
+                        rez_start = new SymbolInfoList();
+                        rez_start.Add(rez_si);
+                    }
+                    else
+                    {
+                        rez_start.Add(rez_si);
+                    }
                 }
-                else
-                {
-                    rez_prev.Next = rez_si;
-                }
-                rez_prev = rez_si;
-                si = si.Next;
-            }
-            if (rez_si != null)
-            {
-                rez_si.Next = null;
             }
             return rez_start;
         }
@@ -1736,24 +1755,19 @@ namespace PascalABCCompiler.TreeRealization
         public override SymbolInfoList find(string name, bool no_search_in_extension_methods = false)
         {
             SymbolInfoList si = _original_generic.find(name);
-            if (si != null)
-                return new SymbolInfoList(ConvertSymbolInfo(si.ToSymbolInfo()));
-            return new SymbolInfoList(ConvertSymbolInfo(null));//delete
+            return ConvertSymbolInfo(si);//delete
         }
 
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
             SymbolInfoList si = _original_generic.find_in_type(name);
-            if (si != null)
-                si = new SymbolInfoList(ConvertSymbolInfo(si.ToSymbolInfo()));
-            else
-                si = new SymbolInfoList(ConvertSymbolInfo(null));
+            si = ConvertSymbolInfo(si);
             return si;
         }
 
-        public override SymbolInfo find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override SymbolInfoList find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfo si = _original_generic.find_in_type(name, CurrentScope);
+            SymbolInfoList si = _original_generic.find_in_type(name, CurrentScope);
             si = ConvertSymbolInfo(si);
             return si;
         }
@@ -2222,5 +2236,4 @@ namespace PascalABCCompiler.TreeRealization
         }
 
     }
-
 }

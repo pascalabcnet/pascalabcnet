@@ -14,7 +14,7 @@ namespace PascalABCCompiler.TreeConverter
 
 	public abstract class base_scope
 	{
-		public abstract SymbolInfo find(string name);
+		public abstract SymbolInfoList find(string name);
 
 		public abstract base_scope top_scope
 		{
@@ -57,7 +57,7 @@ namespace PascalABCCompiler.TreeConverter
 		nit_compiled_namespace
 	};*/
 
-    public class PCUSymbolInfo : SymbolInfo
+    public class PCUSymbolInfo : SymbolInfoUnit
     {
         private semantic_node_type _semantic_node_type;
 
@@ -446,48 +446,8 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = skind;
         }
 
-        public override bool Equals(System.Object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            SymbolInfo p = obj as SymbolInfo;
-            if ((System.Object)p == null)
-            {
-                return false;
-            }
-
-            return (_access_level == p._access_level) && (_symbol_kind == p._symbol_kind) && (_sym_info == p.sym_info) && (scope == p.scope) && (Next == p.Next);
-        }
-
-        public bool Equals(SymbolInfo p)
-        {
-            if ((object)p == null)
-            {
-                return false;
-            }
-            return (_access_level == p._access_level) && (_symbol_kind == p._symbol_kind) && (_sym_info == p.sym_info) && (scope == p.scope) && (Next == p.Next);
-        }
-
-
-        public static bool operator ==(SymbolInfo a, SymbolInfo b)
-        {
-            if (object.ReferenceEquals(a, null))
-            {
-                return object.ReferenceEquals(b, null);
-            }
-
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(SymbolInfo a, SymbolInfo b)
-        {
-            return !(a == b);
-        }
-    }
-        public class SymbolInfoList
+   }
+    public class SymbolInfoList
     {
         //private readonly name_information_type _name_information_type;
 
@@ -500,12 +460,20 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfoList(SymbolInfoUnit inf)
         {
+            if (inf == null)
+            {
+                Console.Write("vse ploho");
+            }
             InfoUnitList = new List<SymbolInfoUnit>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
             InfoUnitList.Add(inf);
         }
 
         public SymbolInfoList(SymbolInfo inf)
         {
+            if (inf == null)
+            {
+                Console.Write("vse ploho");
+            }
             InfoUnitList = new List<SymbolInfoUnit>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
             while (inf != null)
             {
@@ -519,7 +487,7 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolInfoList copy()
         {
             SymbolInfoList si = new SymbolInfoList();
-            si.InfoUnitList = this.InfoUnitList;
+            si.InfoUnitList = new List<SymbolInfoUnit>(this.InfoUnitList);
             return si;
         }
 
@@ -999,22 +967,48 @@ namespace PascalABCCompiler.TreeConverter
             _symbol_kind = skind;
         }
 
-        public static bool operator ==(SymbolInfoUnit a, SymbolInfoUnit b)
+
+        public override bool Equals(System.Object obj)
         {
-            if (System.Object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-            if (((object)a == null) || ((object)b == null))
+            if (obj == null)
             {
                 return false;
             }
-            return (a._access_level == b._access_level) && (a._symbol_kind == b._symbol_kind) && (a._sym_info == b._sym_info) && (a.scope == b.scope);
+
+            SymbolInfoUnit p = obj as SymbolInfoUnit;
+            if ((System.Object)p == null)
+            {
+                return false;
+            }
+
+            return (_access_level == p._access_level) && (_symbol_kind == p._symbol_kind) && (_sym_info == p.sym_info) && (scope == p.scope);
         }
+
+        public bool Equals(SymbolInfoUnit p)
+        {
+            if ((object)p == null)
+            {
+                return false;
+            }
+            return (_access_level == p._access_level) && (_symbol_kind == p._symbol_kind) && (_sym_info == p.sym_info) && (scope == p.scope);
+        }
+
+
+        public static bool operator ==(SymbolInfoUnit a, SymbolInfoUnit b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
         public static bool operator !=(SymbolInfoUnit a, SymbolInfoUnit b)
         {
             return !(a == b);
         }
+
     }
 
 }

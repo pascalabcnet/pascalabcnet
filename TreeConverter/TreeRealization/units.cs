@@ -9,7 +9,7 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public abstract class unit_node : definition_node
     {
-        public abstract PascalABCCompiler.TreeConverter.SymbolInfo find_only_in_namespace(string name);
+        public abstract PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name);
 
         public override general_node_type general_node_type
         {
@@ -28,7 +28,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             this.namespace_name = namespace_name;
         }
-        public override PascalABCCompiler.TreeConverter.SymbolInfo find_only_in_namespace(string name)
+        public override PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name)
         {
             throw new NotSupportedException();
         }
@@ -68,12 +68,9 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        public override PascalABCCompiler.TreeConverter.SymbolInfo find_only_in_namespace(string name)
+        public override PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name)
         {
-            var temp = _dotNetScope.Find(name);
-            if (temp != null)
-                return temp.ToSymbolInfo();
-            return null;
+            return _dotNetScope.Find(name);
         }
     }
 
@@ -98,12 +95,12 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                TreeConverter.SymbolInfo si = namespaces[0].findOnlyInNamespace(TreeConverter.compiler_string_consts.system_unit_marker);
+                TreeConverter.SymbolInfoList si = namespaces[0].findOnlyInNamespace(TreeConverter.compiler_string_consts.system_unit_marker);
                 if (si == null)
                     return false;
-                if (si.sym_info is constant_definition_node)
-                    if ((si.sym_info as constant_definition_node).const_value is bool_const_node)
-                        return ((si.sym_info as constant_definition_node).const_value as bool_const_node).constant_value;
+                if (si.First().sym_info is constant_definition_node)
+                    if ((si.First().sym_info as constant_definition_node).const_value is bool_const_node)
+                        return ((si.First().sym_info as constant_definition_node).const_value as bool_const_node).constant_value;
                 return false;
             }
         }
@@ -237,12 +234,9 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
-        public override PascalABCCompiler.TreeConverter.SymbolInfo find_only_in_namespace(string name)
+        public override PascalABCCompiler.TreeConverter.SymbolInfoList find_only_in_namespace(string name)
 		{
-			var temp = _scope.FindOnlyInScope(name);
-            if (temp != null)
-                return temp.ToSymbolInfo();
-            return null;
+			return _scope.FindOnlyInScope(name);
 		}
 	}
 

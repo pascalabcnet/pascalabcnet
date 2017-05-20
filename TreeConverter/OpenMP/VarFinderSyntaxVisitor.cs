@@ -83,24 +83,24 @@ namespace PascalABCCompiler.TreeConverter
             if (pos != -1)
                 value.name = value.name.Remove(pos);
 
-            SymbolInfo si = context.find(value.name);
+            SymbolInfoList si = context.find(value.name);
             if (si == null)
                 return;     //ничего не нашли => переменная совсем локальная, никуда добавлять не нужно
 
-            if ((si.sym_info is SemanticTree.ICommonParameterNode)      //параметр или
-                || (si.sym_info is SemanticTree.ILocalVariableNode)     //локальная переменная
-                || (si.sym_info is SemanticTree.ICommonClassFieldNode)  //поле класса
-                || (si.sym_info is SemanticTree.ILocalBlockVariableNode)//локальная блочная переменная
+            if ((si.First().sym_info is SemanticTree.ICommonParameterNode)      //параметр или
+                || (si.First().sym_info is SemanticTree.ILocalVariableNode)     //локальная переменная
+                || (si.First().sym_info is SemanticTree.ICommonClassFieldNode)  //поле класса
+                || (si.First().sym_info is SemanticTree.ILocalBlockVariableNode)//локальная блочная переменная
                 || isLoopVariable)                                      //счетчик цикла
             {
-                if (!Variables.Contains(si.sym_info as SemanticTree.IVAriableDefinitionNode))
-                    Variables.Add(si.sym_info as SemanticTree.IVAriableDefinitionNode);
+                if (!Variables.Contains(si.First().sym_info as SemanticTree.IVAriableDefinitionNode))
+                    Variables.Add(si.First().sym_info as SemanticTree.IVAriableDefinitionNode);
             }
-            else if ((si.sym_info is SemanticTree.ICommonFunctionConstantDefinitionNode)//константа из функции
-                     ||(si.sym_info is SemanticTree.IClassConstantDefinitionNode)) //константа из класса
+            else if ((si.First().sym_info is SemanticTree.ICommonFunctionConstantDefinitionNode)//константа из функции
+                     ||(si.First().sym_info is SemanticTree.IClassConstantDefinitionNode)) //константа из класса
             {
-                if (!Constants.Contains(si.sym_info as SemanticTree.IConstantDefinitionNode))
-                    Constants.Add(si.sym_info as SemanticTree.IConstantDefinitionNode);
+                if (!Constants.Contains(si.First().sym_info as SemanticTree.IConstantDefinitionNode))
+                    Constants.Add(si.First().sym_info as SemanticTree.IConstantDefinitionNode);
             }
         }
         public override void visit(dot_node _dot_node)

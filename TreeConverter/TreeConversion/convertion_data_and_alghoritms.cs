@@ -395,7 +395,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <param name="top_function">Функция в которой мы находимся.</param>
         /// <param name="allow_procedure">Может ли это быть вызов процедуры. false если вызов стоит в выражении или правой части опреатора присваивания.</param>
         /// <returns>Возвращает узел вызова метода.</returns>
-		public expression_node create_full_function_call(expressions_list exprs, SymbolInfo si, location loc,
+		public expression_node create_full_function_call(expressions_list exprs, SymbolInfoList si, location loc,
             common_type_node converted_type, common_function_node top_function, bool allow_procedure)
         {
             function_node fn = select_function(exprs, si, loc);
@@ -1693,82 +1693,80 @@ namespace PascalABCCompiler.TreeConverter
 		}
 
 		//Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
-        public function_node select_function(expressions_list parameters, SymbolInfo functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
-		{
-			if (functions==null)
-			{
-				return AddError<function_node>(new NoFunctionWithThisName(loc));
-			}
+        public function_node select_function(expressions_list parameters, SymbolInfoList functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
+        {
+            if (functions == null)
+            {
+                return AddError<function_node>(new NoFunctionWithThisName(loc));
+            }
 
             function_node_list set_of_possible_functions = new function_node_list();
 
-            bool is_alone_method_defined = (functions.Next == null);
-            function_node first_function = functions.sym_info as function_node;
+            bool is_alone_method_defined = (functions.InfoUnitList.Count == 1);
+            function_node first_function = functions.First().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
-            basic_function_node _tmp_bfn = functions.sym_info as basic_function_node;
+            basic_function_node _tmp_bfn = functions.First().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
 
-			while(functions!=null)
-			{
+            foreach (SymbolInfoUnit function in functions.InfoUnitList)
+            {
 #if (DEBUG)
-				if (functions.sym_info.general_node_type!=general_node_type.function_node && functions.sym_info.general_node_type != general_node_type.property_node)
-				{
-					throw new CompilerInternalError("Function name is used to define another kind of object.");
-				}
+                if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
+                {
+                    throw new CompilerInternalError("Function name is used to define another kind of object.");
+                }
 #endif
                 function_node fn = null;
-                if (functions.sym_info.general_node_type == general_node_type.property_node)
+                if (function.sym_info.general_node_type == general_node_type.property_node)
                 {
-                    fn = (functions.sym_info as property_node).get_function;
+                    fn = (function.sym_info as property_node).get_function;
                 }
                 else
-                fn=(function_node)functions.sym_info;
+                    fn = (function_node)function.sym_info;
 
                 if (fn.node_kind == node_kind.indefinite)
                 {
                     indefinits.Add(fn);
                 }
-				else if (fn.node_kind==SemanticTree.node_kind.common)
-				{
-					common_function_node cfn=(common_function_node)fn;
-					if ((parameters.Count>=cfn.parameters.Count-cfn.num_of_default_variables)&&
-					    (parameters.Count<=cfn.parameters.Count) || parameters.Count == 0 && cfn.parameters.Count == 1 && cfn.parameters[0].is_params)
-					{
-						if (is_exist_eq_method_in_list(fn,set_of_possible_functions) != null)
-						{
+                else if (fn.node_kind == SemanticTree.node_kind.common)
+                {
+                    common_function_node cfn = (common_function_node)fn;
+                    if ((parameters.Count >= cfn.parameters.Count - cfn.num_of_default_variables) &&
+                        (parameters.Count <= cfn.parameters.Count) || parameters.Count == 0 && cfn.parameters.Count == 1 && cfn.parameters[0].is_params)
+                    {
+                        if (is_exist_eq_method_in_list(fn, set_of_possible_functions) != null)
+                        {
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
                                 {
                                     set_of_possible_functions.remove(set_of_possible_functions[0]);
                                     set_of_possible_functions.AddElement(fn);
                                 }
-							
-                            functions=functions.Next;
-							continue;
-						}
-						set_of_possible_functions.AddElement(fn);
-					}
-				}
-				else
-				{
+
+                            continue;
+                        }
+                        set_of_possible_functions.AddElement(fn);
+                    }
+                }
+                else
+                {
                     //TODO: Здесь нужно поправить, если создавать возможность вызова метода с параметрами по умолчанию из откомпилированной dll.
-					if (parameters.Count==fn.parameters.Count)
-					{
+                    if (parameters.Count == fn.parameters.Count)
+                    {
                         function_node func = null;
-                        if ((func=is_exist_eq_method_in_list(fn,set_of_possible_functions)) != null)
-						{
+                        if ((func = is_exist_eq_method_in_list(fn, set_of_possible_functions)) != null)
+                        {
                             if (!eq_type_nodes(fn.return_value_type, func.return_value_type))
                             {
                                 set_of_possible_functions[set_of_possible_functions.IndexOf(func)] = fn;
-                                
+
                             }
-                            functions = functions.Next;
                             continue;
-						}
-						set_of_possible_functions.AddElement(fn);
-					}
-				}
+                        }
+                        set_of_possible_functions.AddElement(fn);
+                    }
+                }
                 if (parameters.Count > fn.parameters.Count)
                 {
                     if (fn.parameters.Count > 0)
@@ -1778,7 +1776,6 @@ namespace PascalABCCompiler.TreeConverter
                             //+DS ms0105
                             if (is_exist_eq_method_in_list(fn, set_of_possible_functions) != null)
                             {
-                                functions = functions.Next;
                                 continue;
                             }
                             //-DS
@@ -1798,13 +1795,12 @@ namespace PascalABCCompiler.TreeConverter
                 else if (parameters.Count == 1 && fn is compiled_function_node && (fn as compiled_function_node).ConnectedToType != null && fn.parameters.Count == 2 && fn.parameters[1].is_params)
                     if (!set_of_possible_functions.Contains(fn))
                         set_of_possible_functions.AddElement(fn);
-                functions =functions.Next;
-			}
+            }
 
-			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
-			{
+            if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
+            {
                 return AddError<function_node>(new NoFunctionWithSameParametresNum(loc, is_alone_method_defined, first_function));
-			}
+            }
 
             //(ssyy) Инициализируем is_alone_defined
             FailedWhileTryingToCompileLambdaBodyWithGivenParametersException lastFailedWhileTryingToCompileLambdaBodyWithGivenParametersException = null;
@@ -1885,12 +1881,12 @@ namespace PascalABCCompiler.TreeConverter
                         if (err != null)
                             return AddError<function_node>(err);
                     }
-                        
+
                 }
                 tcll.AddElement(tc);
             }
 
-			int j=0;
+            int j = 0;
             while (j < set_of_possible_functions.Count)
             {
                 if (tcll[j] == null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
@@ -1904,31 +1900,31 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
 
-			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
-			{
+            if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
+            {
                 if (_is_assigment && parameters.Count == 2)
                     return AddError<function_node>(new CanNotConvertTypes(parameters[1], parameters[1].type, parameters[0].type, parameters[1].location));
                 if (_tmp_bfn != null && parameters.Count == 2)
-                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1],loc));
-                return AddError<function_node>(new NoFunctionWithSameArguments(loc,is_alone_method_defined));
-			}
+                    return AddError<function_node>(new OperatorCanNotBeAppliedToThisTypes(_tmp_bfn.name, parameters[0], parameters[1], loc));
+                return AddError<function_node>(new NoFunctionWithSameArguments(loc, is_alone_method_defined));
+            }
 
-			bool remove=true;
-			
-			while(remove)
-			{
-				if (set_of_possible_functions.Count==1)
-				{
-					check_single_possible_convertion(loc,tcll[0]);
-					convert_function_call_expressions(set_of_possible_functions[0],parameters,tcll[0]);
-					return set_of_possible_functions[0];
-				}
-				remove=false;
+            bool remove = true;
+
+            while (remove)
+            {
+                if (set_of_possible_functions.Count == 1)
+                {
+                    check_single_possible_convertion(loc, tcll[0]);
+                    convert_function_call_expressions(set_of_possible_functions[0], parameters, tcll[0]);
+                    return set_of_possible_functions[0];
+                }
+                remove = false;
 
                 var i = 0;
-                while (i < set_of_possible_functions.Count-1)
+                while (i < set_of_possible_functions.Count - 1)
                 {
-                    j = i+1;
+                    j = i + 1;
                     while (j < set_of_possible_functions.Count)
                     {
                         method_compare mc = compare_methods(set_of_possible_functions[i],
@@ -2029,20 +2025,20 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             // Формирование словаря списков функций с одинаковым значением расстояния
-            foreach (function_node fn in set_of_possible_functions) 
+            foreach (function_node fn in set_of_possible_functions)
             {
                 int distance = 0;
                 for (int i = 0; i < parameters.Count; i++)
                 {
                     type_node from = parameters[i].type;
-                    type_node to = fn.parameters[Math.Min(i,fn.parameters.Count-1)].type;
+                    type_node to = fn.parameters[Math.Min(i, fn.parameters.Count - 1)].type;
                     if (fn.parameters[Math.Min(i, fn.parameters.Count - 1)].is_params)
                         to = to.element_type;
                     // ToDo: необходимо сделать более детальную get_type_distance. 
                     // Сейчас для функциональных параметров она всегда возвращает 1000
                     distance += get_type_distance(from, to);
                 }
-                
+
                 /*if (fn.return_value_type != null)
                 {
                     if (fn.return_value_type.is_generic_type_instance || fn.return_value_type.is_generic_type_definition)
@@ -2053,7 +2049,7 @@ namespace PascalABCCompiler.TreeConverter
                         distance += 1;
                 }*/
                 List<function_node> lst;
-                if (distances.TryGetValue(distance,out lst))
+                if (distances.TryGetValue(distance, out lst))
                 {
                     lst.Add(fn);
                 }
@@ -2065,8 +2061,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             foreach (int dist in distances.Keys) // Дистанции упорядочены по возрастанию. Логика тут немного странная: 
-                // если для какой-то минимальной дистанции найдется ровно одна функция, то она и выбирается
-                // если две и больше - то они пробрасываются и мы переходим к бОльшей дистанции
+                                                 // если для какой-то минимальной дистанции найдется ровно одна функция, то она и выбирается
+                                                 // если две и больше - то они пробрасываются и мы переходим к бОльшей дистанции
             {
                 List<function_node> funcs = distances[dist];
                 if (funcs.Count == 1)
@@ -2085,7 +2081,7 @@ namespace PascalABCCompiler.TreeConverter
 
                     if (f1.parameters.Count == f2.parameters.Count)
                     {
-                        for (var i=0; i < f1.parameters.Count; i++)
+                        for (var i = 0; i < f1.parameters.Count; i++)
                         {
                             var p1 = f1.parameters[i].type;
                             var p2 = f2.parameters[i].type;
@@ -2169,11 +2165,11 @@ namespace PascalABCCompiler.TreeConverter
                             }
                         }*/
                     }
-                    
+
                 }
             }
-            return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc,set_of_possible_functions));
-		}
+            return AddError<function_node>(new SeveralFunctionsCanBeCalled(loc, set_of_possible_functions));
+        }
 
         private int get_type_distance(type_node from, type_node to)
         {
@@ -2206,33 +2202,33 @@ namespace PascalABCCompiler.TreeConverter
 			return (compiler_string_consts.function_return_value_prefix+function_name);
 		}
 
-		public void create_function_return_variable(common_function_node cfn, SymbolInfo ret_var)
-		{
+        public void create_function_return_variable(common_function_node cfn, SymbolInfoUnit ret_var)
+        {
             if (!SemanticRules.AddResultVariable)
                 return;
 //#if (DEBUG)
-			if (cfn.return_value_type==null)
-			{
+            if (cfn.return_value_type == null)
+            {
                 return;
-				//throw new CompilerInternalError("Procedure can not return value");
-			}
+                //throw new CompilerInternalError("Procedure can not return value");
+            }
 //#endif
             if (cfn.return_variable != null)
             {
                 if (ret_var != null)
-                ret_var.sym_info = cfn.return_variable;
+                    ret_var.sym_info = cfn.return_variable;
                 return;
             }
-			cfn.return_variable=new local_variable(get_return_variable_name(cfn.name),cfn.return_value_type,cfn,cfn.loc);
-            cfn.return_variable.inital_value = syntax_tree_visitor.context.GetInitalValueForVariable(cfn.return_variable,null);
-			cfn.var_definition_nodes_list.AddElement(cfn.return_variable);
+            cfn.return_variable = new local_variable(get_return_variable_name(cfn.name), cfn.return_value_type, cfn, cfn.loc);
+            cfn.return_variable.inital_value = syntax_tree_visitor.context.GetInitalValueForVariable(cfn.return_variable, null);
+            cfn.var_definition_nodes_list.AddElement(cfn.return_variable);
             if (ret_var != null)
             {
                 ret_var.sym_info = cfn.return_variable;
             }
-		}
+        }
 
-		public void check_node_parser_error(SyntaxTree.syntax_tree_node tn)
+        public void check_node_parser_error(SyntaxTree.syntax_tree_node tn)
 		{
             if (_parser_error == null || tn==null)
 			{

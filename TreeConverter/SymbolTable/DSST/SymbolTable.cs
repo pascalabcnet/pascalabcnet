@@ -440,35 +440,17 @@ namespace SymbolTable
 	public class AreaListNode
 	{
 		public int Area;
-		private List<SymbolInfo> _InfoList;//для перегузки
+		public List<SymbolInfoUnit> InfoList;//для перегузки
 		public AreaListNode()
 		{
-            _InfoList = new List<SymbolInfo>(SymbolTableConstants.InfoList_StartSize);
+            InfoList = new List<SymbolInfoUnit>(SymbolTableConstants.InfoList_StartSize);
 		}
 		public AreaListNode(int ar,SymbolInfoUnit inf)
 		{
-            var sym_inf = inf.ToSymbolInfo();
-
-            _InfoList = new List<SymbolInfo>(SymbolTableConstants.InfoList_StartSize);
+            InfoList = new List<SymbolInfoUnit>(SymbolTableConstants.InfoList_StartSize);
 			Area=ar;
-			_InfoList.Add(sym_inf);
+			InfoList.Add(inf);
 		}
-
-        //DeleteThis
-        public List<SymbolInfoUnit> InfoList
-        {
-            get
-            {
-                List<SymbolInfoUnit> from_list = new List<SymbolInfoUnit>(_InfoList.Count);
-                foreach (var from_sym in _InfoList)
-                    from_list.Add(new SymbolInfoUnit(from_sym));
-                return from_list;
-            }
-        }
-        public void Add(SymbolInfoUnit need)
-        {
-            _InfoList.Add(need.ToSymbolInfo());
-        }
 	}
 	#endregion
 	
@@ -708,7 +690,7 @@ namespace SymbolTable
             Scope ar = ScopeTable[ClassArea];
            
             if ((ai = AreaList.IndexOf(ClassArea)) >= 0)
-                si = new SymbolInfoList(AddToSymbolInfo(AreaList[ai].InfoList, ar, FirstInfo));
+                si = AddToSymbolInfo(AreaList[ai].InfoList, ar, FirstInfo);
 
             if (ar is DotNETScope)
             {
@@ -724,7 +706,7 @@ namespace SymbolTable
                 {
                     ai = AreaList.IndexOf(cl.BaseClassScopeNum);
                     if (ai >= 0)
-                        si = new SymbolInfoList(AddToSymbolInfo(AreaList[ai].InfoList, cl.BaseClassScope, FirstInfo));
+                        si = AddToSymbolInfo(AreaList[ai].InfoList, cl.BaseClassScope, FirstInfo);
                     //cl=(ClassScope)ScopeTable[cl.BaseClassScopeNum];
 
                     ar = ScopeTable[cl.BaseClassScopeNum];
@@ -820,7 +802,7 @@ namespace SymbolTable
             return false;
         }
 
-        private SymbolInfoUnit AddToSymbolInfo(List<SymbolInfoUnit> from, Scope scope, SymbolInfoList FirstInfo)
+        private SymbolInfoList AddToSymbolInfo(List<SymbolInfoUnit> from, Scope scope, SymbolInfoList FirstInfo)
         {
             bool CheckVisible = CurrentScope != null, NeedAdd = false;
             SymbolInfoUnit to = FirstInfo.Last();
@@ -838,7 +820,7 @@ namespace SymbolTable
                 }
             }
             LastScope=scope;
-            return to;
+            return to==null?null:new SymbolInfoList(to);
         }
         //Не используется ==> Не понятно работает или нет.
         private SymbolInfoList AddToSymbolInfo(SymbolInfoList to, SymbolInfoList si, Scope scope)
@@ -847,7 +829,8 @@ namespace SymbolTable
             {
                 if(IsNormal(to.First(), si.First()))
                 {
-                    to.Add(si.First()); si.InfoUnitList.RemoveRange(1, si.InfoUnitList.Count - 1);
+                    SymbolInfoUnit temp = si.First();
+                    to.Add(temp); si.InfoUnitList.RemoveRange(1, si.InfoUnitList.Count - 1);
                     LastScope = scope;
 
                     return si;
@@ -903,7 +886,7 @@ namespace SymbolTable
                     p = AreaNodes.IndexOf(sc.ScopeNum);
                     if (p >= 0)
                     {
-                        si = new SymbolInfoList(AddToSymbolInfo(AreaNodes[p].InfoList, sc, FirstInfo));
+                        si = AddToSymbolInfo(AreaNodes[p].InfoList, sc, FirstInfo);
                         if (FirstInfo.InfoUnitList.Count > add && StopIfFind)
                             return si;
                     }
@@ -1093,7 +1076,7 @@ namespace SymbolTable
 
                         if (ai >= 0) //что-то нашли!
                         {
-                            info = new SymbolInfoList(AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo));
+                            info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                         }
                         CurrentArea = GetTopScopeNum(CurrentArea);
                     }
@@ -1101,7 +1084,7 @@ namespace SymbolTable
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!
                     {
-                        info = new SymbolInfoList(AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo));
+                        info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                     }
                     //смотрим в модулях
                     info = FindAllInAreaList(info, Name, used_units, AreaList, FirstInfo);
@@ -1147,7 +1130,7 @@ namespace SymbolTable
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!
                     {
-                        info = new SymbolInfoList(AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo));
+                        info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                     }
                     if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                     {
@@ -1173,7 +1156,7 @@ namespace SymbolTable
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!
                     {
-                        info = new SymbolInfoList(AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo));
+                        info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                         FirstInfo.InfoUnitList.RemoveAt(0);
                         return FirstInfo.InfoUnitList.Count > 0 ? FirstInfo : null;
                     }

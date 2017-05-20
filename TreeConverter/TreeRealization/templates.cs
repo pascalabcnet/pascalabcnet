@@ -490,12 +490,12 @@ namespace PascalABCCompiler.TreeRealization
             return find_in_type(name);
         }
 
-        public override void add_name(string name, SymbolInfo si)
+        public override void add_name(string name, SymbolInfoUnit si)
         {
             //ничего не делаем
         }
 
-        public override void add_generated_name(string name, SymbolInfo si)
+        public override void add_generated_name(string name, SymbolInfoUnit si)
         {
             //ничего не делаем
         }

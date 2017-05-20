@@ -180,7 +180,7 @@ namespace PascalABCCompiler.PCU
             {
                 if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
                 {
-                    PCUSymbolInfo pcu_tsi = tsi.ToSymbolInfo() as PCUSymbolInfo;
+                    PCUSymbolInfo pcu_tsi = tsi as PCUSymbolInfo;
                     if (!(pcu_tsi != null && pcu_tsi.semantic_node_type == semantic_node_type.common_method_node && !pcu_tsi.virtual_slot) || pr.comp.CompilerOptions.OutputFileType == CompilerOptions.OutputType.ClassLibrary)
                     {
                         wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
@@ -249,6 +249,32 @@ namespace PascalABCCompiler.PCU
         }
     }
 
+    public class wrapped_expression : expression_node
+    {
+        private PCUReader pr;
+
+        public int offset;
+
+        public wrapped_expression(PCUReader pr, int offset)
+        {
+            this.pr = pr;
+            this.offset = offset;
+        }
+
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.wrapped_expression;
+            }
+        }
+
+        public expression_node restore()
+        {
+            return pr.GetExpression(offset);
+        }
+    }
+
     public class wrapped_function_body : wrapped_statement
     {
         private PCUReader pr;
@@ -284,29 +310,27 @@ namespace PascalABCCompiler.PCU
 
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            var temp = find_in_type(name, null, no_search_in_extension_methods);
-            if (temp != null)
-                return new SymbolInfoList(temp);
-            return null;
+            return find_in_type(name, null, no_search_in_extension_methods);
         }
-        public override SymbolInfo find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
+        public override SymbolInfoList find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfo si;
-            var temp = scope.FindOnlyInType(name, CurrentScope);
-            if (temp != null)
-                si = temp.ToSymbolInfo();
-            else
-                si = null;
-            if (si == null) return si;
-            SymbolInfo tsi = si;
-            while (tsi != null)
+            SymbolInfoList si = scope.FindOnlyInType(name, CurrentScope);
+            if (si == null)
             {
-                if (tsi.sym_info.semantic_node_type == semantic_node_type.wrap_def)
+                if (base_type != null && base_type.IsDelegate)
                 {
-                    wrapped_definition_node wdn = (wrapped_definition_node)tsi.sym_info;
-                    tsi.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
+                    return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
                 }
-                tsi = tsi.Next;
+                return si;
+            }
+                
+            foreach(SymbolInfoUnit si_unit in si.InfoUnitList)
+            {
+                if (si_unit.sym_info.semantic_node_type == semantic_node_type.wrap_def)
+                {
+                    wrapped_definition_node wdn = (wrapped_definition_node)si_unit.sym_info;
+                    si_unit.sym_info = wdn.PCUReader.CreateInterfaceInClassMember(wdn.offset, name);
+                }
             }
             return si;
         }

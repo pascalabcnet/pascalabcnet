@@ -517,7 +517,7 @@ namespace PascalABCCompiler.SystemLibrary
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(par_left);
             bfn.parameters.AddElement(par_right);
-            def_type.add_name(operator_name, new SymbolInfo(bfn));
+            def_type.add_name(operator_name, new SymbolInfoUnit(bfn));
             add_stand_type(bft, bfn);
             return bfn;
         }
@@ -529,7 +529,7 @@ namespace PascalABCCompiler.SystemLibrary
             basic_parameter par = new basic_parameter(compiler_string_consts.unary_param_name, to,
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(par);
-            to.add_name(operator_name, new SymbolInfo(bfn));
+            to.add_name(operator_name, new SymbolInfoUnit(bfn));
             add_stand_type(bft, bfn);
             return bfn;
         }
@@ -543,7 +543,7 @@ namespace PascalABCCompiler.SystemLibrary
             type_node ret_value_type)
         {
             basic_function_node bfn = create_emty_function(ret_value_type, operator_name);            
-            to.add_name(operator_name,new SymbolInfo(bfn));
+            to.add_name(operator_name,new SymbolInfoUnit(bfn));
             return bfn;
         }
 
@@ -597,11 +597,11 @@ namespace PascalABCCompiler.SystemLibrary
 
         public static void add_function_to_type(string oper_name, type_node to, function_node fn)
         {
-            to.add_name(oper_name, new SymbolInfo(fn));
+            to.add_name(oper_name, new SymbolInfoUnit(fn));
         }
         public static void add_generated_funtion_to_type(string oper_name, type_node to, function_node fn)
         {
-            to.add_generated_name(oper_name, new SymbolInfo(fn));
+            to.add_generated_name(oper_name, new SymbolInfoUnit(fn));
         }
 
         private static basic_function_node create_oti_method(SemanticTree.basic_function_type bft, type_node type)
@@ -719,7 +719,7 @@ namespace PascalABCCompiler.SystemLibrary
             string method_name,string new_name,compiled_type_node left_type,compiled_type_node right_type)
         {
             compiled_function_node fn=NetHelper.NetHelper.get_compiled_method(declaring_type, method_name, left_type, right_type);
-            declaring_type.add_name(new_name,new SymbolInfo(fn));
+            declaring_type.add_name(new_name,new SymbolInfoUnit(fn));
             return fn;
         }
 
@@ -733,7 +733,7 @@ namespace PascalABCCompiler.SystemLibrary
             string method_name, string new_name, compiled_type_node operand_type)
         {
             compiled_function_node fn = NetHelper.NetHelper.get_compiled_method(declaring_type, method_name, operand_type, operand_type);
-            add_to_type.add_name(new_name, new SymbolInfo(fn));
+            add_to_type.add_name(new_name, new SymbolInfoUnit(fn));
             fn.IsOperator = true;
             return fn;
         }
@@ -966,7 +966,6 @@ namespace PascalABCCompiler.SystemLibrary
             si = type.find(compiler_string_consts.sm_name);
             basic_function_node lo = (basic_function_node)si.First().sym_info;
             
-
             si = type.find(compiler_string_consts.gr_name);
             basic_function_node gr = (basic_function_node)si.First().sym_info;
 
@@ -2170,7 +2169,7 @@ namespace PascalABCCompiler.SystemLibrary
                 SemanticTree.parameter_type.value, bfn);
             bfn.parameters.AddElement(to);
             bfn.parameters.AddElement(from);
-            ctn.add_name(name, new SymbolInfo(bfn)); 
+            ctn.add_name(name, new SymbolInfoUnit(bfn)); 
             add_stand_type(bas_ft, bfn);
             return bfn;
         }

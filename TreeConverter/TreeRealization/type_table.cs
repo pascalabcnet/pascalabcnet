@@ -9,15 +9,15 @@ namespace PascalABCCompiler.TreeRealization
     /// Метод преобразования одного типа к другому.
     /// </summary>
     [Serializable]
-	public class type_conversion
-	{
-		private function_node _conversion_method;
+    public class type_conversion
+    {
+        private function_node _conversion_method;
         private bool _is_explicit = false;
-		
-		public type_conversion(function_node conversion)
-		{
-			_conversion_method=conversion;
-		}
+
+        public type_conversion(function_node conversion)
+        {
+            _conversion_method = conversion;
+        }
 
         public type_conversion(function_node conversion, bool is_explicit)
         {
@@ -33,166 +33,166 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-		public type_node from
-		{
-			get
-			{
-				return _conversion_method.parameters[0].type;
-			}
-		}
+        public type_node from
+        {
+            get
+            {
+                return _conversion_method.parameters[0].type;
+            }
+        }
 
-		public type_node to
-		{
-			get
-			{
-				return _conversion_method.return_value_type;
-			}
-		}
+        public type_node to
+        {
+            get
+            {
+                return _conversion_method.return_value_type;
+            }
+        }
 
-		public function_node convertion_method
-		{
-			get
-			{
-				return _conversion_method;
-			}
-		}
-	}
+        public function_node convertion_method
+        {
+            get
+            {
+                return _conversion_method;
+            }
+        }
+    }
 
-	public enum type_compare {less_type,greater_type,non_comparable_type};
+    public enum type_compare { less_type, greater_type, non_comparable_type };
 
     /// <summary>
     /// Узел пересечения типов. Хранит информацию, общую для пары типов. Например, операции приведения от одного типа к другому.
     /// </summary>
     [Serializable]
-	public class type_intersection_node
-	{
-		private type_compare _type_compare=type_compare.non_comparable_type;
+    public class type_intersection_node
+    {
+        private type_compare _type_compare = type_compare.non_comparable_type;
 
-		private type_conversion _this_to_another;
-		private type_conversion _another_to_this;
+        private type_conversion _this_to_another;
+        private type_conversion _another_to_this;
 
-		public type_intersection_node()
-		{
-		}
+        public type_intersection_node()
+        {
+        }
 
-		public type_intersection_node(type_compare type_compare)
-		{
-			_type_compare=type_compare;
-		}
+        public type_intersection_node(type_compare type_compare)
+        {
+            _type_compare = type_compare;
+        }
 
-		public type_conversion this_to_another
-		{
-			get
-			{
-				return _this_to_another;
-			}
-			set
-			{
-				_this_to_another=value;
-			}
-		}
+        public type_conversion this_to_another
+        {
+            get
+            {
+                return _this_to_another;
+            }
+            set
+            {
+                _this_to_another = value;
+            }
+        }
 
-		public type_conversion another_to_this
-		{
-			get
-			{
-				return _another_to_this;
-			}
-			set
-			{
-				_another_to_this=value;
-			}
-		}
+        public type_conversion another_to_this
+        {
+            get
+            {
+                return _another_to_this;
+            }
+            set
+            {
+                _another_to_this = value;
+            }
+        }
 
-		public type_compare type_compare
-		{
-			get
-			{
-				return _type_compare;
-			}
+        public type_compare type_compare
+        {
+            get
+            {
+                return _type_compare;
+            }
             set
             {
                 _type_compare = value;
             }
-		}
-	}
+        }
+    }
 
-	public class possible_type_convertions
-	{
-		public type_conversion first=null;
-		public type_conversion second=null;
-		public type_node from;
-		public type_node to;
-	}
+    public class possible_type_convertions
+    {
+        public type_conversion first = null;
+        public type_conversion second = null;
+        public type_node from;
+        public type_node to;
+    }
 
     /// <summary>
     /// Таблица типов.
     /// </summary>
 	public static class type_table
-	{
-		private static type_intersection_node[] get_type_intersections_in_specific_order(type_node left,type_node right)
-		{
-			type_intersection_node tin1=left.get_type_intersection(right);
-			type_intersection_node tin2=right.get_type_intersection(left);
+    {
+        private static type_intersection_node[] get_type_intersections_in_specific_order(type_node left, type_node right)
+        {
+            type_intersection_node tin1 = left.get_type_intersection(right);
+            type_intersection_node tin2 = right.get_type_intersection(left);
 
-			if (tin1==null)
-			{
-				if (tin2==null)
-				{
-					return new type_intersection_node[0];
-				}
-				else
-				{
-					if (tin2.another_to_this != null && tin2.another_to_this.is_explicit)
-						return new type_intersection_node[0];
-					type_intersection_node[] tinarr=new type_intersection_node[1];
-					type_intersection_node new_tin = null;
-					if (tin2.type_compare == type_compare.greater_type)
-						new_tin = new type_intersection_node(type_compare.less_type);
-					else if (tin2.type_compare == type_compare.less_type)
-						new_tin = new type_intersection_node(type_compare.greater_type);
-					else
-						new_tin = new type_intersection_node(type_compare.non_comparable_type);
-					new_tin.another_to_this = tin2.another_to_this;
-					new_tin.this_to_another = tin2.this_to_another;
-					tinarr[0]=new_tin;
-					return tinarr;
-				}
-			}
-			else
-			{
-				if (tin2==null)
-				{
-					if (tin1.this_to_another != null && tin1.this_to_another.is_explicit)
-						return new type_intersection_node[0];
-					type_intersection_node[] tinarr2=new type_intersection_node[1];
-					tinarr2[0]=tin1;
-					return tinarr2;
-				}
-				else
-				{
-					type_intersection_node[] tinarr3=new type_intersection_node[2];
-					tinarr3[0]=tin1;
-					tinarr3[1]=tin2;
-					return tinarr3;
-				}
-			}
-		}
-		
-		private static type_intersection_node[] get_type_intersections(type_node left,type_node right)
-		{
-			type_intersection_node tin1=left.get_type_intersection(right);
-			type_intersection_node tin2=right.get_type_intersection(left);
+            if (tin1 == null)
+            {
+                if (tin2 == null)
+                {
+                    return new type_intersection_node[0];
+                }
+                else
+                {
+                    if (tin2.another_to_this != null && tin2.another_to_this.is_explicit)
+                        return new type_intersection_node[0];
+                    type_intersection_node[] tinarr = new type_intersection_node[1];
+                    type_intersection_node new_tin = null;
+                    if (tin2.type_compare == type_compare.greater_type)
+                        new_tin = new type_intersection_node(type_compare.less_type);
+                    else if (tin2.type_compare == type_compare.less_type)
+                        new_tin = new type_intersection_node(type_compare.greater_type);
+                    else
+                        new_tin = new type_intersection_node(type_compare.non_comparable_type);
+                    new_tin.another_to_this = tin2.another_to_this;
+                    new_tin.this_to_another = tin2.this_to_another;
+                    tinarr[0] = new_tin;
+                    return tinarr;
+                }
+            }
+            else
+            {
+                if (tin2 == null)
+                {
+                    if (tin1.this_to_another != null && tin1.this_to_another.is_explicit)
+                        return new type_intersection_node[0];
+                    type_intersection_node[] tinarr2 = new type_intersection_node[1];
+                    tinarr2[0] = tin1;
+                    return tinarr2;
+                }
+                else
+                {
+                    type_intersection_node[] tinarr3 = new type_intersection_node[2];
+                    tinarr3[0] = tin1;
+                    tinarr3[1] = tin2;
+                    return tinarr3;
+                }
+            }
+        }
 
-			if (tin1==null)
-			{
-				if (tin2==null)
-				{
-					return new type_intersection_node[0];
-				}
-				else
-				{
-					type_intersection_node[] tinarr=new type_intersection_node[1];
+        private static type_intersection_node[] get_type_intersections(type_node left, type_node right)
+        {
+            type_intersection_node tin1 = left.get_type_intersection(right);
+            type_intersection_node tin2 = right.get_type_intersection(left);
+
+            if (tin1 == null)
+            {
+                if (tin2 == null)
+                {
+                    return new type_intersection_node[0];
+                }
+                else
+                {
+                    type_intersection_node[] tinarr = new type_intersection_node[1];
                     type_intersection_node new_tin = new type_intersection_node();
 
                     new_tin.another_to_this = tin2.another_to_this;
@@ -201,27 +201,27 @@ namespace PascalABCCompiler.TreeRealization
                         new_tin.type_compare = type_compare.less_type;
                     else
                         new_tin.type_compare = type_compare.greater_type;
-					tinarr[0]= new_tin;
-					return tinarr;
-				}
-			}
-			else
-			{
-				if (tin2==null)
-				{
-					type_intersection_node[] tinarr2=new type_intersection_node[1];
-					tinarr2[0]=tin1;
-					return tinarr2;
-				}
-				else
-				{
-					type_intersection_node[] tinarr3=new type_intersection_node[2];
-					tinarr3[0]=tin1;
-					tinarr3[1]=tin2;
-					return tinarr3;
-				}
-			}
-		}
+                    tinarr[0] = new_tin;
+                    return tinarr;
+                }
+            }
+            else
+            {
+                if (tin2 == null)
+                {
+                    type_intersection_node[] tinarr2 = new type_intersection_node[1];
+                    tinarr2[0] = tin1;
+                    return tinarr2;
+                }
+                else
+                {
+                    type_intersection_node[] tinarr3 = new type_intersection_node[2];
+                    tinarr3[0] = tin1;
+                    tinarr3[1] = tin2;
+                    return tinarr3;
+                }
+            }
+        }
 
         public static void add_type_conversion_from_defined(type_node from, type_node to,
             function_node convertion_method, type_compare comp, bool is_implicit)
@@ -234,30 +234,30 @@ namespace PascalABCCompiler.TreeRealization
             add_type_conversion_from_defined(from, to, convertion_method, comp, is_implicit, true);
         }
         public static void add_type_conversion_from_defined(type_node from, type_node to,
-			function_node convertion_method,type_compare comp,bool is_implicit,bool is_generated)
-		{
-			type_intersection_node tin=from.get_type_intersection(to);
-			if (tin==null)
-			{
-				tin=new type_intersection_node(comp);
-				from.add_intersection_node(to,tin,is_generated);
-			}
+            function_node convertion_method, type_compare comp, bool is_implicit, bool is_generated)
+        {
+            type_intersection_node tin = from.get_type_intersection(to);
+            if (tin == null)
+            {
+                tin = new type_intersection_node(comp);
+                from.add_intersection_node(to, tin, is_generated);
+            }
 #if (DEBUG)
-			else
-			{
-				if (tin.this_to_another!=null)
-				{
-					throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Duplicate type conversion added");
-				}
-			}
+            else
+            {
+                if (tin.this_to_another != null)
+                {
+                    throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Duplicate type conversion added");
+                }
+            }
 #endif
-			tin.this_to_another=new type_conversion(convertion_method,!is_implicit);		
-		}
-		
-		public static bool is_with_nil_allowed(type_node tn)
+            tin.this_to_another = new type_conversion(convertion_method, !is_implicit);
+        }
+
+        public static bool is_with_nil_allowed(type_node tn)
         {
             //(ssyy) переписал нормально, через switch
-            
+
             switch (tn.type_special_kind)
             {
                 case SemanticTree.type_special_kind.array_wrapper:
@@ -280,11 +280,11 @@ namespace PascalABCCompiler.TreeRealization
                     }
                     else if (tn is ref_type_node)
                     {
-                    	return true;
+                        return true;
                     }
                     else
                     {
-                    	return !tn.is_value || tn is null_type_node;
+                        return !tn.is_value || tn is null_type_node;
                     }
             }
         }
@@ -338,196 +338,196 @@ namespace PascalABCCompiler.TreeRealization
                 }
             }
         }
-		
-		public static bool is_derived(type_node base_class,type_node derived_class)
-		{
+
+        public static bool is_derived(type_node base_class, type_node derived_class)
+        {
             if (derived_class == null)  //void?
                 return false;
             if (base_class == null)
                 return false;
-			type_node tn=derived_class.base_type;
+            type_node tn = derived_class.base_type;
             //TODO: Проверить на ссылочный и размерный тип.
-			if (derived_class.semantic_node_type == semantic_node_type.null_type_node) 
-			if (is_with_nil_allowed(base_class) || base_class.IsPointer)
-				return true;
-			else
-				return false;
-			if (base_class.type_special_kind == SemanticTree.type_special_kind.short_string && derived_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
-			else if (derived_class == SystemLibrary.SystemLibrary.string_type && base_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
-			else if (base_class == SystemLibrary.SystemLibrary.string_type && derived_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
-			if (SystemLibrary.SystemLibInitializer.TypedSetType != null && SystemLibrary.SystemLibInitializer.TypedSetType.Found &&
+            if (derived_class.semantic_node_type == semantic_node_type.null_type_node)
+                if (is_with_nil_allowed(base_class) || base_class.IsPointer)
+                    return true;
+                else
+                    return false;
+            if (base_class.type_special_kind == SemanticTree.type_special_kind.short_string && derived_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
+            else if (derived_class == SystemLibrary.SystemLibrary.string_type && base_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
+            else if (base_class == SystemLibrary.SystemLibrary.string_type && derived_class.type_special_kind == SemanticTree.type_special_kind.short_string) return true;
+            if (SystemLibrary.SystemLibInitializer.TypedSetType != null && SystemLibrary.SystemLibInitializer.TypedSetType.Found &&
                 base_class.type_special_kind == SemanticTree.type_special_kind.set_type && derived_class == SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node
                 )
                 return true;
-			if (base_class.type_special_kind == SemanticTree.type_special_kind.set_type && derived_class.type_special_kind == SemanticTree.type_special_kind.set_type)
-			{
-				if (base_class.element_type == derived_class.element_type) return true;
-				type_compare tc = get_table_type_compare(base_class.element_type,derived_class.element_type);
-				if (tc == type_compare.non_comparable_type)
-				{
-					if (base_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-					{
-						if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-						{
-							if (base_class.element_type.base_type == derived_class.element_type.base_type) return true;
-							tc = get_table_type_compare(base_class.element_type.base_type,derived_class.element_type.base_type);
-							if (tc == type_compare.non_comparable_type) return false;
-							type_intersection_node tin = base_class.element_type.base_type.get_type_intersection(derived_class.element_type.base_type);
-							if (tin == null || tin.this_to_another == null)
-							{
-								if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
-								{
-									if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-										return false;
-									else return false;
-								}
-								else return true;
-							}
-							if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
-							     && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-							return !tin.this_to_another.is_explicit;
-						}
-						else
-						{
-							if (base_class.element_type.base_type == derived_class.element_type) return true; 
-							tc = get_table_type_compare(base_class.element_type.base_type,derived_class.element_type);
-							if (tc == type_compare.non_comparable_type) return false;
-							type_intersection_node tin = base_class.element_type.base_type.get_type_intersection(derived_class.element_type);
-							if (tin == null || tin.this_to_another == null)
-							{
-								if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
-								{
-									if ((derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
-										return false;
-									else return false;
-								}
-								else return true;
-							}
-							if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
-							     && (derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-							return !tin.this_to_another.is_explicit;
-						}
-					}
-					else
-					 if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-					 {
-						if (base_class.element_type == derived_class.element_type.base_type) return true;
-						tc = get_table_type_compare(base_class.element_type,derived_class.element_type.base_type);
-						if (tc == type_compare.non_comparable_type) return false;
-						type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type.base_type);
-						if (tin == null || tin.this_to_another == null)
-						{
-							if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type)
-							{
-								if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-									return false;
-								else return false;
-							}
-							else return true;
-						}
-						if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type
-							     && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-						return !tin.this_to_another.is_explicit;
-					 }
-					else if (base_class.element_type.type_special_kind == SemanticTree.type_special_kind.short_string && derived_class.element_type == SystemLibrary.SystemLibrary.string_type
-					        || derived_class.element_type.type_special_kind == SemanticTree.type_special_kind.short_string && base_class.element_type == SystemLibrary.SystemLibrary.string_type)
-						return true;
-					 else return false;
-					
-				}
-				else
-				{
-					type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type);
-					if (tin == null || tin.this_to_another == null) 
-					{
-						//proverka na diapasony
-						if (base_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-						{
-						if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-						{
-							if (base_class.element_type.base_type == derived_class.element_type.base_type) return true;
-							tc = get_table_type_compare(base_class.element_type.base_type,derived_class.element_type.base_type);
-							if (tc == type_compare.non_comparable_type) return false;
-							type_intersection_node tin2 = base_class.element_type.base_type.get_type_intersection(derived_class.element_type.base_type);
-							if (tin == null || tin.this_to_another == null)
-							{
-								if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
-								{
-									if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-										return false;
-									else return false;
-								}
-								else return true;
-							}
-							if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
-							     && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-							return !tin.this_to_another.is_explicit;
-						}
-						else
-						{
-							if (base_class.element_type.base_type == derived_class.element_type) return true; 
-							tc = get_table_type_compare(base_class.element_type.base_type,derived_class.element_type);
-							if (tc == type_compare.non_comparable_type) return false;
-							type_intersection_node tin2 = base_class.element_type.base_type.get_type_intersection(derived_class.element_type);
-							if (tin == null || tin.this_to_another == null)
-							{
-								if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
-								{
-									if ((derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
-										return false;
-									else return false;
-								}
-								else return true;
-							}
-							if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
-							     && (derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-							return !tin.this_to_another.is_explicit;
-						}
-					}
-					else
-					 if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
-					 {
-						if (base_class.element_type == derived_class.element_type.base_type) return true;
-						tc = get_table_type_compare(base_class.element_type,derived_class.element_type.base_type);
-						if (tc == type_compare.non_comparable_type) return false;
-						type_intersection_node tin2 = base_class.element_type.get_type_intersection(derived_class.element_type.base_type);
-						if (tin == null || tin.this_to_another == null)
-						{
-							if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type)
-							{
-								if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-									return false;
-								else return false;
-							}
-							else return true;
-						}
-						if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type
-							     && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-						return !tin.this_to_another.is_explicit;
-					 }
-						if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type)
-						{
-							if ((derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
-								return false;
-							else return false;
-						}
-						else return true;
-					}
-					return !tin.this_to_another.is_explicit;
-				}
-			}
+            if (base_class.type_special_kind == SemanticTree.type_special_kind.set_type && derived_class.type_special_kind == SemanticTree.type_special_kind.set_type)
+            {
+                if (base_class.element_type == derived_class.element_type) return true;
+                type_compare tc = get_table_type_compare(base_class.element_type, derived_class.element_type);
+                if (tc == type_compare.non_comparable_type)
+                {
+                    if (base_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                    {
+                        if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                        {
+                            if (base_class.element_type.base_type == derived_class.element_type.base_type) return true;
+                            tc = get_table_type_compare(base_class.element_type.base_type, derived_class.element_type.base_type);
+                            if (tc == type_compare.non_comparable_type) return false;
+                            type_intersection_node tin = base_class.element_type.base_type.get_type_intersection(derived_class.element_type.base_type);
+                            if (tin == null || tin.this_to_another == null)
+                            {
+                                if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
+                                {
+                                    if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                        return false;
+                                    else return false;
+                                }
+                                else return true;
+                            }
+                            if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
+                                 && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                return false;
+                            return !tin.this_to_another.is_explicit;
+                        }
+                        else
+                        {
+                            if (base_class.element_type.base_type == derived_class.element_type) return true;
+                            tc = get_table_type_compare(base_class.element_type.base_type, derived_class.element_type);
+                            if (tc == type_compare.non_comparable_type) return false;
+                            type_intersection_node tin = base_class.element_type.base_type.get_type_intersection(derived_class.element_type);
+                            if (tin == null || tin.this_to_another == null)
+                            {
+                                if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
+                                {
+                                    if ((derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
+                                        return false;
+                                    else return false;
+                                }
+                                else return true;
+                            }
+                            if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
+                                 && (derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
+                                return false;
+                            return !tin.this_to_another.is_explicit;
+                        }
+                    }
+                    else
+                     if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                    {
+                        if (base_class.element_type == derived_class.element_type.base_type) return true;
+                        tc = get_table_type_compare(base_class.element_type, derived_class.element_type.base_type);
+                        if (tc == type_compare.non_comparable_type) return false;
+                        type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type.base_type);
+                        if (tin == null || tin.this_to_another == null)
+                        {
+                            if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type)
+                            {
+                                if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                    return false;
+                                else return false;
+                            }
+                            else return true;
+                        }
+                        if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type
+                                 && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                            return false;
+                        return !tin.this_to_another.is_explicit;
+                    }
+                    else if (base_class.element_type.type_special_kind == SemanticTree.type_special_kind.short_string && derived_class.element_type == SystemLibrary.SystemLibrary.string_type
+                            || derived_class.element_type.type_special_kind == SemanticTree.type_special_kind.short_string && base_class.element_type == SystemLibrary.SystemLibrary.string_type)
+                        return true;
+                    else return false;
+
+                }
+                else
+                {
+                    type_intersection_node tin = base_class.element_type.get_type_intersection(derived_class.element_type);
+                    if (tin == null || tin.this_to_another == null)
+                    {
+                        //proverka na diapasony
+                        if (base_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                        {
+                            if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                            {
+                                if (base_class.element_type.base_type == derived_class.element_type.base_type) return true;
+                                tc = get_table_type_compare(base_class.element_type.base_type, derived_class.element_type.base_type);
+                                if (tc == type_compare.non_comparable_type) return false;
+                                type_intersection_node tin2 = base_class.element_type.base_type.get_type_intersection(derived_class.element_type.base_type);
+                                if (tin == null || tin.this_to_another == null)
+                                {
+                                    if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
+                                    {
+                                        if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                            return false;
+                                        else return false;
+                                    }
+                                    else return true;
+                                }
+                                if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
+                                     && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                    return false;
+                                return !tin.this_to_another.is_explicit;
+                            }
+                            else
+                            {
+                                if (base_class.element_type.base_type == derived_class.element_type) return true;
+                                tc = get_table_type_compare(base_class.element_type.base_type, derived_class.element_type);
+                                if (tc == type_compare.non_comparable_type) return false;
+                                type_intersection_node tin2 = base_class.element_type.base_type.get_type_intersection(derived_class.element_type);
+                                if (tin == null || tin.this_to_another == null)
+                                {
+                                    if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type)
+                                    {
+                                        if ((derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
+                                            return false;
+                                        else return false;
+                                    }
+                                    else return true;
+                                }
+                                if (base_class.element_type.base_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type.base_type != SystemLibrary.SystemLibrary.float_type
+                                     && (derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
+                                    return false;
+                                return !tin.this_to_another.is_explicit;
+                            }
+                        }
+                        else
+                     if (derived_class.element_type.type_special_kind == PascalABCCompiler.SemanticTree.type_special_kind.diap_type)
+                        {
+                            if (base_class.element_type == derived_class.element_type.base_type) return true;
+                            tc = get_table_type_compare(base_class.element_type, derived_class.element_type.base_type);
+                            if (tc == type_compare.non_comparable_type) return false;
+                            type_intersection_node tin2 = base_class.element_type.get_type_intersection(derived_class.element_type.base_type);
+                            if (tin == null || tin.this_to_another == null)
+                            {
+                                if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type)
+                                {
+                                    if ((derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                        return false;
+                                    else return false;
+                                }
+                                else return true;
+                            }
+                            if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type
+                                     && (derived_class.element_type.base_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type.base_type == SystemLibrary.SystemLibrary.float_type))
+                                return false;
+                            return !tin.this_to_another.is_explicit;
+                        }
+                        if (base_class.element_type != SystemLibrary.SystemLibrary.double_type && base_class.element_type != SystemLibrary.SystemLibrary.float_type)
+                        {
+                            if ((derived_class.element_type == SystemLibrary.SystemLibrary.double_type || derived_class.element_type == SystemLibrary.SystemLibrary.float_type))
+                                return false;
+                            else return false;
+                        }
+                        else return true;
+                    }
+                    return !tin.this_to_another.is_explicit;
+                }
+            }
             //ssyy Рассматриваем случай интерфейса
             if (base_class.IsInterface)
             {
                 bool implements = false;
                 type_node tnode = derived_class;
-                while (!implements && tnode != null && tnode.ImplementingInterfaces!=null)
+                while (!implements && tnode != null && tnode.ImplementingInterfaces != null)
                 {
                     implements = tnode.ImplementingInterfaces.Contains(base_class);
                     tnode = tnode.base_type;
@@ -535,134 +535,134 @@ namespace PascalABCCompiler.TreeRealization
                 return implements;
             }
             //\ssyy
-            
-            if (base_class.type_special_kind == SemanticTree.type_special_kind.diap_type && derived_class.type_special_kind == SemanticTree.type_special_kind.diap_type)
-			{
-				if (base_class.base_type == derived_class.base_type) return true;
-				type_compare tc = get_table_type_compare(base_class.base_type,derived_class.base_type);
-				if (tc == type_compare.non_comparable_type) return false;
-				type_intersection_node tin = base_class.base_type.get_type_intersection(derived_class.base_type);
-				if (tin == null || tin.this_to_another == null)
-				{
-					return false;
-				}
-				return !tin.this_to_another.is_explicit;
-            }
-				
-			while((tn!=null)&&(tn!=base_class))
-			{
-				tn=tn.base_type;
-			}
-			if (tn==null)
-			{
-				return false;
-			}
-			return true;
-		}
-		
-		private static type_compare get_table_type_compare_in_specific_order(type_node left, type_node right)
-		{
-			type_intersection_node[] tins=get_type_intersections_in_specific_order(left,right);
-			if (tins.Length==0)
-			{
-				return type_compare.non_comparable_type;
-			}
-			if (tins.Length==1)
-			{
-				return tins[0].type_compare;
-			}
-			if (tins.Length==2)
-			{
-				type_compare tc1=tins[0].type_compare;
-				type_compare tc2=tins[1].type_compare;
-				if ((tc1==type_compare.non_comparable_type)&&(tc2==type_compare.non_comparable_type))
-				{
-					return type_compare.non_comparable_type;
-				}
-				if ((tc1==type_compare.greater_type)&&(tc2==type_compare.less_type))
-				{
-					return type_compare.greater_type;
-				}
-				if ((tc1==type_compare.less_type)&&(tc2==type_compare.greater_type))
-				{
-					return type_compare.less_type;
-				}
-                throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Conflicting type comparsion");
-			}
-			return type_compare.non_comparable_type;
-		}
-		
-		private static type_compare get_table_type_compare(type_node left,type_node right)
-		{
-			type_intersection_node[] tins=get_type_intersections(left,right);
-			if (tins.Length==0)
-			{
-				return type_compare.non_comparable_type;
-			}
-			if (tins.Length==1)
-			{
-				return tins[0].type_compare;
-			}
-			if (tins.Length==2)
-			{
-				type_compare tc1=tins[0].type_compare;
-				type_compare tc2=tins[1].type_compare;
-				if ((tc1==type_compare.non_comparable_type)&&(tc2==type_compare.non_comparable_type))
-				{
-					return type_compare.non_comparable_type;
-				}
-				if ((tc1==type_compare.greater_type)&&(tc2==type_compare.less_type))
-				{
-					return type_compare.greater_type;
-				}
-				if ((tc1==type_compare.less_type)&&(tc2==type_compare.greater_type))
-				{
-					return type_compare.less_type;
-				}
-                throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Conflicting type comparsion");
-			}
-			return type_compare.non_comparable_type;
-		}
-		
-		public static type_compare compare_types_in_specific_order(type_node left, type_node right)
-		{
-			type_compare ret=get_table_type_compare_in_specific_order(left,right);
-			if (ret!=type_compare.non_comparable_type)
-			{
-				return ret;
-			}
-			if (is_derived(left,right))
-			{
-				return type_compare.greater_type;
-			}
-			if (is_derived(right,left))
-			{
-				return type_compare.less_type;
-			}
-			return type_compare.non_comparable_type;
-		}
-		
-		public static type_compare compare_types(type_node left,type_node right)
-		{
-			type_compare ret=get_table_type_compare(left,right);
-			if (ret!=type_compare.non_comparable_type)
-			{
-				return ret;
-			}
-			if (is_derived(left,right))
-			{
-				return type_compare.greater_type;
-			}
-			if (is_derived(right,left))
-			{
-				return type_compare.less_type;
-			}
-			return type_compare.non_comparable_type;
-		}
 
-        private static void add_conversion(possible_type_convertions ptc, function_node fn,type_node from,type_node to)
+            if (base_class.type_special_kind == SemanticTree.type_special_kind.diap_type && derived_class.type_special_kind == SemanticTree.type_special_kind.diap_type)
+            {
+                if (base_class.base_type == derived_class.base_type) return true;
+                type_compare tc = get_table_type_compare(base_class.base_type, derived_class.base_type);
+                if (tc == type_compare.non_comparable_type) return false;
+                type_intersection_node tin = base_class.base_type.get_type_intersection(derived_class.base_type);
+                if (tin == null || tin.this_to_another == null)
+                {
+                    return false;
+                }
+                return !tin.this_to_another.is_explicit;
+            }
+
+            while ((tn != null) && (tn != base_class))
+            {
+                tn = tn.base_type;
+            }
+            if (tn == null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private static type_compare get_table_type_compare_in_specific_order(type_node left, type_node right)
         {
-            if (fn==null)
+            type_intersection_node[] tins = get_type_intersections_in_specific_order(left, right);
+            if (tins.Length == 0)
+            {
+                return type_compare.non_comparable_type;
+            }
+            if (tins.Length == 1)
+            {
+                return tins[0].type_compare;
+            }
+            if (tins.Length == 2)
+            {
+                type_compare tc1 = tins[0].type_compare;
+                type_compare tc2 = tins[1].type_compare;
+                if ((tc1 == type_compare.non_comparable_type) && (tc2 == type_compare.non_comparable_type))
+                {
+                    return type_compare.non_comparable_type;
+                }
+                if ((tc1 == type_compare.greater_type) && (tc2 == type_compare.less_type))
+                {
+                    return type_compare.greater_type;
+                }
+                if ((tc1 == type_compare.less_type) && (tc2 == type_compare.greater_type))
+                {
+                    return type_compare.less_type;
+                }
+                throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Conflicting type comparsion");
+            }
+            return type_compare.non_comparable_type;
+        }
+
+        private static type_compare get_table_type_compare(type_node left, type_node right)
+        {
+            type_intersection_node[] tins = get_type_intersections(left, right);
+            if (tins.Length == 0)
+            {
+                return type_compare.non_comparable_type;
+            }
+            if (tins.Length == 1)
+            {
+                return tins[0].type_compare;
+            }
+            if (tins.Length == 2)
+            {
+                type_compare tc1 = tins[0].type_compare;
+                type_compare tc2 = tins[1].type_compare;
+                if ((tc1 == type_compare.non_comparable_type) && (tc2 == type_compare.non_comparable_type))
+                {
+                    return type_compare.non_comparable_type;
+                }
+                if ((tc1 == type_compare.greater_type) && (tc2 == type_compare.less_type))
+                {
+                    return type_compare.greater_type;
+                }
+                if ((tc1 == type_compare.less_type) && (tc2 == type_compare.greater_type))
+                {
+                    return type_compare.less_type;
+                }
+                throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Conflicting type comparsion");
+            }
+            return type_compare.non_comparable_type;
+        }
+
+        public static type_compare compare_types_in_specific_order(type_node left, type_node right)
+        {
+            type_compare ret = get_table_type_compare_in_specific_order(left, right);
+            if (ret != type_compare.non_comparable_type)
+            {
+                return ret;
+            }
+            if (is_derived(left, right))
+            {
+                return type_compare.greater_type;
+            }
+            if (is_derived(right, left))
+            {
+                return type_compare.less_type;
+            }
+            return type_compare.non_comparable_type;
+        }
+
+        public static type_compare compare_types(type_node left, type_node right)
+        {
+            type_compare ret = get_table_type_compare(left, right);
+            if (ret != type_compare.non_comparable_type)
+            {
+                return ret;
+            }
+            if (is_derived(left, right))
+            {
+                return type_compare.greater_type;
+            }
+            if (is_derived(right, left))
+            {
+                return type_compare.less_type;
+            }
+            return type_compare.non_comparable_type;
+        }
+
+        private static void add_conversion(possible_type_convertions ptc, function_node fn, type_node from, type_node to)
+        {
+            if (fn == null)
             {
                 return;
             }
@@ -680,7 +680,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public static expression_node convert_delegate_to_return_value_type(location call_location, params expression_node[] parameters)
         {
-            expression_node par=parameters[0];
+            expression_node par = parameters[0];
             internal_interface ii = par.type.get_internal_interface(internal_interface_kind.delegate_interface);
             delegate_internal_interface dii = (delegate_internal_interface)ii;
             common_method_node cmn = dii.invoke_method as common_method_node;
@@ -712,8 +712,8 @@ namespace PascalABCCompiler.TreeRealization
 
             public expression_node convert_delegate_to_return_value_type_with_convertion(location call_location, params expression_node[] parameters)
             {
-                expression_node del=parameters[0];
-                expression_node par=convert_delegate_to_return_value_type(call_location,del);
+                expression_node del = parameters[0];
+                expression_node par = convert_delegate_to_return_value_type(call_location, del);
                 return type_table_function_call_maker(convert_function, call_location, par);
             }
         }
@@ -738,7 +738,7 @@ namespace PascalABCCompiler.TreeRealization
                 {
                     throw new PascalABCCompiler.TreeConverter.CompilerInternalError("Invalid delegates convertion");
                 }
-                delegate_internal_interface dii_to=
+                delegate_internal_interface dii_to =
                     (delegate_internal_interface)_to.get_internal_interface(internal_interface_kind.delegate_interface);
                 delegate_internal_interface dii =
                     (delegate_internal_interface)parameters[0].type.get_internal_interface(internal_interface_kind.delegate_interface);
@@ -805,7 +805,7 @@ namespace PascalABCCompiler.TreeRealization
                     return false;
                 if (left.instance_params.Count != right.instance_params.Count)
                     return false;
-                for (int i=0; i<left.instance_params.Count; i++)
+                for (int i = 0; i < left.instance_params.Count; i++)
                 {
                     if (!is_type_or_original_generics_equal(left.instance_params[i], right.instance_params[i]))
                         return false;
@@ -821,8 +821,8 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         //TODO: Возможно стоит если пересечение типов найдено в откомпилированных типах, добавлять к нашим структурам и не искать повторно.
-		public static possible_type_convertions get_convertions(type_node from,type_node to, bool is_implicit)
-		{
+        public static possible_type_convertions get_convertions(type_node from, type_node to, bool is_implicit)
+        {
             possible_type_convertions ret = new possible_type_convertions();
             ret.first = null;
             ret.second = null;
@@ -832,8 +832,8 @@ namespace PascalABCCompiler.TreeRealization
                 return ret;
             }
 
-			type_intersection_node tin_from=from.get_type_intersection(to);
-			type_intersection_node tin_to=to.get_type_intersection(from);
+            type_intersection_node tin_from = from.get_type_intersection(to);
+            type_intersection_node tin_to = to.get_type_intersection(from);
 
             if (tin_from != null)
             {
@@ -871,8 +871,8 @@ namespace PascalABCCompiler.TreeRealization
                 return ret;
             }
 
-			wrapped_type ctn_to=to as wrapped_type;
-			wrapped_type ctn_from=from as wrapped_type;
+            wrapped_type ctn_to = to as wrapped_type;
+            wrapped_type ctn_from = from as wrapped_type;
 
             if (ctn_to != null)
             {
@@ -920,7 +920,7 @@ namespace PascalABCCompiler.TreeRealization
             if (ii != null)
             {
                 delegate_internal_interface dii = (delegate_internal_interface)ii;
-                
+
                 internal_interface to_ii = to.get_internal_interface(internal_interface_kind.delegate_interface);
                 if (to_ii != null)
                 {
@@ -936,7 +936,7 @@ namespace PascalABCCompiler.TreeRealization
                         }
                     }
                 }
-                
+
                 if (dii.parameters.Count == 0)
                 {
                     if (dii.return_value_type == to)
@@ -960,8 +960,8 @@ namespace PascalABCCompiler.TreeRealization
                 }
             }
 
-			return ret;
-		}
-	}
+            return ret;
+        }
+    }
 
 }
