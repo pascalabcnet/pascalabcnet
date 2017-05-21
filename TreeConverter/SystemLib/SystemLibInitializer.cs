@@ -13,35 +13,28 @@ namespace PascalABCCompiler.SystemLibrary
         dot_net_unit_node dnu;
         string name;
         TreeConverter.SymbolInfoList symbolInfo = null;
-        TreeConverter.SymbolInfo _notCreatedSymbolInfo = null;
+        TreeConverter.SymbolInfoList _notCreatedSymbolInfo = null;
         TreeConverter.SymbolInfoList notCreatedSymbolInfo
         {
             get
             {
                 if (_notCreatedSymbolInfo != null)
-                    return new TreeConverter.SymbolInfoList(_notCreatedSymbolInfo);
+                    return _notCreatedSymbolInfo;
                 if (cmn != null)
                 {
-                    var temp = cmn.scope.SymbolTable.Find(cmn.scope, name);
-                    if (temp != null)
-                        _notCreatedSymbolInfo = temp.ToSymbolInfo();
-                    else
-                        _notCreatedSymbolInfo = null;
+                    _notCreatedSymbolInfo = cmn.scope.SymbolTable.Find(cmn.scope, name);
                 }
                 else
                 {
                     Type t = NetHelper.NetHelper.PABCSystemType.Assembly.GetType("PABCSystem." + name);
                     if (t != null)
                     {
-                        _notCreatedSymbolInfo = new TreeConverter.SymbolInfo(compiled_type_node.get_type_node(t, SystemLibrary.syn_visitor.SymbolTable));
+                        _notCreatedSymbolInfo = new TreeConverter.SymbolInfoList(new TreeConverter.SymbolInfoUnit(compiled_type_node.get_type_node(t, SystemLibrary.syn_visitor.SymbolTable)));
                     }
                     else
                     {
                         compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.PABCSystemType);
-                        _notCreatedSymbolInfo = null;
-                        var temp = ctn.find_in_type(name);
-                        if (temp != null)
-                            _notCreatedSymbolInfo = temp.ToSymbolInfo();
+                        _notCreatedSymbolInfo = ctn.find_in_type(name);
                         /*if (name == TreeConverter.compiler_string_consts.read_procedure_name || name == TreeConverter.compiler_string_consts.readln_procedure_name)
                         {
                             compiled_type_node ctn2 = compiled_type_node.get_type_node(NetHelper.NetHelper.PT4Type);
@@ -55,7 +48,7 @@ namespace PascalABCCompiler.SystemLibrary
                         //    _notCreatedSymbolInfo = _notCreatedSymbolInfo.Next;
                     }
                 }
-                return _notCreatedSymbolInfo==null?null:new TreeConverter.SymbolInfoList(_notCreatedSymbolInfo);
+                return _notCreatedSymbolInfo;
                 //return SymbolInfo;
             }
         }
@@ -193,7 +186,7 @@ namespace PascalABCCompiler.SystemLibrary
         public bool Equal(TreeConverter.SymbolInfoList si)
         {
             if (dnu == null)
-                return notCreatedSymbolInfo == si;
+                return notCreatedSymbolInfo.First() == si.First();
             else
             {
                 foreach (var si_unit in si.InfoUnitList)

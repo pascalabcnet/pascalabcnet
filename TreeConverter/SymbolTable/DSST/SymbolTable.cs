@@ -477,7 +477,7 @@ namespace SymbolTable
     public class DSSymbolTable
 	{
 		public List<Scope> ScopeTable;
-		private DSHashTable HashTable;
+		public DSHashTable HashTable;
 		internal bool CaseSensitive;
 		private Scope LastScope;
 		//private SymbolInfo FirstInfo;
@@ -665,7 +665,7 @@ namespace SymbolTable
                     if (FirstInfo.InfoUnitList.Count > 0) //если что-то нашли то заканчиваем
                         return FirstInfo;
 
-                    FindAllInAreaList(FirstInfo, Name, (ScopeTable[CurrentArea] as WithScope).WithScopes, AreaList, true, FirstInfo);
+                    FindAllInAreaList(Name, (ScopeTable[CurrentArea] as WithScope).WithScopes, AreaList, true, FirstInfo);
                     if (FirstInfo.InfoUnitList.Count > 0) //если что-то нашли то заканчиваем
                         return FirstInfo;
                 }
@@ -683,20 +683,19 @@ namespace SymbolTable
             } while (CurrentArea >= 0 && (FindInUpperBlocks && ScopeTable[bs] is BlockScope));
             return null;
         }
-
-        private SymbolInfoList FindAllInClass(SymbolInfoList si, string name, int ClassArea, AreaNodesList AreaList, bool OnlyInThisClass, SymbolInfoList FirstInfo)
+        private void FindAllInClass(string name, int ClassArea, AreaNodesList AreaList, bool OnlyInThisClass, SymbolInfoList FirstInfo)
         {
             int ai;
             Scope ar = ScopeTable[ClassArea];
-           
+
             if ((ai = AreaList.IndexOf(ClassArea)) >= 0)
-                si = AddToSymbolInfo(AreaList[ai].InfoList, ar, FirstInfo);
+                AddToSymbolInfo(AreaList[ai].InfoList, ar, FirstInfo);
 
             if (ar is DotNETScope)
             {
                 PascalABCCompiler.TreeRealization.BasePCUReader.RestoreSymbols(FirstInfo, name);
-                si = AddToSymbolInfo(FirstInfo, (DotNETScope)ar, name);
-                return si;
+                AddToSymbolInfo(FirstInfo, (DotNETScope)ar, name);
+                return;
             }
 
             ClassScope cl = (ClassScope)ScopeTable[ClassArea];
@@ -706,18 +705,17 @@ namespace SymbolTable
                 {
                     ai = AreaList.IndexOf(cl.BaseClassScopeNum);
                     if (ai >= 0)
-                        si = AddToSymbolInfo(AreaList[ai].InfoList, cl.BaseClassScope, FirstInfo);
+                        AddToSymbolInfo(AreaList[ai].InfoList, cl.BaseClassScope, FirstInfo);
                     //cl=(ClassScope)ScopeTable[cl.BaseClassScopeNum];
 
                     ar = ScopeTable[cl.BaseClassScopeNum];
                     if (ar is DotNETScope)
                     {
-                        si = AddToSymbolInfo(FirstInfo, (DotNETScope)ar, name);
-                        return si;
+                        AddToSymbolInfo(FirstInfo, (DotNETScope)ar, name);
+                        return;
                     }
                     cl = (ClassScope)ScopeTable[cl.BaseClassScopeNum];
                 }
-            return si;
         }
 
         private Scope FindUnitInterfaceScope(Scope scope)
@@ -851,15 +849,15 @@ namespace SymbolTable
             return sito;
         }
 
-        private SymbolInfoList FindAllInAreaList(SymbolInfoList si, string name, Scope[] arr, AreaNodesList AreaNodes,SymbolInfoList FirstInfo)
+        private void FindAllInAreaList(string name, Scope[] arr, AreaNodesList AreaNodes,SymbolInfoList FirstInfo)
         {
-            return FindAllInAreaList(si, name, arr, AreaNodes, false, FirstInfo);
+            FindAllInAreaList(name, arr, AreaNodes, false, FirstInfo);
         }
-        private SymbolInfoList FindAllInAreaList(SymbolInfoList si, string name, Scope[] arr, AreaNodesList AreaNodes, bool StopIfFind, SymbolInfoList FirstInfo)
+        private void FindAllInAreaList(string name, Scope[] arr, AreaNodesList AreaNodes, bool StopIfFind, SymbolInfoList FirstInfo)
         {
-            if (arr == null) return si;
+            if (arr == null) return;
             int p;
-            int add = FirstInfo.IndexOf(si.First());
+            int add = FirstInfo.InfoUnitList.Count;
             HashSet<Assembly> assm_cache = new HashSet<Assembly>();
             foreach (Scope sc in arr)
             {
@@ -876,9 +874,9 @@ namespace SymbolTable
                                 continue;
                         }
                     }
-                    si = AddToSymbolInfo(FirstInfo, (DotNETScope)sc, name);
+                    AddToSymbolInfo(FirstInfo, (DotNETScope)sc, name);
                     if (FirstInfo.InfoUnitList.Count > add && StopIfFind)
-                        return si;
+                        return;
                 }
                 else
                 if (AreaNodes != null && sc != null)
@@ -886,14 +884,12 @@ namespace SymbolTable
                     p = AreaNodes.IndexOf(sc.ScopeNum);
                     if (p >= 0)
                     {
-                        si = AddToSymbolInfo(AreaNodes[p].InfoList, sc, FirstInfo);
+                        AddToSymbolInfo(AreaNodes[p].InfoList, sc, FirstInfo);
                         if (FirstInfo.InfoUnitList.Count > add && StopIfFind)
-                            return si;
+                            return;
                     }
                 }
             }
-
-            return si;
         }
         //поиск всех имен в ООВ.
         //  ищет наборы имен в ООВ, если находит то возвращает их список.
@@ -932,7 +928,6 @@ namespace SymbolTable
             LastScope = null;         //глобальные переменные могут привести к ошибкам при поиске и поторном вызове!
 
             SymbolInfoList FirstInfo = new SymbolInfoList(new SymbolInfoUnit());
-            SymbolInfoList info = FirstInfo;
 
             int Area = scope.ScopeNum;
             Scope[] used_units = null;
@@ -956,11 +951,11 @@ namespace SymbolTable
                     {
                         if (tn < 0)
                         {
-                            info = AddToSymbolInfo(FirstInfo, (DotNETScope)an, Name);
+                            AddToSymbolInfo(FirstInfo, (DotNETScope)an, Name);
                         }
                         else
                         {
-                            info = FindAllInClass(info, Name, Area, HashTable.hash_arr[tn].NumAreaList, false, FirstInfo);
+                            FindAllInClass(Name, Area, HashTable.hash_arr[tn].NumAreaList, false, FirstInfo);
                         }
                     }
                     if (FirstInfo.InfoUnitList.Count > 1)
@@ -972,11 +967,11 @@ namespace SymbolTable
                     {
                         if (an is UnitImplementationScope)
                         {
-                            info = FindAllInAreaList(info, Name, (an as UnitImplementationScope).TopScopeArray, null, FirstInfo);
+                            FindAllInAreaList(Name, (an as UnitImplementationScope).TopScopeArray, null, FirstInfo);
                             an = ScopeTable[an.TopScopeNum];
                         }
 
-                        info = FindAllInAreaList(info, Name, (an as UnitInterfaceScope).TopScopeArray, null, FirstInfo);
+                        FindAllInAreaList(Name, (an as UnitInterfaceScope).TopScopeArray, null, FirstInfo);
 
                         if (FirstInfo.InfoUnitList.Count > 1)
                         {
@@ -986,7 +981,7 @@ namespace SymbolTable
                     }
                     if (an is WithScope)//мы очутились в Width
                     {
-                        info = FindAllInAreaList(info, Name, (an as WithScope).WithScopes, null, true, FirstInfo);
+                        FindAllInAreaList(Name, (an as WithScope).WithScopes, null, true, FirstInfo);
 
                         if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                         {
@@ -1003,7 +998,7 @@ namespace SymbolTable
                             an = ScopeTable[((ClassScope)an).BaseClassScopeNum];
                             if (an is DotNETScope)
                             {
-                                info = AddToSymbolInfo(FirstInfo, (DotNETScope)an, Name);
+                                AddToSymbolInfo(FirstInfo, (DotNETScope)an, Name);
                                 if (FirstInfo.InfoUnitList.Count > 1) // || OnlyInType) 
                                 {
                                     FirstInfo.InfoUnitList.RemoveAt(0);
@@ -1015,7 +1010,7 @@ namespace SymbolTable
                         //В предках ничего не нашли, ищем по интерфейсам...
                         if (IntScope != null)
                         {
-                            info = FindAllInAreaList(info, Name, IntScope.TopInterfaceScopeArray, null, FirstInfo);
+                            FindAllInAreaList(Name, IntScope.TopInterfaceScopeArray, null, FirstInfo);
                             if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                             {
                                 FirstInfo.InfoUnitList.RemoveAt(0);
@@ -1038,7 +1033,7 @@ namespace SymbolTable
                             //\ssyy
                             an = ScopeTable[unit_area];
                     }
-                    if (info.InfoUnitList.Count > 1)
+                    if (FirstInfo.InfoUnitList.Count > 1)
                     {
                         FirstInfo.InfoUnitList.RemoveAt(0);
                         return FirstInfo;
@@ -1076,7 +1071,7 @@ namespace SymbolTable
 
                         if (ai >= 0) //что-то нашли!
                         {
-                            info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
+                            AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                         }
                         CurrentArea = GetTopScopeNum(CurrentArea);
                     }
@@ -1084,18 +1079,18 @@ namespace SymbolTable
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!
                     {
-                        info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
+                        AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                     }
                     //смотрим в модулях
-                    info = FindAllInAreaList(info, Name, used_units, AreaList, FirstInfo);
-                    info = FindAllInAreaList(info, Name, (ScopeTable[CurrentArea] as UnitInterfaceScope).TopScopeArray, AreaList, FirstInfo);
+                    FindAllInAreaList(Name, used_units, AreaList, FirstInfo);
+                    FindAllInAreaList(Name, (ScopeTable[CurrentArea] as UnitInterfaceScope).TopScopeArray, AreaList, FirstInfo);
                     FirstInfo.InfoUnitList.RemoveAt(0);
                     return FirstInfo.InfoUnitList.Count > 0 ? FirstInfo : null;
                 }
                 else
                 if (ScopeTable[CurrentArea] is IInterfaceScope)
                 {
-                    info = FindAllInClass(info, Name, CurrentArea, AreaList, OnlyInThisClass, FirstInfo);
+                    FindAllInClass(Name, CurrentArea, AreaList, OnlyInThisClass, FirstInfo);
 
                     if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                     {
@@ -1104,7 +1099,7 @@ namespace SymbolTable
                     }
                     //Зачем искать в интерфейсах?
                     //(ssyy) Не понимаю вопрос. Спросившему подумать, зачем в компиляторе нужен поиск.
-                    info = FindAllInAreaList(info, Name, (ScopeTable[CurrentArea] as IInterfaceScope).TopInterfaceScopeArray, AreaList, FirstInfo);
+                    FindAllInAreaList(Name, (ScopeTable[CurrentArea] as IInterfaceScope).TopInterfaceScopeArray, AreaList, FirstInfo);
 
                     if (FirstInfo.InfoUnitList.Count > 1 || OnlyInType) //если что-то нашли то заканчиваем
                     {
@@ -1115,7 +1110,7 @@ namespace SymbolTable
                 else
                 if (ScopeTable[CurrentArea] is ClassScope)//мы очутились в классе
                 {
-                    info = FindAllInClass(info, Name, CurrentArea, AreaList, OnlyInThisClass, FirstInfo);//надо сделать поиск по его предкам
+                    FindAllInClass(Name, CurrentArea, AreaList, OnlyInThisClass, FirstInfo);//надо сделать поиск по его предкам
 
                     if (FirstInfo.InfoUnitList.Count > 1 || OnlyInType) //если что-то нашли то заканчиваем
                     {
@@ -1130,7 +1125,7 @@ namespace SymbolTable
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!
                     {
-                        info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
+                        AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                     }
                     if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                     {
@@ -1141,7 +1136,7 @@ namespace SymbolTable
                     if (wscopes != null)
                         foreach (Scope wsc in wscopes)
                         {
-                            info = FindAllInClass(info, Name, wsc.ScopeNum, AreaList, OnlyInThisClass, FirstInfo);//надо сделать поиск по его предкам                    
+                            FindAllInClass(Name, wsc.ScopeNum, AreaList, OnlyInThisClass, FirstInfo);//надо сделать поиск по его предкам                    
 
                             if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                             {
@@ -1156,13 +1151,13 @@ namespace SymbolTable
                     ai = AreaList.IndexOf(CurrentArea);
                     if (ai >= 0) //что-то нашли!
                     {
-                        info = AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
+                        AddToSymbolInfo(AreaList[ai].InfoList, ScopeTable[CurrentArea], FirstInfo);
                         FirstInfo.InfoUnitList.RemoveAt(0);
                         return FirstInfo.InfoUnitList.Count > 0 ? FirstInfo : null;
                     }
                     if (ScopeTable[CurrentArea] is ClassMethodScope)//мы очутились в методе класса
                     {
-                        info = FindAllInClass(info, Name, (ScopeTable[CurrentArea] as ClassMethodScope).MyClassNum, AreaList, OnlyInThisClass, FirstInfo);//надо сделать поиск по его классу
+                        FindAllInClass(Name, (ScopeTable[CurrentArea] as ClassMethodScope).MyClassNum, AreaList, OnlyInThisClass, FirstInfo);//надо сделать поиск по его классу
 
                         if (FirstInfo.InfoUnitList.Count > 1) //если что-то нашли то заканчиваем
                         {

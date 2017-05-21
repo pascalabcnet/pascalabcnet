@@ -2203,7 +2203,7 @@ namespace CodeCompletion
             if (es == null) return false;
             if (enum_consts.Count != es.enum_consts.Count) return false;
             for (int i = 0; i < es.enum_consts.Count; i++)
-                if (string.Compare(enum_consts[i], this.enum_consts[i], true) != 0) return false;
+                if (string.Compare(es.enum_consts[i], enum_consts[i], true) != 0) return false;
             return true;
         }
 

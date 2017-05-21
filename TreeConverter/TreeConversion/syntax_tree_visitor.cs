@@ -5951,7 +5951,7 @@ namespace PascalABCCompiler.TreeConverter
             is_format_allowed = false;
             if (SystemUnitAssigned)
             {
-                si.ToSymbolInfo();//notCreatedSymbol problem
+                //si.ToSymbolInfo();//notCreatedSymbol problem
                 if (SystemLibrary.SystemLibInitializer.read_procedure.Equal(si) || SystemLibrary.SystemLibInitializer.readln_procedure.Equal(si))
                 {
 
@@ -5999,7 +5999,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                 }
-                else if (SystemLibrary.SystemLibInitializer.SetLengthProcedure.Equal(si.ToSymbolInfo()) || SystemLibrary.SystemLibrary.resize_func == si.First().sym_info as function_node)
+                else if (SystemLibrary.SystemLibInitializer.SetLengthProcedure.Equal(si) || SystemLibrary.SystemLibrary.resize_func == si.First().sym_info as function_node)
                 {
                     if (_method_call.parameters != null && _method_call.parameters.expressions.Count >= 2)
                     {
