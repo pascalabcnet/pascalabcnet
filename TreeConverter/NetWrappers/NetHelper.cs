@@ -1467,7 +1467,7 @@ namespace PascalABCCompiler.NetHelper
             //в список.
 
             //TODO: проанализировать и изменить алгоритмы, использующие поиск.
-            List<SymbolInfo> si_list = new List<SymbolInfo>();
+            //List<SymbolInfo> si_list = new List<SymbolInfo>();
             foreach (MemberInfo mi in mis)
             {
                 if (mi.DeclaringType != null && PABCSystemType != null && mi.DeclaringType.Assembly == PABCSystemType.Assembly && !UsePABCRtl)

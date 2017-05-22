@@ -164,25 +164,6 @@ namespace PascalABCCompiler.SystemLibrary
                 return symbolInfo;
             }
         }
-        public bool Equal(TreeConverter.SymbolInfo si)
-        {
-            if (dnu == null)
-                return notCreatedSymbolInfo == new TreeConverter.SymbolInfoList(si);
-            else
-            {
-                TreeConverter.SymbolInfo si2 = si;
-                while (si != null)
-                    if (notCreatedSymbolInfo.First().sym_info == si.sym_info)
-                        return true;
-                    else
-                        si = si.Next;
-                si = si2;
-                foreach(TreeConverter.SymbolInfoUnit tmp_si in notCreatedSymbolInfo.InfoUnitList)
-                    if (tmp_si.sym_info == si.sym_info)
-                        return true;
-                return false;
-            }
-        }
         public bool Equal(TreeConverter.SymbolInfoList si)
         {
             if (dnu == null)

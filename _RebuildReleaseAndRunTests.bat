@@ -1,12 +1,12 @@
 if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe" (
-"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release /p:Platform="Any CPU" C:\pascalabcnet\PascalABCNET.sln
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Community\MSBuild\15.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release /p:Platform="Any CPU" PascalABCNET.sln
 ) else (
-"%ProgramFiles(x86)%\MSBuild\14.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release /p:Platform="Any CPU" PascalABCNET.sln
+"%ProgramFiles(x86)%\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\msbuild.exe" /t:rebuild /property:Configuration=Release /p:Platform="Any CPU" PascalABCNET.sln
 )
 
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
-cd C:\pascalabcnet\ReleaseGenerators
+cd ReleaseGenerators
 ..\bin\pabcnetc RebuildStandartModules.pas /rebuild
 @IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
@@ -41,4 +41,3 @@ GOTO EXIT
 PAUSE
 
 :EXIT
-PAUSE

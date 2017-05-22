@@ -1260,7 +1260,6 @@ namespace PascalABCCompiler.TreeConverter
             else
                 ThrowCompilationError = tmp_throw_error;
             //function_node fnsel=convertion_data_and_alghoritms.select_function(pars,si,loc);
-            si.ToSymbolInfo();//notCtreatedSymbolInfo problem
             CheckSpecialFunctionCall(si, pars,loc);
             //TODO: А это зачем? Можно передать в create_simple_function_call pars.
             left = pars[0];

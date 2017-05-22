@@ -467,8 +467,10 @@ namespace PascalABCCompiler.PCU
                 {
                     //PCUReturner.AddPCUReader((wrapped_definition_node)si.sym_info, this);
                     //si.access_level = access_level.al_public;
-                    /*SymbolInfoList si2 = (cun.scope as WrappedUnitInterfaceScope).FindWithoutCreation(names[i].name);
-                    si.Add(si2);*/ 
+
+                    /*TODO: AddSymbol(SymbolInfoList) 
+                     * SymbolInfoList si2 = (cun.scope as WrappedUnitInterfaceScope).FindWithoutCreation(names[i].name);
+                    si.Add(si2);*/
                     Scope.AddSymbol(names[i].name, si);
                 }
                 else
@@ -484,7 +486,11 @@ namespace PascalABCCompiler.PCU
                     else if (tn is generic_instance_type_node)
                         tn.Scope.AddSymbol(names[i].name, si);
                     else if (tn is common_type_node)
+                    {
                         (tn as common_type_node).scope.AddSymbol(names[i].name, si);
+                        if (tn.IsDelegate)
+                            SystemLibrary.SystemLibrary.system_delegate_type.Scope.AddSymbol(names[i].name, si);
+                    }
                     else
                         throw new NotSupportedException();
                 }
