@@ -24974,7 +24974,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///expr:1:2
 	///</summary>
 	[Serializable]
-	public partial class format_expr : expression
+	public partial class format_expr : addressed_value
 	{
 
 		///<summary>
@@ -42450,7 +42450,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class tuple_node : expression
+	public partial class tuple_node : addressed_value
 	{
 
 		///<summary>

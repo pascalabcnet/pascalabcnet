@@ -3415,7 +3415,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_format_expr(format_expr _format_expr)
 		{
-			write_expression(_format_expr);
+			write_addressed_value(_format_expr);
 			if (_format_expr.expr == null)
 			{
 				bw.Write((byte)0);
@@ -5787,7 +5787,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_tuple_node(tuple_node _tuple_node)
 		{
-			write_expression(_tuple_node);
+			write_addressed_value(_tuple_node);
 			if (_tuple_node.el == null)
 			{
 				bw.Write((byte)0);

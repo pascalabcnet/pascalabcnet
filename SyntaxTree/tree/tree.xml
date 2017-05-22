@@ -1627,7 +1627,7 @@
         </TagIndices>
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="format_expr" BaseName="expression">
+    <SyntaxNode Name="format_expr" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="expr" SyntaxType="expression" />
         <SyntaxField Name="format1" SyntaxType="expression" />
@@ -2692,7 +2692,7 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="tuple_node" BaseName="expression">
+    <SyntaxNode Name="tuple_node" BaseName="addressed_value">
       <Fields>
         <SyntaxField Name="el" SyntaxType="expression_list" />
       </Fields>

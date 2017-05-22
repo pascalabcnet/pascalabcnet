@@ -3108,6 +3108,10 @@ variable
         {
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
         }
+    | tuple tkPoint identifier_keyword_operatorname
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
     /*| variable tkQuestionPoint identifier_keyword_operatorname                
         {
 			$$ = new dot_question_node($1 as addressed_value, $3 as addressed_value, @$);
