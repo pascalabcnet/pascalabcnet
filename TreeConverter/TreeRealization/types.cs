@@ -4010,7 +4010,18 @@ namespace PascalABCCompiler.TreeRealization
               
             }
         }
-
+        
+		public override string name {
+			get {
+				return "nil";
+			}
+		}
+        
+		public override string full_name {
+			get {
+				return "nil";
+			}
+		}
     }
 
     public class convert_function_to_function_call

@@ -98,7 +98,8 @@ namespace PascalABCCompiler.TreeConverter
 
         internal void RemoveLastError()
         {
-            ErrorsList.RemoveAt(ErrorsList.Count - 1);
+        	if (ErrorsList.Count > 0)
+            	ErrorsList.RemoveAt(ErrorsList.Count - 1);
         }
 
         internal void AddError(Errors.Error err, bool shouldReturn=false)
@@ -999,13 +1000,16 @@ namespace PascalABCCompiler.TreeConverter
 
             expressions_list pars = new expressions_list();
             pars.AddElement(expr);
-
+            bool tmp = ThrowCompilationError;
+            ThrowCompilationError = false;
             function_node fn = convertion_data_and_alghoritms.select_function(pars, si, loc);
-            expr = pars[0];
+            ThrowCompilationError = tmp;
             if (fn == null)
             {
+            	RemoveLastError();
             	AddError(new OperatorCanNotBeAppliedToThisType(name, expr));
             }
+            expr = pars[0];
 #if (DEBUG)
             convertion_data_and_alghoritms.check_operator(fn);
 #endif
