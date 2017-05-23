@@ -1653,7 +1653,7 @@ namespace PascalABCCompiler.TreeConverter
             return cf;
         }
 
-		public var_definition_node add_var_definition(string name, location loc, type_node tn, SemanticTree.polymorphic_state ps)
+		public var_definition_node add_var_definition(string name, location loc, type_node tn, SemanticTree.polymorphic_state ps, bool not_add_to_varlist=false)
 		{
 			check_name_free(name,loc);
 			var_definition_node vdn=null;
@@ -1681,7 +1681,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             	local_block_variable lv = new local_block_variable(name, tn, CurrentStatementList, loc);
                 CurrentScope.AddSymbol(name, new SymbolInfo(lv));
-                lv.block.local_variables.Add(lv);
+                if (!not_add_to_varlist)
+                    lv.block.local_variables.Add(lv);
                 if (tn == null) //Тип еще неизвестен, будем закрывать.
                     var_defs.Add(lv);
                 return lv;

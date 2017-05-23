@@ -5616,9 +5616,14 @@ namespace PascalABCCompiler.NETGenerator
                     else
                         typ = TypeFactory.ExceptionType;
                     il.BeginCatchBlock(typ);
+                    
                     if (iefbn.ExceptionInstance != null)
                     {
-                        il.Emit(OpCodes.Stloc, helper.GetVariable(iefbn.ExceptionInstance.Variable).lb);
+                        LocalBuilder lb = il.DeclareLocal(typ);
+                        helper.AddVariable(iefbn.ExceptionInstance.Variable, lb);
+                        if (save_debug_info && iefbn.ExceptionInstance.Location != null)
+                            lb.SetLocalSymInfo(iefbn.ExceptionInstance.Variable.name + ":" + iefbn.ExceptionInstance.Location.begin_line_num + ":" + iefbn.ExceptionInstance.Location.end_line_num);
+                        il.Emit(OpCodes.Stloc, lb);
                     }
                     else
                     {

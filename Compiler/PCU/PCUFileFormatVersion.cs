@@ -6,6 +6,6 @@ namespace PascalABCCompiler.PCU
 {
     public static class PCUFileFormatVersion
     {
-        public static System.Int16 Version = 105;
+        public static System.Int16 Version = 106;
     }
 }

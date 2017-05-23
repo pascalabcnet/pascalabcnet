@@ -1773,24 +1773,17 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         current_catch_excep = new int_const_node(2,null);//create_constructor_call(filter_type, new expressions_list(), null);
                         local_block_variable_reference lvr = null;
-                        
+                        statements_list sl = new statements_list(get_location(eh.statements));
+                        convertion_data_and_alghoritms.statement_list_stack_push(sl);
                         context.enter_code_block_without_bind();
                         if (eh.variable != null)
                         {
-                        	
-                        	context.check_name_redefinition = false;
-                        	
-                        	local_block_variable lbv = context.add_var_definition(eh.variable.name, get_location(eh.variable), filter_type, SemanticTree.polymorphic_state.ps_common) as local_block_variable;
-                            context.check_name_redefinition = true;
+                        	local_block_variable lbv = context.add_var_definition(eh.variable.name, get_location(eh.variable), filter_type, SemanticTree.polymorphic_state.ps_common, true) as local_block_variable;
                         	lvr = new local_block_variable_reference(lbv, lbv.loc);
                         }
                         statement_node stm = convert_strong(eh.statements);
                         context.leave_code_block();
-                        
-                        /*if (eh.variable != null)
-                        {
-                            context.leave_scope();
-                        }*/
+                        sl = convertion_data_and_alghoritms.statement_list_stack.pop();
                         exception_filter ef = new exception_filter(filter_type, lvr, stm, get_location(eh));
                         efl.AddElement(ef);
                         current_catch_excep = null;
