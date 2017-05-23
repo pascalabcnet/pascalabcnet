@@ -3190,7 +3190,10 @@ namespace PascalABCCompiler.PCU
                 if (CanWriteObject(ef.filter_type))
                     WriteTypeReference(ef.filter_type);
                 if (CanWriteObject(ef.exception_var))
+                {
+                    VisitLocalBlockVariable(ef.exception_var.var);
                     VisitLocalBlockVariableReference(ef.exception_var);
+                }
                 VisitStatement(ef.exception_handler);
                 WriteDebugInfo(ef.location);
             }

@@ -3141,7 +3141,10 @@ namespace PascalABCCompiler.PCU
                     filter_type = GetTypeReference();
                 local_block_variable_reference exception_var = null;
                 if (CanReadObject())
+                {
+                    CreateLocalBlockVariable(null);
                     exception_var = (local_block_variable_reference)CreateLocalBlockVariableReference();
+                }
                 efl.AddElement(new exception_filter(filter_type,exception_var,CreateStatement(),ReadDebugInfo()));
             }
             return new try_block(try_statements, finally_statements, efl, null);
