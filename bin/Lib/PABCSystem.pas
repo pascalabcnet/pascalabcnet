@@ -89,13 +89,13 @@ type
   /// Базовый тип исключений
   Exception = System.Exception;
   
-  /// type double = real
+  /// double = real
   double = System.Double;
   
-  /// type longint = integer
+  /// longint = integer
   longint = System.Int32;
   
-  /// type cardinal = longword
+  /// cardinal = longword
   cardinal = System.UInt32;
   
   /// Представляет 128-битное вещественное число
@@ -117,6 +117,7 @@ type
   /// Представляет базовый класс для реализации интерфейса IComparer
   Comparer<T> = System.Collections.Generic.Comparer<T>;
   
+  /// Представляет базовый класс для реализации интерфейса IComparer
   IComparable<T> = System.IComparable<T>;
 
   /// Представляет множество значений, реализованное на базе хеш-таблицы
@@ -8913,6 +8914,7 @@ begin
   Result := Self.GetLength(1);
 end;
 
+/// Вывод двумерного массива, w - ширина поля вывода
 function Print<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
 begin
 	for var i:=0 to Self.RowCount-1 do
@@ -8928,6 +8930,7 @@ begin
 	Result := Self;  
 end;
 
+/// Вывод двумерного вещественного массива по формату :w:f
 function Print(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
 begin
 	for var i:=0 to Self.RowCount-1 do
@@ -8939,12 +8942,14 @@ begin
 	Result := Self;  
 end;
 
+/// Вывод двумерного массива и переход на следующую строку, w - ширина поля вывода
 function Println<T>(Self: array [,] of T; w: integer := 4): array [,] of T; extensionmethod;
 begin
   Self.Print(w);
 	Result := Self;  
 end;
 
+/// Вывод двумерного вещественного массива по формату :w:f и переход на следующую строку 
 function Println(Self: array [,] of real; w: integer := 7; f: integer := 2): array [,] of real; extensionmethod;
 begin
   Self.Print(w,f);
@@ -9080,6 +9085,9 @@ begin
     Self[i,j] := f(i,j);
 end;
 
+// -----------------------------------------------------
+//>>     Фиктивная секция YYY - не удалять! # YYY
+// -----------------------------------------------------
 
 // Реализация операций с матрицами - только после введения RowCount и ColCount
 function MatrRandom(m: integer; n: integer; a,b: integer): array [,] of integer;
@@ -9149,6 +9157,42 @@ begin
 end;
 
 // -----------------------------------------------------
+//>>     Фиктивная секция XXX - не удалять! # XXX
+// -----------------------------------------------------
+type
+  AdjGroupClass<T> = class
+  private
+    cur: T;
+    enm: IEnumerator<T>;
+    fin: boolean;
+  public
+    constructor Create(a: sequence of T);
+    begin
+      enm := a.GetEnumerator();
+      fin := enm.MoveNext;
+      if fin then
+        cur := enm.Current;
+    end;
+    
+    function TakeGroup: sequence of T;
+    begin
+      yield cur;
+      fin := enm.movenext;
+      while fin do
+      begin
+        if enm.current = cur then
+          yield enm.current
+        else
+        begin
+          cur := enm.Current;
+          break;
+        end;
+        fin := enm.movenext;
+      end;  
+    end;
+  end;
+
+// -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
 // -----------------------------------------------------
 
@@ -9189,40 +9233,6 @@ begin
     end;
 end;
 
-///--
-type
-  AdjGroupClass<T> = class
-  private
-    cur: T;
-    enm: IEnumerator<T>;
-    fin: boolean;
-  public
-    constructor Create(a: sequence of T);
-    begin
-      enm := a.GetEnumerator();
-      fin := enm.MoveNext;
-      if fin then
-        cur := enm.Current;
-    end;
-    
-    function TakeGroup: sequence of T;
-    begin
-      yield cur;
-      fin := enm.movenext;
-      while fin do
-      begin
-        if enm.current = cur then
-          yield enm.current
-        else
-        begin
-          cur := enm.Current;
-          break;
-        end;
-        fin := enm.movenext;
-      end;  
-    end;
-  end;
-
 /// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
 function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
 begin
@@ -9231,7 +9241,7 @@ begin
     yield c.TakeGroup();
 end;
 
-//ToDo Сделать AdjacentGroup с функцией сравнения
+// ToDo Сделать AdjacentGroup с функцией сравнения
 
 /// Возвращает минимальный элемент 
 function Min<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
@@ -9286,7 +9296,6 @@ begin
     if Self[i] > Result then 
       Result := Self[i];
 end;
-
 
 /// Возвращает индекс первого минимального элемента начиная с позиции start
 function IndexMin<T>(Self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
@@ -9387,7 +9396,6 @@ begin
   for var i:=0 to Self.Length-1 do
     Self[i] := f(i);
 end;
-
 
 /// Выполняет бинарный поиск в отсортированном массиве
 function BinarySearch<T>(self: array of T; x: T): integer; extensionmethod;
