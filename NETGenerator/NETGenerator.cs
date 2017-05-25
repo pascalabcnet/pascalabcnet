@@ -7894,7 +7894,7 @@ namespace PascalABCCompiler.NETGenerator
             }
             if (from is INullConstantNode && to.type.is_nullable_type)
             {
-                il.Emit(OpCodes.Initobj, elem_ti.tp);
+                il.Emit(OpCodes.Initobj, elem_type);
                 return;
             }
             from.visit(this);

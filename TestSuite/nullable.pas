@@ -163,4 +163,10 @@ begin
   Test6;
   Test5(nil, nil);
   TClass2.Test2(nil, nil);
+  var arr: array of System.Nullable<integer>;
+  SetLength(arr,3);
+  arr[0] := nil;
+  assert(arr[0] = nil);
+  arr[0] := 2;
+  assert(arr[0] <> nil);
 end.
