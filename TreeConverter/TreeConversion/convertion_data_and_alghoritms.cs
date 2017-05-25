@@ -100,7 +100,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             return statement_list_stack.pop();
         }
-
+        
+        internal statements_list statement_list_stack_first()
+        {
+        	return statement_list_stack.first();
+        }
+        
         public type_constructor type_constructor
         {
             get
@@ -436,7 +441,7 @@ namespace PascalABCCompiler.TreeConverter
                                         common_constructor_call ccc = new common_constructor_call((common_method_node)fn, loc);
                                         //(ssyy) По-видимому, здесь всегда можно присваивать false, так как при создании нового объекта мы сюда не заходим...
                                         ccc._new_obj_awaited = false;
-                                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call && !syntax_tree_visitor.context.can_call_inherited_ctor_call(statement_list_stack_first()))
                                         {
                                             if (syntax_tree_visitor.inherited_ident_processing)
                                                 syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST"));
@@ -490,7 +495,7 @@ namespace PascalABCCompiler.TreeConverter
                         compiled_constructor_call ccc = new compiled_constructor_call(ccn, loc);
                         ccc.parameters.AddRange(exprs);
                         ccc._new_obj_awaited = false;
-                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call && !syntax_tree_visitor.context.can_call_inherited_ctor_call(statement_list_stack_first()))
                         {
                             throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
                         }

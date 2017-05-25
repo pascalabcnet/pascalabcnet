@@ -278,7 +278,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             syntax_tree_visitor.AddError(loc, ErrString, values);
         }
-
+        
+        internal bool can_call_inherited_ctor_call(statements_list lst)
+        {
+        	return lst.statements.Count == 0;
+        }
+        
         public void reset()
         {
             _cmn = null;

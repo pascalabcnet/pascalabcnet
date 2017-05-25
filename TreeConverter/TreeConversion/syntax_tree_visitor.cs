@@ -15485,7 +15485,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-            	if (!context.allow_inherited_ctor_call)
+            	if (!context.allow_inherited_ctor_call && !context.can_call_inherited_ctor_call(convertion_data_and_alghoritms.statement_list_stack_first()))
                     AddError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
             	expressions_list exprs = new expressions_list();
             	foreach (common_parameter cp in cfn.parameters)
@@ -16308,31 +16308,17 @@ namespace PascalABCCompiler.TreeConverter
             convertion_data_and_alghoritms.statement_list_stack_push(stl);
 
             for (var i=0; i< _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
-            //foreach (statement syntax_statement in _statement_list.subnodes)
             {
                 statement syntax_statement = _statement_list.subnodes[i];
                 try
                 {
-                    // SSM выкинул эти три строки - теперь внутриблочные описания обрабатываются как обычные операторы. 
-                    // При этом в конце visit(var_statement) стоит вызов ret.reset(), который возвращает нулевой semantic_statement - и всё работает эквивалентно
-                    //if (syntax_statement is SyntaxTree.var_statement)
-                    //    visit(syntax_statement as SyntaxTree.var_statement); // Добавление в текущий statements_list происходит опосредованно !!
-                    //else if (MustVisitBody) // MustVisitBody - всегда True!!!
-                    //{
-                        //(ssyy) TODO Сделать по-другому!!!
                         statement_node semantic_statement = convert_strong(syntax_statement);
-                        //(ssyy) Проверка для C
                         if (semantic_statement != null)
                         {
-                            //Обработать по другому - комментарий не мой - SSM
-                            //if (context.CurrentScope.AddStatementsToFront)
-                            //    stl.statements.AddElementFirst(semantic_statement);
-                            //else
                             stl.statements.AddElement(semantic_statement);
                         }
 
                         context.allow_inherited_ctor_call = false;
-                    //}
                 }
                 catch (Errors.Error ex)
                 {
