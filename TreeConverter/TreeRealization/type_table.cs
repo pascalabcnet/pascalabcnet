@@ -282,6 +282,10 @@ namespace PascalABCCompiler.TreeRealization
                     {
                     	return true;
                     }
+                    else if (tn.is_nullable_type)
+                    {
+                    	return true;
+                    }
                     else
                     {
                     	return !tn.is_value || tn is null_type_node;

@@ -239,6 +239,42 @@ namespace VisualPascalABC
         }
     }
 	
+	public class ProcessDelegator : IProcess
+	{
+		private Process process;
+		
+		public ProcessDelegator(Process process)
+		{
+			this.process = process;
+		}
+		
+		public bool HasExited
+		{
+			get
+			{
+				return process.HasExited;
+			}
+		}
+	}
+	
+	public class ProcessEventArgsDelegator : EventArgs, IProcessEventArgs
+	{
+		private ProcessDelegator process;
+		
+		public ProcessEventArgsDelegator(ProcessDelegator process)
+		{
+			this.process = process;
+		}
+		
+		public IProcess Process
+		{
+			get
+			{
+				return process;
+			}
+		}
+	}
+	
     /// <summary>
     /// Класс для отладки программ
     /// </summary>
@@ -259,6 +295,7 @@ namespace VisualPascalABC
         public string ExeFileName;
 		public bool show_debug_tabs=true;
 		public PascalABCCompiler.Parsers.IParser parser = null;
+		EventHandler<EventArgs> debuggerStateEvent;
 		
         public DebugHelper()
         {
@@ -275,7 +312,20 @@ namespace VisualPascalABC
                 return debuggedProcess;
             }
         }
+        
+        event EventHandler<EventArgs> IDebuggerManager.DebuggeeStateChanged
+       	{
+        	add
+        	{
+            	debuggerStateEvent += value;
+        	}
 
+        	remove
+        	{
+            	debuggerStateEvent -= value;
+        	}
+    	}
+        
         public Breakpoint CurrentBreakpoint
         {
             get { return currentBreakpoint; }
@@ -434,6 +484,8 @@ namespace VisualPascalABC
             //if (e.Process.IsPaused)
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(e.Process.SelectedFunction).SubItems);
             workbench.WidgetController.SetStartDebugEnabled();
+            if (debuggerStateEvent != null)
+            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));
         }
 		
         private void debugBreakpointHit(object sender, BreakpointEventArgs e)

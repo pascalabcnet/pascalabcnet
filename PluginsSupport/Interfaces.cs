@@ -477,7 +477,17 @@ namespace VisualPascalABCPlugins
         IValue ObjectValue { get; }
         object PrimitiveValue { get; }
     }
-
+	
+    public interface IProcess
+    {
+    	bool HasExited { get; }
+    }
+    
+    public interface IProcessEventArgs
+    {
+    	IProcess Process { get; }
+    }
+    
     public interface IDebuggerManager
     {
         bool IsRunning { get; }
@@ -491,6 +501,7 @@ namespace VisualPascalABCPlugins
         void StepInto();
         void StepOver();
         void RunToCursor();
+        event EventHandler<EventArgs> DebuggeeStateChanged;
     }
 
     public interface ILanguageManager

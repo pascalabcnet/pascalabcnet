@@ -43,7 +43,6 @@ namespace VisualPascalABCPlugins
             this.Workbench = Workbench;
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             testForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
-            
 
         }
         public void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)
