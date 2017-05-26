@@ -8362,9 +8362,9 @@ namespace PascalABCCompiler.TreeConverter
             lab.comprehensive_code_block = context.block_stack.Peek();
             foreach (goto_statement gs in lab.goto_statements)
             {
-                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block))
+                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && gs.location != null)
                 {
-                    //AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.to_statement);
@@ -8394,9 +8394,9 @@ namespace PascalABCCompiler.TreeConverter
             lab.goto_statements.Add(gs);
             if (lab.comprehensive_code_block != null)
             {
-                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block))
+                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && _goto_statement.source_context != null)
                 {
-                    //AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             ret.return_value((statement_node)gs);
