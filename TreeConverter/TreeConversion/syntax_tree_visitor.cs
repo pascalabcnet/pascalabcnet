@@ -285,6 +285,7 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.ObjectType = null;
             SystemLibrary.SystemLibInitializer.StringType = null;
             SystemLibrary.SystemLibInitializer.ConfigVariable = null;
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = null;
         }
         
         internal bool SystemUnitAssigned = false;
@@ -360,6 +361,7 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerToStringFunction_func_name);
             SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetRuntimeSizeFunction_func_name);
             SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StrProcedure_func_name);
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PascalABCVersion_func_name);
             SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ChrUnicodeFunction_func_name);
             SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssertProcedure);
             SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range);
@@ -453,6 +455,7 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerToStringFunction_func_name);
             SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetRuntimeSizeFunction_func_name);
             SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StrProcedure_func_name);
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PascalABCVersion_func_name);
             SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ChrUnicodeFunction_func_name);
             SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssertProcedure);
             SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range);
@@ -5979,6 +5982,11 @@ namespace PascalABCCompiler.TreeConverter
                 else if (SystemLibrary.SystemLibInitializer.write_procedure.Equal(si) || SystemLibrary.SystemLibInitializer.writeln_procedure.Equal(si) || SystemLibrary.SystemLibInitializer.StrProcedure.Equal(si))
                 {
                     is_format_allowed = true;
+                }
+                else if (SystemLibrary.SystemLibInitializer.PascalABCVersion.Equal(si))
+                {
+                	return_value(new string_const_node(RevisionClass.FullVersion, get_location(_method_call)));
+                	return;
                 }
                 else if (SystemLibrary.SystemLibInitializer.ArrayCopyFunction.Equal(si))
                 {
@@ -15194,7 +15202,10 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         //return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                         //	si,lloc,blocks.converted_type,blocks.top_function,false);
-                        
+                        if (SystemUnitAssigned && SystemLibrary.SystemLibInitializer.PascalABCVersion.Equal(si))
+                		{
+                			return new string_const_node(RevisionClass.FullVersion, get_location(_ident));
+                		}
                         if (si.sym_info == SystemLibrary.SystemLibInitializer.NewProcedure.sym_info)
                         {
                             AddError(lloc, "EXPECTED_TYPE_AFTER_NEW");
