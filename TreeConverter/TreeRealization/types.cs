@@ -66,6 +66,11 @@ namespace PascalABCCompiler.TreeRealization
         	get { return false; }
         }
         
+        public virtual bool is_standard_type
+        {
+        	get { return false; }
+        }
+        
         public bool is_nullable_type
         {
         	get
@@ -2566,7 +2571,15 @@ namespace PascalABCCompiler.TreeRealization
             {
             }
         }
-
+        
+        public override bool is_standard_type
+        {
+        	get
+        	{
+        		return NetHelper.NetHelper.IsStandType(_compiled_type);
+        	}
+        }
+        
         public override function_node generic_function_container
         {
             get

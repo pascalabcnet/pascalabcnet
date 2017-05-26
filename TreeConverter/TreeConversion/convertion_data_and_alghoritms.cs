@@ -2018,13 +2018,26 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         type_compare tc = type_table.compare_types(best_function.return_value_type, fn.return_value_type);
-                        if (tc == type_compare.greater_type)
+                        if (best_function.return_value_type.is_standard_type && fn.return_value_type.is_standard_type)
                         {
-                            to_remove.Add(best_function);
-                            best_function = fn;
+                        	if (tc == type_compare.less_type)
+                        	{
+                           		to_remove.Add(best_function);
+                            	best_function = fn;
+                        	}
+                        	else if (tc == type_compare.greater_type)
+                            	to_remove.Add(fn);
                         }
-                        else if (tc == type_compare.less_type)
-                            to_remove.Add(fn);
+                        else
+                        {
+                        	if (tc == type_compare.greater_type)
+                        	{
+                           		to_remove.Add(best_function);
+                            	best_function = fn;
+                        	}
+                        	else if (tc == type_compare.less_type)
+                            	to_remove.Add(fn);
+                        }
                     }
                 }
             }
