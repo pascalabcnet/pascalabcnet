@@ -567,6 +567,7 @@ namespace VisualPascalABC
         public override void Execute(TextArea textArea)
         {
             WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
+            VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
             CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(VisualPABCSingleton.MainForm.UserOptions.TabIndent);
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =

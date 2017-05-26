@@ -72,6 +72,11 @@ namespace VisualPascalABC
         {
             get { return WorkbenchServiceFactory.OperationsService; }
         }
+
+        public ICodeCompletionService CodeCompletionService
+        {
+            get { return WorkbenchServiceFactory.CodeCompletionService; }
+        }
     }
 
     public class WorkbenchServiceFactory
@@ -199,6 +204,14 @@ namespace VisualPascalABC
                 if (_debuggerManager == null)
                     _debuggerManager = new DebugHelper();
                 return _debuggerManager;
+            }
+        }
+
+        public static ICodeCompletionService CodeCompletionService
+        {
+            get
+            {
+                return CodeCompletionParserController;
             }
         }
 

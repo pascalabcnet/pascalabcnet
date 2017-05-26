@@ -247,6 +247,11 @@ namespace VisualPascalABC
             (new ICSharpCode.TextEditor.Actions.SelectWholeDocument()).Execute(TextEditor.ActiveTextAreaControl.TextArea);
         }
 
+        public void DeselectAll()
+        {
+            (new ICSharpCode.TextEditor.Actions.ClearAllSelections()).Execute(TextEditor.ActiveTextAreaControl.TextArea);
+        }
+
         public void Delete()
         {
             (new ICSharpCode.TextEditor.Actions.Delete()).Execute(TextEditor.ActiveTextAreaControl.TextArea);
