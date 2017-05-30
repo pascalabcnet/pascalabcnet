@@ -306,6 +306,11 @@ namespace VisualPascalABCPlugins
         void KillAll();
     }
 
+    public interface IWorkbenchUpdateService
+    {
+        void CheckForUpdates();
+    }
+
     public interface IWorkbenchBuildService
     {
         string Compile(string FileName, bool rebuild, string RuntimeServicesModule, bool ForRun, bool RunWithEnvironment);
@@ -366,6 +371,8 @@ namespace VisualPascalABCPlugins
         void ExecFindNext();
         void ExecUndo();
         void ExecRedo();
+        void CollapseRegions();
+        void CodeFormat();
     }
 
     public interface IWorkbenchDebuggerOperationsService
@@ -386,6 +393,7 @@ namespace VisualPascalABCPlugins
         void AddTextToOutputWindowSync(string fileName, string text);
         void WriteToOutputBox(string message, bool is_exc);
         void ClearOutputTextBoxForTabPage(ICodeFileDocument tabPage);
+        void AddTabWithUrl(string title, string url);
     }
 
     public interface IWorkbenchOptionService
@@ -420,6 +428,15 @@ namespace VisualPascalABCPlugins
         IWorkbenchRunService RunService { get; }
         IWorkbenchDesignerService DesignerService { get; }
         IWorkbenchOperationsService OperationsService { get; }
+        IWorkbenchUpdateService UpdateService { get;  }
+        ICodeCompletionService CodeCompletionService { get; }
+    }
+
+    public interface ICodeCompletionService
+    {
+        PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string FileName);
+        void SetAsChanged(string FileName);
+        void RegisterFileForParsing(string FileName);
     }
 
     public interface IWorkbench
@@ -435,7 +452,6 @@ namespace VisualPascalABCPlugins
         ICompilerConsoleWindow CompilerConsoleWindow { get; }
         IOutputWindow OutputWindow { get; }
         IErrorListWindow ErrorsListWindow { get; }
-        
         void BeginInvoke(Delegate del, params object[] args);
     }
 
@@ -469,7 +485,17 @@ namespace VisualPascalABCPlugins
         IValue ObjectValue { get; }
         object PrimitiveValue { get; }
     }
-
+	
+    public interface IProcess
+    {
+    	bool HasExited { get; }
+    }
+    
+    public interface IProcessEventArgs
+    {
+    	IProcess Process { get; }
+    }
+    
     public interface IDebuggerManager
     {
         bool IsRunning { get; }
@@ -483,6 +509,7 @@ namespace VisualPascalABCPlugins
         void StepInto();
         void StepOver();
         void RunToCursor();
+        event EventHandler<EventArgs> DebuggeeStateChanged;
     }
 
     public interface ILanguageManager

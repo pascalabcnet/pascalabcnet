@@ -73,7 +73,7 @@ namespace VisualPascalABC
         	
         		string expr = FindExpression(off, Text, line, col);
         		List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-        		PascalABCCompiler.SyntaxTree.expression e = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test.pas", expr, Errors);
+        		PascalABCCompiler.SyntaxTree.expression e = VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test.pas", expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
         		if (e == null || Errors.Count > 0) return;
         		CodeCompletion.DomConverter dconv = (CodeCompletion.DomConverter)CodeCompletion.CodeCompletionController.comp_modules[fileName];
         		string fname = fileName;

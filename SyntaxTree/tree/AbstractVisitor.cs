@@ -1043,9 +1043,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_addressed_value_list);
 		}
 
-		public virtual void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public virtual void visit(tuple_node _tuple_node)
 		{
-			DefaultVisit(_tuple_node_for_formatter);
+			DefaultVisit(_tuple_node);
 		}
 
 		public virtual void visit(uses_closure _uses_closure)
@@ -1086,6 +1086,31 @@ namespace PascalABCCompiler.SyntaxTree
 		public virtual void visit(yield_sequence_node _yield_sequence_node)
 		{
 			DefaultVisit(_yield_sequence_node);
+		}
+
+		public virtual void visit(assign_var_tuple _assign_var_tuple)
+		{
+			DefaultVisit(_assign_var_tuple);
+		}
+
+		public virtual void visit(slice_expr_question _slice_expr_question)
+		{
+			DefaultVisit(_slice_expr_question);
+		}
+
+		public virtual void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+			DefaultVisit(_semantic_check_sugared_statement_node);
+		}
+
+		public virtual void visit(sugared_expression _sugared_expression)
+		{
+			DefaultVisit(_sugared_expression);
+		}
+
+		public virtual void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			DefaultVisit(_sugared_addressed_value);
 		}
 	}
 

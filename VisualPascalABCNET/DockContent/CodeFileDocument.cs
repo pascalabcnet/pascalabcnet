@@ -247,6 +247,11 @@ namespace VisualPascalABC
             (new ICSharpCode.TextEditor.Actions.SelectWholeDocument()).Execute(TextEditor.ActiveTextAreaControl.TextArea);
         }
 
+        public void DeselectAll()
+        {
+            (new ICSharpCode.TextEditor.Actions.ClearAllSelections()).Execute(TextEditor.ActiveTextAreaControl.TextArea);
+        }
+
         public void Delete()
         {
             (new ICSharpCode.TextEditor.Actions.Delete()).Execute(TextEditor.ActiveTextAreaControl.TextArea);
@@ -506,6 +511,7 @@ namespace VisualPascalABC
                 return null;
             }
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
+            List<PascalABCCompiler.Errors.CompilerWarning> Warnings = new List<PascalABCCompiler.Errors.CompilerWarning>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
             //    MainForm.VisualEnvironmentCompiler.Compiler.ParsersController.Compile(
             //    FileName, TextEditor.Text, null, Errors, PascalABCCompiler.Parsers.ParseMode.Normal);
@@ -513,7 +519,8 @@ namespace VisualPascalABC
                 CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnit(
                 VisualPABCSingleton.MainForm._currentCodeFileDocument.FileName,
                 existing_text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
-                Errors);
+                Errors,
+                Warnings);
             PascalABCCompiler.SyntaxTree.unit_module um = sn as PascalABCCompiler.SyntaxTree.unit_module;
             bool good_syntax = um != null;
             PascalABCCompiler.SyntaxTree.type_declaration form_decl = null;

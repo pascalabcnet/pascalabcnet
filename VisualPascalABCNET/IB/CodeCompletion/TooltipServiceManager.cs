@@ -34,12 +34,12 @@ namespace VisualPascalABC
             if (expr_without_brackets == null)
                 return null;
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
-            PascalABCCompiler.SyntaxTree.expression tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr, Errors);
+            PascalABCCompiler.SyntaxTree.expression tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
             bool header = false;
             if (tree == null || Errors.Count > 0)
             {
                 Errors.Clear();
-                tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors);
+                tree = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 header = true;
                 if (tree == null || Errors.Count > 0)
                     return null;
@@ -47,7 +47,7 @@ namespace VisualPascalABC
             else
             {
                 Errors.Clear();
-                PascalABCCompiler.SyntaxTree.expression tree2 = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors);
+                PascalABCCompiler.SyntaxTree.expression tree2 = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler.StandartCompiler.ParsersController.GetExpression("test" + Path.GetExtension(FileName), expr_without_brackets, Errors, new List<PascalABCCompiler.Errors.CompilerWarning>());
                 //header = true;
                 if (tree2 == null || Errors.Count > 0)
                     return null;

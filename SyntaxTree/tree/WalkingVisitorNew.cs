@@ -12,13 +12,11 @@ namespace PascalABCCompiler.SyntaxTree
     //2. Унаследовать от этого класса свой класс, в котором переорпеделить обработку нужных узлов.
     //Не забывать при этом о вызове visit'ов для подузлов (или base.visit), если это нужно.
 
-	public delegate void VisitorDelegateNew(syntax_tree_node node);
-
     public class WalkingVisitorNew : AbstractVisitor
     {
 
-		protected VisitorDelegateNew OnEnter;
-        protected VisitorDelegateNew OnLeave;
+		protected Action<syntax_tree_node> OnEnter;
+        protected Action<syntax_tree_node> OnLeave;
 
         protected bool visitNode = true; // в OnEnter можно сделать false
 
@@ -40,10 +38,39 @@ namespace PascalABCCompiler.SyntaxTree
 
         public override void DefaultVisit(syntax_tree_node n)
         {
-            var count = n.subnodes_count;
-            for (var i = 0; i < count; i++)
+            // n.subnodes_count может меняться в процессе работы этого алгоритма
+            // В частности, в результате ReplaceStatementWithParent
+            for (var i = 0; i < n.subnodes_count; i++)
                 ProcessNode(n[i]);
         }
+
+        // Можно перенести сюда поскольку замена 1 на 1 позволяет пользоваться текущим DefaultVisit
+        public void ReplaceUsingParent(syntax_tree_node from, syntax_tree_node to)
+        {
+            to.Parent = from.Parent;
+            if (from.Parent == null)
+                throw new Exception("У корневого элемента нельзя получить Parent");
+            from.Parent.ReplaceDescendant(from, to);
+        }
+
+        public void ReplaceStatementUsingParent(statement from, IEnumerable<statement> to, Desc d = Desc.DirectDescendants)
+        {
+            foreach (var x in to)
+                x.Parent = from.Parent;
+            var sl = from.Parent as statement_list;
+            if (sl != null)
+            {
+                sl.ReplaceInList(from, to);
+            }
+            else
+            {
+                var l = new statement_list();
+                l.AddMany(to);
+                l.source_context = from.source_context;
+                from.Parent.ReplaceDescendant(from, l, d);
+            }
+        }
+
     }
- 
+
 }

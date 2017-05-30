@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -213,7 +215,10 @@ namespace SyntaxVisitors
                     if (decls != null)
                     {
                         // frninja 12/05/16 - забыли копировать return
-                        function_header nfh = ObjectCopier.Clone(fh);
+                        //function_header nfh = ObjectCopier.Clone(fh);
+
+                        function_header nfh = fh.TypedClone();
+
                         //function_header nfh = new function_header();
                         //nfh.name = new method_name(fh.name.meth_name.name);
 
@@ -415,6 +420,7 @@ namespace SyntaxVisitors
                 if (pd.proc_header.where_defs != null)
                 {
                     return ObjectCopier.Clone(pd.proc_header.where_defs);
+                    //return pd.proc_header.where_defs.TypedClone();
                 }
                 else
                 {
@@ -426,6 +432,7 @@ namespace SyntaxVisitors
                     if (pdPredefs.Count() > 0)
                     {
                         return ObjectCopier.Clone(pdPredefs.First().proc_header.where_defs);
+                        //return pdPredefs.First().proc_header.where_defs.TypedClone();
                     }
                 }
             }
@@ -587,7 +594,8 @@ namespace SyntaxVisitors
         private void CreateErrorCheckerHelper(procedure_definition pd)
         {
             // Клонируем исходный метод для проверок ошибок бэкендом
-            var pdCloned = ObjectCopier.Clone(pd);
+            //var pdCloned = ObjectCopier.Clone(pd);
+            var pdCloned = (procedure_definition)pd.Clone();
 
             pdCloned.has_yield = false;
 
@@ -613,7 +621,8 @@ namespace SyntaxVisitors
 
             // Клонируем исходный метод для вставки оберток-хелперов для локальных переменных и дальнейшей обработки на семантике
             var pdCloned = ObjectCopier.Clone(pd);
-            //var pdCloned = pd;
+            //pd.
+            //var pdCloned = (procedure_definition)pd.Clone();
 
             pdCloned.has_yield = false;
 

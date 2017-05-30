@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +18,11 @@ namespace SyntaxVisitors
         private procedure_definition CurrentMethod = null;
 
         private Stack<procedure_definition> MethodsStack = new Stack<procedure_definition>();
+
+        public static MarkMethodHasYieldAndCheckSomeErrorsVisitor New
+        {
+            get { return new MarkMethodHasYieldAndCheckSomeErrorsVisitor(); }
+        }
 
         public override void visit(function_lambda_definition ld)
         {

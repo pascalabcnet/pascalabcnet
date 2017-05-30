@@ -14,7 +14,6 @@ using VisualPascalABC.Utils;
 using Debugger;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
-using VisualPascalABCPlugins;
 using System.Runtime.ExceptionServices;
 
 namespace VisualPascalABC
@@ -23,14 +22,14 @@ namespace VisualPascalABC
 	//Klass predostavljaushij informaciju ob otlazhivaemoj programme
 	public class AssemblyHelper
     {
-        private static AppDomain ad;
         private static System.Reflection.Assembly a;
         private static List<System.Reflection.Assembly> ref_modules = new List<System.Reflection.Assembly>();
         private static Hashtable ns_ht = new Hashtable();
         private static Hashtable stand_types = new Hashtable(StringComparer.OrdinalIgnoreCase);
         private static List<Type> unit_types = new List<Type>();//spisok tipov-obertok nad moduljami
         private static List<DebugType> unit_debug_types;//to zhe samoe, no tipy Debugger.Core
-        
+        private static DebugType pabc_system_type = null;
+
         static AssemblyHelper()
         {
         	stand_types["integer"] = typeof(int);
@@ -102,14 +101,8 @@ namespace VisualPascalABC
             {
 
             }
-//            if (a != null)
-//           	{
-//           		System.Reflection.AssemblyName[] refs = a.GetReferencedAssemblies();            	
-//           		for (int i=0; i<refs.Length; i++)
-//           			ref_modules.Add(System.Reflection.Assembly.Load(refs[i]));
-//            }
-            //a = ad.Load(buf);
         }
+
         [HandleProcessCorruptedStateExceptionsAttribute]
         public static bool IsDebuggerStepThrough(Function f)
         {
@@ -126,6 +119,19 @@ namespace VisualPascalABC
             {
             }
             return false;
+        }
+
+
+        public static DebugType GetPABCSystemType()
+        {
+            if (pabc_system_type == null)
+            {
+                string file_name = PascalABCCompiler.Compiler.GetReferenceFileName("PABCRtl.dll");
+                System.Reflection.Assembly assm = PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(file_name);
+                PascalABCCompiler.NetHelper.NetHelper.init_namespaces(assm);
+                pabc_system_type = DebugUtils.GetDebugType(PascalABCCompiler.NetHelper.NetHelper.PABCSystemType);
+            }
+            return pabc_system_type;
         }
 
         public static Type GetTypeForStatic(string name)
@@ -233,6 +239,42 @@ namespace VisualPascalABC
         }
     }
 	
+	public class ProcessDelegator : IProcess
+	{
+		private Process process;
+		
+		public ProcessDelegator(Process process)
+		{
+			this.process = process;
+		}
+		
+		public bool HasExited
+		{
+			get
+			{
+				return process.HasExited;
+			}
+		}
+	}
+	
+	public class ProcessEventArgsDelegator : EventArgs, IProcessEventArgs
+	{
+		private ProcessDelegator process;
+		
+		public ProcessEventArgsDelegator(ProcessDelegator process)
+		{
+			this.process = process;
+		}
+		
+		public IProcess Process
+		{
+			get
+			{
+				return process;
+			}
+		}
+	}
+	
     /// <summary>
     /// Класс для отладки программ
     /// </summary>
@@ -253,6 +295,7 @@ namespace VisualPascalABC
         public string ExeFileName;
 		public bool show_debug_tabs=true;
 		public PascalABCCompiler.Parsers.IParser parser = null;
+		EventHandler<EventArgs> debuggerStateEvent;
 		
         public DebugHelper()
         {
@@ -269,7 +312,20 @@ namespace VisualPascalABC
                 return debuggedProcess;
             }
         }
+        
+        event EventHandler<EventArgs> IDebuggerManager.DebuggeeStateChanged
+       	{
+        	add
+        	{
+            	debuggerStateEvent += value;
+        	}
 
+        	remove
+        	{
+            	debuggerStateEvent -= value;
+        	}
+    	}
+        
         public Breakpoint CurrentBreakpoint
         {
             get { return currentBreakpoint; }
@@ -428,6 +484,8 @@ namespace VisualPascalABC
             //if (e.Process.IsPaused)
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(e.Process.SelectedFunction).SubItems);
             workbench.WidgetController.SetStartDebugEnabled();
+            if (debuggerStateEvent != null)
+            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));
         }
 		
         private void debugBreakpointHit(object sender, BreakpointEventArgs e)
@@ -1547,16 +1605,16 @@ namespace VisualPascalABC
         {
             goto_brs.Push(br);
         }
-		
+
         public string ExecuteImmediate(string stmt)
         {
-        	RetValue rv = evaluator.Evaluate(stmt,true);
-        	if (rv.prim_val != null)
-        		return rv.prim_val.ToString();
-        	if (rv.obj_val != null)
-        		return rv.obj_val.AsString;
-        	if (rv.err_mes != null)
-        		return rv.err_mes;
+            RetValue rv = evaluator.Evaluate(stmt, true);
+            if (rv.prim_val != null)
+                return rv.prim_val.ToString();
+            if (rv.obj_val != null)
+                return rv.obj_val.AsString;
+            if (rv.err_mes != null)
+                return rv.err_mes;
             if (rv.syn_err)
                 return PascalABCCompiler.StringResources.Get("EXPR_VALUE_SYNTAX_ERROR_IN_EXPR");
             else

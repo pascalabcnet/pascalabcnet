@@ -12,6 +12,15 @@ using PascalABCCompiler.Parsers;
 
 namespace VisualPascalABC
 {
+    public class RegionFoldMarker : FoldMarker
+    {
+        public RegionFoldMarker(IDocument document, int startLine, int startColumn, int endLine, int endColumn, FoldType foldType, string foldText):
+            base(document, startLine, startColumn, endLine, endColumn, foldType, foldText)
+        {
+
+        }   
+    }
+
 	public class ParserFoldingStrategy : IFoldingStrategy
 	{
         private List<FoldMarker> GetFoldMarkers(IDocument doc, IBaseScope root)
@@ -37,7 +46,7 @@ namespace VisualPascalABC
                 {
                     foreach (Position p in root.Regions)
                     {
-                        foldMarkers.Add(new FoldMarker(doc, p.line - 1, p.column, p.end_line - 1, p.end_column, FoldType.MemberBody, p.fold_text));
+                        foldMarkers.Add(new RegionFoldMarker(doc, p.line - 1, p.column, p.end_line - 1, p.end_column, FoldType.MemberBody, p.fold_text));
                     }
                 }
                 Position body_pos = root.GetBodyPosition();
@@ -89,12 +98,6 @@ namespace VisualPascalABC
 		{
 			List<FoldMarker> foldMarkers = GetFoldMarkers(document, parseInfo as IBaseScope);
 			return foldMarkers;
-//			int lastLine = (foldMarkers.Count == 0) ? 0 : foldMarkers[foldMarkers.Count - 1].EndLine;
-//			int totalNumberOfLines = document.TotalNumberOfLines;
-//			foreach (FoldMarker marker in oldFoldMarkers) {
-//					if (marker.StartLine > lastLine && marker.EndLine < totalNumberOfLines)
-//						foldMarkers.Add(marker);
-//			}
 		}
 		
 	}

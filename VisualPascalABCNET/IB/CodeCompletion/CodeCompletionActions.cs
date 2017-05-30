@@ -567,6 +567,7 @@ namespace VisualPascalABC
         public override void Execute(TextArea textArea)
         {
             WorkbenchServiceFactory.Workbench.ErrorsListWindow.ClearErrorList();
+            VisualPABCSingleton.MainForm.CurrentCodeFileDocument.DeselectAll();
             CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(VisualPABCSingleton.MainForm.UserOptions.TabIndent);
             List<PascalABCCompiler.Errors.Error> Errors = new List<PascalABCCompiler.Errors.Error>();
             //PascalABCCompiler.SyntaxTree.syntax_tree_node sn =
@@ -577,7 +578,8 @@ namespace VisualPascalABC
                 CodeCompletion.CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(
                 VisualPABCSingleton.MainForm.CurrentCodeFileDocument.FileName,
                text, //VisualPascalABC.Form1.Form1_object._currentCodeFileDocument.TextEditor.Text,
-                Errors);
+                Errors,
+                new List<PascalABCCompiler.Errors.CompilerWarning>());
             if (Errors.Count == 0)
             {
                 string formattedText = cf.FormatTree(text, cu, textArea.Caret.Line + 1, textArea.Caret.Column + 1);

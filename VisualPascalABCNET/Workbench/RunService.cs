@@ -29,14 +29,10 @@ namespace VisualPascalABC
         private Dictionary<ICodeFileDocument, string> ReadRequests = new Dictionary<ICodeFileDocument, string>();
         private Dictionary<string, string> RunArgumentsTable = new Dictionary<string, string>();
         bool RunActiveTabPage = false;
-        //IUserOptions UserOptions;
-        //IVisualEnvironmentCompiler VisualEnvironmentCompiler;
 
         public WorkbenchRunService()
         {
-            //UserOptions = WorkbenchServiceFactory.Workbench.UserOptions;
             Workbench = WorkbenchServiceFactory.Workbench;
-            //VisualEnvironmentCompiler = WorkbenchServiceFactory.Workbench.VisualEnvironmentCompiler;
             RunnerManager = new RunManager(ReadStringRequest);
             RunnerManager.Exited += new RunManager.RunnerManagerActionDelegate(RunnerManager_Exited);
             RunnerManager.Starting += new RunManager.RunnerManagerActionDelegate(RunnerManager_Started);
@@ -82,8 +78,6 @@ namespace VisualPascalABC
             WorkbenchServiceFactory.OperationsService.ClearOutputTextBoxForTabPage(tabPage);
             Workbench.ErrorsListWindow.ClearErrorList();
             DesignerService.GenerateAllDesignersCode();
-            //this.Refresh();
-            //            new System.Threading.Thread(new System.Threading.ThreadStart(RunCompile)).Start();;
             string runtimeModule;
             string ModeName;
             bool RunWithPause = false;
@@ -225,11 +219,6 @@ namespace VisualPascalABC
                 return true;
             }
             return true;
-            /*else
-            {
-                DebugStop();
-                return true;
-            }*/
         }
 
         void RunTabsAdd(string name, ICodeFileDocument p)

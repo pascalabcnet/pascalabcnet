@@ -123,6 +123,9 @@ CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Can not extend operators +,+=,-,-=
 FORWARD_EXTENSION_METHODS_NOT_ALLOWED=forward attribute can not be applied to extension methods
 WHERE_SECTION_NOT_ALLOWED=Can not apply 'where' to predefined class
 GENERIC_PARAMETERS_MISMATCH=Generic-parameters mismatch
+EXPECTED_TYPE_AFTER_NEW=type after 'new' expected
+USE_ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS=Using of anonymous delegates in generic subroutine. Define a generic-delegate outside the procedure and instant it with generic-parameters of function
+WITH_AND_LAMBDAS_NOT_ALLOWED=Cannot use 'with' and lambdas in the same function
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

@@ -107,7 +107,7 @@ namespace VisualPascalABCPlugins
             this.linkLabel1.Size = new System.Drawing.Size(129, 13);
             this.linkLabel1.TabIndex = 7;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "ibond84@googlemail.com";
+            this.linkLabel1.Text = "ibondarev@sfedu.ru";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // saveFileDialog

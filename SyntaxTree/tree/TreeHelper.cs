@@ -26,13 +26,22 @@ namespace PascalABCCompiler.SyntaxTree
         PreOrder
     }
 
+    public enum Desc
+    {
+        All,
+        DirectDescendants
+    }
+
     public partial class syntax_tree_node
     {
-        public object Parent;
-        public int FindIndex(syntax_tree_node node)
+        public syntax_tree_node Parent;
+        public int FindIndex(syntax_tree_node node, Desc d = Desc.All)
         {
             int ind = -1;
-            for (var i = 0; i < subnodes_count; i++)
+
+            var count = d == Desc.All ? subnodes_count : subnodes_without_list_elements_count;
+
+            for (var i = 0; i < count; i++)
                 if (node == this[i])
                 {
                     ind = i;
@@ -43,10 +52,18 @@ namespace PascalABCCompiler.SyntaxTree
             return ind;
         }
 
-        public void Replace(syntax_tree_node from, syntax_tree_node to) // есть риск, что типы не совпадут
+        /*public void ReplaceDescendant(syntax_tree_node from, syntax_tree_node to, Desc d = Desc.All) // есть риск, что типы не совпадут
         {
-            var ind = FindIndex(from);
+            var ind = FindIndex(from,d);
             this[ind] = to;
+        }*/
+
+        // Безопасная версия Replace - не сработает если менять foreach_node на if_node. Плохо
+        public void ReplaceDescendant<T,T1>(T from, T1 to, Desc d = Desc.All) where T: syntax_tree_node where T1 : T
+        {
+            var ind = FindIndex(from,d);
+            this[ind] = to;
+            to.Parent = from.Parent;
         }
 
         /// <summary>
@@ -256,6 +273,11 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class statement_list 
     {
+        public statement_list(IEnumerable<statement> sts)
+        {
+            AddMany(sts);
+        }
+
         public statement_list(params statement[] sts)
         {
             AddMany(sts);
@@ -926,8 +948,28 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
+    public partial class dot_node
+    {
+        public static dot_node NewP(addressed_value avl, addressed_value avr, SourceContext sc)
+        {
+            var dn = new dot_node(avl, avr, sc);
+            if (avl != null) avl.Parent = dn;
+            if (avr != null) avr.Parent = dn;
+            return dn;
+        }
+    }
+
+
     public partial class method_call
     {
+        public static method_call NewP(addressed_value av, expression_list el, SourceContext sc)
+        {
+            var mc = new method_call(av, el, sc);
+            if (av != null) av.Parent = mc;
+            if (el != null) el.Parent = mc;
+            return mc;
+        }
+
         /// <summary>
         /// Простое имя метода. Возвращает null, если не удалось такое получить.
         /// </summary>
@@ -1230,6 +1272,12 @@ namespace PascalABCCompiler.SyntaxTree
         public var_statement(ident id, expression iv)
         {
             var_def = new var_def_statement(new ident_list(id), null, iv);
+        }
+
+        public var_statement(ident id, expression iv,SourceContext sc)
+        {
+            var_def = new var_def_statement(new ident_list(id), null, iv);
+            var_def.source_context = sc;
         }
 
         public override string ToString()
@@ -1610,6 +1658,44 @@ namespace PascalABCCompiler.SyntaxTree
         {
             return new int32_const(i);
         }
+    }
+
+    public partial class slice_expr
+    {
+        public override string ToString() => this.v + "[" + this.from + ":" + this.to + ":" + this.step + "]";
+    }
+
+    public partial class slice_expr_question
+    {
+        public slice_expr_question(addressed_value v, expression from, expression to, expression step) : base(v, from, to, step)
+        { }
+        public slice_expr_question(addressed_value v, expression from, expression to, expression step, SourceContext sc) : base(v, from, to, step, sc)
+        { }
+    }
+
+    public partial class sugared_addressed_value
+    {
+        public static sugared_addressed_value NewP(object sug, addressed_value av, SourceContext sc)
+        {
+            var res = new sugared_addressed_value(sug, av, sc);
+            av.Parent = res;
+            return res;
+        }
+        public override string ToString()
+        {
+            return "{sug}" + this.new_addr_value;
+        }
+
+    }
+
+    public partial class question_colon_expression
+    {
+        public override string ToString() => this.condition + "?" + this.ret_if_true + ":" + this.ret_if_false;
+    }
+
+    public partial class dot_question_node
+    {
+        public override string ToString() => left.ToString() + "?." + right.ToString();
     }
 
 }

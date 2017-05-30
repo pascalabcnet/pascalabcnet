@@ -106,7 +106,8 @@ namespace CodeCompletion
             if (expr == null)
               expr = expr_without_brackets;
             var errors = new List<PascalABCCompiler.Errors.Error>();
-            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors);
+            var warnings = new List<CompilerWarning>();
+            var tree = controller.GetExpression("test" + Path.GetExtension(FileName), expr, errors, warnings);
             var desc = dc.GetDescription(tree, FileName, expr_without_brackets, controller, line, col, keyw, false);
             return desc;
         }
@@ -769,7 +770,8 @@ namespace CodeCompletion
             {
                 string Text = new StreamReader(s,System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
                 List<Error> Errors = new List<Error>();
-                compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors);
+                List<CompilerWarning> Warnings = new List<CompilerWarning>();
+                compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 if (Errors.Count == 0)
                 {
                     CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
@@ -778,7 +780,8 @@ namespace CodeCompletion
                     sw.Write(Text);
                     sw.Close();
                     Errors.Clear();
-                    compilation_unit cu2 = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(Path.Combine(test_dir + @"\output", Path.GetFileName(s)), Text, Errors);
+                    Warnings.Clear();
+                    compilation_unit cu2 = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(Path.Combine(test_dir + @"\output", Path.GetFileName(s)), Text, Errors, Warnings);
                     if (Errors.Count > 0)
                     {
                         for (int i = 0; i < Errors.Count; i++)
@@ -800,7 +803,8 @@ namespace CodeCompletion
             {
                 string Text = new StreamReader(s, System.Text.Encoding.GetEncoding(1251)).ReadToEnd();
                 List<Error> Errors = new List<Error>();
-                compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors);
+                List<CompilerWarning> Warnings = new List<CompilerWarning>();
+                compilation_unit cu = CodeCompletionController.ParsersController.GetCompilationUnitForFormatter(s, Text, Errors, Warnings);
                 CodeFormatters.CodeFormatter cf = new CodeFormatters.CodeFormatter(2);
                 string Text2 = cf.FormatTree(Text, cu, 1, 1);
                 if (Text != Text2)

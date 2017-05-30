@@ -63,6 +63,11 @@ namespace TreeConverter.LambdaExpressions.Closure
             _identsReferences = new Dictionary<SubstitutionKey, List<ident>>();
         }
 
+        public override void visit(semantic_check_sugared_statement_node sn)
+        {
+            // Не обходить проверочные узлы в визиторе строительства дерева - SSM 1.05.17
+        }
+
         public override void visit(var_def_statement varDefStmt)
         {
             _visitor.visit(varDefStmt);
@@ -615,6 +620,10 @@ namespace TreeConverter.LambdaExpressions.Closure
             ProcessNode(nae.expr);
         }
 
+        public override void visit(with_statement _with_statement)
+        {
+            _visitor.AddError(_visitor.get_location(_with_statement), "WITH_AND_LAMBDAS_NOT_ALLOWED");
+        }
 
         private void VisitProcParameters(formal_parameters procParametres)
         {

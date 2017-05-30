@@ -100,7 +100,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             return statement_list_stack.pop();
         }
-
+        
+        internal statements_list statement_list_stack_first()
+        {
+        	return statement_list_stack.first();
+        }
+        
         public type_constructor type_constructor
         {
             get
@@ -436,7 +441,7 @@ namespace PascalABCCompiler.TreeConverter
                                         common_constructor_call ccc = new common_constructor_call((common_method_node)fn, loc);
                                         //(ssyy) По-видимому, здесь всегда можно присваивать false, так как при создании нового объекта мы сюда не заходим...
                                         ccc._new_obj_awaited = false;
-                                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call && !syntax_tree_visitor.context.can_call_inherited_ctor_call(statement_list_stack_first()))
                                         {
                                             if (syntax_tree_visitor.inherited_ident_processing)
                                                 syntax_tree_visitor.AddError(new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST"));
@@ -490,7 +495,7 @@ namespace PascalABCCompiler.TreeConverter
                         compiled_constructor_call ccc = new compiled_constructor_call(ccn, loc);
                         ccc.parameters.AddRange(exprs);
                         ccc._new_obj_awaited = false;
-                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call)
+                        if (!syntax_tree_visitor.context.allow_inherited_ctor_call && !syntax_tree_visitor.context.can_call_inherited_ctor_call(statement_list_stack_first()))
                         {
                             throw new SimpleSemanticError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
                         }
@@ -883,7 +888,7 @@ namespace PascalABCCompiler.TreeConverter
                     if (syntax_tree_visitor.context.converted_func_stack.size > 0)
                     {
                         common_function_node cfn = syntax_tree_visitor.context.converted_func_stack.first();
-                        if (cfn.is_generic_function)
+                        if (cfn.is_generic_function || !syntax_tree_visitor.context.has_nested_functions && syntax_tree_visitor.context.converted_func_stack.size == 1)
                         {
                             vdn = syntax_tree_visitor.context.add_var_definition(get_temp_arr_name(), loc);
                         }
@@ -1099,8 +1104,20 @@ namespace PascalABCCompiler.TreeConverter
 						{
                             if (is_alone_method_defined)
                             {
-                                error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
-                                //AddError(new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg));
+                                //issue #348
+                                if (formal_param_type == SystemLibrary.SystemLibrary.object_type && factparams[i].type is delegated_methods)
+                                {
+                                    possible_type_convertions ptci = new possible_type_convertions();
+                                    ptci.first = null;
+                                    ptci.second = null;
+                                    ptci.from = factparams[i].type;
+                                    ptci.to = formal_param_type;
+                                    tc.AddElement(ptci);
+                                    factparams[i] = syntax_tree_visitor.CreateDelegateCall((factparams[i].type as delegated_methods).proper_methods[0]);
+                                    return tc;
+                                }
+                                else
+                                    error = new CanNotConvertTypes(factparams[i], factparams[i].type, formal_param_type, locg);
                             }
 							return null;
                             
@@ -1298,11 +1315,17 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (!left_func.is_generic_function_instance && right_func.is_generic_function_instance)
             {
-                return method_compare.greater_method;
+                if (left_func is basic_function_node)
+                    return method_compare.less_method;
+                else
+                    return method_compare.greater_method;
             }
             if (left_func.is_generic_function_instance && !right_func.is_generic_function_instance)
             {
-                return method_compare.less_method;
+                if (right_func is basic_function_node)
+                    return method_compare.greater_method;
+                else
+                    return method_compare.less_method;
             }
             if (left_func.is_generic_function_instance && right_func.is_generic_function_instance)
             {
@@ -1719,17 +1742,12 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						if (is_exist_eq_method_in_list(fn,set_of_possible_functions) != null)
 						{
-                            //!!!!!!!!!!!!!
-                            //DS TODO
-                            //Это нужно чтобы была возможность создавать операторы = := ..., т.к. всегда они добавляюся автоматом
-                            //Надо сначало просматривать заголовки и добавлять такие операторы только если нужно.
                             if (set_of_possible_functions.Count > 0)
                                 if (set_of_possible_functions[0] is basic_function_node)
                                 {
                                     set_of_possible_functions.remove(set_of_possible_functions[0]);
                                     set_of_possible_functions.AddElement(fn);
                                 }
-                            //!!!!!!!!!!!!!
 							
                             functions=functions.Next;
 							continue;
@@ -1878,18 +1896,18 @@ namespace PascalABCCompiler.TreeConverter
             }
 
 			int j=0;
-			while(j<set_of_possible_functions.Count)
-			{
-				if (tcll[j]==null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
-				{
-					tcll.remove_at(j);
-					set_of_possible_functions.remove_at(j);
-				}
-				else
-				{
-					j++;
-				}
-			}
+            while (j < set_of_possible_functions.Count)
+            {
+                if (tcll[j] == null && set_of_possible_functions[j].node_kind != node_kind.indefinite)
+                {
+                    tcll.remove_at(j);
+                    set_of_possible_functions.remove_at(j);
+                }
+                else
+                {
+                    j++;
+                }
+            }
 
 			if (set_of_possible_functions.Count==0 && indefinits.Count == 0)
 			{
@@ -2000,13 +2018,26 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                         type_compare tc = type_table.compare_types(best_function.return_value_type, fn.return_value_type);
-                        if (tc == type_compare.greater_type)
+                        if (best_function.return_value_type.is_standard_type && fn.return_value_type.is_standard_type)
                         {
-                            to_remove.Add(best_function);
-                            best_function = fn;
+                        	if (tc == type_compare.less_type)
+                        	{
+                           		to_remove.Add(best_function);
+                            	best_function = fn;
+                        	}
+                        	else if (tc == type_compare.greater_type)
+                            	to_remove.Add(fn);
                         }
-                        else if (tc == type_compare.less_type)
-                            to_remove.Add(fn);
+                        else
+                        {
+                        	if (tc == type_compare.greater_type)
+                        	{
+                           		to_remove.Add(best_function);
+                            	best_function = fn;
+                        	}
+                        	else if (tc == type_compare.less_type)
+                            	to_remove.Add(fn);
+                        }
                     }
                 }
             }
@@ -2089,7 +2120,46 @@ namespace PascalABCCompiler.TreeConverter
                                     ctn1 = cgn1.original_generic as compiled_type_node;
                             }
 
-                            var ctn2 = p1 as compiled_type_node;
+                            var ctn2 = p2 as compiled_type_node;
+                            if (ctn2 == null)
+                            {
+                                var cgn2 = p2 as compiled_generic_instance_type_node;
+                                if (cgn2 != null)
+                                    ctn2 = cgn2.original_generic as compiled_type_node;
+                            }
+
+                            if (ctn1 == null || ctn2 == null)
+                                continue;
+
+                            System.Type ct1 = ctn1.compiled_type;
+                            if (ct1.IsGenericType && ct1.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct1.GetGenericArguments().Length;
+                                if (c != 0 && (ct1.GetGenericArguments().Last().FullName == null || ct1.GetGenericArguments().Last().FullName.StartsWith("System.Nullable")))
+                                    return f2;
+                            }
+
+                            System.Type ct2 = ctn2.compiled_type;
+                            if (ct2.IsGenericType && ct2.FullName.StartsWith("System.Func"))
+                            {
+                                var c = ct2.GetGenericArguments().Length;
+                                if (c != 0 && (ct2.GetGenericArguments().Last().FullName == null || ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable")))
+                                    return f1;
+                            }
+                        }
+                        /*if (f1.return_value_type != null && f2.return_value_type != null)
+                        {
+                            var p1 = f1.return_value_type;
+                            var p2 = f2.return_value_type;
+                            var ctn1 = p1 as compiled_type_node;
+                            if (ctn1 == null)
+                            {
+                                var cgn1 = p1 as compiled_generic_instance_type_node;
+                                if (cgn1 != null)
+                                    ctn1 = cgn1.original_generic as compiled_type_node;
+                            }
+
+                            var ctn2 = p2 as compiled_type_node;
                             if (ctn2 == null)
                             {
                                 var cgn2 = p2 as compiled_generic_instance_type_node;
@@ -2115,7 +2185,7 @@ namespace PascalABCCompiler.TreeConverter
                                 if (c != 0 && ct2.GetGenericArguments().Last().FullName.StartsWith("System.Nullable"))
                                     return f1;
                             }
-                        }
+                        }*/
                     }
                     
                 }
@@ -2127,6 +2197,10 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (from == to)
                 return 0;
+            if (from is delegated_methods && (from as delegated_methods).empty_param_method != null && (from as delegated_methods).empty_param_method.ret_type != null)
+                from = (from as delegated_methods).empty_param_method.ret_type;
+            if (to is delegated_methods && (to as delegated_methods).empty_param_method != null && (to as delegated_methods).empty_param_method.ret_type != null)
+                to = (to as delegated_methods).empty_param_method.ret_type;
             type_compare tc = type_table.compare_types(from, to);
             if (tc == type_compare.non_comparable_type)
                 return 1000;

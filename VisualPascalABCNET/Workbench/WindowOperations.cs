@@ -206,6 +206,11 @@ namespace VisualPascalABC
                 OpenBrowserDocuments.Remove(text);
         }
 
+        public void AddTabWithUrl(string title, string url)
+        {
+            AddTabWithUrl(MainDockPanel, title, url);
+        }
+
         public void AddTabWithUrl(DockPanel tabControl, string title, string url)
         {
             WebBrowserControl tp = null;//new WebBrowserControl();

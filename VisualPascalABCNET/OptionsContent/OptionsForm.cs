@@ -18,6 +18,7 @@ namespace VisualPascalABC.OptionsContent
         string strprefix = "VP_OPTIONSFORM_";
         public OptionsForm(OptionsContentEngine contentEngine)
         {
+            var sl = 50;
             this.contentEngine = contentEngine;
             InitializeComponent();
             foreach (IOptionsContent content in contentEngine.ContentList)

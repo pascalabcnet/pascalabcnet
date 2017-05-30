@@ -1,14 +1,15 @@
-/// Модуль электронного задачника Programming Taskbook 4
-unit PT4;
+﻿/// Модуль электронного задачника Programming Taskbook 4
+unit PT4;  
 
 //------------------------------------------------------------------------------
 // Модуль для подключения задачника Programming Taskbook
-// Версия 4.13
+// Версия 4.15
 // Copyright (c) 2006-2008 DarkStar, SSM
 // Copyright (c) 2010 М.Э.Абрамян, дополнения к версии 1.3
 // Copyright (c) 2014-2015 М.Э.Абрамян, дополнения к версии 4.13
 // Copyright (c) 2015 М.Э.Абрамян, дополнения к версии 4.14
-// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2015
+// Copyright (c) 2016 М.Э.Абрамян, дополнения к версии 4.15
+// Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2016
 //------------------------------------------------------------------------------
 
 {$apptype windows}
@@ -132,6 +133,54 @@ function ReadlnPNode: PNode;
 /// Возвращает введенное значение типа Node
 function ReadlnNode: Node;
 
+// == Версия 4.15. Дополнения ==
+
+/// Возвращает введенное значение типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadInteger(prompt: string): integer;
+/// Возвращает введенное значение типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadReal(prompt: string): real;
+/// Возвращает введенное значение типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadChar(prompt: string): char;
+/// Возвращает введенное значение типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadString(prompt: string): string;
+/// Возвращает введенное значение типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadBoolean(prompt: string): boolean;
+/// Возвращает введенное значение типа PNode.
+/// Строковое приглашение prompt игнорируется
+function ReadPNode(prompt: string): PNode;
+/// Возвращает введенное значение типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadNode(prompt: string): Node;
+
+/// Возвращает введенное значение типа integer.
+/// Строковое приглашение prompt игнорируется
+function ReadlnInteger(prompt: string): integer;
+/// Возвращает введенное значение типа real.
+/// Строковое приглашение prompt игнорируется
+function ReadlnReal(prompt: string): real;
+/// Возвращает введенное значение типа char.
+/// Строковое приглашение prompt игнорируется
+function ReadlnChar(prompt: string): char;
+/// Возвращает введенное значение типа string.
+/// Строковое приглашение prompt игнорируется
+function ReadlnString(prompt: string): string;
+/// Возвращает введенное значение типа boolean.
+/// Строковое приглашение prompt игнорируется
+function ReadlnBoolean(prompt: string): boolean;
+/// Возвращает введенное значение типа PNode.
+/// Строковое приглашение prompt игнорируется
+function ReadlnPNode(prompt: string): PNode;
+/// Возвращает введенное значение типа Node.
+/// Строковое приглашение prompt игнорируется
+function ReadlnNode(prompt: string): Node;
+
+// == Версия 4.15. Конец дополнений ==
+
 procedure GetR(var param: real);
 procedure GetN(var param: integer);
 procedure GetC(var param: char);
@@ -195,8 +244,14 @@ procedure Read(var val: PNode);
 procedure Readln;
 
 procedure Print(params args: array of object);
-
 procedure Println(params args: array of object);
+
+// == Версия 4.15. Дополнения ==
+
+procedure Print(s: string);
+procedure Println(s: string);
+
+// == Версия 4.15. Конец дополнений ==
 
 /// Освобождает память, выделенную динамически, на которую указывает p
 procedure Dispose(p: pointer);
@@ -318,27 +373,27 @@ function ReadArrString(n: integer): array of string;
 
 /// Вводит n целых чисел
 /// и возвращает введенные числа в виде последовательности
-function ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+function ReadSeqInteger(n: integer): sequence of integer;
 
 /// Вводит n вещественных чисел
 /// и возвращает введенные числа в виде последовательности
-function ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+function ReadSeqReal(n: integer): sequence of real;
 
 /// Вводит n строк 
 /// и возвращает введенные строки в виде последовательности
-function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(n: integer): sequence of string;
 
 /// Вводит размер набора целых чисел и его элементы
 /// и возвращает введенный набор в виде последовательности
-function ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+function ReadSeqInteger(): sequence of integer;
 
 /// Вводит размер набора вещественных чисел и его элементы
 /// и возвращает введенный набор в виде последовательности
-function ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+function ReadSeqReal(): sequence of real;
 
 /// Вводит размер набора строк и его элементы
 /// и возвращает введенный набор в виде последовательности
-function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(): sequence of string;
 
 /// Вводит размер набора целых чисел и его элементы
 /// и возвращает введенный набор в виде массива
@@ -369,6 +424,58 @@ function  ReadMatrString(m,n: integer): array [,] of string;
 
 /// Вводит размеры матрицы и затем строковую матрицу указанных размеров по строкам
 function  ReadMatrString(): array [,] of string;
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of integer);
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of real);
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of string);
+
+procedure ReadMatr(var m: integer; var a: array [,] of integer);
+
+procedure ReadMatr(var m: integer; var a: array [,] of real);
+
+procedure ReadMatr(var m: integer; var a: array [,] of string);
+
+procedure ReadMatr(var m, n: integer; var a: array of array of integer);
+
+procedure ReadMatr(var m, n: integer; var a: array of array of real);
+
+procedure ReadMatr(var m, n: integer; var a: array of array of string);
+
+procedure ReadMatr(var m: integer; var a: array of array of integer);
+
+procedure ReadMatr(var m: integer; var a: array of array of real);
+
+procedure ReadMatr(var m: integer; var a: array of array of string);
+
+procedure ReadMatr(var m, n: integer; var a: List<List<integer>>);
+
+procedure ReadMatr(var m, n: integer; var a: List<List<real>>);
+
+procedure ReadMatr(var m, n: integer; var a: List<List<string>>);
+
+procedure ReadMatr(var m: integer; var a: List<List<integer>>);
+
+procedure ReadMatr(var m: integer; var a: List<List<real>>);
+
+procedure ReadMatr(var m: integer; var a: List<List<string>>);
+
+procedure WriteMatr<T>(a: array[,] of T);
+
+procedure WriteMatr<T>(a: array of array of T);
+
+procedure WriteMatr<T>(a: List<List<T>>);
+
+// == Дополнения 2016.07
+
+procedure PrintMatr<T>(a: array[,] of T);
+
+procedure PrintMatr<T>(a: array of array of T);
+
+procedure PrintMatr<T>(a: List<List<T>>);
+
+// == Конец дополнений 2016.07
 
 // == Конец дополнений к версии 4.14 ==
 
@@ -610,7 +717,6 @@ end;
 function Node.getNext:Node;
 var tmp: IntPtr;
     tmpNode: Node;
-    i: integer;
 begin
   result := nil;
   if isDisposed then
@@ -618,7 +724,7 @@ begin
   if x.Next <> IntPtr.Zero then 
   begin
      tmp := x.Next;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then 
@@ -648,14 +754,13 @@ end;
 function Node.getPrev: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Prev <> IntPtr.Zero then begin
      tmp := x.Prev;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -684,14 +789,13 @@ end;
 function Node.getLeft: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Left <> IntPtr.Zero then begin
      tmp := x.Left;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -720,14 +824,13 @@ end;
 function Node.getRight: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Right <> IntPtr.Zero then begin
      tmp := x.Right;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -756,14 +859,13 @@ end;
 function Node.getParent: Node;
 var tmp: IntPtr;
     tmpNode:Node;
-    i:integer;
 begin
   result := nil;
   if isDisposed then
      raise new ObjectDisposedException(ToString, eMessage);
   if x.Parent <> IntPtr.Zero then begin
      tmp := x.Parent;
-     for i:=0 to loadNodes.Count-1 do
+     for var i:=0 to loadNodes.Count-1 do
        if tmp.Equals(Node(loadNodes[i]).addr) then 
          result:=Node(loadNodes[i]);
      if result=nil then begin           
@@ -886,7 +988,6 @@ function GetNode: Node;
 var 
   p: IntPtr;
   sNode: InternalNode;
-  i: integer;
 begin
   //raise new NotSupportedException('Работа с динамическими структурами задачника PT4 не поддерживается в этой версии компилятора. Исправление ошибки планируется в следуйщей версии');
   //result := new PT4Node(sNode, p);// fixme здесь ошибка генерации кода!
@@ -901,7 +1002,7 @@ begin
   if p = IntPtr.Zero then
     result := nil
   else begin  
-    for i:=0 to loadNodes.Count-1 do 
+    for var i:=0 to loadNodes.Count-1 do 
       if sNode=Node(loadNodes[i]).x then
          result := Node(loadNodes[i]);
     if result = nil then begin
@@ -987,6 +1088,80 @@ function ReadlnNode: Node;
 begin
   Result := GetNode;
 end;
+
+// == Версия 4.15. Дополнения ==
+
+function ReadInteger(prompt: string): integer;
+begin
+  Result := GetInt;
+end;
+
+function ReadReal(prompt: string): real;
+begin
+  Result := GetReal;
+end;
+
+function ReadChar(prompt: string): char;
+begin
+  Result := GetChar;
+end;
+
+function ReadString(prompt: string): string;
+begin
+  Result := GetString;
+end;
+
+function ReadBoolean(prompt: string): boolean;
+begin
+  Result := GetBool;
+end;
+
+function ReadPNode(prompt: string): PNode;
+begin
+  Result := GetPNode;
+end;
+
+function ReadNode(prompt: string): Node;
+begin
+  Result := GetNode;
+end;
+
+function ReadlnInteger(prompt: string): integer;
+begin
+  Result := GetInt;
+end;
+
+function ReadlnReal(prompt: string): real;
+begin
+  Result := GetReal;
+end;
+
+function ReadlnChar(prompt: string): char;
+begin
+  Result := GetChar;
+end;
+
+function ReadlnString(prompt: string): string;
+begin
+  Result := GetString;
+end;
+
+function ReadlnBoolean(prompt: string): boolean;
+begin
+  Result := GetBool;
+end;
+
+function ReadlnPNode(prompt: string): PNode;
+begin
+  Result := GetPNode;
+end;
+
+function ReadlnNode(prompt: string): Node;
+begin
+  Result := GetNode;
+end;
+
+// == Версия 4.15. Конец дополнений ==
 
 // -----------------------------------------------------
 //                      Процедуры Put
@@ -1163,6 +1338,20 @@ begin
   Print(args);
 end;
 
+// == Версия 4.15. Дополнения ==
+
+procedure Print(s: string);
+begin
+  write(s);
+end;
+
+procedure Println(s: string);
+begin
+  write(s);
+end;
+
+// == Версия 4.15. Конец дополнений ==
+
 {procedure write;
 begin
 end;}
@@ -1213,6 +1402,7 @@ var __initialized := false;
 procedure __InitModule;
 begin
   CurrentIOSystem := new IOPT4System;
+  PrintDelimDefault := '';
   loadNodes := new ArrayList;  
   ExecuteBeforeProcessTerminateIn__Mode += PT4_ExecuteBeforeProcessTerminateIn__Mode;
   StartPT(512);    
@@ -1400,32 +1590,32 @@ end;
 
 // == Версия 4.14. Дополнения ==
 
-function  ReadSeqInteger(): System.Collections.Generic.IEnumerable<integer>;
+function  ReadSeqInteger(): sequence of integer;
 begin
   result := Range(1, GetInteger()).Select(e -> GetInteger()).ToArray();
 end;  
 
-function  ReadSeqReal(): System.Collections.Generic.IEnumerable<real>;
+function  ReadSeqReal(): sequence of real;
 begin
   result := Range(1, GetInteger()).Select(e -> GetReal()).ToArray();
 end;  
 
-function ReadSeqString(): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(): sequence of string;
 begin
   result := Range(1, GetInteger()).Select(e -> GetString()).ToArray();
 end;           
 
-function  ReadSeqInteger(n: integer): System.Collections.Generic.IEnumerable<integer>;
+function  ReadSeqInteger(n: integer): sequence of integer;
 begin
   result := Range(1, n).Select(e -> GetInteger()).ToArray();
 end;  
 
-function  ReadSeqReal(n: integer): System.Collections.Generic.IEnumerable<real>;
+function  ReadSeqReal(n: integer): sequence of real;
 begin
   result := Range(1, n).Select(e -> GetReal()).ToArray();
 end;  
 
-function ReadSeqString(n: integer): System.Collections.Generic.IEnumerable<string>;
+function ReadSeqString(n: integer): sequence of string;
 begin
   result := Range(1, n).Select(e -> GetString()).ToArray();
 end;           
@@ -1460,7 +1650,7 @@ begin
   result := Range(1, n).Select(e -> GetString()).ToArray();
 end;   
 
-function  ReadMatrInteger(m,n: integer): array [,] of integer;
+function ReadMatrInteger(m,n: integer): array [,] of integer;
 begin
   result := new integer[m,n];
   for var i := 0 to m-1 do
@@ -1468,7 +1658,7 @@ begin
       result[i,j] := ReadInteger;
 end;
 
-function  ReadMatrInteger(): array [,] of integer;
+function ReadMatrInteger(): array [,] of integer;
 begin
   result := ReadMatrInteger(ReadInteger,ReadInteger);
 end;
@@ -1499,9 +1689,179 @@ begin
   result := ReadMatrString(ReadInteger,ReadInteger);
 end;        
 
+procedure ReadMatr(var m, n: integer; var a: array [,] of integer);
+begin
+  read(m); read(n);
+  a := new integer[m, n];
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of real);
+begin
+  read(m); read(n);
+  a := new real[m, n];
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array [,] of string);
+begin
+  read(m); read(n);
+  a := new string[m, n];
+  for var i := 0 to m - 1 do
+    for var j := 0 to n - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m: integer; var a: array [,] of integer);
+begin
+  read(m);
+  a := new integer[m, m];
+  for var i := 0 to m - 1 do
+    for var j := 0 to m - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m: integer; var a: array [,] of real);
+begin
+  read(m);
+  a := new real[m, m];
+  for var i := 0 to m - 1 do
+    for var j := 0 to m - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m: integer; var a: array [,] of string);
+begin
+  read(m);
+  a := new string[m, m];
+  for var i := 0 to m - 1 do
+    for var j := 0 to m - 1 do
+      read(a[i,j]);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array of array of integer);
+begin
+  read(m); read(n);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrInteger(n);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array of array of real);
+begin
+  read(m); read(n);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrReal(n);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: array of array of string);
+begin
+  read(m); read(n);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrString(n);
+end;
+
+procedure ReadMatr(var m: integer; var a: array of array of integer);
+begin
+  read(m);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrInteger(m);
+end;
+
+procedure ReadMatr(var m: integer; var a: array of array of real);
+begin
+  read(m);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrReal(m);
+end;
+
+procedure ReadMatr(var m: integer; var a: array of array of string);
+begin
+  read(m);
+  SetLength(a, m);
+  for var i := 0 to m - 1 do
+    a[i] := ReadArrString(m);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: List<List<integer>>);
+begin
+  read(m); read(n);
+  a := new List<List<integer>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqInteger(n).ToList);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: List<List<real>>);
+begin
+  read(m); read(n);
+  a := new List<List<real>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqReal(n).ToList);
+end;
+
+procedure ReadMatr(var m, n: integer; var a: List<List<string>>);
+begin
+  read(m); read(n);
+  a := new List<List<string>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqString(n).ToList);
+end;
+
+procedure ReadMatr(var m: integer; var a: List<List<integer>>);
+begin
+  read(m);
+  a := new List<List<integer>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqInteger(m).ToList);
+end;
+
+procedure ReadMatr(var m: integer; var a: List<List<real>>);
+begin
+  read(m);
+  a := new List<List<real>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqReal(m).ToList);
+end;
+
+procedure ReadMatr(var m: integer; var a: List<List<string>>);
+begin
+  read(m);
+  a := new List<List<string>>(m);
+  for var i := 0 to m - 1 do
+    a.Add(ReadSeqString(m).ToList);
+end;
+
+procedure WriteMatr<T>(a: array[,] of T);
+begin
+  for var i := 0 to a.GetLength(0)-1 do
+    for var j := 0 to a.GetLength(1)-1 do
+      write(a[i,j]);
+end;
+
+procedure WriteMatr<T>(a: array of array of T);
+begin
+  for var i := 0 to a.Length-1 do
+    for var j := 0 to a[i].Length-1 do
+      write(a[i][j]);
+end;
+
+procedure WriteMatr<T>(a: List<List<T>>);
+begin
+  for var i := 0 to a.Count-1 do
+    for var j := 0 to a[i].Count-1 do
+      write(a[i][j]);
+end;
 
 /// Выводит размер и элементы последовательности
-procedure System.Collections.Generic.IEnumerable<T>.WriteAll();
+procedure WriteAll<T>(self: sequence of T); extensionmethod;
 begin
   var b := self.ToArray();
   PT4.Put(b.Length);
@@ -1510,7 +1870,7 @@ begin
 end;
 
 /// Выводит элементы последовательности
-procedure System.Collections.Generic.IEnumerable<T>.Write();
+procedure Write<T>(self: sequence of T); extensionmethod;
 begin
   var b := self.ToArray();
   foreach e : T in b do
@@ -1532,13 +1892,86 @@ begin
     PT4.Put(self[i,j]);
 end;
 
+// == Дополнения 2016.07
+
+procedure PrintMatr<T>(a: array[,] of T);
+begin
+  for var i := 0 to a.GetLength(0)-1 do
+    for var j := 0 to a.GetLength(1)-1 do
+      write(a[i,j]);
+end;
+
+procedure PrintMatr<T>(a: array of array of T);
+begin
+  for var i := 0 to a.Length-1 do
+    for var j := 0 to a[i].Length-1 do
+      write(a[i][j]);
+end;
+
+procedure PrintMatr<T>(a: List<List<T>>);
+begin
+  for var i := 0 to a.Count-1 do
+    for var j := 0 to a[i].Count-1 do
+      write(a[i][j]);
+end;
+
+/// Выводит размер и элементы последовательности
+procedure PrintAll<T>(self: sequence of T); extensionmethod;
+begin
+  var b := self.ToArray();
+  PT4.Put(b.Length);
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит размер и элементы динамического массива
+procedure PrintAll<T>(self: array of T); extensionmethod;
+begin
+  PT4.Put(self.Length);
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит размер и элементы динамического массива
+procedure WriteAll<T>(self: array of T); extensionmethod;
+begin
+  PT4.Put(self.Length);
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит элементы последовательности
+procedure Writeln<T>(self: sequence of T); extensionmethod;
+begin
+  var b := self.ToArray();
+  foreach e : T in b do
+    PT4.Put(e);
+end;
+
+/// Выводит элементы динамического массива
+procedure Writeln<T>(self: array of T); extensionmethod;
+begin
+  for var i:=0 to self.Length-1 do
+    PT4.Put(self[i]);
+end;
+
+/// Выводит элементы матрицы
+procedure Writeln<T>(self: array [,] of T); extensionmethod;
+begin
+  for var i:=0 to self.GetLength(0)-1 do
+  for var j:=0 to self.GetLength(1)-1 do
+    PT4.Put(self[i,j]);
+end;
+
+// == Конец дополнений 2016.07
+
+
 /// Выводит в разделе отладки окна задачника 
 /// комментарий cmt, размер последовательности и значения, 
 /// полученные из элементов последовательности 
 /// с помощью указанного лямбда-выражения
-function System.Collections.Generic.IEnumerable<TSource>.Show
-  (cmt: string; selector: System.Func<TSource, string>): 
-  System.Collections.Generic.IEnumerable<TSource>;
+
+function Show<TSource>(self: sequence of TSource; cmt: string; selector: System.Func<TSource, string>): sequence of TSource; extensionmethod;
 begin
   var b := self.Select(selector).ToArray();
   PT4.Show(cmt);
@@ -1553,17 +1986,14 @@ end;
 /// размер последовательности и значения, 
 /// полученные из элементов последовательности 
 /// с помощью указанного лямбда-выражения
-function System.Collections.Generic.IEnumerable<TSource>.Show
-  (selector: System.Func<TSource, string>): 
-  System.Collections.Generic.IEnumerable<TSource>;
+function Show<TSource>(Self: sequence of TSource; selector: System.Func<TSource, string>): sequence of TSource; extensionmethod;
 begin
   result := self.Show('', selector); 
 end;
 
 /// Выводит в разделе отладки окна задачника 
 /// комментарий cmt, размер последовательности и ее элементы
-function System.Collections.Generic.IEnumerable<TSource>.Show(cmt: string): 
-  System.Collections.Generic.IEnumerable<TSource>;
+function Show<TSource>(Self: sequence of TSource; cmt: string): sequence of TSource; extensionmethod;
 begin
   result := self;
   var a := self.ToArray;
@@ -1580,10 +2010,10 @@ begin
     string.Format(s, e).Replace(',', '.'));
 end;
 
+
 /// Выводит в разделе отладки окна задачника 
 /// размер последовательности и ее элементы.
-function System.Collections.Generic.IEnumerable<TSource>.Show(): 
-  System.Collections.Generic.IEnumerable<TSource>;
+function Show<TSource>(Self: sequence of TSource): sequence of TSource; extensionmethod;
 begin
   result := self.Show(''); 
 end;

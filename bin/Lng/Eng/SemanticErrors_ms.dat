@@ -7,3 +7,8 @@ TUPLE_TYPE_ERROR=Bad element in Tuple type
 INTEGER_VALUE_EXPECTED=Integer value expected
 BAD_SLICE_OBJECT=Slices are allowed for strings, dynamic arrays and lists only
 ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED=Only in short function definitions you can omit the return type
+ONE_TKIDENTIFIER=Type here must be identifier 
+SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR=Sugared node {0} must not be visited in syntax_tree_visitor
+MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}=Missed semantic check for sugared node {0}
+TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Count of Tuple elements must be <=7
+

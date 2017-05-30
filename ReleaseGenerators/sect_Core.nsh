@@ -11,9 +11,7 @@
     File "..\bin\SemanticTree.dll"
     File "..\bin\SyntaxTree.dll"
     File "..\bin\SyntaxTreeConverters.dll"
-    File "..\bin\StandardSyntaxTreeConverter.dll"
     File "..\bin\SyntaxVisitors.dll"
-    File "..\bin\YieldConversionSyntax.dll"
     File "..\bin\YieldHelpers.dll"
 	File "..\bin\ICSharpCode.NRefactory.dll"
     File "..\bin\TreeConverter.dll"
@@ -49,10 +47,8 @@
     ${AddFile} "SemanticTree.dll"
     ${AddFile} "SyntaxTree.dll"
     ${AddFile} "SyntaxTreeConverters.dll"
-    ${AddFile} "StandardSyntaxTreeConverter.dll"
     ${AddFile} "YieldHelpers.dll"
     ${AddFile} "SyntaxVisitors.dll"
-    ${AddFile} "YieldConversionSyntax.dll"
 	${AddFile} "ICSharpCode.NRefactory.dll"
     ${AddFile} "TreeConverter.dll"
     ${AddFile} "OptimizerConversion.dll"
@@ -66,7 +62,7 @@
     SetOutPath "$INSTDIR\Lib"
     ;File ..\bin\Lib\*.pcu; eto ploho nuzhno kazhdyj pcu raspisyvat
 	
-	File ..\bin\Lib\__RedirectIOMode.pcu
+    File ..\bin\Lib\__RedirectIOMode.pcu
     File ..\bin\Lib\__RunMode.pcu
     File ..\bin\Lib\ABCButtons.pcu
     File ..\bin\Lib\ABCHouse.pcu
@@ -87,6 +83,7 @@
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
     File ..\bin\Lib\PABCSystem.pcu
+    File ..\bin\Lib\PABCExtensions.pcu
     File ..\bin\Lib\PointerTools.pcu
     File ..\bin\Lib\PointRect.pcu
     File ..\bin\Lib\PT4.pcu
@@ -106,10 +103,12 @@
     File ..\bin\Lib\MPI.pcu
     File ..\bin\Lib\ClientServer.pcu
     File ..\bin\Lib\OpenGL.pcu
+    File ..\bin\Lib\PT4MakerNetX.pcu
+    File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\PABCRtl.dll
 	File ..\bin\Lib\PABCRtl32.dll
 	
-	${AddFile} "__RedirectIOMode.pcu"
+    ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
     ${AddFile} "ABCButtons.pcu"
     ${AddFile} "ABCHouse.pcu"
@@ -121,7 +120,7 @@
     ${AddFile} "CRT.pcu"
     ${AddFile} "DMCollect.pcu"
     ${AddFile} "DMTaskMaker.pcu"
-	${AddFile} "DMZadan.pcu"
+    ${AddFile} "DMZadan.pcu"
     ${AddFile} "Drawman.pcu"
     ${AddFile} "DrawManField.pcu"
     ${AddFile} "Events.pcu"
@@ -132,6 +131,7 @@
     ${AddFile} "GraphABCHelper.pcu"
     ${AddFile} "IniFile.pcu"
     ${AddFile} "PABCSystem.pcu"
+    ${AddFile} "PABCExtensions.pcu"
     ${AddFile} "PointerTools.pcu"
     ${AddFile} "PointRect.pcu"
     ${AddFile} "PT4.pcu"
@@ -140,7 +140,7 @@
     ${AddFile} "RobotTaskMaker.pcu"
     ${AddFile} "RobotZadan.pcu"
     ${AddFile} "Sockets.pcu"
-	${AddFile} "Timers.pcu"
+    ${AddFile} "Timers.pcu"
     ${AddFile} "Utils.pcu"
     ${AddFile} "VCL.pcu"
     ${AddFile} "PT4TaskMakerNET.pcu"
@@ -151,6 +151,8 @@
     ${AddFile} "MPI.pcu"
     ${AddFile} "ClientServer.pcu"
     ${AddFile} "OpenGL.pcu"
+    ${AddFile} "PT4MakerNetX.pcu"
+    ${AddFile} "Speech.pcu"
 	${AddFile} "PABCRtl.dll"
 	${AddFile} "PABCRtl.pdb"
 	Push "Lib\PABCRtl.dll"
@@ -178,6 +180,7 @@
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
     File ..\bin\Lib\PABCSystem.pas
+    File ..\bin\Lib\PABCExtensions.pas
     File ..\bin\Lib\PointerTools.pas
     File ..\bin\Lib\PointRect.pas
     File ..\bin\Lib\PT4.pas
@@ -187,7 +190,7 @@
     File ..\bin\Lib\RobotTaskMaker.pas
 ;    File ..\bin\Lib\RobotZadan.pas
     File ..\bin\Lib\Sockets.pas
-	File ..\bin\Lib\Timers.pas
+    File ..\bin\Lib\Timers.pas
     File ..\bin\Lib\Utils.pas
     File ..\bin\Lib\VCL.pas
     File ..\bin\Lib\PT4TaskMakerNET.pas
@@ -197,6 +200,8 @@
     File ..\bin\Lib\MPI.pas
     File ..\bin\Lib\ClientServer.pas
     File ..\bin\Lib\OpenGL.pas
+    File ..\bin\Lib\PT4MakerNetX.pas
+    File ..\bin\Lib\Speech.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -222,6 +227,7 @@
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"
     ${AddFile} "PABCSystem.pas"
+    ${AddFile} "PABCExtensions.pas"
     ${AddFile} "PointerTools.pas"
     ${AddFile} "PointRect.pas"
     ${AddFile} "PT4.pas"
@@ -241,6 +247,8 @@
     ${AddFile} "MPI.pas"
     ${AddFile} "ClientServer.pas"
     ${AddFile} "OpenGL.pas"
+    ${AddFile} "PT4MakerNetX.pas"
+    ${AddFile} "Speech.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	
@@ -248,10 +256,6 @@
     Push "OptimizerConversion.dll"
     Call NGEN
 	Push "SyntaxVisitors.dll"
-    Call NGEN
-    Push "YieldConversionSyntax.dll"
-    Call NGEN
-    Push "StandardSyntaxTreeConverter.dll"
     Call NGEN
     
 ;    SetOutPath "$INSTDIR\Output"

@@ -7,8 +7,8 @@ unit GraphABC;
 //ne udaljat, IB 7.10.08 
 //с дополнениями 2015.01 (mabr) 
 {$apptype windows} 
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$reference '%GAC%\System.Windows.Forms.dll'}
+{$reference '%GAC%\System.Drawing.dll'}
 {$gendoc true}
 
 interface
@@ -234,10 +234,16 @@ function GetPixel(x,y: integer): Color;
 
 /// Устанавливает текущую позицию рисования в точку (x,y)
 procedure MoveTo(x,y: integer);
+/// Перемещает текущую позицию рисования на вектор (dx,dy)
+procedure MoveRel(dx,dy: integer);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: integer);
 /// Рисует отрезок от текущей позиции до точки (x,y) цветом c. Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: integer; c: Color);
+/// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineRel(dx,dy: integer);
+/// Рисует отрезок цветом c от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineRel(dx,dy: integer; c: Color);
 
 /// Рисует отрезок от точки (x1,y1) до точки (x2,y2)
 procedure Line(x1,y1,x2,y2: integer);
@@ -849,6 +855,31 @@ type
 /// Возвращает центр графического окна
     function Center: Point;
   end;
+  
+  GraphABCStatusPanel = class
+  private
+    p: System.Windows.Forms.ToolStripStatusLabel;
+    procedure SetText(s: string);
+    function GetText: string;
+  public
+    constructor (pp: System.Windows.Forms.ToolStripStatusLabel);
+    property Text: string read GetText write SetText;
+  end;
+  
+  GraphABCStatus = class
+  private
+    procedure SetText(s: string);
+    function GetText: string;
+    procedure SetPanelsCount(n: integer);
+    function GetPanelsCount: integer;
+    function GetItem(i: integer): GraphABCStatusPanel;
+  public
+    procedure Show;
+    procedure Hide;
+    property Text: string read GetText write SetText;
+    property Items[i: integer]: GraphABCStatusPanel read GetItem; default;
+    property PanelsCount: integer read GetPanelsCount write SetPanelsCount;
+  end;
 
 /// Тип рисунка GraphABC
   Picture = class
@@ -1023,6 +1054,8 @@ function Brush: GraphABCBrush;
 function Font: GraphABCFont;
 /// Возвращает систему координат GraphABC
 function Coordinate: GraphABCCoordinate;
+/// Строка статуса
+function StatusBar: GraphABCStatus;
 
 function GraphWindowGraphics: Graphics;
 function GraphBufferGraphics: Graphics;
@@ -1100,6 +1133,7 @@ var
   _Brush := new GraphABCBrush;
   _Font := new GraphABCFont;
   _Coordinate := new GraphABCCoordinate;
+  _StatusBar := new GraphABCStatus;
 
   __buffer: Bitmap;
   bmp: Bitmap; 
@@ -1686,6 +1720,108 @@ begin
   Result := FontName;
 end;
 
+var _StatusStrip: System.Windows.Forms.StatusStrip := nil;
+
+procedure AddStatusBarP;
+begin
+  _StatusStrip := new System.Windows.Forms.StatusStrip;
+  _StatusStrip.Items.Add(new System.Windows.Forms.ToolStripStatusLabel);
+  _StatusStrip.BackColor := Color.White;
+  MainForm.Controls.Add(_StatusStrip);
+end;
+
+procedure AddStatusBar;
+begin
+  f.Invoke(AddStatusBarP);
+end;
+
+// GraphABCStatusPanel
+constructor GraphABCStatusPanel.Create(pp: System.Windows.Forms.ToolStripStatusLabel);
+begin
+  p := pp
+end;
+
+procedure SetTextP(p: System.Windows.Forms.ToolStripStatusLabel; s: string);
+begin
+  p.Text := s
+end;
+
+procedure GraphABCStatusPanel.SetText(s: string);
+begin
+  f.Invoke(SetTextP,p,s)
+end;
+
+function GraphABCStatusPanel.GetText: string;
+begin
+  Result := p.Text
+end;
+
+procedure SetStatusTextP(s: string);
+begin
+  _StatusStrip.Items[0].Text := s
+end;
+
+// GraphABCStatus
+procedure GraphABCStatus.SetText(s: string);
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  f.Invoke(SetStatusTextP,s);  
+end;
+
+function GraphABCStatus.GetText: string;
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  Result := _StatusStrip.Items[0].Text
+end;
+
+procedure SetPanelsCountP(n: integer);
+begin
+  if n<1 then n := 1;
+  if n>10 then n := 10;
+  if n>_StatusStrip.Items.Count then
+  begin
+    var d := n - _StatusStrip.Items.Count;
+    for var i:=1 to d do
+      _StatusStrip.Items.Add(new System.Windows.Forms.ToolStripStatusLabel);
+  end;
+end;
+
+procedure GraphABCStatus.SetPanelsCount(n: integer);
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  f.Invoke(SetPanelsCountP,n);       
+end;
+
+function GraphABCStatus.GetPanelsCount := _StatusStrip.Items.Count;
+
+function GraphABCStatus.GetItem(i: integer): GraphABCStatusPanel;
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  var p := _StatusStrip.Items[i] as System.Windows.Forms.ToolStripStatusLabel; 
+  Result := new GraphABCStatusPanel(p);
+end;
+
+procedure GraphABCStatus.Show;
+begin
+  if _StatusStrip<>nil then 
+   _StatusStrip.Visible := True
+  else AddStatusBar   
+end;
+
+procedure PHide;
+begin
+  _StatusStrip.Visible := False;
+end;
+
+procedure GraphABCStatus.Hide;
+begin
+  f.Invoke(PHide);
+end;
+
 // Picture
 constructor Picture.Create(w,h: integer);
 begin
@@ -1952,9 +2088,9 @@ begin
   //(x+w/2, y+h/2) - центр масштабированного изображения
   //(x+new_w/2, y+new_h/2) - центр масштабированного и повернутого изображения
   if NotLockDrawing then
-  gr.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
+    gr.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
   if DrawInBuffer then
-  gbmp.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
+    gbmp.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
   Monitor.Exit(f);
 end;     
 
@@ -2308,10 +2444,9 @@ begin
 end;
 
 procedure ResizeHelper;
-var t: SmoothingMode;
 begin
   Monitor.Enter(f);
-  t := gr.SmoothingMode;
+  var t := gr.SmoothingMode;
   var m := gr.Transform;
   gr := Graphics.FromHwnd(f.Handle);
   gr.Transform := m;
@@ -2388,6 +2523,12 @@ begin
   y_coord := y;
 end;
 
+procedure MoveRel(dx,dy: integer);
+begin
+  x_coord += dx;
+  y_coord += dy;
+end;
+
 procedure LineTo(x,y: integer);
 begin
   Line(x_coord,y_coord,x,y);
@@ -2400,6 +2541,16 @@ begin
   Line(x_coord,y_coord,x,y,c);
   x_coord := x;
   y_coord := y;
+end;
+
+procedure LineRel(dx,dy: integer);
+begin
+  LineTo(x_coord + dx,y_coord + dy);
+end;
+
+procedure LineRel(dx,dy: integer; c: Color);
+begin
+  LineTo(x_coord + dx,y_coord + dy,c);
 end;
 
 procedure Line(x1,y1,x2,y2: integer; c: Color);
@@ -2904,7 +3055,10 @@ end;
 procedure SetPenWidth(Width: integer);
 begin
   lock f do
+  begin
     Pen.NETPen.Width := Width;
+    _ColorLinePen.Width := Width;
+  end;  
 end;
 
 function PenWidth: integer;
@@ -3245,10 +3399,8 @@ begin
 end;
 
 procedure SetWindowPos(l,t: integer);
-var p: Proc2Integer;
 begin
-  p := ChangeFormPos;
-  f.Invoke(p,l,t);
+  f.Invoke(ChangeFormPos,l,t);
 end;
 
 procedure ChangeFormClientSize(w,h: integer); // вспомогательная
@@ -3258,11 +3410,8 @@ begin
 end;
 
 procedure SetWindowSize(w,h: integer);
-var p: Proc2Integer;
 begin
-  p := ChangeFormClientSize;
-  f.Invoke(p,w,h);
-  //ResizeHelper;
+  f.Invoke(ChangeFormClientSize,w,h);
 end;
 
 function GraphBoxWidth: integer;
@@ -3309,10 +3458,8 @@ begin
 end;
 
 procedure SetWindowTitle(s: string);
-var p: Proc1String;
 begin
-  p := ChangeFormTitle;
-  f.Invoke(p,s);
+  f.Invoke(ChangeFormTitle,s);
 end;
 
 procedure SetWindowCaption(s: string);
@@ -3514,6 +3661,11 @@ end;
 function Coordinate: GraphABCCoordinate;
 begin
   Result := _Coordinate;
+end;
+
+function StatusBar: GraphABCStatus;
+begin
+  Result := _StatusBar;
 end;
 
 procedure GraphABCWindow.SetLeft(l: integer);

@@ -484,7 +484,12 @@ namespace PascalABCCompiler.PCU
                     else if (tn is generic_instance_type_node)
                         tn.Scope.AddSymbol(names[i].name, si);
                     else if (tn is common_type_node)
+                    {
                         (tn as common_type_node).scope.AddSymbol(names[i].name, si);
+                        if (tn.IsDelegate)
+                            SystemLibrary.SystemLibrary.system_delegate_type.Scope.AddSymbol(names[i].name, si);
+                    }
+                        
                     else
                         throw new NotSupportedException();
                 }
@@ -1704,15 +1709,6 @@ namespace PascalABCCompiler.PCU
             cmn.newslot_awaited = br.ReadByte() == 1;
 
             ReadGenericFunctionInformation(cmn);
-            //if (CanReadObject())
-            //{
-            //    cmn.generic_params = ReadGenericParams(cun.namespaces[0]);
-            //    foreach (common_type_node par in cmn.generic_params)
-            //    {
-            //        par.generic_function_container = cmn;
-            //        ReadTypeParameterEliminations(par);
-            //    }
-            //}
 
             if (br.ReadByte() == 1) //return_value_type
             {
@@ -1741,12 +1737,7 @@ namespace PascalABCCompiler.PCU
             cmn.num_of_for_cycles = br.ReadInt32();
             br.ReadBoolean();
             int num_var = br.ReadInt32();
-            for (int i = 0; i < num_var; i++)
-            {
-                local_variable lv = GetLocalVariable(cmn);
-                if (lv != cmn.return_variable)
-                    cmn.var_definition_nodes_list.AddElement(lv);
-            }
+            GetVariables(cmn, num_var);
             int num_consts = br.ReadInt32();
             for (int i = 0; i < num_consts; i++)
             {
@@ -1762,6 +1753,24 @@ namespace PascalABCCompiler.PCU
             cmn.cont_type.methods.AddElement(cmn);
             
             return cmn;
+        }
+
+        private void GetVariables(common_function_node cfn, int num_var)
+        {
+            var local_list = new List<Tuple<local_variable, int>>();
+            for (int i = 0; i < num_var; i++)
+            {
+                var tup = GetLocalVariableLazy(cfn);
+                local_variable lv = tup.Item1;
+                if (lv != cfn.return_variable)
+                    cfn.var_definition_nodes_list.AddElement(lv);
+                if (tup.Item2 != -1)
+                    local_list.Add(tup);
+            }
+            foreach (var tup in local_list)
+            {
+                tup.Item1.inital_value = CreateExpressionWithOffset(tup.Item2);
+            }
         }
 
         private ref_type_node CreateRefType(int offset)
@@ -2782,12 +2791,7 @@ namespace PascalABCCompiler.PCU
 			cnfn.num_of_for_cycles = br.ReadInt32();
 			int num_var = br.ReadInt32();
 			if (cnfn.return_value_type != null) num_var--;
-            for (int i = 0; i < num_var; i++)
-            {
-                local_variable lv = GetLocalVariable(cnfn);
-                if (lv != cnfn.return_variable)
-                cnfn.var_definition_nodes_list.AddElement(lv);
-            }
+            GetVariables(cnfn, num_var);
             int num_consts = br.ReadInt32();
             for (int i = 0; i < num_consts; i++)
             {
@@ -2807,9 +2811,15 @@ namespace PascalABCCompiler.PCU
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.is_generic_parameter)
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
+            {
                 cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
+                    compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            }
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
                 compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && cnfn.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
+                (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             return cnfn;
 		}
 
@@ -2888,12 +2898,7 @@ namespace PascalABCCompiler.PCU
 			cnfn.num_of_for_cycles = br.ReadInt32();
 			int num_var = br.ReadInt32();
 			if (cnfn.return_value_type != null) num_var--;
-            for (int i = 0; i < num_var; i++)
-            {
-                local_variable lv = GetLocalVariable(cnfn);
-                if (lv != cnfn.return_variable)
-                    cnfn.var_definition_nodes_list.AddElement(lv);
-            }
+            GetVariables(cnfn, num_var);
             int num_consts = br.ReadInt32();
             for (int i = 0; i < num_consts; i++)
             {
@@ -2903,6 +2908,10 @@ namespace PascalABCCompiler.PCU
 			for (int i=0; i<num_nest_funcs; i++)
 				cnfn.functions_nodes_list.AddElement(GetNestedFunction());
 			//br.ReadInt32();//code;
+            if (cnfn.name == "*")
+            {
+
+            }
 			cnfn.loc = ReadDebugInfo();
             cnfn.function_code = (restore_code /*|| cnfn.is_generic_function*/) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
             cnfn.ConnectedToType = ConnectedToType;
@@ -2911,7 +2920,15 @@ namespace PascalABCCompiler.PCU
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.is_generic_parameter)
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
+            {
                 cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+                if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
+                    compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            }
+            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.IsDelegate && cnfn.ConnectedToType.base_type.IsDelegate)
+                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && (cnfn.ConnectedToType.element_type == null || cnfn.ConnectedToType.element_type.is_generic_parameter) && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
+                (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             br.BaseStream.Seek(pos,SeekOrigin.Begin);
 			return cnfn;
 		}
@@ -2989,12 +3006,7 @@ namespace PascalABCCompiler.PCU
             AddMember(cffn, offset);            
 			int num_var = br.ReadInt32();
 			if (cffn.return_value_type != null) num_var--;
-            for (int i = 0; i < num_var; i++)
-            {
-                local_variable lv = GetLocalVariable(cffn);
-                if (lv != cffn.return_variable)
-                    cffn.var_definition_nodes_list.AddElement(lv);
-            }
+            GetVariables(cffn, num_var);
             int num_consts = br.ReadInt32();
             for (int i=0; i < num_consts; i++)
             {
@@ -3010,6 +3022,23 @@ namespace PascalABCCompiler.PCU
             cffn.function_code = GetCode(br.ReadInt32());
 			return cffn;
 		}
+
+        private Tuple<local_variable, int> GetLocalVariableLazy(common_function_node func)
+        {
+            int offset = (int)br.BaseStream.Position - start_pos;
+            //int tmp=br.ReadByte();
+            local_variable lv = new local_variable(br.ReadString(), func, null);
+            lv.type = GetTypeReference();
+            if (br.ReadBoolean()) lv.set_used_as_unlocal();
+            //members[offset] = lv;
+            AddMember(lv, offset);
+            int pos = -1;
+            if (CanReadObject())
+            {
+                pos = br.ReadInt32();
+            }
+            return new Tuple<local_variable,int>(lv, pos);
+        }
 
         private local_variable GetLocalVariable(common_function_node func)
 		{
@@ -3112,7 +3141,10 @@ namespace PascalABCCompiler.PCU
                     filter_type = GetTypeReference();
                 local_block_variable_reference exception_var = null;
                 if (CanReadObject())
+                {
+                    CreateLocalBlockVariable(null);
                     exception_var = (local_block_variable_reference)CreateLocalBlockVariableReference();
+                }
                 efl.AddElement(new exception_filter(filter_type,exception_var,CreateStatement(),ReadDebugInfo()));
             }
             return new try_block(try_statements, finally_statements, efl, null);
@@ -3290,15 +3322,35 @@ namespace PascalABCCompiler.PCU
             type_node tn = GetTypeReference();
             expression_node initv = null;
             local_block_variable lv = new local_block_variable(name, tn, stmt, null);
-            AddMember(lv, offset);
-            if (CanReadObject())
-                initv = CreateExpressionWithOffset();
-            lv.loc = ReadDebugInfo();
-            lv.inital_value = initv;
+            if (members.ContainsKey(offset))
+            {
+                lv = members[offset] as local_block_variable;
+                if (CanReadObject())
+                    br.ReadInt32();
+                ReadDebugInfo();
+            } 
+            else
+            {
+                AddMember(lv, offset);
+                if (CanReadObject())
+                    initv = CreateExpressionWithOffset();
+                lv.loc = ReadDebugInfo();
+                lv.inital_value = initv;
+            }
+                
             return lv;
             
         }
 		
+        public expression_node GetExpression(int offset)
+        {
+            int tmp = (int)br.BaseStream.Position;
+            br.BaseStream.Seek(offset, SeekOrigin.Begin);
+            expression_node expr = CreateExpressionWithOffset();
+            br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            return expr;
+        }
+
 		private statement_node CreateEmpty()
 		{
 			return new empty_statement(null);
@@ -3585,7 +3637,16 @@ namespace PascalABCCompiler.PCU
 			br.BaseStream.Seek(tmp, SeekOrigin.Begin);
 			return en;
 		}
-		
+
+        private expression_node CreateExpressionWithOffset(int pos)
+        {
+            int tmp = (int)br.BaseStream.Position;
+            br.BaseStream.Seek(start_pos + pos, SeekOrigin.Begin);
+            expression_node en = CreateExpression();
+            br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            return en;
+        }
+
         private expression_node CreateEnumConstNode()
         {
             return new enum_const_node(br.ReadInt32(),GetTypeReference(),null);
@@ -3750,9 +3811,18 @@ namespace PascalABCCompiler.PCU
 		
 		private expression_node CreateLocalVariableReference()
 		{
-			local_variable lv = GetLocalVariableByOffset(br.ReadInt32());
-			local_variable_reference lvr = new local_variable_reference(lv,0,null);
-			return lvr;
+            int off = 0;
+            try
+            {
+                off = br.ReadInt32();
+                local_variable lv = GetLocalVariableByOffset(off);
+                local_variable_reference lvr = new local_variable_reference(lv, 0, null);
+                return lvr;
+            }
+			catch
+            {
+                throw;
+            }
 		}
 
         private expression_node CreateLocalBlockVariableReference()
@@ -3910,6 +3980,13 @@ namespace PascalABCCompiler.PCU
 
         private local_block_variable GetLocalBlockVariableByOffset(int offset)
         {
+            if (!members.ContainsKey(offset))
+            {
+                int tmp = (int)br.BaseStream.Position;
+                br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
+                var loc_var = CreateLocalBlockVariable(null);
+                br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            }
             return (local_block_variable)members[offset];
         }
 		

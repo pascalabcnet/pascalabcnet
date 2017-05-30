@@ -126,6 +126,7 @@ M_FIND_ALL_REFERENCES=Найти все ссылки
 M_RENAME=Переименовать
 M_FORMAT=Форматировать код
 M_SAMPLES=Примеры
+M_COLLAPSE_REGIONS=Свернуть все регионы
 
 TP_WARNINGLIST=Предупреждения
 TP_VARLIST=Локальные переменные
@@ -236,7 +237,7 @@ EXCEPTION_IN_START_EXE{0}=При попытке запуска файла {0} п
 
 ERROR_FILE_EXISTS_IN_CODEPAGES=Нельзя сохранить файл под таким именем, т.к. этот файл уже открыт
 
-SAVE_FILE_ERROR_TEXT{0}=Ошибка при сохраннении файла {0}
+SAVE_FILE_ERROR_TEXT{0}=Ошибка при сохранении файла {0}
 
 FILE_ALREADY_EXISTS{0}=Файл с именем {0} уже существует
 TOO_LONG_FILE_NAME{0}=Слишком длинное имя файла
@@ -330,7 +331,14 @@ PRJ_COMPANY=Компания
 PRJ_TRADEMARK=Торговая марка
 PRJ_COPYRIGHT=Copyright
 PRJ_GENERATE_XML_DOC=Генерировать XML документацию
-
+VERSION_IS_UP_DO_DATE=Вы используете актуальную версию PascalABC.NET
+UPDATE_AVAILABLE=Доступна новая версия PascalABC.NET. Перейти на страницу скачивания?
+UPDATE_AVAILABLE_CURRENT_VESION{0}=Установленная версия: {0}
+UPDATE_AVAILABLE_NEW_VESION{0}=Доступная версия: {0}
+UPDATE_CHECK_ERROR=Ошибка при проверке обновлений
+UPDATE_CHECK=Проверка обновлений
+PABC_DOWNLOAD_PAGE=http://pascalabc.net/ssyilki-dlya-skachivaniya
+M_CHECKUPDATES=Проверить обновления
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=Общие

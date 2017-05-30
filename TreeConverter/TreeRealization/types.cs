@@ -53,7 +53,9 @@ namespace PascalABCCompiler.TreeRealization
         }
         */
         internal bool is_ref_inited;
-
+        internal bool is_nullable_inited;
+        private bool _is_nullable_type;
+        
         public virtual bool IsSealed
         {
             get { return false; }
@@ -62,6 +64,27 @@ namespace PascalABCCompiler.TreeRealization
         public virtual bool IsAbstract
         {
         	get { return false; }
+        }
+        
+        public virtual bool is_standard_type
+        {
+        	get { return false; }
+        }
+        
+        public bool is_nullable_type
+        {
+        	get
+        	{
+        		if (is_nullable_inited)
+        			return _is_nullable_type;
+        		string fname = full_name;
+        		if (this is compiled_type_node)
+        			_is_nullable_type = fname != null && fname.StartsWith("System.Nullable");
+        		else if (original_generic != null)
+        			return original_generic.is_nullable_type;
+        		is_nullable_inited = true;
+        		return _is_nullable_type;
+        	}
         }
         
         public virtual bool IsInterface
@@ -1734,7 +1757,7 @@ namespace PascalABCCompiler.TreeRealization
 		public override string full_name {
 			get 
 			{ 
-				if (!string.IsNullOrEmpty(_comprehensive_namespace.namespace_name))
+				if (_comprehensive_namespace != null && !string.IsNullOrEmpty(_comprehensive_namespace.namespace_name))
 				return _comprehensive_namespace.namespace_name+"."+_name;
 				return _name;
 			}
@@ -2548,7 +2571,15 @@ namespace PascalABCCompiler.TreeRealization
             {
             }
         }
-
+        
+        public override bool is_standard_type
+        {
+        	get
+        	{
+        		return NetHelper.NetHelper.IsStandType(_compiled_type);
+        	}
+        }
+        
         public override function_node generic_function_container
         {
             get
@@ -3171,12 +3202,6 @@ namespace PascalABCCompiler.TreeRealization
         //Попытался написать правильно.
 		public override SymbolInfo find(string name, bool no_search_in_extension_methods = false)
 		{
-            /*//Старый код
-            SymbolInfo si = AddToSymbolInfo(compiled_find(name), find_in_additional_names(name));
-            if(scope!=null)
-                si = AddToSymbolInfo(si, scope.SymbolTable.Find(scope,name));
-			return si;
-            */
             if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && scope == null)
                 this.init_scope();
             if (scope == null)
@@ -3214,7 +3239,7 @@ namespace PascalABCCompiler.TreeRealization
                 SymbolInfo si2 = find_in_additional_names(name);
                 SymbolInfo si3 = compiled_find(name);
                 bool clone = false;
-                if (!no_search_in_extension_methods)
+                if (!no_search_in_extension_methods || this._compiled_type.IsGenericType)
                 {
                     
                     if (this.type_special_kind == SemanticTree.type_special_kind.array_kind && this.base_type.Scope != null)
@@ -4016,7 +4041,18 @@ namespace PascalABCCompiler.TreeRealization
               
             }
         }
-
+        
+		public override string name {
+			get {
+				return "nil";
+			}
+		}
+        
+		public override string full_name {
+			get {
+				return "nil";
+			}
+		}
     }
 
     public class convert_function_to_function_call
@@ -4191,7 +4227,8 @@ namespace PascalABCCompiler.TreeRealization
                     return (new convert_types_function_node(cftfc2.compile_time_executor, false));
                 }
                 else if (fn.simple_function_node.parameters.Count == 1 && fn.simple_function_node.parameters[0].default_value != null ||
-                    (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
+                    (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null 
+                    || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null)
                     && fn.simple_function_node.parameters.Count == 2 && fn.simple_function_node.parameters[1].default_value != null)
                 {
                     int param_num = (fn.simple_function_node is common_namespace_function_node && (fn.simple_function_node as common_namespace_function_node).ConnectedToType != null || fn.simple_function_node is compiled_function_node && (fn.simple_function_node as compiled_function_node).ConnectedToType != null) ? 1 : 0;

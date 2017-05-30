@@ -602,13 +602,6 @@ namespace VisualPascalABC
                         //CurrentSyntaxEditor.SetText(text);
                     }
                     return true;
-                /*case VisualEnvironmentCompilerAction.SetCurrentSourceFileTextFormatting:
-                    string text2 = (string)obj;
-                    CurrentSyntaxEditor.SelectAll();
-                    Tools.CopyTextToClipboard(text2);
-                    CurrentSyntaxEditor.Paste(false);
-                    //CurrentSyntaxEditor.SetText(text2);
-                    return true;*/
                 case VisualEnvironmentCompilerAction.AddTextToCompilerMessages:
                     AddTextToCompilerMessagesSync((string)obj);
                     return true;
@@ -651,10 +644,28 @@ namespace VisualPascalABC
         {
             get
             {
-            	if (UserOptions.UseOutputDirectory)
-                    return Path.Combine(UserOptions.OutputDirectory , Path.GetFileNameWithoutExtension(CurrentSourceFileName)) + ".exe";
+                string path = "";
+
+                if (ProjectFactory.Instance.CurrentProject != null)
+                {
+                    if (!string.IsNullOrEmpty(ProjectFactory.Instance.CurrentProject.OutputDirectory))
+                        return Path.Combine(ProjectFactory.Instance.CurrentProject.OutputDirectory, ProjectFactory.Instance.CurrentProject.OutputFileName);
+                    return Path.Combine(ProjectFactory.Instance.CurrentProject.ProjectDirectory, ProjectFactory.Instance.CurrentProject.OutputFileName);
+                }
+                    
+
+                if (UserOptions.UseOutputDirectory)
+                    path = Path.Combine(UserOptions.OutputDirectory, Path.GetFileNameWithoutExtension(CurrentSourceFileName)) + ".exe";
                 else
-                    return Path.ChangeExtension(CurrentSourceFileName, ".exe"); 
+                    path = Path.ChangeExtension(CurrentSourceFileName, ".exe");
+                if (!File.Exists(path) && ActiveCodeFileDocument != null)
+                {
+                    if (UserOptions.UseOutputDirectory)
+                        path = Path.Combine(UserOptions.OutputDirectory, Path.GetFileNameWithoutExtension(ActiveCodeFileDocument.FileName)) + ".exe";
+                    else
+                        path = Path.ChangeExtension(ActiveCodeFileDocument.FileName, ".exe");
+                }
+                return path;
             }
         }
 
@@ -1446,6 +1457,16 @@ namespace VisualPascalABC
         private void cmHelp_Click(object sender, EventArgs e)
         {
             __showhelpinqueue();
+        }
+
+        private void miCheckUpdates_Click(object sender, EventArgs e)
+        {
+            WorkbenchServiceFactory.UpdateService.CheckForUpdates();
+        }
+
+        private void cmCollapseRegions_Click(object sender, EventArgs e)
+        {
+            WorkbenchServiceFactory.EditorService.CollapseRegions();
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

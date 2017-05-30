@@ -1247,11 +1247,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(addressed_value_list _addressed_value_list);
 		///<summary>
-		///Method to visit tuple_node_for_formatter.
+		///Method to visit tuple_node.
 		///</summary>
-		///<param name="_tuple_node_for_formatter">Node to visit</param>
+		///<param name="_tuple_node">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(tuple_node_for_formatter _tuple_node_for_formatter);
+		void visit(tuple_node _tuple_node);
 		///<summary>
 		///Method to visit uses_closure.
 		///</summary>
@@ -1300,6 +1300,36 @@ namespace PascalABCCompiler.SyntaxTree
 		///<param name="_yield_sequence_node">Node to visit</param>
 		///<returns> Return value is void </returns>
 		void visit(yield_sequence_node _yield_sequence_node);
+		///<summary>
+		///Method to visit assign_var_tuple.
+		///</summary>
+		///<param name="_assign_var_tuple">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(assign_var_tuple _assign_var_tuple);
+		///<summary>
+		///Method to visit slice_expr_question.
+		///</summary>
+		///<param name="_slice_expr_question">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(slice_expr_question _slice_expr_question);
+		///<summary>
+		///Method to visit semantic_check_sugared_statement_node.
+		///</summary>
+		///<param name="_semantic_check_sugared_statement_node">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node);
+		///<summary>
+		///Method to visit sugared_expression.
+		///</summary>
+		///<param name="_sugared_expression">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(sugared_expression _sugared_expression);
+		///<summary>
+		///Method to visit sugared_addressed_value.
+		///</summary>
+		///<param name="_sugared_addressed_value">Node to visit</param>
+		///<returns> Return value is void </returns>
+		void visit(sugared_addressed_value _sugared_addressed_value);
 	}
 
 

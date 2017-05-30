@@ -49,6 +49,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
@@ -391,6 +392,7 @@
     </Compile>
     <Compile Include="Workbench\RunnerManagerHandlers.cs" />
     <Compile Include="Workbench\RunService.cs" />
+    <Compile Include="Workbench\UpdateService.cs" />
     <Compile Include="Workbench\VisibilityService.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -13,7 +13,7 @@ namespace VisualPascalABC
 {
     public delegate void ParseInformationUpdatedDelegate(object obj, string fileName);
 
-    public class CodeCompletionParserController
+    public class CodeCompletionParserController : VisualPascalABCPlugins.ICodeCompletionService
     {
         public static Hashtable open_files = new Hashtable(StringComparer.OrdinalIgnoreCase);
         public VisualEnvironmentCompiler visualEnvironmentCompiler;
@@ -35,10 +35,13 @@ namespace VisualPascalABC
 
         public CodeCompletionParserController()
         {
-            //this.visualEnvironmentCompiler = visualEnvironmentCompiler;
             this.th = new System.Threading.Thread(new System.Threading.ThreadStart(ParseInThread));
             ccp = new CodeCompletionProvider();
-            //CodeCompletion.CodeCompletionController.OpenFiles = open_files;
+        }
+
+        public PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string fileName)
+        {
+            return CodeCompletion.CodeCompletionController.comp_modules[fileName] as PascalABCCompiler.Parsers.ICodeCompletionDomConverter;
         }
 
         public static string CurrentTwoLetterISO

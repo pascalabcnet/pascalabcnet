@@ -23,8 +23,8 @@ NODIRECTIVE [.|\n]+
 }
 
 <INSIDEDIRECTIVE> {DIRECTIVE} {
-  if (yytext.Contains("\n"))
-    Console.WriteLine("({0},{1})  {2}",tokLin,tokCol,"error: LF into directive");
+  //if (yytext.Contains("\n"))
+  //  Console.WriteLine("({0},{1})  {2}",tokLin,tokCol,"error: LF into directive");
   //else Console.WriteLine("({0},{1})  {2}",tokLin,tokCol,yytext);
   yylval = new Directive(yytext, new LexLocation(tokLin, tokCol, tokELin, tokECol));
   var t1 = yylloc;

@@ -261,6 +261,32 @@ namespace PascalABCCompiler.PCU
         }
     }
 
+    public class wrapped_expression : expression_node
+    {
+        private PCUReader pr;
+
+        public int offset;
+
+        public wrapped_expression(PCUReader pr, int offset)
+        {
+            this.pr = pr;
+            this.offset = offset;
+        }
+
+        public override semantic_node_type semantic_node_type
+        {
+            get
+            {
+                return semantic_node_type.wrapped_expression;
+            }
+        }
+
+        public expression_node restore()
+        {
+            return pr.GetExpression(offset);
+        }
+    }
+
     public class wrapped_function_body : wrapped_statement
     {
         private PCUReader pr;
@@ -301,7 +327,13 @@ namespace PascalABCCompiler.PCU
         public override SymbolInfo find_in_type(string name, Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
             SymbolInfo si = scope.FindOnlyInType(name, CurrentScope);
-            if (si == null) return si;
+            if (si == null)
+            {
+                if (base_type != null && base_type.IsDelegate)
+                    return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
+                return si;
+            }
+                
             SymbolInfo tsi = si;
             while (tsi != null)
             {

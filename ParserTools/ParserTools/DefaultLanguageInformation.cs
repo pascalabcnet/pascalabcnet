@@ -238,22 +238,31 @@ namespace PascalABCCompiler.Parsers
 			return "unit "+scope.Name;
 		}
 		
-		public virtual string GetShortTypeName(ICompiledTypeScope scope)
+		public virtual string GetShortName(ICompiledTypeScope scope)
 		{
 			return GetShortTypeName(scope.CompiledType);
 		}
 		
-		public virtual string GetShortTypeName(ICompiledMethodScope scope)
+		public virtual string GetShortName(ICompiledMethodScope scope)
 		{
 			return GetShortTypeName(scope.CompiledMethod);
 		}
 		
-		public virtual string GetShortTypeName(ICompiledConstructorScope scope)
+		public virtual string GetShortName(ICompiledConstructorScope scope)
 		{
 			return "Create";
 		}
-		
-		public virtual string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true)
+
+        public virtual string GetShortName(IProcScope scope)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(scope.Name);
+            if (scope.TemplateParameters != null && scope.TemplateParameters.Length > 0)
+                sb.Append("<>");
+            return sb.ToString();
+        }
+
+        public virtual string GetFullTypeName(ICompiledTypeScope scope, bool no_alias=true)
 		{
 			return GetFullTypeName(scope.CompiledType);
 		}
@@ -415,6 +424,8 @@ namespace PascalABCCompiler.Parsers
                     return getLambdaRepresentation(ctn, false, new List<string>());
                 else if (ctn.Name == "IEnumerable`1")
                     return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
+                else if (ctn.Name.Contains("Tuple`"))
+                    return get_tuple_string(ctn);
             }
 			if (ctn.Name.Contains("`"))
 			{
@@ -438,6 +449,35 @@ namespace PascalABCCompiler.Parsers
 				return ctn.Name;
 			return ctn.FullName;
 		}
+
+        private string get_tuple_string(ITypeScope[] generic_args)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("(");
+            for (int i = 0; i < generic_args.Length; i++)
+            {
+                sb.Append(GetSimpleDescriptionWithoutNamespace(generic_args[i]));
+                if (i < generic_args.Length - 1)
+                    sb.Append(",");
+            }
+            sb.Append(")");
+            return sb.ToString();
+        }
+
+        private string get_tuple_string(Type t)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("(");
+            Type[] generic_args = t.GetGenericArguments();
+            for (int i = 0; i<generic_args.Length; i++)
+            {
+                sb.Append(GetShortTypeName(generic_args[i], false));
+                if (i < generic_args.Length - 1)
+                    sb.Append(",");
+            }
+            sb.Append(")");
+            return sb.ToString();
+        }
 
         private string get_enum_constants(Type t)
         {
@@ -828,6 +868,8 @@ namespace PascalABCCompiler.Parsers
                         return getLambdaRepresentation(ctn, false, new List<string>());
                     else if (ctn.Name == "IEnumerable`1")
                         return "sequence of " + GetShortTypeName(ctn.GetGenericArguments()[0], false);
+                    else if (ctn.Name.Contains("Tuple`"))
+                        return get_tuple_string(ctn);
                 }
 				int len = ctn.GetGenericArguments().Length;
 				System.Text.StringBuilder sb = new System.Text.StringBuilder();
@@ -866,7 +908,7 @@ namespace PascalABCCompiler.Parsers
 			if (sc is IProcScope) return "";
 			if (sc is ITypeScope)
 			{
-				return sc.Name+((sc as ITypeScope).TemplateArguments != null?"<>":"")+".";
+				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))?"<>":"")+".";
 			}
 			return sc.Name + ".";
 		}
@@ -878,7 +920,7 @@ namespace PascalABCCompiler.Parsers
 			if (sc is IProcScope) return "";
 			if (sc is ITypeScope)
 			{
-				return sc.Name+((sc as ITypeScope).TemplateArguments != null?"<>":"");
+				return sc.Name+(((sc as ITypeScope).TemplateArguments != null && !sc.Name.EndsWith("<>"))? "<>":"");
 			}
 			return sc.Name;
 		}
@@ -1006,7 +1048,7 @@ namespace PascalABCCompiler.Parsers
 			ICompiledTypeScope cts = scope as ICompiledTypeScope;
 			if (cts == null)
 				return GetSimpleDescription(scope);
-			string s = GetShortTypeName(cts);
+			string s = GetShortName(cts);
 			ITypeScope[] instances = scope.GenericInstances;
 			if (instances != null && instances.Length > 0)
 			{
@@ -1133,7 +1175,7 @@ namespace PascalABCCompiler.Parsers
             {
                 return getLambdaRepresentation(scope, false);
             }
-            else if (scope.CompiledType.Name != null && scope.CompiledType.Name == "IEnumerable`1")
+            else if (scope.CompiledType.Name == "IEnumerable`1")
             {
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
@@ -1142,6 +1184,16 @@ namespace PascalABCCompiler.Parsers
                 }
                 else
                     return "sequence of T";
+            }
+            else if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Tuple`"))
+            {
+                ITypeScope[] instances = scope.GenericInstances;
+                if (instances != null && instances.Length > 0)
+                {
+                    return get_tuple_string(instances);
+                }
+                else
+                    return "(T1,...)";
             }
             else
             {
@@ -1520,6 +1572,8 @@ namespace PascalABCCompiler.Parsers
                         return getLambdaRepresentation(t, true, generic_args, generic_param_args);
                     else if (t.Name.Contains("Action`") )
                         return getLambdaRepresentation(t, false, generic_args, generic_param_args);
+                    else if (t.Name.Contains("Tuple`"))
+                        return get_tuple_string(t);
                 }
                 string name = GetShortTypeName(t);
                 StringBuilder sb = new StringBuilder();
@@ -1621,8 +1675,24 @@ namespace PascalABCCompiler.Parsers
         protected virtual string GetDescriptionForCompiledMethod(ICompiledMethodScope scope)
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            string extensionType = null;
+            if (scope.IsExtension && scope.Parameters.Length > 0)
+            {
+                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+            }
             if (scope.IsExtension)
-                sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+            {
+                if (extensionType.IndexOf(' ') != -1)
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                }
+                else
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + ") ");
+                    extensionType = null;
+                }
+            }
+                
             if (scope.IsStatic && !scope.IsGlobal) sb.Append("class ");
             if (scope.ReturnType == null)
                 sb.Append("procedure ");
@@ -1645,6 +1715,8 @@ namespace PascalABCCompiler.Parsers
                             generic_param_args = new Dictionary<string, string>();
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                             generic_param_args.Add(gen_arg.Name, scope.GenericArgs[ind]);
+                        else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > ind)
+                            generic_param_args.Add(gen_arg.Name, scope.DeclaringType.TemplateArguments[ind]);
                     }
                     ind++;
                 }
@@ -1652,11 +1724,11 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                gen_ind = 1;
+                gen_ind = 0;
                 generic_param_args = new Dictionary<string, string>();
                 for (int i = 0; i < pis.Length; i++)
                 {
-                    if (i == 0 && scope.IsExtension)
+                    if (i == 0)
                     {
                         Type[] class_generic_args = pis[i].ParameterType.GetGenericArguments();
                         for (int j = 0; j < class_generic_args.Length; j++)
@@ -1664,16 +1736,20 @@ namespace PascalABCCompiler.Parsers
                             if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
                                 class_generic_table.Add(class_generic_args[i].Name, j);
                             if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
-                                generic_param_args.Add(class_generic_args[i].Name, scope.GenericArgs[j]);
+                                generic_param_args.Add(class_generic_args[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[0]));
+                            else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > j)
+                                generic_param_args.Add(class_generic_args[i].Name, scope.DeclaringType.TemplateArguments[j]);
                         }
                         break;
                     }
                 }
-                sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
+                if (extensionType == null)
+                    sb.Append(GetShortTypeName(scope.CompiledMethod.GetParameters()[0].ParameterType));
             }
             if (scope.Name != "Invoke")
             {
-                sb.Append(".");
+                if (extensionType == null)
+                    sb.Append(".");
                 sb.Append(scope.Name);
             }
 
@@ -1687,8 +1763,9 @@ namespace PascalABCCompiler.Parsers
                         int ind = class_generic_table[tt[i].Name];
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                         {
-                            sb.Append(scope.GenericArgs[ind]);
-                            generic_param_args.Add(tt[i].Name, scope.GenericArgs[ind]);
+                            sb.Append(GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                            if (!generic_param_args.ContainsKey(tt[i].Name))
+                                generic_param_args.Add(tt[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
                         }
                     }
                     else
@@ -1745,7 +1822,12 @@ namespace PascalABCCompiler.Parsers
                     ret_inst_type = get_type_instance(scope.CompiledMethod.ReturnType, scope.GenericArgs, generic_param_args);
                 }
                 if (ret_inst_type == null)
-                    sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
+                {
+                    if (scope.ReturnType is ICompiledTypeScope)
+                        sb.Append(": " + GetFullTypeName((scope.ReturnType as ICompiledTypeScope).CompiledType, false));
+                    else
+                        sb.Append(": " + GetSimpleDescription(scope.ReturnType));
+                }
                 else
                     sb.Append(": " + ret_inst_type);
             }
@@ -1765,9 +1847,24 @@ namespace PascalABCCompiler.Parsers
 		protected virtual string GetDescriptionForProcedure(IProcScope scope)
 		{
 			System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            
+            string extensionType = null;
+            if (scope.IsExtension && scope.Parameters.Length > 0)
+            {
+                extensionType = GetSimpleDescription(scope.Parameters[0].Type);
+            }
             if (scope.IsExtension)
-                sb.Append("("+StringResources.Get("CODE_COMPLETION_EXTENSION")+") ");
+            {
+                if (extensionType != null && extensionType.IndexOf(' ') != -1)
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION") + " " + extensionType + ") ");
+                    extensionType = null;
+                }
+                else
+                {
+                    sb.Append("(" + StringResources.Get("CODE_COMPLETION_EXTENSION")+ ") ");
+                }   
+            }
+              
 			if (scope.IsStatic) sb.Append("class ");
 			if (scope.IsConstructor())
 				sb.Append("constructor ");
@@ -1778,8 +1875,16 @@ namespace PascalABCCompiler.Parsers
 				sb.Append("function ");
 			if (!scope.IsConstructor())
 			{
-				sb.Append(GetTopScopeName(scope.TopScope));
-				sb.Append(scope.Name);
+                if (extensionType != null)
+                {
+                    sb.Append(extensionType+".");
+                    sb.Append(scope.Name);
+                }
+                else
+                {
+                    sb.Append(GetTopScopeName(scope.TopScope));
+                    sb.Append(scope.Name);
+                }
 			}
 			else
 			{
@@ -1802,6 +1907,8 @@ namespace PascalABCCompiler.Parsers
 			IElementScope[] parameters = scope.Parameters;
 			for (int i=0; i<parameters.Length; i++)
 			{
+                if (scope.IsExtension && i == 0)
+                    continue;
 				sb.Append(GetSimpleDescription(parameters[i]));
 				if (i < parameters.Length - 1)
 				{
@@ -1950,12 +2057,12 @@ namespace PascalABCCompiler.Parsers
 		
 		public string GetSynonimDescription(ITypeScope scope)
 		{
-			return "type "+scope.Name+" = "+scope.Description;
+			return "type "+scope.Name + GetGenericString(scope.TemplateArguments)+" = " +scope.Description;
 		}
 		
 		public string GetSynonimDescription(ITypeSynonimScope scope)
-		{
-			return "type "+scope.Name+" = "+GetSimpleDescription(scope.ActType);
+		{ 
+			return "type "+scope.Name+GetGenericString(scope.TemplateArguments) + " = "+GetSimpleDescription(scope.ActType);
 		}
 		
 		public string GetSynonimDescription(IProcScope scope)
@@ -2273,12 +2380,22 @@ namespace PascalABCCompiler.Parsers
         			bool in_kav = false;
         			Stack<char> sk_stack = new Stack<char>();
         			sk_stack.Push('(');i++;
+        			bool default_value = false;
         			while (i < meth.Length && sk_stack.Count > 0)
         			{
         				if (meth[i] == '\'') in_kav = !in_kav;
         				else if (meth[i] == '(') {if (!in_kav) sk_stack.Push('(');}
         				else if (meth[i] == ')') {if (!in_kav) sk_stack.Pop();}
-        				sb.Append(meth[i]);
+        				if (meth[i] == ':' && meth[i+1] == '=' && !in_kav)
+        					default_value = true;
+        				else if (meth[i] == ';' && !in_kav)
+        					default_value = false;
+        				if (!default_value || meth[i] == ')' && sk_stack.Count == 0)
+        				{
+        					if (meth[i] == ')' && sk_stack.Count == 0 && default_value)
+        						sb = new StringBuilder(sb.ToString().TrimEnd());
+        					sb.Append(meth[i]);
+        				}
         				i++;
         			}
         			while (i<meth.Length && meth[i] != ':' && meth[i] != ';')

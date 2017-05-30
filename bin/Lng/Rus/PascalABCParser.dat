@@ -49,9 +49,12 @@ ONE_TKIDENTIFIER=Ожидался идентификатор
 ONE_OPERATOR=Ожидался оператор
 ONE_STMT=Ожидался оператор
 BAD_TUPLE=Неправильно сформированный кортеж
-TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Количество элементов кортежа не должно быть больше 7 
 EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Ожидался оператор
 
 DUPLICATE_NAMES_IN_ANON_TYPE=Анонимный тип не может содержать поля с одинаковыми именами
 BAD_ANON_TYPE=Неверное определение имени поля анонимного типа
 ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=Одинокий типовой параметр не должен заключаться в скобки
+
+USING_UNLOCAL_FOR_VARIABLE=Параметр цикла for в PascalABC.NET должен описываться в заголовке цикла
+USING_UNLOCAL_FOREACH_VARIABLE=Параметр цикла foreach должен описываться в заголовке цикла
+OVERLOAD_IS_NOT_USED=overload не используется в PascalABC.NET

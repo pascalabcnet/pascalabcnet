@@ -1390,7 +1390,7 @@ namespace CodeCompletion
 
         public override void visit(enumerator _enumerator)
         {
-            
+
         }
 
         public override void visit(enumerator_list _enumerator_list)
@@ -1511,7 +1511,7 @@ namespace CodeCompletion
         public override void visit(semantic_check _semantic_check)
         {
         }
-		public override void visit(lambda_inferred_type lit) //lroman//
+        public override void visit(lambda_inferred_type lit) //lroman//
         {
         }
         public override void visit(same_type_node stn) //SS 22/06/13//

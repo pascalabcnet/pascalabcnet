@@ -191,7 +191,7 @@ namespace PascalABCCompiler.DocTagsParser
         {
             get
             {
-                return "Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich";
+                return "Copyright © 2005-2017 by Ivan Bondarev, Stanislav Mihalkovich";
             }
         }
 
@@ -207,7 +207,21 @@ namespace PascalABCCompiler.DocTagsParser
             }
         }
 
-	}
+        List<CompilerWarning> warnings = new List<CompilerWarning>();
+
+        public List<CompilerWarning> Warnings
+        {
+            get
+            {
+                return warnings;
+            }
+
+            set
+            {
+                warnings = value;
+            }
+        }
+    }
 
 
 

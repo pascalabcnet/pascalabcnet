@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit IniFile;
 
@@ -95,17 +95,16 @@ end;
 
 procedure TIniFile.Save;
 var 
-  i,j: integer;
   sl1: SortedList;
   f: text;
 begin
   assign(f,fname);
   rewrite(f);
-  for i:=0 to sl.Count-1 do    
+  for var i:=0 to sl.Count-1 do    
   begin
     writeln(f,'['+sl.GetKey(i)+']');
     sl1 := SortedList(sl.GetByIndex(i));
-    for j:=0 to sl1.Count-1 do    
+    for var j:=0 to sl1.Count-1 do    
       writeln(f,sl1.GetKey(j)+'='+string(sl1.GetByIndex(j)));
     writeln(f);
   end;

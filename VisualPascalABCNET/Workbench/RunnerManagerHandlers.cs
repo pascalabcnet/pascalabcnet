@@ -22,9 +22,6 @@ namespace VisualPascalABC
         void RunnerManager_Started(string fileName)
         {
             Workbench.BeginInvoke(new SetTextDelegate(RunnerManager_Started_Sync), fileName);
-            //            execThread = new Thread(new ParameterizedThreadStart(RunnerManager_Started_Sync_Thread));
-            //            execThread.Priority = ThreadPriority.BelowNormal;
-            //            execThread.Start(fileName);
         }
 
         void RunnerManager_Started_Sync(string fileName)
@@ -39,7 +36,6 @@ namespace VisualPascalABC
                     Workbench.WidgetController.SetDebugButtonsEnabled(false);
                     Workbench.WidgetController.SetOptionsEnabled(false);
                 }
-                //(Tabs[fileName]).Text = (Tabs[fileName]).Text + string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_TS_RUN"));
                 RunTabs[fileName].Run = true;
                 WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
             }
@@ -81,7 +77,7 @@ namespace VisualPascalABC
                     Workbench.WidgetController.SetStopEnabled(false);
                     Workbench.WidgetController.SetCompilingButtonsEnabled(true);
                     Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                    if (IsOneProgramStarted())
+                    //if (IsOneProgramStarted())
                         Workbench.WidgetController.SetOptionsEnabled(true);
                 }
             }
@@ -90,12 +86,11 @@ namespace VisualPascalABC
                 Workbench.WidgetController.SetStopEnabled(false);
                 Workbench.WidgetController.SetCompilingButtonsEnabled(true);
                 Workbench.WidgetController.SetDebugButtonsEnabled(true);
-                if (IsOneProgramStarted())
+                //if (IsOneProgramStarted())
                     Workbench.WidgetController.SetOptionsEnabled(true);
             }
             RunTabs[fileName].Run = false;
             WorkbenchServiceFactory.DocumentService.SetTabPageText(RunTabs[fileName]);
-            //Tabs.Remove(fileName);
             if (ReadRequests.ContainsKey(RunTabs[fileName]))
                 ReadRequests.Remove(RunTabs[fileName]);
             UpdateReadRequest(false);
@@ -104,13 +99,10 @@ namespace VisualPascalABC
                 WaitCallback_DeleteEXEAndPDB(fileName);
             else
                 System.Threading.ThreadPool.QueueUserWorkItem(WaitCallback_DeleteEXEAndPDB, fileName);
-            //RunTabs.Remove(fileName);
         }
 
         void RunnerManager_RunnerManagerUnhanledRuntimeException(string id, string ExceptionType, string ExceptionMessage, string StackTraceData, List<RunManager.StackTraceItem> StackTrace)
         {
-            //if (VisualPascalABCPlugins.PT4Provider_VisualPascalABCPlugin.PT4UnitUsed)
-            //return;
             string localiseMsg = RuntimeExceptionsStringResources.Get(ExceptionMessage);
             WorkbenchServiceFactory.OperationsService.AddTextToOutputWindowSync(id, string.Format(Form1StringResources.Get("OW_RUNTIME_EXCEPTION{0}_MESSAGE{1}"), ExceptionType, localiseMsg) + Environment.NewLine);
             if (StackTraceData != null)
@@ -122,7 +114,9 @@ namespace VisualPascalABC
                 {
                     if (ToSend == null && File.Exists(StackTraceItem.SourceFileName))
                         ToSend = StackTraceItem;
-                    if (Workbench.UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory && Path.GetDirectoryName(StackTraceItem.SourceFileName) == WorkbenchServiceFactory.BuildService.CompilerOptions.SearchDirectory)
+                    if (Workbench.UserOptions.SkipStakTraceItemIfSourceFileInSystemDirectory && 
+                        (Path.GetDirectoryName(StackTraceItem.SourceFileName) == WorkbenchServiceFactory.BuildService.CompilerOptions.SearchDirectory ||
+                        Path.GetDirectoryName(StackTraceItem.SourceFileName) == WorkbenchServiceFactory.BuildService.CompilerOptions.SearchDirectory+"Source"))
                         continue;
                     if (!(bool)Workbench.VisualEnvironmentCompiler.SourceFilesProvider(StackTraceItem.SourceFileName, PascalABCCompiler.SourceFileOperation.Exists))
                     {

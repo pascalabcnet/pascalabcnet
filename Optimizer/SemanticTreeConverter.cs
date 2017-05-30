@@ -29,7 +29,7 @@ namespace PascalABCCompiler
 
         public string Copyright
         {
-            get { return "Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich"; }
+            get { return "Copyright © 2005-2017 by Ivan Bondarev, Stanislav Mihalkovich"; }
         }
 
         public PascalABCCompiler.SemanticTreeConverters.ConverterType ConverterType

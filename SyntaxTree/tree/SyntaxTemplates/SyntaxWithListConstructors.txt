@@ -1,0 +1,5 @@
+public <#NodeName#>(<#ListElementType#> elem, SourceContext sc = null)
+{
+	Add(elem, sc);
+    FillParentsInDirectChilds();
+}

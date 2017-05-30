@@ -285,6 +285,8 @@ namespace GPPGParserScanner
                     err_stn = expr2;
                 parsertools.errors.Add(new PABCNETUnexpectedToken(parsertools.CurrentFileName, StringResources.Get("TKDO"), new SourceContext(fp.line_num, fp.column_num + 1, fp.line_num, fp.column_num + 1, 0, 0), err_stn));
             }
+            if (!opt_var && for_stmt_decl_or_assign == null)
+                parsertools.AddWarningFromResource("USING_UNLOCAL_FOR_VARIABLE", identifier.source_context);
             return nfs;
         }
 

@@ -340,6 +340,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public static string system_unit_marker = "__IS_SYSTEM_MODULE";
         public static string system_unit_file_name = "PABCSystem";
+        public static string extensions_unit_file_name = "PABCExtensions";
 
         public static string get_array_type_name(string type_name, int rank)
         {
@@ -410,6 +411,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string PointerToStringFunction_func_name = "PointerToString";
         public static string GetRuntimeSizeFunction_func_name = "GetRuntimeSize";
         public static string StrProcedure_func_name = "Str";
+        public static string PascalABCVersion_func_name = "PascalABCVersion";
         public static string ChrUnicodeFunction_func_name = "ChrUnicode";
         public static string ExceptionName = "System.Exception";
         public static string value_in_accessor_name = "$value";

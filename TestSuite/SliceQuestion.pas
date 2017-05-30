@@ -1,0 +1,36 @@
+begin
+  //var s := '012345';
+  var a:= Arr(0,1,2,3,4,5);
+  var a1 := a?[-1:];
+  Assert(a1.SequenceEqual(Seq(0,1,2,3,4,5)));
+  a1 := a?[1:6];
+  Assert(a1.SequenceEqual(Seq(1,2,3,4,5)));
+  a1 := a?[-2::2];
+  Assert(a1.SequenceEqual(Seq(0,2,4)));
+  a1 := a?[3:-2:-1];
+  Assert(a1.SequenceEqual(Seq(3,2,1,0)));
+  a1 := a?[4:-2:-2];
+  Assert(a1.SequenceEqual(Seq(4,2,0)));
+  var l:= Lst(0,1,2,3,4,5);
+  var l1 := l?[-1:];
+  Assert(l1.SequenceEqual(Seq(0,1,2,3,4,5)));
+  l1 := l?[1:6];
+  Assert(l1.SequenceEqual(Seq(1,2,3,4,5)));
+  l1 := l?[-2::2];
+  Assert(l1.SequenceEqual(Seq(0,2,4)));
+  l1 := l?[3:-2:-1];
+  Assert(l1.SequenceEqual(Seq(3,2,1,0)));
+  l1 := l?[4:-2:-2];
+  Assert(l1.SequenceEqual(Seq(4,2,0)));
+  var s := '012345';
+  var s1 := s?[-1:];
+  Assert(s1.Equals('012345'));
+  s1 := s?[2:7];
+  Assert(s1.Equals('12345'));
+  s1 := s?[-1::2];
+  Assert(s1.Equals('024'));
+  s1 := s?[4:-2:-1];
+  Assert(s1.Equals('3210'));
+  s1 := s?[5:-2:-2];
+  Assert(s1.Equals('420'));
+end.

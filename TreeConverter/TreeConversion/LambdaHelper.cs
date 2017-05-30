@@ -211,10 +211,13 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         public static bool TryConvertFuncLambdaBodyWithMethodCallToProcLambdaBody(function_lambda_definition lambdaDef)
         {
+            // SSM 12/12/16 - сделал чтобы всегда эта функция возвращала true.
+            // Посмотрю далее на её поведение. Мне кажется, что если мы попали сюда, то мы хотим присвоить процедурному типу, 
+            // и в любом случае это надо интерпретировать как процедуру
             var stl = lambdaDef.proc_body as SyntaxTree.statement_list;
             if (stl.expr_lambda_body)
             {
-                // Очищаем от Result :=
+                // Очищаем от Result := , который мы создали на предыдущем этапе
 
                 var ass = stl.list[0] as assign;
                 if (ass != null && ass.to is ident && (ass.to as ident).name.ToLower() == "result")
@@ -227,10 +230,14 @@ namespace PascalABCCompiler.TreeConverter
                         lambdaDef.return_type = null;
                         return true;
                     }
+                    else
+                        return false;
                 }
             }
 
-            return false;
+            lambdaDef.return_type = null;
+            return true;
+//            return false;
         }
 
         /// <summary>
@@ -314,7 +321,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <returns></returns>
         public static typed_expression GetTempFunctionNodeForTypeInference(SyntaxTree.function_lambda_definition def, syntax_tree_visitor visitor)
         {
-            var res = new common_namespace_function_node(def.lambda_name, null, null, null);
+            var res = new common_namespace_function_node(def.lambda_name, visitor.get_location(def), null, null);
             if (def.return_type != null)
                 res.return_value_type = visitor.convert_strong(def.return_type);
             else
@@ -325,14 +332,14 @@ namespace PascalABCCompiler.TreeConverter
                 for (int i = 0; i < def.formal_parameters.params_list.Count; i++)
                     for (int j = 0; j < def.formal_parameters.params_list[i].idents.idents.Count; j++)
                     {
-                        var new_param = new common_parameter(null, SemanticTree.parameter_type.value, res, concrete_parameter_type.cpt_none, null);
+                        var new_param = new common_parameter(null, SemanticTree.parameter_type.value, res, concrete_parameter_type.cpt_none, visitor.get_location(def.formal_parameters.params_list[i].idents.idents[0]));
                         new_param.type = visitor.convert_strong(def.formal_parameters.params_list[i].vars_type);
                         res.parameters.AddElement(new_param);
                     }
             }
             var hhh = new delegated_methods();
-            hhh.proper_methods.AddElement(new common_namespace_function_call(res, null));
-            return new typed_expression(hhh, null);
+            hhh.proper_methods.AddElement(new common_namespace_function_call(res, visitor.get_location(def)));
+            return new typed_expression(hhh, visitor.get_location(def));
         }
 
         public static procedure_definition ConvertLambdaNodeToProcDefNode(function_lambda_definition functionLambdaDef)

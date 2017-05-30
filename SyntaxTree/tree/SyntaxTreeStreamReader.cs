@@ -435,7 +435,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 206:
 					return new addressed_value_list();
 				case 207:
-					return new tuple_node_for_formatter();
+					return new tuple_node();
 				case 208:
 					return new uses_closure();
 				case 209:
@@ -452,6 +452,16 @@ namespace PascalABCCompiler.SyntaxTree
 					return new yield_unknown_foreach_type();
 				case 215:
 					return new yield_sequence_node();
+				case 216:
+					return new assign_var_tuple();
+				case 217:
+					return new slice_expr_question();
+				case 218:
+					return new semantic_check_sugared_statement_node();
+				case 219:
+					return new sugared_expression();
+				case 220:
+					return new sugared_addressed_value();
 			}
 			return null;
 		}
@@ -2348,7 +2358,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_format_expr(format_expr _format_expr)
 		{
-			read_expression(_format_expr);
+			read_addressed_value(_format_expr);
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
@@ -3699,15 +3709,15 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(tuple_node_for_formatter _tuple_node_for_formatter)
+		public void visit(tuple_node _tuple_node)
 		{
-			read_tuple_node_for_formatter(_tuple_node_for_formatter);
+			read_tuple_node(_tuple_node);
 		}
 
-		public void read_tuple_node_for_formatter(tuple_node_for_formatter _tuple_node_for_formatter)
+		public void read_tuple_node(tuple_node _tuple_node)
 		{
-			read_expression(_tuple_node_for_formatter);
-			_tuple_node_for_formatter.el = _read_node() as expression_list;
+			read_addressed_value(_tuple_node);
+			_tuple_node.el = _read_node() as expression_list;
 		}
 
 
@@ -3816,6 +3826,79 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_statement(_yield_sequence_node);
 			_yield_sequence_node.ex = _read_node() as expression;
+		}
+
+
+		public void visit(assign_var_tuple _assign_var_tuple)
+		{
+			read_assign_var_tuple(_assign_var_tuple);
+		}
+
+		public void read_assign_var_tuple(assign_var_tuple _assign_var_tuple)
+		{
+			read_assign_tuple(_assign_var_tuple);
+		}
+
+
+		public void visit(slice_expr_question _slice_expr_question)
+		{
+			read_slice_expr_question(_slice_expr_question);
+		}
+
+		public void read_slice_expr_question(slice_expr_question _slice_expr_question)
+		{
+			read_slice_expr(_slice_expr_question);
+		}
+
+
+		public void visit(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+			read_semantic_check_sugared_statement_node(_semantic_check_sugared_statement_node);
+		}
+
+		public void read_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
+		{
+			read_statement(_semantic_check_sugared_statement_node);
+			_semantic_check_sugared_statement_node.typ = (object)br.ReadByte();
+			if (br.ReadByte() == 0)
+			{
+				_semantic_check_sugared_statement_node.lst = null;
+			}
+			else
+			{
+				_semantic_check_sugared_statement_node.lst = new List<syntax_tree_node>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_semantic_check_sugared_statement_node.lst.Add(_read_node() as syntax_tree_node);
+				}
+			}
+		}
+
+
+		public void visit(sugared_expression _sugared_expression)
+		{
+			read_sugared_expression(_sugared_expression);
+		}
+
+		public void read_sugared_expression(sugared_expression _sugared_expression)
+		{
+			read_expression(_sugared_expression);
+			_sugared_expression.sugared_expr = (object)br.ReadByte();
+			_sugared_expression.new_expr = _read_node() as expression;
+		}
+
+
+		public void visit(sugared_addressed_value _sugared_addressed_value)
+		{
+			read_sugared_addressed_value(_sugared_addressed_value);
+		}
+
+		public void read_sugared_addressed_value(sugared_addressed_value _sugared_addressed_value)
+		{
+			read_addressed_value(_sugared_addressed_value);
+			_sugared_addressed_value.sugared_expr = (object)br.ReadByte();
+			_sugared_addressed_value.new_addr_value = _read_node() as addressed_value;
 		}
 
 	}

@@ -18,19 +18,19 @@ string
 boolean
 
 [f]
-for |:= to do
+for var |:= to do
 
 [fb]
-for |:= to do
+for var |:= to do
 begin
 
 end;
 
 [fore]
-foreach |:  in  do
+foreach var |:  in  do
 
 [foreb]
-foreach |:  in  do
+foreach var |:  in  do
 begin
 
 end;
@@ -91,7 +91,7 @@ begin
 end;
 
 [ar]
-array[1..|] of ;
+array of |;
 
 [try]
 try

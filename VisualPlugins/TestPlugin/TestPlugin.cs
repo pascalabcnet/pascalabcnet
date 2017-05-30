@@ -29,7 +29,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2016 by Ivan Bondarev, Stanislav Mihalkovich";
+                return "Copyright © 2005-2017 by Ivan Bondarev, Stanislav Mihalkovich";
             }
         }
 
@@ -43,7 +43,6 @@ namespace VisualPascalABCPlugins
             this.Workbench = Workbench;
             VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             testForm.VisualEnvironmentCompiler = VisualEnvironmentCompiler;
-            
 
         }
         public void GetGUI(List<IPluginGUIItem> MenuItems, List<IPluginGUIItem> ToolBarItems)

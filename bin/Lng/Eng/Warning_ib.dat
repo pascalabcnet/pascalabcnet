@@ -6,3 +6,5 @@ UNUSED_PARAM_{0}=The parameter '{0}' is never used
 ASS_WITHOUT_USE_{0}=The variable '{0}' is assigned but its value is never used
 UNREACHABLE_CODE_DETECTED=Unreachable code detected
 UNDEFINED_RETURN_VALUE_{0}=Return value of function '{0}' is not to be set
+DO_NOT_USE_SHORT_STRINGS=Don't use short strings
+DO_NOT_USE_POINTERS_TO_RECORDS=Don't use pointers to records. You classes instead

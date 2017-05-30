@@ -41,6 +41,7 @@ namespace PascalABCSavParser
         private const int max_char_const = 0xFFFF;
         // SSM: Errors инициализируется в другом месте - сюда только передается!
         public List<Error> errors;
+        public List<CompilerWarning> warnings;
         public System.Collections.Stack NodesStack; // SSM: для каких-то вспомогательных целей в двух правилах
         public bool build_tree_for_formatter = false; 
 
@@ -238,6 +239,14 @@ namespace PascalABCSavParser
             if (pars != null && pars.Length > 0)
                 res = string.Format(res, pars);
             errors.Add(new SyntaxError(res, CurrentFileName, loc, null));
+        }
+
+        public void AddWarningFromResource(string res, PascalABCCompiler.SyntaxTree.SourceContext loc, params string[] pars)
+        {
+            res = StringResources.Get(res);
+            if (pars != null && pars.Length > 0)
+                res = string.Format(res, pars);
+            warnings.Add(new CommonWarning(res, CurrentFileName, loc.begin_position.line_num, loc.begin_position.column_num));
         }
 
         public string directive_parameter(string s)

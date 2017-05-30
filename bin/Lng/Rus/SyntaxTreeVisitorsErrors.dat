@@ -1,18 +1,18 @@
-// Syntax tree conversion errors
+п»ї// Syntax tree conversion errors
 %PREFIX%=SYNTAXTREEVISITORSERROR_
 
-YIELD_FUNC_MUST_RETURN_SEQUENCE=Функции с yield должны возвращать последовательность
-ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Только функции могут содержать yield
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=В параметрах функции с yield не должно быть модификаторов 'var', 'const' или 'params'
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Функция с yield не должна иметь параметров по умолчанию
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT=Функция с yield не может содержать переменную Result
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Функции с yield не могут содержать оператор lock
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Функции с yield не могут содержать блоков try..except и try..finally
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Функции с yield не могут содержать вложенные подпрограммы и сами быть вложенными 
-FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Функции с yield не могут содержать локальные определения типов
-YIELDS_INSIDE_WITH_ARE_ILLEGAL=Оператор yield запрещен внутри with
-LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Лямбда-выражения не могут содержать yield
+YIELD_FUNC_MUST_RETURN_SEQUENCE=Р¤СѓРЅРєС†РёРё СЃ yield РґРѕР»Р¶РЅС‹ РІРѕР·РІСЂР°С‰Р°С‚СЊ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ
+ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=РўРѕР»СЊРєРѕ С„СѓРЅРєС†РёРё РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ yield
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=Р’ РїР°СЂР°РјРµС‚СЂР°С… С„СѓРЅРєС†РёРё СЃ yield РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РјРѕРґРёС„РёРєР°С‚РѕСЂРѕРІ 'var', 'const' РёР»Рё 'params'
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Р¤СѓРЅРєС†РёСЏ СЃ yield РЅРµ РґРѕР»Р¶РЅР° РёРјРµС‚СЊ РїР°СЂР°РјРµС‚СЂРѕРІ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT=Р¤СѓРЅРєС†РёСЏ СЃ yield РЅРµ РјРѕР¶РµС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РїРµСЂРµРјРµРЅРЅСѓСЋ Result
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Р¤СѓРЅРєС†РёРё СЃ yield РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РѕРїРµСЂР°С‚РѕСЂ lock
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Р¤СѓРЅРєС†РёРё СЃ yield РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ Р±Р»РѕРєРѕРІ try..except Рё try..finally
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Р¤СѓРЅРєС†РёРё СЃ yield РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РІР»РѕР¶РµРЅРЅС‹Рµ РїРѕРґРїСЂРѕРіСЂР°РјРјС‹ Рё СЃР°РјРё Р±С‹С‚СЊ РІР»РѕР¶РµРЅРЅС‹РјРё 
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Р¤СѓРЅРєС†РёРё СЃ yield РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ Р»РѕРєР°Р»СЊРЅС‹Рµ РѕРїСЂРµРґРµР»РµРЅРёСЏ С‚РёРїРѕРІ
+YIELDS_INSIDE_WITH_ARE_ILLEGAL=РћРїРµСЂР°С‚РѕСЂ yield Р·Р°РїСЂРµС‰РµРЅ РІРЅСѓС‚СЂРё with
+LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Р›СЏРјР±РґР°-РІС‹СЂР°Р¶РµРЅРёСЏ РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ yield
 
-Var_{0}_is_already_defined=Переменная {0} уже определена
+Var_{0}_is_already_defined=РџРµСЂРµРјРµРЅРЅР°СЏ {0} СѓР¶Рµ РѕРїСЂРµРґРµР»РµРЅР°
 
 

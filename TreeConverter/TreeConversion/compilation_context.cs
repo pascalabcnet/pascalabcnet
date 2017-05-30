@@ -41,7 +41,11 @@ namespace PascalABCCompiler.TreeConverter
         public Stack<common_type_node> type_stack; // Для вложенных типов
         public statement_list_stack stlist_stack;
         public semantic_node ret_value; // Возвращаемое значение класса returner
+        public bool WithSection;
+        public Dictionary<SymbolTable.Scope, expression_node> WithVariables;
+        public Stack<SymbolTable.Scope> WithTypes;
         //LambdaHelper.Reset(); // Пока не знаю, что с этим делать
+
     }
 	
 	public class compilation_context
@@ -96,6 +100,9 @@ namespace PascalABCCompiler.TreeConverter
             SavedContext.member_decls = member_decls;
             SavedContext.types_predefined = _types_predefined;
             SavedContext.ret_value = syntax_tree_visitor.ret.get_result();
+            SavedContext.WithTypes = WithTypes;
+            SavedContext.WithSection = WithSection;
+            SavedContext.WithVariables = WithVariables;
 
             SavedContextStack.Push(SavedContext);
             // SavedContext.type_stack = type_stack;
@@ -152,6 +159,9 @@ namespace PascalABCCompiler.TreeConverter
             _fal = SavedContext._fal;
             member_decls = SavedContext.member_decls;
             _types_predefined = SavedContext.types_predefined;
+            WithTypes = SavedContext.WithTypes;
+            WithVariables = SavedContext.WithVariables;
+            WithSection = SavedContext.WithSection;
             syntax_tree_visitor.ret.return_value(SavedContext.ret_value);
 
             if (SavedContextStack.Count == 0)
@@ -164,6 +174,9 @@ namespace PascalABCCompiler.TreeConverter
 		public common_type_node _ctn; // SSM - пытаюсь выходить из класса и входить заново
 		private common_function_node_stack _func_stack=new common_function_node_stack();
         private type_node _explicit_interface_type;
+        internal bool WithSection = false;
+        internal Dictionary<SymbolTable.Scope, expression_node> WithVariables = new Dictionary<SymbolTable.Scope, expression_node>();
+        internal Stack<SymbolTable.Scope> WithTypes = new Stack<SymbolTable.Scope>();
 
         internal common_function_node_stack func_stack
         {
@@ -226,12 +239,13 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        private int _num_for_delegates;
 		private int _num_of_for_cycles;
 
         internal convertion_data_and_alghoritms convertion_data_and_alghoritms;
 
 		private SemanticTree.field_access_level _fal;
-
+        private bool _has_nested_functions;
         internal syntax_tree_visitor syntax_tree_visitor;
 		
         private static compilation_context _instance;
@@ -264,7 +278,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             syntax_tree_visitor.AddError(loc, ErrString, values);
         }
-
+        
+        internal bool can_call_inherited_ctor_call(statements_list lst)
+        {
+        	return lst.statements.Count == 0;
+        }
+        
         public void reset()
         {
             _cmn = null;
@@ -276,6 +295,7 @@ namespace PascalABCCompiler.TreeConverter
             _cycles_stack.clear();
             _num_of_for_cycles = 0;
             _fal = SemanticTree.field_access_level.fal_private;
+            _num_for_delegates = 0;
             rec_num = 1;
             var_defs_stack.Clear();
             type_stack.Clear();
@@ -301,7 +321,7 @@ namespace PascalABCCompiler.TreeConverter
             _last_created_function = null;
             in_parameters_block = false;
             is_order_independed_method_description = false;
-            
+            _has_nested_functions = false;
         }
         
         public bool inStaticArea()
@@ -618,6 +638,18 @@ namespace PascalABCCompiler.TreeConverter
             }
             //\ssyy
 		}
+
+        public bool has_nested_functions
+        {
+            get
+            {
+                return _has_nested_functions;
+            }
+            set
+            {
+                _has_nested_functions = value;
+            }
+        }
 
         //ssyy
         public common_function_node_stack converted_func_stack
@@ -1333,16 +1365,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public common_type_node create_set_type(type_node elem_type, location def_loc)
         {
-            //if (elem_type == PascalABCCompiler.SystemLibrary.SystemLibrary.byte_type) 
-            //	elem_type = PascalABCCompiler.SystemLibrary.SystemLibrary.integer_type;
         	if (TypedSets.ContainsKey(elem_type))
                 return TypedSets[elem_type];
             string name = compiler_string_consts.GetSetTypeName(elem_type.name);
-            /*common_type_node sctn = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as common_type_node;
-            sctn.type_special_kind = SemanticTree.type_special_kind.set_type;
-            if (sctn.scope.Find(compiler_string_consts.assign_name) == null)
-            sctn.scope.AddSymbol(compiler_string_consts.assign_name, sctn.scope.Find(compiler_string_consts.AssignSetName));
-            return sctn;*/
             type_node base_type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
             //check_name_free(name, def_loc);
             SymbolTable.ClassScope scope = convertion_data_and_alghoritms.symbol_table.CreateClassScope(_cmn.scope, null);
@@ -1351,27 +1376,12 @@ namespace PascalABCCompiler.TreeConverter
             set_field_access_level(SemanticTree.field_access_level.fal_public);
             _cmn.scope.AddSymbol(name, new SymbolInfo(tctn));
             tctn.type_special_kind = SemanticTree.type_special_kind.set_type;
-            //tctn.add_intersection_node(type_intersection_node);
             tctn.element_type = elem_type;
             tctn.internal_is_value = base_type.is_value;
             tctn.is_class = base_type.is_class;
             tctn.SetBaseType(base_type);
             tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            //tctn.add_name(compiler_string_consts.assign_name,SystemLibrary.SystemLibInitializer.AssignSetProcedure.SymbolInfo);
-            /*foreach (type_node tn in TypedSets.Keys)
-            {
-            	type_compare tc = type_table.compare_types(elem_type,tn);
-            	if (tc != type_compare.non_comparable_type)
-            	{
-            		tctn.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(TypedSets[tn],PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            		TypedSets[tn].add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(tctn,PascalABCCompiler.SemanticTree.basic_function_type.objassign)));
-            	}
-            }*/
             tctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
-            //tctn.scope.AddSymbol(compiler_string_consts.and_name,SystemLibrary.)
-            //_ctn = tctn;
-            //if (tctn.scope.Find(compiler_string_consts.assign_name) != tctn.scope.Find(compiler_string_consts.AssignSetName))
-              //  tctn.scope.AddSymbol(compiler_string_consts.assign_name, tctn.scope.Find(compiler_string_consts.AssignSetName));
             tctn.scope.AddSymbol(compiler_string_consts.plus_name, SystemLibrary.SystemLibInitializer.SetUnionProcedure.SymbolInfo);
             tctn.scope.AddSymbol(compiler_string_consts.mul_name, SystemLibrary.SystemLibInitializer.SetIntersectProcedure.SymbolInfo);
             tctn.scope.AddSymbol(compiler_string_consts.in_name, SystemLibrary.SystemLibInitializer.InSetProcedure.SymbolInfo);
@@ -1385,7 +1395,6 @@ namespace PascalABCCompiler.TreeConverter
             tctn.scope.AddSymbol(compiler_string_consts.plusassign_name,new SymbolInfo(make_set_plus_assign(tctn)));
             tctn.scope.AddSymbol(compiler_string_consts.minusassign_name,new SymbolInfo(make_set_minus_assign(tctn)));
             tctn.scope.AddSymbol(compiler_string_consts.multassign_name,new SymbolInfo(make_set_mult_assign(tctn)));
-            //SystemLibrary.SystemLibrary.init_reference_type(tctn);
             converted_namespace.types.AddElement(tctn);
             TypedSets.Add(elem_type, tctn);
             return tctn;            
@@ -1649,7 +1658,7 @@ namespace PascalABCCompiler.TreeConverter
             return cf;
         }
 
-		public var_definition_node add_var_definition(string name, location loc, type_node tn, SemanticTree.polymorphic_state ps)
+		public var_definition_node add_var_definition(string name, location loc, type_node tn, SemanticTree.polymorphic_state ps, bool not_add_to_varlist=false)
 		{
 			check_name_free(name,loc);
 			var_definition_node vdn=null;
@@ -1677,7 +1686,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             	local_block_variable lv = new local_block_variable(name, tn, CurrentStatementList, loc);
                 CurrentScope.AddSymbol(name, new SymbolInfo(lv));
-                lv.block.local_variables.Add(lv);
+                if (!not_add_to_varlist)
+                    lv.block.local_variables.Add(lv);
                 if (tn == null) //Тип еще неизвестен, будем закрывать.
                     var_defs.Add(lv);
                 return lv;
@@ -1802,7 +1812,7 @@ namespace PascalABCCompiler.TreeConverter
 
         public string get_delegate_type_name()
         {
-            return (compiler_string_consts.delegate_type_name_template+get_and_postinc_num_of_for_cycles());
+            return (compiler_string_consts.delegate_type_name_template + _num_for_delegates++);
         }
 
 		public var_definition_node create_for_temp_variable(type_node type,location loc)
@@ -3067,7 +3077,7 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (finded_method.is_constructor == false)
                         {
-                            AddError(compiled_meth.loc, "CONSTRUCTOR_MUST_BE_REALIZED_WITH_CONSTRUCTOR_KEYWORD");
+                            AddError(finded_method.loc, "CONSTRUCTOR_MUST_BE_REALIZED_WITH_CONSTRUCTOR_KEYWORD");
                         }
                         compiled_meth.return_value_type = finded_method.return_value_type;
                         convertion_data_and_alghoritms.create_function_return_variable(finded_method,null);
