@@ -3,4 +3,3 @@
 "..\utils\NSIS\Unicode\makensis.exe" PascalABCNETWithDotNet.nsi
 PascalABCNETConsoleZIP.bat
 PascalABCNETMonoZIP.bat
-PAUSE

@@ -413,12 +413,25 @@ namespace CodeCompletion
             if (this.used_units != null)
                 for (int i = 0; i < this.used_units.Count; i++)
                 {
-                    if (this.used_units[i] != this)
+            		if (!hasUsesCycle(this))
                         lst.AddRange(this.used_units[i].GetExtensionMethods(ts));
                 }
             return lst;
         }
-
+        
+        private bool hasUsesCycle(SymScope unit)
+        {
+        	if (this.used_units != null)
+        		for (int i = 0; i < this.used_units.Count; i++)
+                {
+                    if (this.used_units[i] == unit)
+                    	return true;
+                    else if (this.used_units[i].hasUsesCycle(unit))
+                    	return true;
+                }
+        	return false;
+        }
+        
         public virtual bool IsAssembliesChanged()
         {
             return false;
@@ -2203,7 +2216,7 @@ namespace CodeCompletion
             if (es == null) return false;
             if (enum_consts.Count != es.enum_consts.Count) return false;
             for (int i = 0; i < es.enum_consts.Count; i++)
-                if (string.Compare(es.enum_consts[i], enum_consts[i], true) != 0) return false;
+                if (string.Compare(enum_consts[i], this.enum_consts[i], true) != 0) return false;
             return true;
         }
 
@@ -5844,9 +5857,7 @@ namespace CodeCompletion
             if (si == null && names.Count == 0)
             {
                 if (string.Compare(name, "Create", true) == 0 && this.ctn != typeof(object))
-                {
                     si = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
-                }
                 if (si == null)
                 {
                     if (pascal_ext_meths.Count > 0)
@@ -5921,6 +5932,7 @@ namespace CodeCompletion
                     {
                         CompiledConstructorScope cms = new CompiledConstructorScope(new SymInfo("Create", SymbolKind.Method, "Create"), (si.First().sym_info as compiled_constructor_node).constructor_info, this);
                         names.Insert(0, cms);
+						si.InfoUnitList.RemoveAt(0);
                         if(si.InfoUnitList.Count == 0)
                             si = null;
                         CompiledConstructorScope tmp = cms;
@@ -6000,9 +6012,7 @@ namespace CodeCompletion
             if (si == null)
             {
                 if (string.Compare(name, "Create", true) == 0)
-                {
                     si = PascalABCCompiler.NetHelper.NetHelper.GetConstructor(ctn);
-                }
                 if (si == null)
                 {
                     return null;

@@ -3450,7 +3450,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             if (si == null)
             {
-                return null; //Никогда не зайдёт
+                return null;
             }
             compiled_function_node cfn_sec = fn as compiled_function_node;
 
