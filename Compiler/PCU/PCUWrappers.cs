@@ -67,7 +67,7 @@ namespace PascalABCCompiler.PCU
                     if (wdn.is_synonim)
                         tsi.sym_info = wdn.PCUReader.CreateTypeSynonim(wdn.offset, name);
                     else
-                        tsi.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset, name);
+                    	tsi.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset,name);
                 }
             }
             return si;
@@ -155,11 +155,9 @@ namespace PascalABCCompiler.PCU
                 if (si == null)
                     si = SymbolTable.Find(PartialScope, name);
                 else
-                {
                     si.Add(SymbolTable.Find(PartialScope, name));
-                }
             }
-            if (si == null) return null;
+            if (si == null) return si;
             //если это заглушка, то разворачиваем сущность
             foreach (SymbolInfoUnit tsi in si.InfoUnitList)
             {
@@ -201,7 +199,7 @@ namespace PascalABCCompiler.PCU
 
         public SymbolInfoList FindWithoutCreation(string name)
         {
-            return SymbolTable.FindOnlyInScope(this, name, false);
+            return SymbolTable.FindOnlyInScope(this,name, false);
         }
 
     }
@@ -318,9 +316,7 @@ namespace PascalABCCompiler.PCU
             if (si == null)
             {
                 if (base_type != null && base_type.IsDelegate)
-                {
                     return base_type.find_in_type(name, CurrentScope, no_search_in_extension_methods);
-                }
                 return si;
             }
                 
