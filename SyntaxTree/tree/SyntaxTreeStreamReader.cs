@@ -2358,7 +2358,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_format_expr(format_expr _format_expr)
 		{
-			read_expression(_format_expr);
+			read_addressed_value(_format_expr);
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
@@ -3716,7 +3716,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_tuple_node(tuple_node _tuple_node)
 		{
-			read_expression(_tuple_node);
+			read_addressed_value(_tuple_node);
 			_tuple_node.el = _read_node() as expression_list;
 		}
 

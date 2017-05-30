@@ -372,6 +372,7 @@ namespace VisualPascalABCPlugins
         void ExecUndo();
         void ExecRedo();
         void CollapseRegions();
+        void CodeFormat();
     }
 
     public interface IWorkbenchDebuggerOperationsService
@@ -428,6 +429,14 @@ namespace VisualPascalABCPlugins
         IWorkbenchDesignerService DesignerService { get; }
         IWorkbenchOperationsService OperationsService { get; }
         IWorkbenchUpdateService UpdateService { get;  }
+        ICodeCompletionService CodeCompletionService { get; }
+    }
+
+    public interface ICodeCompletionService
+    {
+        PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string FileName);
+        void SetAsChanged(string FileName);
+        void RegisterFileForParsing(string FileName);
     }
 
     public interface IWorkbench
@@ -443,7 +452,6 @@ namespace VisualPascalABCPlugins
         ICompilerConsoleWindow CompilerConsoleWindow { get; }
         IOutputWindow OutputWindow { get; }
         IErrorListWindow ErrorsListWindow { get; }
-        
         void BeginInvoke(Delegate del, params object[] args);
     }
 
@@ -477,7 +485,17 @@ namespace VisualPascalABCPlugins
         IValue ObjectValue { get; }
         object PrimitiveValue { get; }
     }
-
+	
+    public interface IProcess
+    {
+    	bool HasExited { get; }
+    }
+    
+    public interface IProcessEventArgs
+    {
+    	IProcess Process { get; }
+    }
+    
     public interface IDebuggerManager
     {
         bool IsRunning { get; }
@@ -491,6 +509,7 @@ namespace VisualPascalABCPlugins
         void StepInto();
         void StepOver();
         void RunToCursor();
+        event EventHandler<EventArgs> DebuggeeStateChanged;
     }
 
     public interface ILanguageManager

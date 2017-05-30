@@ -645,7 +645,16 @@ namespace VisualPascalABC
             get
             {
                 string path = "";
-            	if (UserOptions.UseOutputDirectory)
+
+                if (ProjectFactory.Instance.CurrentProject != null)
+                {
+                    if (!string.IsNullOrEmpty(ProjectFactory.Instance.CurrentProject.OutputDirectory))
+                        return Path.Combine(ProjectFactory.Instance.CurrentProject.OutputDirectory, ProjectFactory.Instance.CurrentProject.OutputFileName);
+                    return Path.Combine(ProjectFactory.Instance.CurrentProject.ProjectDirectory, ProjectFactory.Instance.CurrentProject.OutputFileName);
+                }
+                    
+
+                if (UserOptions.UseOutputDirectory)
                     path = Path.Combine(UserOptions.OutputDirectory, Path.GetFileNameWithoutExtension(CurrentSourceFileName)) + ".exe";
                 else
                     path = Path.ChangeExtension(CurrentSourceFileName, ".exe");

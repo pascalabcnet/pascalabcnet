@@ -1,6 +1,8 @@
 public <#NodeName#> Add(<#ListElementType#> elem, SourceContext sc = null)
 {
 	<#ListName#>.Add(elem);
+	if (elem != null)
+		elem.Parent = this;
 	if (sc != null)
 		source_context = sc;
 	return this;
@@ -9,16 +11,23 @@ public <#NodeName#> Add(<#ListElementType#> elem, SourceContext sc = null)
 public void AddFirst(<#ListElementType#> el)
 {
 	<#ListName#>.Insert(0, el);
+	FillParentsInDirectChilds();
 }
 
 public void AddFirst(IEnumerable<<#ListElementType#>> els)
 {
 	<#ListName#>.InsertRange(0, els);
+	foreach (var el in els)
+		if (el != null)
+			el.Parent = this;
 }
 
 public void AddMany(params <#ListElementType#>[] els)
 {
 	<#ListName#>.AddRange(els);
+	foreach (var el in els)
+		if (el != null)
+			el.Parent = this;
 }
 
 private int FindIndexInList(<#ListElementType#> el)
@@ -32,21 +41,31 @@ private int FindIndexInList(<#ListElementType#> el)
 public void InsertAfter(<#ListElementType#> el, <#ListElementType#> newel)
 {
 	<#ListName#>.Insert(FindIndexInList(el) + 1, newel);
+	if (newel != null)
+	   	newel.Parent = this;
 }
 
 public void InsertAfter(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
 	<#ListName#>.InsertRange(FindIndexInList(el) + 1, newels);
+	foreach (var newel in newels)
+		if (el != null)
+			el.Parent = this;
 }
 
 public void InsertBefore(<#ListElementType#> el, <#ListElementType#> newel)
 {
 	<#ListName#>.Insert(FindIndexInList(el), newel);
+	if (newel != null)
+		newel.Parent = this;
 }
 
 public void InsertBefore(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
 	<#ListName#>.InsertRange(FindIndexInList(el), newels);
+	foreach (var newel in newels)
+		if (el != null)
+			el.Parent = this;
 }
 
 public bool Remove(<#ListElementType#> el)
@@ -57,6 +76,8 @@ public bool Remove(<#ListElementType#> el)
 public void ReplaceInList(<#ListElementType#> el, <#ListElementType#> newel)
 {
 	<#ListName#>[FindIndexInList(el)] = newel;
+	if (newel != null)
+	   	newel.Parent = this;
 }
 
 public void ReplaceInList(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
@@ -64,6 +85,9 @@ public void ReplaceInList(<#ListElementType#> el, IEnumerable<<#ListElementType#
 	var ind = FindIndexInList(el);
 	<#ListName#>.RemoveAt(ind);
 	<#ListName#>.InsertRange(ind, newels);
+    foreach (var newel in newels)
+		if (el != null)
+			el.Parent = this;
 }
 
 public int RemoveAll(Predicate<<#ListElementType#>> match)

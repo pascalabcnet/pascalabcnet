@@ -98,6 +98,7 @@ namespace PascalABCCompiler.TreeConverter
 
         internal void RemoveLastError()
         {
+        	if (ErrorsList.Count > 0)
             ErrorsList.RemoveAt(ErrorsList.Count - 1);
         }
 
@@ -284,6 +285,7 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.ObjectType = null;
             SystemLibrary.SystemLibInitializer.StringType = null;
             SystemLibrary.SystemLibInitializer.ConfigVariable = null;
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = null;
         }
         
         internal bool SystemUnitAssigned = false;
@@ -359,6 +361,7 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerToStringFunction_func_name);
             SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetRuntimeSizeFunction_func_name);
             SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StrProcedure_func_name);
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PascalABCVersion_func_name);
             SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ChrUnicodeFunction_func_name);
             SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssertProcedure);
             SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range);
@@ -452,6 +455,7 @@ namespace PascalABCCompiler.TreeConverter
             SystemLibrary.SystemLibInitializer.PointerToStringFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PointerToStringFunction_func_name);
             SystemLibrary.SystemLibInitializer.GetRuntimeSizeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.GetRuntimeSizeFunction_func_name);
             SystemLibrary.SystemLibInitializer.StrProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.StrProcedure_func_name);
+            SystemLibrary.SystemLibInitializer.PascalABCVersion = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.PascalABCVersion_func_name);
             SystemLibrary.SystemLibInitializer.ChrUnicodeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.ChrUnicodeFunction_func_name);
             SystemLibrary.SystemLibInitializer.AssertProcedure = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.AssertProcedure);
             SystemLibrary.SystemLibInitializer.CheckRangeFunction = new SystemLibrary.UnitDefinitionItem(psystem_unit, compiler_string_consts.check_in_range);
@@ -999,14 +1003,17 @@ namespace PascalABCCompiler.TreeConverter
 
             expressions_list pars = new expressions_list();
             pars.AddElement(expr);
-
+            bool tmp = ThrowCompilationError;
+            ThrowCompilationError = false;
             function_node fn;
             fn = convertion_data_and_alghoritms.select_function(pars, si, loc);
-            expr = pars[0];
+            ThrowCompilationError = tmp;
             if (fn == null)
             {
+            	RemoveLastError();
             	AddError(new OperatorCanNotBeAppliedToThisType(name, expr));
             }
+            expr = pars[0];
 #if (DEBUG)
             convertion_data_and_alghoritms.check_operator(fn);
 #endif
@@ -1169,8 +1176,7 @@ namespace PascalABCCompiler.TreeConverter
                                 }
                             }
                         }
-                        var temp = new SymbolInfoUnit(fnode);
-                        si.Add(temp);
+                        si.Add(new SymbolInfoUnit(fnode));
                     }
                 }
                 else
@@ -1771,24 +1777,17 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         current_catch_excep = new int_const_node(2,null);//create_constructor_call(filter_type, new expressions_list(), null);
                         local_block_variable_reference lvr = null;
-                        
+                        statements_list sl = new statements_list(get_location(eh.statements));
+                        convertion_data_and_alghoritms.statement_list_stack_push(sl);
                         context.enter_code_block_without_bind();
                         if (eh.variable != null)
                         {
-                        	
-                        	context.check_name_redefinition = false;
-                        	
-                        	local_block_variable lbv = context.add_var_definition(eh.variable.name, get_location(eh.variable), filter_type, SemanticTree.polymorphic_state.ps_common) as local_block_variable;
-                            context.check_name_redefinition = true;
+                        	local_block_variable lbv = context.add_var_definition(eh.variable.name, get_location(eh.variable), filter_type, SemanticTree.polymorphic_state.ps_common, true) as local_block_variable;
                         	lvr = new local_block_variable_reference(lbv, lbv.loc);
                         }
                         statement_node stm = convert_strong(eh.statements);
                         context.leave_code_block();
-                        
-                        /*if (eh.variable != null)
-                        {
-                            context.leave_scope();
-                        }*/
+                        sl = convertion_data_and_alghoritms.statement_list_stack.pop();
                         exception_filter ef = new exception_filter(filter_type, lvr, stm, get_location(eh));
                         efl.AddElement(ef);
                         current_catch_excep = null;
@@ -5982,6 +5981,11 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     is_format_allowed = true;
                 }
+                else if (SystemLibrary.SystemLibInitializer.PascalABCVersion.Equal(si))
+                {
+                	return_value(new string_const_node(RevisionClass.FullVersion, get_location(_method_call)));
+                	return;
+                }
                 else if (SystemLibrary.SystemLibInitializer.ArrayCopyFunction.Equal(si))
                 {
                     if (_method_call.parameters != null && _method_call.parameters.expressions.Count == 1)
@@ -8331,9 +8335,9 @@ namespace PascalABCCompiler.TreeConverter
             lab.comprehensive_code_block = context.block_stack.Peek();
             foreach (goto_statement gs in lab.goto_statements)
             {
-                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block))
+                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && gs.location != null)
                 {
-                    //AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.to_statement);
@@ -8363,9 +8367,9 @@ namespace PascalABCCompiler.TreeConverter
             lab.goto_statements.Add(gs);
             if (lab.comprehensive_code_block != null)
             {
-                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block))
+                if (!context.check_can_goto(lab.comprehensive_code_block, gs.comprehensive_code_block) && _goto_statement.source_context != null)
                 {
-                    //AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
+                    AddError(gs.location, "BLOCKED_LABEL_{0}_GOTO", lab.name);
                 }
             }
             ret.return_value((statement_node)gs);
@@ -15194,7 +15198,10 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         //return convertion_data_and_alghoritms.create_full_function_call(new expressions_list(),
                         //	si,lloc,blocks.converted_type,blocks.top_function,false);
-                        
+                        if (SystemUnitAssigned && SystemLibrary.SystemLibInitializer.PascalABCVersion.Equal(si))
+                		{
+                			return new string_const_node(RevisionClass.FullVersion, get_location(_ident));
+                		}
                         if (si.First().sym_info == SystemLibrary.SystemLibInitializer.NewProcedure.sym_info)
                         {
                             AddError(lloc, "EXPECTED_TYPE_AFTER_NEW");
@@ -15491,7 +15498,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             else
             {
-            	if (!context.allow_inherited_ctor_call)
+            	if (!context.allow_inherited_ctor_call && !context.can_call_inherited_ctor_call(convertion_data_and_alghoritms.statement_list_stack_first()))
                     AddError(loc, "INHERITED_CONSTRUCTOR_CALL_MUST_BE_FIRST");
             	expressions_list exprs = new expressions_list();
             	foreach (common_parameter cp in cfn.parameters)
@@ -16314,31 +16321,17 @@ namespace PascalABCCompiler.TreeConverter
             convertion_data_and_alghoritms.statement_list_stack_push(stl);
 
             for (var i=0; i< _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
-            //foreach (statement syntax_statement in _statement_list.subnodes)
             {
                 statement syntax_statement = _statement_list.subnodes[i];
                 try
                 {
-                    // SSM выкинул эти три строки - теперь внутриблочные описания обрабатываются как обычные операторы. 
-                    // При этом в конце visit(var_statement) стоит вызов ret.reset(), который возвращает нулевой semantic_statement - и всё работает эквивалентно
-                    //if (syntax_statement is SyntaxTree.var_statement)
-                    //    visit(syntax_statement as SyntaxTree.var_statement); // Добавление в текущий statements_list происходит опосредованно !!
-                    //else if (MustVisitBody) // MustVisitBody - всегда True!!!
-                    //{
-                        //(ssyy) TODO Сделать по-другому!!!
                         statement_node semantic_statement = convert_strong(syntax_statement);
-                        //(ssyy) Проверка для C
                         if (semantic_statement != null)
                         {
-                            //Обработать по другому - комментарий не мой - SSM
-                            //if (context.CurrentScope.AddStatementsToFront)
-                            //    stl.statements.AddElementFirst(semantic_statement);
-                            //else
                             stl.statements.AddElement(semantic_statement);
                         }
 
                         context.allow_inherited_ctor_call = false;
-                    //}
                 }
                 catch (Errors.Error ex)
                 {

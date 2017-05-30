@@ -460,29 +460,9 @@ namespace PascalABCCompiler.TreeConverter
 
         public SymbolInfoList(SymbolInfoUnit inf)
         {
-            if (inf == null)
-            {
-                Console.Write("vse ploho");
-            }
             InfoUnitList = new List<SymbolInfoUnit>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
             InfoUnitList.Add(inf);
         }
-
-        /*public SymbolInfoList(SymbolInfo inf)
-        {
-            if (inf == null)
-            {
-                Console.Write("vse ploho");
-            }
-            InfoUnitList = new List<SymbolInfoUnit>(SymbolTable.SymbolTableConstants.InfoList_StartSize);
-            while (inf != null)
-            {
-                SymbolInfoUnit temp = new SymbolInfoUnit(inf);
-                InfoUnitList.Add(temp);
-                inf = inf.Next;
-            }
-        }*/
-
 
         public SymbolInfoList copy()
         {
@@ -525,18 +505,6 @@ namespace PascalABCCompiler.TreeConverter
 
             return -1;
         }
-
-        /*public SymbolInfo ToSymbolInfo()
-        {
-            SymbolInfo first_temp = new SymbolInfo();
-            SymbolInfo temp = first_temp;
-            foreach(var info_unit in InfoUnitList)
-            {
-                temp.Next = info_unit.ToSymbolInfo();
-                temp = temp.Next;
-            }
-            return first_temp.Next;
-        }*/
 
         public static bool operator ==(SymbolInfoList a, SymbolInfoList b)
         {
@@ -635,25 +603,6 @@ namespace PascalABCCompiler.TreeConverter
             si.scope = this.scope;
             return si;
         }
-
-        /*public SymbolInfo ToSymbolInfo()
-        {
-            reference.Next = null;
-            reference.access_level = _access_level;
-            reference.symbol_kind = _symbol_kind;
-            reference.sym_info = _sym_info;
-            reference.scope = scope;
-            return reference;
-        }*/
-
-        /*public SymbolInfoUnit(SymbolInfo inf)
-        {
-            //reference = inf;
-            _access_level = inf.access_level;
-            _symbol_kind = inf.symbol_kind;
-            _sym_info = inf.sym_info;
-            scope = inf.scope;
-        }*/
 
         private symbol_kind get_function_kind(function_node fn, bool is_overload)
         {

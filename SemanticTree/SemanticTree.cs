@@ -166,7 +166,12 @@ namespace PascalABCCompiler.SemanticTree
         {
             get;
         }
-
+        
+        bool is_nullable_type
+        {
+        	get;
+        }
+        
         type_special_kind type_special_kind
         {
             get;

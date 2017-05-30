@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace NodesGenerator.XmlModel
 {
     [Serializable]
-    public class HelpUnit
+    public class HelpUnit : IComparable<HelpUnit>
     {
         public HelpUnit() { }
 
@@ -23,6 +23,13 @@ namespace NodesGenerator.XmlModel
 
         [XmlAttribute]
         public string Value;
+
+        public int CompareTo(HelpUnit other)
+        {
+            if (ReferenceEquals(this, other)) return 0;
+            if (ReferenceEquals(null, other)) return 1;
+            return string.Compare(Key, other.Key, StringComparison.Ordinal);
+        }
     }
 
     [Serializable]
@@ -42,6 +49,7 @@ namespace NodesGenerator.XmlModel
                     helpElementKey as string,
                     (storage.HelpData[helpElementKey] as NodeGenerator.HelpContext).help_context));
             }
+            HelpData.Sort();
         }
 
         public NodeGenerator.HelpStorage ToHelpStorage()

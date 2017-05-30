@@ -309,6 +309,7 @@ namespace PascalABCCompiler.SystemLibrary
         public static UnitDefinitionItem OMP_Available;
         public static UnitDefinitionItem OMP_ParallelFor;
         public static UnitDefinitionItem OMP_ParallelSections;
+        public static UnitDefinitionItem PascalABCVersion;
         //native-->
         public static UnitDefinitionItem ObjectType;
         public static UnitDefinitionItem StringType;

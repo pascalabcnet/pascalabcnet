@@ -278,7 +278,12 @@ namespace PascalABCCompiler.TreeConverter
         {
             syntax_tree_visitor.AddError(loc, ErrString, values);
         }
-
+        
+        internal bool can_call_inherited_ctor_call(statements_list lst)
+        {
+        	return lst.statements.Count == 0;
+        }
+        
         public void reset()
         {
             _cmn = null;
@@ -1183,8 +1188,7 @@ namespace PascalABCCompiler.TreeConverter
 				{
                     common_function_node top_func = _func_stack.top();
                     SymbolTable.Scope scope = convertion_data_and_alghoritms.symbol_table.CreateScope(top_func.scope);
-					common_in_function_function_node ciffn;
-					ciffn=new common_in_function_function_node(name,def_loc,top_func,scope);
+					common_in_function_function_node ciffn =new common_in_function_function_node(name,def_loc,top_func,scope);
 					top_func.functions_nodes_list.AddElement(ciffn);
                     _last_created_function = new SymbolInfoUnit(ciffn);
                     if (add_symbol_info)
@@ -1656,7 +1660,7 @@ namespace PascalABCCompiler.TreeConverter
             return cf;
         }
 
-		public var_definition_node add_var_definition(string name, location loc, type_node tn, SemanticTree.polymorphic_state ps)
+		public var_definition_node add_var_definition(string name, location loc, type_node tn, SemanticTree.polymorphic_state ps, bool not_add_to_varlist=false)
 		{
 			check_name_free(name,loc);
 			var_definition_node vdn=null;
@@ -1684,6 +1688,7 @@ namespace PascalABCCompiler.TreeConverter
                 }
             	local_block_variable lv = new local_block_variable(name, tn, CurrentStatementList, loc);
                 CurrentScope.AddSymbol(name, new SymbolInfoUnit(lv));
+                if (!not_add_to_varlist)
                 lv.block.local_variables.Add(lv);
                 if (tn == null) //Тип еще неизвестен, будем закрывать.
                     var_defs.Add(lv);
@@ -2894,7 +2899,6 @@ namespace PascalABCCompiler.TreeConverter
         /// </summary>
         /// <param name="fn">Проверяемая функция</param>
         /// <returns></returns>
-        //DeleteSymbolInfo
 		private bool check_unique_or_predefined(common_function_node fn)
 		{
             SymbolInfoList si_list = null;

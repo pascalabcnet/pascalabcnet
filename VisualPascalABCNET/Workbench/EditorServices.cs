@@ -240,5 +240,10 @@ namespace VisualPascalABC
         {
             CurrentCodeFileDocument.TextEditor.CollapseRegions();
         }
+
+        public void CodeFormat()
+        {
+            (new CodeFormattingAction()).Execute(CurrentSyntaxEditor.TextEditor.ActiveTextAreaControl.TextArea);
+        }
     }
 }

@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 // SSM 21/11/16 Ћ€мбда выражени€ вынесены на верхний уровень (п.ч. присваивани€ и параметры)
 %{
 // Ёти объ€влени€ добавл€ютс€ в класс GPPGParser, представл€ющий собой парсер, генерируемый системой gppg
@@ -3105,6 +3107,10 @@ variable
 			$$ = new method_call($1 as addressed_value,$3 as expression_list, @$);
         }
     | variable tkPoint identifier_keyword_operatorname
+        {
+			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+    | tuple tkPoint identifier_keyword_operatorname
         {
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
         }

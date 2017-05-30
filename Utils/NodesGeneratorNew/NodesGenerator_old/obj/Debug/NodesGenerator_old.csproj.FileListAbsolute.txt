@@ -76,3 +76,15 @@ G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\
 G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csproj.GenerateResource.Cache
 G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.exe
 G:\MMCS\Programming\PascalABCNET\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.pdb
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.exe.config
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.exe
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\bin\Debug\NodesGenerator.pdb
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.Form1.resources
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.method_editor.resources
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.node_def.resources
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.simple_node_editor.resources
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.subnode_editor.resources
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.template_form.resources
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator_old.csproj.GenerateResource.Cache
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.exe
+J:\PascalABC.NET\!PABC_Git\Utils\NodesGeneratorNew\NodesGenerator_old\obj\Debug\NodesGenerator.pdb

@@ -53,7 +53,9 @@ namespace PascalABCCompiler.TreeRealization
         }
         */
         internal bool is_ref_inited;
-
+        internal bool is_nullable_inited;
+        private bool _is_nullable_type;
+        
         public virtual bool IsSealed
         {
             get { return false; }
@@ -62,6 +64,27 @@ namespace PascalABCCompiler.TreeRealization
         public virtual bool IsAbstract
         {
         	get { return false; }
+        }
+        
+        public virtual bool is_standard_type
+        {
+        	get { return false; }
+        }
+        
+        public bool is_nullable_type
+        {
+        	get
+        	{
+        		if (is_nullable_inited)
+        			return _is_nullable_type;
+        		string fname = full_name;
+        		if (this is compiled_type_node)
+        			_is_nullable_type = fname != null && fname.StartsWith("System.Nullable");
+        		else if (original_generic != null)
+        			return original_generic.is_nullable_type;
+        		is_nullable_inited = true;
+        		return _is_nullable_type;
+        	}
         }
         
         public virtual bool IsInterface
@@ -1731,7 +1754,7 @@ namespace PascalABCCompiler.TreeRealization
 		public override string full_name {
 			get 
 			{ 
-				if (!string.IsNullOrEmpty(_comprehensive_namespace.namespace_name))
+				if (_comprehensive_namespace != null && !string.IsNullOrEmpty(_comprehensive_namespace.namespace_name))
 				return _comprehensive_namespace.namespace_name+"."+_name;
 				return _name;
 			}
@@ -2528,7 +2551,15 @@ namespace PascalABCCompiler.TreeRealization
             {
             }
         }
-
+        
+        public override bool is_standard_type
+        {
+        	get
+        	{
+        		return NetHelper.NetHelper.IsStandType(_compiled_type);
+        	}
+        }
+        
         public override function_node generic_function_container
         {
             get
@@ -3979,7 +4010,18 @@ namespace PascalABCCompiler.TreeRealization
               
             }
         }
-
+        
+		public override string name {
+			get {
+				return "nil";
+			}
+		}
+        
+		public override string full_name {
+			get {
+				return "nil";
+			}
+		}
     }
 
     public class convert_function_to_function_call
