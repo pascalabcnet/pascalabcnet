@@ -2316,6 +2316,10 @@ assignment
 			($5 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as addressed_value_list, $8, @$);
 		}		
+/*    | tkVar tkRoundOpen variable tkComma variable_list tkRoundClose assign_operator expr
+    {
+    
+    }*/
     ;
     
 variable_list
