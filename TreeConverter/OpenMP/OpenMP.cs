@@ -106,7 +106,7 @@ namespace PascalABCCompiler.TreeConverter
         public statement_node_stack cycle_stack;
         public Hashtable current_member_decls;
         public common_function_node_stack function_node_stack;
-        public SymbolInfo current_last_created_function;
+        public SymbolInfoUnit current_last_created_function;
         public bool SemanticRulesThrowErrorWithoutSave;
         public void SaveContext(syntax_tree_visitor syntax_tree_visitor)
         {
@@ -2114,23 +2114,23 @@ namespace PascalABCCompiler.TreeConverter
                         visitor.AddWarning(new PascalABCCompiler.Errors.CommonWarning(String.Format(PascalABCCompiler.StringResources.Get("OMPERROR_REDUCTION_WITH_LOOPVAR_{0}"), rdVarName), visitor.CurrentDocument.file_name, dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num));
                         continue;
                     }
-                    SymbolInfo si = visitor.context.find(rdVarName);
+                    SymbolInfoList si = visitor.context.find(rdVarName);
                     if (si == null)
                     {
                         visitor.AddWarning(new PascalABCCompiler.Errors.CommonWarning(String.Format(PascalABCCompiler.StringResources.Get("OMPERROR_UNKNOWN_VARNAME_{0}"), rdVarName), visitor.CurrentDocument.file_name, dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num));
                         continue;
                     }
-                    if (!(si.sym_info is SemanticTree.IVAriableDefinitionNode))
+                    if (!(si.First().sym_info is SemanticTree.IVAriableDefinitionNode))
                     {
                         visitor.AddWarning(new PascalABCCompiler.Errors.CommonWarning(String.Format(PascalABCCompiler.StringResources.Get("OMPERROR_NAME_IS_NOT_VAR_{0}"), rdVarName), visitor.CurrentDocument.file_name, dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num));
                         continue;
                     }
-                    if (!IsValidVarForReduction(si.sym_info as SemanticTree.IVAriableDefinitionNode))
+                    if (!IsValidVarForReduction(si.First().sym_info as SemanticTree.IVAriableDefinitionNode))
                     {
                         visitor.AddWarning(new PascalABCCompiler.Errors.CommonWarning(String.Format(PascalABCCompiler.StringResources.Get("OMPERROR_IS_NOT_POSSIBLE_REDUCTION_WITH_THIS_VAR_{0}"), rdVarName), visitor.CurrentDocument.file_name, dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num));
                         continue;
                     }
-                    Result.ReductionVariables.Add(si.sym_info as SemanticTree.IVAriableDefinitionNode);
+                    Result.ReductionVariables.Add(si.First().sym_info as SemanticTree.IVAriableDefinitionNode);
                     Result.ReductionActions.Add(rd.Oper);
                     //for (int i = 0; i < VFVis.Variables.Count; ++i)
                     //    if (VFVis.Variables[i].name.ToLower() == rdVarName.ToLower())
@@ -2144,18 +2144,18 @@ namespace PascalABCCompiler.TreeConverter
             //приватные переменные - аналогично, но без проверки на тип
             foreach (string privateVar in PrivateVars)
             {
-                SymbolInfo si = visitor.context.find(privateVar);
+                SymbolInfoList si = visitor.context.find(privateVar);
                 if (si == null)
                 {
                     visitor.AddWarning(new PascalABCCompiler.Errors.CommonWarning(String.Format(PascalABCCompiler.StringResources.Get("OMPERROR_UNKNOWN_VARNAME_{0}"), privateVar), visitor.CurrentDocument.file_name, dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num));
                     continue;
                 }
-                if (!(si.sym_info is SemanticTree.IVAriableDefinitionNode))
+                if (!(si.First().sym_info is SemanticTree.IVAriableDefinitionNode))
                 {
                     visitor.AddWarning(new PascalABCCompiler.Errors.CommonWarning(String.Format(PascalABCCompiler.StringResources.Get("OMPERROR_NAME_IS_NOT_VAR_{0}"), privateVar), visitor.CurrentDocument.file_name, dir.source_context.begin_position.line_num, dir.source_context.begin_position.column_num));
                     continue;
                 }
-                Result.PrivateVariables.Add(si.sym_info as SemanticTree.IVAriableDefinitionNode);
+                Result.PrivateVariables.Add(si.First().sym_info as SemanticTree.IVAriableDefinitionNode);
             }
 
             //по всем переменным:

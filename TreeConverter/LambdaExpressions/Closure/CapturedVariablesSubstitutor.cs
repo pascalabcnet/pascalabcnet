@@ -145,7 +145,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         pn.internal_get_function = readFunction;
                         pn.internal_set_function = writeFunction;
 
-                        _visitor.context._ctn.Scope.AddSymbol(name, new SymbolInfo(pn));
+                        _visitor.context._ctn.Scope.AddSymbol(name, new SymbolInfoUnit(pn));
                         _visitor.context._ctn.properties.AddElement(pn);
                     }
                 }

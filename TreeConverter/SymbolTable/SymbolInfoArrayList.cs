@@ -21,7 +21,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="value">The SymbolInfo to be added to the end of the ArrayList. The value can be a null reference.<param>
 		///<returns>The SymbolInfoArrayList index at which the value has been added.</returns>
-		public int Add(SymbolInfo value)
+		public int Add(SymbolInfoUnit value)
 		{
 			return arr.Add(value);
 		}
@@ -41,7 +41,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="array">The SymbolInfo[] whose elements should be added to the end of the ArrayList. The SymbolInfo[] itself cannot be a null reference, but it can contain elements that are a null reference.<param>
 		///<returns>Return value is void</returns>
-		public void AddRange(SymbolInfo[] array)
+		public void AddRange(SymbolInfoUnit[] array)
 		{
 			arr.AddRange(array);
 		}
@@ -61,7 +61,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="value">The Object to locate. The value can be a null reference.<param>
 		///<returns>The zero-based index of value in the sorted SymbolInfoArrayList, if value is found; otherwise, a negative number, which is the bitwise complement of the index of the next element that is larger than value or, if there is no larger element, the bitwise complement of Count.</returns>
-		public int BinarySearch(SymbolInfo value)
+		public int BinarySearch(SymbolInfoUnit value)
 		{
 			return arr.BinarySearch(value);
 		}
@@ -72,7 +72,7 @@ namespace TreeConverter
 		///<param name="value">The Object to locate. The value can be a null reference.<param>
 		///<param name="comparer">The IComparer implementation to use when comparing elements. -or- A null reference (Nothing in Visual Basic) to use the default comparer that is the IComparable implementation of each element.<param>
 		///<returns>The zero-based index of value in the sorted SymbolInfoArrayList, if value is found; otherwise, a negative number, which is the bitwise complement of the index of the next element that is larger than value or, if there is no larger element, the bitwise complement of Count.</returns>
-		public void BinarySearch(SymbolInfo value,System.Collections.IComparer comparer)
+		public void BinarySearch(SymbolInfoUnit value,System.Collections.IComparer comparer)
 		{
 			arr.BinarySearch(value,comparer);
 		}
@@ -85,7 +85,7 @@ namespace TreeConverter
 		///<param name="value">The Object to locate. The value can be a null reference.<param>
 		///<param name="comparer">The IComparer implementation to use when comparing elements. -or- A null reference (Nothing in Visual Basic) to use the default comparer that is the IComparable implementation of each element.<param>
 		///<returns>The zero-based index of value in the sorted SymbolInfoArrayList, if value is found; otherwise, a negative number, which is the bitwise complement of the index of the next element that is larger than value or, if there is no larger element, the bitwise complement of Count.</returns>
-		public void BinarySearch(int index,int count,SymbolInfo value,System.Collections.IComparer comparer)
+		public void BinarySearch(int index,int count,SymbolInfoUnit value,System.Collections.IComparer comparer)
 		{
 			arr.BinarySearch(value,comparer);
 		}
@@ -115,7 +115,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="item">The SymbolInfo to locate in the ArrayList. The value can be a null reference.<param>
 		///<returns>true if item is found in the SymbolInfoArrayList; otherwise, false.</returns>
-		public bool Contains(SymbolInfo item)
+		public bool Contains(SymbolInfoUnit item)
 		{
 			return arr.Contains(item);
 		}
@@ -125,7 +125,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="value">The SymbolInfo to locate in the SymbolInfoArrayList. The value can be a null reference.<param>
 		///<returns>The zero-based index of the first occurrence of value within the entire SymbolInfoArrayList, if found; otherwise, -1.</returns>
-		public int IndexOf(SymbolInfo value)
+		public int IndexOf(SymbolInfoUnit value)
 		{
 			return arr.IndexOf(value);
 		}
@@ -136,7 +136,7 @@ namespace TreeConverter
 		///<param name="value">The SymbolInfo to locate in the SymbolInfoArrayList. The value can be a null reference.<param>
 		///<param name="startIndex">The zero-based starting index of the search.<param>
 		///<returns>The zero-based index of the first occurrence of value within the section of the SymbolInfoArrayList that extends from startIndex to the last element, if found; otherwise, -1.</returns>
-		public int IndexOf(SymbolInfo value,int startIndex)
+		public int IndexOf(SymbolInfoUnit value,int startIndex)
 		{
 			return arr.IndexOf(value,startIndex);
 		}
@@ -148,7 +148,7 @@ namespace TreeConverter
 		///<param name="startIndex">The zero-based starting index of the search.<param>
 		///<param name="count">The number of elements in the section to search.<param>
 		///<returns>The zero-based index of the first occurrence of value within the section of the ArrayList that starts at startIndex and contains count number of elements, if found; otherwise, -1.</returns>
-		public int IndexOf(SymbolInfo value,int startIndex,int count)
+		public int IndexOf(SymbolInfoUnit value,int startIndex,int count)
 		{
 			return arr.IndexOf(value,startIndex,count);
 		}
@@ -159,7 +159,7 @@ namespace TreeConverter
 		///<param name="index">The zero-based index at which value should be inserted.<param>
 		///<param name="value">The SymbolInfo to insert. The value can be a null reference.<param>
 		///<returns>Return value is void</returns>
-		public void Insert(int index,SymbolInfo value)
+		public void Insert(int index,SymbolInfoUnit value)
 		{
 			arr.Insert(index,value);
 		}
@@ -170,7 +170,7 @@ namespace TreeConverter
 		///<param name="index">The zero-based index at which the new elements should be inserted.<param>
 		///<param name="arr">The SymbolInfo[] whose elements should be inserted into the SymbolInfoArrayList. The SymbolInfo[] itself cannot be a null reference, but it can contain elements that are a null reference.<param>
 		///<returns>Return value is void</returns>
-		public void InsertRange(int index,SymbolInfo[] SymbolInfo_arr)
+		public void InsertRange(int index,SymbolInfoUnit[] SymbolInfo_arr)
 		{
 			arr.InsertRange(index,arr);
 		}
@@ -202,7 +202,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="value">The SymbolInfo to locate in the SymbolInfoArrayList. The value can be a null reference.<param>
 		///<returns>The zero-based index of the last occurrence of value within the entire the ArrayList, if found; otherwise, -1.</returns>
-		public int LastIndexOf(SymbolInfo value)
+		public int LastIndexOf(SymbolInfoUnit value)
 		{
 			return arr.LastIndexOf(value);
 		}
@@ -213,7 +213,7 @@ namespace TreeConverter
 		///<param name="value">The SymbolInfo to locate in the SymbolInfoArrayList. The value can be a null reference.<param>
 		///<param name="startIndex">The zero-based starting index of the backward search.<param>
 		///<returns>The zero-based index of the last occurrence of value within the section of the SymbolInfoArrayList that extends from the first element to startIndex, if found; otherwise, -1.</returns>
-		public int LastIndexOf(SymbolInfo value,int startIndex)
+		public int LastIndexOf(SymbolInfoUnit value,int startIndex)
 		{
 			return arr.LastIndexOf(value,startIndex);
 		}
@@ -225,7 +225,7 @@ namespace TreeConverter
 		///<param name="startIndex">The zero-based starting index of the backward search.<param>
 		///<param name="count">The number of elements in the section to search.<param>
 		///<returns>The zero-based index of the last occurrence of value within the section of the SymbolInfoArrayList that extends from the first element to startIndex, if found; otherwise, -1.</returns>
-		public int LastIndexOf(SymbolInfo value,int startIndex,int count)
+		public int LastIndexOf(SymbolInfoUnit value,int startIndex,int count)
 		{
 			return arr.LastIndexOf(value,startIndex,count);
 		}
@@ -234,11 +234,11 @@ namespace TreeConverter
 		///Gets or sets the element at the specified index.
 		///</summary>
 		///<param name="index">The zero-based index of the element to get or set.<param>
-		public SymbolInfo this [int index]
+		public SymbolInfoUnit this [int index]
 		{
 			get
 			{
-				return ((SymbolInfo)(arr[index]));
+				return ((SymbolInfoUnit)(arr[index]));
 			}
 			set
 			{
@@ -251,7 +251,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="value">The SymbolInfo to remove from the ArrayList. The value can be a null reference.<param>
 		///<returns>Return value is void</returns>
-		public void Remove(SymbolInfo value)
+		public void Remove(SymbolInfoUnit value)
 		{
 			arr.Remove(value);
 		}
@@ -271,9 +271,9 @@ namespace TreeConverter
 		///Copies the elements of the SymbolInfoArrayList to a new SymbolInfo array.
 		///</summary>
 		///<returns>An SymbolInfo array containing copies of the elements of the SymbolInfoArrayList.</returns>
-		public SymbolInfo[] ToArray()
+		public SymbolInfoUnit[] ToArray()
 		{
-			return ((SymbolInfo[])(arr.ToArray(typeof(SymbolInfo))));
+			return ((SymbolInfoUnit[])(arr.ToArray(typeof(SymbolInfoUnit))));
 		}
 		
 		///<summary>
@@ -304,7 +304,7 @@ namespace TreeConverter
 		///<param name="array">The one-dimensional SymbolInfo[] that is the destination of the elements copied from SymbolInfoArrayList. The Array must have zero-based indexing.<param>
 		///<param name="arrayIndex">The zero-based index in array at which copying begins.<param>
 		///<returns>Return value is void</returns>
-		public void CopyTo(SymbolInfo[] array,int arrayIndex)
+		public void CopyTo(SymbolInfoUnit[] array,int arrayIndex)
 		{
 			arr.CopyTo(array,arrayIndex);
 		}
@@ -314,7 +314,7 @@ namespace TreeConverter
 		///</summary>
 		///<param name="array">The one-dimensional SymbolInfo[] that is the destination of the elements copied from SymbolInfoArrayList. The Array must have zero-based indexing.<param>
 		///<returns>Return value is void</returns>
-		public void CopyTo(SymbolInfo[] array)
+		public void CopyTo(SymbolInfoUnit[] array)
 		{
 			arr.CopyTo(array);
 		}
@@ -327,7 +327,7 @@ namespace TreeConverter
 		///<param name="arrayIndex">The zero-based index in array at which copying begins.<param>
 		///<param name="count">The number of elements to copy.<param>
 		///<returns>Return value is void</returns>
-		public void CopyTo(int index,SymbolInfo[] array,int arrayIndex,int count)
+		public void CopyTo(int index,SymbolInfoUnit[] array,int arrayIndex,int count)
 		{
 			arr.CopyTo(index,array,arrayIndex,count);
 		}
@@ -434,7 +434,7 @@ namespace TreeConverter
 			arr.Reverse(index,count);
 		}
 		
-		public void SetRange(int index,SymbolInfo[] tnarr)
+		public void SetRange(int index,SymbolInfoUnit[] tnarr)
 		{
 			SetRange(index,tnarr);
 		}
