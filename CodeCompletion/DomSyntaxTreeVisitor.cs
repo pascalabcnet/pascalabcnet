@@ -840,7 +840,7 @@ namespace CodeCompletion
         				}
         				if (eq)
         				{
-        					if (ps.return_type == null && return_type == null) return ps;
+        					if (return_type == null) return ps;
         					if (ps.return_type != null && return_type != null)
         					{
         						if ((ps.return_type as TypeScope).IsEqual(return_type))
@@ -1568,7 +1568,17 @@ namespace CodeCompletion
             		ret_tn.AddName("Result",new ElementScope(new SymInfo("Result", SymbolKind.Variable,"Result"),(ret_tn as ProcScope).return_type,cur_scope));
             	}*/
                 if (!parse_only_interface)
-            	    _procedure_definition.proc_body.visit(this);
+                {
+                	try
+                	{
+                		_procedure_definition.proc_body.visit(this);
+                	}
+                	catch
+                	{
+                		
+                	}
+                }
+            	    
                 if (cur_scope != null && cur_scope is ProcScope)
                 {
                     ProcRealization pr = (cur_scope as ProcScope).proc_realization;
@@ -4532,7 +4542,7 @@ namespace CodeCompletion
             mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
             mc.visit(this);
         }
-
+		
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();
