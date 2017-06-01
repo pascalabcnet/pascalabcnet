@@ -2790,8 +2790,11 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="assign_var_tuple" BaseName="assign_tuple">
-      <Fields />
+    <SyntaxNode Name="assign_var_tuple" BaseName="statement">
+      <Fields>
+        <SyntaxField Name="idents" SyntaxType="ident_list" />
+        <SyntaxField Name="expr" SyntaxType="expression" />
+      </Fields>
       <Methods />
       <Tags>
         <CategoryIndices />
@@ -2990,6 +2993,8 @@
       <HelpData Key="assign_tuple.expr" Value="" />
       <HelpData Key="assign_tuple.vars" Value="" />
       <HelpData Key="assign_var_tuple" Value="" />
+      <HelpData Key="assign_var_tuple.expr" Value="" />
+      <HelpData Key="assign_var_tuple.idents" Value="" />
       <HelpData Key="attribute" Value="" />
       <HelpData Key="attribute." Value="" />
       <HelpData Key="attribute.arguments" Value="" />

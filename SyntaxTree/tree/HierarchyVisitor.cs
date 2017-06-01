@@ -3629,6 +3629,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_assign_var_tuple);
 			pre_do_visit(_assign_var_tuple);
+			visit(assign_var_tuple.idents);
+			visit(assign_var_tuple.expr);
 			post_do_visit(_assign_var_tuple);
 		}
 

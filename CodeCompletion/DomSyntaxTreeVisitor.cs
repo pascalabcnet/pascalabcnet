@@ -4507,9 +4507,9 @@ namespace CodeCompletion
             TypeScope ts = returned_scope as TypeScope;
             if (ts != null && ts.instances != null && ts.instances.Count > 0)
             {
-                for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+                for (int i = 0; i < _assign_var_tuple.idents.idents.Count; i++)
                 {
-                    ident id = _assign_var_tuple.vars.variables[i] as ident;
+                    ident id = _assign_var_tuple.idents.idents[i];
                     if (id != null)
                     {
                         SymInfo si = new SymInfo(id.name, SymbolKind.Variable, id.name);
