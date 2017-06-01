@@ -1359,6 +1359,8 @@ namespace PascalABCCompiler.NetHelper
             	if (fal != field_access_level.fal_private && fal != field_access_level.fal_internal)
                 {
             		si = new SymbolInfoUnit(compiled_constructor_node.get_compiled_constructor(ci));
+            		if (res_si == null)
+            			res_si = new SymbolInfoList();
                     res_si.Add(si);
             	}
         	}
