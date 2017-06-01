@@ -411,6 +411,7 @@ namespace PascalABCCompiler.TreeConverter
         public static string PointerToStringFunction_func_name = "PointerToString";
         public static string GetRuntimeSizeFunction_func_name = "GetRuntimeSize";
         public static string StrProcedure_func_name = "Str";
+        public static string PascalABCVersion_func_name = "PascalABCVersion";
         public static string ChrUnicodeFunction_func_name = "ChrUnicode";
         public static string ExceptionName = "System.Exception";
         public static string value_in_accessor_name = "$value";

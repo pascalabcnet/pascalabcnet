@@ -3838,7 +3838,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_assign_var_tuple(assign_var_tuple _assign_var_tuple)
 		{
-			read_assign_tuple(_assign_var_tuple);
+			read_statement(_assign_var_tuple);
+			_assign_var_tuple.idents = _read_node() as ident_list;
+			_assign_var_tuple.expr = _read_node() as expression;
 		}
 
 

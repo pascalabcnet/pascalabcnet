@@ -31,7 +31,10 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                             foreach (var v in finder.vars)
                             {
-                                var si = _visitor.context.find(v.name);
+                                SymbolInfoUnit si = null;
+                                var temp = _visitor.context.find(v.name);
+                                if (temp != null)
+                                    si = temp.First();
                                 if (si == null)
                                 {
                                     continue;
@@ -55,7 +58,10 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                                 foreach (var v in finder.vars)
                                 {
-                                    var si = _visitor.context.find(v.name);
+                                    SymbolInfoUnit si = null;
+                                    var temp = _visitor.context.find(v.name);
+                                    if (temp != null)
+                                        si = temp.First();
                                     if (si == null)
                                     {
                                         continue;
@@ -80,7 +86,10 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                                 foreach (var v in finder.vars)
                                 {
-                                    var si = _visitor.context.find(v.name);
+                                    SymbolInfoUnit si = null;
+                                    var temp = _visitor.context.find(v.name);
+                                    if (temp != null)
+                                        si = temp.First();
                                     if (si == null)
                                     {
                                         continue;

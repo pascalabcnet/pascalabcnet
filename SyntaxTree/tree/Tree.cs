@@ -44109,7 +44109,7 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class assign_var_tuple : assign_tuple
+	public partial class assign_var_tuple : statement
 	{
 
 		///<summary>
@@ -44120,13 +44120,12 @@ namespace PascalABCCompiler.SyntaxTree
 
 		}
 
-
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public assign_var_tuple(addressed_value_list _vars,expression _expr)
+		public assign_var_tuple(ident_list _idents,expression _expr)
 		{
-			this._vars=_vars;
+			this._idents=_idents;
 			this._expr=_expr;
 			FillParentsInDirectChilds();
 		}
@@ -44134,13 +44133,47 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public assign_var_tuple(addressed_value_list _vars,expression _expr,SourceContext sc)
+		public assign_var_tuple(ident_list _idents,expression _expr,SourceContext sc)
 		{
-			this._vars=_vars;
+			this._idents=_idents;
 			this._expr=_expr;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
+		protected ident_list _idents;
+		protected expression _expr;
+
+		///<summary>
+		///
+		///</summary>
+		public ident_list idents
+		{
+			get
+			{
+				return _idents;
+			}
+			set
+			{
+				_idents=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public expression expr
+		{
+			get
+			{
+				return _expr;
+			}
+			set
+			{
+				_expr=value;
+			}
+		}
+
+
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -44153,10 +44186,10 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.attributes = (attribute_list)attributes.Clone();
 				copy.attributes.Parent = copy;
 			}
-			if (vars != null)
+			if (idents != null)
 			{
-				copy.vars = (addressed_value_list)vars.Clone();
-				copy.vars.Parent = copy;
+				copy.idents = (ident_list)idents.Clone();
+				copy.idents.Parent = copy;
 			}
 			if (expr != null)
 			{
@@ -44177,8 +44210,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (attributes != null)
 				attributes.Parent = this;
-			if (vars != null)
-				vars.Parent = this;
+			if (idents != null)
+				idents.Parent = this;
 			if (expr != null)
 				expr.Parent = this;
 		}
@@ -44188,7 +44221,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			FillParentsInDirectChilds();
 			attributes?.FillParentsInAllChilds();
-			vars?.FillParentsInAllChilds();
+			idents?.FillParentsInAllChilds();
 			expr?.FillParentsInAllChilds();
 		}
 
@@ -44224,7 +44257,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						return vars;
+						return idents;
 					case 1:
 						return expr;
 				}
@@ -44237,7 +44270,7 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						vars = (addressed_value_list)value;
+						idents = (ident_list)value;
 						break;
 					case 1:
 						expr = (expression)value;

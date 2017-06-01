@@ -1087,6 +1087,8 @@ function ArcTan(x: real): real;
 function Exp(x: real): real;
 /// Возвращает натуральный логарифм числа x
 function Ln(x: real): real;
+/// Возвращает натуральный логарифм числа x
+function Log(x: real): real;
 /// Возвращает логарифм числа x по основанию 2
 function Log2(x: real): real;
 /// Возвращает десятичный логарифм числа x
@@ -1230,6 +1232,8 @@ function Conjugate(c: Complex): Complex;
 function Cos(c: Complex): Complex;
 /// Возвращает экспоненту комплексного числа
 function Exp(c: Complex): Complex;
+/// Возвращает натуральный логарифм комплексного числа
+function Ln(c: Complex): Complex;
 /// Возвращает натуральный логарифм комплексного числа
 function Log(c: Complex): Complex;
 /// Возвращает десятичный логарифм комплексного числа
@@ -6579,10 +6583,7 @@ begin
   System.Diagnostics.Process.Start(filename)
 end;
 
-procedure Execute(filename: string; args: string);
-begin
-  System.Diagnostics.Process.Start(filename, args)
-end;
+procedure Execute(filename: string; args: string) := System.Diagnostics.Process.Start(filename, args);
 
 // -----------------------------------------------------
 // EnumerateFiles, EnumerateDirectories
@@ -6740,130 +6741,57 @@ begin
   Result := Math.Abs(x);
 end;
 
-function Sin(x: real): real;
-begin
-  Result := Math.Sin(x);
-end;
+function Sin(x: real) := Math.Sin(x);
 
-function Sinh(x: real): real;
-begin
-  Result := Math.Sinh(x);
-end;
+function Sinh(x: real) := Math.Sinh(x);
 
-function Cos(x: real): real;
-begin
-  Result := Math.Cos(x);
-end;
+function Cos(x: real) := Math.Cos(x);
 
-function Cosh(x: real): real;
-begin
-  Result := Math.Cosh(x);
-end;
+function Cosh(x: real) := Math.Cosh(x);
 
-function Tan(x: real): real;
-begin
-  Result := Math.Tan(x);
-end;
+function Tan(x: real) := Math.Tan(x);
 
-function Tanh(x: real): real;
-begin
-  Result := Math.Tanh(x);
-end;
+function Tanh(x: real) := Math.Tanh(x);
 
-function ArcSin(x: real): real;
-begin
-  Result := Math.Asin(x);
-end;
+function ArcSin(x: real) := Math.Asin(x);
 
-function ArcCos(x: real): real;
-begin
-  Result := Math.Acos(x);
-end;
+function ArcCos(x: real) := Math.Acos(x);
 
-function ArcTan(x: real): real;
-begin
-  Result := Math.Atan(x);
-end;
+function ArcTan(x: real) := Math.Atan(x);
 
-function Exp(x: real): real;
-begin
-  Result := Math.Exp(x);
-end;
+function Exp(x: real) := Math.Exp(x);
 
-function Ln(x: real): real;
-begin
-  Result := Math.Log(x);
-end;
+function Ln(x: real) := Math.Log(x);
 
-function Log2(x: real): real;
-begin
-  Result := LogN(2, x);
-end;
+function Log(x: real) := Math.Log(x); 
 
-function Log10(x: real): real;
-begin
-  Result := Math.Log10(x);
-end;
+function Log2(x: real) := LogN(2, x);
 
-function LogN(base, x: real): real;
-begin
-  Result := Math.Log(x) / Math.Log(base);
-end;
+function Log10(x: real) := Math.Log10(x);
 
-function Sqrt(x: real): real;
-begin
-  Result := Math.Sqrt(x);
-end;
+function LogN(base, x: real) := Math.Log(x) / Math.Log(base);
 
-function Sqr(x: integer): int64;
-begin
-  Result := x * x;
-end;
+function Sqrt(x: real) := Math.Sqrt(x);
 
-function Sqr(x: shortint): integer;
-begin
-  Result := x * x;
-end;
+function Sqr(x: integer): int64 := x * x;
 
-function Sqr(x: smallint): integer;
-begin
-  Result := x * x;
-end;
+function Sqr(x: shortint): integer := x * x;
 
-function Sqr(x: BigInteger): BigInteger;
-begin
-  Result := x * x;
-end;
+function Sqr(x: smallint): integer := x * x;
 
-function Sqr(x: longword): uint64;
-begin
-  Result := x * x;
-end;
+function Sqr(x: BigInteger): BigInteger := x * x;
 
-function Sqr(x: int64): int64;
-begin
-  Result := x * x;
-end;
+function Sqr(x: longword): uint64 := x * x;
 
-function Sqr(x: uint64): uint64;
-begin
-  Result := x * x;
-end;
+function Sqr(x: int64): int64 := x * x;
 
-function Sqr(x: real): real;
-begin
-  Result := x * x;
-end;
+function Sqr(x: uint64): uint64 := x * x;
 
-function Power(x, y: real): real;
-begin
-  Result := Math.Pow(x, y);
-end;
+function Sqr(x: real): real := x * x;
 
-function Power(x, y: integer): real;
-begin
-  Result := Math.Pow(x, y);
-end;
+function Power(x, y: real): real := Math.Pow(x, y);
+
+function Power(x, y: integer): real := Math.Pow(x, y);
 
 function Power(x: BigInteger; y: integer): BigInteger;
 begin
@@ -7109,6 +7037,8 @@ function Cos(c: Complex) := Complex.Cos(c);
 function Exp(c: Complex) := Complex.Exp(c);
 
 function Log(c: Complex) := Complex.Log(c);
+
+function Ln(c: Complex) := Complex.Log(c);
 
 function Log10(c: Complex) := Complex.Log10(c);
 
