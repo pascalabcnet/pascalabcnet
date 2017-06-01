@@ -1945,6 +1945,12 @@ procedure __InitPABCSystem;
 ///--
 procedure __FinalizeModule__;
 
+// -----------------------------------------------------
+//                   DQNToNullable for dot_question_node
+// -----------------------------------------------------
+
+function DQNToNullable(v:Int32):Nullable<System.Int32>;
+
 implementation
 
 var
@@ -10749,6 +10755,15 @@ begin
     output.sw.Close;
   if (input.sr <> nil) and (input.sr.BaseStream <> nil) then
     input.sr.Close;
+end;
+
+// -----------------------------------------------------
+//   DQNToNullable for dot_question_node: implementation
+// -----------------------------------------------------
+
+function DQNToNullable (v:Int32):Nullable<System.Int32>;
+begin
+  Result:=new Nullable<System.Int32>(v);
 end;
 
 initialization

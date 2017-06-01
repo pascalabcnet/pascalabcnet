@@ -36,6 +36,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // question_point_desugar_visitor
             QuestionPointDesugarVisitor.New.ProcessNode(root);
 
+            // double_question_desugar_visitor
+            DoubleQuestionDesugarVisitor.New.ProcessNode(root);
+
 
             // Всё, связанное с yield
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);

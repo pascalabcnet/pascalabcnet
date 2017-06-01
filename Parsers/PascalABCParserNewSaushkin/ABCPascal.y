@@ -29,7 +29,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkQuestionSquareOpen
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -78,7 +78,7 @@
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
 %type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point var_double_question
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -3008,12 +3008,16 @@ literal_or_number
 var_question_point
 	: variable tkQuestionPoint variable
 	{
-		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value, null, @$);
 	}
 	| variable tkQuestionPoint var_question_point 
 	{
-		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value, null, @$);
 	}
+	/*| variable tkQuestionPoint variable tkDoubleQuestion variable 
+	{
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,$5 as addressed_value, @$);
+	}*/
 	;
 
 var_reference
@@ -3026,6 +3030,21 @@ var_reference
     | var_question_point 
 		{ $$ = $1; }
     ;
+	
+var_double_question
+	: variable tkDoubleQuestion variable
+	{
+		$$ = new double_question_node($1 as addressed_value,$3 as addressed_value,@$);
+	}
+	/*| variable tkDoubleQuestion expr
+	{
+		$$ = new double_question_node($1 as addressed_value,$3 as addressed_value,@$);
+	}
+	| var_question_point tkDoubleQuestion variable
+	{
+		$$ = new double_question_node($1 as addressed_value,$3 as addressed_value,@$);
+	}*/
+	;
  
 var_address
     : tkAddressOf                                
@@ -3116,6 +3135,9 @@ variable
         {
 			$$ = new dot_question_node($1 as addressed_value, $3 as addressed_value, @$);
         }*/
+		
+	| var_double_question 
+		{ $$ = $1; }
     | variable tkDeref              
         {
 			$$ = new roof_dereference($1 as addressed_value,@$);

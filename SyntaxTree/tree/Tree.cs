@@ -45108,6 +45108,192 @@ namespace PascalABCCompiler.SyntaxTree
 	}
 
 
+	///<summary>
+	///
+	///</summary>
+	[Serializable]
+	public partial class double_question_node : addressed_value_funcname
+	{
+
+		///<summary>
+		///Конструктор без параметров.
+		///</summary>
+		public double_question_node()
+		{
+
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public double_question_node(addressed_value _left,addressed_value _right)
+		{
+			this._left=_left;
+			this._right=_right;
+			FillParentsInDirectChilds();
+		}
+
+		///<summary>
+		///Конструктор с параметрами.
+		///</summary>
+		public double_question_node(addressed_value _left,addressed_value _right,SourceContext sc)
+		{
+			this._left=_left;
+			this._right=_right;
+			source_context = sc;
+			FillParentsInDirectChilds();
+		}
+		protected addressed_value _left;
+		protected addressed_value _right;
+
+		///<summary>
+		///
+		///</summary>
+		public addressed_value left
+		{
+			get
+			{
+				return _left;
+			}
+			set
+			{
+				_left=value;
+			}
+		}
+
+		///<summary>
+		///
+		///</summary>
+		public addressed_value right
+		{
+			get
+			{
+				return _right;
+			}
+			set
+			{
+				_right=value;
+			}
+		}
+
+
+		/// <summary> Создает копию узла </summary>
+		public override syntax_tree_node Clone()
+		{
+			double_question_node copy = new double_question_node();
+			copy.Parent = this.Parent;
+			if (source_context != null)
+				copy.source_context = new SourceContext(source_context);
+			if (attributes != null)
+			{
+				copy.attributes = (attribute_list)attributes.Clone();
+				copy.attributes.Parent = copy;
+			}
+			if (left != null)
+			{
+				copy.left = (addressed_value)left.Clone();
+				copy.left.Parent = copy;
+			}
+			if (right != null)
+			{
+				copy.right = (addressed_value)right.Clone();
+				copy.right.Parent = copy;
+			}
+			return copy;
+		}
+
+		/// <summary> Получает копию данного узла корректного типа </summary>
+		public new double_question_node TypedClone()
+		{
+			return Clone() as double_question_node;
+		}
+
+		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
+		public override void FillParentsInDirectChilds()
+		{
+			if (attributes != null)
+				attributes.Parent = this;
+			if (left != null)
+				left.Parent = this;
+			if (right != null)
+				right.Parent = this;
+		}
+
+		///<summary> Заполняет поля Parent во всем поддереве </summary>
+		public override void FillParentsInAllChilds()
+		{
+			FillParentsInDirectChilds();
+			attributes?.FillParentsInAllChilds();
+			left?.FillParentsInAllChilds();
+			right?.FillParentsInAllChilds();
+		}
+
+		///<summary>
+		///Свойство для получения количества всех подузлов без элементов поля типа List
+		///</summary>
+		public override Int32 subnodes_without_list_elements_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Свойство для получения количества всех подузлов. Подузлом также считается каждый элемент поля типа List
+		///</summary>
+		public override Int32 subnodes_count
+		{
+			get
+			{
+				return 2;
+			}
+		}
+		///<summary>
+		///Индексатор для получения всех подузлов
+		///</summary>
+		public override syntax_tree_node this[Int32 ind]
+		{
+			get
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						return left;
+					case 1:
+						return right;
+				}
+				return null;
+			}
+			set
+			{
+				if(subnodes_count == 0 || ind < 0 || ind > subnodes_count-1)
+					throw new IndexOutOfRangeException();
+				switch(ind)
+				{
+					case 0:
+						left = (addressed_value)value;
+						break;
+					case 1:
+						right = (addressed_value)value;
+						break;
+				}
+			}
+		}
+		///<summary>
+		///Метод для обхода дерева посетителем
+		///</summary>
+		///<param name="visitor">Объект-посетитель.</param>
+		///<returns>Return value is void</returns>
+		public override void visit(IVisitor visitor)
+		{
+			visitor.visit(this);
+		}
+
+	}
+
+
 
 }
 
