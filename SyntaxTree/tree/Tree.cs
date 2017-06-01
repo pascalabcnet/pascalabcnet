@@ -495,8 +495,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			subnodes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(statement el, statement newel)
@@ -510,8 +510,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			subnodes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(statement el)
@@ -532,8 +532,8 @@ namespace PascalABCCompiler.SyntaxTree
 			subnodes.RemoveAt(ind);
 			subnodes.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<statement> match)
@@ -554,6 +554,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, statement el)
 		{
 			subnodes.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -2648,8 +2650,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			names.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(ident el, ident newel)
@@ -2663,8 +2665,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			names.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(ident el)
@@ -2685,8 +2687,8 @@ namespace PascalABCCompiler.SyntaxTree
 			names.RemoveAt(ind);
 			names.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<ident> match)
@@ -2707,6 +2709,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, ident el)
 		{
 			names.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -2963,8 +2967,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			var_definitions.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
@@ -2978,8 +2982,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			var_definitions.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(var_def_statement el)
@@ -3000,8 +3004,8 @@ namespace PascalABCCompiler.SyntaxTree
 			var_definitions.RemoveAt(ind);
 			var_definitions.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<var_def_statement> match)
@@ -3022,6 +3026,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, var_def_statement el)
 		{
 			var_definitions.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -3259,8 +3265,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			idents.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(ident el, ident newel)
@@ -3274,8 +3280,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			idents.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(ident el)
@@ -3296,8 +3302,8 @@ namespace PascalABCCompiler.SyntaxTree
 			idents.RemoveAt(ind);
 			idents.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<ident> match)
@@ -3318,6 +3324,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, ident el)
 		{
 			idents.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -3950,8 +3958,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(declaration el, declaration newel)
@@ -3965,8 +3973,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(declaration el)
@@ -3987,8 +3995,8 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<declaration> match)
@@ -4009,6 +4017,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, declaration el)
 		{
 			defs.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -4238,8 +4248,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compilation_units.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(compilation_unit el, compilation_unit newel)
@@ -4253,8 +4263,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compilation_units.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(compilation_unit el)
@@ -4275,8 +4285,8 @@ namespace PascalABCCompiler.SyntaxTree
 			compilation_units.RemoveAt(ind);
 			compilation_units.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<compilation_unit> match)
@@ -4297,6 +4307,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, compilation_unit el)
 		{
 			compilation_units.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -4810,8 +4822,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			expressions.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(expression el, expression newel)
@@ -4825,8 +4837,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			expressions.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(expression el)
@@ -4847,8 +4859,8 @@ namespace PascalABCCompiler.SyntaxTree
 			expressions.RemoveAt(ind);
 			expressions.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<expression> match)
@@ -4869,6 +4881,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, expression el)
 		{
 			expressions.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -6830,8 +6844,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			indexers.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition el, type_definition newel)
@@ -6845,8 +6859,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			indexers.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(type_definition el)
@@ -6867,8 +6881,8 @@ namespace PascalABCCompiler.SyntaxTree
 			indexers.RemoveAt(ind);
 			indexers.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<type_definition> match)
@@ -6889,6 +6903,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, type_definition el)
 		{
 			indexers.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -7917,8 +7933,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			params_list.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(typed_parameters el, typed_parameters newel)
@@ -7932,8 +7948,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			params_list.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(typed_parameters el)
@@ -7954,8 +7970,8 @@ namespace PascalABCCompiler.SyntaxTree
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<typed_parameters> match)
@@ -7976,6 +7992,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, typed_parameters el)
 		{
 			params_list.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -8205,8 +8223,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			proc_attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(procedure_attribute el, procedure_attribute newel)
@@ -8220,8 +8238,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			proc_attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(procedure_attribute el)
@@ -8242,8 +8260,8 @@ namespace PascalABCCompiler.SyntaxTree
 			proc_attributes.RemoveAt(ind);
 			proc_attributes.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<procedure_attribute> match)
@@ -8264,6 +8282,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, procedure_attribute el)
 		{
 			proc_attributes.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -9517,8 +9537,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			types_decl.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_declaration el, type_declaration newel)
@@ -9532,8 +9552,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			types_decl.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(type_declaration el)
@@ -9554,8 +9574,8 @@ namespace PascalABCCompiler.SyntaxTree
 			types_decl.RemoveAt(ind);
 			types_decl.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<type_declaration> match)
@@ -9576,6 +9596,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, type_declaration el)
 		{
 			types_decl.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -10356,8 +10378,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			const_defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(const_definition el, const_definition newel)
@@ -10371,8 +10393,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			const_defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(const_definition el)
@@ -10393,8 +10415,8 @@ namespace PascalABCCompiler.SyntaxTree
 			const_defs.RemoveAt(ind);
 			const_defs.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<const_definition> match)
@@ -10415,6 +10437,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, const_definition el)
 		{
 			const_defs.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -11146,8 +11170,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			units.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
@@ -11161,8 +11185,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			units.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(unit_or_namespace el)
@@ -11183,8 +11207,8 @@ namespace PascalABCCompiler.SyntaxTree
 			units.RemoveAt(ind);
 			units.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<unit_or_namespace> match)
@@ -11205,6 +11229,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, unit_or_namespace el)
 		{
 			units.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -11710,8 +11736,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compiler_directives.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
@@ -11725,8 +11751,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			compiler_directives.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(compiler_directive el)
@@ -11747,8 +11773,8 @@ namespace PascalABCCompiler.SyntaxTree
 			compiler_directives.RemoveAt(ind);
 			compiler_directives.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<compiler_directive> match)
@@ -11769,6 +11795,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, compiler_directive el)
 		{
 			compiler_directives.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -13426,8 +13454,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			ln.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(ident el, ident newel)
@@ -13441,8 +13469,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			ln.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(ident el)
@@ -13463,8 +13491,8 @@ namespace PascalABCCompiler.SyntaxTree
 			ln.RemoveAt(ind);
 			ln.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<ident> match)
@@ -13485,6 +13513,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, ident el)
 		{
 			ln.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -16190,8 +16220,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			members.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(declaration el, declaration newel)
@@ -16205,8 +16235,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			members.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(declaration el)
@@ -16227,8 +16257,8 @@ namespace PascalABCCompiler.SyntaxTree
 			members.RemoveAt(ind);
 			members.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<declaration> match)
@@ -16249,6 +16279,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, declaration el)
 		{
 			members.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -16626,8 +16658,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			class_def_blocks.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(class_members el, class_members newel)
@@ -16641,8 +16673,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			class_def_blocks.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(class_members el)
@@ -16663,8 +16695,8 @@ namespace PascalABCCompiler.SyntaxTree
 			class_def_blocks.RemoveAt(ind);
 			class_def_blocks.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<class_members> match)
@@ -16685,6 +16717,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, class_members el)
 		{
 			class_def_blocks.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -17942,8 +17976,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			rec_consts.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(record_const_definition el, record_const_definition newel)
@@ -17957,8 +17991,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			rec_consts.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(record_const_definition el)
@@ -17979,8 +18013,8 @@ namespace PascalABCCompiler.SyntaxTree
 			rec_consts.RemoveAt(ind);
 			rec_consts.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<record_const_definition> match)
@@ -18001,6 +18035,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, record_const_definition el)
 		{
 			rec_consts.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -19078,8 +19114,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			literals.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(literal el, literal newel)
@@ -19093,8 +19129,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			literals.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(literal el)
@@ -19115,8 +19151,8 @@ namespace PascalABCCompiler.SyntaxTree
 			literals.RemoveAt(ind);
 			literals.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<literal> match)
@@ -19137,6 +19173,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, literal el)
 		{
 			literals.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -19774,8 +19812,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			vars.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(variant el, variant newel)
@@ -19789,8 +19827,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			vars.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(variant el)
@@ -19811,8 +19849,8 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<variant> match)
@@ -19833,6 +19871,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, variant el)
 		{
 			vars.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -20240,8 +20280,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			vars.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(variant_type el, variant_type newel)
@@ -20255,8 +20295,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			vars.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(variant_type el)
@@ -20277,8 +20317,8 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<variant_type> match)
@@ -20299,6 +20339,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, variant_type el)
 		{
 			vars.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -23515,8 +23557,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variants.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(case_variant el, case_variant newel)
@@ -23530,8 +23572,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variants.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(case_variant el)
@@ -23552,8 +23594,8 @@ namespace PascalABCCompiler.SyntaxTree
 			variants.RemoveAt(ind);
 			variants.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<case_variant> match)
@@ -23574,6 +23616,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, case_variant el)
 		{
 			variants.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -23989,8 +24033,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			vars.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
@@ -24004,8 +24048,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			vars.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(var_def_statement el)
@@ -24026,8 +24070,8 @@ namespace PascalABCCompiler.SyntaxTree
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<var_def_statement> match)
@@ -24048,6 +24092,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, var_def_statement el)
 		{
 			vars.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -24934,8 +24980,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			parameters.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(property_parameter el, property_parameter newel)
@@ -24949,8 +24995,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			parameters.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(property_parameter el)
@@ -24971,8 +25017,8 @@ namespace PascalABCCompiler.SyntaxTree
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<property_parameter> match)
@@ -24993,6 +25039,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, property_parameter el)
 		{
 			parameters.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -26938,8 +26986,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			handlers.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(exception_handler el, exception_handler newel)
@@ -26953,8 +27001,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			handlers.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(exception_handler el)
@@ -26975,8 +27023,8 @@ namespace PascalABCCompiler.SyntaxTree
 			handlers.RemoveAt(ind);
 			handlers.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<exception_handler> match)
@@ -26997,6 +27045,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, exception_handler el)
 		{
 			handlers.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -28285,8 +28335,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			namespaces.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
@@ -28300,8 +28350,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			namespaces.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(unit_or_namespace el)
@@ -28322,8 +28372,8 @@ namespace PascalABCCompiler.SyntaxTree
 			namespaces.RemoveAt(ind);
 			namespaces.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<unit_or_namespace> match)
@@ -28344,6 +28394,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, unit_or_namespace el)
 		{
 			namespaces.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -29250,8 +29302,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			types.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(named_type_reference el, named_type_reference newel)
@@ -29265,8 +29317,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			types.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(named_type_reference el)
@@ -29287,8 +29339,8 @@ namespace PascalABCCompiler.SyntaxTree
 			types.RemoveAt(ind);
 			types.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<named_type_reference> match)
@@ -29309,6 +29361,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, named_type_reference el)
 		{
 			types.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -29559,8 +29613,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			params_list.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition el, type_definition newel)
@@ -29574,8 +29628,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			params_list.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(type_definition el)
@@ -29596,8 +29650,8 @@ namespace PascalABCCompiler.SyntaxTree
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<type_definition> match)
@@ -29618,6 +29672,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, type_definition el)
 		{
 			params_list.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -30649,8 +30705,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition el, type_definition newel)
@@ -30664,8 +30720,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(type_definition el)
@@ -30686,8 +30742,8 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<type_definition> match)
@@ -30708,6 +30764,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, type_definition el)
 		{
 			defs.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -31115,8 +31173,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(where_definition el, where_definition newel)
@@ -31130,8 +31188,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(where_definition el)
@@ -31152,8 +31210,8 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<where_definition> match)
@@ -31174,6 +31232,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, where_definition el)
 		{
 			defs.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -33576,8 +33636,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			enumerators.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(enumerator el, enumerator newel)
@@ -33591,8 +33651,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			enumerators.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(enumerator el)
@@ -33613,8 +33673,8 @@ namespace PascalABCCompiler.SyntaxTree
 			enumerators.RemoveAt(ind);
 			enumerators.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<enumerator> match)
@@ -33635,6 +33695,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, enumerator el)
 		{
 			enumerators.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -34317,8 +34379,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition_attr el, type_definition_attr newel)
@@ -34332,8 +34394,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(type_definition_attr el)
@@ -34354,8 +34416,8 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<type_definition_attr> match)
@@ -34376,6 +34438,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, type_definition_attr el)
 		{
 			attributes.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -34991,8 +35055,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			directives.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
@@ -35006,8 +35070,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			directives.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(compiler_directive el)
@@ -35028,8 +35092,8 @@ namespace PascalABCCompiler.SyntaxTree
 			directives.RemoveAt(ind);
 			directives.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<compiler_directive> match)
@@ -35050,6 +35114,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, compiler_directive el)
 		{
 			directives.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -35540,8 +35606,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			sections.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(documentation_comment_section el, documentation_comment_section newel)
@@ -35555,8 +35621,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			sections.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(documentation_comment_section el)
@@ -35577,8 +35643,8 @@ namespace PascalABCCompiler.SyntaxTree
 			sections.RemoveAt(ind);
 			sections.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<documentation_comment_section> match)
@@ -35599,6 +35665,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, documentation_comment_section el)
 		{
 			sections.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -35864,8 +35932,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			parameters.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(documentation_comment_tag_param el, documentation_comment_tag_param newel)
@@ -35879,8 +35947,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			parameters.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(documentation_comment_tag_param el)
@@ -35901,8 +35969,8 @@ namespace PascalABCCompiler.SyntaxTree
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<documentation_comment_tag_param> match)
@@ -35923,6 +35991,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, documentation_comment_tag_param el)
 		{
 			parameters.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -36320,8 +36390,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			tags.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(documentation_comment_tag el, documentation_comment_tag newel)
@@ -36335,8 +36405,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			tags.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(documentation_comment_tag el)
@@ -36357,8 +36427,8 @@ namespace PascalABCCompiler.SyntaxTree
 			tags.RemoveAt(ind);
 			tags.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<documentation_comment_tag> match)
@@ -36379,6 +36449,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, documentation_comment_tag el)
 		{
 			tags.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -37840,8 +37912,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(attribute el, attribute newel)
@@ -37855,8 +37927,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(attribute el)
@@ -37877,8 +37949,8 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<attribute> match)
@@ -37899,6 +37971,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, attribute el)
 		{
 			attributes.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -38128,8 +38202,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(simple_attribute_list el, simple_attribute_list newel)
@@ -38143,8 +38217,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(simple_attribute_list el)
@@ -38165,8 +38239,8 @@ namespace PascalABCCompiler.SyntaxTree
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<simple_attribute_list> match)
@@ -38187,6 +38261,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, simple_attribute_list el)
 		{
 			attributes.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -38596,8 +38672,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(declaration el, declaration newel)
@@ -38611,8 +38687,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(declaration el)
@@ -38633,8 +38709,8 @@ namespace PascalABCCompiler.SyntaxTree
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<declaration> match)
@@ -38655,6 +38731,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, declaration el)
 		{
 			defs.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -39214,8 +39292,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			param.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
@@ -39229,8 +39307,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			param.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(syntax_tree_node el)
@@ -39251,8 +39329,8 @@ namespace PascalABCCompiler.SyntaxTree
 			param.RemoveAt(ind);
 			param.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<syntax_tree_node> match)
@@ -39273,6 +39351,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, syntax_tree_node el)
 		{
 			param.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -40056,8 +40136,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			name_expr.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(name_assign_expr el, name_assign_expr newel)
@@ -40071,8 +40151,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			name_expr.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(name_assign_expr el)
@@ -40093,8 +40173,8 @@ namespace PascalABCCompiler.SyntaxTree
 			name_expr.RemoveAt(ind);
 			name_expr.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<name_assign_expr> match)
@@ -40115,6 +40195,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, name_assign_expr el)
 		{
 			name_expr.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -42728,8 +42810,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variables.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(addressed_value el, addressed_value newel)
@@ -42743,8 +42825,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			variables.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(addressed_value el)
@@ -42765,8 +42847,8 @@ namespace PascalABCCompiler.SyntaxTree
 			variables.RemoveAt(ind);
 			variables.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<addressed_value> match)
@@ -42787,6 +42869,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, addressed_value el)
 		{
 			variables.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -43192,8 +43276,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			listunitsections.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(uses_list el, uses_list newel)
@@ -43207,8 +43291,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			listunitsections.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(uses_list el)
@@ -43229,8 +43313,8 @@ namespace PascalABCCompiler.SyntaxTree
 			listunitsections.RemoveAt(ind);
 			listunitsections.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<uses_list> match)
@@ -43251,6 +43335,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, uses_list el)
 		{
 			listunitsections.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		
@@ -45088,8 +45174,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			lst.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
@@ -45103,8 +45189,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			lst.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public bool Remove(syntax_tree_node el)
@@ -45125,8 +45211,8 @@ namespace PascalABCCompiler.SyntaxTree
 			lst.RemoveAt(ind);
 			lst.InsertRange(ind, newels);
 		    foreach (var newel in newels)
-				if (el != null)
-					el.Parent = this;
+				if (newel != null)
+					newel.Parent = this;
 		}
 		
 		public int RemoveAll(Predicate<syntax_tree_node> match)
@@ -45147,6 +45233,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void Insert(int pos, syntax_tree_node el)
 		{
 			lst.Insert(pos,el);
+			if (el != null)
+			   	el.Parent = this;
 		}
 		
 		

@@ -49,8 +49,8 @@ public void InsertAfter(<#ListElementType#> el, IEnumerable<<#ListElementType#>>
 {
 	<#ListName#>.InsertRange(FindIndexInList(el) + 1, newels);
 	foreach (var newel in newels)
-		if (el != null)
-			el.Parent = this;
+		if (newel != null)
+			newel.Parent = this;
 }
 
 public void InsertBefore(<#ListElementType#> el, <#ListElementType#> newel)
@@ -64,8 +64,8 @@ public void InsertBefore(<#ListElementType#> el, IEnumerable<<#ListElementType#>
 {
 	<#ListName#>.InsertRange(FindIndexInList(el), newels);
 	foreach (var newel in newels)
-		if (el != null)
-			el.Parent = this;
+		if (newel != null)
+			newel.Parent = this;
 }
 
 public bool Remove(<#ListElementType#> el)
@@ -86,8 +86,8 @@ public void ReplaceInList(<#ListElementType#> el, IEnumerable<<#ListElementType#
 	<#ListName#>.RemoveAt(ind);
 	<#ListName#>.InsertRange(ind, newels);
     foreach (var newel in newels)
-		if (el != null)
-			el.Parent = this;
+		if (newel != null)
+			newel.Parent = this;
 }
 
 public int RemoveAll(Predicate<<#ListElementType#>> match)
