@@ -419,7 +419,7 @@ initialization_part
 interface_decl_sect_list
     : int_decl_sect_list1         
         {
-			if (($1 as declarations).defs.Count > 0) 
+			if (($1 as declarations).Count > 0) 
 				$$ = $1; 
 			else 
 				$$ = $1;
@@ -442,7 +442,7 @@ int_decl_sect_list1
 decl_sect_list
     : decl_sect_list1                      
         {
-			if (($1 as declarations).defs.Count > 0) 
+			if (($1 as declarations).Count > 0) 
 				$$ = $1; 
 			else 
 				$$ = $1;
@@ -465,7 +465,7 @@ decl_sect_list1
 inclass_decl_sect_list
     : inclass_decl_sect_list1                  
         {
-			if (($1 as declarations).defs.Count > 0) 
+			if (($1 as declarations).Count > 0) 
 				$$ = $1; 
 			else 
 				$$ = $1;
@@ -1535,7 +1535,7 @@ member_list_section
 		    ($3 as class_members).access_mod = $2 as access_modifer_node;
 			($1 as class_body).Add($3 as class_members,@$);
 			
-			if (($1 as class_body).class_def_blocks[0].members.Count == 0)
+			if (($1 as class_body).class_def_blocks[0].Count == 0)
                 ($1 as class_body).class_def_blocks.RemoveAt(0);
 			
 			$$ = $1;
@@ -1875,7 +1875,7 @@ typed_var_init_expression
     | tkRoundOpen typed_const_list tkRoundClose tkArrow lambda_function_body
 		{  
 		    var el = $2 as expression_list;
-		    var cnt = el.expressions.Count;
+		    var cnt = el.Count;
 		    
 			var idList = new ident_list();
 			idList.source_context = @2;
@@ -2017,7 +2017,7 @@ func_name
     | func_class_name_ident_list tkPoint func_meth_name_ident  
         { 
         	var ln = $1 as List<ident>;
-        	var cnt = ($1 as List<ident>).Count;
+        	var cnt = ln.Count;
         	if (cnt == 1)
 				$$ = new method_name(null, ln[cnt-1], $3, null, @$);
 			else 	
@@ -2306,24 +2306,24 @@ assignment
 		{
 			if ($6.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($4 as addressed_value_list).variables.Insert(0,$2 as addressed_value);
-			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
+			($4 as addressed_value_list).Insert(0,$2 as addressed_value);
+			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
     | tkRoundOpen tkVar identifier tkComma var_ident_list tkRoundClose assign_operator expr
 		{
 			if ($7.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as ident_list).idents.Insert(0,$3);
-			($5 as ident_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			($5 as ident_list).Insert(0,$3);
+			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
 		}		
     | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose assign_operator expr
 	    {
 			if ($7.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as ident_list).idents.Insert(0,$3);
-			($5 as ident_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			($5 as ident_list).Insert(0,$3);
+			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
 	    }
     ;
@@ -2336,7 +2336,7 @@ variable_list
 	| variable_list tkComma variable
 	{
 		($1 as addressed_value_list).Add($3 as addressed_value);
-		($1 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3);
+		($1 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3);
 		$$ = $1;
 	}
 	;
@@ -2751,7 +2751,7 @@ new_expr
         		var cnt = 0;
         		var ac = $6 as array_const;
         		if (ac != null && ac.elements != null)
-	        	    cnt = ac.elements.expressions.Count;
+	        	    cnt = ac.elements.Count;
 	        	else parsertools.AddErrorFromResource("WITHOUT_INIT_AND_SIZE",@5);
         		el = new expression_list(new int32_const(cnt),@1);
         	}	
@@ -2968,7 +2968,7 @@ tuple
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
-			if (($4 as expression_list).expressions.Count>7) 
+			if (($4 as expression_list).Count>7) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
             ($4 as expression_list).expressions.Insert(0,$2);
 			$$ = new tuple_node($4 as expression_list,@$);
@@ -3098,7 +3098,7 @@ variable
     | variable tkSquareOpen expr_list tkSquareClose                
         {
         	var el = $3 as expression_list; // SSM 10/03/16
-        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
@@ -3535,7 +3535,7 @@ func_decl_lambda
 		{
 			var idList = new ident_list($2, @2);
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
-			for (int i = 0; i < ($4 as formal_parameters).params_list.Count; i++)
+			for (int i = 0; i < ($4 as formal_parameters).Count; i++)
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
 		}
@@ -3544,7 +3544,7 @@ func_decl_lambda
 			var idList = new ident_list($2, @2);
             var loc = LexLocation.MergeAll(@2,@3,@4);
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
-			for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+			for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 				formalPars.Add(($6 as formal_parameters).params_list[i]);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, $10 as statement_list, @$);
 		}
@@ -3573,7 +3573,7 @@ func_decl_lambda
 				}
 				
 				if ($6 != null)
-					for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+					for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 						formal_pars.Add(($6 as formal_parameters).params_list[i]);		
 					
 				formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
@@ -3601,7 +3601,7 @@ func_decl_lambda
 				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
 				
 				if ($6 != null)
-					for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+					for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 						formalPars.Add(($6 as formal_parameters).params_list[i]);
 					
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);

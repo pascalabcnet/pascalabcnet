@@ -573,6 +573,33 @@ function ReadlnString: string;
 /// Возвращает значение типа boolean, введенное с клавиатуры, и переходит на следующую строку ввода
 function ReadlnBoolean: boolean;
 
+/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
+function ReadInteger2: (integer,integer);
+/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры
+function ReadReal2: (real,real);
+/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры
+function ReadChar2: (char,char);
+/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры
+function ReadString2: (string,string);
+/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInteger2: (integer,integer);
+/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnReal2: (real,real);
+/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnChar2: (char,char);
+/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnString2: (string,string);
+
+function ReadInteger3: (integer,integer,integer);
+function ReadReal3: (real,real,real);
+function ReadChar3: (char,char,char);
+function ReadString3: (string,string,string);
+function ReadlnInteger3: (integer,integer,integer);
+function ReadlnReal3: (real,real,real);
+function ReadlnChar3: (char,char,char);
+function ReadlnString3: (string,string,string);
+
+
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger(prompt: string): integer;
 /// Выводит приглашение к вводу и возвращает значение типа real, введенное с клавиатуры
@@ -4775,6 +4802,24 @@ begin
   Result := ReadBoolean;
   readln();
 end;
+
+function ReadInteger2   := (ReadInteger,ReadInteger);
+function ReadReal2      := (ReadReal,ReadReal);
+function ReadChar2      := (ReadChar,ReadChar);
+function ReadString2    := (ReadString,ReadString);
+function ReadlnInteger2 := (ReadInteger,ReadlnInteger);
+function ReadlnReal2    := (ReadReal,ReadlnReal);
+function ReadlnChar2    := (ReadChar,ReadlnChar);
+function ReadlnString2  := (ReadString,ReadlnString);
+function ReadInteger3   := (ReadInteger,ReadInteger,ReadInteger);
+function ReadReal3      := (ReadReal,ReadReal,ReadReal);
+function ReadChar3      := (ReadChar,ReadChar,ReadChar);
+function ReadString3    := (ReadString,ReadString,ReadString);
+function ReadlnInteger3 := (ReadInteger,ReadInteger,ReadlnInteger);
+function ReadlnReal3    := (ReadReal,ReadReal,ReadlnReal);
+function ReadlnChar3    := (ReadChar,ReadChar,ReadlnChar);
+function ReadlnString3  := (ReadString,ReadString,ReadlnString);
+
 
 // Read with prompt
 
