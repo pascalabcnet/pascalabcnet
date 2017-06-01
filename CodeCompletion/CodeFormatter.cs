@@ -2828,13 +2828,13 @@ namespace CodeFormatters
         public override void visit(assign_var_tuple _assign_var_tuple)
         {
             read_from_beg_pos = true;
-            for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+            for (int i = 0; i < _assign_var_tuple.idents.idents.Count; i++)
             {
                 if (options.SpaceBetweenArguments == 1)
                 {
                     add_space_after = true;
                 }  
-                visit_node(_assign_var_tuple.vars.variables[i]);
+                visit_node(_assign_var_tuple.idents.idents[i]);
                 add_space_before = true;
             }
             visit_node(_assign_var_tuple.expr);

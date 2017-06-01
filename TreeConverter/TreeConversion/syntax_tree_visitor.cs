@@ -19385,11 +19385,17 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var vars = st.lst[0] as SyntaxTree.addressed_value_list;
                 var expr = st.lst[1] as SyntaxTree.expression;
-                semantic_check_assign_tuple(vars,expr);
+                semantic_check_assign_tuple(vars, expr);
             }
-            else 
+            else if (st.typ as System.Type == typeof(SyntaxTree.assign_var_tuple))
             {
-                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", st.GetType().Name);
+                var idents = st.lst[0] as SyntaxTree.ident_list;
+                var expr = st.lst[1] as SyntaxTree.expression;
+                semantic_check_assign_var_tuple(idents, expr);
+            }
+            else
+            {
+                AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name??"Unknown");
             }
             ret.reset(); // обязательно очистить - этот узел в семантику ничего не должен приносить!
         }

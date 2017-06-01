@@ -5988,7 +5988,25 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_assign_var_tuple(assign_var_tuple _assign_var_tuple)
 		{
-			write_assign_tuple(_assign_var_tuple);
+			write_statement(_assign_var_tuple);
+			if (_assign_var_tuple.idents == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_var_tuple.idents.visit(this);
+			}
+			if (_assign_var_tuple.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_var_tuple.expr.visit(this);
+			}
 		}
 
 
