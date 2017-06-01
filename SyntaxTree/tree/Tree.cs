@@ -546,6 +546,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return subnodes[subnodes.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return subnodes.Count; }
+		}
+		
+		public void Insert(int pos, statement el)
+		{
+			subnodes.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -2688,6 +2699,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return names[names.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return names.Count; }
+		}
+		
+		public void Insert(int pos, ident el)
+		{
+			names.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -2992,6 +3014,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return var_definitions[var_definitions.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return var_definitions.Count; }
+		}
+		
+		public void Insert(int pos, var_def_statement el)
+		{
+			var_definitions.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -3276,6 +3309,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return idents[idents.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return idents.Count; }
+		}
+		
+		public void Insert(int pos, ident el)
+		{
+			idents.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -3957,6 +4001,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs[defs.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return defs.Count; }
+		}
+		
+		public void Insert(int pos, declaration el)
+		{
+			defs.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -4233,6 +4288,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return compilation_units[compilation_units.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return compilation_units.Count; }
+		}
+		
+		public void Insert(int pos, compilation_unit el)
+		{
+			compilation_units.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -4794,6 +4860,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return expressions[expressions.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return expressions.Count; }
+		}
+		
+		public void Insert(int pos, expression el)
+		{
+			expressions.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -6804,6 +6881,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return indexers[indexers.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return indexers.Count; }
+		}
+		
+		public void Insert(int pos, type_definition el)
+		{
+			indexers.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -7880,6 +7968,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return params_list[params_list.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return params_list.Count; }
+		}
+		
+		public void Insert(int pos, typed_parameters el)
+		{
+			params_list.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -8156,6 +8255,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return proc_attributes[proc_attributes.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return proc_attributes.Count; }
+		}
+		
+		public void Insert(int pos, procedure_attribute el)
+		{
+			proc_attributes.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -9458,6 +9568,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return types_decl[types_decl.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return types_decl.Count; }
+		}
+		
+		public void Insert(int pos, type_declaration el)
+		{
+			types_decl.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -10286,6 +10407,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return const_defs[const_defs.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return const_defs.Count; }
+		}
+		
+		public void Insert(int pos, const_definition el)
+		{
+			const_defs.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -11065,6 +11197,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return units[units.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return units.Count; }
+		}
+		
+		public void Insert(int pos, unit_or_namespace el)
+		{
+			units.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -11617,6 +11760,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return compiler_directives[compiler_directives.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return compiler_directives.Count; }
+		}
+		
+		public void Insert(int pos, compiler_directive el)
+		{
+			compiler_directives.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -13322,6 +13476,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return ln[ln.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return ln.Count; }
+		}
+		
+		public void Insert(int pos, ident el)
+		{
+			ln.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -16076,6 +16241,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return members[members.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return members.Count; }
+		}
+		
+		public void Insert(int pos, declaration el)
+		{
+			members.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -16500,6 +16676,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return class_def_blocks[class_def_blocks.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return class_def_blocks.Count; }
+		}
+		
+		public void Insert(int pos, class_members el)
+		{
+			class_def_blocks.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -17806,6 +17993,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return rec_consts[rec_consts.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return rec_consts.Count; }
+		}
+		
+		public void Insert(int pos, record_const_definition el)
+		{
+			rec_consts.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -18931,6 +19129,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return literals[literals.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return literals.Count; }
+		}
+		
+		public void Insert(int pos, literal el)
+		{
+			literals.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -19616,6 +19825,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return vars[vars.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return vars.Count; }
+		}
+		
+		public void Insert(int pos, variant el)
+		{
+			vars.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -20070,6 +20290,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return vars[vars.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return vars.Count; }
+		}
+		
+		public void Insert(int pos, variant_type el)
+		{
+			vars.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -23335,6 +23566,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return variants[variants.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return variants.Count; }
+		}
+		
+		public void Insert(int pos, case_variant el)
+		{
+			variants.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -23797,6 +24039,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return vars[vars.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return vars.Count; }
+		}
+		
+		public void Insert(int pos, var_def_statement el)
+		{
+			vars.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -24731,6 +24984,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return parameters[parameters.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return parameters.Count; }
+		}
+		
+		public void Insert(int pos, property_parameter el)
+		{
+			parameters.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -26725,6 +26989,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return handlers[handlers.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return handlers.Count; }
+		}
+		
+		public void Insert(int pos, exception_handler el)
+		{
+			handlers.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -28061,6 +28336,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return namespaces[namespaces.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return namespaces.Count; }
+		}
+		
+		public void Insert(int pos, unit_or_namespace el)
+		{
+			namespaces.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -29015,6 +29301,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return types[types.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return types.Count; }
+		}
+		
+		public void Insert(int pos, named_type_reference el)
+		{
+			types.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -29312,6 +29609,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return params_list[params_list.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return params_list.Count; }
+		}
+		
+		public void Insert(int pos, type_definition el)
+		{
+			params_list.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -30392,6 +30700,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return defs[defs.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return defs.Count; }
+		}
+		
+		public void Insert(int pos, type_definition el)
+		{
+			defs.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -30846,6 +31165,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return defs[defs.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return defs.Count; }
+		}
+		
+		public void Insert(int pos, where_definition el)
+		{
+			defs.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -33297,6 +33627,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return enumerators[enumerators.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return enumerators.Count; }
+		}
+		
+		public void Insert(int pos, enumerator el)
+		{
+			enumerators.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -34027,6 +34368,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes[attributes.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return attributes.Count; }
+		}
+		
+		public void Insert(int pos, type_definition_attr el)
+		{
+			attributes.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -34690,6 +35042,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return directives[directives.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return directives.Count; }
+		}
+		
+		public void Insert(int pos, compiler_directive el)
+		{
+			directives.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -35228,6 +35591,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return sections[sections.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return sections.Count; }
+		}
+		
+		public void Insert(int pos, documentation_comment_section el)
+		{
+			sections.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -35540,6 +35914,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return parameters[parameters.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return parameters.Count; }
+		}
+		
+		public void Insert(int pos, documentation_comment_tag_param el)
+		{
+			parameters.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -35985,6 +36370,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return tags[tags.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return tags.Count; }
+		}
+		
+		public void Insert(int pos, documentation_comment_tag el)
+		{
+			tags.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -37495,6 +37891,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return attributes[attributes.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return attributes.Count; }
+		}
+		
+		public void Insert(int pos, attribute el)
+		{
+			attributes.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -37771,6 +38178,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return attributes[attributes.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return attributes.Count; }
+		}
+		
+		public void Insert(int pos, simple_attribute_list el)
+		{
+			attributes.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -38228,6 +38646,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return defs[defs.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return defs.Count; }
+		}
+		
+		public void Insert(int pos, declaration el)
+		{
+			defs.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -38835,6 +39264,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return param[param.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return param.Count; }
+		}
+		
+		public void Insert(int pos, syntax_tree_node el)
+		{
+			param.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -39666,6 +40106,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return name_expr[name_expr.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return name_expr.Count; }
+		}
+		
+		public void Insert(int pos, name_assign_expr el)
+		{
+			name_expr.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -42328,6 +42779,17 @@ namespace PascalABCCompiler.SyntaxTree
 			return variables[variables.Count - 1];
 		}
 		
+		public int Count
+		{
+		    get { return variables.Count; }
+		}
+		
+		public void Insert(int pos, addressed_value el)
+		{
+			variables.Insert(pos,el);
+		}
+		
+		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
@@ -42780,6 +43242,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return listunitsections[listunitsections.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return listunitsections.Count; }
+		}
+		
+		public void Insert(int pos, uses_list el)
+		{
+			listunitsections.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
@@ -44665,6 +45138,17 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			return lst[lst.Count - 1];
 		}
+		
+		public int Count
+		{
+		    get { return lst.Count; }
+		}
+		
+		public void Insert(int pos, syntax_tree_node el)
+		{
+			lst.Insert(pos,el);
+		}
+		
 		
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()

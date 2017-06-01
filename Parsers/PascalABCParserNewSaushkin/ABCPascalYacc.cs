@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-8EAQPI9
-// DateTime: 01.06.2017 11:45:28
+// DateTime: 01.06.2017 21:50:37
 // UserName: ?????????
 // Input file <J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
@@ -2533,7 +2533,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 54: // interface_decl_sect_list -> int_decl_sect_list1
 {
-			if ((ValueStack[ValueStack.Depth-1].stn as declarations).defs.Count > 0) 
+			if ((ValueStack[ValueStack.Depth-1].stn as declarations).Count > 0) 
 				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
 			else 
 				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
@@ -2553,7 +2553,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 57: // decl_sect_list -> decl_sect_list1
 {
-			if ((ValueStack[ValueStack.Depth-1].stn as declarations).defs.Count > 0) 
+			if ((ValueStack[ValueStack.Depth-1].stn as declarations).Count > 0) 
 				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
 			else 
 				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
@@ -2573,7 +2573,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 60: // inclass_decl_sect_list -> inclass_decl_sect_list1
 {
-			if ((ValueStack[ValueStack.Depth-1].stn as declarations).defs.Count > 0) 
+			if ((ValueStack[ValueStack.Depth-1].stn as declarations).Count > 0) 
 				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
 			else 
 				CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn;
@@ -3596,7 +3596,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 		    (ValueStack[ValueStack.Depth-1].stn as class_members).access_mod = ValueStack[ValueStack.Depth-2].stn as access_modifer_node;
 			(ValueStack[ValueStack.Depth-3].stn as class_body).Add(ValueStack[ValueStack.Depth-1].stn as class_members,CurrentLocationSpan);
 			
-			if ((ValueStack[ValueStack.Depth-3].stn as class_body).class_def_blocks[0].members.Count == 0)
+			if ((ValueStack[ValueStack.Depth-3].stn as class_body).class_def_blocks[0].Count == 0)
                 (ValueStack[ValueStack.Depth-3].stn as class_body).class_def_blocks.RemoveAt(0);
 			
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-3].stn;
@@ -3901,7 +3901,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                              tkArrow, lambda_function_body
 {  
 		    var el = ValueStack[ValueStack.Depth-4].stn as expression_list;
-		    var cnt = el.expressions.Count;
+		    var cnt = el.Count;
 		    
 			var idList = new ident_list();
 			idList.source_context = LocationStack[LocationStack.Depth-4];
@@ -4054,7 +4054,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 404: // func_name -> func_class_name_ident_list, tkPoint, func_meth_name_ident
 { 
         	var ln = ValueStack[ValueStack.Depth-3].ob as List<ident>;
-        	var cnt = (ValueStack[ValueStack.Depth-3].ob as List<ident>).Count;
+        	var cnt = ln.Count;
         	if (cnt == 1)
 				CurrentSemanticValue.stn = new method_name(null, ln[cnt-1], ValueStack[ValueStack.Depth-1].id, null, CurrentLocationSpan);
 			else 	
@@ -4341,8 +4341,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
 			if (ValueStack[ValueStack.Depth-2].op.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",LocationStack[LocationStack.Depth-2]);
-			(ValueStack[ValueStack.Depth-4].ob as addressed_value_list).variables.Insert(0,ValueStack[ValueStack.Depth-6].ex as addressed_value);
-			(ValueStack[ValueStack.Depth-4].ob as addressed_value_list).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
+			(ValueStack[ValueStack.Depth-4].ob as addressed_value_list).Insert(0,ValueStack[ValueStack.Depth-6].ex as addressed_value);
+			(ValueStack[ValueStack.Depth-4].ob as syntax_tree_node).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
 			CurrentSemanticValue.stn = new assign_tuple(ValueStack[ValueStack.Depth-4].ob as addressed_value_list, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		}
         break;
@@ -4351,8 +4351,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
 			if (ValueStack[ValueStack.Depth-2].op.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",LocationStack[LocationStack.Depth-3]);
-			(ValueStack[ValueStack.Depth-4].ob as ident_list).idents.Insert(0,ValueStack[ValueStack.Depth-6].id);
-			(ValueStack[ValueStack.Depth-4].ob as ident_list).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
+			(ValueStack[ValueStack.Depth-4].ob as ident_list).Insert(0,ValueStack[ValueStack.Depth-6].id);
+			(ValueStack[ValueStack.Depth-4].ob as syntax_tree_node).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
 			CurrentSemanticValue.stn = new assign_var_tuple(ValueStack[ValueStack.Depth-4].ob as ident_list, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 		}
         break;
@@ -4361,8 +4361,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
 			if (ValueStack[ValueStack.Depth-2].op.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",LocationStack[LocationStack.Depth-3]);
-			(ValueStack[ValueStack.Depth-4].stn as ident_list).idents.Insert(0,ValueStack[ValueStack.Depth-6].id);
-			(ValueStack[ValueStack.Depth-4].stn as ident_list).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
+			(ValueStack[ValueStack.Depth-4].stn as ident_list).Insert(0,ValueStack[ValueStack.Depth-6].id);
+			ValueStack[ValueStack.Depth-4].stn.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]);
 			CurrentSemanticValue.stn = new assign_var_tuple(ValueStack[ValueStack.Depth-4].stn as ident_list, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan);
 	    }
         break;
@@ -4374,7 +4374,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 476: // variable_list -> variable_list, tkComma, variable
 {
 		(ValueStack[ValueStack.Depth-3].ob as addressed_value_list).Add(ValueStack[ValueStack.Depth-1].ex as addressed_value);
-		(ValueStack[ValueStack.Depth-3].ob as addressed_value_list).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-3],LocationStack[LocationStack.Depth-2],LocationStack[LocationStack.Depth-1]);
+		(ValueStack[ValueStack.Depth-3].ob as syntax_tree_node).source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-3],LocationStack[LocationStack.Depth-2],LocationStack[LocationStack.Depth-1]);
 		CurrentSemanticValue.ob = ValueStack[ValueStack.Depth-3].ob;
 	}
         break;
@@ -4733,7 +4733,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         		var cnt = 0;
         		var ac = ValueStack[ValueStack.Depth-1].stn as array_const;
         		if (ac != null && ac.elements != null)
-	        	    cnt = ac.elements.expressions.Count;
+	        	    cnt = ac.elements.Count;
 	        	else parsertools.AddErrorFromResource("WITHOUT_INIT_AND_SIZE",LocationStack[LocationStack.Depth-2]);
         		el = new expression_list(new int32_const(cnt),LocationStack[LocationStack.Depth-6]);
         	}	
@@ -4955,7 +4955,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
-			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Count>7) 
+			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).Count>7) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
             (ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Insert(0,ValueStack[ValueStack.Depth-6].ex);
 			CurrentSemanticValue.ex = new tuple_node(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
@@ -5090,7 +5090,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 629: // variable -> variable, tkSquareOpen, expr_list, tkSquareClose
 {
         	var el = ValueStack[ValueStack.Depth-2].stn as expression_list; // SSM 10/03/16
-        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
         		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
@@ -5608,7 +5608,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 {
 			var idList = new ident_list(ValueStack[ValueStack.Depth-7].id, LocationStack[LocationStack.Depth-7]);
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, LocationStack[LocationStack.Depth-7]), LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]));
-			for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list.Count; i++)
+			for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).Count; i++)
 				formalPars.Add((ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list[i]);
 			CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
 		}
@@ -5620,7 +5620,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 			var idList = new ident_list(ValueStack[ValueStack.Depth-9].id, LocationStack[LocationStack.Depth-9]);
             var loc = LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7]);
 			var formalPars = new formal_parameters(new typed_parameters(idList, ValueStack[ValueStack.Depth-7].td, parametr_kind.none, null, loc), LexLocation.MergeAll(LocationStack[LocationStack.Depth-9],LocationStack[LocationStack.Depth-8],LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5]));
-			for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list.Count; i++)
+			for (int i = 0; i < (ValueStack[ValueStack.Depth-5].stn as formal_parameters).Count; i++)
 				formalPars.Add((ValueStack[ValueStack.Depth-5].stn as formal_parameters).params_list[i]);
 			CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, ValueStack[ValueStack.Depth-3].td, ValueStack[ValueStack.Depth-1].stn as statement_list, CurrentLocationSpan);
 		}
@@ -5652,7 +5652,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				}
 				
 				if (ValueStack[ValueStack.Depth-3].stn != null)
-					for (int i = 0; i < (ValueStack[ValueStack.Depth-3].stn as formal_parameters).params_list.Count; i++)
+					for (int i = 0; i < (ValueStack[ValueStack.Depth-3].stn as formal_parameters).Count; i++)
 						formal_pars.Add((ValueStack[ValueStack.Depth-3].stn as formal_parameters).params_list[i]);		
 					
 				formal_pars.source_context = LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]);
@@ -5680,7 +5680,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]));
 				
 				if (ValueStack[ValueStack.Depth-3].stn != null)
-					for (int i = 0; i < (ValueStack[ValueStack.Depth-3].stn as formal_parameters).params_list.Count; i++)
+					for (int i = 0; i < (ValueStack[ValueStack.Depth-3].stn as formal_parameters).Count; i++)
 						formalPars.Add((ValueStack[ValueStack.Depth-3].stn as formal_parameters).params_list[i]);
 					
 				CurrentSemanticValue.ex = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, CurrentLocationSpan);

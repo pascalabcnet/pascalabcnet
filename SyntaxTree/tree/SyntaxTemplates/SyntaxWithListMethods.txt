@@ -99,3 +99,16 @@ public <#ListElementType#> Last()
 {
 	return <#ListName#>[<#ListName#>.Count - 1];
 }
+
+public int Count
+{
+    get { return <#ListName#>.Count; }
+}
+
+public void Insert(int pos, <#ListElementType#> el)
+{
+	<#ListName#>.Insert(pos,el);
+	if (el != null)
+	   	el.Parent = this;
+}
+

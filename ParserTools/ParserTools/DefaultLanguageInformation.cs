@@ -1355,7 +1355,6 @@ namespace PascalABCCompiler.Parsers
 		protected virtual string GetDescriptionForElementScope(IElementScope scope)
 		{
 			string type_name=null;
-			string s="";
 			StringBuilder sb = new StringBuilder();
 			if (scope.Type == null) type_name = "";
 			else
