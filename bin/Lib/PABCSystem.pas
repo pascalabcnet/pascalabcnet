@@ -2962,18 +2962,12 @@ begin
   end;
 end;
 
-function TypedFile.ToString: string;
-begin
-  Result := string.Format('file of {0}', ElementType);
-end;
+function TypedFile.ToString := Format('file of {0}', ElementType);
 
 // -----------------------------------------------------
 //                      BinaryFile
 // -----------------------------------------------------
-function BinaryFile.ToString: string;
-begin
-  Result := 'file';
-end;
+function BinaryFile.ToString: string := 'file';
 
 // -----------------------------------------------------
 //                  GCHandlersController    
@@ -3181,25 +3175,13 @@ begin
   left := left + right;
 end;
 
-function string.operator<(left, right: string): boolean;
-begin
-  result := string.CompareOrdinal(left, right) < 0;
-end;
+function string.operator<(left, right: string) := string.CompareOrdinal(left, right) < 0;
 
-function string.operator<=(left, right: string): boolean;
-begin
-  result := string.CompareOrdinal(left, right) <= 0;
-end;
+function string.operator<=(left, right: string) := string.CompareOrdinal(left, right) <= 0;
 
-function string.operator>(left, right: string): boolean;
-begin
-  result := string.CompareOrdinal(left, right) > 0;
-end;
+function string.operator>(left, right: string) := string.CompareOrdinal(left, right) > 0;
 
-function string.operator>=(left, right: string): boolean;
-begin
-  result := string.CompareOrdinal(left, right) >= 0;
-end;
+function string.operator>=(left, right: string) := string.CompareOrdinal(left, right) >= 0;
 
 /// Повторяет строку str n раз
 function string.operator*(str: string; n: integer): string;
@@ -3222,7 +3204,7 @@ end;
 /// Повторяет символ c n раз
 function char.operator*(c: char; n: integer): string;
 begin
-  var sb := new StringBuilder;
+  var sb := new StringBuilder(n,n);
   for var i:=1 to n do
     sb.Append(c);
   result := sb.ToString;
@@ -3231,35 +3213,23 @@ end;
 /// Повторяет символ c n раз
 function char.operator*(n: integer; c: char): string;
 begin
-  var sb := new StringBuilder;
+  var sb := new StringBuilder(n,n);
   for var i:=1 to n do
     sb.Append(c);
   result := sb.ToString;
 end;
 
 /// Добавляет к строке str строковое представление числа n
-function string.operator+(str: string; n: integer): string;
-begin
-  result := str + n.ToString;
-end;
+function string.operator+(str: string; n: integer) := str + n.ToString;
 
 /// Добавляет к строке str строковое представление числа n
-function string.operator+(n: integer; str: string): string;
-begin
-  result := n.ToString + str;
-end;
+function string.operator+(n: integer; str: string) := n.ToString + str;
 
 /// Добавляет к строке str строковое представление числа r
-function string.operator+(str: string; r: real): string;
-begin
-  result := str + r.ToString(nfi);
-end;
+function string.operator+(str: string; r: real) := str + r.ToString(nfi);
 
 /// Добавляет к строке str строковое представление числа r
-function string.operator+(r: real; str: string): string;
-begin
-  result := r.ToString(nfi) + str;
-end;
+function string.operator+(r: real; str: string) := r.ToString(nfi) + str;
 
 procedure string.operator+=(var left: string; right: integer);
 begin
@@ -3279,10 +3249,7 @@ begin
   left := sb.ToString;
 end;
 
-function string.operator in(substr: string; str: string): boolean;
-begin
-  Result := str.Contains(substr);
-end;
+function string.operator in(substr: string; str: string) := str.Contains(substr);
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -3296,10 +3263,7 @@ begin
 end;
 
 ///--
-function operator in<T>(x: T; a: array of T): boolean; extensionmethod;
-begin
-  Result := a.Contains(x);
-end;
+function operator in<T>(x: T; a: array of T): boolean; extensionmethod := a.Contains(x);
 
 function operator*<T>(a: array of T; n: integer): array of T; extensionmethod;
 begin
@@ -3308,10 +3272,7 @@ begin
     a.CopyTo(Result,a.Length*i);
 end;
 
-function operator*<T>(n: integer; a: array of T): array of T; extensionmethod;
-begin
-  Result := a*n
-end;
+function operator*<T>(n: integer; a: array of T): array of T; extensionmethod := a*n;
 
 //------------------------------------------------------------------------------
 //          Операции для List<T> 
@@ -3352,10 +3313,7 @@ begin
 end;
 
 ///--
-function operator*<T>(n: integer; a: List<T>): List<T>; extensionmethod;
-begin
-  Result := a*n;
-end;
+function operator*<T>(n: integer; a: List<T>): List<T>; extensionmethod := a*n;
 
 //------------------------------------------------------------------------------
 //          Операции для Stack<T> 
@@ -3381,10 +3339,7 @@ end;
 //          Операции для HashSet<T> 
 //------------------------------------------------------------------------------
 ///--
-function operator in<T>(x: T; Self: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := Self.Contains(x);
-end;
+function operator in<T>(x: T; Self: HashSet<T>): boolean; extensionmethod := Self.Contains(x);
 
 function operator+=<T>(var Self: HashSet<T>; x: T): HashSet<T>; extensionmethod;
 begin
@@ -3410,15 +3365,9 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := x.SetEquals(y)
-end;
+function operator=<T>(x,y: HashSet<T>); extensionmethod := x.SetEquals(y);
 
-function operator<><T>(x,y: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := not x.SetEquals(y)
-end;
+function operator<><T>(x,y: HashSet<T>); extensionmethod := not x.SetEquals(y);
 
 function operator-<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
@@ -3441,33 +3390,18 @@ begin
   Result := v;
 end;
 
-function operator< <T>(x,y: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsProperSubsetOf(y);
-end;
+function operator< <T>(x,y: HashSet<T>); extensionmethod := x.IsProperSubsetOf(y);
 
-function operator<= <T>(x,y: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsSubsetOf(y);
-end;
+function operator<= <T>(x,y: HashSet<T>); extensionmethod := x.IsSubsetOf(y);
 
-function operator> <T>(x,y: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsProperSupersetOf(y);
-end;
+function operator> <T>(x,y: HashSet<T>); extensionmethod := x.IsProperSupersetOf(y);
 
-function operator>= <T>(x,y: HashSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsSupersetOf(y);
-end;
+function operator>= <T>(x,y: HashSet<T>); extensionmethod := x.IsSupersetOf(y);
 
 //------------------------------------------------------------------------------
 //          Операции для SortedSet<T> 
 //------------------------------------------------------------------------------
-function operator in<T>(x: T; Self: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := Self.Contains(x);
-end;
+function operator in<T>(x: T; Self: SortedSet<T>): boolean; extensionmethod := Self.Contains(x);
 
 function operator+=<T>(var Self: SortedSet<T>; x: T): SortedSet<T>; extensionmethod;
 begin
@@ -3493,15 +3427,9 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := x.SetEquals(y)
-end;
+function operator=<T>(x,y: SortedSet<T>); extensionmethod := x.SetEquals(y);
 
-function operator<><T>(x,y: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := not x.SetEquals(y)
-end;
+function operator<><T>(x,y: SortedSet<T>); extensionmethod := not x.SetEquals(y);
 
 function operator-<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
 begin
@@ -3524,25 +3452,13 @@ begin
   Result := v;
 end;
 
-function operator< <T>(x,y: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsProperSubsetOf(y);
-end;
+function operator< <T>(x,y: SortedSet<T>); extensionmethod := x.IsProperSubsetOf(y);
 
-function operator<= <T>(x,y: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsSubsetOf(y);
-end;
+function operator<= <T>(x,y: SortedSet<T>); extensionmethod := x.IsSubsetOf(y);
 
-function operator> <T>(x,y: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsProperSupersetOf(y);
-end;
+function operator> <T>(x,y: SortedSet<T>); extensionmethod := x.IsProperSupersetOf(y);
 
-function operator>= <T>(x,y: SortedSet<T>): boolean; extensionmethod;
-begin
-  Result := x.IsSupersetOf(y);
-end;
+function operator>= <T>(x,y: SortedSet<T>): boolean; extensionmethod := x.IsSupersetOf(y);
 
 //------------------------------------------------------------------------------
 //          Операции для Dictionary<K,V>, SortedDictionary<K,V>, SortedList<K,V>
@@ -3768,81 +3684,6 @@ end;
 //                Функции для последовательностей и динамических массивов
 // -----------------------------------------------------------------------------
 
-type
-// Вспомогательный класс для генерации всех последовательностей
-  SeqBase<T> = class(IEnumerable<T>,IEnumerator<T>)
-  public
-    function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
-    begin
-      Result := Self;
-    end;
-
-    function GetEnumerator(): IEnumerator<T>;
-    begin
-      Result := Self;
-    end;
-
-    function get_Current: T; virtual;
-    begin
-      Result := default(T);
-    end;
-
-    function System.Collections.IEnumerator.get_Current(): object;
-    begin
-      Result := Self.get_Current();
-    end;
-
-    function MoveNext(): boolean; virtual; 
-    begin
-      Result := True;
-    end;
-
-    procedure Dispose(); virtual;
-    begin
-    end;
-
-    procedure Reset();
-    begin
-    end;
-  end;
-  
-// Вспомогательный класс для генерации целых последовательностей
-  SeqBaseInteger = class(IEnumerable<integer>,IEnumerator<integer>)
-  public
-    function System.Collections.IEnumerable.GetEnumerator(): System.Collections.IEnumerator;
-    begin
-      Result := Self;
-    end;
-
-    function GetEnumerator(): IEnumerator<integer>;
-    begin
-      Result := Self;
-    end;
-
-    function get_Current: integer; virtual;
-    begin
-      Result := 0;
-    end;
-
-    function System.Collections.IEnumerator.get_Current(): object;
-    begin
-      Result := Self.get_Current();
-    end;
-
-    function MoveNext(): boolean; virtual; 
-    begin
-      Result := True;
-    end;
-
-    procedure Dispose(); virtual;
-    begin
-    end;
-
-    procedure Reset();
-    begin
-    end;
-  end;
-  
 function Range(a, b: integer): sequence of integer;
 begin
   if b<a then 
@@ -3965,7 +3806,6 @@ begin
     first := next(first);
     yield first;
   end;
-  //Result := IterateClass&<T>.Create(first,next).Select(x->T(x));
 end;
 
 /// Возвращает бесконечную рекуррентную последовательность элементов, задаваемую начальными элементами first, second и функцией next
@@ -3980,7 +3820,6 @@ begin
     first := second;
     second := nxt;
   end;
-//  Result := Iterate2Class&<T>.Create(first,second,next).Select(x->T(x));
 end;
 
 function SeqGen<T>(count: integer; first: T; next: T -> T): sequence of T;
@@ -4219,35 +4058,17 @@ end;
 // -----------------------------------------------------------------------------
 //                Функции Rec для создания кортежей
 // -----------------------------------------------------------------------------
-function Rec<T1,T2>(x1: T1; x2: T2): System.Tuple<T1,T2>;
-begin
-  Result := Tuple.Create(x1,x2);
-end;
+function Rec<T1,T2>(x1: T1; x2: T2) := Tuple.Create(x1,x2);
 
-function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3): (T1,T2,T3);
-begin
-  Result := Tuple.Create(x1,x2,x3);
-end;
+function Rec<T1,T2,T3>(x1: T1; x2: T2; x3: T3) := Tuple.Create(x1,x2,x3);
 
-function Rec<T1,T2,T3,T4>(x1: T1; x2: T2; x3: T3; x4: T4): (T1,T2,T3,T4);
-begin
-  Result := Tuple.Create(x1,x2,x3,x4);
-end;
+function Rec<T1,T2,T3,T4>(x1: T1; x2: T2; x3: T3; x4: T4) := Tuple.Create(x1,x2,x3,x4);
 
-function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5): (T1,T2,T3,T4,T5);
-begin
-  Result := Tuple.Create(x1,x2,x3,x4,x5);
-end;
+function Rec<T1,T2,T3,T4,T5>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5) := Tuple.Create(x1,x2,x3,x4,x5);
 
-function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6): (T1,T2,T3,T4,T5,T6);
-begin
-  Result := Tuple.Create(x1,x2,x3,x4,x5,x6);
-end;
+function Rec<T1,T2,T3,T4,T5,T6>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6) := Tuple.Create(x1,x2,x3,x4,x5,x6);
 
-function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7): (T1,T2,T3,T4,T5,T6,T7);
-begin
-  Result := Tuple.Create(x1,x2,x3,x4,x5,x6,x7);
-end;
+function Rec<T1,T2,T3,T4,T5,T6,T7>(x1: T1; x2: T2; x3: T3; x4: T4; x5: T5; x6: T6; x7: T7) := Tuple.Create(x1,x2,x3,x4,x5,x6,x7);
 
 // -----------------------------------------------------------------------------
 //                Функции Lst, LLst, Dict, KV, HSet, SSet

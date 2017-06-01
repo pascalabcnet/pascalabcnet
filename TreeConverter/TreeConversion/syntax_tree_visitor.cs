@@ -5940,12 +5940,14 @@ namespace PascalABCCompiler.TreeConverter
             location subloc2 = get_location(id);
 
             SymbolInfoList sibak = new SymbolInfoList();
-            sibak.InfoUnitList.AddRange(si.InfoUnitList.GetRange(1, si.InfoUnitList.Count - 1));
+            if (si != null)
+                sibak.InfoUnitList.AddRange(si.InfoUnitList.GetRange(1, si.InfoUnitList.Count - 1));
 
             if (si == null)
             {
                 AddError(new UndefinedNameReference(id.name, subloc2));
             }
+
             is_format_allowed = false;
             if (SystemUnitAssigned)
             {
