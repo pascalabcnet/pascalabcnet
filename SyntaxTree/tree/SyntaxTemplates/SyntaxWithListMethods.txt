@@ -1,8 +1,9 @@
 public <#NodeName#> Add(<#ListElementType#> elem, SourceContext sc = null)
 {
+	if (elem == null)
+		throw new ArgumentNullException(nameof(elem));
 	<#ListName#>.Add(elem);
-	if (elem != null)
-		elem.Parent = this;
+    elem.Parent = this;
 	if (sc != null)
 		source_context = sc;
 	return this;
@@ -10,12 +11,16 @@ public <#NodeName#> Add(<#ListElementType#> elem, SourceContext sc = null)
 
 public void AddFirst(<#ListElementType#> el)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
 	<#ListName#>.Insert(0, el);
 	FillParentsInDirectChilds();
 }
 
 public void AddFirst(IEnumerable<<#ListElementType#>> els)
 {
+	if (els == null)
+		throw new ArgumentNullException(nameof(els));
 	<#ListName#>.InsertRange(0, els);
 	foreach (var el in els)
 		if (el != null)
@@ -24,6 +29,8 @@ public void AddFirst(IEnumerable<<#ListElementType#>> els)
 
 public void AddMany(params <#ListElementType#>[] els)
 {
+	if (els == null)
+		throw new ArgumentNullException(nameof(els));
 	<#ListName#>.AddRange(els);
 	foreach (var el in els)
 		if (el != null)
@@ -32,6 +39,8 @@ public void AddMany(params <#ListElementType#>[] els)
 
 private int FindIndexInList(<#ListElementType#> el)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
 	var ind = <#ListName#>.FindIndex(x => x == el);
 	if (ind == -1)
 		throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -40,13 +49,20 @@ private int FindIndexInList(<#ListElementType#> el)
 
 public void InsertAfter(<#ListElementType#> el, <#ListElementType#> newel)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
+	if (newel == null)
+		throw new ArgumentNullException(nameof(newel));
 	<#ListName#>.Insert(FindIndexInList(el) + 1, newel);
-	if (newel != null)
-	   	newel.Parent = this;
+	newel.Parent = this;
 }
 
 public void InsertAfter(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
+	if (newels == null)
+		throw new ArgumentNullException(nameof(newels));
 	<#ListName#>.InsertRange(FindIndexInList(el) + 1, newels);
 	foreach (var newel in newels)
 		if (newel != null)
@@ -55,13 +71,20 @@ public void InsertAfter(<#ListElementType#> el, IEnumerable<<#ListElementType#>>
 
 public void InsertBefore(<#ListElementType#> el, <#ListElementType#> newel)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
+	if (newel == null)
+		throw new ArgumentNullException(nameof(newel));
 	<#ListName#>.Insert(FindIndexInList(el), newel);
-	if (newel != null)
-		newel.Parent = this;
+	newel.Parent = this;
 }
 
 public void InsertBefore(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
+	if (newels == null)
+		throw new ArgumentNullException(nameof(newels));
 	<#ListName#>.InsertRange(FindIndexInList(el), newels);
 	foreach (var newel in newels)
 		if (newel != null)
@@ -75,13 +98,20 @@ public bool Remove(<#ListElementType#> el)
 
 public void ReplaceInList(<#ListElementType#> el, <#ListElementType#> newel)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
+	if (newel == null)
+		throw new ArgumentNullException(nameof(newel));
 	<#ListName#>[FindIndexInList(el)] = newel;
-	if (newel != null)
-	   	newel.Parent = this;
+	newel.Parent = this;
 }
 
 public void ReplaceInList(<#ListElementType#> el, IEnumerable<<#ListElementType#>> newels)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
+	if (newels == null)
+		throw new ArgumentNullException(nameof(newels));
 	var ind = FindIndexInList(el);
 	<#ListName#>.RemoveAt(ind);
 	<#ListName#>.InsertRange(ind, newels);
@@ -97,7 +127,9 @@ public int RemoveAll(Predicate<<#ListElementType#>> match)
 
 public <#ListElementType#> Last()
 {
-	return <#ListName#>[<#ListName#>.Count - 1];
+	if (<#ListName#>.Count > 0)
+        return <#ListName#>[<#ListName#>.Count - 1];
+	throw new InvalidOperationException("Список пуст");
 }
 
 public int Count
@@ -107,6 +139,8 @@ public int Count
 
 public void Insert(int pos, <#ListElementType#> el)
 {
+	if (el == null)
+		throw new ArgumentNullException(nameof(el));
 	<#ListName#>.Insert(pos,el);
 	if (el != null)
 	   	el.Parent = this;
