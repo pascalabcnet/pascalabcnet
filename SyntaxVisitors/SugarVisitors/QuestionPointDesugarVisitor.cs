@@ -154,9 +154,10 @@ namespace SyntaxVisitors.SugarVisitors
 
         public override void visit(dot_question_node dqn)
         {
-            var sug = ConvertToQCE1(dqn);
-            visit(sug);
+            var qce = ConvertToQCE1(dqn);
+            var sug = sugared_addressed_value.NewP(dqn, qce, dqn.source_context);
             ReplaceUsingParent(dqn, sug);
+            visit(qce);
         }
     }
 }

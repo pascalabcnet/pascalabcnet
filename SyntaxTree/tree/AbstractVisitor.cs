@@ -1112,6 +1112,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_sugared_addressed_value);
 		}
+
+		public virtual void visit(double_question_node _double_question_node)
+		{
+			DefaultVisit(_double_question_node);
+		}
 	}
 
 

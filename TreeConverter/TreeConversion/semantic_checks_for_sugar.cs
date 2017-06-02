@@ -104,5 +104,12 @@ namespace PascalABCCompiler.TreeConverter
             //if (tup.el.expressions.Count > 7) 
 			//	AddError(get_location(tup),"TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
         }*/
+
+        public void semantic_check_dot_question(SyntaxTree.question_colon_expression qce)
+        {
+            var av = convert_strong((qce.condition as bin_expr).left);
+            if (!av.type.is_class)
+                AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
+        }
     }
 }
