@@ -31,7 +31,7 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkQuestionSquareOpen
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
@@ -79,7 +79,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr double_question_expr expr_l1 simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -1073,6 +1073,13 @@ type_decl_type
 type_ref
     : simple_type
 		{ $$ = $1; }
+	| simple_type tkQuestion
+		{ 	
+			var l = new List<ident>();
+			l.Add(new ident("System"));
+            l.Add(new ident("Nullable"));
+			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		}
     | string_type
 		{ $$ = $1; }
     | pointer_type
@@ -2688,11 +2695,18 @@ expr
     ;
 
 expr_l1
-    : relop_expr
+    : double_question_expr
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
     ;
+	
+double_question_expr
+	: relop_expr
+		{ $$ = $1; }
+	| double_question_expr tkDoubleQuestion relop_expr
+		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
+	;
     
 sizeof_expr
     : tkSizeOf tkRoundOpen simple_or_template_type_reference tkRoundClose

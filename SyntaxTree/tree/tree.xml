@@ -2842,6 +2842,17 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
+    <SyntaxNode Name="double_question_node" BaseName="addressed_value_funcname">
+      <Fields>
+        <SyntaxField Name="left" SyntaxType="expression" />
+        <SyntaxField Name="right" SyntaxType="expression" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
+      </Tags>
+    </SyntaxNode>
   </SyntaxNodes>
   <Settings>
     <FileName>Tree.cs</FileName>
@@ -3225,6 +3236,9 @@
       <HelpData Key="double_const." Value="" />
       <HelpData Key="double_const.override string ToString()" Value="" />
       <HelpData Key="double_const.val" Value="Значение вещественной константы" />
+      <HelpData Key="double_question_node" Value="" />
+      <HelpData Key="double_question_node.left" Value="" />
+      <HelpData Key="double_question_node.right" Value="" />
       <HelpData Key="eee" Value="" />
       <HelpData Key="empty_statement" Value="" />
       <HelpData Key="enum_type_definition" Value="" />

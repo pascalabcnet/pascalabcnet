@@ -19428,6 +19428,18 @@ namespace PascalABCCompiler.TreeConverter
             {
                 semantic_check_method_call_as_slice_expr(av.new_addr_value as SyntaxTree.method_call);
             }
+            else if (av.sugared_expr is SyntaxTree.dot_question_node)
+            {
+                var qce = av.new_addr_value as SyntaxTree.question_colon_expression;
+                var av_cs = convert_strong(qce.ret_if_false);
+                if (!type_table.is_with_nil_allowed(av_cs.type))
+                {
+                    var dn = new dot_node(new ident("PABCSystem"), new ident("DQNToNullable"));
+                    (av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false
+                     = new method_call(dn, new expression_list((av.new_addr_value as SyntaxTree.question_colon_expression).ret_if_false), av.source_context);
+                }
+                semantic_check_dot_question(av.new_addr_value as SyntaxTree.question_colon_expression);
+            }
             else
             {
                 AddError(get_location(av), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", av.sugared_expr.GetType().Name);
