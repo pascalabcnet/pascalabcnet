@@ -1245,10 +1245,13 @@ namespace PascalABCCompiler.TreeConverter
 
             expressions_list pars = null;
             function_node fnsel = null;
-            foreach(SymbolInfoUnit tmp_si in si.InfoUnitList)
+            if (si != null)
             {
-                if (tmp_si.sym_info is wrapped_definition_node)
-                    BasePCUReader.RestoreSymbols(si, name);
+                foreach (SymbolInfoUnit tmp_si in si.InfoUnitList)
+                {
+                    if (tmp_si.sym_info is wrapped_definition_node)
+                        BasePCUReader.RestoreSymbols(si, name);
+                }
             }
             pars = new expressions_list();
             pars.AddElement(left);
@@ -5951,7 +5954,6 @@ namespace PascalABCCompiler.TreeConverter
             is_format_allowed = false;
             if (SystemUnitAssigned)
             {
-                //si.ToSymbolInfo();//notCreatedSymbol problem
                 if (SystemLibrary.SystemLibInitializer.read_procedure.Equal(si) || SystemLibrary.SystemLibInitializer.readln_procedure.Equal(si))
                 {
 
@@ -6546,6 +6548,7 @@ namespace PascalABCCompiler.TreeConverter
             is_format_allowed = false;
             CheckSpecialFunctionCall(si, exprs, get_location(_method_call));
 
+            si.InfoUnitList.RemoveRange(1, si.InfoUnitList.Count - 1);
             si.Add(sibak);
 
             if (to_type != null)
@@ -9292,11 +9295,11 @@ namespace PascalABCCompiler.TreeConverter
         private bool can_convert_to_method_call(ref SymbolInfoList si)
         {
             SymbolInfoList tmp_list = si.copy();
-            foreach(SymbolInfoUnit tmp_si in tmp_list.InfoUnitList)
+            foreach (SymbolInfoUnit tmp_si in tmp_list.InfoUnitList)
             {
                 if (tmp_si.sym_info is function_node && (tmp_si.sym_info as function_node).is_extension_method && !has_property(ref si)
-                           || tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor
-                           || tmp_si.sym_info is compiled_constructor_node)
+                            || tmp_si.sym_info is common_method_node && (tmp_si.sym_info as common_method_node).is_constructor
+                            || tmp_si.sym_info is compiled_constructor_node)
                     return true;
             }
             return false;
@@ -11268,11 +11271,14 @@ namespace PascalABCCompiler.TreeConverter
         
         private bool FunctionExsistsInSymbolInfo(function_node fn, SymbolInfoList si)
         {
-            foreach(SymbolInfoUnit si_unit in si.InfoUnitList)
+            if (si != null)
             {
-                if (si_unit.sym_info is function_node)
-                    if (convertion_data_and_alghoritms.function_eq_params(fn, si_unit.sym_info as function_node))
-                        return true;
+                foreach (SymbolInfoUnit si_unit in si.InfoUnitList)
+                {
+                    if (si_unit.sym_info is function_node)
+                        if (convertion_data_and_alghoritms.function_eq_params(fn, si_unit.sym_info as function_node))
+                            return true;
+                }
             }
             return false;
         }

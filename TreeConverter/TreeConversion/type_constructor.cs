@@ -544,7 +544,7 @@ namespace PascalABCCompiler.TreeConverter
                     en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumeratorInterfaceName)).get_instance(generic_args), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
                     //en_fnc = en_tn.find_in_type("GetEnumerator").sym_info as function_node;//NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).sym_info as compiled_function_node;
                     SymbolInfoList en_si = en_tn.find_in_type("GetEnumerator");
-                    if (en_si.InfoUnitList.Count > 1 && (en_si.InfoUnitList[1].sym_info as function_node).return_value_type.is_generic_type_instance)
+                    if (en_si != null && en_si.InfoUnitList.Count > 1 && (en_si.InfoUnitList[1].sym_info as function_node).return_value_type.is_generic_type_instance)
                         en_si.InfoUnitList = en_si.InfoUnitList.GetRange(1, en_si.InfoUnitList.Count - 1);
                     function_node en_fnc_inst = en_si.First().sym_info as function_node; ;//.get_instance(generic_args, true, loc);
                     sl = new statements_list(null);
