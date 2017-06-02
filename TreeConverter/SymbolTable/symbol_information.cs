@@ -506,26 +506,61 @@ namespace PascalABCCompiler.TreeConverter
             return -1;
         }
 
-        public static bool operator ==(SymbolInfoList a, SymbolInfoList b)
+
+        public override bool Equals(System.Object obj)
         {
-            if (System.Object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-            if (((object)a == null) || ((object)b == null))
+            if (obj == null)
             {
                 return false;
             }
-            if (a.InfoUnitList.Count != b.InfoUnitList.Count)
+
+            SymbolInfoList p = obj as SymbolInfoList;
+            if ((System.Object)p == null)
+            {
                 return false;
-            for (int i = 0; i < a.InfoUnitList.Count; ++i)
-                if (a.InfoUnitList[i] != b.InfoUnitList[i])
+            }
+
+            if (p.InfoUnitList.Count != InfoUnitList.Count)
+                return false;
+            for (int i = 0; i < InfoUnitList.Count; ++i)
+                if (p.InfoUnitList[i] != InfoUnitList[i])
                     return false;
             return true;
         }
+
+        public bool Equals(SymbolInfoList p)
+        {
+            if ((object)p == null)
+            {
+                return false;
+            }
+            if (p.InfoUnitList.Count != InfoUnitList.Count)
+                return false;
+            for (int i = 0; i < InfoUnitList.Count; ++i)
+                if (p.InfoUnitList[i] != InfoUnitList[i])
+                    return false;
+            return true;
+        }
+
+
+        public static bool operator ==(SymbolInfoList a, SymbolInfoList b)
+        {
+            if (object.ReferenceEquals(a, null))
+            {
+                return object.ReferenceEquals(b, null);
+            }
+
+            return a.Equals(b);
+        }
+
         public static bool operator !=(SymbolInfoList a, SymbolInfoList b)
         {
             return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
     }
 
@@ -914,48 +949,6 @@ namespace PascalABCCompiler.TreeConverter
             _sym_info = value;
             _access_level = alevel;
             _symbol_kind = skind;
-        }
-
-
-        public override bool Equals(System.Object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            SymbolInfoUnit p = obj as SymbolInfoUnit;
-            if ((System.Object)p == null)
-            {
-                return false;
-            }
-
-            return (_access_level == p._access_level) && (_symbol_kind == p._symbol_kind) && (_sym_info == p.sym_info) && (scope == p.scope);
-        }
-
-        public bool Equals(SymbolInfoUnit p)
-        {
-            if ((object)p == null)
-            {
-                return false;
-            }
-            return (_access_level == p._access_level) && (_symbol_kind == p._symbol_kind) && (_sym_info == p.sym_info) && (scope == p.scope);
-        }
-
-
-        public static bool operator ==(SymbolInfoUnit a, SymbolInfoUnit b)
-        {
-            if (object.ReferenceEquals(a, null))
-            {
-                return object.ReferenceEquals(b, null);
-            }
-
-            return a.Equals(b);
-        }
-
-        public static bool operator !=(SymbolInfoUnit a, SymbolInfoUnit b)
-        {
-            return !(a == b);
         }
 
     }

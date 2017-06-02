@@ -14,14 +14,17 @@ namespace PascalABCCompiler.TreeRealization
         public abstract definition_node CreateInterfaceMember(int offset, string name);
         public static void RestoreSymbolsInterfaceMember(SymbolInfoList si, string name)
         {
-            foreach(var si_unit in si.InfoUnitList)
+            if (si != null)
             {
-                if(si_unit.sym_info !=  null)
-                    if(si_unit.sym_info.semantic_node_type == PascalABCCompiler.TreeRealization.semantic_node_type.wrap_def)
-                    {
-                        PascalABCCompiler.TreeRealization.wrapped_definition_node wdn = (PascalABCCompiler.TreeRealization.wrapped_definition_node)si_unit.sym_info;
-                        si_unit.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset, name);
-                    }
+                foreach (var si_unit in si.InfoUnitList)
+                {
+                    if (si_unit.sym_info != null)
+                        if (si_unit.sym_info.semantic_node_type == PascalABCCompiler.TreeRealization.semantic_node_type.wrap_def)
+                        {
+                            PascalABCCompiler.TreeRealization.wrapped_definition_node wdn = (PascalABCCompiler.TreeRealization.wrapped_definition_node)si_unit.sym_info;
+                            si_unit.sym_info = wdn.PCUReader.CreateInterfaceMember(wdn.offset, name);
+                        }
+                }
             }
         }
 
@@ -32,14 +35,17 @@ namespace PascalABCCompiler.TreeRealization
         
         public static void RestoreSymbols(SymbolInfoList si, string name, int index = 0)
         {
-            for(int i = index; i < si.InfoUnitList.Count; ++i)
+            if (si != null)
             {
-                if (si.InfoUnitList[i].sym_info != null)
-                    if (si.InfoUnitList[i].sym_info.semantic_node_type == PascalABCCompiler.TreeRealization.semantic_node_type.wrap_def)
-                    {
-                        PascalABCCompiler.TreeRealization.wrapped_definition_node wdn = (PascalABCCompiler.TreeRealization.wrapped_definition_node)si.InfoUnitList[i].sym_info;
-                        RestoreSymbols(si.InfoUnitList[i], wdn, name);
-                    }
+                for (int i = index; i < si.InfoUnitList.Count; ++i)
+                {
+                    if (si.InfoUnitList[i].sym_info != null)
+                        if (si.InfoUnitList[i].sym_info.semantic_node_type == PascalABCCompiler.TreeRealization.semantic_node_type.wrap_def)
+                        {
+                            PascalABCCompiler.TreeRealization.wrapped_definition_node wdn = (PascalABCCompiler.TreeRealization.wrapped_definition_node)si.InfoUnitList[i].sym_info;
+                            RestoreSymbols(si.InfoUnitList[i], wdn, name);
+                        }
+                }
             }
 
         }

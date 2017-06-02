@@ -456,12 +456,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			subnodes.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<statement> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			subnodes.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -470,6 +474,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params statement[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			subnodes.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -478,6 +484,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = subnodes.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -486,13 +494,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(statement el, statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			subnodes.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(statement el, IEnumerable<statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			subnodes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -501,13 +516,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(statement el, statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			subnodes.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(statement el, IEnumerable<statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			subnodes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -521,13 +543,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(statement el, statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			subnodes[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(statement el, IEnumerable<statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			subnodes.RemoveAt(ind);
 			subnodes.InsertRange(ind, newels);
@@ -543,7 +572,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public statement Last()
 		{
-			return subnodes[subnodes.Count - 1];
+			if (subnodes.Count > 0)
+		        return subnodes[subnodes.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -553,6 +584,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			subnodes.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -2611,12 +2644,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			names.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<ident> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			names.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -2625,6 +2662,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params ident[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			names.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -2633,6 +2672,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = names.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -2641,13 +2682,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			names.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			names.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -2656,13 +2704,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			names.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			names.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -2676,13 +2731,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			names[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			names.RemoveAt(ind);
 			names.InsertRange(ind, newels);
@@ -2698,7 +2760,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public ident Last()
 		{
-			return names[names.Count - 1];
+			if (names.Count > 0)
+		        return names[names.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -2708,6 +2772,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			names.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -2928,12 +2994,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(var_def_statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var_definitions.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<var_def_statement> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			var_definitions.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -2942,6 +3012,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params var_def_statement[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			var_definitions.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -2950,6 +3022,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(var_def_statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = var_definitions.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -2958,13 +3032,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(var_def_statement el, var_def_statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			var_definitions.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var_definitions.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -2973,13 +3054,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			var_definitions.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var_definitions.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -2993,13 +3081,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(var_def_statement el, var_def_statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			var_definitions[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			var_definitions.RemoveAt(ind);
 			var_definitions.InsertRange(ind, newels);
@@ -3015,7 +3110,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public var_def_statement Last()
 		{
-			return var_definitions[var_definitions.Count - 1];
+			if (var_definitions.Count > 0)
+		        return var_definitions[var_definitions.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -3025,6 +3122,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, var_def_statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var_definitions.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -3226,12 +3325,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			idents.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<ident> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			idents.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -3240,6 +3343,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params ident[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			idents.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -3248,6 +3353,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = idents.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -3256,13 +3363,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			idents.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			idents.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -3271,13 +3385,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			idents.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			idents.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -3291,13 +3412,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			idents[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			idents.RemoveAt(ind);
 			idents.InsertRange(ind, newels);
@@ -3313,7 +3441,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public ident Last()
 		{
-			return idents[idents.Count - 1];
+			if (idents.Count > 0)
+		        return idents[idents.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -3323,6 +3453,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			idents.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -3919,12 +4051,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<declaration> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -3933,6 +4069,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params declaration[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -3941,6 +4079,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -3949,13 +4089,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -3964,13 +4111,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -3984,13 +4138,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
@@ -4006,7 +4167,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public declaration Last()
 		{
-			return defs[defs.Count - 1];
+			if (defs.Count > 0)
+		        return defs[defs.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -4016,6 +4179,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -4209,12 +4374,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(compilation_unit el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			compilation_units.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<compilation_unit> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			compilation_units.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -4223,6 +4392,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params compilation_unit[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			compilation_units.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -4231,6 +4402,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(compilation_unit el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = compilation_units.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -4239,13 +4412,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(compilation_unit el, compilation_unit newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			compilation_units.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			compilation_units.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -4254,13 +4434,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(compilation_unit el, compilation_unit newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			compilation_units.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			compilation_units.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -4274,13 +4461,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(compilation_unit el, compilation_unit newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			compilation_units[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(compilation_unit el, IEnumerable<compilation_unit> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			compilation_units.RemoveAt(ind);
 			compilation_units.InsertRange(ind, newels);
@@ -4296,7 +4490,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public compilation_unit Last()
 		{
-			return compilation_units[compilation_units.Count - 1];
+			if (compilation_units.Count > 0)
+		        return compilation_units[compilation_units.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -4306,6 +4502,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, compilation_unit el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			compilation_units.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -4783,12 +4981,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(expression el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			expressions.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<expression> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			expressions.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -4797,6 +4999,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params expression[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			expressions.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -4805,6 +5009,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(expression el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = expressions.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -4813,13 +5019,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(expression el, expression newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			expressions.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(expression el, IEnumerable<expression> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			expressions.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -4828,13 +5041,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(expression el, expression newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			expressions.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(expression el, IEnumerable<expression> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			expressions.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -4848,13 +5068,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(expression el, expression newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			expressions[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(expression el, IEnumerable<expression> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			expressions.RemoveAt(ind);
 			expressions.InsertRange(ind, newels);
@@ -4870,7 +5097,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public expression Last()
 		{
-			return expressions[expressions.Count - 1];
+			if (expressions.Count > 0)
+		        return expressions[expressions.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -4880,6 +5109,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, expression el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			expressions.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -6805,12 +7036,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			indexers.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<type_definition> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			indexers.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -6819,6 +7054,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params type_definition[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			indexers.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -6827,6 +7064,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = indexers.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -6835,13 +7074,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			indexers.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			indexers.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -6850,13 +7096,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			indexers.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			indexers.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -6870,13 +7123,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			indexers[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			indexers.RemoveAt(ind);
 			indexers.InsertRange(ind, newels);
@@ -6892,7 +7152,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public type_definition Last()
 		{
-			return indexers[indexers.Count - 1];
+			if (indexers.Count > 0)
+		        return indexers[indexers.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -6902,6 +7164,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			indexers.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -7894,12 +8158,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(typed_parameters el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			params_list.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<typed_parameters> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			params_list.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -7908,6 +8176,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params typed_parameters[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			params_list.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -7916,6 +8186,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(typed_parameters el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = params_list.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -7924,13 +8196,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(typed_parameters el, typed_parameters newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			params_list.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			params_list.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -7939,13 +8218,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(typed_parameters el, typed_parameters newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			params_list.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			params_list.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -7959,13 +8245,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(typed_parameters el, typed_parameters newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			params_list[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(typed_parameters el, IEnumerable<typed_parameters> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
@@ -7981,7 +8274,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public typed_parameters Last()
 		{
-			return params_list[params_list.Count - 1];
+			if (params_list.Count > 0)
+		        return params_list[params_list.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -7991,6 +8286,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, typed_parameters el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			params_list.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -8184,12 +8481,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(procedure_attribute el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			proc_attributes.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<procedure_attribute> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			proc_attributes.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -8198,6 +8499,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params procedure_attribute[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			proc_attributes.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -8206,6 +8509,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(procedure_attribute el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = proc_attributes.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -8214,13 +8519,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(procedure_attribute el, procedure_attribute newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			proc_attributes.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			proc_attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -8229,13 +8541,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(procedure_attribute el, procedure_attribute newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			proc_attributes.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			proc_attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -8249,13 +8568,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(procedure_attribute el, procedure_attribute newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			proc_attributes[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(procedure_attribute el, IEnumerable<procedure_attribute> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			proc_attributes.RemoveAt(ind);
 			proc_attributes.InsertRange(ind, newels);
@@ -8271,7 +8597,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public procedure_attribute Last()
 		{
-			return proc_attributes[proc_attributes.Count - 1];
+			if (proc_attributes.Count > 0)
+		        return proc_attributes[proc_attributes.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -8281,6 +8609,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, procedure_attribute el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			proc_attributes.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -9498,12 +9828,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(type_declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			types_decl.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<type_declaration> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			types_decl.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -9512,6 +9846,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params type_declaration[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			types_decl.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -9520,6 +9856,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(type_declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = types_decl.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -9528,13 +9866,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_declaration el, type_declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			types_decl.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(type_declaration el, IEnumerable<type_declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			types_decl.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -9543,13 +9888,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(type_declaration el, type_declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			types_decl.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_declaration el, IEnumerable<type_declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			types_decl.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -9563,13 +9915,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(type_declaration el, type_declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			types_decl[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(type_declaration el, IEnumerable<type_declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			types_decl.RemoveAt(ind);
 			types_decl.InsertRange(ind, newels);
@@ -9585,7 +9944,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public type_declaration Last()
 		{
-			return types_decl[types_decl.Count - 1];
+			if (types_decl.Count > 0)
+		        return types_decl[types_decl.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -9595,6 +9956,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, type_declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			types_decl.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -10339,12 +10702,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(const_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			const_defs.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<const_definition> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			const_defs.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -10353,6 +10720,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params const_definition[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			const_defs.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -10361,6 +10730,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(const_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = const_defs.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -10369,13 +10740,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(const_definition el, const_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			const_defs.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(const_definition el, IEnumerable<const_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			const_defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -10384,13 +10762,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(const_definition el, const_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			const_defs.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(const_definition el, IEnumerable<const_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			const_defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -10404,13 +10789,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(const_definition el, const_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			const_defs[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(const_definition el, IEnumerable<const_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			const_defs.RemoveAt(ind);
 			const_defs.InsertRange(ind, newels);
@@ -10426,7 +10818,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public const_definition Last()
 		{
-			return const_defs[const_defs.Count - 1];
+			if (const_defs.Count > 0)
+		        return const_defs[const_defs.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -10436,6 +10830,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, const_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			const_defs.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -11131,12 +11527,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(unit_or_namespace el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			units.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<unit_or_namespace> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			units.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -11145,6 +11545,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params unit_or_namespace[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			units.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -11153,6 +11555,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(unit_or_namespace el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = units.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -11161,13 +11565,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(unit_or_namespace el, unit_or_namespace newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			units.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			units.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -11176,13 +11587,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			units.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			units.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -11196,13 +11614,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(unit_or_namespace el, unit_or_namespace newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			units[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			units.RemoveAt(ind);
 			units.InsertRange(ind, newels);
@@ -11218,7 +11643,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public unit_or_namespace Last()
 		{
-			return units[units.Count - 1];
+			if (units.Count > 0)
+		        return units[units.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -11228,6 +11655,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, unit_or_namespace el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			units.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -11697,12 +12126,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(compiler_directive el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			compiler_directives.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<compiler_directive> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			compiler_directives.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -11711,6 +12144,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params compiler_directive[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			compiler_directives.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -11719,6 +12154,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(compiler_directive el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = compiler_directives.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -11727,13 +12164,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(compiler_directive el, compiler_directive newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			compiler_directives.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			compiler_directives.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -11742,13 +12186,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			compiler_directives.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			compiler_directives.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -11762,13 +12213,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(compiler_directive el, compiler_directive newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			compiler_directives[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			compiler_directives.RemoveAt(ind);
 			compiler_directives.InsertRange(ind, newels);
@@ -11784,7 +12242,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public compiler_directive Last()
 		{
-			return compiler_directives[compiler_directives.Count - 1];
+			if (compiler_directives.Count > 0)
+		        return compiler_directives[compiler_directives.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -11794,6 +12254,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, compiler_directive el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			compiler_directives.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -13415,12 +13877,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			ln.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<ident> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			ln.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -13429,6 +13895,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params ident[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			ln.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -13437,6 +13905,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = ln.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -13445,13 +13915,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			ln.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			ln.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -13460,13 +13937,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			ln.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			ln.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -13480,13 +13964,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(ident el, ident newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			ln[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(ident el, IEnumerable<ident> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			ln.RemoveAt(ind);
 			ln.InsertRange(ind, newels);
@@ -13502,7 +13993,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public ident Last()
 		{
-			return ln[ln.Count - 1];
+			if (ln.Count > 0)
+		        return ln[ln.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -13512,6 +14005,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, ident el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			ln.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -16181,12 +16676,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			members.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<declaration> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			members.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -16195,6 +16694,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params declaration[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			members.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -16203,6 +16704,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = members.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -16211,13 +16714,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			members.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			members.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -16226,13 +16736,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			members.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			members.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -16246,13 +16763,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			members[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			members.RemoveAt(ind);
 			members.InsertRange(ind, newels);
@@ -16268,7 +16792,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public declaration Last()
 		{
-			return members[members.Count - 1];
+			if (members.Count > 0)
+		        return members[members.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -16278,6 +16804,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			members.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -16619,12 +17147,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(class_members el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			class_def_blocks.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<class_members> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			class_def_blocks.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -16633,6 +17165,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params class_members[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			class_def_blocks.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -16641,6 +17175,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(class_members el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = class_def_blocks.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -16649,13 +17185,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(class_members el, class_members newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			class_def_blocks.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(class_members el, IEnumerable<class_members> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			class_def_blocks.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -16664,13 +17207,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(class_members el, class_members newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			class_def_blocks.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(class_members el, IEnumerable<class_members> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			class_def_blocks.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -16684,13 +17234,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(class_members el, class_members newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			class_def_blocks[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(class_members el, IEnumerable<class_members> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			class_def_blocks.RemoveAt(ind);
 			class_def_blocks.InsertRange(ind, newels);
@@ -16706,7 +17263,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public class_members Last()
 		{
-			return class_def_blocks[class_def_blocks.Count - 1];
+			if (class_def_blocks.Count > 0)
+		        return class_def_blocks[class_def_blocks.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -16716,6 +17275,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, class_members el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			class_def_blocks.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -17937,12 +18498,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(record_const_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			rec_consts.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<record_const_definition> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			rec_consts.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -17951,6 +18516,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params record_const_definition[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			rec_consts.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -17959,6 +18526,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(record_const_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = rec_consts.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -17967,13 +18536,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(record_const_definition el, record_const_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			rec_consts.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			rec_consts.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -17982,13 +18558,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(record_const_definition el, record_const_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			rec_consts.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			rec_consts.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -18002,13 +18585,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(record_const_definition el, record_const_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			rec_consts[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(record_const_definition el, IEnumerable<record_const_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			rec_consts.RemoveAt(ind);
 			rec_consts.InsertRange(ind, newels);
@@ -18024,7 +18614,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public record_const_definition Last()
 		{
-			return rec_consts[rec_consts.Count - 1];
+			if (rec_consts.Count > 0)
+		        return rec_consts[rec_consts.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -18034,6 +18626,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, record_const_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			rec_consts.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -19075,12 +19669,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(literal el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			literals.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<literal> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			literals.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -19089,6 +19687,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params literal[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			literals.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -19097,6 +19697,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(literal el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = literals.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -19105,13 +19707,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(literal el, literal newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			literals.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(literal el, IEnumerable<literal> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			literals.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -19120,13 +19729,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(literal el, literal newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			literals.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(literal el, IEnumerable<literal> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			literals.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -19140,13 +19756,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(literal el, literal newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			literals[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(literal el, IEnumerable<literal> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			literals.RemoveAt(ind);
 			literals.InsertRange(ind, newels);
@@ -19162,7 +19785,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public literal Last()
 		{
-			return literals[literals.Count - 1];
+			if (literals.Count > 0)
+		        return literals[literals.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -19172,6 +19797,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, literal el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			literals.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -19773,12 +20400,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(variant el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			vars.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<variant> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			vars.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -19787,6 +20418,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params variant[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			vars.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -19795,6 +20428,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(variant el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = vars.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -19803,13 +20438,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(variant el, variant newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(variant el, IEnumerable<variant> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			vars.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -19818,13 +20460,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(variant el, variant newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(variant el, IEnumerable<variant> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			vars.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -19838,13 +20487,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(variant el, variant newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(variant el, IEnumerable<variant> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
@@ -19860,7 +20516,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public variant Last()
 		{
-			return vars[vars.Count - 1];
+			if (vars.Count > 0)
+		        return vars[vars.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -19870,6 +20528,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, variant el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			vars.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -20241,12 +20901,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(variant_type el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			vars.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<variant_type> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			vars.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -20255,6 +20919,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params variant_type[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			vars.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -20263,6 +20929,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(variant_type el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = vars.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -20271,13 +20939,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(variant_type el, variant_type newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(variant_type el, IEnumerable<variant_type> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			vars.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -20286,13 +20961,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(variant_type el, variant_type newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(variant_type el, IEnumerable<variant_type> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			vars.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -20306,13 +20988,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(variant_type el, variant_type newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(variant_type el, IEnumerable<variant_type> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
@@ -20328,7 +21017,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public variant_type Last()
 		{
-			return vars[vars.Count - 1];
+			if (vars.Count > 0)
+		        return vars[vars.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -20338,6 +21029,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, variant_type el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			vars.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -23518,12 +24211,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(case_variant el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			variants.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<case_variant> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			variants.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -23532,6 +24229,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params case_variant[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			variants.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -23540,6 +24239,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(case_variant el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = variants.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -23548,13 +24249,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(case_variant el, case_variant newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			variants.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(case_variant el, IEnumerable<case_variant> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			variants.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -23563,13 +24271,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(case_variant el, case_variant newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			variants.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(case_variant el, IEnumerable<case_variant> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			variants.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -23583,13 +24298,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(case_variant el, case_variant newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			variants[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(case_variant el, IEnumerable<case_variant> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			variants.RemoveAt(ind);
 			variants.InsertRange(ind, newels);
@@ -23605,7 +24327,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public case_variant Last()
 		{
-			return variants[variants.Count - 1];
+			if (variants.Count > 0)
+		        return variants[variants.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -23615,6 +24339,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, case_variant el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			variants.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -23994,12 +24720,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(var_def_statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			vars.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<var_def_statement> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			vars.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -24008,6 +24738,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params var_def_statement[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			vars.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -24016,6 +24748,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(var_def_statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = vars.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -24024,13 +24758,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(var_def_statement el, var_def_statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			vars.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -24039,13 +24780,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(var_def_statement el, var_def_statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			vars.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -24059,13 +24807,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(var_def_statement el, var_def_statement newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			vars[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(var_def_statement el, IEnumerable<var_def_statement> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			vars.RemoveAt(ind);
 			vars.InsertRange(ind, newels);
@@ -24081,7 +24836,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public var_def_statement Last()
 		{
-			return vars[vars.Count - 1];
+			if (vars.Count > 0)
+		        return vars[vars.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -24091,6 +24848,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, var_def_statement el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			vars.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -24941,12 +25700,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(property_parameter el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			parameters.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<property_parameter> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			parameters.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -24955,6 +25718,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params property_parameter[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			parameters.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -24963,6 +25728,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(property_parameter el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = parameters.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -24971,13 +25738,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(property_parameter el, property_parameter newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			parameters.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(property_parameter el, IEnumerable<property_parameter> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			parameters.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -24986,13 +25760,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(property_parameter el, property_parameter newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			parameters.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(property_parameter el, IEnumerable<property_parameter> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			parameters.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -25006,13 +25787,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(property_parameter el, property_parameter newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			parameters[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(property_parameter el, IEnumerable<property_parameter> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
@@ -25028,7 +25816,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public property_parameter Last()
 		{
-			return parameters[parameters.Count - 1];
+			if (parameters.Count > 0)
+		        return parameters[parameters.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -25038,6 +25828,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, property_parameter el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			parameters.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -26947,12 +27739,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(exception_handler el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			handlers.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<exception_handler> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			handlers.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -26961,6 +27757,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params exception_handler[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			handlers.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -26969,6 +27767,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(exception_handler el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = handlers.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -26977,13 +27777,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(exception_handler el, exception_handler newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			handlers.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(exception_handler el, IEnumerable<exception_handler> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			handlers.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -26992,13 +27799,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(exception_handler el, exception_handler newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			handlers.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(exception_handler el, IEnumerable<exception_handler> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			handlers.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -27012,13 +27826,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(exception_handler el, exception_handler newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			handlers[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(exception_handler el, IEnumerable<exception_handler> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			handlers.RemoveAt(ind);
 			handlers.InsertRange(ind, newels);
@@ -27034,7 +27855,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public exception_handler Last()
 		{
-			return handlers[handlers.Count - 1];
+			if (handlers.Count > 0)
+		        return handlers[handlers.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -27044,6 +27867,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, exception_handler el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			handlers.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -28296,12 +29121,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(unit_or_namespace el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			namespaces.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<unit_or_namespace> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			namespaces.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -28310,6 +29139,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params unit_or_namespace[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			namespaces.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -28318,6 +29149,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(unit_or_namespace el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = namespaces.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -28326,13 +29159,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(unit_or_namespace el, unit_or_namespace newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			namespaces.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			namespaces.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -28341,13 +29181,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(unit_or_namespace el, unit_or_namespace newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			namespaces.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			namespaces.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -28361,13 +29208,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(unit_or_namespace el, unit_or_namespace newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			namespaces[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(unit_or_namespace el, IEnumerable<unit_or_namespace> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			namespaces.RemoveAt(ind);
 			namespaces.InsertRange(ind, newels);
@@ -28383,7 +29237,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public unit_or_namespace Last()
 		{
-			return namespaces[namespaces.Count - 1];
+			if (namespaces.Count > 0)
+		        return namespaces[namespaces.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -28393,6 +29249,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, unit_or_namespace el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			namespaces.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -29263,12 +30121,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(named_type_reference el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			types.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<named_type_reference> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			types.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -29277,6 +30139,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params named_type_reference[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			types.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -29285,6 +30149,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(named_type_reference el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = types.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -29293,13 +30159,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(named_type_reference el, named_type_reference newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			types.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			types.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -29308,13 +30181,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(named_type_reference el, named_type_reference newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			types.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			types.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -29328,13 +30208,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(named_type_reference el, named_type_reference newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			types[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(named_type_reference el, IEnumerable<named_type_reference> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			types.RemoveAt(ind);
 			types.InsertRange(ind, newels);
@@ -29350,7 +30237,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public named_type_reference Last()
 		{
-			return types[types.Count - 1];
+			if (types.Count > 0)
+		        return types[types.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -29360,6 +30249,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, named_type_reference el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			types.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -29574,12 +30465,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			params_list.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<type_definition> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			params_list.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -29588,6 +30483,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params type_definition[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			params_list.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -29596,6 +30493,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = params_list.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -29604,13 +30503,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			params_list.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			params_list.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -29619,13 +30525,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			params_list.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			params_list.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -29639,13 +30552,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			params_list[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			params_list.RemoveAt(ind);
 			params_list.InsertRange(ind, newels);
@@ -29661,7 +30581,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public type_definition Last()
 		{
-			return params_list[params_list.Count - 1];
+			if (params_list.Count > 0)
+		        return params_list[params_list.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -29671,6 +30593,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			params_list.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -30666,12 +31590,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<type_definition> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -30680,6 +31608,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params type_definition[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -30688,6 +31618,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -30696,13 +31628,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -30711,13 +31650,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -30731,13 +31677,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(type_definition el, type_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(type_definition el, IEnumerable<type_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
@@ -30753,7 +31706,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public type_definition Last()
 		{
-			return defs[defs.Count - 1];
+			if (defs.Count > 0)
+		        return defs[defs.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -30763,6 +31718,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, type_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -31134,12 +32091,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(where_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<where_definition> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -31148,6 +32109,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params where_definition[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -31156,6 +32119,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(where_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -31164,13 +32129,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(where_definition el, where_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(where_definition el, IEnumerable<where_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -31179,13 +32151,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(where_definition el, where_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(where_definition el, IEnumerable<where_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -31199,13 +32178,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(where_definition el, where_definition newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(where_definition el, IEnumerable<where_definition> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
@@ -31221,7 +32207,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public where_definition Last()
 		{
-			return defs[defs.Count - 1];
+			if (defs.Count > 0)
+		        return defs[defs.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -31231,6 +32219,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, where_definition el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -33597,12 +34587,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(enumerator el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			enumerators.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<enumerator> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			enumerators.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -33611,6 +34605,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params enumerator[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			enumerators.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -33619,6 +34615,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(enumerator el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = enumerators.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -33627,13 +34625,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(enumerator el, enumerator newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			enumerators.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(enumerator el, IEnumerable<enumerator> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			enumerators.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -33642,13 +34647,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(enumerator el, enumerator newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			enumerators.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(enumerator el, IEnumerable<enumerator> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			enumerators.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -33662,13 +34674,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(enumerator el, enumerator newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			enumerators[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(enumerator el, IEnumerable<enumerator> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			enumerators.RemoveAt(ind);
 			enumerators.InsertRange(ind, newels);
@@ -33684,7 +34703,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public enumerator Last()
 		{
-			return enumerators[enumerators.Count - 1];
+			if (enumerators.Count > 0)
+		        return enumerators[enumerators.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -33694,6 +34715,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, enumerator el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			enumerators.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -34340,12 +35363,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(type_definition_attr el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			attributes.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<type_definition_attr> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			attributes.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -34354,6 +35381,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params type_definition_attr[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			attributes.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -34362,6 +35391,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(type_definition_attr el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = attributes.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -34370,13 +35401,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(type_definition_attr el, type_definition_attr newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -34385,13 +35423,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(type_definition_attr el, type_definition_attr newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -34405,13 +35450,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(type_definition_attr el, type_definition_attr newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(type_definition_attr el, IEnumerable<type_definition_attr> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
@@ -34427,7 +35479,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public type_definition_attr Last()
 		{
-			return attributes[attributes.Count - 1];
+			if (attributes.Count > 0)
+		        return attributes[attributes.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -34437,6 +35491,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, type_definition_attr el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			attributes.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -35016,12 +36072,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(compiler_directive el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			directives.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<compiler_directive> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			directives.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -35030,6 +36090,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params compiler_directive[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			directives.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -35038,6 +36100,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(compiler_directive el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = directives.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -35046,13 +36110,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(compiler_directive el, compiler_directive newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			directives.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			directives.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -35061,13 +36132,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(compiler_directive el, compiler_directive newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			directives.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			directives.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -35081,13 +36159,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(compiler_directive el, compiler_directive newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			directives[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(compiler_directive el, IEnumerable<compiler_directive> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			directives.RemoveAt(ind);
 			directives.InsertRange(ind, newels);
@@ -35103,7 +36188,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public compiler_directive Last()
 		{
-			return directives[directives.Count - 1];
+			if (directives.Count > 0)
+		        return directives[directives.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -35113,6 +36200,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, compiler_directive el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			directives.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -35567,12 +36656,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(documentation_comment_section el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			sections.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<documentation_comment_section> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			sections.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -35581,6 +36674,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params documentation_comment_section[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			sections.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -35589,6 +36684,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(documentation_comment_section el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = sections.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -35597,13 +36694,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(documentation_comment_section el, documentation_comment_section newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			sections.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			sections.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -35612,13 +36716,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(documentation_comment_section el, documentation_comment_section newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			sections.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			sections.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -35632,13 +36743,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(documentation_comment_section el, documentation_comment_section newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			sections[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(documentation_comment_section el, IEnumerable<documentation_comment_section> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			sections.RemoveAt(ind);
 			sections.InsertRange(ind, newels);
@@ -35654,7 +36772,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public documentation_comment_section Last()
 		{
-			return sections[sections.Count - 1];
+			if (sections.Count > 0)
+		        return sections[sections.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -35664,6 +36784,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, documentation_comment_section el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			sections.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -35893,12 +37015,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(documentation_comment_tag_param el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			parameters.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<documentation_comment_tag_param> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			parameters.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -35907,6 +37033,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params documentation_comment_tag_param[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			parameters.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -35915,6 +37043,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(documentation_comment_tag_param el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = parameters.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -35923,13 +37053,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			parameters.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			parameters.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -35938,13 +37075,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			parameters.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			parameters.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -35958,13 +37102,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(documentation_comment_tag_param el, documentation_comment_tag_param newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			parameters[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(documentation_comment_tag_param el, IEnumerable<documentation_comment_tag_param> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			parameters.RemoveAt(ind);
 			parameters.InsertRange(ind, newels);
@@ -35980,7 +37131,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public documentation_comment_tag_param Last()
 		{
-			return parameters[parameters.Count - 1];
+			if (parameters.Count > 0)
+		        return parameters[parameters.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -35990,6 +37143,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, documentation_comment_tag_param el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			parameters.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -36351,12 +37506,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(documentation_comment_tag el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			tags.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<documentation_comment_tag> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			tags.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -36365,6 +37524,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params documentation_comment_tag[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			tags.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -36373,6 +37534,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(documentation_comment_tag el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = tags.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -36381,13 +37544,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(documentation_comment_tag el, documentation_comment_tag newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			tags.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			tags.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -36396,13 +37566,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(documentation_comment_tag el, documentation_comment_tag newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			tags.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			tags.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -36416,13 +37593,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(documentation_comment_tag el, documentation_comment_tag newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			tags[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(documentation_comment_tag el, IEnumerable<documentation_comment_tag> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			tags.RemoveAt(ind);
 			tags.InsertRange(ind, newels);
@@ -36438,7 +37622,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public documentation_comment_tag Last()
 		{
-			return tags[tags.Count - 1];
+			if (tags.Count > 0)
+		        return tags[tags.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -36448,6 +37634,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, documentation_comment_tag el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			tags.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -37873,12 +39061,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(attribute el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			attributes.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<attribute> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			attributes.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -37887,6 +39079,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params attribute[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			attributes.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -37895,6 +39089,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(attribute el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = attributes.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -37903,13 +39099,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(attribute el, attribute newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(attribute el, IEnumerable<attribute> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -37918,13 +39121,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(attribute el, attribute newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(attribute el, IEnumerable<attribute> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -37938,13 +39148,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(attribute el, attribute newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(attribute el, IEnumerable<attribute> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
@@ -37960,7 +39177,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public attribute Last()
 		{
-			return attributes[attributes.Count - 1];
+			if (attributes.Count > 0)
+		        return attributes[attributes.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -37970,6 +39189,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, attribute el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			attributes.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -38163,12 +39384,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(simple_attribute_list el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			attributes.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<simple_attribute_list> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			attributes.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -38177,6 +39402,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params simple_attribute_list[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			attributes.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -38185,6 +39412,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(simple_attribute_list el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = attributes.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -38193,13 +39422,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(simple_attribute_list el, simple_attribute_list newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			attributes.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -38208,13 +39444,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(simple_attribute_list el, simple_attribute_list newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			attributes.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -38228,13 +39471,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(simple_attribute_list el, simple_attribute_list newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			attributes[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(simple_attribute_list el, IEnumerable<simple_attribute_list> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			attributes.RemoveAt(ind);
 			attributes.InsertRange(ind, newels);
@@ -38250,7 +39500,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public simple_attribute_list Last()
 		{
-			return attributes[attributes.Count - 1];
+			if (attributes.Count > 0)
+		        return attributes[attributes.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -38260,6 +39512,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, simple_attribute_list el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			attributes.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -38633,12 +39887,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<declaration> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -38647,6 +39905,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params declaration[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			defs.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -38655,6 +39915,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = defs.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -38663,13 +39925,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -38678,13 +39947,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			defs.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -38698,13 +39974,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(declaration el, declaration newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			defs[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(declaration el, IEnumerable<declaration> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			defs.RemoveAt(ind);
 			defs.InsertRange(ind, newels);
@@ -38720,7 +40003,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public declaration Last()
 		{
-			return defs[defs.Count - 1];
+			if (defs.Count > 0)
+		        return defs[defs.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -38730,6 +40015,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, declaration el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			defs.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -39253,12 +40540,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(syntax_tree_node el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			param.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<syntax_tree_node> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			param.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -39267,6 +40558,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params syntax_tree_node[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			param.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -39275,6 +40568,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(syntax_tree_node el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = param.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -39283,13 +40578,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(syntax_tree_node el, syntax_tree_node newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			param.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			param.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -39298,13 +40600,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			param.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			param.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -39318,13 +40627,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(syntax_tree_node el, syntax_tree_node newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			param[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			param.RemoveAt(ind);
 			param.InsertRange(ind, newels);
@@ -39340,7 +40656,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public syntax_tree_node Last()
 		{
-			return param[param.Count - 1];
+			if (param.Count > 0)
+		        return param[param.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -39350,6 +40668,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, syntax_tree_node el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			param.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -40097,12 +41417,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(name_assign_expr el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			name_expr.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<name_assign_expr> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			name_expr.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -40111,6 +41435,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params name_assign_expr[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			name_expr.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -40119,6 +41445,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(name_assign_expr el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = name_expr.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -40127,13 +41455,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(name_assign_expr el, name_assign_expr newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			name_expr.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			name_expr.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -40142,13 +41477,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(name_assign_expr el, name_assign_expr newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			name_expr.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			name_expr.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -40162,13 +41504,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(name_assign_expr el, name_assign_expr newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			name_expr[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(name_assign_expr el, IEnumerable<name_assign_expr> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			name_expr.RemoveAt(ind);
 			name_expr.InsertRange(ind, newels);
@@ -40184,7 +41533,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public name_assign_expr Last()
 		{
-			return name_expr[name_expr.Count - 1];
+			if (name_expr.Count > 0)
+		        return name_expr[name_expr.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -40194,6 +41545,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, name_assign_expr el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			name_expr.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -42771,12 +44124,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(addressed_value el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			variables.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<addressed_value> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			variables.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -42785,6 +44142,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params addressed_value[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			variables.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -42793,6 +44152,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(addressed_value el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = variables.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -42801,13 +44162,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(addressed_value el, addressed_value newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			variables.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(addressed_value el, IEnumerable<addressed_value> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			variables.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -42816,13 +44184,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(addressed_value el, addressed_value newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			variables.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(addressed_value el, IEnumerable<addressed_value> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			variables.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -42836,13 +44211,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(addressed_value el, addressed_value newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			variables[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(addressed_value el, IEnumerable<addressed_value> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			variables.RemoveAt(ind);
 			variables.InsertRange(ind, newels);
@@ -42858,7 +44240,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public addressed_value Last()
 		{
-			return variables[variables.Count - 1];
+			if (variables.Count > 0)
+		        return variables[variables.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -42868,6 +44252,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, addressed_value el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			variables.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -43237,12 +44623,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(uses_list el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			listunitsections.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<uses_list> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			listunitsections.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -43251,6 +44641,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params uses_list[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			listunitsections.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -43259,6 +44651,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(uses_list el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = listunitsections.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -43267,13 +44661,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(uses_list el, uses_list newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			listunitsections.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(uses_list el, IEnumerable<uses_list> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			listunitsections.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -43282,13 +44683,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(uses_list el, uses_list newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			listunitsections.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(uses_list el, IEnumerable<uses_list> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			listunitsections.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -43302,13 +44710,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(uses_list el, uses_list newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			listunitsections[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(uses_list el, IEnumerable<uses_list> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			listunitsections.RemoveAt(ind);
 			listunitsections.InsertRange(ind, newels);
@@ -43324,7 +44739,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public uses_list Last()
 		{
-			return listunitsections[listunitsections.Count - 1];
+			if (listunitsections.Count > 0)
+		        return listunitsections[listunitsections.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -43334,6 +44751,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, uses_list el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			listunitsections.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
@@ -45135,12 +46554,16 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddFirst(syntax_tree_node el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			lst.Insert(0, el);
 			FillParentsInDirectChilds();
 		}
 		
 		public void AddFirst(IEnumerable<syntax_tree_node> els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			lst.InsertRange(0, els);
 			foreach (var el in els)
 				if (el != null)
@@ -45149,6 +46572,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void AddMany(params syntax_tree_node[] els)
 		{
+			if (els == null)
+				throw new ArgumentNullException(nameof(els));
 			lst.AddRange(els);
 			foreach (var el in els)
 				if (el != null)
@@ -45157,6 +46582,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		private int FindIndexInList(syntax_tree_node el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			var ind = lst.FindIndex(x => x == el);
 			if (ind == -1)
 				throw new Exception(string.Format("У списка {0} не найден элемент {1} среди дочерних\n", this, el));
@@ -45165,13 +46592,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertAfter(syntax_tree_node el, syntax_tree_node newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			lst.Insert(FindIndexInList(el) + 1, newel);
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertAfter(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			lst.InsertRange(FindIndexInList(el) + 1, newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -45180,13 +46614,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void InsertBefore(syntax_tree_node el, syntax_tree_node newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			lst.Insert(FindIndexInList(el), newel);
-			if (newel != null)
-				newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void InsertBefore(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			lst.InsertRange(FindIndexInList(el), newels);
 			foreach (var newel in newels)
 				if (newel != null)
@@ -45200,13 +46641,20 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void ReplaceInList(syntax_tree_node el, syntax_tree_node newel)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newel == null)
+				throw new ArgumentNullException(nameof(newel));
 			lst[FindIndexInList(el)] = newel;
-			if (newel != null)
-			   	newel.Parent = this;
+			newel.Parent = this;
 		}
 		
 		public void ReplaceInList(syntax_tree_node el, IEnumerable<syntax_tree_node> newels)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
+			if (newels == null)
+				throw new ArgumentNullException(nameof(newels));
 			var ind = FindIndexInList(el);
 			lst.RemoveAt(ind);
 			lst.InsertRange(ind, newels);
@@ -45222,7 +46670,9 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public syntax_tree_node Last()
 		{
-			return lst[lst.Count - 1];
+			if (lst.Count > 0)
+		        return lst[lst.Count - 1];
+			throw new InvalidOperationException("Список пуст");
 		}
 		
 		public int Count
@@ -45232,6 +46682,8 @@ namespace PascalABCCompiler.SyntaxTree
 		
 		public void Insert(int pos, syntax_tree_node el)
 		{
+			if (el == null)
+				throw new ArgumentNullException(nameof(el));
 			lst.Insert(pos,el);
 			if (el != null)
 			   	el.Parent = this;
