@@ -446,10 +446,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public statement_list Add(statement elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			subnodes.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -2635,10 +2634,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public named_type_reference Add(ident elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			names.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -2986,10 +2984,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public variable_definitions Add(var_def_statement elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			var_definitions.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -3318,10 +3315,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public ident_list Add(ident elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			idents.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -4045,10 +4041,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public declarations Add(declaration elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			defs.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -4369,10 +4364,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public program_tree Add(compilation_unit elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			compilation_units.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -4977,10 +4971,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public expression_list Add(expression elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			expressions.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -7033,10 +7026,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public indexers_types Add(type_definition elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			indexers.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -8156,10 +8148,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public formal_parameters Add(typed_parameters elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			params_list.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -8480,10 +8471,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public procedure_attributes_list Add(procedure_attribute elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			proc_attributes.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -9828,10 +9818,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public type_declarations Add(type_declaration elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			types_decl.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -10703,10 +10692,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public consts_definitions_list Add(const_definition elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			const_defs.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -11529,10 +11517,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public uses_list Add(unit_or_namespace elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			units.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -12129,10 +12116,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public compilation_unit Add(compiler_directive elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			compiler_directives.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -13881,10 +13867,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public method_name Add(ident elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			ln.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -16681,10 +16666,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public class_members Add(declaration elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			members.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -17153,10 +17137,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public class_body Add(class_members elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			class_def_blocks.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -18505,10 +18488,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public record_const Add(record_const_definition elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			rec_consts.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -19677,10 +19659,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public literal_const_line Add(literal elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			literals.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -20409,10 +20390,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public variant_list Add(variant elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			vars.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -20911,10 +20891,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public variant_types Add(variant_type elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			vars.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -24222,10 +24201,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public case_variants Add(case_variant elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			variants.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -24732,10 +24710,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public var_def_list_for_record Add(var_def_statement elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			vars.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -25713,10 +25690,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public property_parameter_list Add(property_parameter elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			parameters.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -27753,10 +27729,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public exception_handler_list Add(exception_handler elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			handlers.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -29136,10 +29111,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public using_list Add(unit_or_namespace elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			namespaces.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -30137,10 +30111,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public named_type_reference_list Add(named_type_reference elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			types.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -30482,10 +30455,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public template_param_list Add(type_definition elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			params_list.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -31608,10 +31580,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public where_type_specificator_list Add(type_definition elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			defs.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -32110,10 +32081,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public where_definition_list Add(where_definition elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			defs.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -34607,10 +34577,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public enumerator_list Add(enumerator elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			enumerators.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -35384,10 +35353,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public type_definition_attr_list Add(type_definition_attr elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			attributes.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -36094,10 +36062,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public compiler_directive_list Add(compiler_directive elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			directives.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -36679,10 +36646,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public documentation_comment_list Add(documentation_comment_section elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			sections.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -37039,10 +37005,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public documentation_comment_tag Add(documentation_comment_tag_param elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			parameters.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -37531,10 +37496,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public documentation_comment_section Add(documentation_comment_tag elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			tags.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -39087,10 +39051,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public simple_attribute_list Add(attribute elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			attributes.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -39411,10 +39374,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public attribute_list Add(simple_attribute_list elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			attributes.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -39915,10 +39877,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public function_lambda_definition Add(declaration elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			defs.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -40569,10 +40530,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public semantic_check Add(syntax_tree_node elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			param.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -41447,10 +41407,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public name_assign_expr_list Add(name_assign_expr elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			name_expr.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -44155,10 +44114,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public addressed_value_list Add(addressed_value elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			variables.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -44655,10 +44613,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public uses_closure Add(uses_list elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			listunitsections.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;
@@ -46587,10 +46544,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public semantic_check_sugared_statement_node Add(syntax_tree_node elem, SourceContext sc = null)
 		{
-			if (elem == null)
-				throw new ArgumentNullException(nameof(elem));
 			lst.Add(elem);
-		    elem.Parent = this;
+			if (elem != null)
+				elem.Parent = this;
 			if (sc != null)
 				source_context = sc;
 			return this;

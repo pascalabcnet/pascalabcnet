@@ -1,9 +1,8 @@
 public <#NodeName#> Add(<#ListElementType#> elem, SourceContext sc = null)
 {
-	if (elem == null)
-		throw new ArgumentNullException(nameof(elem));
 	<#ListName#>.Add(elem);
-    elem.Parent = this;
+	if (elem != null)
+		elem.Parent = this;
 	if (sc != null)
 		source_context = sc;
 	return this;
