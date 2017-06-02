@@ -186,7 +186,7 @@ namespace CodeCompletionTools
 					return s;
 				}
 			}
-			catch(Exception e)
+			catch(Exception)
 			{
 				
 			}

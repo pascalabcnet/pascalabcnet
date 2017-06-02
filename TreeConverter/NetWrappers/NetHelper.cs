@@ -149,7 +149,6 @@ namespace PascalABCCompiler.NetHelper
             {
                 //Type t = Type.GetType("System."+name,false,true);
                 Type t = null;
-                int i = 0;
                 t = NetHelper.FindType(name, _unar);
                 if (t != null)
                 {
