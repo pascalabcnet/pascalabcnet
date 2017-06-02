@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\SyntaxTreeConverters.dll
+D:\PABC\pascalabcnet\bin\SyntaxTreeConverters.pdb
+D:\PABC\pascalabcnet\SyntaxTreeConverters\obj\Release\SyntaxTreeConverters.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\SyntaxTreeConverters\obj\Release\SyntaxTreeConverters.dll
+D:\PABC\pascalabcnet\SyntaxTreeConverters\obj\Release\SyntaxTreeConverters.pdb

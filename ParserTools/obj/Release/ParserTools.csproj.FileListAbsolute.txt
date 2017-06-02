@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\ParserTools.dll
+D:\PABC\pascalabcnet\bin\ParserTools.pdb
+D:\PABC\pascalabcnet\ParserTools\obj\Release\ParserTools.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\ParserTools\obj\Release\ParserTools.dll
+D:\PABC\pascalabcnet\ParserTools\obj\Release\ParserTools.pdb

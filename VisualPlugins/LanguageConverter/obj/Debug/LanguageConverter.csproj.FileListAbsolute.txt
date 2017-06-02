@@ -1,0 +1,8 @@
+D:\PABC\pascalabcnet\bin\LanguageConverter.dll
+D:\PABC\pascalabcnet\bin\LanguageConverter.pdb
+D:\PABC\pascalabcnet\VisualPlugins\LanguageConverter\obj\Debug\Converter.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\LanguageConverter\obj\Debug\Converter.TextFormatterForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\LanguageConverter\obj\Debug\LanguageConverter.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\LanguageConverter\obj\Debug\LanguageConverter.dll
+D:\PABC\pascalabcnet\VisualPlugins\LanguageConverter\obj\Debug\LanguageConverter.pdb
+D:\PABC\pascalabcnet\VisualPlugins\LanguageConverter\obj\Debug\LanguageConverter.csprojResolveAssemblyReference.cache

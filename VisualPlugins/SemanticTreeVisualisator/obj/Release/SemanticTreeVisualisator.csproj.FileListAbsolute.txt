@@ -1,0 +1,7 @@
+D:\PABC\pascalabcnet\bin\SemanticTreeVisualisator.dll
+D:\PABC\pascalabcnet\bin\SemanticTreeVisualisator.pdb
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Release\VisualPascalABCPlugins.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Release\VisualPascalABCPlugins.SemanticTreeVisualisatorForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Release\SemanticTreeVisualisator.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Release\SemanticTreeVisualisator.dll
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Release\SemanticTreeVisualisator.pdb

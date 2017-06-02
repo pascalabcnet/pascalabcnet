@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\SCharpLanguageConverter.dll
+D:\PABC\pascalabcnet\bin\SCharpLanguageConverter.pdb
+D:\PABC\pascalabcnet\VisualPlugins\SCharpLanguageConverter\obj\Debug\SCharpLanguageConverter.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\VisualPlugins\SCharpLanguageConverter\obj\Debug\SCharpLanguageConverter.dll
+D:\PABC\pascalabcnet\VisualPlugins\SCharpLanguageConverter\obj\Debug\SCharpLanguageConverter.pdb

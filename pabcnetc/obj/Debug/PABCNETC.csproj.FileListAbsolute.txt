@@ -1,0 +1,6 @@
+D:\PABC\pascalabcnet\bin\pabcnetc.exe.config
+D:\PABC\pascalabcnet\bin\pabcnetc.exe
+D:\PABC\pascalabcnet\bin\pabcnetc.pdb
+D:\PABC\pascalabcnet\pabcnetc\obj\Debug\pabcnetc.exe
+D:\PABC\pascalabcnet\pabcnetc\obj\Debug\pabcnetc.pdb
+D:\PABC\pascalabcnet\pabcnetc\obj\Debug\PABCNETC.csprojResolveAssemblyReference.cache

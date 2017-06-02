@@ -1,0 +1,7 @@
+D:\PABC\pascalabcnet\bin\SyntaxTreeVisualisator.dll
+D:\PABC\pascalabcnet\bin\SyntaxTreeVisualisator.pdb
+D:\PABC\pascalabcnet\VisualPlugins\SyntaxTreeVisualisator\obj\Release\VisualPascalABCPlugins.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\SyntaxTreeVisualisator\obj\Release\VisualPascalABCPlugins.SyntaxTreeVisualisatorForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\SyntaxTreeVisualisator\obj\Release\SyntaxTreeVisualisator.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\SyntaxTreeVisualisator\obj\Release\SyntaxTreeVisualisator.dll
+D:\PABC\pascalabcnet\VisualPlugins\SyntaxTreeVisualisator\obj\Release\SyntaxTreeVisualisator.pdb

@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\CodeCompletion.dll
+D:\PABC\pascalabcnet\bin\CodeCompletion.pdb
+D:\PABC\pascalabcnet\CodeCompletion\obj\Debug\CodeCompletion.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\CodeCompletion\obj\Debug\CodeCompletion.dll
+D:\PABC\pascalabcnet\CodeCompletion\obj\Debug\CodeCompletion.pdb

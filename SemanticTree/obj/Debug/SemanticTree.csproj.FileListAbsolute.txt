@@ -1,0 +1,4 @@
+D:\PABC\pascalabcnet\bin\SemanticTree.dll
+D:\PABC\pascalabcnet\bin\SemanticTree.pdb
+D:\PABC\pascalabcnet\SemanticTree\obj\Debug\SemanticTree.dll
+D:\PABC\pascalabcnet\SemanticTree\obj\Debug\SemanticTree.pdb

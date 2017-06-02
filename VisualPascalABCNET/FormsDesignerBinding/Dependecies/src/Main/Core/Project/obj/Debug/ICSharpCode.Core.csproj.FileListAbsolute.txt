@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.xml
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.pdb
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\Core\Project\obj\Debug\ICSharpCode.Core.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\Core\Project\obj\Debug\ICSharpCode.Core.pdb

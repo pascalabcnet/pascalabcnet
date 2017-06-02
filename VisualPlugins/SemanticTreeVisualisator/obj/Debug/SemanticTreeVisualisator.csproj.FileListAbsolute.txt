@@ -1,0 +1,8 @@
+D:\PABC\pascalabcnet\bin\SemanticTreeVisualisator.dll
+D:\PABC\pascalabcnet\bin\SemanticTreeVisualisator.pdb
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Debug\VisualPascalABCPlugins.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Debug\VisualPascalABCPlugins.SemanticTreeVisualisatorForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Debug\SemanticTreeVisualisator.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Debug\SemanticTreeVisualisator.dll
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Debug\SemanticTreeVisualisator.pdb
+D:\PABC\pascalabcnet\VisualPlugins\SemanticTreeVisualisator\obj\Debug\SemanticTreeVisualisator.csprojResolveAssemblyReference.cache

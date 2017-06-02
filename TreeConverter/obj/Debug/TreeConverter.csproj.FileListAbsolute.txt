@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\TreeConverter.dll
+D:\PABC\pascalabcnet\bin\TreeConverter.pdb
+D:\PABC\pascalabcnet\TreeConverter\obj\Debug\TreeConverter.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\TreeConverter\obj\Debug\TreeConverter.dll
+D:\PABC\pascalabcnet\TreeConverter\obj\Debug\TreeConverter.pdb

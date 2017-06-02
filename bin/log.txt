@@ -1,0 +1,199 @@
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2210
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.SymScope.get_Name() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 271
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetSimpleDescriptionForType(ITypeScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 999
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetSimpleDescription(IBaseScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 211
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetDescriptionForElementScope(IElementScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 1362
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetDescription(IBaseScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 177
+   в CodeCompletion.ElementScope.MakeDescription() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1286
+   в CodeCompletion.ElementScope..ctor(SymInfo si, SymScope sc, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1158
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(var_def_statement _var_def_statement) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 487
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.SymScope.get_Name() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 271
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetSimpleDescriptionForType(ITypeScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 999
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetSimpleDescription(IBaseScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 211
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetDescriptionForElementScope(IElementScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 1362
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetDescription(IBaseScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 177
+   в CodeCompletion.ElementScope.MakeDescription() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1286
+   в CodeCompletion.ElementScope..ctor(SymInfo si, SymScope sc, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1158
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(var_def_statement _var_def_statement) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 487
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.SymScope.get_Name() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 271
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetSimpleDescriptionForType(ITypeScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 999
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetSimpleDescription(IBaseScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 211
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetDescriptionForElementScope(IElementScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 1362
+   в PascalABCCompiler.Parsers.DefaultLanguageInformation.GetDescription(IBaseScope scope) в D:\PABC\pascalabcnet\ParserTools\ParserTools\DefaultLanguageInformation.cs:строка 177
+   в CodeCompletion.ElementScope.MakeDescription() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1286
+   в CodeCompletion.ElementScope..ctor(SymInfo si, SymScope sc, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1158
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(var_def_statement _var_def_statement) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 487
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2210
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pas'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в PascalABCCompiler.Parsers.Controller.GetCompilationUnit(String FileName, String Text, List`1 Errors, List`1 Warnings, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 140
+   в CodeCompletion.CodeCompletionController.ParsersControllerGetCompilationUnit(String FileName, String Text, List`1 ErrorsList, List`1 Warnings) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 77
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 103
+Не могу выбрать подходящий парсер для файла 'test_dqn1.pasdt_'
+   в PascalABCCompiler.Parsers.Controller.Compile(String FileName, String Text, List`1 Errors, List`1 Warnings, ParseMode ParseMode, List`1 DefinesList) в D:\PABC\pascalabcnet\ParserTools\ParsersController.cs:строка 123
+   в CodeCompletion.CodeCompletionController.Compile(String FileName, String Text) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 142
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.InterfaceUnitScope.ToString() в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 1069
+   в CodeCompletion.InterfaceUnitScope..ctor(SymInfo si, SymScope topScope) в D:\PABC\pascalabcnet\CodeCompletion\SymTable.cs:строка 980
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2021
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2210
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2210
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2210
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2210
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59
+Ссылка на объект не указывает на экземпляр объекта.
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 66
+   в CodeCompletion.DomConverter.ConvertToDom(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomConverter.cs:строка 79
+   в CodeCompletion.CodeCompletionController.CompileAllIfNeed(String FileName, Boolean parse_only_interface) в D:\PABC\pascalabcnet\CodeCompletion\CodeCompletion.cs:строка 318
+   в CodeCompletion.DomSyntaxTreeVisitor.add_system_unit() в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 1957
+   в CodeCompletion.DomSyntaxTreeVisitor.visit(program_module _program_module) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 2178
+   в PascalABCCompiler.SyntaxTree.program_module.visit(IVisitor visitor) в D:\PABC\pascalabcnet\SyntaxTree\tree\Tree.cs:строка 12429
+   в CodeCompletion.DomSyntaxTreeVisitor.Convert(compilation_unit cu) в D:\PABC\pascalabcnet\CodeCompletion\DomSyntaxTreeVisitor.cs:строка 59

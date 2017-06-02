@@ -1,0 +1,3 @@
+D:\PABC\pascalabcnet\bin\NETGenerator.dll
+D:\PABC\pascalabcnet\NETGenerator\obj\Release\NETGenerator.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\NETGenerator\obj\Release\NETGenerator.dll

@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\VBNETParser.dll
+D:\PABC\pascalabcnet\bin\VBNETParser.pdb
+D:\PABC\pascalabcnet\Parsers\VBNETParser\obj\Debug\VBNETParser.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\Parsers\VBNETParser\obj\Debug\VBNETParser.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\obj\Debug\VBNETParser.pdb

@@ -79,8 +79,8 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point var_double_question
+%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr double_question_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point 
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
@@ -1073,6 +1073,13 @@ type_decl_type
 type_ref
     : simple_type
 		{ $$ = $1; }
+	| simple_type tkQuestion
+		{ 	
+			var l = new List<ident>();
+			l.Add(new ident("System"));
+            l.Add(new ident("Nullable"));
+			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		}
     | string_type
 		{ $$ = $1; }
     | pointer_type
@@ -2688,11 +2695,19 @@ expr
     ;
 
 expr_l1
-    : relop_expr
+    : double_question_expr
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
+	
     ;
+
+double_question_expr
+	: relop_expr
+		{ $$ = $1; }
+	| double_question_expr tkDoubleQuestion relop_expr
+		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
+	;
     
 sizeof_expr
     : tkSizeOf tkRoundOpen simple_or_template_type_reference tkRoundClose
@@ -2932,6 +2947,8 @@ term
 		{ $$ = $1; }
     | term mulop factor                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
+	/*| term tkDoubleQuestion factor
+		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}*/
     | as_is_expr
 		{ $$ = $1; }
     ;
@@ -3018,13 +3035,13 @@ literal_or_number
 var_question_point
 	: variable tkQuestionPoint variable
 	{
-		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value, null, @$);
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value, @$);
 	}
 	| variable tkQuestionPoint var_question_point 
 	{
-		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value, null, @$);
+		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value, @$);
 	}
-	/*| variable tkQuestionPoint variable tkDoubleQuestion variable 
+	/*| variable tkQuestionPoint variable tkDoubleQuestion expr_l1 
 	{
 		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,$5 as addressed_value, @$);
 	}*/
@@ -3041,20 +3058,20 @@ var_reference
 		{ $$ = $1; }
     ;
 	
-var_double_question
-	: variable tkDoubleQuestion variable
+/*var_double_question
+	: expr_l1 tkDoubleQuestion variable
 	{
 		$$ = new double_question_node($1 as addressed_value,$3 as addressed_value,@$);
 	}
-	/*| variable tkDoubleQuestion expr
+	| variable tkDoubleQuestion expr
 	{
 		$$ = new double_question_node($1 as addressed_value,$3 as addressed_value,@$);
 	}
 	| var_question_point tkDoubleQuestion variable
 	{
 		$$ = new double_question_node($1 as addressed_value,$3 as addressed_value,@$);
-	}*/
-	;
+	}
+	;*/
  
 var_address
     : tkAddressOf                                
@@ -3145,9 +3162,6 @@ variable
         {
 			$$ = new dot_question_node($1 as addressed_value, $3 as addressed_value, @$);
         }*/
-		
-	| var_double_question 
-		{ $$ = $1; }
     | variable tkDeref              
         {
 			$$ = new roof_dereference($1 as addressed_value,@$);

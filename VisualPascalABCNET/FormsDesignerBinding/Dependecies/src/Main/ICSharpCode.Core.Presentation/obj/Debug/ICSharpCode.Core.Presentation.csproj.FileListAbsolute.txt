@@ -1,0 +1,11 @@
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.Presentation.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.Presentation.pdb
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\GeneratedInternalTypeHelper.g.cs
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\ICSharpCode.Core.Presentation_MarkupCompile.cache
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\ICSharpCode.Core.Presentation_MarkupCompile.lref
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\themes\Aero.NormalColor.baml
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\themes\generic.baml
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\ICSharpCode.Core.Presentation.g.resources
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\ICSharpCode.Core.Presentation.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\ICSharpCode.Core.Presentation.pdb
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.Presentation\obj\Debug\ICSharpCode.Core.Presentation.csprojResolveAssemblyReference.cache

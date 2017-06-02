@@ -1,0 +1,3 @@
+D:\PABC\pascalabcnet\bin\pabcnetc.exe.config
+D:\PABC\pascalabcnet\bin\pabcnetc.exe
+D:\PABC\pascalabcnet\pabcnetc\obj\Release\pabcnetc.exe

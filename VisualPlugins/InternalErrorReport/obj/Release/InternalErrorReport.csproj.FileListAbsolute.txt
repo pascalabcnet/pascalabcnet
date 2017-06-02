@@ -1,0 +1,9 @@
+D:\PABC\pascalabcnet\bin\InternalErrorReport.dll
+D:\PABC\pascalabcnet\bin\InternalErrorReport.pdb
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\InternalErrorReport.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\VisualPascalABCPlugins.CompilerInternalErrorReport.resources
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\VisualPascalABCPlugins.ErrorReport.resources
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\VisualPascalABCPlugins.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\InternalErrorReport.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\InternalErrorReport.dll
+D:\PABC\pascalabcnet\VisualPlugins\InternalErrorReport\obj\Release\InternalErrorReport.pdb

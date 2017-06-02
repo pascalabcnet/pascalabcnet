@@ -1,0 +1,2 @@
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.WinForms.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.WinForms\obj\Release\ICSharpCode.Core.WinForms.dll

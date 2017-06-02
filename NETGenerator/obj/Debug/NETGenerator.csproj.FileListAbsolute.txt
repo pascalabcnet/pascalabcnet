@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\NETGenerator.dll
+D:\PABC\pascalabcnet\bin\NETGenerator.pdb
+D:\PABC\pascalabcnet\NETGenerator\obj\Debug\NETGenerator.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\NETGenerator\obj\Debug\NETGenerator.dll
+D:\PABC\pascalabcnet\NETGenerator\obj\Debug\NETGenerator.pdb

@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.WinForms.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\bin\ICSharpCode.Core.WinForms.pdb
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.WinForms\obj\Debug\ICSharpCode.Core.WinForms.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.WinForms\obj\Debug\ICSharpCode.Core.WinForms.dll
+D:\PABC\pascalabcnet\VisualPascalABCNET\FormsDesignerBinding\Dependecies\src\Main\ICSharpCode.Core.WinForms\obj\Debug\ICSharpCode.Core.WinForms.pdb

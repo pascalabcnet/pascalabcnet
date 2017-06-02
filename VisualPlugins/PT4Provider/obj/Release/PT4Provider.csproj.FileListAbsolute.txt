@@ -1,0 +1,8 @@
+D:\PABC\pascalabcnet\bin\PT4Provider.dll
+D:\PABC\pascalabcnet\bin\PT4Provider.pdb
+D:\PABC\pascalabcnet\VisualPlugins\PT4Provider\obj\Release\PT4Provider.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\VisualPlugins\PT4Provider\obj\Release\PT4Provider.Images.resources
+D:\PABC\pascalabcnet\VisualPlugins\PT4Provider\obj\Release\PT4Provider.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\PT4Provider\obj\Release\PT4Provider.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\PT4Provider\obj\Release\PT4Provider.dll
+D:\PABC\pascalabcnet\VisualPlugins\PT4Provider\obj\Release\PT4Provider.pdb

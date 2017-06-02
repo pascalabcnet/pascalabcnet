@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\OptimizerConversion.dll
+D:\PABC\pascalabcnet\bin\OptimizerConversion.pdb
+D:\PABC\pascalabcnet\Optimizer\obj\Debug\Optimizer.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\Optimizer\obj\Debug\OptimizerConversion.dll
+D:\PABC\pascalabcnet\Optimizer\obj\Debug\OptimizerConversion.pdb

@@ -1,0 +1,3 @@
+D:\PABC\pascalabcnet\bin\Compiler.dll
+D:\PABC\pascalabcnet\Compiler\obj\Release\Compiler.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\Compiler\obj\Release\Compiler.dll

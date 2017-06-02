@@ -1,0 +1,4 @@
+D:\PABC\pascalabcnet\bin\PascalABCParser.dll
+D:\PABC\pascalabcnet\bin\PascalABCParser.pdb
+D:\PABC\pascalabcnet\Parsers\PascalABCParserNewSaushkin\obj\Release\PascalABCParser.dll
+D:\PABC\pascalabcnet\Parsers\PascalABCParserNewSaushkin\obj\Release\PascalABCParser.pdb

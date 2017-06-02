@@ -1,0 +1,4 @@
+D:\PABC\pascalabcnet\bin\SyntaxTree.dll
+D:\PABC\pascalabcnet\bin\SyntaxTree.pdb
+D:\PABC\pascalabcnet\SyntaxTree\obj\Debug\SyntaxTree.dll
+D:\PABC\pascalabcnet\SyntaxTree\obj\Debug\SyntaxTree.pdb

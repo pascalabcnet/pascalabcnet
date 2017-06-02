@@ -1,0 +1,4 @@
+D:\PABC\pascalabcnet\bin\Localization.dll
+D:\PABC\pascalabcnet\bin\Localization.pdb
+D:\PABC\pascalabcnet\Localization\obj\Debug\Localization.dll
+D:\PABC\pascalabcnet\Localization\obj\Debug\Localization.pdb

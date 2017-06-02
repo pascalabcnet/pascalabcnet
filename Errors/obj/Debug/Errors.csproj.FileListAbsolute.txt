@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\Errors.dll
+D:\PABC\pascalabcnet\bin\Errors.pdb
+D:\PABC\pascalabcnet\Errors\obj\Debug\Errors.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\Errors\obj\Debug\Errors.dll
+D:\PABC\pascalabcnet\Errors\obj\Debug\Errors.pdb

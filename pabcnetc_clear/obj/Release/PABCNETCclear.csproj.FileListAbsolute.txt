@@ -1,0 +1,3 @@
+D:\PABC\pascalabcnet\bin\pabcnetcclear.exe.config
+D:\PABC\pascalabcnet\bin\pabcnetcclear.exe
+D:\PABC\pascalabcnet\pabcnetc_clear\obj\Release\pabcnetcclear.exe

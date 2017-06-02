@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\CompilerTools.dll
+D:\PABC\pascalabcnet\bin\CompilerTools.pdb
+D:\PABC\pascalabcnet\CompilerTools\obj\Release\CompilerTools.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\CompilerTools\obj\Release\CompilerTools.dll
+D:\PABC\pascalabcnet\CompilerTools\obj\Release\CompilerTools.pdb

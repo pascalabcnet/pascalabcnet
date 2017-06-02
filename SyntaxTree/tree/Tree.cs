@@ -45159,7 +45159,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public double_question_node(addressed_value _left,addressed_value _right)
+		public double_question_node(expression _left,expression _right)
 		{
 			this._left=_left;
 			this._right=_right;
@@ -45169,20 +45169,20 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public double_question_node(addressed_value _left,addressed_value _right,SourceContext sc)
+		public double_question_node(expression _left,expression _right,SourceContext sc)
 		{
 			this._left=_left;
 			this._right=_right;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		protected addressed_value _left;
-		protected addressed_value _right;
+		protected expression _left;
+		protected expression _right;
 
 		///<summary>
 		///
 		///</summary>
-		public addressed_value left
+		public expression left
 		{
 			get
 			{
@@ -45197,7 +45197,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public addressed_value right
+		public expression right
 		{
 			get
 			{
@@ -45224,12 +45224,12 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			if (left != null)
 			{
-				copy.left = (addressed_value)left.Clone();
+				copy.left = (expression)left.Clone();
 				copy.left.Parent = copy;
 			}
 			if (right != null)
 			{
-				copy.right = (addressed_value)right.Clone();
+				copy.right = (expression)right.Clone();
 				copy.right.Parent = copy;
 			}
 			return copy;
@@ -45306,10 +45306,10 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
-						left = (addressed_value)value;
+						left = (expression)value;
 						break;
 					case 1:
-						right = (addressed_value)value;
+						right = (expression)value;
 						break;
 				}
 			}

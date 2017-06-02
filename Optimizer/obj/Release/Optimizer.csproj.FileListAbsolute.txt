@@ -1,0 +1,4 @@
+D:\PABC\pascalabcnet\bin\OptimizerConversion.dll
+D:\PABC\pascalabcnet\bin\OptimizerConversion.pdb
+D:\PABC\pascalabcnet\Optimizer\obj\Release\OptimizerConversion.dll
+D:\PABC\pascalabcnet\Optimizer\obj\Release\OptimizerConversion.pdb

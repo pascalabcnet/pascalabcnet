@@ -1,0 +1,4 @@
+D:\PABC\pascalabcnet\bin\HelpBuilder.dll
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Release\VisualPascalABCPlugins.HelpBuilderForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Release\HelpBuilder.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Release\HelpBuilder.dll

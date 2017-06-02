@@ -1,0 +1,7 @@
+D:\PABC\pascalabcnet\bin\HelpBuilder.dll
+D:\PABC\pascalabcnet\bin\HelpBuilder.pdb
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Debug\VisualPascalABCPlugins.HelpBuilderForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Debug\HelpBuilder.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Debug\HelpBuilder.dll
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Debug\HelpBuilder.pdb
+D:\PABC\pascalabcnet\VisualPlugins\HelpBuilder\obj\Debug\HelpBuilder.csprojResolveAssemblyReference.cache

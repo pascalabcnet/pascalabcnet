@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\Localization.dll
+D:\PABC\pascalabcnet\bin\Localization.pdb
+D:\PABC\pascalabcnet\Localization\obj\Release\Localization.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\Localization\obj\Release\Localization.dll
+D:\PABC\pascalabcnet\Localization\obj\Release\Localization.pdb

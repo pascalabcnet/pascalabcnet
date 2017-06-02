@@ -1,0 +1,11 @@
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\VBNETParser.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\Errors.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\ICSharpCode.NRefactory.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\Localization.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\ParserTools.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\SyntaxTree.dll
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\Errors.pdb
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\Localization.pdb
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\ParserTools.pdb
+D:\PABC\pascalabcnet\Parsers\VBNETParser\bin\Release\SyntaxTree.pdb
+D:\PABC\pascalabcnet\Parsers\VBNETParser\obj\Release\VBNETParser.dll

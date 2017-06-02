@@ -1,0 +1,7 @@
+D:\PABC\pascalabcnet\bin\CompilerController.dll
+D:\PABC\pascalabcnet\bin\CompilerController.pdb
+D:\PABC\pascalabcnet\VisualPlugins\CompilerController\obj\Release\VisualPascalABCPlugins.CompilerInformation.resources
+D:\PABC\pascalabcnet\VisualPlugins\CompilerController\obj\Release\VisualPascalABCPlugins.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\CompilerController\obj\Release\CompilerController.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\CompilerController\obj\Release\CompilerController.dll
+D:\PABC\pascalabcnet\VisualPlugins\CompilerController\obj\Release\CompilerController.pdb

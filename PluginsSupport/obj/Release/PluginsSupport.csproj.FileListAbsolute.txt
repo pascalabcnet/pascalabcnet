@@ -1,0 +1,5 @@
+D:\PABC\pascalabcnet\bin\PluginsSupport.dll
+D:\PABC\pascalabcnet\bin\PluginsSupport.pdb
+D:\PABC\pascalabcnet\PluginsSupport\obj\Release\PluginsSupport.csprojResolveAssemblyReference.cache
+D:\PABC\pascalabcnet\PluginsSupport\obj\Release\PluginsSupport.dll
+D:\PABC\pascalabcnet\PluginsSupport\obj\Release\PluginsSupport.pdb

@@ -3914,8 +3914,8 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_double_question_node(double_question_node _double_question_node)
 		{
 			read_addressed_value_funcname(_double_question_node);
-			_double_question_node.left = _read_node() as addressed_value;
-			_double_question_node.right = _read_node() as addressed_value;
+			_double_question_node.left = _read_node() as expression;
+			_double_question_node.right = _read_node() as expression;
 		}
 
 	}

@@ -1,0 +1,7 @@
+D:\PABC\pascalabcnet\bin\TestPlugin.dll
+D:\PABC\pascalabcnet\bin\TestPlugin.pdb
+D:\PABC\pascalabcnet\VisualPlugins\TestPlugin\obj\Release\VisualPascalABCPlugins.Properties.Resources.resources
+D:\PABC\pascalabcnet\VisualPlugins\TestPlugin\obj\Release\VisualPascalABCPlugins.TestForm.resources
+D:\PABC\pascalabcnet\VisualPlugins\TestPlugin\obj\Release\TestPlugin.csproj.GenerateResource.Cache
+D:\PABC\pascalabcnet\VisualPlugins\TestPlugin\obj\Release\TestPlugin.dll
+D:\PABC\pascalabcnet\VisualPlugins\TestPlugin\obj\Release\TestPlugin.pdb
