@@ -1708,6 +1708,8 @@ namespace CodeCompletion
                 return this.IsEqual((ts as TypeSynonim).actType);
             if (ts is ProcType)
                 return target.IsParamsEquals((ts as ProcType).target);
+            if (ts is CompiledScope)
+                return ts.IsEqual(this);
             return false;
         }
 
@@ -5088,7 +5090,7 @@ namespace CodeCompletion
                             if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope))
                                 return false;
                         }
-                        return true;
+                        return CompiledScope.get_type_instance(invoke_meth.ReturnType, new List<TypeScope>()).IsConvertable(pt.target.return_type);
                     }
                     else
                         return false;
