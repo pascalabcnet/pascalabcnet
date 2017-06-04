@@ -792,9 +792,13 @@ namespace CodeCompletion
                         {
                             stc.Compare(cu, cu2);
                         }
+                        catch(SyntaxNodesNotEqual ex)
+                        {
+                            log.WriteLine("SyntaxTreeNotEquals " + s + " " + ex.left?.ToString() + " and " + ex.right?.ToString() + Environment.NewLine);
+                        }
                         catch (Exception ex)
                         {
-                            log.WriteLine("SyntaxTreeNotEquals " + s + Environment.NewLine);
+                            log.WriteLine("SyntaxTreeNotEquals " + ex.Message  + " " + s + Environment.NewLine);
                         }
                 }
             }
