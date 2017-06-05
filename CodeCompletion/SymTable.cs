@@ -4654,7 +4654,8 @@ namespace CodeCompletion
             if (ctn.BaseType != null)
                 baseScope = TypeTable.get_compiled_type(ctn.BaseType);
             Type t = ctn.GetElementType();
-            //get_default_property();
+            if (t == null && ctn == typeof(string))
+                t = typeof(char);
             if (t != null)
             {
                 elementType = TypeTable.get_compiled_type(t);

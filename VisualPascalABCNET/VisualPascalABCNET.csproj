@@ -368,6 +368,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Config\AssemblyInfo.cs" />
+    <Compile Include="Projects\NuGetTasks.cs" />
     <Compile Include="Workbench\BuildService.cs" />
     <Compile Include="Workbench\DesignerService.cs">
       <SubType>Form</SubType>
