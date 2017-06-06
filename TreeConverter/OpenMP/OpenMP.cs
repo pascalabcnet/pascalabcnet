@@ -755,7 +755,7 @@ namespace PascalABCCompiler.TreeConverter
             TypeDecl.type_name = new PascalABCCompiler.SyntaxTree.ident(LocksName);
             SyntaxTree.class_definition ClassDef = new PascalABCCompiler.SyntaxTree.class_definition();
             TypeDecl.type_def = ClassDef;
-            SyntaxTree.class_body ClassBody = new PascalABCCompiler.SyntaxTree.class_body();
+            SyntaxTree.class_body_list ClassBody = new PascalABCCompiler.SyntaxTree.class_body_list();
             ClassDef.body = ClassBody;
             SyntaxTree.class_members ClassMember = new PascalABCCompiler.SyntaxTree.class_members();
             ClassBody.class_def_blocks.Add(ClassMember);
@@ -1577,7 +1577,7 @@ namespace PascalABCCompiler.TreeConverter
             TypeDecl.type_name = new PascalABCCompiler.SyntaxTree.ident(ClassName);
             SyntaxTree.class_definition ClassDef = new PascalABCCompiler.SyntaxTree.class_definition();
             TypeDecl.type_def = ClassDef;
-            SyntaxTree.class_body ClassBody = new PascalABCCompiler.SyntaxTree.class_body();
+            SyntaxTree.class_body_list ClassBody = new PascalABCCompiler.SyntaxTree.class_body_list();
             ClassDef.body = ClassBody;
             ClassMember = new PascalABCCompiler.SyntaxTree.class_members();
             ClassBody.class_def_blocks.Add(ClassMember);

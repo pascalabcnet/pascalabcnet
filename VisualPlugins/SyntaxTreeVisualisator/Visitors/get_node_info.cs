@@ -528,7 +528,7 @@ namespace VisualPascalABCPlugins
 		}
 
 
-		public override void visit(class_body _class_body)
+		public override void visit(class_body_list _class_body)
 		{
 			get_count(_class_body.class_def_blocks);
 		}

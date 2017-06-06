@@ -1369,14 +1369,14 @@ proc_type_decl
 object_type
     : class_attributes class_or_interface_keyword optional_base_classes optional_where_section optional_component_list_seq_end
         { 
-			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body, @$);
+			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
 		}
     ;
 
 record_type 
     : tkRecord optional_base_classes optional_where_section member_list_section tkEnd   
         { 
-			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body, @$);
+			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body_list, @$);
 		}
     ;
 
@@ -1535,15 +1535,15 @@ type_ref_or_secific
 member_list_section
     : member_list      
         { 
-			$$ = new class_body($1 as class_members, @$);
+			$$ = new class_body_list($1 as class_members, @$);
         }
     | member_list_section ot_visibility_specifier member_list
         { 
 		    ($3 as class_members).access_mod = $2 as access_modifer_node;
-			($1 as class_body).Add($3 as class_members,@$);
+			($1 as class_body_list).Add($3 as class_members,@$);
 			
-			if (($1 as class_body).class_def_blocks[0].Count == 0)
-                ($1 as class_body).class_def_blocks.RemoveAt(0);
+			if (($1 as class_body_list).class_def_blocks[0].Count == 0)
+                ($1 as class_body_list).class_def_blocks.RemoveAt(0);
 			
 			$$ = $1;
         } 
@@ -2984,7 +2984,7 @@ tuple
 
 			if (($4 as expression_list).Count>7) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
-            ($4 as expression_list).expressions.Insert(0,$2);
+            ($4 as expression_list).Insert(0,$2);
 			$$ = new tuple_node($4 as expression_list,@$);
 		}	
     ; 
@@ -3609,7 +3609,7 @@ func_decl_lambda
 					var idd2 = iddlist[j] as ident;
 					if (idd2==null)
 						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
-					idList.idents.Add(idd2);
+					idList.Add(idd2);
 				}	
 				var parsType = $5;
 				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));

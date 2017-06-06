@@ -92,7 +92,7 @@ namespace GPPGParserScanner
             return ncv;
         }
 
-        public class_definition NewObjectType(class_attribute class_attributes, token_info class_or_interface_keyword, named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body opt_not_component_list_seq_end, LexLocation loc)
+        public class_definition NewObjectType(class_attribute class_attributes, token_info class_or_interface_keyword, named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body_list opt_not_component_list_seq_end, LexLocation loc)
         {
             var nnof = new class_definition(opt_base_classes, opt_not_component_list_seq_end, class_keyword.Class, null, opt_where_section, class_attribute.None, false, loc); 
 			string kw = class_or_interface_keyword.text.ToLower();
@@ -122,7 +122,7 @@ namespace GPPGParserScanner
             return nnof;
         }
 
-        public class_definition NewRecordType(named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body component_list_seq, LexLocation loc)
+        public class_definition NewRecordType(named_type_reference_list opt_base_classes, where_definition_list opt_where_section, class_body_list component_list_seq, LexLocation loc)
         {
             var nnrt = new class_definition(opt_base_classes, component_list_seq, class_keyword.Record, null, opt_where_section, class_attribute.None, false, loc); 
 			if (nnrt.body!=null && nnrt.body.class_def_blocks!=null && 

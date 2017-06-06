@@ -1,10 +1,10 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  JANE-MSI
-// DateTime: 03.06.2017 0:09:25
-// UserName: Jane
-// Input file <ABCPascal.y>
+// Machine:  DESKTOP-8EAQPI9
+// DateTime: 06.06.2017 4:53:48
+// UserName: ?????????
+// Input file <J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y>
 
 // options: no-lines gplex
 
@@ -56,7 +56,7 @@ public abstract class ScanBase : AbstractScanner<PascalABCSavParser.Union,LexLoc
 
 public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, LexLocation>
 {
-  // Verbatim content from ABCPascal.y
+  // Verbatim content from J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 // ��� ���������� ����������� � ����� GPPGParser, �������������� ����� ������, ������������ �������� gppg
     public syntax_tree_node root; // �������� ���� ��������������� ������ 
 
@@ -68,7 +68,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 	public ParserLambdaHelper lambdaHelper = new ParserLambdaHelper();
 	
     public GPPGParser(AbstractScanner<PascalABCSavParser.Union, LexLocation> scanner) : base(scanner) { }
-  // End verbatim content from ABCPascal.y
+  // End verbatim content from J:\PascalABC.NET\!PABC_Git\Parsers\PascalABCParserNewSaushkin\ABCPascal.y
 
 #pragma warning disable 649
   private static Dictionary<int, string> aliasses;
@@ -3448,13 +3448,13 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
                 //                optional_base_classes, optional_where_section, 
                 //                optional_component_list_seq_end
 { 
-			CurrentSemanticValue.td = NewObjectType((class_attribute)ValueStack[ValueStack.Depth-5].ob, ValueStack[ValueStack.Depth-4].ti, ValueStack[ValueStack.Depth-3].stn as named_type_reference_list, ValueStack[ValueStack.Depth-2].stn as where_definition_list, ValueStack[ValueStack.Depth-1].stn as class_body, CurrentLocationSpan);
+			CurrentSemanticValue.td = NewObjectType((class_attribute)ValueStack[ValueStack.Depth-5].ob, ValueStack[ValueStack.Depth-4].ti, ValueStack[ValueStack.Depth-3].stn as named_type_reference_list, ValueStack[ValueStack.Depth-2].stn as where_definition_list, ValueStack[ValueStack.Depth-1].stn as class_body_list, CurrentLocationSpan);
 		}
         break;
       case 272: // record_type -> tkRecord, optional_base_classes, optional_where_section, 
                 //                member_list_section, tkEnd
 { 
-			CurrentSemanticValue.td = NewRecordType(ValueStack[ValueStack.Depth-4].stn as named_type_reference_list, ValueStack[ValueStack.Depth-3].stn as where_definition_list, ValueStack[ValueStack.Depth-2].stn as class_body, CurrentLocationSpan);
+			CurrentSemanticValue.td = NewRecordType(ValueStack[ValueStack.Depth-4].stn as named_type_reference_list, ValueStack[ValueStack.Depth-3].stn as where_definition_list, ValueStack[ValueStack.Depth-2].stn as class_body_list, CurrentLocationSpan);
 		}
         break;
       case 273: // class_attribute -> tkSealed
@@ -3603,17 +3603,17 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 307: // member_list_section -> member_list
 { 
-			CurrentSemanticValue.stn = new class_body(ValueStack[ValueStack.Depth-1].stn as class_members, CurrentLocationSpan);
+			CurrentSemanticValue.stn = new class_body_list(ValueStack[ValueStack.Depth-1].stn as class_members, CurrentLocationSpan);
         }
         break;
       case 308: // member_list_section -> member_list_section, ot_visibility_specifier, 
                 //                        member_list
 { 
 		    (ValueStack[ValueStack.Depth-1].stn as class_members).access_mod = ValueStack[ValueStack.Depth-2].stn as access_modifer_node;
-			(ValueStack[ValueStack.Depth-3].stn as class_body).Add(ValueStack[ValueStack.Depth-1].stn as class_members,CurrentLocationSpan);
+			(ValueStack[ValueStack.Depth-3].stn as class_body_list).Add(ValueStack[ValueStack.Depth-1].stn as class_members,CurrentLocationSpan);
 			
-			if ((ValueStack[ValueStack.Depth-3].stn as class_body).class_def_blocks[0].Count == 0)
-                (ValueStack[ValueStack.Depth-3].stn as class_body).class_def_blocks.RemoveAt(0);
+			if ((ValueStack[ValueStack.Depth-3].stn as class_body_list).class_def_blocks[0].Count == 0)
+                (ValueStack[ValueStack.Depth-3].stn as class_body_list).class_def_blocks.RemoveAt(0);
 			
 			CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-3].stn;
         }
@@ -4979,7 +4979,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 
 			if ((ValueStack[ValueStack.Depth-4].stn as expression_list).Count>7) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",CurrentLocationSpan);
-            (ValueStack[ValueStack.Depth-4].stn as expression_list).expressions.Insert(0,ValueStack[ValueStack.Depth-6].ex);
+            (ValueStack[ValueStack.Depth-4].stn as expression_list).Insert(0,ValueStack[ValueStack.Depth-6].ex);
 			CurrentSemanticValue.ex = new tuple_node(ValueStack[ValueStack.Depth-4].stn as expression_list,CurrentLocationSpan);
 		}
         break;
@@ -5696,7 +5696,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 					var idd2 = iddlist[j] as ident;
 					if (idd2==null)
 						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
-					idList.idents.Add(idd2);
+					idList.Add(idd2);
 				}	
 				var parsType = ValueStack[ValueStack.Depth-4].td;
 				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(LocationStack[LocationStack.Depth-7],LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4],LocationStack[LocationStack.Depth-3]));

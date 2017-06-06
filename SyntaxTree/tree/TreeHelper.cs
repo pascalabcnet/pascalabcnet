@@ -1055,16 +1055,16 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    public partial class class_body
+    public partial class class_body_list
     {
 
     }
 
     public partial class class_definition
     {
-        public class_definition(named_type_reference_list parents, class_body body, SourceContext sc = null) : this(parents, body, class_keyword.Class, null, null, class_attribute.None, false, sc)
+        public class_definition(named_type_reference_list parents, class_body_list body, SourceContext sc = null) : this(parents, body, class_keyword.Class, null, null, class_attribute.None, false, sc)
         { is_auto = false; }
-        public class_definition(class_body body, SourceContext sc = null) : this(null, body, sc)
+        public class_definition(class_body_list body, SourceContext sc = null) : this(null, body, sc)
         { is_auto = false; }
 
     }

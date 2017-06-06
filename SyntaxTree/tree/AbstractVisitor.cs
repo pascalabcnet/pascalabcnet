@@ -398,9 +398,9 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_access_modifer_node);
 		}
 
-		public virtual void visit(class_body _class_body)
+		public virtual void visit(class_body_list _class_body_list)
 		{
-			DefaultVisit(_class_body);
+			DefaultVisit(_class_body_list);
 		}
 
 		public virtual void visit(class_definition _class_definition)

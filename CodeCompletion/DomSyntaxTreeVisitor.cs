@@ -2883,7 +2883,7 @@ namespace CodeCompletion
         }
 		
         private access_modifer cur_access_mod = access_modifer.none;
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             //throw new Exception("The method or operation is not implemented.");
             foreach (class_members mems in _class_body.class_def_blocks)

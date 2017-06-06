@@ -203,9 +203,9 @@ namespace PascalABCCompiler.VBNETParser
 			return false;
 		}
 		
-		private class_body get_class_body(ICSharpCode.NRefactory.Ast.TypeDeclaration td)
+		private class_body_list get_class_body(ICSharpCode.NRefactory.Ast.TypeDeclaration td)
 		{
-			class_body body = new class_body();
+            class_body_list body = new class_body_list();
 			body.source_context = get_source_context(td);
 			foreach (ICSharpCode.NRefactory.Ast.INode node in td.Children)
 			{

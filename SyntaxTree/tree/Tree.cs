@@ -17082,13 +17082,13 @@ namespace PascalABCCompiler.SyntaxTree
 	///
 	///</summary>
 	[Serializable]
-	public partial class class_body : syntax_tree_node
+	public partial class class_body_list : syntax_tree_node
 	{
 
 		///<summary>
 		///Конструктор без параметров.
 		///</summary>
-		public class_body()
+		public class_body_list()
 		{
 
 		}
@@ -17096,7 +17096,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public class_body(List<class_members> _class_def_blocks)
+		public class_body_list(List<class_members> _class_def_blocks)
 		{
 			this._class_def_blocks=_class_def_blocks;
 			FillParentsInDirectChilds();
@@ -17105,13 +17105,13 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public class_body(List<class_members> _class_def_blocks,SourceContext sc)
+		public class_body_list(List<class_members> _class_def_blocks,SourceContext sc)
 		{
 			this._class_def_blocks=_class_def_blocks;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
-		public class_body(class_members elem, SourceContext sc = null)
+		public class_body_list(class_members elem, SourceContext sc = null)
 		{
 			Add(elem, sc);
 		    FillParentsInDirectChilds();
@@ -17135,7 +17135,7 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public class_body Add(class_members elem, SourceContext sc = null)
+		public class_body_list Add(class_members elem, SourceContext sc = null)
 		{
 			class_def_blocks.Add(elem);
 			if (elem != null)
@@ -17286,7 +17286,7 @@ namespace PascalABCCompiler.SyntaxTree
 		/// <summary> Создает копию узла </summary>
 		public override syntax_tree_node Clone()
 		{
-			class_body copy = new class_body();
+			class_body_list copy = new class_body_list();
 			copy.Parent = this.Parent;
 			if (source_context != null)
 				copy.source_context = new SourceContext(source_context);
@@ -17307,9 +17307,9 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 		/// <summary> Получает копию данного узла корректного типа </summary>
-		public new class_body TypedClone()
+		public new class_body_list TypedClone()
 		{
-			return Clone() as class_body;
+			return Clone() as class_body_list;
 		}
 
 		///<summary> Заполняет поля Parent в непосредственных дочерних узлах </summary>
@@ -17419,7 +17419,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public class_definition(named_type_reference_list _class_parents,class_body _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto)
+		public class_definition(named_type_reference_list _class_parents,class_body_list _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto)
 		{
 			this._class_parents=_class_parents;
 			this._body=_body;
@@ -17434,7 +17434,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public class_definition(named_type_reference_list _class_parents,class_body _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto,SourceContext sc)
+		public class_definition(named_type_reference_list _class_parents,class_body_list _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto,SourceContext sc)
 		{
 			this._class_parents=_class_parents;
 			this._body=_body;
@@ -17450,7 +17450,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public class_definition(type_definition_attr_list _attr_list,named_type_reference_list _class_parents,class_body _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto)
+		public class_definition(type_definition_attr_list _attr_list,named_type_reference_list _class_parents,class_body_list _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto)
 		{
 			this._attr_list=_attr_list;
 			this._class_parents=_class_parents;
@@ -17466,7 +17466,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public class_definition(type_definition_attr_list _attr_list,named_type_reference_list _class_parents,class_body _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto,SourceContext sc)
+		public class_definition(type_definition_attr_list _attr_list,named_type_reference_list _class_parents,class_body_list _body,class_keyword _keyword,ident_list _template_args,where_definition_list _where_section,class_attribute _attribute,bool _is_auto,SourceContext sc)
 		{
 			this._attr_list=_attr_list;
 			this._class_parents=_class_parents;
@@ -17480,7 +17480,7 @@ namespace PascalABCCompiler.SyntaxTree
 			FillParentsInDirectChilds();
 		}
 		protected named_type_reference_list _class_parents;
-		protected class_body _body;
+		protected class_body_list _body;
 		protected class_keyword _keyword;
 		protected ident_list _template_args;
 		protected where_definition_list _where_section;
@@ -17505,7 +17505,7 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///
 		///</summary>
-		public class_body body
+		public class_body_list body
 		{
 			get
 			{
@@ -17617,7 +17617,7 @@ namespace PascalABCCompiler.SyntaxTree
 			}
 			if (body != null)
 			{
-				copy.body = (class_body)body.Clone();
+				copy.body = (class_body_list)body.Clone();
 				copy.body.Parent = copy;
 			}
 			copy.keyword = keyword;
@@ -17728,7 +17728,7 @@ namespace PascalABCCompiler.SyntaxTree
 						class_parents = (named_type_reference_list)value;
 						break;
 					case 2:
-						body = (class_body)value;
+						body = (class_body_list)value;
 						break;
 					case 3:
 						template_args = (ident_list)value;

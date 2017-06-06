@@ -113,7 +113,7 @@ namespace PascalABCCompiler
             connect(_class_definition);
             visit_node(_class_definition.body);
         }
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             visit_collection(_class_body.class_def_blocks);
         }

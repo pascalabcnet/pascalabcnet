@@ -177,7 +177,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 77:
 					return new access_modifer_node();
 				case 78:
-					return new class_body();
+					return new class_body_list();
 				case 79:
 					return new class_definition();
 				case 80:
@@ -1710,25 +1710,25 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(class_body _class_body)
+		public void visit(class_body_list _class_body_list)
 		{
-			read_class_body(_class_body);
+			read_class_body_list(_class_body_list);
 		}
 
-		public void read_class_body(class_body _class_body)
+		public void read_class_body_list(class_body_list _class_body_list)
 		{
-			read_syntax_tree_node(_class_body);
+			read_syntax_tree_node(_class_body_list);
 			if (br.ReadByte() == 0)
 			{
-				_class_body.class_def_blocks = null;
+				_class_body_list.class_def_blocks = null;
 			}
 			else
 			{
-				_class_body.class_def_blocks = new List<class_members>();
+				_class_body_list.class_def_blocks = new List<class_members>();
 				Int32 ssyy_count = br.ReadInt32();
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
-					_class_body.class_def_blocks.Add(_read_node() as class_members);
+					_class_body_list.class_def_blocks.Add(_read_node() as class_members);
 				}
 			}
 		}
@@ -1743,7 +1743,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_type_definition(_class_definition);
 			_class_definition.class_parents = _read_node() as named_type_reference_list;
-			_class_definition.body = _read_node() as class_body;
+			_class_definition.body = _read_node() as class_body_list;
 			_class_definition.keyword = (class_keyword)br.ReadByte();
 			_class_definition.template_args = _read_node() as ident_list;
 			_class_definition.where_section = _read_node() as where_definition_list;

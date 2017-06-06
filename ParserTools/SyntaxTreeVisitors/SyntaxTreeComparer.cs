@@ -235,7 +235,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(class_body left, class_body right)
+        public void CompareInternal(class_body_list left, class_body_list right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

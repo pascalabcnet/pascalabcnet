@@ -603,7 +603,7 @@ namespace CodeFormatters
             return ident;
         }
 
-        private bool has_members(class_body body)
+        private bool has_members(class_body_list body)
         {
             return body.class_def_blocks.Count != 0;
         }
@@ -632,7 +632,7 @@ namespace CodeFormatters
                         output_caret_col = sn.source_context.begin_position.column_num;
                     }
                 }
-                if (!(sn is block) && !(sn is declarations) && !(sn is class_body && has_members(sn as class_body)) && 
+                if (!(sn is block) && !(sn is declarations) && !(sn is class_body_list && has_members(sn as class_body_list)) && 
                     !(sn is class_members) && !(sn is procedure_attributes_list) && !(sn is property_accessors) &&
                     !(sn is exception_block) && !(sn is exception_handler_list))
                 {
@@ -654,7 +654,7 @@ namespace CodeFormatters
                         read_from_beg_pos = true;
                 }
                 sn.visit(this);
-                if (!(sn is block) && !(sn is declarations) && !(sn is class_body) && !(sn is class_members))
+                if (!(sn is block) && !(sn is declarations) && !(sn is class_body_list) && !(sn is class_members))
                 {
                     if (sn.source_context != null)
                         WritePossibleCommentAfter(sn);
@@ -1701,7 +1701,7 @@ namespace CodeFormatters
             sb.Append(GetAccessModifier(_access_modifer_node.access_level));
         }
 
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             in_class = true;
             if (_class_body.class_def_blocks.Count == 0)

@@ -1028,7 +1028,7 @@ namespace CodeCompletion
             throw new NotImplementedException();
         }
 
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             throw new NotImplementedException();
         }

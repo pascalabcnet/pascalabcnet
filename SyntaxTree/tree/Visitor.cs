@@ -473,11 +473,11 @@ namespace PascalABCCompiler.SyntaxTree
 		///<returns> Return value is void </returns>
 		void visit(access_modifer_node _access_modifer_node);
 		///<summary>
-		///Method to visit class_body.
+		///Method to visit class_body_list.
 		///</summary>
-		///<param name="_class_body">Node to visit</param>
+		///<param name="_class_body_list">Node to visit</param>
 		///<returns> Return value is void </returns>
-		void visit(class_body _class_body);
+		void visit(class_body_list _class_body_list);
 		///<summary>
 		///Method to visit class_definition.
 		///</summary>

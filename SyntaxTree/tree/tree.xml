@@ -1057,7 +1057,7 @@
         <TagIndices />
       </Tags>
     </SyntaxNode>
-    <SyntaxNode Name="class_body" BaseName="syntax_tree_node">
+    <SyntaxNode Name="class_body_list" BaseName="syntax_tree_node">
       <Fields>
         <ExtendedField Name="class_def_blocks" Type="List&lt;class_members&gt;" CreateVariable="true" DeleteVariable="false" />
       </Fields>
@@ -1074,7 +1074,7 @@
     <SyntaxNode Name="class_definition" BaseName="type_definition">
       <Fields>
         <SyntaxField Name="class_parents" SyntaxType="named_type_reference_list" />
-        <SyntaxField Name="body" SyntaxType="class_body" />
+        <SyntaxField Name="body" SyntaxType="class_body_list" />
         <ExtendedField Name="keyword" Type="class_keyword" CreateVariable="false" DeleteVariable="false" />
         <SyntaxField Name="template_args" SyntaxType="ident_list" />
         <SyntaxField Name="where_section" SyntaxType="where_definition_list" />
@@ -3084,6 +3084,8 @@
       <HelpData Key="class_body.class_body Add(class_members _class_members, SourceContext sc)" Value="" />
       <HelpData Key="class_body.class_body(class_members _class_members, SourceContext sc)" Value="" />
       <HelpData Key="class_body.class_def_blocks" Value="" />
+      <HelpData Key="class_body_list" Value="" />
+      <HelpData Key="class_body_list.class_def_blocks" Value="" />
       <HelpData Key="class_definition" Value="" />
       <HelpData Key="class_definition." Value="" />
       <HelpData Key="class_definition.IsInterface" Value="" />

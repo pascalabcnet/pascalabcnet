@@ -629,11 +629,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(class_body _class_body)
+		public virtual void pre_do_visit(class_body_list _class_body_list)
 		{
 		}
 
-		public virtual void post_do_visit(class_body _class_body)
+		public virtual void post_do_visit(class_body_list _class_body_list)
 		{
 		}
 
@@ -2460,13 +2460,13 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_access_modifer_node);
 		}
 
-		public override void visit(class_body _class_body)
+		public override void visit(class_body_list _class_body_list)
 		{
-			DefaultVisit(_class_body);
-			pre_do_visit(_class_body);
+			DefaultVisit(_class_body_list);
+			pre_do_visit(_class_body_list);
 			for (int i = 0; i < class_def_blocks.Count; i++)
-				visit(class_body.class_def_blocks[i]);
-			post_do_visit(_class_body);
+				visit(class_body_list.class_def_blocks[i]);
+			post_do_visit(_class_body_list);
 		}
 
 		public override void visit(class_definition _class_definition)

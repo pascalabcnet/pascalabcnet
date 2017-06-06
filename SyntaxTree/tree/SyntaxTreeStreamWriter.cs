@@ -2272,33 +2272,33 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(class_body _class_body)
+		public void visit(class_body_list _class_body_list)
 		{
 			bw.Write((Int16)78);
-			write_class_body(_class_body);
+			write_class_body_list(_class_body_list);
 		}
 
-		public void write_class_body(class_body _class_body)
+		public void write_class_body_list(class_body_list _class_body_list)
 		{
-			write_syntax_tree_node(_class_body);
-			if (_class_body.class_def_blocks == null)
+			write_syntax_tree_node(_class_body_list);
+			if (_class_body_list.class_def_blocks == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_class_body.class_def_blocks.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _class_body.class_def_blocks.Count; ssyy_i++)
+				bw.Write(_class_body_list.class_def_blocks.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _class_body_list.class_def_blocks.Count; ssyy_i++)
 				{
-					if (_class_body.class_def_blocks[ssyy_i] == null)
+					if (_class_body_list.class_def_blocks[ssyy_i] == null)
 					{
 						bw.Write((byte)0);
 					}
 					else
 					{
 						bw.Write((byte)1);
-						_class_body.class_def_blocks[ssyy_i].visit(this);
+						_class_body_list.class_def_blocks[ssyy_i].visit(this);
 					}
 				}
 			}

@@ -3747,7 +3747,7 @@ namespace PascalABCCompiler.TreeConverter
         	}
         }
         
-        private void visit_class_member_realizations(SyntaxTree.class_body _class_body)
+        private void visit_class_member_realizations(SyntaxTree.class_body_list _class_body)
         {
         	foreach (SyntaxTree.class_members clmem in _class_body.class_def_blocks)
             {
@@ -3786,7 +3786,7 @@ namespace PascalABCCompiler.TreeConverter
         	context.clear_member_bindings();
         }
         
-        public override void visit(SyntaxTree.class_body _class_body)
+        public override void visit(SyntaxTree.class_body_list _class_body)
         {
             foreach (SyntaxTree.class_members clmem in _class_body.class_def_blocks)
             {

@@ -791,7 +791,7 @@ namespace CodeCompletion
             //throw new NotImplementedException();
         }
 
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             if (_class_body.class_def_blocks != null)
                 foreach (class_members cm in _class_body.class_def_blocks)

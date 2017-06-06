@@ -80,74 +80,74 @@ namespace SyntaxVisitors.SugarVisitors
             {
                 var vv = v as dot_question_node;
                 var res = new dot_question_node(Into(x, vv.left), vv.right, x.source_context);
-                res.left.Parent = res;
-                res.right.Parent = res;
+                //res.left.Parent = res;
+                //res.right.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(dot_node))
             {
                 var vv = v as dot_node;
                 var res = new dot_node(Into(x, vv.left), vv.right, x.source_context);
-                res.left.Parent = res;
-                res.right.Parent = res;
+                //res.left.Parent = res;
+                //res.right.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(indexer))
             {
                 var vv = v as indexer;
                 var res = new indexer(Into(x, vv.dereferencing_value), vv.indexes, x.source_context);
-                res.dereferencing_value.Parent = res;
-                res.indexes.Parent = res;
+                //res.dereferencing_value.Parent = res;
+                //res.indexes.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(slice_expr))
             {
                 var vv = v as slice_expr;
                 var res = new slice_expr(Into(x, vv.dereferencing_value), vv.from, vv.to, vv.step, x.source_context);
-                res.dereferencing_value.Parent = res;
-                res.from.Parent = res;
-                res.to.Parent = res;
-                res.step.Parent = res;
+                //res.dereferencing_value.Parent = res;
+                //res.from.Parent = res;
+                //res.to.Parent = res;
+                //res.step.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(slice_expr_question))
             {
                 var vv = v as slice_expr_question;
                 var res = new slice_expr_question(Into(x, vv.dereferencing_value), vv.from, vv.to, vv.step, x.source_context);
-                res.dereferencing_value.Parent = res;
-                res.from.Parent = res;
-                res.to.Parent = res;
-                res.step.Parent = res;
+                //res.dereferencing_value.Parent = res;
+                //res.from.Parent = res;
+                //res.to.Parent = res;
+                //res.step.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(method_call))
             {
                 var vv = v as method_call;
                 var res = new method_call(Into(x, vv.dereferencing_value), vv.parameters, x.source_context);
-                res.dereferencing_value.Parent = res;
-                res.parameters.Parent = res;
+                //res.dereferencing_value.Parent = res;
+                //res.parameters.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(roof_dereference))
             {
                 var vv = v as roof_dereference;
                 var res = new roof_dereference(Into(x, vv.dereferencing_value), x.source_context);
-                res.dereferencing_value.Parent = res;
+                //res.dereferencing_value.Parent = res;
                 return res;
             }
             else if (v.GetType() == typeof(ident_with_templateparams))
             {
                 var vv = v as ident_with_templateparams;
                 var res = new ident_with_templateparams(Into(x, vv.name), vv.template_params, x.source_context);
-                res.name.Parent = res;
-                res.template_params.Parent = res;
+                //res.name.Parent = res;
+                //res.template_params.Parent = res;
                 return res;
             }
             else
             {
                 var res = new dot_node(x, v, x.source_context);
-                res.left.Parent = res;
-                res.right.Parent = res;
+                //res.left.Parent = res;
+                //res.right.Parent = res;
                 return res;
             }
         }
