@@ -2651,6 +2651,19 @@ namespace CodeCompletion
         	for (int i=0; i<good_procs.Count; i++)
         	if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
         		return good_procs[i].GetInstance(arg_types2);
+            if (good_procs.Count == 0)
+            {
+                for (int i = 0; i < meths.Length; i++)
+                {
+                    if (meths[i] is ProcScope)
+                    {
+                        if (obj != null && !(meths[i] as ProcScope).IsStatic)
+                        {
+                            good_procs.Add(meths[i] as ProcScope);
+                        }
+                    }
+                }
+            }
         	if (good_procs.Count > 0)
             {
                 if (obj != null)

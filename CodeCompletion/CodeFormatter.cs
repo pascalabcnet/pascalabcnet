@@ -1177,14 +1177,15 @@ namespace CodeFormatters
             {
                 visit_node(_procedure_header.parameters);
             }
-            if (_procedure_header.where_defs != null)
-                visit_node(_procedure_header.where_defs);
+            
             if (_procedure_header.proc_attributes != null && has_attributes(_procedure_header.proc_attributes))
             {
                 if (is_forward(_procedure_header))
                     _procedure_header.source_context = new SourceContext(_procedure_header.source_context.begin_position.line_num, _procedure_header.source_context.begin_position.column_num, _procedure_header.proc_attributes.source_context.end_position.line_num, _procedure_header.proc_attributes.source_context.end_position.column_num);
                 visit_node(_procedure_header.proc_attributes);
             }
+            if (_procedure_header.where_defs != null)
+                visit_node(_procedure_header.where_defs);
             keyword_offset = 0;
             read_from_beg_pos = false;
             multiline_stack_pop(_procedure_header);
@@ -1215,15 +1216,16 @@ namespace CodeFormatters
             //sb.Append(": ");
             add_space_after = true;
             visit_node(_function_header.return_type);
-            if (_function_header.where_defs != null)
-            {
-                visit_node(_function_header.where_defs);
-            }
+            
             if (_function_header.proc_attributes != null && has_attributes(_function_header.proc_attributes))
             {
                 if (is_forward(_function_header))
                     _function_header.source_context = new SourceContext(_function_header.source_context.begin_position.line_num, _function_header.source_context.begin_position.column_num, _function_header.proc_attributes.source_context.end_position.line_num, _function_header.proc_attributes.source_context.end_position.column_num);
                 visit_node(_function_header.proc_attributes);
+            }
+            if (_function_header.where_defs != null)
+            {
+                visit_node(_function_header.where_defs);
             }
             keyword_offset = 0;
             read_from_beg_pos = false;
@@ -1246,6 +1248,11 @@ namespace CodeFormatters
                     add_newline_after = true;
                 else
                     sb.AppendLine();
+            }
+            if (_procedure_definition.proc_body is block && (_procedure_definition.proc_body as block).program_code.left_logical_bracket == null)
+            {
+                add_space_before = true;
+                add_space_after = true;
             }
             visit_node(_procedure_definition.proc_body);
             in_procedure = tmp_in_proc;

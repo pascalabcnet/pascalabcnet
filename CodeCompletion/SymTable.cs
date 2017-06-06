@@ -1708,6 +1708,8 @@ namespace CodeCompletion
                 return this.IsEqual((ts as TypeSynonim).actType);
             if (ts is ProcType)
                 return target.IsParamsEquals((ts as ProcType).target);
+            if (ts is CompiledScope)
+                return ts.IsEqual(this);
             return false;
         }
 
@@ -4652,7 +4654,8 @@ namespace CodeCompletion
             if (ctn.BaseType != null)
                 baseScope = TypeTable.get_compiled_type(ctn.BaseType);
             Type t = ctn.GetElementType();
-            //get_default_property();
+            if (t == null && ctn == typeof(string))
+                t = typeof(char);
             if (t != null)
             {
                 elementType = TypeTable.get_compiled_type(t);
@@ -5088,7 +5091,7 @@ namespace CodeCompletion
                             if (!(pt.target.parameters[i].sc is TypeScope) || !param_cs.IsConvertable(pt.target.parameters[i].sc as TypeScope))
                                 return false;
                         }
-                        return true;
+                        return CompiledScope.get_type_instance(invoke_meth.ReturnType, new List<TypeScope>()).IsConvertable(pt.target.return_type);
                     }
                     else
                         return false;

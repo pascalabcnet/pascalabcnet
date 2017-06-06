@@ -70,6 +70,7 @@ namespace VisualPascalABC
 			assembly_files.Clear();
 			assemblyType = AssemblyType.GAC;
 			lvGac.Items.Clear();
+            tbLog.Text = "";
 			//lvCom.Items.Clear();
 		}
 		
@@ -153,5 +154,42 @@ namespace VisualPascalABC
 			}
 		}
 
-	}
+        private void nugetInstalled(bool result, string[] dlls, string[] xmls)
+        {
+            assemblyType = AssemblyType.File;
+            if (result)
+            {
+                foreach (string dll in dlls)
+                    assembly_files.Add(dll);
+                this.DialogResult = DialogResult.OK;
+            }
+            else
+                this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void nugetOutput(string output)
+        {
+            tbLog.Text += output;
+        }
+
+        private void btnInstallPackage_Click(object sender, EventArgs e)
+        {
+            NuGetTasks.InstallPackage(tbPackageName.Text, 
+                                      ProjectFactory.Instance.CurrentProject.ProjectDirectory, 
+                                      new NugetPackageInstallHandler(nugetInstalled),
+                                      new NugetPackageOutputHandler(nugetOutput));
+            
+        }
+
+        private void btnSearchPackages_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://www.nuget.org/packages");
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 }
