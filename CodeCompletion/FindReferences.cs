@@ -1228,7 +1228,10 @@ namespace CodeCompletion
 
         public override void visit(loop_stmt _loop_stmt)
         {
-            throw new NotImplementedException();
+            if (_loop_stmt.count != null)
+                _loop_stmt.count.visit(this);
+            if (_loop_stmt.stmt != null)
+                _loop_stmt.stmt.visit(this);
         }
 
         public override void visit(foreach_stmt _foreach_stmt)

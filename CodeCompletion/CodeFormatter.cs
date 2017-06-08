@@ -647,7 +647,7 @@ namespace CodeFormatters
                         || sn is constructor || sn is destructor || sn is type_declarations || sn is consts_definitions_list
                         || sn is label_definitions || sn is class_definition || sn is uses_list || sn is unit_name || sn is program_name ||
                         sn is new_expr || sn is raise_stmt || sn is interface_node || sn is implementation_node
-                        || sn is lock_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
+                        || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
                         || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure))
@@ -2303,8 +2303,8 @@ namespace CodeFormatters
 
         public override void visit(loop_stmt loop)
         {
-            sb.Append("loop ");
-            SetKeywordOffset("loop ");
+            sb.Append("loop");
+            SetKeywordOffset("loop");
 
             multiline_stack_push(loop.count);
             visit_node(loop.count);

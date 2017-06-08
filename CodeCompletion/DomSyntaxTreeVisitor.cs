@@ -3982,7 +3982,14 @@ namespace CodeCompletion
 
         public override void visit(loop_stmt _loop_stmt)
         {
-            throw new Exception("The method or operation is not implemented.");
+            SymScope tmp = cur_scope;
+            SymScope stmt_scope = new BlockScope(cur_scope);
+            cur_scope.AddName("$block_scope", stmt_scope);
+            stmt_scope.loc = get_location(_loop_stmt);
+            cur_scope = stmt_scope;
+            if (_loop_stmt.stmt != null)
+                _loop_stmt.stmt.visit(this);
+            cur_scope = tmp;
         }
 
         public override void visit(foreach_stmt _foreach_stmt)
