@@ -19401,6 +19401,11 @@ namespace PascalABCCompiler.TreeConverter
                 var expr = st.lst[1] as SyntaxTree.expression;
                 semantic_check_assign_var_tuple(idents, expr);
             }
+            else if (st.typ as System.Type == typeof(SyntaxTree.loop_stmt))
+            {
+                var expr = st.lst[0] as SyntaxTree.expression;
+                semantic_check_loop_stmt(expr);
+            }
             else
             {
                 AddError(get_location(st), "MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}", (st.typ as System.Type)?.Name??"Unknown");

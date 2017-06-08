@@ -82,6 +82,7 @@ namespace GPPGParserScanner
             keywords.Add(Convert("finalization"), (int)Tokens.tkFinalization);
             keywords.Add(Convert("finally"), (int)Tokens.tkFinally);
             keywords.Add(Convert("for"), (int)Tokens.tkFor);
+            keywords.Add(Convert("loop"), (int)Tokens.tkLoop);
             keywords.Add(Convert("foreach"), (int)Tokens.tkForeach);
             keywords.Add(Convert("function"), (int)Tokens.tkFunction);
             keywords.Add(Convert("goto"), (int)Tokens.tkGoto);

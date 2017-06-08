@@ -111,5 +111,13 @@ namespace PascalABCCompiler.TreeConverter
             if (!av.type.is_class)
                 AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
         }
+
+        public void semantic_check_loop_stmt(SyntaxTree.expression ex)
+        {
+            var sem_ex = convert_strong(ex);
+            var b = convertion_data_and_alghoritms.can_convert_type(sem_ex, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
+        }
     }
 }

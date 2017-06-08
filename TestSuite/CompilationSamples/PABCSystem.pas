@@ -1980,7 +1980,7 @@ procedure __FinalizeModule__;
 //                   DQNToNullable for dot_question_node
 // -----------------------------------------------------
 
-function DQNToNullable(v:Int32):Nullable<System.Int32>;
+function DQNToNullable(v: integer): Nullable<integer>;
 
 implementation
 
@@ -5654,8 +5654,6 @@ begin
 end;
 
 function SeekEof(f: Text): boolean;
-var
-  i: integer;
 begin
   if f.sw <> nil then
     raise new IOException(GetTranslation(SEEKEOF_FOR_TEXT_WRITEOPENED));
@@ -5664,7 +5662,7 @@ begin
   repeat
     if f.sr.EndOfStream then
       break;
-    i := f.sr.Peek;
+    var i := f.sr.Peek;
     if not char.IsWhiteSpace(char(i)) then
       break;
     f.sr.Read;
@@ -10326,10 +10324,8 @@ begin
     var src_ind := 0;
     var dest_ind := 0;
     internal_copy(source, dest, source_sizes, dest_sizes, 0, src_ind, dest_ind, 0);
-    Result := dest;
-  end
-  else
-    Result := dest;
+  end;
+  Result := dest;
 end;
 
 {function TypedSetComparer.Equals(x: System.Object; y: System.Object): boolean;
@@ -10557,9 +10553,9 @@ end;
 //   DQNToNullable for dot_question_node: implementation
 // -----------------------------------------------------
 
-function DQNToNullable (v:Int32):Nullable<System.Int32>;
+function DQNToNullable (v: integer): System.Nullable<integer>;
 begin
-  Result:=new Nullable<System.Int32>(v);
+  Result := new System.Nullable<integer>(v);
 end;
 
 initialization

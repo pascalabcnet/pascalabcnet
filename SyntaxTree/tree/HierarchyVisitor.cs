@@ -2996,6 +2996,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_loop_stmt);
 			pre_do_visit(_loop_stmt);
+			visit(loop_stmt.count);
 			visit(loop_stmt.stmt);
 			post_do_visit(_loop_stmt);
 		}

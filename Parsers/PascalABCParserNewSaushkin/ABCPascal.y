@@ -35,7 +35,8 @@
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
-%token <ti> tkCycle tkSequence tkYield
+%token <ti> tkLoop 
+%token <ti> tkSequence tkYield
 %token <id> tkNew
 %token <id> tkOn 
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
@@ -84,7 +85,7 @@
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
-%type <stn> for_stmt yield_stmt yield_sequence_stmt
+%type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
 %type <td> file_type sequence_type 
 %type <stn> var_address  
@@ -2281,8 +2282,17 @@ unlabelled_stmt
 		{ $$ = $1; }
 	| yield_sequence_stmt	
 		{ $$ = $1; }
+	| loop_stmt	
+		{ $$ = $1; }
     ;
     
+loop_stmt
+	: tkLoop expr_l1 tkDo unlabelled_stmt 
+		{
+			$$ = new loop_stmt($2,$4 as statement,@$);
+		}
+	;
+	
 yield_stmt
 	: tkYield expr_l1
 		{

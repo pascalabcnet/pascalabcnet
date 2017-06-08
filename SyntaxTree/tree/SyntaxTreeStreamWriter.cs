@@ -3905,6 +3905,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_loop_stmt(loop_stmt _loop_stmt)
 		{
 			write_statement(_loop_stmt);
+			if (_loop_stmt.count == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_loop_stmt.count.visit(this);
+			}
 			if (_loop_stmt.stmt == null)
 			{
 				bw.Write((byte)0);

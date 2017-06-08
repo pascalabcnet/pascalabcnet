@@ -2301,9 +2301,24 @@ namespace CodeFormatters
             throw new NotImplementedException();
         }
 
-        public override void visit(loop_stmt _loop_stmt)
+        public override void visit(loop_stmt loop)
         {
-            throw new NotImplementedException();
+            sb.Append("loop ");
+            SetKeywordOffset("loop ");
+
+            multiline_stack_push(loop.count);
+            visit_node(loop.count);
+            multiline_stack_pop(loop.count);
+            if (!in_one_row(loop.stmt))
+                add_newline_after = true;
+            add_space_before = true;
+            //WriteKeyword(" do");
+            bool need_off = !(loop.stmt is statement_list);
+            if (need_off)
+                IncOffset();
+            visit_node(loop.stmt);
+            if (need_off)
+                DecOffset();
         }
 
         public override void visit(foreach_stmt _foreach_stmt)
@@ -2868,6 +2883,7 @@ namespace CodeFormatters
             if (_slice_expr_question.step != null)
                 visit_node(_slice_expr_question.step);
         }
+
         #endregion
     }
 }

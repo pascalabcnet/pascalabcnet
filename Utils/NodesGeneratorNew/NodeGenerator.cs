@@ -268,9 +268,14 @@ namespace NodeGenerator
 
         public static string create_property(string property_type,string property_name,string field_name,string help_context)
 		{
-			return change_words(prop_template,new string_repl("property_type",property_type),
-				new string_repl("property_name",property_name),new string_repl("field_name",field_name),
-				new string_repl("help_context",help_context));
+            var w = change_words(prop_template, new string_repl("property_type", property_type),
+                new string_repl("property_name", property_name), new string_repl("field_name", field_name),
+                new string_repl("help_context", help_context));
+            /*if (property_type.ToLower().StartsWith("list<"))
+            {
+                w = change_words(w, new string_repl("get", "protected get"));
+            }*/
+            return w;
 		}
 
 		public static string create_field(string field_type,string field_name)

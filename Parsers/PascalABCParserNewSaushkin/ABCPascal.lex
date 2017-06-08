@@ -307,6 +307,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkFinalization:
     case (int)Tokens.tkFinally:
     case (int)Tokens.tkFor:
+    case (int)Tokens.tkLoop:
     case (int)Tokens.tkForeach:
     case (int)Tokens.tkFunction:
     case (int)Tokens.tkIf:

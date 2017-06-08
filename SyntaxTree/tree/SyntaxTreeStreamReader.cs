@@ -2630,6 +2630,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_loop_stmt(loop_stmt _loop_stmt)
 		{
 			read_statement(_loop_stmt);
+			_loop_stmt.count = _read_node() as expression;
 			_loop_stmt.stmt = _read_node() as statement;
 		}
 

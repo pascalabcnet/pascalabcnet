@@ -1855,6 +1855,7 @@
     </SyntaxNode>
     <SyntaxNode Name="loop_stmt" BaseName="statement">
       <Fields>
+        <SyntaxField Name="count" SyntaxType="expression" />
         <SyntaxField Name="stmt" SyntaxType="statement" />
       </Fields>
       <Methods />
@@ -2898,6 +2899,7 @@
       <HelpData Key=".attributes" Value="" />
       <HelpData Key=".cconst" Value="Значение константы." />
       <HelpData Key=".char_num" Value="Номер символа." />
+      <HelpData Key=".count" Value="" />
       <HelpData Key=".def" Value="" />
       <HelpData Key=".defs" Value="" />
       <HelpData Key=".directives" Value="" />
@@ -2928,6 +2930,7 @@
       <HelpData Key=".sharp_consts" Value="Список символьных констант в строке вида #123#124#125" />
       <HelpData Key=".specificator" Value="" />
       <HelpData Key=".stat" Value="" />
+      <HelpData Key=".statements" Value="" />
       <HelpData Key=".step" Value="" />
       <HelpData Key=".string" Value="" />
       <HelpData Key=".subprogram_definitions" Value="" />
@@ -3522,8 +3525,12 @@
       <HelpData Key="look_stmt." Value="" />
       <HelpData Key="look_stmt.name" Value="" />
       <HelpData Key="look_stmt.stmt" Value="" />
+      <HelpData Key="loop_node" Value="" />
+      <HelpData Key="loop_node.count" Value="" />
+      <HelpData Key="loop_node.stmt" Value="" />
       <HelpData Key="loop_stmt" Value="" />
       <HelpData Key="loop_stmt." Value="" />
+      <HelpData Key="loop_stmt.count" Value="" />
       <HelpData Key="loop_stmt.stmt" Value="" />
       <HelpData Key="matching_expression" Value="" />
       <HelpData Key="matching_expression.left" Value="" />

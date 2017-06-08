@@ -50,6 +50,7 @@
     <Compile Include="ChangeWhileVisitor.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
+    <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\QuestionPointDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\SliceDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\TupleVisitor.cs" />

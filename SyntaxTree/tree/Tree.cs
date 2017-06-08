@@ -29567,8 +29567,9 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public loop_stmt(statement _stmt)
+		public loop_stmt(expression _count,statement _stmt)
 		{
+			this._count=_count;
 			this._stmt=_stmt;
 			FillParentsInDirectChilds();
 		}
@@ -29576,13 +29577,30 @@ namespace PascalABCCompiler.SyntaxTree
 		///<summary>
 		///Конструктор с параметрами.
 		///</summary>
-		public loop_stmt(statement _stmt,SourceContext sc)
+		public loop_stmt(expression _count,statement _stmt,SourceContext sc)
 		{
+			this._count=_count;
 			this._stmt=_stmt;
 			source_context = sc;
 			FillParentsInDirectChilds();
 		}
+		protected expression _count;
 		protected statement _stmt;
+
+		///<summary>
+		///
+		///</summary>
+		public expression count
+		{
+			get
+			{
+				return _count;
+			}
+			set
+			{
+				_count=value;
+			}
+		}
 
 		///<summary>
 		///
@@ -29612,6 +29630,11 @@ namespace PascalABCCompiler.SyntaxTree
 				copy.attributes = (attribute_list)attributes.Clone();
 				copy.attributes.Parent = copy;
 			}
+			if (count != null)
+			{
+				copy.count = (expression)count.Clone();
+				copy.count.Parent = copy;
+			}
 			if (stmt != null)
 			{
 				copy.stmt = (statement)stmt.Clone();
@@ -29631,6 +29654,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			if (attributes != null)
 				attributes.Parent = this;
+			if (count != null)
+				count.Parent = this;
 			if (stmt != null)
 				stmt.Parent = this;
 		}
@@ -29640,6 +29665,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			FillParentsInDirectChilds();
 			attributes?.FillParentsInAllChilds();
+			count?.FillParentsInAllChilds();
 			stmt?.FillParentsInAllChilds();
 		}
 
@@ -29650,7 +29676,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 2;
 			}
 		}
 		///<summary>
@@ -29660,7 +29686,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			get
 			{
-				return 1;
+				return 2;
 			}
 		}
 		///<summary>
@@ -29675,6 +29701,8 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
+						return count;
+					case 1:
 						return stmt;
 				}
 				return null;
@@ -29686,6 +29714,9 @@ namespace PascalABCCompiler.SyntaxTree
 				switch(ind)
 				{
 					case 0:
+						count = (expression)value;
+						break;
+					case 1:
 						stmt = (statement)value;
 						break;
 				}

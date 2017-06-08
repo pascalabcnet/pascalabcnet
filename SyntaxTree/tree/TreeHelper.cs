@@ -1698,5 +1698,20 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString() => left.ToString() + "?." + right.ToString();
     }
 
+    public partial class for_node
+    {
+        public for_node(ident loop_variable, expression init_value, expression finish_value, statement stmt, SourceContext sc):
+            this(loop_variable, init_value, finish_value,stmt,for_cycle_type.to, null,null,true)
+        {
+
+        }
+        public override string ToString() => "for var " + this.loop_variable.ToString() + " := " + this.initial_value.ToString() + " to " + this.finish_value.ToString()+" do \n"+this.statements.ToString();
+    }
+
+    public partial class loop_stmt
+    {
+        public override string ToString() => "loop " + this.count.ToString() + " do \n" + this.stmt.ToString();
+    }
+
 }
 
