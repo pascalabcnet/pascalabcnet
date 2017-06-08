@@ -2852,13 +2852,16 @@ namespace CodeFormatters
             read_from_beg_pos = true;
             for (int i = 0; i < _assign_var_tuple.idents.idents.Count; i++)
             {
-                if (options.SpaceBetweenArguments == 1)
+                if (options.SpaceBetweenArguments == 1 && i > 0)
                 {
                     add_space_after = true;
                 }  
                 visit_node(_assign_var_tuple.idents.idents[i]);
-                add_space_before = true;
             }
+            sb.Append(")");
+            add_space_after = true;
+            add_space_before = true;
+            prev_sn = _assign_var_tuple.idents;
             visit_node(_assign_var_tuple.expr);
         }
 
