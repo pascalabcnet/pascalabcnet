@@ -1472,7 +1472,12 @@ namespace CodeCompletion
         	ps.is_static = _function_header.class_keyword;
         	if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_function_header))
         		ps.AddDocumentation(this.converter.controller.docs[_function_header]);
-        	if (is_proc_realization) ps.already_defined = true;
+        	if (is_proc_realization)
+            {
+                ps.already_defined = true;
+                if (ps.loc == null)
+                    ps.loc = loc;
+            } 
         	else 
         	{
         		ps.loc = loc;

@@ -1883,6 +1883,8 @@ namespace CodeCompletion
                 return this;
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
             instance.is_extension = this.is_extension;
+            instance.loc = this.loc;
+            instance.body_loc = this.body_loc;
             instance.parameters = new List<ElementScope>(this.parameters.Count);
             int i = 0;
             foreach (ElementScope parameter in this.parameters)
