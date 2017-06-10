@@ -1210,7 +1210,7 @@ namespace PascalABCCompiler.TreeConverter
                         saved_si = si;
                     if (saved_si2 != null)
                     {
-                        si2.InfoUnitList.RemoveRange(1, si.InfoUnitList.Count - 1);
+                        si2.InfoUnitList.RemoveRange(1, si2.InfoUnitList.Count - 1);
                         si2.Add(saved_si2);
                     }
                     else

@@ -3193,7 +3193,7 @@ function string.operator>=(left, right: string) := string.CompareOrdinal(left, r
 function string.operator*(str: string; n: integer): string;
 begin
   var sb := new StringBuilder;
-  for var i:=1 to n do
+  loop n do
     sb.Append(str);
   result := sb.ToString;
 end;
@@ -3202,7 +3202,7 @@ end;
 function string.operator*(n: integer; str: string): string;
 begin
   var sb := new StringBuilder;
-  for var i:=1 to n do
+  loop n do
     sb.Append(str);
   result := sb.ToString;
 end;
@@ -3211,7 +3211,7 @@ end;
 function char.operator*(c: char; n: integer): string;
 begin
   var sb := new StringBuilder(n,n);
-  for var i:=1 to n do
+  loop n do
     sb.Append(c);
   result := sb.ToString;
 end;
@@ -3220,7 +3220,7 @@ end;
 function char.operator*(n: integer; c: char): string;
 begin
   var sb := new StringBuilder(n,n);
-  for var i:=1 to n do
+  loop n do
     sb.Append(c);
   result := sb.ToString;
 end;
@@ -3250,7 +3250,7 @@ end;
 procedure string.operator*=(var left: string; n: integer);
 begin
   var sb := new StringBuilder;
-  for var i:=1 to n do
+  loop n do
     sb.Append(left);
   left := sb.ToString;
 end;
@@ -3671,7 +3671,7 @@ end;
 function operator*<T>(a: sequence of T; n: integer): sequence of T; extensionmethod;
 begin
   Result := System.Linq.Enumerable.Empty&<T>();
-  for var i:=1 to n do
+  loop n do
     Result := Result.Concat(a);
 end;
 
@@ -3769,19 +3769,19 @@ end;
 
 function SeqRandom(n: integer; a: integer; b: integer): sequence of integer;
 begin
-  for var i:=1 to n do
+  loop n do
     yield Random(a,b)
 end;
 
 function SeqRandomInteger(n: integer; a: integer; b: integer): sequence of integer;
 begin
-  for var i:=1 to n do
+  loop n do
     yield Random(a,b)
 end;
 
 function SeqRandomReal(n: integer; a: real; b: real): sequence of real;
 begin
-  for var i:=1 to n do
+  loop n do
     yield Random()*(b-a)+a
 end;
 
@@ -7947,6 +7947,42 @@ begin
   end;
 end;
 
+// -----------------------------------------------------
+//>>     Фиктивная секция XXX - не удалять! # XXX
+// -----------------------------------------------------
+type
+  AdjGroupClass<T> = class
+  private
+    cur: T;
+    enm: IEnumerator<T>;
+    fin: boolean;
+  public
+    constructor Create(a: sequence of T);
+    begin
+      enm := a.GetEnumerator();
+      fin := enm.MoveNext;
+      if fin then
+        cur := enm.Current;
+    end;
+    
+    function TakeGroup: sequence of T;
+    begin
+      yield cur;
+      fin := enm.movenext;
+      while fin do
+      begin
+        if enm.current = cur then
+          yield enm.current
+        else
+        begin
+          cur := enm.Current;
+          break;
+        end;
+        fin := enm.movenext;
+      end;  
+    end;
+  end;
+
 //------------------------------------------------------------------------------
 //>>     Методы расширения для sequence of T # Extension methods for sequence of T
 //------------------------------------------------------------------------------
@@ -8136,8 +8172,6 @@ begin
   foreach var x in Self do
   foreach var y in b do
     yield (x,y)
-  
-  //Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x);
 end;
 
 /// Декартово произведение последовательностей
@@ -8149,8 +8183,6 @@ begin
   foreach var x in Self do
   foreach var y in b do
     yield func(x,y)
-
-//  Result := Self.Select(x->b.Select(y->(x,y))).SelectMany(x->x).Select(x->func(x[0],x[1]));
 end;
 
 /// Разбивает последовательности на две в позиции ind
@@ -8467,6 +8499,16 @@ begin
   end
 end;
 
+/// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
+function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
+begin
+  var c := new AdjGroupClass<T>(Self);
+  while c.fin do
+    yield c.TakeGroup();
+end;
+
+// ToDo Сделать AdjacentGroup с функцией сравнения
+
 // -----------------------------------------------------
 //>>     Методы расширения типа List<T> # Extension methods for List T
 // -----------------------------------------------------
@@ -8485,13 +8527,137 @@ begin
 	Result := Self;  
 end;
 
+/// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
+function AdjacentFind<T>(Self: IList<T>; start: integer := 0): integer; extensionmethod;
+begin
+  Result := -1;
+  for var i:=start to Self.Count-2 do
+    if Self[i]=Self[i+1] then 
+    begin
+      Result := i;
+      exit;
+    end;
+end;
+
+/// Находит первую пару подряд идущих одинаковых элементов, используя функцию сравнения eq, и возвращает индекс первого элемента пары. Если не найден, возвращается -1
+function AdjacentFind<T>(Self: IList<T>; eq: (T,T)->boolean; start: integer := 0): integer; extensionmethod;
+begin
+  Result := -1;
+  for var i:=start to Self.Count-2 do
+    if eq(Self[i],Self[i+1]) then 
+    begin
+      Result := i;
+      exit;
+    end;
+end;
+
+/// Возвращает индекс первого минимального элемента начиная с позиции index
+function IndexMin<T>(Self: IList<T>; index: integer := 0): integer; extensionmethod; where T: IComparable<T>;
+begin
+  var min := Self[index];
+  Result := index;
+  for var i:=index+1 to Self.Count-1 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс первого максимального элемента начиная с позиции index
+function IndexMax<T>(self: IList<T>; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[index];
+  Result := index;
+  for var i:=index+1 to Self.Count-1 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMin<T>(Self: IList<T>): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[Self.Count-1];
+  Result := Self.Count-1;
+  for var i:=Self.Count-2 downto 0 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1] 
+function LastIndexMin<T>(Self: IList<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var min := Self[index];
+  Result := index;
+  for var i:=index-1 downto 0 do
+    if Self[i].CompareTo(min)<0 then 
+    begin
+      Result := i;
+      min := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента
+function LastIndexMax<T>(Self: IList<T>): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[Self.Count-1];
+  Result := Self.Count-1;
+  for var i:=Self.Count-2 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index-1]
+function LastIndexMax<T>(Self: IList<T>; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
+begin
+  var max := Self[index];
+  Result := index;
+  for var i:=index-1 downto 0 do
+    if Self[i].CompareTo(max)>0 then 
+    begin
+      Result := i;
+      max := Self[i];
+    end;
+end;
+
+/// Заменяет в массиве или списке все вхождения одного значения на другое
+procedure Replace<T>(Self: IList<T>; oldValue,newValue: T); extensionmethod;
+begin
+  for var i:=0 to Self.Count-1 do
+    if Self[i] = oldValue then
+      Self[i] := newValue;
+end;
+
+/// Преобразует элементы массива или списка по заданному правилу
+procedure Transform<T>(Self: IList<T>; f: T -> T); extensionmethod;
+begin
+  for var i:=0 to Self.Count-1 do
+    Self[i] := f(Self[i]);
+end;
+
+/// Заполняет элементы массива или списка значениями, вычисляемыми по некоторому правилу
+procedure Fill<T>(Self: IList<T>; f: integer -> T); extensionmethod;
+begin
+  for var i:=0 to Self.Count-1 do
+    Self[i] := f(i);
+end;
+
 ///-- 
 function CreateSliceFromListInternal<T>(Self: List<T>; from,step,count: integer): List<T>;
 begin
   Result := new List<T>(count);
   
   var f := from;
-  for var i:=0 to count-1 do
+  loop count do
   begin
     Result.Add(Self[f]);
     f += step;
@@ -8549,10 +8715,7 @@ begin
     case situation of
   1: from := 0;
   2: &to := Len;
-  3: begin
-       from := 0;
-       &to := Len;
-     end;
+  3: (from,&to) := (0,Len)
     end;  
   end
   else
@@ -8560,10 +8723,7 @@ begin
     case situation of
   1: from := Len - 1;
   2: &to := -1;
-  3: begin
-       from := Len - 1;
-       &to := -1;
-     end;
+  3: (from,&to) := (Len - 1,-1);
     end;
   end;
 end;
@@ -8957,42 +9117,6 @@ begin
 end;
 
 // -----------------------------------------------------
-//>>     Фиктивная секция XXX - не удалять! # XXX
-// -----------------------------------------------------
-type
-  AdjGroupClass<T> = class
-  private
-    cur: T;
-    enm: IEnumerator<T>;
-    fin: boolean;
-  public
-    constructor Create(a: sequence of T);
-    begin
-      enm := a.GetEnumerator();
-      fin := enm.MoveNext;
-      if fin then
-        cur := enm.Current;
-    end;
-    
-    function TakeGroup: sequence of T;
-    begin
-      yield cur;
-      fin := enm.movenext;
-      while fin do
-      begin
-        if enm.current = cur then
-          yield enm.current
-        else
-        begin
-          cur := enm.Current;
-          break;
-        end;
-        fin := enm.movenext;
-      end;  
-    end;
-  end;
-
-// -----------------------------------------------------
 //>>     Методы расширения типа array of T # Extension methods for array of T
 // -----------------------------------------------------
 
@@ -9009,7 +9133,7 @@ begin
 	Result := Self;  
 end;
 
-/// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
+{/// Находит первую пару подряд идущих одинаковых элементов и возвращает индекс первого элемента пары. Если не найден, возвращается -1
 function AdjacentFind<T>(Self: array of T; start: integer := 0): integer; extensionmethod;
 begin
   Result := -1;
@@ -9031,17 +9155,7 @@ begin
       Result := i;
       exit;
     end;
-end;
-
-/// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
-function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
-begin
-  var c := new AdjGroupClass<T>(Self);
-  while c.fin do
-    yield c.TakeGroup();
-end;
-
-// ToDo Сделать AdjacentGroup с функцией сравнения
+end;}
 
 /// Возвращает минимальный элемент 
 function Min<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
@@ -9052,7 +9166,7 @@ begin
       Result := Self[i];
 end;
 
-/// Возвращает максинимальный элемент 
+/// Возвращает максимальный элемент 
 function Max<T>(Self: array of T): T; extensionmethod; where T: System.IComparable<T>;
 begin
   Result := Self[0];
@@ -9097,12 +9211,12 @@ begin
       Result := Self[i];
 end;
 
-/// Возвращает индекс первого минимального элемента начиная с позиции start
-function IndexMin<T>(Self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+{/// Возвращает индекс первого минимального элемента начиная с позиции index
+function IndexMin<T>(Self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var min := Self[start];
-  Result := start;
-  for var i:=start+1 to Self.Length-1 do
+  var min := Self[index];
+  Result := index;
+  for var i:=index+1 to Self.Length-1 do
     if Self[i].CompareTo(min)<0 then 
     begin
       Result := i;
@@ -9110,12 +9224,12 @@ begin
     end;
 end;
 
-/// Возвращает индекс первого максимального элемента начиная с позиции start
-function IndexMax<T>(self: array of T; start: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс первого максимального элемента начиная с позиции index
+function IndexMax<T>(self: array of T; index: integer := 0): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var max := Self[start];
-  Result := start;
-  for var i:=start+1 to Self.Length-1 do
+  var max := Self[index];
+  Result := index;
+  for var i:=index+1 to Self.Length-1 do
     if Self[i].CompareTo(max)>0 then 
     begin
       Result := i;
@@ -9136,12 +9250,12 @@ begin
     end;
 end;
 
-/// Возвращает индекс последнего минимального элемента начиная с позиции start
-function LastIndexMin<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index] 
+function LastIndexMin<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var min := Self[start];
-  Result := start;
-  for var i:=start-1 downto 0 do
+  var min := Self[index];
+  Result := index;
+  for var i:=index-1 downto 0 do
     if Self[i].CompareTo(min)<0 then 
     begin
       Result := i;
@@ -9162,12 +9276,12 @@ begin
     end;
 end;
 
-/// Возвращает индекс последнего минимального элемента начиная с позиции start
-function LastIndexMax<T>(Self: array of T; start: integer): integer; extensionmethod; where T: System.IComparable<T>;
+/// Возвращает индекс последнего минимального элемента в диапазоне [0,index]
+function LastIndexMax<T>(Self: array of T; index: integer): integer; extensionmethod; where T: System.IComparable<T>;
 begin
-  var max := Self[start];
-  Result := start;
-  for var i:=start-1 downto 0 do
+  var max := Self[index];
+  Result := index;
+  for var i:=index-1 downto 0 do
     if Self[i].CompareTo(max)>0 then 
     begin
       Result := i;
@@ -9186,8 +9300,8 @@ end;
 /// Преобразует элементы массива по заданному правилу
 procedure Transform<T>(self: array of T; f: T -> T); extensionmethod;
 begin
-  for var i:=0 to self.Length-1 do
-    self[i] := f(self[i]);
+  for var i:=0 to Self.Length-1 do
+    Self[i] := f(Self[i]);
 end;
 
 /// Заполняет элементы массива значениями, вычисляемыми по некоторому правилу
@@ -9195,7 +9309,7 @@ procedure Fill<T>(Self: array of T; f: integer -> T); extensionmethod;
 begin
   for var i:=0 to Self.Length-1 do
     Self[i] := f(i);
-end;
+end;}
 
 /// Выполняет бинарный поиск в отсортированном массиве
 function BinarySearch<T>(self: array of T; x: T): integer; extensionmethod;
@@ -9292,6 +9406,25 @@ function High(self: System.Array); extensionmethod := High(Self);
 
 /// Возвращает индекс первого элемента массива
 function Low(self: System.Array); extensionmethod := Low(Self);
+
+/// Возвращает последовательность индексов одномерного массива
+function Indexes<T>(Self: array of T): sequence of integer; extensionmethod := Range(0,Self.Length-1);
+
+/// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
+function IndexesOf<T>(Self: array of T; cond: T -> boolean): sequence of integer; extensionmethod;
+begin
+  for var i:=0 to Self.High do
+    if cond(Self[i]) then
+      yield i;
+end;
+
+/// Возвращает последовательность индексов элементов одномерного массива, удовлетворяющих условию
+function IndexesOf<T>(Self: array of T; cond: (T,integer) -> boolean): sequence of integer; extensionmethod;
+begin
+  for var i:=0 to Self.High do
+    if cond(Self[i],i) then
+      yield i;
+end;
 
 ///-- 
 function CreateSliceFromArrayInternal<T>(Self: array of T; from,step,count: integer): array of T;
@@ -9693,7 +9826,7 @@ function CreateSliceFromStringInternal(Self: string; from,step,count: integer): 
 begin
   var res := new StringBuilder(count);
   
-  for var i:=0 to count-1 do
+  loop count do
   begin
     res.Append(Self[from]);
     from += step;
@@ -10106,7 +10239,7 @@ end;
 
 function GetResourceStream(ResourceFileName: string): Stream;
 begin
-  result := System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream(ResourceFileName);
+  Result := System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream(ResourceFileName);
 end;
 
 function FormatValue(value: object; NumOfChars: integer): string;
@@ -10145,9 +10278,6 @@ end;
 
 procedure StringDefaultPropertySet(var s: string; index: integer; c: char);
 begin
-  //s := string.Concat( s.Copy(0,index-1), c, s.Copy(index, s.Length - index));
-  //s := string.Concat(s.Substring(0, index), c, s.Substring(index + 1));
-  //ChangeChar(s[index + 1], c);
   var chars := s.ToCharArray;
   chars[index] := c;
   s := new String(chars);
@@ -10159,8 +10289,6 @@ begin
 end;
 
 procedure CheckCanUsePointerOnType(T: System.Type);
-var
-  fields: array of System.Reflection.FieldInfo;
 begin
   if T.IsPointer then
   begin
@@ -10169,7 +10297,7 @@ begin
   end;
   if T.IsValueType then
   begin
-    fields := T.GetFields();
+    var fields := T.GetFields();
     foreach var fi in fields do
       if not fi.IsStatic then
         CheckCanUsePointerOnType(fi.FieldType);
