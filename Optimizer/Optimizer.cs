@@ -15,6 +15,7 @@ namespace PascalABCCompiler
         private OptimizerHelper helper = new OptimizerHelper();
         private bool extended_mode = true;
         private common_type_node current_type;
+        private bool condition_block = false;
 
         public Optimizer()
         {
@@ -131,7 +132,7 @@ namespace PascalABCCompiler
                 helper.AddParameter(prm);
             foreach (common_in_function_function_node nested in cmn.functions_nodes_list)
                 VisitNestedFunction(nested);
-            cur_func = cmn;
+            current_function = cmn;
             VisitStatement(cmn.function_code);
             foreach (var_definition_node vdn2 in cmn.var_definition_nodes_list)
             {
@@ -212,7 +213,7 @@ namespace PascalABCCompiler
                 }
         }
 
-        private common_function_node cur_func=null;
+        private common_function_node current_function=null;
 
         private void CheckType(type_node type, expression_node initial_value, location loc)
         {
@@ -248,7 +249,7 @@ namespace PascalABCCompiler
                 helper.AddParameter(prm);
             foreach (common_in_function_function_node nested in cnfn.functions_nodes_list)
                 VisitNestedFunction(nested);
-            cur_func = cnfn;
+            current_function = cnfn;
             VisitStatement(cnfn.function_code);
             foreach (var_definition_node vdn2 in cnfn.var_definition_nodes_list)
             {
@@ -316,7 +317,7 @@ namespace PascalABCCompiler
                 helper.AddParameter(prm);
             foreach (common_in_function_function_node nested in cnfn.functions_nodes_list)
                 VisitNestedFunction(nested);
-            cur_func = cnfn;
+            current_function = cnfn;
             VisitStatement(cnfn.function_code);
             foreach (var_definition_node vdn2 in cnfn.var_definition_nodes_list)
             {
@@ -426,6 +427,36 @@ namespace PascalABCCompiler
             else return RetVal.Undef;
         }
 
+        private Stack<bool> condition_block_states = new Stack<bool>();
+
+        private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
+        {
+            if (!condition_block && cnfc.function_node == current_function)
+                warns.Add(new InfiniteRecursion(cnfc.location));
+        }
+
+        private void CheckInfiniteRecursion(common_static_method_call cnfc)
+        {
+            if (!condition_block && cnfc.function_node == current_function)
+                warns.Add(new InfiniteRecursion(cnfc.location));
+        }
+
+        private void SaveConditionBlock()
+        {
+            condition_block_states.Push(condition_block);
+            condition_block = false;
+        }
+
+        private void RestoreConditionBlock()
+        {
+            condition_block = condition_block_states.Pop();
+        }
+
+        private void EnterConditionBlock()
+        {
+            condition_block = true;
+        }
+
         private void VisitLockStatement(lock_statement stmt)
         {
             VisitExpression(stmt.lock_object);
@@ -434,48 +465,68 @@ namespace PascalABCCompiler
 
         private void VisitForeach(foreach_node stmt)
         {
-        	IncreaseNumUseVar(stmt.ident);
+            SaveConditionBlock();
+            IncreaseNumUseVar(stmt.ident);
         	VisitExpression(stmt.in_what);
+            EnterConditionBlock();
             VisitStatement(stmt.what_do);
+            RestoreConditionBlock();
         }
 
         private void VisitIf(if_node stmt)
         {
+            SaveConditionBlock();
             RetVal rv = GetConstantValue(stmt.condition);
             VisitExpression(stmt.condition);
             if (rv == RetVal.False)
                 is_break_stmt = true;
+            if (rv != RetVal.True)
+                EnterConditionBlock();
             VisitStatement(stmt.then_body);
             is_break_stmt = false;
             if (rv == RetVal.True)
                 is_break_stmt = true;
+            if (rv != RetVal.False)
+                EnterConditionBlock();
             VisitStatement(stmt.else_body);
             is_break_stmt = false;
+            RestoreConditionBlock();
         }
 
         private void VisitWhile(while_node stmt)
         {
+            SaveConditionBlock();
             RetVal rv = GetConstantValue(stmt.condition);
             VisitExpression(stmt.condition);
             if (rv == RetVal.False)
                 is_break_stmt = true;
+            if (rv != RetVal.True)
+                EnterConditionBlock();
             VisitStatement(stmt.body);
+            RestoreConditionBlock();
         }
 
         private void VisitRepeat(repeat_node stmt)
         {
+            SaveConditionBlock();
             RetVal rv = GetConstantValue(stmt.condition);
+            if (rv != RetVal.False)
+                EnterConditionBlock();
             VisitStatement(stmt.body);
             VisitExpression(stmt.condition);
+            RestoreConditionBlock();
         }
 
         private void VisitFor(for_node stmt)
         {
+            SaveConditionBlock();
             VisitStatement(stmt.init_while_expr);
             VisitStatement(stmt.initialization_statement);
             VisitStatement(stmt.increment_statement);
             VisitExpression(stmt.while_expr);
+            EnterConditionBlock();
             VisitStatement(stmt.body);
+            RestoreConditionBlock();
         }
 
         private bool is_break_stmt = false;
@@ -514,23 +565,26 @@ namespace PascalABCCompiler
 
         private void VisitExternalStatementNode(external_statement sn)
         {
-            helper.MarkAsExternal(cur_func);
+            helper.MarkAsExternal(current_function);
         }
 		
         private void VisitPInvokeStatementNode(pinvoke_statement sn)
         {
-        	helper.MarkAsExternal(cur_func);		
+        	helper.MarkAsExternal(current_function);		
         }
         
         private void VisitSwitchNode(switch_node stmt)
         {
+            SaveConditionBlock();
             VisitExpression(stmt.condition);
+            EnterConditionBlock();
             for (int i = 0; i < stmt.case_variants.Count; i++)
             {
                 VisitStatement(stmt.case_variants[i].case_statement);
                 is_break_stmt = false;
             }
             VisitStatement(stmt.default_statement);
+            RestoreConditionBlock();
         }
 
         private void VisitRuntimeStatement(runtime_statement sn)
@@ -634,6 +688,20 @@ namespace PascalABCCompiler
             vi.act_num_use++;
             vi.cur_use++;
             //if (vi.cur_ass == 0 && !lvr.var.name.Contains("$")) helper.AddTempWarning(lvr.var,new UseWithoutAssign(lvr.var.name, lvr.location));
+        }
+
+        private void CheckVarParameter(expression_node expr, function_node func, int index)
+        {
+            if (index < func.parameters.Count && func.parameters[index].parameter_type == SemanticTree.parameter_type.var
+                || (func is compiled_function_node && (func as compiled_function_node).cont_type.compiled_type == typeof(Array) && index == 0))
+            {
+                if (expr is local_block_variable_reference)
+                    IncreaseNumAssVar(expr as local_block_variable_reference);
+                else if (expr is local_variable_reference)
+                    IncreaseNumAssVar(expr as local_variable_reference);
+                else if (expr is namespace_variable_reference)
+                    IncreaseNumAssVar(expr as namespace_variable_reference);
+            }
         }
         
         private void IncreaseNumAssVar(namespace_variable_reference lvr)
@@ -891,13 +959,19 @@ namespace PascalABCCompiler
         {
             VisitExpression(en.obj);
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }
         }
 
         private void VisitCompiledConstructorCall(compiled_constructor_call en)
         {
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }
         }
 
         private void VisitSimpleArrayIndexing(simple_array_indexing en)
@@ -921,7 +995,10 @@ namespace PascalABCCompiler
         private void VisitCommonConstructorCall(common_constructor_call en)
         {
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }    
         }
 
         private void VisitGetAddrNode(get_addr_node en)
@@ -938,38 +1015,59 @@ namespace PascalABCCompiler
         private void VisitCompiledStaticMethodCall(compiled_static_method_call en)
         {
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }  
         }
 
         private void VisitCommonInFuncFuncCall(common_in_function_function_call en)
         {
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }
+                
         }
 
         private void VisitCommonNamespaceFunctionCall(common_namespace_function_call en)
         {
+            CheckInfiniteRecursion(en);
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }  
         }
 		
         private void VisitCommonNamespaceFunctionCallAsConstant(common_namespace_function_call_as_constant en)
         {
             for (int i = 0; i < en.method_call.parameters.Count; i++)
+            {
+                CheckVarParameter(en.method_call.parameters[i], en.method_call.function_node, i);
                 VisitExpression(en.method_call.parameters[i]);
+            }
         }
         
         private void VisitCommonStaticMethodCall(common_static_method_call en)
         {
-        	for (int i = 0; i < en.parameters.Count; i++)
+            CheckInfiniteRecursion(en);
+            for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            }
         }
         
         private void VisitCommonMethodCall(common_method_call en)
         {
             VisitExpression(en.obj);
             for (int i = 0; i < en.parameters.Count; i++)
+            {
+                CheckVarParameter(en.parameters[i], en.function_node, i);
                 VisitExpression(en.parameters[i]);
+            } 
         }
 
         private void VisitDerefNode(dereference_node en)
@@ -986,9 +1084,16 @@ namespace PascalABCCompiler
 
         private void VisitQuestionColonExpression(question_colon_expression en)
         {
+            SaveConditionBlock();
+            RetVal rv = GetConstantValue(en.internal_condition);
             VisitExpression(en.internal_condition);
+            if (rv != RetVal.True)
+                EnterConditionBlock();
             VisitExpression(en.internal_ret_if_true);
+            if (rv != RetVal.False)
+                EnterConditionBlock();
             VisitExpression(en.internal_ret_if_false);
+            RestoreConditionBlock();
         }
 
         private void VisitSizeOfOperator(sizeof_operator en)
