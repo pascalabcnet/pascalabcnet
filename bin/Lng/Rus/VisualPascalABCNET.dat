@@ -335,6 +335,7 @@ PRJ_NUGET=NuGet
 NUGET_PACKAGE=Идентификатор пакета
 NUGET_INSTALL=Установить пакет
 NUGET_LOG=Лог
+VERSION_IS_UP_TO_DATE=Вы используете актуальную версию
 UPDATE_AVAILABLE=Доступна новая версия PascalABC.NET. Перейти на страницу скачивания?
 UPDATE_AVAILABLE_CURRENT_VESION{0}=Установленная версия: {0}
 UPDATE_AVAILABLE_NEW_VESION{0}=Доступная версия: {0}
