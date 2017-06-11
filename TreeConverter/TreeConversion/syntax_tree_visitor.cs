@@ -11833,6 +11833,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 visit_generic_params(context.top_function, _function_header.template_args.idents);
             }
+            if (_function_header.where_defs != null)
+            {
+                visit_where_list(_function_header.where_defs);
+            }
             SymbolInfoUnit si = context.create_special_names();
             weak_node_test_and_visit(_function_header.parameters);
 			type_node tn = null;
@@ -12012,11 +12016,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             if (_function_header.where_defs != null)
             {
-                if (unique)
-                {
-                    visit_where_list(_function_header.where_defs);
-                }
-                else
+                if (!unique)
                 {
                     AddError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
@@ -12105,6 +12105,10 @@ namespace PascalABCCompiler.TreeConverter
             {
                 visit_generic_params(context.top_function, _procedure_header.template_args.idents);
             }
+            if (_procedure_header.where_defs != null)
+            {
+                visit_where_list(_procedure_header.where_defs);
+            }
             weak_node_test_and_visit(_procedure_header.parameters);
             if (_procedure_header.name.class_name != null) 
             	with_class_name = true;
@@ -12179,11 +12183,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (_procedure_header.where_defs != null)
             {
-                if (unique)
-                {
-                    visit_where_list(_procedure_header.where_defs);
-                }
-                else
+                if (!unique)
                 {
                     AddError(get_location(_procedure_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
