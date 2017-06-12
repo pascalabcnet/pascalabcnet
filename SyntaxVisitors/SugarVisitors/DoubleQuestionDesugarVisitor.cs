@@ -34,8 +34,8 @@ namespace SyntaxVisitors.SugarVisitors
             l.Add(tt);
             l.Add(st as statement);
             expression right = dqn.right;
-            var eq = new bin_expr(new ident(tname), new nil_const(), Operators.Equal, dqn.left.source_context);
-            var qce = new question_colon_expression(eq, right, new ident(tname), dqn.source_context);
+            var eq = new bin_expr(new ident(tname), new nil_const(), Operators.NotEqual, dqn.left.source_context);
+            var qce = new question_colon_expression(eq, new ident(tname), right, dqn.source_context);
             ReplaceUsingParent(dqn, qce);
             visit(qce);
             ReplaceStatementUsingParent(st as statement, l);
