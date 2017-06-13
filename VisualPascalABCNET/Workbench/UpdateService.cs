@@ -38,7 +38,7 @@ namespace VisualPascalABC
             switch (status)
             {
                 case 1:
-                    MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_VERSION_IS_UP_DO_DATE"), PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_CHECK"), MessageBoxButtons.OK);
+                    MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_VERSION_IS_UP_TO_DATE"), PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_CHECK"), MessageBoxButtons.OK);
                     break;
                 case 0:
                     if (MessageBox.Show(PascalABCCompiler.StringResources.Get("VP_MF_UPDATE_AVAILABLE") + Environment.NewLine + 
