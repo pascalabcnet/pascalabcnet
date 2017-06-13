@@ -8996,12 +8996,12 @@ begin
     Self[i,k] := a[i]
 end;
 
-/// Возвращает по заданному двумерному массиву последовательность (i,j,a[i,j])
-function ElementsWithIndexes<T>(Self: array [,] of T): sequence of (integer,integer,T); extensionmethod;
+/// Возвращает по заданному двумерному массиву последовательность (a[i,j],i,j)
+function ElementsWithIndexes<T>(Self: array [,] of T): sequence of (T,integer,integer); extensionmethod;
 begin
   for var i:=0 to Self.RowCount-1 do
   for var j:=0 to Self.ColCount-1 do
-    yield (i,j,Self[i,j])
+    yield (Self[i,j],i,j)
 end;
 
 /// Возвращает по заданному двумерному массиву последовательность его элементов по строкам
@@ -9525,6 +9525,13 @@ begin
   Result := Sqr(Self);
 end;
 
+/// Возвращает True если значение находится между двумя другими
+function Between(Self: integer; a,b: integer): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
+
 // Дополнения февраль 2016: IsEven, IsOdd
 
 /// Возвращает, является ли целое четным
@@ -9577,6 +9584,12 @@ end;
 // -----------------------------------------------------
 //>>     Методы расширения типа real # Extension methods for real
 // -----------------------------------------------------
+/// Возвращает True если значение находится между двумя другими
+function Between(Self: real; a,b: real): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
 /// Возвращает квадратный корень числа
 function Sqrt(Self: real): real; extensionmethod;
 begin
@@ -9627,29 +9640,23 @@ end;
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа char # Extension methods for char
 //------------------------------------------------------------------------------
-/// Предыдущий символ
-function Pred(Self: char): char; extensionmethod;
+/// Возвращает True если значение находится между двумя другими
+function Between(Self: char; a,b: char): boolean; extensionmethod;
 begin
-  Result := PABCSystem.Pred(Self);
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
+
+/// Предыдущий символ
+function Pred(Self: char); extensionmethod := PABCSystem.Pred(Self);
 
 /// Следующий символ
-function Succ(Self: char): char; extensionmethod;
-begin
-  Result := PABCSystem.Succ(Self);
-end;
+function Succ(Self: char); extensionmethod := PABCSystem.Succ(Self);
 
 /// Код символа в кодировке Unicode
-function Code(Self: char): integer; extensionmethod;
-begin
-  Result := word(Self);
-end;
+function Code(Self: char): integer; extensionmethod := word(Self);
 
 /// Является ли символ цифрой
-function IsDigit(Self: char): boolean; extensionmethod;
-begin
-  Result := char.IsDigit(Self);
-end;
+function IsDigit(Self: char); extensionmethod := char.IsDigit(Self);
 
 /// Является ли символ буквой
 function IsLetter(Self: char): boolean; extensionmethod;
@@ -9692,6 +9699,12 @@ end;
 //------------------------------------------------------------------------------
 //>>     Методы расширения типа string # Extension methods for string
 //------------------------------------------------------------------------------
+/// Возвращает True если значение находится между двумя другими
+function Between(Self: string; a,b: string): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
 /// Считывает целое из строки начиная с позиции from и устанавливает from за считанным значением
 function ReadInteger(Self: string; var from: integer): integer; extensionmethod;
 begin
