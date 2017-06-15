@@ -12016,7 +12016,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(get_location(_function_header), "FUNCTION_NEED_RETURN_TYPE");
             if (_function_header.where_defs != null)
             {
-                if (!unique)
+                if (!unique && false)
                 {
                     AddError(get_location(_function_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
@@ -12183,7 +12183,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             if (_procedure_header.where_defs != null)
             {
-                if (!unique)
+                if (!unique && false)
                 {
                     AddError(get_location(_procedure_header.where_defs), "WHERE_SECTION_MUST_BE_ONLY_IN_FIRST_DECLARATION");
                 }
