@@ -60,20 +60,6 @@ namespace SyntaxVisitors.SugarVisitors
             return q;
         }
 
-        public question_colon_expression ConvertToQCE1(dot_question_node dqn)
-        {
-            addressed_value left = dqn.left;
-            addressed_value right = dqn.right;
-
-            var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
-
-            var nr = Into(left, right);
-
-            var q = new question_colon_expression(eq, new nil_const(), nr, dqn.source_context);
-            nr.Parent = q;
-            return q;
-        }
-
         public addressed_value Into(addressed_value x, addressed_value v) // При возникновении новой конструкции в грамматике variable добавить обработку сюда
         {
             if (v.GetType() == typeof(dot_question_node))
@@ -131,12 +117,68 @@ namespace SyntaxVisitors.SugarVisitors
             }
         }
 
+        private int num = 0;
+
+        public string UniqueNumStr()
+        {
+            num++;
+            return num.ToString();
+        }
+
+
+        /*public question_colon_expression ConvertToQCE1(dot_question_node dqn)
+        {
+            addressed_value left = dqn.left;
+            addressed_value right = dqn.right;
+
+            var eq = new bin_expr(left, new nil_const(), Operators.Equal, left.source_context);
+
+            var nr = Into(left, right);
+
+            var q = new question_colon_expression(eq, new nil_const(), nr, dqn.source_context);
+            nr.Parent = q;
+            return q;
+        }*/
+
+        public question_colon_expression ConvertToQCE1(dot_question_node dqn, string name)
+        {
+            addressed_value right = dqn.right;
+
+            var eq = new bin_expr(new ident(name), new nil_const(), Operators.Equal, dqn.left.source_context);
+
+            var nr = Into(new ident(name), right);
+
+            var q = new question_colon_expression(eq, new nil_const(), nr, dqn.source_context);
+            nr.Parent = q;
+            return q;
+        }
+
         public override void visit(dot_question_node dqn)
+        {
+            var st = dqn.Parent;
+            while (!(st is statement))
+                st = st.Parent;
+            var tname = "#dqn_temp" + UniqueNumStr();
+            var tt = new var_statement(new ident(tname), dqn.left);
+            tt.var_def.Parent = tt;
+            var l = new List<statement>();
+            l.Add(tt);
+            l.Add(st as statement);
+
+            var qce = ConvertToQCE1(dqn, tname);
+            var sug = sugared_addressed_value.NewP(dqn, qce, dqn.source_context);
+            ReplaceUsingParent(dqn, sug);
+            visit(qce);
+
+            ReplaceStatementUsingParent(st as statement, l);
+            visit(tt);
+        }
+        /*public override void visit(dot_question_node dqn)
         {
             var qce = ConvertToQCE1(dqn);
             var sug = sugared_addressed_value.NewP(dqn, qce, dqn.source_context);
             ReplaceUsingParent(dqn, sug);
             visit(qce);
-        }
+        }*/
     }
 }

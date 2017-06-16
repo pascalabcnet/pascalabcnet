@@ -590,14 +590,56 @@ function ReadlnChar2: (char,char);
 /// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnString2: (string,string);
 
+/// Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры
 function ReadInteger3: (integer,integer,integer);
+/// Возвращает кортеж из трёх значений типа real, введенных с клавиатуры
 function ReadReal3: (real,real,real);
+/// Возвращает кортеж из трёх значений типа char, введенных с клавиатуры
 function ReadChar3: (char,char,char);
+/// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры
 function ReadString3: (string,string,string);
+/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnInteger3: (integer,integer,integer);
+/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnReal3: (real,real,real);
+/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnChar3: (char,char,char);
+/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
 function ReadlnString3: (string,string,string);
+
+/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
+function ReadInteger2(message: string): (integer,integer);
+/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры
+function ReadReal2(message: string): (real,real);
+/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры
+function ReadChar2(message: string): (char,char);
+/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры
+function ReadString2(message: string): (string,string);
+/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInteger2(message: string): (integer,integer);
+/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnReal2(message: string): (real,real);
+/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnChar2(message: string): (char,char);
+/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnString2(message: string): (string,string);
+
+/// Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры
+function ReadInteger3(message: string): (integer,integer,integer);
+/// Возвращает кортеж из трёх значений типа real, введенных с клавиатуры
+function ReadReal3(message: string): (real,real,real);
+/// Возвращает кортеж из трёх значений типа char, введенных с клавиатуры
+function ReadChar3(message: string): (char,char,char);
+/// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры
+function ReadString3(message: string): (string,string,string);
+/// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnInteger3(message: string): (integer,integer,integer);
+/// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnReal3(message: string): (real,real,real);
+/// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnChar3(message: string): (char,char,char);
+/// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
+function ReadlnString3(message: string): (string,string,string);
 
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
@@ -4646,6 +4688,23 @@ function ReadlnInteger3 := (ReadInteger,ReadInteger,ReadlnInteger);
 function ReadlnReal3    := (ReadReal,ReadReal,ReadlnReal);
 function ReadlnChar3    := (ReadChar,ReadChar,ReadlnChar);
 function ReadlnString3  := (ReadString,ReadString,ReadlnString);
+
+function ReadInteger2(message: string)   := (ReadInteger(message),ReadInteger);
+function ReadReal2(message: string)      := (ReadReal(message),ReadReal);
+function ReadChar2(message: string)      := (ReadChar(message),ReadChar);
+function ReadString2(message: string)    := (ReadString(message),ReadString);
+function ReadlnInteger2(message: string) := (ReadInteger(message),ReadlnInteger);
+function ReadlnReal2(message: string)    := (ReadReal(message),ReadlnReal);
+function ReadlnChar2(message: string)    := (ReadChar(message),ReadlnChar);
+function ReadlnString2(message: string)  := (ReadString(message),ReadlnString);
+function ReadInteger3(message: string)   := (ReadInteger(message),ReadInteger,ReadInteger);
+function ReadReal3(message: string)      := (ReadReal(message),ReadReal,ReadReal);
+function ReadChar3(message: string)      := (ReadChar(message),ReadChar,ReadChar);
+function ReadString3(message: string)    := (ReadString(message),ReadString,ReadString);
+function ReadlnInteger3(message: string) := (ReadInteger(message),ReadInteger,ReadlnInteger);
+function ReadlnReal3(message: string)    := (ReadReal(message),ReadReal,ReadlnReal);
+function ReadlnChar3(message: string)    := (ReadChar(message),ReadChar,ReadlnChar);
+function ReadlnString3(message: string)  := (ReadString(message),ReadString,ReadlnString);
 
 
 // Read with prompt
