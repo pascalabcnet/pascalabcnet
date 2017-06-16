@@ -259,7 +259,7 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchFileService
     {
-        bool OpenFile(string FileName, string PreferedFileName, bool not_open_designer = false);
+        bool OpenFile(string FileName, string PreferedFileName, bool notOpenDesigner = false);
         void RenameFile(string OldFileName, string NewFileName);
         void CloseFile(string FileName);
         void ReloadFile(string FileName);
@@ -338,6 +338,7 @@ namespace VisualPascalABCPlugins
         void SetDebugStopDisabled();
         void SetDebugStopEnabled();
         void SetAddExprMenuVisible(bool val);
+        void SetDisassemblyMenuVisible(bool val);
         void SetDebugTabsVisible(bool val);
         void SetDebugPausedDisabled();
         void SetPlayButtonsVisible(bool val);
@@ -384,6 +385,7 @@ namespace VisualPascalABCPlugins
         void ClearWatch();
         void ClearLocalVarTree();
         void ClearDebugTabs();
+        void DisplayDisassembledCode(string code);
     }
 
     public interface IWorkbenchOperationsService
@@ -452,6 +454,7 @@ namespace VisualPascalABCPlugins
         ICompilerConsoleWindow CompilerConsoleWindow { get; }
         IOutputWindow OutputWindow { get; }
         IErrorListWindow ErrorsListWindow { get; }
+        IDisassemblyWindow DisassemblyWindow { get; }
         void BeginInvoke(Delegate del, params object[] args);
     }
 
@@ -464,6 +467,12 @@ namespace VisualPascalABCPlugins
     {
         void ShowErrorsSync(List<PascalABCCompiler.Errors.Error> errors, bool ChangeViewTab);
         void ClearErrorList();
+    }
+
+    public interface IDisassemblyWindow
+    {
+        bool IsVisible { get; }
+        void ClearWindow();
     }
 
     public interface IOutputWindow

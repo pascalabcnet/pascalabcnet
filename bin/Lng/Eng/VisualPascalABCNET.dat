@@ -131,6 +131,7 @@ M_COLLAPSE_REGIONS=Collapse regions
 TP_WARNINGLIST=Warnings
 TP_VARLIST=Local Variables
 TP_WATCHLIST=Watch List
+TP_DISASSEMBLY=Disassembly window
 TP_FIND_SYMBOL_RESULTS=Search Results
 CLMN_VAR=Var
 CLMN_TYPE=Type

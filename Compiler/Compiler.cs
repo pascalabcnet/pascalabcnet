@@ -2005,7 +2005,7 @@ namespace PascalABCCompiler
                         case false: cdo.dbg_attrs = NETGenerator.DebugAttributes.Release; break;
                     }
                     if (CompilerOptions.ForDebugging)
-                        cdo.dbg_attrs = NETGenerator.DebugAttributes.ForDebbuging;
+                        cdo.dbg_attrs = NETGenerator.DebugAttributes.ForDebugging;
 
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.
