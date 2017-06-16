@@ -27,7 +27,7 @@ namespace PascalABCCompiler.NETGenerator
     public enum DebugAttributes
     {
         Debug,
-        ForDebbuging,
+        ForDebugging,
         Release
     }
 
@@ -485,8 +485,8 @@ namespace PascalABCCompiler.NETGenerator
                     throw new TreeConverter.SourceFileError("");
                 }
             }
-            save_debug_info = comp_opt.dbg_attrs == DebugAttributes.Debug || comp_opt.dbg_attrs == DebugAttributes.ForDebbuging;
-            add_special_debug_variables = comp_opt.dbg_attrs == DebugAttributes.ForDebbuging;
+            save_debug_info = comp_opt.dbg_attrs == DebugAttributes.Debug || comp_opt.dbg_attrs == DebugAttributes.ForDebugging;
+            add_special_debug_variables = comp_opt.dbg_attrs == DebugAttributes.ForDebugging;
 
             //bool emit_sym = true;
             if (save_debug_info) //если модуль отладочный, то устанавливаем атрибут, запрещающий inline методов
@@ -512,7 +512,7 @@ namespace PascalABCCompiler.NETGenerator
                 entry_meth = helper.GetMethod(p.main_function).mi as MethodBuilder;
                 cur_meth = entry_meth;
                 il = cur_meth.GetILGenerator();
-                if (options.target != TargetType.Dll && options.dbg_attrs == DebugAttributes.ForDebbuging)
+                if (options.target != TargetType.Dll && options.dbg_attrs == DebugAttributes.ForDebugging)
                     AddSpecialInitDebugCode();
             }
             ILGenerator tmp_il = il;
@@ -803,7 +803,7 @@ namespace PascalABCCompiler.NETGenerator
             try
             { //ne osobo vazhnaja vesh, sohranjaet v exe-shnik spisok ispolzuemyh prostranstv imen, dlja strahovki obernuli try catch
 
-                if (comp_opt.dbg_attrs == DebugAttributes.ForDebbuging)
+                if (comp_opt.dbg_attrs == DebugAttributes.ForDebugging)
                 {
                     string[] namespaces = p.UsedNamespaces;
 

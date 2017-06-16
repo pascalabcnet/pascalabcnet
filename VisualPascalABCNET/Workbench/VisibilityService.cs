@@ -243,6 +243,32 @@ namespace VisualPascalABC
 
         }
 
+        public bool DisassemblyWindowVisible
+        {
+            get
+            {
+                return DisassemblyWindow != null && DisassemblyWindow.Visible;
+            }
+            set
+            {
+                if (value)
+                {
+                    if (DisassemblyWindow == null)
+                    {
+                        AddDisassemblyWindow();
+                    }
+                    else
+                    {
+                        //ShowContent(PropertiesWindow, false);
+                        DisassemblyWindow.Show();
+                        DisassemblyWindow.ShowDisassembly();
+                        //PropertiesWindow.IsHidden = false; //Show(MainDockPanel, DockState.Hidden);
+                    }
+                }
+            }
+
+        }
+
         public bool PropertiesWindowVisible
         {
             get
@@ -455,6 +481,11 @@ namespace VisualPascalABC
 
         public void SetAddExprMenuVisible(bool flag)
         {
+        }
+
+        public void SetDisassemblyMenuVisible(bool flag)
+        {
+            tsDisassembly.Visible = flag;
         }
 
         public void SetPlayButtonsVisible(bool start)

@@ -50,6 +50,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>PdbOnly</DebugType>
@@ -60,6 +61,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugSymbols>false</DebugSymbols>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
@@ -93,6 +95,10 @@
     <Reference Include="Microsoft.Build.Tasks" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="SharpDisasm, Version=1.0.0.0, Culture=neutral, PublicKeyToken=3c6f10d5f3df8ab7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SharpDisasm.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -154,6 +160,12 @@
     </Compile>
     <Compile Include="DockContent\DebugWatchListWindowForm.Designer.cs">
       <DependentUpon>DebugWatchListWindowForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DockContent\DisassemblyWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DockContent\DisassemblyWindow.Designer.cs">
+      <DependentUpon>DisassemblyWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="DockContent\ImmediateWindow.cs">
       <SubType>Form</SubType>
@@ -666,6 +678,7 @@
     <None Include="Resources\FormsDesignerPointerIcon.png" />
     <None Include="Resources\browserNavigBack.Image.png" />
     <Content Include="Resources\FormsDesignerPointerIcon.bmp" />
+    <EmbeddedResource Include="Resources\Icons.16x16.Disassembly.png" />
     <Content Include="Resources\Pointer.bmp" />
     <None Include="Resources\PrintHS.bmp" />
     <None Include="Resources\PrintHS.png" />
@@ -783,7 +796,7 @@
       <Name>ParserTools</Name>
     </ProjectReference>
     <ProjectReference Include="..\PluginsSupport\PluginsSupport.csproj">
-      <Project>{CFC683F8-0165-4A9F-9C3F-BB8C5BAB507F}</Project>
+      <Project>{cfc683f8-0165-4a9f-9c3f-bb8c5bab507f}</Project>
       <Name>PluginsSupport</Name>
     </ProjectReference>
     <ProjectReference Include="..\SyntaxTree\SyntaxTree.csproj">

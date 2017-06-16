@@ -69,6 +69,7 @@ namespace VisualPascalABC
         internal CompilerConsoleWindowForm CompilerConsoleWindow;
         internal DebugVariablesListWindowForm DebugVariablesListWindow;
         internal DebugWatchListWindowForm DebugWatchListWindow;
+        internal DisassemblyWindow DisassemblyWindow;
         internal ProjectExplorerForm ProjectExplorerWindow = null;
         WeifenLuo.WinFormsUI.Docking.DockPane BottomPane;
         WeifenLuo.WinFormsUI.Docking.DockPane ProjectPane;
@@ -92,6 +93,14 @@ namespace VisualPascalABC
             get
             {
                 return OutputWindow;
+            }
+        }
+
+        VisualPascalABCPlugins.IDisassemblyWindow VisualPascalABCPlugins.IWorkbench.DisassemblyWindow
+        {
+            get
+            {
+                return DisassemblyWindow;
             }
         }
 
@@ -1467,6 +1476,11 @@ namespace VisualPascalABC
         private void cmCollapseRegions_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.EditorService.CollapseRegions();
+        }
+
+        private void tsDisassembly_Click(object sender, EventArgs e)
+        {
+            DisassemblyWindowVisible = true;
         }
 
         private void tsHelp_Click(object sender, EventArgs e)

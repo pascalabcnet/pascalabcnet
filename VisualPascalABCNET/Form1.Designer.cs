@@ -118,6 +118,7 @@ namespace VisualPascalABC
             this.tsShowFindSymbolsResultWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.tsShowDebugVariablesListWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.tsShowDebugWatchListWindow = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsDisassembly = new System.Windows.Forms.ToolStripMenuItem();
             this.tsImmediateWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem12 = new System.Windows.Forms.ToolStripSeparator();
             this.tsViewIntellisensePanel = new System.Windows.Forms.ToolStripMenuItem();
@@ -1045,6 +1046,7 @@ namespace VisualPascalABC
             this.tsShowFindSymbolsResultWindow,
             this.tsShowDebugVariablesListWindow,
             this.tsShowDebugWatchListWindow,
+            this.tsDisassembly,
             this.tsImmediateWindow,
             this.toolStripMenuItem12,
             this.tsViewIntellisensePanel,
@@ -1133,6 +1135,15 @@ namespace VisualPascalABC
             this.tsShowDebugWatchListWindow.Size = new System.Drawing.Size(216, 22);
             this.tsShowDebugWatchListWindow.Text = "TP_WATCHLIST";
             this.tsShowDebugWatchListWindow.Click += new System.EventHandler(this.tsShowDebugWatchListWindow_Click);
+            // 
+            // tsDisassembly
+            // 
+            this.tsDisassembly.Image = ((System.Drawing.Image)(resources.GetObject("tsDisassembly.Image")));
+            this.tsDisassembly.Name = "tsDisassembly";
+            this.tsDisassembly.Size = new System.Drawing.Size(216, 22);
+            this.tsDisassembly.Text = "TP_DISASSEMBLY";
+            this.tsDisassembly.Visible = false;
+            this.tsDisassembly.Click += new System.EventHandler(this.tsDisassembly_Click);
             // 
             // tsImmediateWindow
             // 
@@ -1837,7 +1848,7 @@ namespace VisualPascalABC
             this.cmHelp,
             this.cmSamples});
             this.cmEditor.Name = "cmEditor";
-            this.cmEditor.Size = new System.Drawing.Size(226, 358);
+            this.cmEditor.Size = new System.Drawing.Size(226, 336);
             this.cmEditor.Opening += new System.ComponentModel.CancelEventHandler(this.cmEditor_Opening);
             // 
             // cmGotoDefinition
@@ -2565,6 +2576,7 @@ namespace VisualPascalABC
         private System.Windows.Forms.ToolStripMenuItem cmSamples;
         private System.Windows.Forms.ToolStripMenuItem miCheckUpdates;
         private System.Windows.Forms.ToolStripMenuItem cmCollapseRegions;
+        private System.Windows.Forms.ToolStripMenuItem tsDisassembly;
     }
 }
 

@@ -419,7 +419,6 @@
     <Compile Include="Src\Wrappers\ResourceManager.cs" />
     <Compile Include="Src\Wrappers\Util.cs" />
     <Compile Include="Src\Wrappers\_SECURITY_ATTRIBUTES.cs" />
-    <None Include="app.config" />
     <None Include="Src\Stepping.txt" />
   </ItemGroup>
   <ItemGroup>

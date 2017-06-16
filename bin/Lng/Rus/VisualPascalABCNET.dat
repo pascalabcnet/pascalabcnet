@@ -131,6 +131,7 @@ M_COLLAPSE_REGIONS=Свернуть все регионы
 TP_WARNINGLIST=Предупреждения
 TP_VARLIST=Локальные переменные
 TP_WATCHLIST=Просмотр выражений
+TP_DISASSEMBLY=Окно дизассемблирования
 TP_FIND_SYMBOL_RESULTS=Результат поиска символов
 CLMN_VAR=Переменная
 CLMN_TYPE=Тип

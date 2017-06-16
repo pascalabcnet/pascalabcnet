@@ -82,6 +82,17 @@ namespace VisualPascalABC
             AddWindowToDockPanel(DebugVariablesListWindow, MainDockPanel, OutputWindow.Dock, DockState.DockBottom, OutputWindow.IsFloat, BottomPane, int.MaxValue);
         }
 
+        void AddDisassemblyWindow()
+        {
+            if (DisassemblyWindow == null)
+            {
+                DisassemblyWindow = new DisassemblyWindow(this);
+                Form1StringResources.SetTextForAllControls(DisassemblyWindow);
+            }
+
+            AddWindowToDockPanel(DisassemblyWindow, MainDockPanel, OutputWindow.Dock, DockState.DockBottom, OutputWindow.IsFloat, BottomPane, int.MaxValue);
+        }
+
         void AddDebugWatchListWindow()
         {
             if (DebugWatchListWindow == null)
@@ -166,7 +177,7 @@ namespace VisualPascalABC
             else PropertiesWindowVisible = true;
         }
 
-        private CodeFileDocumentControl AddNewTab(DockPanel tabControl)
+        private CodeFileDocumentControl AddNewTab(DockPanel tabControl, DockStyle dockStyle = DockStyle.Fill)
         {
             CodeFileDocumentControl tp = new CodeFileDocumentControl(this);
             //tp.BorderStyle=BorderStyle.Fixed3D;
@@ -174,7 +185,7 @@ namespace VisualPascalABC
             RichTextBox tb = OutputWindow.outputTextBox;
             if (OpenDocuments.Count > 0)
                 tb = CopyTextBox(OutputWindow.outputTextBox);
-            AddWindowToDockPanel(tp, tabControl, tp.Dock, DockState.Document, tp.IsFloat, null, 0);
+            AddWindowToDockPanel(tp, tabControl, tp.Dock != dockStyle?dockStyle:tp.Dock, DockState.Document, tp.IsFloat, null, 0);
             OutputTextBoxs.Add(tp, tb);
 
             WorkbenchServiceFactory.CodeCompletionParserController.ParseInformationUpdated += tp.TextEditor.UpdateFolding;
@@ -311,6 +322,7 @@ namespace VisualPascalABC
             AddCompilerConsoleWindow();
             AddFindSymbolsResultWindow();
             AddImmediateWindow();
+            AddDisassemblyWindow();
             AddDebugVariablesListWindow();
             AddDebugWatchListWindow();
             if (!Tools.IsUnix())
@@ -326,6 +338,7 @@ namespace VisualPascalABC
             HideContent(DebugVariablesListWindow);
             HideContent(DebugWatchListWindow);
             HideContent(FindSymbolsResultWindow);
+            HideContent(DisassemblyWindow);
             if (!Tools.IsUnix())
             {
                 HideContent(PropertiesWindow);
@@ -622,6 +635,11 @@ namespace VisualPascalABC
             {
                 DebugWatchListWindow.SetUndefinedValue(i);
             }
+        }
+
+        public void DisplayDisassembledCode(string code)
+        {
+            DisassemblyWindow.SetDisassembledCode(code);
         }
 
         public void ClearDebugTabs()

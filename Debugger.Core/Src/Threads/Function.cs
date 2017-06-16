@@ -45,6 +45,14 @@ namespace Debugger
 			}
 		}
 
+        public ICorDebugFunction CorFunction
+        {
+            get
+            {
+                return corFunction;
+            }
+        }
+
 		/// <summary> The name of the function (eg "ToString") </summary>
 		public string Name { 
 			get { 
