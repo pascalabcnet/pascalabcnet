@@ -34,7 +34,7 @@
 %token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction 
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
-%token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
+%token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto tkStep
 %token <ti> tkLoop 
 %token <ti> tkSequence tkYield
 %token <id> tkNew
@@ -2528,7 +2528,11 @@ foreach_stmt_ident_dype_opt
 for_stmt
     : tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 optional_tk_do unlabelled_stmt
         { 
-			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $8, $9 as statement, @$);
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, null, $8, $9 as statement, @$);
+        }
+    | tkFor optional_var identifier for_stmt_decl_or_assign expr_l1 for_cycle_type expr_l1 tkStep expr_l1 optional_tk_do unlabelled_stmt
+        { 
+			$$ = NewForStmt((bool)$2, $3, $4, $5, (for_cycle_type)$6, $7, $9, $10, $11 as statement, @$);
         }
 	;
 	

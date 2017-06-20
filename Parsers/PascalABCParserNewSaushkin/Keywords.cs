@@ -102,6 +102,7 @@ namespace GPPGParserScanner
             keywords.Add(Convert("record"), (int)Tokens.tkRecord);
             keywords.Add(Convert("repeat"), (int)Tokens.tkRepeat);
             keywords.Add(Convert("set"), (int)Tokens.tkSet);
+            keywords.Add(Convert("step"), (int)Tokens.tkStep);
             keywords.Add(Convert("try"), (int)Tokens.tkTry);
             keywords.Add(Convert("type"), (int)Tokens.tkType);
             keywords.Add(Convert("then"), (int)Tokens.tkThen);
