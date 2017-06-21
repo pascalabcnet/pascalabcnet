@@ -345,7 +345,6 @@ UNICODEARROW \x890
     case (int)Tokens.tkSealed:
     case (int)Tokens.tkPartial:
     case (int)Tokens.tkParams:
-    case (int)Tokens.tkStep:
     case (int)Tokens.tkTo:
     case (int)Tokens.tkDownto:
     case (int)Tokens.tkUnit:

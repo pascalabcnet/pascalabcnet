@@ -274,9 +274,9 @@ namespace GPPGParserScanner
             return nws;
         }
 
-        public for_node NewForStmt(bool opt_var, ident identifier, type_definition for_stmt_decl_or_assign, expression expr1, for_cycle_type fc_type, expression expr2, expression IncrementValue, token_info opt_tk_do, statement stmt, LexLocation loc)
+        public for_node NewForStmt(bool opt_var, ident identifier, type_definition for_stmt_decl_or_assign, expression expr1, for_cycle_type fc_type, expression expr2, token_info opt_tk_do, statement stmt, LexLocation loc)
         {
-            var nfs = new for_node(identifier, expr1, expr2, stmt, fc_type, IncrementValue, for_stmt_decl_or_assign, opt_var != false, loc); 
+            var nfs = new for_node(identifier, expr1, expr2, stmt, fc_type, null, for_stmt_decl_or_assign, opt_var != false, loc); 
             if (opt_tk_do == null)
             {
                 file_position fp = expr2.source_context.end_position;

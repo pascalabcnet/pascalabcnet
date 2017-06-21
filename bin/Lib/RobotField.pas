@@ -27,29 +27,6 @@ var
   LabelBadEndColor: Color;
   LabelGoodEndColor: Color;
   
-  HelpStr := 
-'Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-17  '#10#13#10#13+
-    'Команды  исполнителя  Робот:'#10#13+
-    '    Right - вправо'#10#13+
-    '    Left - влево'#10#13
-    '    Up - вверх'#10#13+
-    '    Down - вниз'#10#13
-    '    Paint - закрасить текущую клетку'#10#13
-    '    Task(name) - вызвать задание с указанным именем'#10#13
-    '    StandardField - вызвать стандартное поле'#10#13
-    '    Field(n,m) - вызвать поле размера n на m'#10#13#10#13
-    'Условия, проверяемые  исполнителем  Робот:'#10#13
-    '    WallFromRight - справа стена'#10#13
-    '    WallFromLeft -  слева стена'#10#13
-    '    WallFromUp - сверху стена'#10#13
-    '    WallFromDown - снизу стена'#10#13
-    '    FreeFromRight - справа свободно'#10#13
-    '    FreeFromLeft - слева свободно'#10#13
-    '    FreeFromUp - сверху свободно'#10#13
-    '    FreeFromDown - снизу свободно'#10#13
-    '    CellIsPainted - клетка закрашена'#10#13
-    '    CellIsFree - клетка не закрашена'#10#13;
-  
 type 
   TRobotField = class
   private
@@ -254,33 +231,35 @@ begin
 end;
 
 procedure TRobotField.DrawFieldOnly;
+var ix,iy,w,h: integer;
 begin
-  var w := CellSize*DimX; 
-  var h := CellSize*DimY;
+  w := CellSize*DimX; 
+  h := CellSize*DimY;
   Brush.Color := clWhite;
   FillRectangle(X0,Y0,X0+w+1,Y0+h+1);
   Pen.Width := 1;
   Pen.Color := RGB(191,191,191);
-  for var ix:=0 to DimX do
+  for ix:=0 to DimX do
     Line(X0+ix*CellSize,Y0,X0+ix*CellSize,Y0+h);
-  for var iy:=0 to DimY do
+  for iy:=0 to DimY do
     Line(X0,Y0+iy*CellSize,X0+w,Y0+iy*CellSize);
 end;
 
 procedure TRobotField.Draw0;
+var x,y: integer;
 begin
   DrawFieldOnly;
   Pen.Color:=clBlack;
   Pen.Width:=3;
-  for var x:=1 to DimX do
-  for var y:=0 to DimY do
+  for x:=1 to DimX do
+  for y:=0 to DimY do
     if HorizWalls[x,y] then
     begin
       MoveTo(X0+(x-1)*CellSize,Y0+y*CellSize);
       LineTo(X0+x*CellSize,Y0+y*CellSize);
     end;
-  for var x:=0 to DimX do
-  for var y:=1 to DimY do
+  for x:=0 to DimX do
+  for y:=1 to DimY do
     if VertWalls[x,y] then
     begin
       MoveTo(X0+x*CellSize,Y0+(y-1)*CellSize);
@@ -289,8 +268,8 @@ begin
 
   Pen.Color:=clBlack;
   Pen.Width:=1;
-  for var x:=1 to DimX do
-  for var y:=1 to DimY do
+  for x:=1 to DimX do
+  for y:=1 to DimY do
     DrawCell(x,y);
 end;
 
@@ -386,9 +365,10 @@ begin
 end;
 
 procedure TRobotField.SetTagRect(x1,y1,x2,y2: integer);
+var x,y: integer;
 begin
-  for var x:=x1 to x2 do
-  for var y:=y1 to y2 do
+  for x:=x1 to x2 do
+  for y:=y1 to y2 do
     SetTag(x,y);
 end;
 
@@ -568,14 +548,16 @@ begin
 end;
 
 procedure TRobotField.HorizWall(x,y,len: integer);
+var xx: integer;
 begin
-  for var xx:=x to x+len-1 do
+  for xx:=x to x+len-1 do
     HorizWalls[xx,y] := True;
 end;
 
 procedure TRobotField.VertWall(x,y,len: integer);
+var yy: integer;
 begin
-  for var yy:=y to y+len-1 do
+  for yy:=y to y+len-1 do
     VertWalls[x,yy] := True;
 end;
 
@@ -622,15 +604,16 @@ begin
 end;
 
 procedure TRobotField.Clear;
+var x,y: integer;
 begin
-  for var x:=1 to Max_DimX do
-  for var y:=0 to Max_DimY do
+  for x:=1 to Max_DimX do
+  for y:=0 to Max_DimY do
     HorizWalls[x,y] := False;
-  for var x:=0 to Max_DimX do
-  for var y:=1 to Max_DimY do
+  for x:=0 to Max_DimX do
+  for y:=1 to Max_DimY do
     VertWalls[x,y] := False;
-  for var x:=1 to Max_DimX do
-  for var y:=1 to Max_DimY do
+  for x:=1 to Max_DimX do
+  for y:=1 to Max_DimY do
   begin
     Painted[x,y] := 0;
     Tags[x,y] := False;
@@ -645,10 +628,12 @@ end;
 
 function TRobotField.IsSolution: boolean;
 label 1;
+var x,y: integer;
+    ID: boolean;
 begin
-  var ID:=True;
-  for var x:=1 to DimX do
-  for var y:=1 to DimY do
+  ID:=True;
+  for x:=1 to DimX do
+  for y:=1 to DimY do
   begin
     //ID := ID and (((Tags[x,y]=True) and ((Painted[x,y]=1) or (Painted[x,y]=2))) or ((Tags[x,y]=False) and ((Painted[x,y]=0) or (Painted[x,y]=2))));
     ID := ID and (((Tags[x,y]=True) and (Painted[x,y] in [1,2])) or ((Tags[x,y]=False) and (Painted[x,y] in [0,2])));
@@ -661,8 +646,9 @@ end;
 
 //--------- Интерфейс и обработчики 
 procedure LoadIni(var settings: IniSettings);
+var Ini: TIniFile;
 begin
-  var Ini := new TIniFile(IniFileName);
+  Ini := new TIniFile(IniFileName);
   settings.Width := Ini.ReadInteger('RobotWindow','Width',679);
   settings.Height := Ini.ReadInteger('RobotWindow','Height',490);
   settings.Left := Ini.ReadInteger('RobotWindow','Left',(Screen.PrimaryScreen.Bounds.Width-settings.Width) div 2);
@@ -692,10 +678,11 @@ begin
 end;
 
 procedure SaveIni;
+var Ini: TIniFile;
 begin
   if (MainForm.Left<0) or (MainForm.Top<0) then
     exit;
-  var Ini := new TIniFile(IniFileName);
+  Ini := new TIniFile(IniFileName);
   Ini.WriteInteger('RobotWindow','Width',MainForm.Width);
   Ini.WriteInteger('RobotWindow','Height',MainForm.Height);
   Ini.WriteInteger('RobotWindow','Left',MainForm.Left);
@@ -710,9 +697,15 @@ begin
   halt;
 end;   
 
-procedure ABCWindowResize(o: Object; e: EventArgs) := CorrectWHLT;
+procedure ABCWindowResize(o: Object; e: EventArgs);
+begin
+  CorrectWHLT;
+end;
 
-procedure MainWindowClose := SaveIni;  
+procedure MainWindowClose;
+begin
+  SaveIni;  
+end;
 
 procedure buttonStartClick(o: Object; e: EventArgs);
 begin
@@ -741,7 +734,28 @@ end;
 
 procedure buttonHelpClick(o: Object; e: EventArgs);
 begin
-  MessageBox.Show(HelpStr,'Исполнитель Робот - Справка');
+  MessageBox.Show('Разработчик  исполнителя  Робот:  Михалкович С.С., 2002-07  '#10#13#10#13+
+    'Команды  исполнителя  Робот:'#10#13+
+    '    Right - вправо'#10#13+
+    '    Left - влево'#10#13
+    '    Up - вверх'#10#13+
+    '    Down - вниз'#10#13
+    '    Paint - закрасить текущую клетку'#10#13
+    '    Speed(n) - установить скорость n (n=0..10)'#10#13
+    '    Stop - остановить Робота'#10#13
+    '    Start - запустить Робота'#10#13#10#13
+    'Условия, проверяемые  исполнителем  Робот:'#10#13
+    '    WallFromRight - справа стена'#10#13
+    '    WallFromLeft -  слева стена;'#10#13
+    '    WallFromUp - сверху стена;'#10#13
+    '    WallFromDown - снизу стена;'#10#13
+    '    FreeFromRight - справа свободно;'#10#13
+    '    FreeFromLeft - слева свободно;'#10#13
+    '    FreeFromUp - сверху свободно;'#10#13
+    '    FreeFromDown - снизу свободно;'#10#13
+    '    CellIsPainted - клетка закрашена;'#10#13
+    '    CellIsFree - клетка не закрашена.'#10#13,
+    'Исполнитель Робот - Справка');
 
   (GraphABCControl as Control).Focus;
 end;
