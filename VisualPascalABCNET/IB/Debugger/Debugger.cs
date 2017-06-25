@@ -118,7 +118,6 @@ namespace VisualPascalABC
         {
             if (f == null)
                 return false;
-
             try
             {
                 System.Reflection.MethodBase mb = a.ManifestModule.ResolveMethod((int)f.Token);

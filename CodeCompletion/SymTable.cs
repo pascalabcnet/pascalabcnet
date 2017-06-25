@@ -2914,6 +2914,7 @@ namespace CodeCompletion
                 lst.Add(elementType);
                 this.implemented_interfaces = new List<TypeScope>();
                 this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IEnumerable<>), lst));
+                this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IList<>), lst));
             }
             this.si = new SymInfo("$" + this.ToString(), SymbolKind.Type, this.ToString());
             this.members = new List<SymScope>();
