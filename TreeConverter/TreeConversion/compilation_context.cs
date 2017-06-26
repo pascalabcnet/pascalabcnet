@@ -1995,8 +1995,11 @@ namespace PascalABCCompiler.TreeConverter
                 		userInitalValue = syntax_tree_visitor.get_init_call_for_set_as_constr(vdn,userInitalValue);
                 	//userInitalValue.type = SystemLibrary.SystemLibInitializer.TypedSetType.sym_info as type_node;
                 	}
-                    else
-                    if (userInitalValue is array_initializer)
+                    else if (vdn.type.type_special_kind == SemanticTree.type_special_kind.short_string)
+                    {
+                        userInitalValue = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, null, convertion_data_and_alghoritms.convert_type(userInitalValue, SystemLibrary.SystemLibrary.string_type), new int_const_node((vdn.type as short_string_type_node).Length, null));
+                    }
+                    else if (userInitalValue is array_initializer)
                 	{
                 		array_initializer arr = userInitalValue as array_initializer;
                 		if (vdn.type.element_type.type_special_kind == SemanticTree.type_special_kind.short_string)
