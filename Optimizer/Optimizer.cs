@@ -16,7 +16,8 @@ namespace PascalABCCompiler
         private bool extended_mode = true;
         private common_type_node current_type;
         private bool condition_block = false;
-
+        private bool has_returns = false;
+        
         public Optimizer()
         {
         }
@@ -133,6 +134,7 @@ namespace PascalABCCompiler
             foreach (common_in_function_function_node nested in cmn.functions_nodes_list)
                 VisitNestedFunction(nested);
             current_function = cmn;
+            has_returns = false;
             VisitStatement(cmn.function_code);
             foreach (var_definition_node vdn2 in cmn.var_definition_nodes_list)
             {
@@ -250,6 +252,7 @@ namespace PascalABCCompiler
             foreach (common_in_function_function_node nested in cnfn.functions_nodes_list)
                 VisitNestedFunction(nested);
             current_function = cnfn;
+            has_returns = false;
             VisitStatement(cnfn.function_code);
             foreach (var_definition_node vdn2 in cnfn.var_definition_nodes_list)
             {
@@ -318,6 +321,7 @@ namespace PascalABCCompiler
             foreach (common_in_function_function_node nested in cnfn.functions_nodes_list)
                 VisitNestedFunction(nested);
             current_function = cnfn;
+            has_returns = false;
             VisitStatement(cnfn.function_code);
             foreach (var_definition_node vdn2 in cnfn.var_definition_nodes_list)
             {
@@ -431,13 +435,13 @@ namespace PascalABCCompiler
 
         private void CheckInfiniteRecursion(common_namespace_function_call cnfc)
         {
-            if (!condition_block && cnfc.function_node == current_function)
+            if (!condition_block && !has_returns && cnfc.function_node == current_function)
                 warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
         private void CheckInfiniteRecursion(common_static_method_call cnfc)
         {
-            if (!condition_block && cnfc.function_node == current_function)
+            if (!condition_block && !has_returns && cnfc.function_node == current_function)
                 warns.Add(new InfiniteRecursion(cnfc.location));
         }
 
@@ -606,6 +610,7 @@ namespace PascalABCCompiler
         {
             VisitExpression(stmt.excpetion);
             is_break_stmt = true;
+            has_returns = true;
         }
 
         private void VisitTryBlock(try_block stmt)
@@ -782,6 +787,7 @@ namespace PascalABCCompiler
             {
                 case semantic_node_type.exit_procedure:
                     /*ничего писать не надо*/
+                    has_returns = true;
                     break;
                 case semantic_node_type.typeof_operator:
                     //VisitTypeOfOperator((typeof_operator)en); 
