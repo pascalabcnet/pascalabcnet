@@ -17,6 +17,7 @@ namespace PascalABCCompiler
         private common_type_node current_type;
         private bool condition_block = false;
         private bool has_returns = false;
+        private bool has_goto = false;
         
         public Optimizer()
         {
@@ -135,6 +136,7 @@ namespace PascalABCCompiler
                 VisitNestedFunction(nested);
             current_function = cmn;
             has_returns = false;
+            has_goto = false;
             VisitStatement(cmn.function_code);
             foreach (var_definition_node vdn2 in cmn.var_definition_nodes_list)
             {
@@ -253,6 +255,7 @@ namespace PascalABCCompiler
                 VisitNestedFunction(nested);
             current_function = cnfn;
             has_returns = false;
+            has_goto = false;
             VisitStatement(cnfn.function_code);
             foreach (var_definition_node vdn2 in cnfn.var_definition_nodes_list)
             {
@@ -322,6 +325,7 @@ namespace PascalABCCompiler
                 VisitNestedFunction(nested);
             current_function = cnfn;
             has_returns = false;
+            has_goto = false;
             VisitStatement(cnfn.function_code);
             foreach (var_definition_node vdn2 in cnfn.var_definition_nodes_list)
             {
@@ -380,7 +384,7 @@ namespace PascalABCCompiler
         private void VisitStatement(statement_node sn)
         {
             if (sn == null) return;
-            if (!(sn is statements_list) && is_break_stmt)
+            if (!(sn is statements_list) && is_break_stmt && !has_goto)
             {
                 warns.Add(new UnreachableCodeDetected(sn.location));
                 is_break_stmt = false;
@@ -548,12 +552,12 @@ namespace PascalABCCompiler
             }
             for (int i = 0; i < stmt.statements.Count; i++)
             {
-                if (is_break_stmt && stmt.statements[i].semantic_node_type != semantic_node_type.empty_statement)
+                if (is_break_stmt && !has_goto && stmt.statements[i].semantic_node_type != semantic_node_type.empty_statement)
                     warns.Add(new UnreachableCodeDetected(stmt.statements[i].location));
                 is_break_stmt = false;
                 sn = stmt.statements[i];
                 VisitStatement(sn);
-                if (is_break_stmt && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement)
+                if (is_break_stmt  && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement)
                     warns.Add(new UnreachableCodeDetected(stmt.statements[i + 1].location));
                 is_break_stmt = false;
             }
@@ -631,6 +635,7 @@ namespace PascalABCCompiler
 
         private void VisitGoto(goto_statement stmt)
         {
+        	has_goto = true;
         }
 		
         private void IncreaseNumUseVar(var_definition_node lvr)
