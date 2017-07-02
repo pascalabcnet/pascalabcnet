@@ -636,7 +636,12 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             _visitor.AddError(_visitor.get_location(_with_statement), "WITH_AND_LAMBDAS_NOT_ALLOWED");
         }
-
+        
+        public override void visit(PascalABCCompiler.SyntaxTree.goto_statement _goto_statement)
+        {
+            _visitor.AddError(_visitor.get_location(_goto_statement), "GOTO_AND_LAMBDAS_NOT_ALLOWED");
+        }
+        
         private void VisitProcParameters(formal_parameters procParametres)
         {
             if (procParametres == null ||
