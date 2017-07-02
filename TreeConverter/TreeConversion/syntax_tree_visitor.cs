@@ -3227,7 +3227,7 @@ namespace PascalABCCompiler.TreeConverter
                 AddError(new ExpectedType(SystemLibrary.SystemLibrary.string_type.name, loc));
             constant_node cn = convert_strong_to_constant_node(node.num_of_symbols, SystemLibrary.SystemLibrary.integer_type);
             int length = (cn as int_const_node).constant_value;
-            if (length < 1 || length > 256)
+            if (length < 1 || length > 255)
                 AddError(loc, "TYPE_CAN_NOT_HAVE_THIS_SIZE_{0}", SystemLibrary.SystemLibrary.string_type.name);
             return_value(context.create_short_string_type(length, loc));
         }
