@@ -1,0 +1,1 @@
+uses u_boxing1; begin end.

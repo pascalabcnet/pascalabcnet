@@ -638,7 +638,9 @@ namespace PascalABCCompiler.TreeConverter
 #if (DEBUG)
 			check_operator(pct.first.convertion_method);
 #endif
-            expression_node expr = create_simple_function_call(pct.first.convertion_method, en.location, en);
+			type_node conv_type = en.type;
+			expression_node expr = create_simple_function_call(pct.first.convertion_method, en.location, en);
+            expr.conversion_type = conv_type;
 			return expr;
 		}
 
@@ -668,10 +670,12 @@ namespace PascalABCCompiler.TreeConverter
 
             if (ptc.first != null)
             {
+            	type_node conv_type = from.type;
                 expression_node ret = create_simple_function_call(ptc.first.convertion_method, from.location, from);
                 if ((ret is base_function_call))
                     (ret as base_function_call).IsExplicitConversion = true;
                 ret.type = to;
+                ret.conversion_type = conv_type;
                 return ret;
             }
 
@@ -682,10 +686,11 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     AddError(from.location, "CAN_NOT_EXPLICITLY_CONVERT_TYPE_{0}_TO_TYPE_{1}", from.type.PrintableName, to.PrintableName);
                 }
+            	type_node conv_type = from.type;
                 expression_node expr = create_simple_function_call(SystemLibrary.SystemLibrary.obj_to_obj, from.location, from);
                 //TODO: Переделать.
                 ((base_function_call)expr).ret_type = to;
-
+                ((base_function_call)expr).conversion_type = conv_type;
                 ((base_function_call)expr).IsExplicitConversion = true;
                 return expr;
             }

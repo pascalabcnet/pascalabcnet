@@ -525,6 +525,11 @@ namespace PascalABCCompiler.SemanticTree
 		{
 			get;
 		}
+		
+		ITypeNode conversion_type
+		{
+			get;
+		}
 	}
 
 	//Базовый интерфейс для вызовов функций. Нигде не создается.
