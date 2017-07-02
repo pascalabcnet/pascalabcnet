@@ -3873,27 +3873,16 @@ namespace PascalABCCompiler.PCU
 		
 		private expression_node CreateBasicFunctionCall()
 		{
-            /*SemanticTree.basic_function_type bft = (SemanticTree.basic_function_type)br.ReadInt16();
-            type_node _tn = GetTypeReference();
-            int num_param = br.ReadInt32();
-            basic_function_node bfn = new basic_function_node(bft, _tn, true);
-            basic_function_call bfc = new basic_function_call(bfn, null);
-            bfc.ret_type=_tn;
-            for (int i = 0; i < num_param; i++)
-            {
-                expression_node expr=CreateExpression();
-                bfc.parameters.AddElement(expr);
-                bfn.parameters.AddElement(new basic_parameter("p",expr.type, PascalABCCompiler.SemanticTree.parameter_type.value, bfn));
-            }            
-            return bfc;*/
             SemanticTree.basic_function_type bft = (SemanticTree.basic_function_type)br.ReadInt16();
             basic_function_node bfn = PascalABCCompiler.SystemLibrary.SystemLibrary.find_operator(bft);
             if (bfn == null) throw new CompilerInternalError("[PCUREADER] Function not defined: "+bft.ToString());//Console.WriteLine(bft);
 
             type_node _tn = GetTypeReference();
+            type_node _conversion_tn = GetTypeReference();
             br.ReadInt32();
             basic_function_call bfc = new basic_function_call(bfn,null);
             bfc.ret_type = _tn;
+            bfc.conversion_type = _conversion_tn;
             int num_param = bfn.parameters.Count;
             for (int i=0; i<num_param; i++)
                 bfc.parameters.AddElement(CreateExpression());

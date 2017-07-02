@@ -7302,10 +7302,20 @@ namespace PascalABCCompiler.NETGenerator
                 ITypeNode tn2 = parameters[i].type;
                 ICompiledTypeNode ctn2 = tn2 as ICompiledTypeNode;
                 ITypeNode ctn3 = real_parameters[i].type;
+                ITypeNode ctn4 = real_parameters[i].conversion_type;
+                bool use_stn4 = false;
                 //(ssyy) 07.12.2007 При боксировке нужно вызывать Ldsfld вместо Ldsflda.
                 //Дополнительная проверка введена именно для этого.
                 bool box_awaited =
-                    (ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType || tn2.IsInterface) && !(real_parameters[i] is SemanticTree.INullConstantNode) && (ctn3.is_value_type || ctn3.is_generic_parameter);
+                    (ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType || tn2.IsInterface) && !(real_parameters[i] is SemanticTree.INullConstantNode) 
+                	&& (ctn3.is_value_type || ctn3.is_generic_parameter);
+                if (!box_awaited && (ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType || tn2.IsInterface) && !(real_parameters[i] is SemanticTree.INullConstantNode) 
+                	&& ctn4 != null && ctn4.is_value_type)
+                {
+                	box_awaited = true;
+                	use_stn4 = true;
+                }
+                	
                 if (!(real_parameters[i] is INullConstantNode))
                 {
                     ti = helper.GetTypeReference(ctn);
@@ -7318,7 +7328,10 @@ namespace PascalABCCompiler.NETGenerator
                 CallCloneIfNeed(il, parameters[i], real_parameters[i]);
                 if (box_awaited)
                 {
-                    il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
+                	if (use_stn4)
+                		il.Emit(OpCodes.Box, helper.GetTypeReference(ctn4).tp);
+                	else
+                    	il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
                 }
                 is_addr = false;
             }
@@ -7409,6 +7422,10 @@ namespace PascalABCCompiler.NETGenerator
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);//упаковка
                 return true;
+            }
+            if (from.conversion_type != null && from.conversion_type.is_value_type && !(from is SemanticTree.INullConstantNode) && (LocalType == TypeFactory.ObjectType || TypeIsInterface(LocalType)))
+            {
+            	il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
             return false;
         }

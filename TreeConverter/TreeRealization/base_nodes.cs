@@ -229,7 +229,9 @@ namespace PascalABCCompiler.TreeRealization
         /// Тип выражения.
         /// </summary>
 		private type_node _tn;
-
+		
+		private type_node _conversion_tn;
+		
         /// <summary>
         /// Конструктор выражения.
         /// </summary>
@@ -257,6 +259,18 @@ namespace PascalABCCompiler.TreeRealization
             set
             {
                 _tn = value;
+            }
+		}
+		
+		public virtual type_node conversion_type
+		{
+			get
+			{
+				return _conversion_tn;
+			}
+            set
+            {
+                _conversion_tn = value;
             }
 		}
 
@@ -301,6 +315,14 @@ namespace PascalABCCompiler.TreeRealization
 			get
 			{
 				return this.type;
+			}
+		}
+		
+		SemanticTree.ITypeNode SemanticTree.IExpressionNode.conversion_type
+		{
+			get
+			{
+				return this.conversion_type;
 			}
 		}
 	}
