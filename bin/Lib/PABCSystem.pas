@@ -608,38 +608,38 @@ function ReadlnChar3: (char,char,char);
 function ReadlnString3: (string,string,string);
 
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры
-function ReadInteger2(message: string): (integer,integer);
+function ReadInteger2(prompt: string): (integer,integer);
 /// Возвращает кортеж из двух значений типа real, введенных с клавиатуры
-function ReadReal2(message: string): (real,real);
+function ReadReal2(prompt: string): (real,real);
 /// Возвращает кортеж из двух значений типа char, введенных с клавиатуры
-function ReadChar2(message: string): (char,char);
+function ReadChar2(prompt: string): (char,char);
 /// Возвращает кортеж из двух значений типа string, введенных с клавиатуры
-function ReadString2(message: string): (string,string);
+function ReadString2(prompt: string): (string,string);
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnInteger2(message: string): (integer,integer);
+function ReadlnInteger2(prompt: string): (integer,integer);
 /// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnReal2(message: string): (real,real);
+function ReadlnReal2(prompt: string): (real,real);
 /// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnChar2(message: string): (char,char);
+function ReadlnChar2(prompt: string): (char,char);
 /// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnString2(message: string): (string,string);
+function ReadlnString2(prompt: string): (string,string);
 
 /// Возвращает кортеж из трёх значений типа integer, введенных с клавиатуры
-function ReadInteger3(message: string): (integer,integer,integer);
+function ReadInteger3(prompt: string): (integer,integer,integer);
 /// Возвращает кортеж из трёх значений типа real, введенных с клавиатуры
-function ReadReal3(message: string): (real,real,real);
+function ReadReal3(prompt: string): (real,real,real);
 /// Возвращает кортеж из трёх значений типа char, введенных с клавиатуры
-function ReadChar3(message: string): (char,char,char);
+function ReadChar3(prompt: string): (char,char,char);
 /// Возвращает кортеж из трёх значений типа string, введенных с клавиатуры
-function ReadString3(message: string): (string,string,string);
+function ReadString3(prompt: string): (string,string,string);
 /// Возвращает кортеж из двух значений типа integer, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnInteger3(message: string): (integer,integer,integer);
+function ReadlnInteger3(prompt: string): (integer,integer,integer);
 /// Возвращает кортеж из двух значений типа real, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnReal3(message: string): (real,real,real);
+function ReadlnReal3(prompt: string): (real,real,real);
 /// Возвращает кортеж из двух значений типа char, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnChar3(message: string): (char,char,char);
+function ReadlnChar3(prompt: string): (char,char,char);
 /// Возвращает кортеж из двух значений типа string, введенных с клавиатуры, и переходит на следующую строку ввода
-function ReadlnString3(message: string): (string,string,string);
+function ReadlnString3(prompt: string): (string,string,string);
 
 
 /// Выводит приглашение к вводу и возвращает значение типа integer, введенное с клавиатуры
@@ -1221,6 +1221,18 @@ function Random(maxValue: integer): integer;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
+/// Возвращает кортеж из двух случайных целых в диапазоне от 0 до maxValue-1
+function Random2(maxValue: integer): (integer,integer);
+/// Возвращает кортеж из двух случайных целых в диапазоне от a до b
+function Random2(a, b: integer): (integer,integer);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне [0..1)
+function Random2: (real,real);
+/// Возвращает кортеж из трех случайных целых в диапазоне от 0 до maxValue-1
+function Random3(maxValue: integer): (integer,integer,integer);
+/// Возвращает кортеж из трех случайных целых в диапазоне от a до b
+function Random3(a, b: integer): (integer,integer,integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне [0..1)
+function Random3: (real,real,real);
 
 ///-function Max(a: число, b: число): число;
 /// Возвращает максимальное из чисел a,b
@@ -1678,11 +1690,11 @@ function ReadSeqReal(n: integer): sequence of real;
 function ReadSeqString(n: integer): sequence of string;
 
 /// Выводит приглашение к вводу и возвращает последовательность из n целых, введенных с клавиатуры
-function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
+function ReadSeqInteger(prompt: string; n: integer): sequence of integer;
 /// Выводит приглашение к вводу и возвращает последовательность из n вещественных, введенных с клавиатуры
-function ReadSeqReal(const prompt: string; n: integer): sequence of real;
+function ReadSeqReal(prompt: string; n: integer): sequence of real;
 /// Выводит приглашение к вводу и возвращает последовательность из n строк, введенных с клавиатуры
-function ReadSeqString(const prompt: string; n: integer): sequence of string;
+function ReadSeqString(prompt: string; n: integer): sequence of string;
 
 /// Возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
 function ReadSeqIntegerWhile(cond: integer -> boolean): sequence of integer;
@@ -1692,11 +1704,11 @@ function ReadSeqRealWhile(cond: real -> boolean): sequence of real;
 function ReadSeqStringWhile(cond: string -> boolean): sequence of string;
 
 /// Выводит приглашение к вводу и возвращает последовательность целых, вводимых с клавиатуры пока выполняется определенное условие
-function ReadSeqIntegerWhile(const prompt: string; cond: integer -> boolean): sequence of integer;
+function ReadSeqIntegerWhile(prompt: string; cond: integer -> boolean): sequence of integer;
 /// Выводит приглашение к вводу и возвращает последовательность вещественных, вводимых с клавиатуры пока выполняется определенное условие
-function ReadSeqRealWhile(const prompt: string; cond: real -> boolean): sequence of real;
+function ReadSeqRealWhile(prompt: string; cond: real -> boolean): sequence of real;
 /// Выводит приглашение к вводу и возвращает последовательность строк, вводимых с клавиатуры пока выполняется определенное условие
-function ReadSeqStringWhile(const prompt: string; cond: string -> boolean): sequence of string;
+function ReadSeqStringWhile(prompt: string; cond: string -> boolean): sequence of string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для генерации динамических массивов # Subroutines for array of T generation
@@ -1730,11 +1742,11 @@ function ReadArrReal(n: integer): array of real;
 function ReadArrString(n: integer): array of string;
 
 /// Выводит приглашение к вводу и возвращает массив из n целых, введенных с клавиатуры
-function ReadArrInteger(const prompt: string; n: integer): array of integer;
+function ReadArrInteger(prompt: string; n: integer): array of integer;
 /// Выводит приглашение к вводу и возвращает массив из n вещественных, введенных с клавиатуры
-function ReadArrReal(const prompt: string; n: integer): array of real;
+function ReadArrReal(prompt: string; n: integer): array of real;
 /// Выводит приглашение к вводу и возвращает массив из n строк, введенных с клавиатуры
-function ReadArrString(const prompt: string; n: integer): array of string;
+function ReadArrString(prompt: string; n: integer): array of string;
 
 // -----------------------------------------------------
 //>>     Подпрограммы для матриц # Subroutines for matrixes 
@@ -3103,10 +3115,10 @@ const
   nmax = 100;
   nmax1 = 30;
 begin
-  if o is System.Reflection.Pointer then
-    Result := PointerToString(System.Reflection.Pointer.Unbox(o))
-  else if o=nil then
+  if o=nil then
     Result := 'nil' 
+  else if o is System.Reflection.Pointer then
+    Result := PointerToString(System.Reflection.Pointer.Unbox(o))
   else if (o.GetType = typeof(real)) or (o.GetType = typeof(decimal)) or (o.GetType = typeof(single)) then
     Result := FormatFloatNumber(o.ToString)
   else if (o.GetType = typeof(Complex)) then 
@@ -3987,7 +3999,7 @@ begin
     Result[i] := ReadInteger;
 end;
 
-function ReadArrInteger(const prompt: string; n: integer): array of integer;
+function ReadArrInteger(prompt: string; n: integer): array of integer;
 begin
   Print(prompt);
   Result := ReadArrInteger(n);
@@ -4000,7 +4012,7 @@ begin
     Result[i] := ReadReal;
 end;
 
-function ReadArrReal(const prompt: string; n: integer): array of real;
+function ReadArrReal(prompt: string; n: integer): array of real;
 begin
   Print(prompt);
   Result := ReadArrReal(n);
@@ -4013,7 +4025,7 @@ begin
     Result[i] := ReadString;
 end;
 
-function ReadArrString(const prompt: string; n: integer): array of string;
+function ReadArrString(prompt: string; n: integer): array of string;
 begin
   Print(prompt);
   Result := ReadArrString(n);
@@ -4024,7 +4036,7 @@ begin
   Result := Range(1,n).Select(i->ReadInteger());
 end;
 
-function ReadSeqInteger(const prompt: string; n: integer): sequence of integer;
+function ReadSeqInteger(prompt: string; n: integer): sequence of integer;
 begin
   Print(prompt);
   Result := ReadSeqInteger(n);
@@ -4035,7 +4047,7 @@ begin
   Result := Range(1,n).Select(i->ReadReal());
 end;
 
-function ReadSeqReal(const prompt: string; n: integer): sequence of real;
+function ReadSeqReal(prompt: string; n: integer): sequence of real;
 begin
   Print(prompt);
   Result := ReadSeqReal(n);
@@ -4046,7 +4058,7 @@ begin
   Result := Range(1,n).Select(i->ReadString());
 end;
 
-function ReadSeqString(const prompt: string; n: integer): sequence of string;
+function ReadSeqString(prompt: string; n: integer): sequence of string;
 begin
   Print(prompt);
   Result := ReadSeqString(n);
@@ -4085,19 +4097,19 @@ begin
   end;
 end;
 
-function ReadSeqIntegerWhile(const prompt: string; cond: integer -> boolean): sequence of integer;
+function ReadSeqIntegerWhile(prompt: string; cond: integer -> boolean): sequence of integer;
 begin
   Print(prompt);
   Result := ReadSeqIntegerWhile(cond);
 end;
 
-function ReadSeqRealWhile(const prompt: string; cond: real -> boolean): sequence of real;
+function ReadSeqRealWhile(prompt: string; cond: real -> boolean): sequence of real;
 begin
   Print(prompt);
   Result := ReadSeqRealWhile(cond);
 end;
 
-function ReadSeqStringWhile(const prompt: string; cond: string -> boolean): sequence of string;
+function ReadSeqStringWhile(prompt: string; cond: string -> boolean): sequence of string;
 begin
   Print(prompt);
   Result := ReadSeqStringWhile(cond);
@@ -4689,22 +4701,22 @@ function ReadlnReal3    := (ReadReal,ReadReal,ReadlnReal);
 function ReadlnChar3    := (ReadChar,ReadChar,ReadlnChar);
 function ReadlnString3  := (ReadString,ReadString,ReadlnString);
 
-function ReadInteger2(message: string)   := (ReadInteger(message),ReadInteger);
-function ReadReal2(message: string)      := (ReadReal(message),ReadReal);
-function ReadChar2(message: string)      := (ReadChar(message),ReadChar);
-function ReadString2(message: string)    := (ReadString(message),ReadString);
-function ReadlnInteger2(message: string) := (ReadInteger(message),ReadlnInteger);
-function ReadlnReal2(message: string)    := (ReadReal(message),ReadlnReal);
-function ReadlnChar2(message: string)    := (ReadChar(message),ReadlnChar);
-function ReadlnString2(message: string)  := (ReadString(message),ReadlnString);
-function ReadInteger3(message: string)   := (ReadInteger(message),ReadInteger,ReadInteger);
-function ReadReal3(message: string)      := (ReadReal(message),ReadReal,ReadReal);
-function ReadChar3(message: string)      := (ReadChar(message),ReadChar,ReadChar);
-function ReadString3(message: string)    := (ReadString(message),ReadString,ReadString);
-function ReadlnInteger3(message: string) := (ReadInteger(message),ReadInteger,ReadlnInteger);
-function ReadlnReal3(message: string)    := (ReadReal(message),ReadReal,ReadlnReal);
-function ReadlnChar3(message: string)    := (ReadChar(message),ReadChar,ReadlnChar);
-function ReadlnString3(message: string)  := (ReadString(message),ReadString,ReadlnString);
+function ReadInteger2(prompt: string)   := (ReadInteger(prompt),ReadInteger);
+function ReadReal2(prompt: string)      := (ReadReal(prompt),ReadReal);
+function ReadChar2(prompt: string)      := (ReadChar(prompt),ReadChar);
+function ReadString2(prompt: string)    := (ReadString(prompt),ReadString);
+function ReadlnInteger2(prompt: string) := (ReadInteger(prompt),ReadlnInteger);
+function ReadlnReal2(prompt: string)    := (ReadReal(prompt),ReadlnReal);
+function ReadlnChar2(prompt: string)    := (ReadChar(prompt),ReadlnChar);
+function ReadlnString2(prompt: string)  := (ReadString(prompt),ReadlnString);
+function ReadInteger3(prompt: string)   := (ReadInteger(prompt),ReadInteger,ReadInteger);
+function ReadReal3(prompt: string)      := (ReadReal(prompt),ReadReal,ReadReal);
+function ReadChar3(prompt: string)      := (ReadChar(prompt),ReadChar,ReadChar);
+function ReadString3(prompt: string)    := (ReadString(prompt),ReadString,ReadString);
+function ReadlnInteger3(prompt: string) := (ReadInteger(prompt),ReadInteger,ReadlnInteger);
+function ReadlnReal3(prompt: string)    := (ReadReal(prompt),ReadReal,ReadlnReal);
+function ReadlnChar3(prompt: string)    := (ReadChar(prompt),ReadChar,ReadlnChar);
+function ReadlnString3(prompt: string)  := (ReadString(prompt),ReadString,ReadlnString);
 
 
 // Read with prompt
@@ -6716,63 +6728,27 @@ function Power(x, y: real): real := Math.Pow(x, y);
 
 function Power(x, y: integer): real := Math.Pow(x, y);
 
-function Power(x: BigInteger; y: integer): BigInteger;
-begin
-  Result := BigInteger.Pow(x, y)
-end;
+function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 
-function Round(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Round(x));
-end;
+function Round(x: real) := Convert.ToInt32(Math.Round(x));
 
-function RoundBigInteger(x: real): BigInteger;
-begin
-  Result := BigInteger.Create(Math.Round(x));
-end;
+function RoundBigInteger(x: real) := BigInteger.Create(Math.Round(x));
 
-function Trunc(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Truncate(x));
-end;
+function Trunc(x: real) := Convert.ToInt32(Math.Truncate(x));
 
-function TruncBigInteger(x: real): BigInteger;
-begin
-  Result := BigInteger.Create(Math.Truncate(x));
-end;
+function TruncBigInteger(x: real) := BigInteger.Create(Math.Truncate(x));
 
-function Int(x: real): real;
-begin
-  //if x>=0 then
-  //  Result := Math.Floor(x)
-  //else Result := Math.Ceiling(x);
-  Result := x >= 0 ? Math.Floor(x) : Math.Ceiling(x);
-end;
+function Int(x: real) := x >= 0 ? Math.Floor(x) : Math.Ceiling(x);
 
-function Frac(x: real): real;
-begin
-  Result := x - Int(x);
-end;
+function Frac(x: real) := x - Int(x);
 
-function Floor(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Floor(x));
-end;
+function Floor(x: real) := Convert.ToInt32(Math.Floor(x));
 
-function Ceil(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Ceiling(x));
-end;
+function Ceil(x: real) := Convert.ToInt32(Math.Ceiling(x));
 
-function RadToDeg(x: real): real;
-begin
-  Result := x * 180 / Pi;
-end;
+function RadToDeg(x: real) := x * 180 / Pi;
 
-function DegToRad(x: real): real;
-begin
-  Result := x * Pi / 180;
-end;
+function DegToRad(x: real) := x * Pi / 180;
 
 procedure Randomize;
 begin
@@ -6784,10 +6760,7 @@ begin
   rnd := new System.Random(seed);
 end;
 
-function Random(MaxValue: integer): integer;
-begin
-  Result := rnd.Next(MaxValue);
-end;
+function Random(MaxValue: integer) := rnd.Next(MaxValue);
 
 function Random(a, b: integer): integer;
 begin
@@ -6795,10 +6768,15 @@ begin
   Result := rnd.Next(a, b + 1);
 end;
 
-function Random: real;
-begin
-  Result := rnd.NextDouble;
-end;
+function Random := rnd.NextDouble;
+
+function Random2(maxValue: integer) := (Random(maxValue),Random(maxValue));
+function Random2(a, b: integer) := (Random(a,b),Random(a,b));
+function Random2 := (Random,Random);
+function Random3(maxValue: integer) := (Random(maxValue),Random(maxValue),Random(maxValue));
+function Random3(a, b: integer) := (Random(a,b),Random(a,b),Random(a,b));
+function Random3 := (Random,Random,Random);
+
 
 function Max(a, b: byte): byte;
 begin
@@ -6920,30 +6898,18 @@ begin
   result := (i mod 2) <> 0;
 end;
 
-function Odd(i: integer): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: integer) := (i mod 2) <> 0;
 
 function Odd(i: BigInteger): boolean;
 begin
   Result := not i.IsEven;
 end;
 
-function Odd(i: longword): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: longword) := (i mod 2) <> 0;
 
-function Odd(i: int64): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: int64) := (i mod 2) <> 0;
 
-function Odd(i: uint64): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: uint64) := (i mod 2) <> 0;
 
 function Cplx(re,im: real) := new Complex(re,im);
 
