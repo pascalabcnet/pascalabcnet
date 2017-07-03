@@ -1221,6 +1221,18 @@ function Random(maxValue: integer): integer;
 function Random(a, b: integer): integer;
 /// Возвращает случайное вещественное в диапазоне [0..1)
 function Random: real;
+/// Возвращает кортеж из двух случайных целых в диапазоне от 0 до maxValue-1
+function Random2(maxValue: integer): (integer,integer);
+/// Возвращает кортеж из двух случайных целых в диапазоне от a до b
+function Random2(a, b: integer): (integer,integer);
+/// Возвращает кортеж из двух случайных вещественных в диапазоне [0..1)
+function Random2: (real,real);
+/// Возвращает кортеж из трех случайных целых в диапазоне от 0 до maxValue-1
+function Random3(maxValue: integer): (integer,integer,integer);
+/// Возвращает кортеж из трех случайных целых в диапазоне от a до b
+function Random3(a, b: integer): (integer,integer,integer);
+/// Возвращает кортеж из трех случайных вещественных в диапазоне [0..1)
+function Random3: (real,real,real);
 
 ///-function Max(a: число, b: число): число;
 /// Возвращает максимальное из чисел a,b
@@ -3103,10 +3115,10 @@ const
   nmax = 100;
   nmax1 = 30;
 begin
-  if o is System.Reflection.Pointer then
-    Result := PointerToString(System.Reflection.Pointer.Unbox(o))
-  else if o=nil then
+  if o=nil then
     Result := 'nil' 
+  else if o is System.Reflection.Pointer then
+    Result := PointerToString(System.Reflection.Pointer.Unbox(o))
   else if (o.GetType = typeof(real)) or (o.GetType = typeof(decimal)) or (o.GetType = typeof(single)) then
     Result := FormatFloatNumber(o.ToString)
   else if (o.GetType = typeof(Complex)) then 
@@ -3252,15 +3264,25 @@ end;
 /// Повторяет символ c n раз
 function char.operator*(c: char; n: integer): string;
 begin
+  if n<=0 then
+  begin
+    Result := '';
+    exit;
+  end;
   var sb := new StringBuilder(n,n);
   loop n do
     sb.Append(c);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет символ c n раз
 function char.operator*(n: integer; c: char): string;
 begin
+  if n<=0 then
+  begin
+    Result := '';
+    exit;
+  end;
   var sb := new StringBuilder(n,n);
   loop n do
     sb.Append(c);
@@ -6716,63 +6738,27 @@ function Power(x, y: real): real := Math.Pow(x, y);
 
 function Power(x, y: integer): real := Math.Pow(x, y);
 
-function Power(x: BigInteger; y: integer): BigInteger;
-begin
-  Result := BigInteger.Pow(x, y)
-end;
+function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 
-function Round(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Round(x));
-end;
+function Round(x: real) := Convert.ToInt32(Math.Round(x));
 
-function RoundBigInteger(x: real): BigInteger;
-begin
-  Result := BigInteger.Create(Math.Round(x));
-end;
+function RoundBigInteger(x: real) := BigInteger.Create(Math.Round(x));
 
-function Trunc(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Truncate(x));
-end;
+function Trunc(x: real) := Convert.ToInt32(Math.Truncate(x));
 
-function TruncBigInteger(x: real): BigInteger;
-begin
-  Result := BigInteger.Create(Math.Truncate(x));
-end;
+function TruncBigInteger(x: real) := BigInteger.Create(Math.Truncate(x));
 
-function Int(x: real): real;
-begin
-  //if x>=0 then
-  //  Result := Math.Floor(x)
-  //else Result := Math.Ceiling(x);
-  Result := x >= 0 ? Math.Floor(x) : Math.Ceiling(x);
-end;
+function Int(x: real) := x >= 0 ? Math.Floor(x) : Math.Ceiling(x);
 
-function Frac(x: real): real;
-begin
-  Result := x - Int(x);
-end;
+function Frac(x: real) := x - Int(x);
 
-function Floor(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Floor(x));
-end;
+function Floor(x: real) := Convert.ToInt32(Math.Floor(x));
 
-function Ceil(x: real): integer;
-begin
-  Result := Convert.ToInt32(Math.Ceiling(x));
-end;
+function Ceil(x: real) := Convert.ToInt32(Math.Ceiling(x));
 
-function RadToDeg(x: real): real;
-begin
-  Result := x * 180 / Pi;
-end;
+function RadToDeg(x: real) := x * 180 / Pi;
 
-function DegToRad(x: real): real;
-begin
-  Result := x * Pi / 180;
-end;
+function DegToRad(x: real) := x * Pi / 180;
 
 procedure Randomize;
 begin
@@ -6784,10 +6770,7 @@ begin
   rnd := new System.Random(seed);
 end;
 
-function Random(MaxValue: integer): integer;
-begin
-  Result := rnd.Next(MaxValue);
-end;
+function Random(MaxValue: integer) := rnd.Next(MaxValue);
 
 function Random(a, b: integer): integer;
 begin
@@ -6795,10 +6778,15 @@ begin
   Result := rnd.Next(a, b + 1);
 end;
 
-function Random: real;
-begin
-  Result := rnd.NextDouble;
-end;
+function Random := rnd.NextDouble;
+
+function Random2(maxValue: integer) := (Random(maxValue),Random(maxValue));
+function Random2(a, b: integer) := (Random(a,b),Random(a,b));
+function Random2 := (Random,Random);
+function Random3(maxValue: integer) := (Random(maxValue),Random(maxValue),Random(maxValue));
+function Random3(a, b: integer) := (Random(a,b),Random(a,b),Random(a,b));
+function Random3 := (Random,Random,Random);
+
 
 function Max(a, b: byte): byte;
 begin
@@ -6920,30 +6908,18 @@ begin
   result := (i mod 2) <> 0;
 end;
 
-function Odd(i: integer): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: integer) := (i mod 2) <> 0;
 
 function Odd(i: BigInteger): boolean;
 begin
   Result := not i.IsEven;
 end;
 
-function Odd(i: longword): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: longword) := (i mod 2) <> 0;
 
-function Odd(i: int64): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: int64) := (i mod 2) <> 0;
 
-function Odd(i: uint64): boolean;
-begin
-  result := (i mod 2) <> 0;
-end;
+function Odd(i: uint64) := (i mod 2) <> 0;
 
 function Cplx(re,im: real) := new Complex(re,im);
 
