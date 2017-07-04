@@ -3264,15 +3264,25 @@ end;
 /// Повторяет символ c n раз
 function char.operator*(c: char; n: integer): string;
 begin
+  if n<=0 then
+  begin
+    Result := '';
+    exit;
+  end;
   var sb := new StringBuilder(n,n);
   loop n do
     sb.Append(c);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет символ c n раз
 function char.operator*(n: integer; c: char): string;
 begin
+  if n<=0 then
+  begin
+    Result := '';
+    exit;
+  end;
   var sb := new StringBuilder(n,n);
   loop n do
     sb.Append(c);
