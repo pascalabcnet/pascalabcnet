@@ -15933,7 +15933,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             //expression_node from = convert_strong(_assign.from);
-            /// SSM исправление Саушкина 10.03.16
+            // SSM исправление Саушкина 10.03.16
             expression_node from;
             var fromAsLambda = _assign.from as function_lambda_definition;
             if (fromAsLambda != null)
@@ -15969,9 +15969,10 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     var tt = to.type;
                     type_node elem_type = null;
+                    try_convert_typed_expression_to_function_call(ref from);
                     var b = FindIEnumerableElementType(from.type, ref elem_type);
                     if (!b)
-                        AddError(null, "FindIEnumerableElementType returns false");
+                        AddError(from.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", from.type.full_name);
 
                     var IEnumType = new template_type_reference(new named_type_reference("System.Collections.Generic.IEnumerable"), new template_param_list(new semantic_type_node(elem_type)));
                     if (to is class_field_reference)
@@ -15990,7 +15991,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
-            /// end
+            // end
 
             //SSM 4.04.16
             if (to.type is undefined_type)
