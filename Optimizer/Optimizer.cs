@@ -384,7 +384,7 @@ namespace PascalABCCompiler
         private void VisitStatement(statement_node sn)
         {
             if (sn == null) return;
-            if (!(sn is statements_list) && is_break_stmt && !has_goto)
+            if (!(sn is statements_list) && is_break_stmt && !has_goto && !(sn is empty_statement))
             {
                 warns.Add(new UnreachableCodeDetected(sn.location));
                 is_break_stmt = false;
