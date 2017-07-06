@@ -169,4 +169,7 @@ begin
   assert(arr[0] = nil);
   arr[0] := 2;
   assert(arr[0] <> nil);
+  var lst: List<integer?> := new List<integer?>;
+  lst.Add(nil);
+  assert(lst[0] = nil);
 end.
