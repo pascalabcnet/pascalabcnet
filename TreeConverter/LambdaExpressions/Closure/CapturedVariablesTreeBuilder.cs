@@ -179,7 +179,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 return;
             }
 
-            if (si.sym_info.semantic_node_type == semantic_node_type.class_field && InLambdaContext)
+            /*if (si.sym_info.semantic_node_type == semantic_node_type.class_field && InLambdaContext)
             {
                 var semClassField = (class_field)si.sym_info;
                 if (semClassField.polymorphic_state != polymorphic_state.ps_common)
@@ -187,7 +187,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                     return;
                 }
-            }
+            }*/
 
             if (si.scope == null)
             {
