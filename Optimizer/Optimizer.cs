@@ -554,12 +554,14 @@ namespace PascalABCCompiler
             {
                 if (is_break_stmt && !has_goto && stmt.statements[i].semantic_node_type != semantic_node_type.empty_statement)
                     warns.Add(new UnreachableCodeDetected(stmt.statements[i].location));
-                is_break_stmt = false;
+                if (stmt.statements[i].semantic_node_type != semantic_node_type.empty_statement)
+                	is_break_stmt = false;
                 sn = stmt.statements[i];
                 VisitStatement(sn);
                 if (is_break_stmt  && !has_goto && i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type != semantic_node_type.empty_statement)
                     warns.Add(new UnreachableCodeDetected(stmt.statements[i + 1].location));
-                is_break_stmt = false;
+                if (!(i < stmt.statements.Count - 1 && stmt.statements[i + 1].semantic_node_type == semantic_node_type.empty_statement))
+                	is_break_stmt = false;
             }
             foreach (local_block_variable vdn in stmt.local_variables)
             {
