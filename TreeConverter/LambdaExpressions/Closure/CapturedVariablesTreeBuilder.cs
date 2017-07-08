@@ -426,8 +426,8 @@ namespace TreeConverter.LambdaExpressions.Closure
             type_node elemType = null;
             if (inWhat.type == null)
                 inWhat = tmp;
-
-            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType);
+            bool bb; // здесь bb не нужно. Оно нужно в foreach
+            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType, out bb);
 
             if (_foreach_stmt.type_name == null)
             {

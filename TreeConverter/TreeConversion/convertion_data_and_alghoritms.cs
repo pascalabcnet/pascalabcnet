@@ -599,7 +599,7 @@ namespace PascalABCCompiler.TreeConverter
             possible_type_convertions pct = type_table.get_convertions(from, to);
             if (pct.second != null)
                 throw new TwoTypeConversionsPossibleT(pct.first, pct.second, loc);
-            if (pct.first == null && !type_table.is_derived(from, to))
+            if (pct.first == null /*&& !type_table.is_derived(from, to)*/)
                 throw new CanNotConvertTypes(null, from, to, loc);
         } 
 

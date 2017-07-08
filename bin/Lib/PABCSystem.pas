@@ -1653,11 +1653,11 @@ procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
-/// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
+/// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
 procedure Reverse<T>(a: array of T; index,count: integer);
 /// Изменяет порядок элементов в списке на противоположный
 procedure Reverse<T>(a: List<T>);
-/// Изменяет порядок элементов на противоположный в диапазоне списка длины length начиная с индекса index
+/// Изменяет порядок элементов на противоположный в диапазоне списка длины count, начиная с индекса index
 procedure Reverse<T>(a: List<T>; index,count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
@@ -2635,9 +2635,9 @@ end;
 class function TypedSet.operator implicit<T>(s: TypedSet): HashSet<T>;
 begin
   var hs := new HashSet<T>();
-  foreach key: T in s.ht.Keys do
+  foreach var key in s.ht.Keys do
   begin
-    hs.Add(key);  
+    hs.Add(T(key));  
   end;
   Result := hs; 
 end;
@@ -10819,7 +10819,7 @@ begin
   input := new TextFile();
   //var tmp := __CONFIG__;
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
-    foreach listener: System.Diagnostics.TraceListener in System.Diagnostics.Trace.Listeners do
+    foreach var listener in System.Diagnostics.Trace.Listeners do
       if listener is System.Diagnostics.DefaultTraceListener then
         (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; 
 end;

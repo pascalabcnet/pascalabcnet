@@ -551,6 +551,27 @@ procedure Read(var x: boolean);
 /// Вводит значения a,b,... с клавиатуры и осуществляет переход на следующую строку
 procedure Readln;
 
+/// Вводит числовое значение x клавиатуры. Возвращает False если при вводе произошла ошибка
+function TryRead(var x: integer): boolean;
+///--
+function TryRead(var x: real): boolean;
+///--
+function TryRead(var x: byte): boolean;
+///--
+function TryRead(var x: shortint): boolean;
+///--
+function TryRead(var x: smallint): boolean;
+///--
+function TryRead(var x: word): boolean;
+///--
+function TryRead(var x: longword): boolean;
+///--
+function TryRead(var x: int64): boolean;
+///--
+function TryRead(var x: uint64): boolean;
+///--
+function TryRead(var x: single): boolean;
+
 /// Возвращает значение типа integer, введенное с клавиатуры
 function ReadInteger: integer;
 /// Возвращает значение типа real, введенное с клавиатуры
@@ -1632,11 +1653,11 @@ procedure Sort<T>(l: List<T>; cmp: (T,T)->integer);
 procedure Sort<T>(l: List<T>; less: (T,T)->boolean);
 /// Изменяет порядок элементов в динамическом массиве на противоположный
 procedure Reverse<T>(a: array of T);
-/// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины length начиная с индекса index
+/// Изменяет порядок элементов на противоположный в диапазоне динамического массива длины count, начиная с индекса index
 procedure Reverse<T>(a: array of T; index,count: integer);
 /// Изменяет порядок элементов в списке на противоположный
 procedure Reverse<T>(a: List<T>);
-/// Изменяет порядок элементов на противоположный в диапазоне списка длины length начиная с индекса index
+/// Изменяет порядок элементов на противоположный в диапазоне списка длины count, начиная с индекса index
 procedure Reverse<T>(a: List<T>; index,count: integer);
 /// Перемешивает динамический массив случайным образом
 procedure Shuffle<T>(a: array of T);
@@ -2614,9 +2635,9 @@ end;
 class function TypedSet.operator implicit<T>(s: TypedSet): HashSet<T>;
 begin
   var hs := new HashSet<T>();
-  foreach key: T in s.ht.Keys do
+  foreach var key in s.ht.Keys do
   begin
-    hs.Add(key);  
+    hs.Add(T(key));  
   end;
   Result := hs; 
 end;
@@ -4460,7 +4481,7 @@ begin
     end;
 end;
 
-procedure read(var x: integer);
+procedure Read(var x: integer);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4473,7 +4494,7 @@ begin
     end;
 end;
 
-procedure read(var x: real);
+procedure Read(var x: real);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4486,7 +4507,7 @@ begin
     end;
 end;
 
-procedure read(var x: char);
+procedure Read(var x: char);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4499,7 +4520,7 @@ begin
     end;
 end;
 
-procedure read(var x: string);
+procedure Read(var x: string);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4512,7 +4533,7 @@ begin
     end;
 end;
 
-procedure read(var x: byte);
+procedure Read(var x: byte);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4525,7 +4546,7 @@ begin
     end;
 end;
 
-procedure read(var x: shortint);
+procedure Read(var x: shortint);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4538,7 +4559,7 @@ begin
     end;
 end;
 
-procedure read(var x: smallint);
+procedure Read(var x: smallint);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4551,7 +4572,7 @@ begin
     end;
 end;
 
-procedure read(var x: word);
+procedure Read(var x: word);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4564,7 +4585,7 @@ begin
     end;
 end;
 
-procedure read(var x: longword);
+procedure Read(var x: longword);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4577,7 +4598,7 @@ begin
     end;
 end;
 
-procedure read(var x: int64);
+procedure Read(var x: int64);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4590,7 +4611,7 @@ begin
     end;
 end;
 
-procedure read(var x: uint64);
+procedure Read(var x: uint64);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4603,7 +4624,7 @@ begin
     end;
 end;
 
-procedure read(var x: single);
+procedure Read(var x: single);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4616,7 +4637,7 @@ begin
     end;
 end;
 
-procedure read(var x: boolean);
+procedure Read(var x: boolean);
 begin
   if input.sr <> nil then
     read(input, x)
@@ -4628,6 +4649,107 @@ begin
         raise e;
     end;
 end;
+
+function TryRead(var x: integer): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: real): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: byte): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: shortint): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: smallint): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: word): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: longword): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: int64): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: uint64): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
+function TryRead(var x: single): boolean;
+begin
+  Result := True;
+  try
+    Read(x)
+  except
+    Result := False;
+  end
+end;
+
 
 function ReadInteger: integer;
 begin
@@ -10697,7 +10819,7 @@ begin
   input := new TextFile();
   //var tmp := __CONFIG__;
   if (Environment.OSVersion.Platform = PlatformID.Unix) or (Environment.OSVersion.Platform = PlatformID.MacOSX) then
-    foreach listener: System.Diagnostics.TraceListener in System.Diagnostics.Trace.Listeners do
+    foreach var listener in System.Diagnostics.Trace.Listeners do
       if listener is System.Diagnostics.DefaultTraceListener then
         (listener as System.Diagnostics.DefaultTraceListener).AssertUiEnabled := true; 
 end;

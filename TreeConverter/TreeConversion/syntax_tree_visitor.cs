@@ -15970,7 +15970,8 @@ namespace PascalABCCompiler.TreeConverter
                     var tt = to.type;
                     type_node elem_type = null;
                     try_convert_typed_expression_to_function_call(ref from);
-                    var b = FindIEnumerableElementType(from.type, ref elem_type);
+                    bool bb; // здесь bb не нужно. Оно нужно в foreach
+                    var b = FindIEnumerableElementType(from.type, ref elem_type, out bb);
                     if (!b)
                         AddError(from.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", from.type.full_name);
 
@@ -16558,8 +16559,9 @@ namespace PascalABCCompiler.TreeConverter
             return false;
         }
 
-        public bool FindIEnumerableElementType(/*SyntaxTree.foreach_stmt _foreach_stmt, */type_node tn, ref type_node elem_type)
+        public bool FindIEnumerableElementType(type_node tn, ref type_node elem_type, out bool sys_coll_ienum)
         {
+            sys_coll_ienum = false;
             var IEnstring = "System.Collections.IEnumerable";
             compiled_type_node ctn = compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(IEnstring));
             if (tn is compiled_type_node || tn is compiled_generic_instance_type_node) // Если этот тип зашит в .NET
@@ -16628,6 +16630,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (itn == ctn)
                         {
                             elem_type = SystemLibrary.SystemLibrary.object_type;
+                            sys_coll_ienum = true;
                             return true;
                         }
                     }
@@ -16691,6 +16694,7 @@ namespace PascalABCCompiler.TreeConverter
                         if (itn == ctn)
                         {
                             elem_type = SystemLibrary.SystemLibrary.object_type;
+                            sys_coll_ienum = true;
                             return true;
                         }
                     }
@@ -16717,7 +16721,7 @@ namespace PascalABCCompiler.TreeConverter
             expression_node in_what = convert_strong(_foreach_stmt.in_what);
 
             // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
-            var is1dimdynarr = false;
+            /*var is1dimdynarr = false;
             var comptn = in_what.type as compiled_type_node;
             if (comptn != null && comptn.type_special_kind == SemanticTree.type_special_kind.array_kind && comptn.rank == 1)
             {
@@ -16775,7 +16779,7 @@ namespace PascalABCCompiler.TreeConverter
                 //visit(fornode);
 
                 return;
-            }
+            }*/
             /// SSM 29.07.16 
 
             //throw new NotSupportedError(get_location(_foreach_stmt));
@@ -16793,8 +16797,8 @@ namespace PascalABCCompiler.TreeConverter
 
             //(in_what.type as common_type_node).internal_type_special_kind == SemanticTree.type_special_kind.array_kind
             //in_what.type as compiled_type_node
-
-            if (!FindIEnumerableElementType(/*_foreach_stmt, */in_what.type, ref elem_type))
+            bool sys_coll_ienum; // bb = true означает, что мы нашли тип object у интерфейса System.Collections.IEnumerable
+            if (!FindIEnumerableElementType(in_what.type, ref elem_type, out sys_coll_ienum))
             //if (!IsGetEnumerator(in_what.type, ref elem_type))
                 AddError(in_what.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", in_what.type.name);
 
@@ -16829,8 +16833,8 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             //elem_type = vdn.type;
-            if (!(vdn.type is compiled_generic_instance_type_node))
-                convertion_data_and_alghoritms.check_convert_type_with_inheritance(vdn.type, elem_type, get_location(_foreach_stmt.identifier));
+            if (!(vdn.type is compiled_generic_instance_type_node) && !sys_coll_ienum)
+                convertion_data_and_alghoritms.check_convert_type_with_inheritance(elem_type, vdn.type, get_location(_foreach_stmt.identifier));
 
             //if (!convertion_data_and_alghoritms.eq_type_nodes(elem_type, vdn.type))
                 //AddError(new TypesOfVarAndElementsInForeachMustBeEqual(vdn.type.name,elem_type.name,get_location(_foreach_stmt.identifier)));
