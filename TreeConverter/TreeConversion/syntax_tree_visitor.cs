@@ -1613,6 +1613,7 @@ namespace PascalABCCompiler.TreeConverter
             	names.names[names.names.Count-1].name += "Attribute";
                 si = context.find_definition_node(names, loc);
             }
+            
             if (si != null && si.First().sym_info != null && si.First().sym_info.general_node_type == general_node_type.generic_indicator)
             {
                 generic_indicator gi = si.First().sym_info as generic_indicator;
@@ -15466,7 +15467,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private expression_node ident_value_reciving(SyntaxTree.ident _ident)
         {
-            SymbolInfoList si = context.find(_ident.name);
+        	SymbolInfoList si = context.find(_ident.name);
             return ident_value_reciving(si, _ident);
         }
 		

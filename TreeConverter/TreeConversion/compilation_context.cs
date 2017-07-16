@@ -2092,6 +2092,20 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolInfoList find(string name)
         {
             SymbolTable.Scope curscope = CurrentScope;
+            if (name == "$yield_element_type")
+            {
+            	if (top_function != null)
+            	{
+            		return new SymbolInfoList(new SymbolInfoUnit(top_function.return_value_type.instance_params[0]));
+            	}
+            	else
+            	{
+            		type_node tn = converted_type.ImplementingInterfaces.Find(x=>(x as type_node).full_name.StartsWith("System.Collections.Generic.IEnumerable")) as type_node;
+            		return new SymbolInfoList(new SymbolInfoUnit(tn.instance_params[0]));
+            	}
+            }
+            
+            	
             SymbolInfoList si = curscope.Find(name, curscope);
             if (si == null && _compiled_tn != null && curscope.TopScope != null)
             {
