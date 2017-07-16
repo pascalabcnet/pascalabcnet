@@ -8316,11 +8316,20 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.labeled_statement _labeled_statement)
         {
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.label_name);
+            if (_labeled_statement.to_statement is var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
+            {
+            	var stmt = new SyntaxTree.labeled_statement(_labeled_statement.label_name,new SyntaxTree.empty_statement());
+            	ReplaceStatementUsingParent(_labeled_statement, new List<statement>
+            	                            {stmt, _labeled_statement.to_statement
+                                        });
+            	ProcessNode(stmt);
+            	return;
+            }
             SymbolInfoList si = context.CurrentScope.FindOnlyInScopeAndBlocks(_labeled_statement.label_name.name);
-            if (_labeled_statement.to_statement is SyntaxTree.var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
+            /*if (_labeled_statement.to_statement is SyntaxTree.var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
             {
                 AddError(get_location(_labeled_statement.label_name), "LABELED_DECLARATION_NOT_ALLOWED");
-            }
+            }*/
             if (si == null)
             {
                 AddError(new UndefinedNameReference(_labeled_statement.label_name.name, get_location(_labeled_statement.label_name)));
