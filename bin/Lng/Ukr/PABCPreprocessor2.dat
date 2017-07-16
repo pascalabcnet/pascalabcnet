@@ -1,0 +1,27 @@
+﻿%PREFIX%=PABCPreprocessor2_
+
+EXPECTED{0}=Очікувалося '{0}'
+EXPECTED_{0}_BUT_FOUND_{1}=Очікувалося '{0}', а отримано '{1}'
+EOF=(кінець файлу)
+_DIRECTIVE=Директива
+
+INCLUDE_FILE_{0}_NOTFOUND=Файл '{0}' не знайдено
+CIRCULAR_INCLUDE_{0}=Циклічне включення файлу '{0}'
+ERROR_IN_DEFINE_SYNTAX=Помилка в синтаксисі $define
+ERROR_IN_INCLUDE_SYNTAX=Помилка в синтаксисі $include
+NAME_IS_DEFINED_{0}=Спроба повторного визначення імені '{0}'
+NAME_WAS_NOT_DEFINED_{0}=Спроба виключення невизначеного імені '{0}'
+INVALID_INTEGER_EXPRESSION=Невірний цілочисельний вираз
+UNEXPEXTED_ENDIF_DIRECTIVE=Несподівана директива $endif
+UNEXPEXTED_ELSE_DIRECTIVE=Несподівана директива $else
+ENDIF_DIRECTIVE_EXPEXTED=Очікувалася директива $endif
+SYNTAX_ERROR_IN_DIRECTIVE_{0}=Помилка в директиві '{0}'
+UNKNOWN_DIRECTIVE_{0}=Невідома директива '{0}'
+UNEXPECTED_SPACES_IN_DIRECTIVE_{0}=Зайві пропуски в директиві '{0}'
+UNEXPECTED_ASPDATA_DIRECTIVE_{0}=Директива '{0}' поза аспектом
+DOUBLE_ASPDATA_DIRECTIVE_{0}=Спроба повторно задати параметри аспекту '{0}'
+ERROR_ASPDATA_DIRECTIVE_{0}=Недопустимі параметри в директиві '{0}'
+ASPBEGINEND_ERROR_IN_DIRECTIVE_{0}=Неприпустимий рівень вкладеності аспектів '{0}'
+
+ONE_DIRECTIVE=Директива
+ONE__DIRECTIVE=Директива

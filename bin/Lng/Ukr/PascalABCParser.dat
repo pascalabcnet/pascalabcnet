@@ -1,0 +1,60 @@
+﻿//PascalABCParser.dll
+%PREFIX%=PASCALABCPARSER_
+
+FOUND{0}=Отримали {0}, а 
+FOUNDEOF=Отримали кінець файлу, а 
+EXPECTED{0}=Очікувалося {0}
+EXPECTED{1}=очікувалося {1}
+EXPECTEDR{1}=очікувався {1}
+EXPECTEDBEGIN=очікувався розділ опису або begin
+
+WITHOUT_INIT_AND_SIZE=Пропущений розмір динамічного масиву
+
+OPERATOR_NOT_IMPLEMET_TO_THIS_OPEAND_TYPE=Операція не може бути застосована до операндів даного типу
+STATEMENT_EXPECTED=Очікувався оператор
+LEFT_SIDE_ASSIGN_MUST_BE_VARIABLE=Ліва частина оператора присвоєння повинна бути змінною
+PROCEDURE_CANNOT_HAVE_RETURNED_VALUE=Процедура не може мати значення, що повертається
+EXPECTED_{0}_BUT_FOUND_{1}=Очікувалося '{0}', а отримано '{1}'
+NONTERMINALTOKEN_{0}_RETURN_NULL=Синтаксична конструкція виду '{0}' не підтримується поточною версією парсеру
+SEMICOLON_BEFORE_ELSE=Перед else крапка з комою не ставиться
+UNEXPECTED_SYMBOL{0}=Несподіваний символ '{0}'
+UNSUPPORTED_OLD_DIRECTIVES=Директиви компілятора в стилі # більше не підтримуються. Використовуйте директиви в стилі {$ }
+INCLUDE_COULDNT_OPEN_FILE{0}=Директива компілятора $include: не можна відкрити файл '{0}'
+INCLUDE_EMPTY_FILE=Директива компілятора $include: не вказано ім'я файлу 
+UNNECESSARY $endif=Зайвий $endif
+ENDIF_ABSENT=Незакрита директива $ifdef або $ifndef - відсутнє $endif
+UNNECESSARY $else=Зайвий $else
+TYPE_NAME_EXPECTED=Очікувався тип
+
+EOF1=кінець файлу
+EOF=(кінець файлу)
+TKIDENTIFIER=ідентифікатор
+TKINTEGER=число
+OPERATOR=оператор
+TKSEMICOLON=';'
+TKCOLON=':'
+TKCOMMA=','
+TKPOINT='.'
+TKASSIGN=':='
+TKEQUAL='='
+TKDOTDOT='..'
+TKROUNDOPEN='('
+TKROUNDCLOSE=')'
+TKDO=do
+EXPR=вираз
+STMT=оператор
+
+ONE_EOF=Очікувався кінець файлу
+ONE_TKIDENTIFIER=Очікувався ідентифікатор
+ONE_OPERATOR=Очікувався оператор
+ONE_STMT=Очікувався оператор
+BAD_TUPLE=Неправильно сформований кортеж
+EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION=Очікувався оператор
+
+DUPLICATE_NAMES_IN_ANON_TYPE=Анонімний тип не може містити поля з однаковими іменами
+BAD_ANON_TYPE=Неправильне визначення імені поля анонімного типу
+ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=Одинокий типовий параметр не повинен братися в дужки
+
+USING_UNLOCAL_FOR_VARIABLE=Параметр циклу for в PascalABC.NET потрібно описувати в заголовку циклу
+USING_UNLOCAL_FOREACH_VARIABLE=Параметр циклу foreach потрібно описувати в заголовку циклу
+OVERLOAD_IS_NOT_USED=overload не використовується в PascalABC.NET

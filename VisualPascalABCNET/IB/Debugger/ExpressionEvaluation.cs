@@ -6409,8 +6409,8 @@ namespace VisualPascalABC
             RetValue res = new RetValue();
             if (rv.obj_val != null)
             {
-                if (rv.obj_val.Dereference != null)
-                    rv.obj_val = rv.obj_val.Dereference;
+                //if (rv.obj_val.Dereference != null)
+                //    rv.obj_val = rv.obj_val.Dereference;
                 if (_dot_node.right is ident)
                 {
                     if (rv.obj_val.IsNull)

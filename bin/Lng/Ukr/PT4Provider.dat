@@ -1,0 +1,9 @@
+﻿//PT4 Provider Plugin
+
+%PREFIX%=VPP_PT4PROVIDER_
+D_NAME=Переглянути завдання
+L_NAME=Створити шаблон програми
+R_NAME=Переглянути результати
+D_DESCRIPTION=Переглянути завдання
+L_DESCRIPTION=Створити шаблон програми
+R_DESCRIPTION=Переглянути результати

@@ -1,0 +1,89 @@
+﻿//KuMirParser.dll
+%PREFIX%=KUMIRPARSER_
+
+EXPECTED{0}=ќжидалось {0}
+EXPECTED_{0}_BUT_FOUND_{1}=ќжидалось '{0}', а встречено '{1}'
+NONTERMINALTOKEN_{0}_RETURN_NULL=Cинтаксическа¤ конструкци¤ вида '{0}' не поддерживаетс¤ текущей версией парсера
+
+EOF=(конец файла)
+TK_IDENT=идентификатор
+TK_NUMBER=число
+OPERATOR=оператор
+TK_SEMICOLON=';'
+TK_DOUBLEPOINT=':'
+TK_ASSIGN=':='
+TK_EQUAL='='
+TK_ROUNDOPEN='('
+TK_ROUNDCLOSE=')'
+TK_SQUAREOPEN='['
+TK_SQUARECLOSE=']'
+
+tk_NewLine=переход_на_новую_строку
+tk_Identifier=идентификатор
+tk_integer=целое_число
+tk_real=вещественное_число
+tk_char=символ
+tk_StringLiteral=строка
+tk_boolean=логическое_значение
+tk_alg=алг
+tk_arg=арг
+tk_var=рез
+tk_func_val=знач
+tk_begin=нач
+tk_end=кон
+tk_begin_cycle=нц
+tk_end_cycle=кц
+tk_assert=утв
+tk_read=ввод
+tk_write=вывод
+tk_eol=Ќ—
+tk_if=если
+tk_then=то
+tk_else=иначе
+tk_end_all=все
+tk_case=выбор
+tk_case_v=при
+tk_not=не
+tk_and=и
+tk_or=или
+tk_while=пока
+tk_for=дл¤
+tk_from=от
+tk_to=до
+tk_raz=раз
+tk_integer_type=цел
+tk_real_type=вещ
+tk_boolean_type=лог
+tk_char_type=сим
+tk_string_type=лит
+tk_array=таб
+tk_isp=исп
+tk_DoublePoint=':'
+tk_SemiColon=';'
+tk_Comma=','
+tk_RoundOpen='('
+tk_RoundClose=')'
+tk_SquareOpen='['
+tk_SquareClose=']'
+tk_Equal='='
+tk_Greater='>'
+tk_GreaterEqual='>='
+tk_Lower='<'
+tk_LowerEqual='<='
+tk_NotEqual='<>'
+tk_Minus='-'
+tk_Plus='+'
+tk_Div='/'
+tk_Mult='*'
+tk_Assign=':='
+tk_Power='**'
+
+EXPRESSION=выражение
+Expression=выражение
+STATEMENT=оператор
+Statement=оператор
+
+ONE_EOF=ќжидалс¤ конец файла
+ONE_TKIDENTIFIER=ќжидалс¤ идентификатор
+ONE_OPERATOR=ќжидалс¤ оператор
+ONE_STMT=ќжидалс¤ оператор

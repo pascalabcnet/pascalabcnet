@@ -1,0 +1,19 @@
+﻿//CompilerController
+
+%PREFIX%=VPP_COMPCONTR_
+
+NAME=Керування компілятором
+DESCRIPTION=Керування компілятором
+FORMNAME=Керування компілятором
+DISABLE_PCU_READ=Відключити читання PCU (Rebuild)
+DISABLE_ADD_STANDART_UNTS=Відключити додавання стандартних модулів
+DISABLE_SEMANTIC_ANALYSIS=Відключити семантичний аналіз
+DISABLE_PCU_SAVING=Відключити збереження PCU
+DISABLE_CODE_GENERATION=Відключити генерацію коду
+DISABLE_SKIP_PCU_ERRORS=Не пропускати помилки роботи з PCU файлами
+DISABLE_SKIP_INTERNALERRORS_IF_SYNTAXTREE_IS_CORRUPT=Не пропускати внутрішні помилки якщо дерево пошкоджено
+RUN_ILDASM=Запустити ILDASM
+RUN_DBGCLR=Запустити DbgCLR
+RESTART_COMPILER=Перезапустити компілятор
+COMPILER_MESSAGES=Повідомлення компілятора
+NOT_USE_REMOTE_COMPILER=Не запускати компілятор в окремому процесі
