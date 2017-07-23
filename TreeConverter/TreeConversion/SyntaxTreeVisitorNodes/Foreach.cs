@@ -31,41 +31,29 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)
         {
-            var lambdaSearcher = new LambdaSearcher(_foreach_stmt.in_what);
-            if (lambdaSearcher.CheckIfContainsLambdas())
-            {
-                AddError(new LambdasNotAllowedInForeachInWhatSatetement(get_location(lambdaSearcher.FoundLambda)));
-            }
-
-            expression_node foreachCollection = convert_strong(_foreach_stmt.in_what);
-
-            // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
-            // if (OptimizeForeachInCase1DArray(_foreach_stmt, in_what)) return;
-
-            statements_list sl2 = new statements_list(get_location(_foreach_stmt));
+            statements_list sl2 = new statements_list(get_location(_foreach_stmt));            
             convertion_data_and_alghoritms.statement_list_stack_push(sl2);
 
-            expression_node tmp = convert_if_typed_expression_to_function_call(foreachCollection);
-            if (tmp.type != null)
-                foreachCollection = tmp;
+            expression_node foreachCollection;
+            var_definition_node foreachVariable;
+            ForeachCheckAndConvert(_foreach_stmt, out foreachCollection, out foreachVariable);
 
-            bool sys_coll_ienum; // true означает, что мы нашли тип object у интерфейса System.Collections.IEnumerable
-            type_node elem_type = null;
-            if (!FindIEnumerableElementType(foreachCollection.type, ref elem_type, out sys_coll_ienum))
-                AddError(foreachCollection.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", foreachCollection.type.name);
-
-            var foreachVariable = FindForeachVariable(_foreach_stmt, elem_type, sys_coll_ienum);
+            // SSM 29.07.16 - если in_what - одномерный массив, то заменить код foreach на for
+            // if (OptimizeForeachInCase1DArray(_foreach_stmt, foreachCollection)) return;
 
             statements_list sl = new statements_list(get_location(_foreach_stmt.stmt));
             convertion_data_and_alghoritms.statement_list_stack_push(sl);
-            CheckToEmbeddedStatementCannotBeADeclaration(_foreach_stmt.stmt);
+
             foreach_node foreachNode = new foreach_node(foreachVariable, foreachCollection, null, get_location(_foreach_stmt));
+
             context.cycle_stack.push(foreachNode);
             context.loop_var_stack.Push(foreachVariable);
             context.enter_code_block_with_bind();
             statement_node body = convert_strong(_foreach_stmt.stmt);
             context.leave_code_block();
             context.loop_var_stack.Pop();
+            context.cycle_stack.pop();
+
             sl = convertion_data_and_alghoritms.statement_list_stack.pop();
 
             if (sl.statements.Count > 0 || sl.local_variables.Count > 0)
@@ -78,9 +66,35 @@ namespace PascalABCCompiler.TreeConverter
 
             convertion_data_and_alghoritms.statement_list_stack.pop();
             sl2.statements.AddElement(foreachNode);
-            context.cycle_stack.pop();
-
+            
             return_value(sl2);
+        }
+
+
+
+        private void ForeachCheckAndConvert(foreach_stmt _foreach_stmt, out expression_node foreachCollection,
+            out var_definition_node foreachVariable)
+        {
+            var lambdaSearcher = new LambdaSearcher(_foreach_stmt.in_what);
+            if (lambdaSearcher.CheckIfContainsLambdas())
+            {
+                AddError(new LambdasNotAllowedInForeachInWhatSatetement(get_location(lambdaSearcher.FoundLambda)));
+            }
+
+            foreachCollection = convert_strong(_foreach_stmt.in_what);
+
+            expression_node tmp = convert_if_typed_expression_to_function_call(foreachCollection);
+            if (tmp.type != null)
+                foreachCollection = tmp;
+
+            bool sys_coll_ienum; // true означает, что мы нашли тип object у интерфейса System.Collections.IEnumerable
+            type_node elem_type = null;
+            if (!FindIEnumerableElementType(foreachCollection.type, ref elem_type, out sys_coll_ienum))
+                AddError(foreachCollection.location, "CAN_NOT_EXECUTE_FOREACH_BY_EXPR_OF_TYPE_{0}", foreachCollection.type.name);
+
+            CheckToEmbeddedStatementCannotBeADeclaration(_foreach_stmt.stmt);
+
+            foreachVariable = FindForeachVariable(_foreach_stmt, elem_type, sys_coll_ienum);
         }
 
 
