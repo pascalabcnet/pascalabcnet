@@ -49,6 +49,16 @@ namespace VisualPascalABC
         	stand_types["object"] = typeof(object);
         }
         
+        public static bool Is32BitAssembly()
+        {
+            if (!Environment.Is64BitProcess)
+                return false;
+            System.Reflection.PortableExecutableKinds peKind;
+            System.Reflection.ImageFileMachine machine;
+            a.ManifestModule.GetPEKind(out peKind, out machine);
+            return peKind == System.Reflection.PortableExecutableKinds.Required32Bit;
+        }
+
         public static void LoadAssembly(string file_name)
         {
         	//ad = AppDomain.CreateDomain("DebugDomain",null,Path.GetDirectoryName(file_name),Path.GetDirectoryName(file_name),false);
@@ -59,7 +69,7 @@ namespace VisualPascalABC
                 fs.Read(buf, 0, (int)fs.Length);
                 fs.Close();
                 a = System.Reflection.Assembly.Load(buf);
-
+                
                 Type[] tt = a.GetTypes();
                 foreach (Type t in tt)
                 {
@@ -108,7 +118,6 @@ namespace VisualPascalABC
         {
             if (f == null)
                 return false;
-
             try
             {
                 System.Reflection.MethodBase mb = a.ManifestModule.ResolveMethod((int)f.Token);
@@ -239,6 +248,42 @@ namespace VisualPascalABC
         }
     }
 	
+	public class ProcessDelegator : IProcess
+	{
+		private Process process;
+		
+		public ProcessDelegator(Process process)
+		{
+			this.process = process;
+		}
+		
+		public bool HasExited
+		{
+			get
+			{
+				return process.HasExited;
+			}
+		}
+	}
+	
+	public class ProcessEventArgsDelegator : EventArgs, IProcessEventArgs
+	{
+		private ProcessDelegator process;
+		
+		public ProcessEventArgsDelegator(ProcessDelegator process)
+		{
+			this.process = process;
+		}
+		
+		public IProcess Process
+		{
+			get
+			{
+				return process;
+			}
+		}
+	}
+	
     /// <summary>
     /// Класс для отладки программ
     /// </summary>
@@ -259,6 +304,7 @@ namespace VisualPascalABC
         public string ExeFileName;
 		public bool show_debug_tabs=true;
 		public PascalABCCompiler.Parsers.IParser parser = null;
+		EventHandler<EventArgs> debuggerStateEvent;
 		
         public DebugHelper()
         {
@@ -275,7 +321,20 @@ namespace VisualPascalABC
                 return debuggedProcess;
             }
         }
+        
+        event EventHandler<EventArgs> IDebuggerManager.DebuggeeStateChanged
+       	{
+        	add
+        	{
+            	debuggerStateEvent += value;
+        	}
 
+        	remove
+        	{
+            	debuggerStateEvent -= value;
+        	}
+    	}
+        
         public Breakpoint CurrentBreakpoint
         {
             get { return currentBreakpoint; }
@@ -376,6 +435,7 @@ namespace VisualPascalABC
         			ExeFileName = null;
         			WorkbenchServiceFactory.OperationsService.ClearTabStack();
         			WorkbenchServiceFactory.DebuggerOperationsService.ClearDebugTabs();
+                    WorkbenchServiceFactory.Workbench.DisassemblyWindow.ClearWindow();
         		}
         	}
         }
@@ -420,7 +480,10 @@ namespace VisualPascalABC
         	SelectProcess(debuggedProcess);
         	//debuggedProcess.Break();
         }
-        
+
+        Function currentFunction;
+        Dictionary<int, int> sourceMap;
+
         void debuggedProcess_DebuggeeStateChanged(object sender, ProcessEventArgs e)
         {
             if (currentBreakpoint != null)
@@ -434,6 +497,18 @@ namespace VisualPascalABC
             //if (e.Process.IsPaused)
             WorkbenchServiceFactory.DebuggerOperationsService.RefreshPad(new FunctionItem(e.Process.SelectedFunction).SubItems);
             workbench.WidgetController.SetStartDebugEnabled();
+            if (currentFunction != e.Process.SelectedFunction)
+            {
+                if (WorkbenchServiceFactory.Workbench.DisassemblyWindow.IsVisible)
+                {
+                    var tp = GetNativeCodeOfSelectedFunction(e.Process.SelectedFunction);
+                    WorkbenchServiceFactory.DebuggerOperationsService.DisplayDisassembledCode(tp.Item1);
+                    sourceMap = tp.Item2;
+                    currentFunction = e.Process.SelectedFunction;
+                }
+            }
+            if (debuggerStateEvent != null)
+            	debuggerStateEvent(this, new ProcessEventArgsDelegator(new ProcessDelegator(this.debuggedProcess)));
         }
 		
         private void debugBreakpointHit(object sender, BreakpointEventArgs e)
@@ -534,15 +609,16 @@ namespace VisualPascalABC
             show_debug_tabs = true;
             workbench.WidgetController.SetPlayButtonsVisible(false);
             workbench.WidgetController.SetAddExprMenuVisible(false);
+            workbench.WidgetController.SetDisassemblyMenuVisible(false);
             DebugWatchListWindowForm.WatchWindow.ClearAllSubTrees();
             IsRunning = false;
             workbench.WidgetController.SetDebugStopDisabled();
             workbench.WidgetController.ChangeContinueDebugNameOnStart();
-            //if (cur_brpt != null) dbg.RemoveBreakpoint(cur_brpt);
             CurrentLineBookmark.Remove();
             WorkbenchServiceFactory.DebuggerOperationsService.ClearLocalVarTree();
             WorkbenchServiceFactory.DebuggerOperationsService.ClearDebugTabs();
             WorkbenchServiceFactory.DebuggerOperationsService.ClearWatch();
+            WorkbenchServiceFactory.Workbench.DisassemblyWindow.ClearWindow();
             workbench.WidgetController.SetDebugTabsVisible(false);
             WorkbenchServiceFactory.OperationsService.ClearTabStack();
             workbench.WidgetController.EnableCodeCompletionToolTips(true);
@@ -583,6 +659,7 @@ namespace VisualPascalABC
             workbench.WidgetController.ChangeStartDebugNameOnContinue();
             workbench.WidgetController.EnableCodeCompletionToolTips(false);
             workbench.WidgetController.SetAddExprMenuVisible(true);
+            workbench.WidgetController.SetDisassemblyMenuVisible(true);
             TooltipServiceManager.hideToolTip();
             IsRunning = true;
             evaluator = new ExpressionEvaluator(e.Process,workbench.VisualEnvironmentCompiler, FileName);
@@ -894,7 +971,78 @@ namespace VisualPascalABC
         }
 
         private int curILOffset = 0;
-       
+
+        struct COR_DEBUG_IL_TO_NATIVE_MAP
+        {
+            public uint ilOffset;
+            public uint nativeStartOffset;
+            public uint nativeEndOffset;
+        }
+
+        public Tuple<string, Dictionary<int, int>> GetNativeCodeOfSelectedFunction(Function selectedFunction=null)
+        {
+            if (selectedFunction == null)
+                selectedFunction = debuggedProcess.SelectedFunction;
+            uint size = selectedFunction.CorFunction.NativeCode.Size;
+            byte[] buffer = new byte[size];
+            uint mapSize;
+            COR_DEBUG_IL_TO_NATIVE_MAP[] mapBuffer = new COR_DEBUG_IL_TO_NATIVE_MAP[selectedFunction.CorFunction.ILCode.Size];
+            unsafe
+            {
+                fixed (byte* ptr = &buffer[0])
+                {
+                    IntPtr iptr = new IntPtr((void*)ptr);
+                    selectedFunction.CorFunction.NativeCode.GetCode(0, size, size, iptr);
+                }
+                fixed (void* ptr = &mapBuffer[0])
+                {
+                    IntPtr iptr = new IntPtr(ptr);
+                    selectedFunction.CorFunction.NativeCode.GetILToNativeMapping((uint)mapBuffer.Length, out mapSize, iptr);
+                } 
+            }
+            Dictionary<uint, uint> il2asm = new Dictionary<uint, uint>();
+            for (int i = 0; i < mapSize; i++)
+            {
+                il2asm.Add(mapBuffer[i].nativeStartOffset, mapBuffer[i].ilOffset);
+            }
+            SharpDisasm.Disassembler disasm = new SharpDisasm.Disassembler(buffer, AssemblyHelper.Is32BitAssembly()?SharpDisasm.ArchitectureMode.x86_32: SharpDisasm.ArchitectureMode.x86_64);
+            IEnumerable<SharpDisasm.Instruction> instructions = disasm.Disassemble();
+            StringBuilder sb = new StringBuilder();
+            int linesNum = 0;
+            Dictionary<int, int> sourceMap = new Dictionary<int, int>();
+            Dictionary<int, int> linesDict = new Dictionary<int, int>();
+            bool firstLine = true;
+            foreach (var instruction in instructions)
+            {
+                linesNum++;
+
+                uint ilOffset;
+                if (il2asm.TryGetValue((uint)instruction.Offset, out ilOffset))
+                {
+                    var segment = selectedFunction.GetSegmentForOffet(ilOffset);
+                    
+                    if (segment != null && !linesDict.ContainsKey(segment.StartLine))
+                    {
+                        if (ilOffset > 2000000000)
+                        {
+                            if (firstLine)
+                                continue;
+                        }
+                        else
+                            firstLine = false;
+                        int line = segment.StartLine;
+                        string text = curPage.TextEditor.Document.GetText(curPage.TextEditor.Document.GetLineSegment(line - 1));
+                        sb.AppendLine((segment.StartLine+":").PadRight(10, ' ') + text.Trim());
+                        linesDict.Add(segment.StartLine, segment.StartLine);
+                    }
+                }
+                sb.Append("///"+selectedFunction.CorFunction.NativeCode.Address.ToString("X") + "+0x"+instruction.Offset.ToString("X") + ": " + instruction.ToString());
+                sb.AppendLine();
+
+            }
+            return new Tuple<string, Dictionary<int, int>>(sb.ToString(),sourceMap);
+        }
+
         public void DoInPausedState(MethodInvoker action)
         {
             Debugger.Process process = debuggedProcess;

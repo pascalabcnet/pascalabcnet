@@ -2272,33 +2272,33 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(class_body _class_body)
+		public void visit(class_body_list _class_body_list)
 		{
 			bw.Write((Int16)78);
-			write_class_body(_class_body);
+			write_class_body_list(_class_body_list);
 		}
 
-		public void write_class_body(class_body _class_body)
+		public void write_class_body_list(class_body_list _class_body_list)
 		{
-			write_syntax_tree_node(_class_body);
-			if (_class_body.class_def_blocks == null)
+			write_syntax_tree_node(_class_body_list);
+			if (_class_body_list.class_def_blocks == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				bw.Write(_class_body.class_def_blocks.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _class_body.class_def_blocks.Count; ssyy_i++)
+				bw.Write(_class_body_list.class_def_blocks.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _class_body_list.class_def_blocks.Count; ssyy_i++)
 				{
-					if (_class_body.class_def_blocks[ssyy_i] == null)
+					if (_class_body_list.class_def_blocks[ssyy_i] == null)
 					{
 						bw.Write((byte)0);
 					}
 					else
 					{
 						bw.Write((byte)1);
-						_class_body.class_def_blocks[ssyy_i].visit(this);
+						_class_body_list.class_def_blocks[ssyy_i].visit(this);
 					}
 				}
 			}
@@ -3415,7 +3415,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_format_expr(format_expr _format_expr)
 		{
-			write_expression(_format_expr);
+			write_addressed_value(_format_expr);
 			if (_format_expr.expr == null)
 			{
 				bw.Write((byte)0);
@@ -3905,6 +3905,15 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_loop_stmt(loop_stmt _loop_stmt)
 		{
 			write_statement(_loop_stmt);
+			if (_loop_stmt.count == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_loop_stmt.count.visit(this);
+			}
 			if (_loop_stmt.stmt == null)
 			{
 				bw.Write((byte)0);
@@ -5787,7 +5796,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_tuple_node(tuple_node _tuple_node)
 		{
-			write_expression(_tuple_node);
+			write_addressed_value(_tuple_node);
 			if (_tuple_node.el == null)
 			{
 				bw.Write((byte)0);
@@ -5988,7 +5997,25 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void write_assign_var_tuple(assign_var_tuple _assign_var_tuple)
 		{
-			write_assign_tuple(_assign_var_tuple);
+			write_statement(_assign_var_tuple);
+			if (_assign_var_tuple.idents == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_var_tuple.idents.visit(this);
+			}
+			if (_assign_var_tuple.expr == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				_assign_var_tuple.expr.visit(this);
+			}
 		}
 
 
@@ -6013,7 +6040,28 @@ namespace PascalABCCompiler.SyntaxTree
 		public void write_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
 			write_statement(_semantic_check_sugared_statement_node);
-			bw.Write((byte)_semantic_check_sugared_statement_node.stat);
+			bw.Write((byte)_semantic_check_sugared_statement_node.typ);
+			if (_semantic_check_sugared_statement_node.lst == null)
+			{
+				bw.Write((byte)0);
+			}
+			else
+			{
+				bw.Write((byte)1);
+				bw.Write(_semantic_check_sugared_statement_node.lst.Count);
+				for(Int32 ssyy_i = 0; ssyy_i < _semantic_check_sugared_statement_node.lst.Count; ssyy_i++)
+				{
+					if (_semantic_check_sugared_statement_node.lst[ssyy_i] == null)
+					{
+						bw.Write((byte)0);
+					}
+					else
+					{
+						bw.Write((byte)1);
+						_semantic_check_sugared_statement_node.lst[ssyy_i].visit(this);
+					}
+				}
+			}
 		}
 
 
@@ -6061,167 +6109,32 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(pattern_node _pattern_node)
+		public void visit(double_question_node _double_question_node)
 		{
 			bw.Write((Int16)221);
-			write_pattern_node(_pattern_node);
+			write_double_question_node(_double_question_node);
 		}
 
-		public void write_pattern_node(pattern_node _pattern_node)
+		public void write_double_question_node(double_question_node _double_question_node)
 		{
-			write_syntax_tree_node(_pattern_node);
-		}
-
-
-		public void visit(type_pattern _type_pattern)
-		{
-			bw.Write((Int16)222);
-			write_type_pattern(_type_pattern);
-		}
-
-		public void write_type_pattern(type_pattern _type_pattern)
-		{
-			write_pattern_node(_type_pattern);
-			if (_type_pattern.identifier == null)
+			write_addressed_value_funcname(_double_question_node);
+			if (_double_question_node.left == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_type_pattern.identifier.visit(this);
+				_double_question_node.left.visit(this);
 			}
-			if (_type_pattern.type == null)
+			if (_double_question_node.right == null)
 			{
 				bw.Write((byte)0);
 			}
 			else
 			{
 				bw.Write((byte)1);
-				_type_pattern.type.visit(this);
-			}
-		}
-
-
-		public void visit(is_pattern_expr _is_pattern_expr)
-		{
-			bw.Write((Int16)223);
-			write_is_pattern_expr(_is_pattern_expr);
-		}
-
-		public void write_is_pattern_expr(is_pattern_expr _is_pattern_expr)
-		{
-			write_expression(_is_pattern_expr);
-			if (_is_pattern_expr.left == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_is_pattern_expr.left.visit(this);
-			}
-			if (_is_pattern_expr.right == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_is_pattern_expr.right.visit(this);
-			}
-		}
-
-
-		public void visit(match_with _match_with)
-		{
-			bw.Write((Int16)224);
-			write_match_with(_match_with);
-		}
-
-		public void write_match_with(match_with _match_with)
-		{
-			write_statement(_match_with);
-			if (_match_with.expr == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_match_with.expr.visit(this);
-			}
-			if (_match_with.case_list == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_match_with.case_list.visit(this);
-			}
-		}
-
-
-		public void visit(pattern_case _pattern_case)
-		{
-			bw.Write((Int16)225);
-			write_pattern_case(_pattern_case);
-		}
-
-		public void write_pattern_case(pattern_case _pattern_case)
-		{
-			write_statement(_pattern_case);
-			if (_pattern_case.pattern == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_pattern_case.pattern.visit(this);
-			}
-			if (_pattern_case.case_action == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				_pattern_case.case_action.visit(this);
-			}
-		}
-
-
-		public void visit(pattern_cases _pattern_cases)
-		{
-			bw.Write((Int16)226);
-			write_pattern_cases(_pattern_cases);
-		}
-
-		public void write_pattern_cases(pattern_cases _pattern_cases)
-		{
-			write_statement(_pattern_cases);
-			if (_pattern_cases.elements == null)
-			{
-				bw.Write((byte)0);
-			}
-			else
-			{
-				bw.Write((byte)1);
-				bw.Write(_pattern_cases.elements.Count);
-				for(Int32 ssyy_i = 0; ssyy_i < _pattern_cases.elements.Count; ssyy_i++)
-				{
-					if (_pattern_cases.elements[ssyy_i] == null)
-					{
-						bw.Write((byte)0);
-					}
-					else
-					{
-						bw.Write((byte)1);
-						_pattern_cases.elements[ssyy_i].visit(this);
-					}
-				}
+				_double_question_node.right.visit(this);
 			}
 		}
 

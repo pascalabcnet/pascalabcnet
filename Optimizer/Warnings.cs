@@ -101,6 +101,20 @@ namespace PascalABCCompiler
         }
     }
 
+    public class InfiniteRecursion : CompilerWarningWithLocation
+    {
+        public InfiniteRecursion(location loc)
+        {
+            this.loc = loc;
+        }
+
+        public override string ToString()
+        {
+            //return ("Possible two type convertions\n"+_en.location.ToString());
+            return (WarningStringResources.Get("INFINITE_RECURSION"));
+        }
+    }
+
     public class UndefinedReturnValue : CompilerWarningWithLocation
     {
         string name;

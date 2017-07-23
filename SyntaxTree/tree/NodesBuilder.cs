@@ -99,7 +99,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static class_definition BuildClassOrRecordDefinition(bool is_class, params class_members[] cms)
         {
-            var cb = new class_body();
+            var cb = new class_body_list();
             foreach (var cm in cms)
                 cb.Add(cm);
             var cd = new class_definition(cb);
@@ -115,7 +115,7 @@ namespace PascalABCCompiler.SyntaxTree
 
         public static class_definition BuildClassDefinition(named_type_reference_list parents, params class_members[] cms)
         {
-            var cb = new class_body();
+            var cb = new class_body_list();
             foreach (var cm in cms)
                 cb.Add(cm);
             var cd = new class_definition(parents,cb);
@@ -125,7 +125,7 @@ namespace PascalABCCompiler.SyntaxTree
         // frninja 23/04/16 - для шаблонных классов в yield
         public static class_definition BuildClassDefinition(named_type_reference_list parents, ident_list template_args, params class_members[] cms)
         {
-            var cb = new class_body();
+            var cb = new class_body_list();
             foreach (var cm in cms)
                 cb.Add(cm);
 
@@ -138,7 +138,7 @@ namespace PascalABCCompiler.SyntaxTree
         public static void AddMembersForAutoClass(class_definition cd, ref List<ident> names, ref List<type_definition> types) // SSM 24.03.14
         {
             //var types = new List<type_definition>();
-            class_body cb = cd.body;
+            class_body_list cb = cd.body;
             bool HasToString = false;
             bool HasConstructor = false;
             foreach (var l in cb.class_def_blocks)

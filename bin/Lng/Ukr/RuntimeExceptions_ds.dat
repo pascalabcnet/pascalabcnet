@@ -1,0 +1,4 @@
+﻿%PREFIX%=RUNTIME_EXCEPTION
+Attempted to divide by zero.=Спроба ділення на нуль
+Process is terminated due to StackOverflowException.=Програма завершена через переповнення програмного стеку
+Index was outside the bounds of the array.=Індекс виходить за межі масиву

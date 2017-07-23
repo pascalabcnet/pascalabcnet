@@ -194,12 +194,12 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(exprs[0]);
 			el.AddElement(cfc);
 
-			SymbolInfo si = exprs[0].type.find_in_type(compiler_string_consts.assign_name);
+			SymbolInfoList si = exprs[0].type.find_in_type(compiler_string_consts.assign_name);
 			if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
 			}
-			function_node fn = (function_node)si.sym_info;
+			function_node fn = (function_node)si.First().sym_info;
 
 			expression_node en = convertion_data_and_alghoritms.create_simple_function_call(fn,
 			                                                                                call_location, el[0], el[1]);
@@ -221,12 +221,12 @@ namespace PascalABCCompiler.TreeConverter
 			el.AddElement(exprs[0]);
 			el.AddElement(cfc);
 
-			SymbolInfo si = exprs[0].type.find_in_type(compiler_string_consts.assign_name);
+			SymbolInfoList si = exprs[0].type.find_in_type(compiler_string_consts.assign_name);
 			if (si == null)
 			{
 				throw new CompilerInternalError("Undefined delegate operation");
 			}
-			function_node fn = (function_node)si.sym_info;
+			function_node fn = (function_node)si.First().sym_info;
 
 			expression_node en = convertion_data_and_alghoritms.create_simple_function_call(fn,
 			                                                                                call_location, el[0], el[1]);
@@ -271,7 +271,7 @@ namespace PascalABCCompiler.TreeConverter
 			                                                 return_value_type,loc,ctn,SemanticTree.polymorphic_state.ps_virtual,
 			                                                 SemanticTree.field_access_level.fal_public,
 			                                                 convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.invoke_method_name,new SymbolInfo(invoke));
+			ctn.add_name(compiler_string_consts.invoke_method_name,new SymbolInfoUnit(invoke));
 			for (int i=0; i<parameters.Count; i++)
 			{
 				if (parameters[i] is compiled_parameter)
@@ -286,7 +286,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node begin_invoke = new common_method_node(compiler_string_consts.begin_invoke_method_name,
 			                                                         begin_invoke_result_type, loc, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public,
 			                                                         convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.begin_invoke_method_name,new SymbolInfo(begin_invoke));
+			ctn.add_name(compiler_string_consts.begin_invoke_method_name,new SymbolInfoUnit(begin_invoke));
 			parameter_list begin_invoke_params=new parameter_list();
 			begin_invoke_params.AddRange(parameters);
 			common_parameter cp=new common_parameter(compiler_string_consts.callback_string,begin_invoke_parameter_type,
@@ -303,7 +303,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node end_invoke = new common_method_node(compiler_string_consts.end_invoke_method_name,
 			                                                       return_value_type, loc, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public,
 			                                                       convertion_data_and_alghoritms.symbol_table.CreateScope(ctn.scope));
-			ctn.add_name(compiler_string_consts.end_invoke_method_name,new SymbolInfo(end_invoke));
+			ctn.add_name(compiler_string_consts.end_invoke_method_name,new SymbolInfoUnit(end_invoke));
 			cp = new common_parameter(compiler_string_consts.result_string, begin_invoke_result_type,
 			                          SemanticTree.parameter_type.value, end_invoke, concrete_parameter_type.cpt_none,
 			                          null, loc);
@@ -331,7 +331,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node cmn_add = new common_method_node(compiler_string_consts.plus_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                    SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_add.compile_time_executor = delegate_add_compile_time_executor;
-			ctn.scope.AddSymbol(cmn_add.name, new SymbolInfo(cmn_add));
+			ctn.scope.AddSymbol(cmn_add.name, new SymbolInfoUnit(cmn_add));
 			common_parameter cp1 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                            cmn_add, concrete_parameter_type.cpt_none, null, loc);
 			common_parameter cp2 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
@@ -343,7 +343,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node cmn_add_assign = new common_method_node(compiler_string_consts.plusassign_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                           SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_add_assign.compile_time_executor = delegate_add_assign_compile_time_executor;
-			ctn.scope.AddSymbol(cmn_add_assign.name, new SymbolInfo(cmn_add_assign));
+			ctn.scope.AddSymbol(cmn_add_assign.name, new SymbolInfoUnit(cmn_add_assign));
 			common_parameter cp3 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                            cmn_add_assign, concrete_parameter_type.cpt_none, null, loc);
 			common_parameter cp4 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
@@ -355,7 +355,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node cmn_sub = new common_method_node(compiler_string_consts.minus_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                    SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_sub.compile_time_executor = delegate_sub_compile_time_executor;
-			ctn.scope.AddSymbol(cmn_sub.name, new SymbolInfo(cmn_sub));
+			ctn.scope.AddSymbol(cmn_sub.name, new SymbolInfoUnit(cmn_sub));
 			common_parameter cp12 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                             cmn_sub, concrete_parameter_type.cpt_none, null, loc);
 			common_parameter cp22 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
@@ -367,7 +367,7 @@ namespace PascalABCCompiler.TreeConverter
 			common_method_node cmn_sub_assign = new common_method_node(compiler_string_consts.minusassign_name, ctn, loc, ctn, SemanticTree.polymorphic_state.ps_static,
 			                                                           SemanticTree.field_access_level.fal_public, ctn.scope);
 			cmn_sub_assign.compile_time_executor = delegate_sub_assign_compile_time_executor;
-			ctn.scope.AddSymbol(cmn_sub_assign.name, new SymbolInfo(cmn_sub_assign));
+			ctn.scope.AddSymbol(cmn_sub_assign.name, new SymbolInfoUnit(cmn_sub_assign));
 			common_parameter cp32 = new common_parameter(compiler_string_consts.left_param_name, ctn, SemanticTree.parameter_type.value,
 			                                             cmn_sub_assign, concrete_parameter_type.cpt_none, null, loc);
 			common_parameter cp42 = new common_parameter(compiler_string_consts.right_param_name, ctn, SemanticTree.parameter_type.value,
@@ -416,15 +416,15 @@ namespace PascalABCCompiler.TreeConverter
 
 			class_constant_definition cdn1 = new class_constant_definition(compiler_string_consts.lower_array_const_name,
 			                                                               oti_indexer.lower_value, loc, ctn, SemanticTree.field_access_level.fal_public);
-			ctn.scope.AddSymbol(cdn1.name, new SymbolInfo(cdn1));
+			ctn.scope.AddSymbol(cdn1.name, new SymbolInfoUnit(cdn1));
 
 			class_constant_definition cdn2 = new class_constant_definition(compiler_string_consts.upper_array_const_name,
 			                                                               oti_indexer.upper_value, loc, ctn, SemanticTree.field_access_level.fal_public);
-			ctn.scope.AddSymbol(cdn2.name, new SymbolInfo(cdn2));
+			ctn.scope.AddSymbol(cdn2.name, new SymbolInfoUnit(cdn2));
 
 			class_field int_arr = new class_field(compiler_string_consts.internal_array_name, sa, ctn,
 			                                      SemanticTree.polymorphic_state.ps_common, SemanticTree.field_access_level.fal_public,loc);
-			ctn.scope.AddSymbol(int_arr.name, new SymbolInfo(int_arr));
+			ctn.scope.AddSymbol(int_arr.name, new SymbolInfoUnit(int_arr));
 			ctn.fields.AddElement(int_arr);
 
 			SystemLibrary.SystemLibrary.init_reference_type(ctn);
@@ -479,20 +479,20 @@ namespace PascalABCCompiler.TreeConverter
 
 			expression_node index_expr2 = new simple_array_indexing(cfr2, sub_expr2, element_type,loc);
 
-			SymbolInfo si = element_type.find_in_type(compiler_string_consts.assign_name);
+			SymbolInfoList si = element_type.find_in_type(compiler_string_consts.assign_name);
 			if (si == null)
 			{
 				throw new NotSupportedError(loc);
 				throw new CompilerInternalError("Varable of this type can not be assigned");
 			}
-			if (si.sym_info.general_node_type != general_node_type.function_node)
+			if (si.First().sym_info.general_node_type != general_node_type.function_node)
 			{
 				throw new CompilerInternalError("Invalid assign operator");
 			}
 
 			expression_node val_ref = new common_parameter_reference(set_val, 0, loc);
 
-			function_node assign = (function_node)si.sym_info;
+			function_node assign = (function_node)si.First().sym_info;
 			statement_node assign_call = convertion_data_and_alghoritms.create_simple_function_call(assign,
 			                                                                                        /*loc*/new location(0xFFFFFF, 0, 0xFFFFFF, 0, loc.doc), index_expr2, val_ref);
 
@@ -526,7 +526,7 @@ namespace PascalABCCompiler.TreeConverter
                 ctn.ImplementingInterfaces.Add(compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName)));
                 common_method_node en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumeratorInterfaceName)), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
 
-                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).sym_info as compiled_function_node;
+                compiled_function_node en_fnc = NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).First().sym_info as compiled_function_node;
                 statements_list sl = new statements_list(null);
                 sl.statements.AddElement(new return_node(
                     new compiled_function_call(en_fnc, new class_field_reference(int_arr, new this_node(ctn, null), null), null), null));
@@ -543,10 +543,10 @@ namespace PascalABCCompiler.TreeConverter
 
                     en_cmn = new common_method_node(compiler_string_consts.GetEnumeratorMethodName, compiled_type_node.get_type_node(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumeratorInterfaceName)).get_instance(generic_args), null, ctn, SemanticTree.polymorphic_state.ps_virtual, SemanticTree.field_access_level.fal_public, null);
                     //en_fnc = en_tn.find_in_type("GetEnumerator").sym_info as function_node;//NetHelper.NetHelper.FindName(NetHelper.NetHelper.FindType(compiler_string_consts.IGenericEnumerableInterfaceName), compiler_string_consts.GetEnumeratorMethodName).sym_info as compiled_function_node;
-                    SymbolInfo en_si = en_tn.find_in_type("GetEnumerator");
-                    if (en_si.Next != null && (en_si.Next.sym_info as function_node).return_value_type.is_generic_type_instance)
-                        en_si = en_si.Next;
-                    function_node en_fnc_inst = en_si.sym_info as function_node; ;//.get_instance(generic_args, true, loc);
+                    SymbolInfoList en_si = en_tn.find_in_type("GetEnumerator");
+                    if (en_si != null && en_si.InfoUnitList.Count > 1 && (en_si.InfoUnitList[1].sym_info as function_node).return_value_type.is_generic_type_instance)
+                        en_si.InfoUnitList = en_si.InfoUnitList.GetRange(1, en_si.InfoUnitList.Count - 1);
+                    function_node en_fnc_inst = en_si.First().sym_info as function_node; ;//.get_instance(generic_args, true, loc);
                     sl = new statements_list(null);
                     if (en_fnc_inst is compiled_function_node)
                         sl.statements.AddElement(new return_node(
@@ -593,7 +593,7 @@ namespace PascalABCCompiler.TreeConverter
         	cmn_eq.function_code = body;
         	cmn_eq.is_overload = true;
         	ctn.methods.AddElement(cmn_eq);
-        	ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfo(cmn_eq));
+        	ctn.Scope.AddSymbol(compiler_string_consts.eq_name,new SymbolInfoUnit(cmn_eq));
         	
         	//<> operation
 			scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope);
@@ -628,7 +628,7 @@ namespace PascalABCCompiler.TreeConverter
         	cmn_noteq.function_code = body;
         	cmn_noteq.is_overload = true;
         	ctn.methods.AddElement(cmn_noteq);
-        	ctn.Scope.AddSymbol(compiler_string_consts.noteq_name,new SymbolInfo(cmn_noteq));
+        	ctn.Scope.AddSymbol(compiler_string_consts.noteq_name,new SymbolInfoUnit(cmn_noteq));
         	
         	//Equals
         	/*scope = convertion_data_and_alghoritms.symbol_table.CreateClassMethodScope(_cmn.scope,ctn.scope);
@@ -683,13 +683,13 @@ namespace PascalABCCompiler.TreeConverter
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
-				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			else if (element_type.IsEnum)
 			{
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			}
 			
 			if (element_type == SystemLibrary.SystemLibrary.integer_type)
@@ -1185,7 +1185,7 @@ namespace PascalABCCompiler.TreeConverter
 			
 			if (element_type != SystemLibrary.SystemLibrary.char_type && element_type != SystemLibrary.SystemLibrary.bool_type)
 			{
-				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+				element_type.add_generated_name(compiler_string_consts.assign_name,new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 				/*element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.bassign)));
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sassign)));
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.sbassign)));
@@ -1195,13 +1195,13 @@ namespace PascalABCCompiler.TreeConverter
             	element_type.add_name(compiler_string_consts.assign_name,new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn,PascalABCCompiler.SemanticTree.basic_function_type.ulassign)));*/
 			}
 			else if (element_type == SystemLibrary.SystemLibrary.char_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.charassign)));
 			else if (element_type == SystemLibrary.SystemLibrary.bool_type)
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.boolassign)));
 			else if (element_type.IsEnum)
 			{
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
-                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfo(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(ctn, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
+                element_type.add_generated_name(compiler_string_consts.assign_name, new SymbolInfoUnit(SystemLibrary.SystemLibrary.make_assign_operator(element_type, PascalABCCompiler.SemanticTree.basic_function_type.iassign)));
 			}
 			if (element_type == SystemLibrary.SystemLibrary.integer_type)
 			{

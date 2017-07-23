@@ -51,13 +51,28 @@ namespace VisualPascalABC
 				{
 					string[] assemblies = ReferenceForm.Instance.GetSelectedFileAssemblies();
 					List<string> assm_lst = new List<string>();
-                    foreach (string s in assemblies)
+                    foreach (string dll in assemblies)
                     {
-                        if (string.Compare(s, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(s)), true) != 0)
-                            File.Copy(s, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(s)), true);
+                        if (string.Compare(dll, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(dll)), true) != 0)
+                            File.Copy(dll, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(dll)), true);
+                        string xml = Path.ChangeExtension(dll, ".xml");
+                        if (File.Exists(xml))
+                        {
+                            if (string.Compare(xml, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(xml)), true) != 0)
+                                File.Copy(xml, Path.Combine(ProjectFactory.Instance.ProjectDirectory, Path.GetFileName(xml)), true);
+                        }
                         //assm_lst.Add(Path.GetFileNameWithoutExtension(s));
                         //ProjectExplorerWindow.AddReferenceNode(Path.GetFileNameWithoutExtension(s));
-                        PascalABCCompiler.IReferenceInfo ri = ProjectFactory.Instance.AddReference(Path.GetFileNameWithoutExtension(s));
+                        try
+                        {
+                            PascalABCCompiler.NetHelper.NetHelper.LoadAssembly(dll);
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                        
+                        PascalABCCompiler.IReferenceInfo ri = ProjectFactory.Instance.AddReference(Path.GetFileNameWithoutExtension(dll));
                         ProjectExplorerWindow.AddReferenceNode(ri);
                         try
                         {

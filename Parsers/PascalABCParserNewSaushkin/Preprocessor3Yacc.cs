@@ -3,9 +3,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  SSM
-// DateTime: 10.01.2013 23:30:56
-// UserName: ?????????
+// Machine:  IVAN-PC
+// DateTime: 09.05.2017 19:33:14
+// UserName: Ivan
 // Input file <Preprocessor3Yacc.y>
 
 // options: no-lines gplex

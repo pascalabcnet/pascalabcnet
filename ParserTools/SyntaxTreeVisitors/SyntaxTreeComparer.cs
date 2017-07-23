@@ -235,7 +235,7 @@ namespace PascalABCCompiler.SyntaxTree
             }
         }
 
-        public void CompareInternal(class_body left, class_body right)
+        public void CompareInternal(class_body_list left, class_body_list right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);
@@ -656,6 +656,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as function_lambda_call, right as function_lambda_call);
                 else if (left is function_lambda_definition)
                     CompareInternal(left as function_lambda_definition, right as function_lambda_definition);
+                else if (left is tuple_node)
+                    CompareInternal(left as tuple_node, right as tuple_node);
                 else
                     throw new NotImplementedException(left.GetType().ToString());
 
@@ -1630,6 +1632,8 @@ namespace PascalABCCompiler.SyntaxTree
                     CompareInternal(left as inherited_method_call, right as inherited_method_call);
                 else if (left is assign)
                     CompareInternal(left as assign, right as assign);
+                else if (left is yield_node)
+                    CompareInternal(left as yield_node, right as yield_node);
                 //else if (left is expression) // SSM 12/06/15
                 //    CompareInternal(left as expression, right as expression);
 
@@ -2169,6 +2173,26 @@ namespace PascalABCCompiler.SyntaxTree
         }
 
         public void CompareInternal(modern_proc_type left, modern_proc_type right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.el, right.el);
+            }
+        }
+
+        public void CompareInternal(yield_node left, yield_node right)
+        {
+            if (left == null && right != null || left != null && right == null)
+                throw_not_equal(left, right);
+            if (left != null && right != null)
+            {
+                CompareInternal(left.ex, right.ex);
+            }
+        }
+
+        public void CompareInternal(tuple_node left, tuple_node right)
         {
             if (left == null && right != null || left != null && right == null)
                 throw_not_equal(left, right);

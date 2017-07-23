@@ -1,0 +1,498 @@
+using System;
+using System.Drawing;
+using System.Collections;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+using NodeGenerator;
+
+namespace NodesGenerator
+{
+	/// <summary>
+	/// Summary description for node_def.
+	/// </summary>
+	public class node_def : System.Windows.Forms.Form
+	{
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.ListBox subnodes;
+		private System.Windows.Forms.Button delete;
+		private System.Windows.Forms.Button add_subnode;
+		private System.Windows.Forms.Button add_variable;
+		private System.Windows.Forms.TextBox node_name;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button cancel;
+		private System.Windows.Forms.Button ok;
+		private System.Windows.Forms.ListBox base_class;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox help_context;
+		private System.Windows.Forms.Label label3;
+        private Button add_method;
+        private ListBox methods;
+        private Button delete_method;
+        private Button AddAllForList;
+		/// <summary>
+		/// Required designer variable.
+		/// </summary>
+		private System.ComponentModel.Container components = null;
+
+		public node_def()
+		{
+			//
+			// Required for Windows Form Designer support
+			//
+			InitializeComponent();
+
+			//
+			// TODO: Add any constructor code after InitializeComponent call
+			//
+		}
+
+		private node_info ni;
+		private static node_info sni;
+		private NodeGenerator.NodeGenerator ng;
+
+		public node_def(node_info ni,NodeGenerator.NodeGenerator ng)
+		{
+			InitializeComponent();
+			this.ni=ni;
+			sni=ni;
+			
+			base_class.Items.Clear();
+			base_class.Items.AddRange((object[])ng.all_nodes.ToArray(typeof(object)));
+
+			if (this.ni==null)
+			{
+				this.ni=new node_info();
+			}
+			this.ng=ng;
+			set_node_info();
+		}
+
+		private void set_node_info()
+		{
+			this.node_name.Text=ni.node_name;
+			this.subnodes.Items.Clear();
+			this.subnodes.Items.AddRange(ni.subnodes);
+
+            this.methods.Items.Clear();
+            this.methods.Items.AddRange(ni.methods);
+			
+			if (ni.node_name!=null)
+			{
+				if (ng.help_storage.get_help_context(ni.node_name)==null)
+				{
+					ng.help_storage.add_context(ni.node_name,new HelpContext());
+				}
+				this.help_context.Text=ng.help_storage.get_help_context(ni.node_name).help_context;
+			}
+
+			if (ni.base_class==null)
+			{
+				return;
+			}
+			int t=base_class.Items.IndexOf(ni.base_class);
+			if (t<0)
+			{
+				return;
+			}
+			base_class.SelectedIndex=t;
+
+		}
+
+		public static node_info show_modal(node_info ni,NodeGenerator.NodeGenerator ng)
+		{
+			node_def nd=new node_def(ni,ng);
+			nd.ShowDialog();
+			return sni;
+		}
+
+		private void get_node_info()
+		{
+			ni.node_name=node_name.Text;
+			ni.set_subnodes(subnodes.Items);
+            ni.set_methods(methods.Items);
+            
+			ng.help_storage.get_help_context(ni.node_name).help_context=this.help_context.Text;
+
+			int t=base_class.SelectedIndex;
+			if (t<0)
+			{
+				return;
+			}
+			ni.base_class=base_class.Items[t] as node_info;
+
+		}
+
+		private void delete_item()
+		{
+			int t=subnodes.SelectedIndex;
+			if (t<0)
+			{
+				return;
+			}
+			subnodes.Items.RemoveAt(t);
+		}
+
+        private void deletemethod()
+        {
+            int t = methods.SelectedIndex;
+            if (t < 0)
+            {
+                return;
+            }
+            methods.Items.RemoveAt(t);
+            if (t < methods.Items.Count)
+                methods.SelectedIndex = t;
+        }
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		protected override void Dispose( bool disposing )
+		{
+			if( disposing )
+			{
+				if(components != null)
+				{
+					components.Dispose();
+				}
+			}
+			base.Dispose( disposing );
+		}
+
+		#region Windows Form Designer generated code
+		/// <summary>
+		/// Required method for Designer support - do not modify
+		/// the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.AddAllForList = new System.Windows.Forms.Button();
+            this.delete_method = new System.Windows.Forms.Button();
+            this.methods = new System.Windows.Forms.ListBox();
+            this.add_method = new System.Windows.Forms.Button();
+            this.add_variable = new System.Windows.Forms.Button();
+            this.delete = new System.Windows.Forms.Button();
+            this.add_subnode = new System.Windows.Forms.Button();
+            this.subnodes = new System.Windows.Forms.ListBox();
+            this.node_name = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.cancel = new System.Windows.Forms.Button();
+            this.ok = new System.Windows.Forms.Button();
+            this.base_class = new System.Windows.Forms.ListBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.help_context = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.panel1.SuspendLayout();
+            this.SuspendLayout();
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.AddAllForList);
+            this.panel1.Controls.Add(this.delete_method);
+            this.panel1.Controls.Add(this.methods);
+            this.panel1.Controls.Add(this.add_method);
+            this.panel1.Controls.Add(this.add_variable);
+            this.panel1.Controls.Add(this.delete);
+            this.panel1.Controls.Add(this.add_subnode);
+            this.panel1.Controls.Add(this.subnodes);
+            this.panel1.Location = new System.Drawing.Point(10, 92);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(422, 379);
+            this.panel1.TabIndex = 0;
+            // 
+            // AddAllForList
+            // 
+            this.AddAllForList.Location = new System.Drawing.Point(304, 338);
+            this.AddAllForList.Name = "AddAllForList";
+            this.AddAllForList.Size = new System.Drawing.Size(109, 27);
+            this.AddAllForList.TabIndex = 7;
+            this.AddAllForList.Text = "Add all for list";
+            this.AddAllForList.Click += new System.EventHandler(this.AddAllForList_Click);
+            // 
+            // delete_method
+            // 
+            this.delete_method.Location = new System.Drawing.Point(304, 302);
+            this.delete_method.Name = "delete_method";
+            this.delete_method.Size = new System.Drawing.Size(109, 27);
+            this.delete_method.TabIndex = 6;
+            this.delete_method.Text = "Delete";
+            this.delete_method.Click += new System.EventHandler(this.delete_method_Click);
+            // 
+            // methods
+            // 
+            this.methods.ItemHeight = 16;
+            this.methods.Location = new System.Drawing.Point(10, 265);
+            this.methods.Name = "methods";
+            this.methods.Size = new System.Drawing.Size(288, 100);
+            this.methods.TabIndex = 5;
+            this.methods.DoubleClick += new System.EventHandler(this.methods_DoubleClick);
+            this.methods.KeyDown += new System.Windows.Forms.KeyEventHandler(this.methods_KeyDown);
+            // 
+            // add_method
+            // 
+            this.add_method.Location = new System.Drawing.Point(304, 265);
+            this.add_method.Name = "add_method";
+            this.add_method.Size = new System.Drawing.Size(109, 27);
+            this.add_method.TabIndex = 4;
+            this.add_method.Text = "Add method";
+            this.add_method.Click += new System.EventHandler(this.add_method_Click);
+            // 
+            // add_variable
+            // 
+            this.add_variable.Location = new System.Drawing.Point(304, 55);
+            this.add_variable.Name = "add_variable";
+            this.add_variable.Size = new System.Drawing.Size(109, 27);
+            this.add_variable.TabIndex = 3;
+            this.add_variable.Text = "Add variable";
+            this.add_variable.Click += new System.EventHandler(this.add_variable_Click);
+            // 
+            // delete
+            // 
+            this.delete.Location = new System.Drawing.Point(304, 92);
+            this.delete.Name = "delete";
+            this.delete.Size = new System.Drawing.Size(109, 27);
+            this.delete.TabIndex = 2;
+            this.delete.Text = "Delete";
+            this.delete.Click += new System.EventHandler(this.delete_Click);
+            // 
+            // add_subnode
+            // 
+            this.add_subnode.Location = new System.Drawing.Point(304, 18);
+            this.add_subnode.Name = "add_subnode";
+            this.add_subnode.Size = new System.Drawing.Size(109, 27);
+            this.add_subnode.TabIndex = 1;
+            this.add_subnode.Text = "Add subnode";
+            this.add_subnode.Click += new System.EventHandler(this.add_subnode_Click);
+            // 
+            // subnodes
+            // 
+            this.subnodes.ItemHeight = 16;
+            this.subnodes.Location = new System.Drawing.Point(10, 9);
+            this.subnodes.Name = "subnodes";
+            this.subnodes.Size = new System.Drawing.Size(288, 244);
+            this.subnodes.TabIndex = 0;
+            this.subnodes.DoubleClick += new System.EventHandler(this.subnodes_DoubleClick);
+            // 
+            // node_name
+            // 
+            this.node_name.Location = new System.Drawing.Point(10, 55);
+            this.node_name.Name = "node_name";
+            this.node_name.Size = new System.Drawing.Size(422, 22);
+            this.node_name.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(10, 28);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(120, 18);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Имя узла";
+            // 
+            // cancel
+            // 
+            this.cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.cancel.Location = new System.Drawing.Point(538, 618);
+            this.cancel.Name = "cancel";
+            this.cancel.Size = new System.Drawing.Size(90, 27);
+            this.cancel.TabIndex = 3;
+            this.cancel.Text = "Cancel";
+            // 
+            // ok
+            // 
+            this.ok.Location = new System.Drawing.Point(432, 618);
+            this.ok.Name = "ok";
+            this.ok.Size = new System.Drawing.Size(90, 27);
+            this.ok.TabIndex = 4;
+            this.ok.Text = "OK";
+            this.ok.Click += new System.EventHandler(this.ok_Click);
+            // 
+            // base_class
+            // 
+            this.base_class.ItemHeight = 16;
+            this.base_class.Location = new System.Drawing.Point(442, 46);
+            this.base_class.Name = "base_class";
+            this.base_class.Size = new System.Drawing.Size(182, 404);
+            this.base_class.TabIndex = 5;
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(442, 18);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(120, 19);
+            this.label2.TabIndex = 6;
+            this.label2.Text = "Базовый класс";
+            // 
+            // help_context
+            // 
+            this.help_context.Location = new System.Drawing.Point(10, 498);
+            this.help_context.Multiline = true;
+            this.help_context.Name = "help_context";
+            this.help_context.Size = new System.Drawing.Size(624, 111);
+            this.help_context.TabIndex = 7;
+            // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(19, 480);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(120, 18);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Help context";
+            // 
+            // node_def
+            // 
+            this.AcceptButton = this.ok;
+            this.AutoScaleBaseSize = new System.Drawing.Size(6, 15);
+            this.CancelButton = this.cancel;
+            this.ClientSize = new System.Drawing.Size(638, 656);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.help_context);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.base_class);
+            this.Controls.Add(this.ok);
+            this.Controls.Add(this.cancel);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.node_name);
+            this.Controls.Add(this.panel1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
+            this.Name = "node_def";
+            this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "Определение узла";
+            this.panel1.ResumeLayout(false);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+		}
+		#endregion
+
+		private void ok_Click(object sender, System.EventArgs e)
+		{
+			get_node_info();
+			sni=ni;
+			Close();
+		}
+
+		private void add_subnode_Click(object sender, System.EventArgs e)
+		{
+			get_node_info();
+			node_field_info nfi=subnode_editor.edit_field(null,ng,ni);
+			if (nfi != null && nfi.field_name != null)
+			{
+                nfi.field_name = nfi.field_name.Trim();
+                if (!nfi.field_name.Equals(""))
+				    subnodes.Items.Add(nfi);
+			}
+		}
+
+		private void add_variable_Click(object sender, System.EventArgs e)
+		{
+			simple_element se=simple_node_editor.edit_element(null,ni,ng);
+			if (se != null && se.field_name != null)
+			{
+                se.field_name = se.field_name.Trim();
+                if (!se.field_name.Equals(""))
+				    subnodes.Items.Add(se);
+			}
+		}
+
+        private void add_method_Click(object sender, EventArgs e)
+        {
+            method_info nm = method_editor.edit_element(null, ni, ng);
+            if (nm != null)
+            {
+                methods.Items.Add(nm);
+            }
+        }
+        
+        private void delete_Click(object sender, System.EventArgs e)
+		{
+			delete_item();
+		}
+
+        private void delete_method_Click(object sender, EventArgs e)
+        {
+            deletemethod();
+        }
+
+        private void subnodes_DoubleClick(object sender, System.EventArgs e)
+		{
+			int t=subnodes.SelectedIndex;
+			if (t<0)
+			{
+				return;
+			}
+			simple_element se=subnodes.Items[t] as simple_element;
+			if (se!=null)
+			{
+				subnodes.Items[t]=simple_node_editor.edit_element(se,ni,ng);
+				return;
+			}
+            // node_field_info должен быть последним
+            node_field_info nfi = subnodes.Items[t] as node_field_info; 
+            if (nfi != null)
+            {
+                subnode_editor.edit_field(nfi, ng, ni);
+                return;
+            }
+            return;
+		}
+
+        private void methods_DoubleClick(object sender, EventArgs e)
+        {
+            int t = methods.SelectedIndex;
+            if (t < 0)
+            {
+                return;
+            }
+            method_info nm = methods.Items[t] as method_info;
+            if (nm != null)
+            {
+                var v = method_editor.edit_element(nm, ni, ng);
+                if (v != null)
+                    methods.Items[t] = v;
+                return;
+            }
+        }
+
+        private void AddAllForList_Click(object sender, EventArgs e)
+        {
+            if (subnodes.Items.Count == 0)
+                return;
+            var ListItemType = subnodes.Items[0].ToString();
+            var ListName = "";
+            var NodeType = node_name.Text;
+            if (ListItemType.ToLower().StartsWith("list"))
+            {
+                var i1 = ListItemType.IndexOf("<");
+                var i2 = ListItemType.IndexOf(">");
+                ListName = ListItemType.Substring(i2 + 2);
+                ListItemType = ListItemType.Substring(i1 + 1, i2 - i1 - 1);
+            }
+            else return;
+//            nm.method_header = "void Add(SourceContext sc)";
+            string templateListConstructor = "{0}({1} _{1}, SourceContext sc)\r\n{{\r\n    Add(_{1},sc);\r\n}}";
+            string templateListAddNoSC = "{0} Add({1} _{1})\r\n{{\r\n    {2}.Add(_{1});\r\n    return this;\r\n}}";
+            string templateListAdd = "{0} Add({1} _{1}, SourceContext sc)\r\n{{\r\n    {2}.Add(_{1});\r\n    source_context = sc;\r\n    return this;\r\n}}";
+            method_info nm = new method_info();
+            nm.method_text = string.Format(templateListConstructor, NodeType, ListItemType);
+            methods.Items.Add(nm);
+            nm = new method_info();
+            nm.method_text = string.Format(templateListAddNoSC, NodeType, ListItemType, ListName);
+            methods.Items.Add(nm);
+            nm = new method_info();
+            nm.method_text = string.Format(templateListAdd, NodeType, ListItemType, ListName);
+            methods.Items.Add(nm);
+        }
+
+        private void methods_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+                deletemethod();
+        }
+
+	}
+}

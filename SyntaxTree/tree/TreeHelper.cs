@@ -1073,16 +1073,16 @@ namespace PascalABCCompiler.SyntaxTree
         }
     }
 
-    public partial class class_body
+    public partial class class_body_list
     {
 
     }
 
     public partial class class_definition
     {
-        public class_definition(named_type_reference_list parents, class_body body, SourceContext sc = null) : this(parents, body, class_keyword.Class, null, null, class_attribute.None, false, sc)
+        public class_definition(named_type_reference_list parents, class_body_list body, SourceContext sc = null) : this(parents, body, class_keyword.Class, null, null, class_attribute.None, false, sc)
         { is_auto = false; }
-        public class_definition(class_body body, SourceContext sc = null) : this(null, body, sc)
+        public class_definition(class_body_list body, SourceContext sc = null) : this(null, body, sc)
         { is_auto = false; }
 
     }
@@ -1706,6 +1706,30 @@ namespace PascalABCCompiler.SyntaxTree
 
     }
 
+    public partial class question_colon_expression
+    {
+        public override string ToString() => this.condition + "?" + this.ret_if_true + ":" + this.ret_if_false;
+    }
+
+    public partial class dot_question_node
+    {
+        public override string ToString() => left.ToString() + "?." + right.ToString();
+    }
+
+    public partial class for_node
+    {
+        public for_node(ident loop_variable, expression init_value, expression finish_value, statement stmt, SourceContext sc):
+            this(loop_variable, init_value, finish_value,stmt,for_cycle_type.to, null,null,true)
+        {
+
+        }
+        public override string ToString() => "for var " + this.loop_variable.ToString() + " := " + this.initial_value.ToString() + " to " + this.finish_value.ToString()+" do \n"+this.statements.ToString();
+    }
+
+    public partial class loop_stmt
+    {
+        public override string ToString() => "loop " + this.count.ToString() + " do \n" + this.stmt.ToString();
+    }
 
 }
 

@@ -1,5 +1,5 @@
-#reference 'System.Windows.Forms.dll'
-#reference 'System.Drawing.dll'
+{$reference 'System.Windows.Forms.dll'}
+{$reference 'System.Drawing.dll'}
 
 uses System, System.Windows.Forms;
 

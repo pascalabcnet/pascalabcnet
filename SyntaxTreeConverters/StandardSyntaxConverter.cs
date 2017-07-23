@@ -24,6 +24,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
             //--- Обработка синтаксически сахарных узлов
 
+            // loop
+            LoopDesugarVisitor.New.ProcessNode(root);
+
             // tuple_node
             TupleVisitor.New.ProcessNode(root);
 
@@ -33,6 +36,11 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // slice_expr и slice_expr_question
             SliceDesugarVisitor.New.ProcessNode(root);
 
+            // question_point_desugar_visitor
+            QuestionPointDesugarVisitor.New.ProcessNode(root);
+
+            // double_question_desugar_visitor
+            DoubleQuestionDesugarVisitor.New.ProcessNode(root);
 
 
             // Всё, связанное с yield
@@ -45,7 +53,7 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 /*#if DEBUG
             try
             {
-                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz1.txt"));
+                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
             }
             catch
             {

@@ -1355,7 +1355,6 @@ namespace PascalABCCompiler.Parsers
 		protected virtual string GetDescriptionForElementScope(IElementScope scope)
 		{
 			string type_name=null;
-			string s="";
 			StringBuilder sb = new StringBuilder();
 			if (scope.Type == null) type_name = "";
 			else
@@ -2380,12 +2379,22 @@ namespace PascalABCCompiler.Parsers
         			bool in_kav = false;
         			Stack<char> sk_stack = new Stack<char>();
         			sk_stack.Push('(');i++;
+        			bool default_value = false;
         			while (i < meth.Length && sk_stack.Count > 0)
         			{
         				if (meth[i] == '\'') in_kav = !in_kav;
         				else if (meth[i] == '(') {if (!in_kav) sk_stack.Push('(');}
         				else if (meth[i] == ')') {if (!in_kav) sk_stack.Pop();}
-        				sb.Append(meth[i]);
+        				if (meth[i] == ':' && meth[i+1] == '=' && !in_kav)
+        					default_value = true;
+        				else if (meth[i] == ';' && !in_kav)
+        					default_value = false;
+        				if (!default_value || meth[i] == ')' && sk_stack.Count == 0)
+        				{
+        					if (meth[i] == ')' && sk_stack.Count == 0 && default_value)
+        						sb = new StringBuilder(sb.ToString().TrimEnd());
+        					sb.Append(meth[i]);
+        				}
         				i++;
         			}
         			while (i<meth.Length && meth[i] != ':' && meth[i] != ';')

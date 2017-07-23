@@ -670,11 +670,6 @@ var
 procedure drawRect(r: GRectangle);
 // Низкоуровневая процедура (не вызывается пользователем). Вызывает безусловную перерисовку прямоугольника.
 var
-///  b: Picture;
-  g: ObjectABC;
-  gb: System.Drawing.Graphics;
-  db: boolean;
-  bmp,bmp1,tb: Bitmap;
   rr,rtmp: System.Drawing.Rectangle;
 begin
   LockGraphics;
@@ -688,18 +683,18 @@ begin
   if r.Height<=0 then 
     r.Height := 1;
     
-  bmp := GraphBufferBitmap;
+  var bmp := GraphBufferBitmap;
   rr := new System.Drawing.Rectangle(r.Left,r.Top,r.Right-r.Left,r.Bottom-r.Top);
   rtmp := new System.Drawing.Rectangle(0,0,r.Right-r.Left,r.Bottom-r.Top);
 
   //tb := new Bitmap(r.Right-r.Left,r.Bottom-r.Top);
-  tb := GetView(tempbmp,rtmp);
+  var tb := GetView(tempbmp,rtmp);
 
-  gb := System.Drawing.Graphics.FromImage(tb);
+  var gb := System.Drawing.Graphics.FromImage(tb);
   gb.SmoothingMode := GraphWindowGraphics.SmoothingMode;
 //  gb.TextRenderingHint := System.Drawing.Text.TextRenderingHint.AntiAlias; 
 
-  bmp1 := GetView(bmp,rr);
+  var bmp1 := GetView(bmp,rr);
   gb.DrawImageUnscaled(bmp1,0,0);
   //gb.Transform := GraphWindowGraphics.Transform; // ???
   bmp1.Dispose;
@@ -707,20 +702,20 @@ begin
 
   for var i:=0 to __l.Count-1 do
   begin
-    g := ObjectABC(__l[i]);
+    var g := ObjectABC(__l[i]);
     if g.Visible and g.IntersectRect(r) then
       g.Draw(g.Left-r.Left,g.Top-r.Top,gb);
   end;
   
   for var i:=0 to __lUI.Count-1 do
   begin
-    g := ObjectABC(__lUI[i]);
+    var g := ObjectABC(__lUI[i]);
     if g.Visible and g.IntersectRect(r) then
       g.Draw(g.Left-r.Left,g.Top-r.Top,gb);
   end;
   
-  db := DrawInBuffer;
-  DrawInBuffer := False;
+  //var db := DrawInBuffer;
+  //DrawInBuffer := False;
   
 //  if not __LockDrawingObjects then
   //var m := GraphWindowGraphics.Transform;  // ???
@@ -728,7 +723,9 @@ begin
   GraphWindowGraphics.DrawImage(tb,r.Left,r.Top);
   //GraphWindowGraphics.Transform := m;  // ???
 ///  b.Draw(r.Left,r.Top);
-  DrawInBuffer := db;
+  //DrawInBuffer := db;
+  tb.Dispose;
+  tb := nil;
   gb.Dispose;
   gb := nil;
   UnLockGraphics;
@@ -911,7 +908,30 @@ begin
   newBounds.Offset(l,t);
   if oldBounds.IntersectsWith(newBounds) then
   begin
+    // Грубое решение проблемы неотрисовки части изображения
+    var rDiff := newBounds.Right - oldBounds.Right;
+    if rDiff > 0 then
+      newBounds.Width += rDiff;
+    var bDiff := newBounds.Bottom - oldBounds.Bottom;
+    if bDiff > 0 then
+      newBounds.Height += bDiff;
+    
+    var xDiff := oldBounds.X - newBounds.X;
+    if xDiff > 0 then
+    begin
+      newBounds.X -= xDiff;
+      newBounds.Width += xDiff;
+    end;
+        
+    var yDiff := oldBounds.Y - newBounds.Y;
+    if yDiff > 0 then
+    begin
+      newBounds.y -= yDiff;
+      newBounds.Height += yDiff;
+    end;
+    
     r := GRectangle.Union(oldBounds,newBounds);
+    //DrawRectangle(r.X,r.Y,r.Right,r.Bottom);
     //TextOut(0,0,r.ToString);
     //r.Width := r.Width + 5;
     drawRect(r);

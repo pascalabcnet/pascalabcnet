@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit ClientServer;
 
 uses System.Net, System.Net.Sockets, System.IO;
@@ -41,13 +43,12 @@ begin
 
     var br := new BinaryReader(stream);
     var data := br.ReadString();
-    br.Close();
     
     data := OnProcessCommand(data);
     
     var bw := new BinaryWriter(stream);
     bw.Write(data);
-    bw.Close();
+    bw.Flush();
     
     stream.Close();
     client.Close();
@@ -62,8 +63,8 @@ begin
   
   var bw := new BinaryWriter(stream);
   bw.Write(s);
-  bw.Close();
-  
+  bw.Flush();
+
   stream.Close();
   client.Close();
 end;
@@ -76,11 +77,10 @@ begin
   
   var bw := new BinaryWriter(stream);
   bw.Write(s);
-  bw.Close();
+  bw.Flush();
   
   var br := new BinaryReader(stream);
   Result := br.ReadString();
-  br.Close();
   
   stream.Close();
   client.Close();

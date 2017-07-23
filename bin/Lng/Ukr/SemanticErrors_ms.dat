@@ -1,0 +1,14 @@
+﻿%PREFIX%=SEMANTICERROR_
+CAN_NOT_READ=Не можна зчитувати дані цього типу
+TUPLE_EXPECTED=Очікувався кортеж
+TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT=Занадто багато елементів у лівій частині при присвоєнні кортежу
+ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Для кортежу допустимо тільки звичайне присвоювання :=
+TUPLE_TYPE_ERROR=Помилкова конструкція при побудові типу кортежу
+INTEGER_VALUE_EXPECTED=Очікувалося значення цілого типу
+BAD_SLICE_OBJECT=Зрізи допустимі тільки для рядків, динамічних масивів і списків
+ONLY_IN_SHORT_FUNC_DEFS_RETURN_TYPE_CANBE_OMITTED=Тільки в коротких визначеннях функцій можна не вказувати тип повернення значення 
+ONE_TKIDENTIFIER=В якості типу очікувався ідентифікатор
+SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR=Sugared node {0} не повинен обходитися в syntax_tree_visitor. Зверніться до розробників PascalABC.NET
+MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}=Відсутня семантична перевірка для sugared node {0}
+TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Кількість елементів кортежу не повинна бути більше 7 
+OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE=Лівий операнд операції ?. повинен мати тип посилання

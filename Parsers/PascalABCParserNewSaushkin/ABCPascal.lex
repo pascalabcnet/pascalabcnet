@@ -186,6 +186,7 @@ UNICODEARROW \x890
 "]"              { return (int)Tokens.tkSquareClose; }
 "?"              { return (int)Tokens.tkQuestion; }
 "?."              { return (int)Tokens.tkQuestionPoint; }
+"??"              { return (int)Tokens.tkDoubleQuestion; }
 "?["              { return (int)Tokens.tkQuestionSquareOpen; }
 "@"              { yylval = new Union(); yylval.op = new op_type_node(Operators.AddressOf); return (int)Tokens.tkAddressOf; }
 ":="            { yylval = new Union(); yylval.op = new op_type_node(Operators.Assignment); return (int)Tokens.tkAssign; }
@@ -306,6 +307,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkFinalization:
     case (int)Tokens.tkFinally:
     case (int)Tokens.tkFor:
+    case (int)Tokens.tkLoop:
     case (int)Tokens.tkForeach:
     case (int)Tokens.tkFunction:
     case (int)Tokens.tkIf:

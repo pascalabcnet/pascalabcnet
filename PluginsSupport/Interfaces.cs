@@ -259,7 +259,7 @@ namespace VisualPascalABCPlugins
 
     public interface IWorkbenchFileService
     {
-        bool OpenFile(string FileName, string PreferedFileName, bool not_open_designer = false);
+        bool OpenFile(string FileName, string PreferedFileName, bool notOpenDesigner = false);
         void RenameFile(string OldFileName, string NewFileName);
         void CloseFile(string FileName);
         void ReloadFile(string FileName);
@@ -338,6 +338,7 @@ namespace VisualPascalABCPlugins
         void SetDebugStopDisabled();
         void SetDebugStopEnabled();
         void SetAddExprMenuVisible(bool val);
+        void SetDisassemblyMenuVisible(bool val);
         void SetDebugTabsVisible(bool val);
         void SetDebugPausedDisabled();
         void SetPlayButtonsVisible(bool val);
@@ -372,6 +373,7 @@ namespace VisualPascalABCPlugins
         void ExecUndo();
         void ExecRedo();
         void CollapseRegions();
+        void CodeFormat();
     }
 
     public interface IWorkbenchDebuggerOperationsService
@@ -383,6 +385,7 @@ namespace VisualPascalABCPlugins
         void ClearWatch();
         void ClearLocalVarTree();
         void ClearDebugTabs();
+        void DisplayDisassembledCode(string code);
     }
 
     public interface IWorkbenchOperationsService
@@ -428,6 +431,14 @@ namespace VisualPascalABCPlugins
         IWorkbenchDesignerService DesignerService { get; }
         IWorkbenchOperationsService OperationsService { get; }
         IWorkbenchUpdateService UpdateService { get;  }
+        ICodeCompletionService CodeCompletionService { get; }
+    }
+
+    public interface ICodeCompletionService
+    {
+        PascalABCCompiler.Parsers.ICodeCompletionDomConverter GetConverter(string FileName);
+        void SetAsChanged(string FileName);
+        void RegisterFileForParsing(string FileName);
     }
 
     public interface IWorkbench
@@ -443,7 +454,7 @@ namespace VisualPascalABCPlugins
         ICompilerConsoleWindow CompilerConsoleWindow { get; }
         IOutputWindow OutputWindow { get; }
         IErrorListWindow ErrorsListWindow { get; }
-        
+        IDisassemblyWindow DisassemblyWindow { get; }
         void BeginInvoke(Delegate del, params object[] args);
     }
 
@@ -456,6 +467,12 @@ namespace VisualPascalABCPlugins
     {
         void ShowErrorsSync(List<PascalABCCompiler.Errors.Error> errors, bool ChangeViewTab);
         void ClearErrorList();
+    }
+
+    public interface IDisassemblyWindow
+    {
+        bool IsVisible { get; }
+        void ClearWindow();
     }
 
     public interface IOutputWindow
@@ -477,7 +494,17 @@ namespace VisualPascalABCPlugins
         IValue ObjectValue { get; }
         object PrimitiveValue { get; }
     }
-
+	
+    public interface IProcess
+    {
+    	bool HasExited { get; }
+    }
+    
+    public interface IProcessEventArgs
+    {
+    	IProcess Process { get; }
+    }
+    
     public interface IDebuggerManager
     {
         bool IsRunning { get; }
@@ -491,6 +518,7 @@ namespace VisualPascalABCPlugins
         void StepInto();
         void StepOver();
         void RunToCursor();
+        event EventHandler<EventArgs> DebuggeeStateChanged;
     }
 
     public interface ILanguageManager

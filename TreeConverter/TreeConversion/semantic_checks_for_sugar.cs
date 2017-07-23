@@ -10,10 +10,10 @@ namespace PascalABCCompiler.TreeConverter
 {
     public partial class syntax_tree_visitor
     {
-        public void semantic_check_assign_tuple(SyntaxTree.assign_tuple asstup) // подходит и для assign_var_tuple
+        public void semantic_check_assign_tuple(addressed_value_list vars, expression ex) 
         {
             // Проверить, что справа - Tuple
-            var expr = convert_strong(asstup.expr);
+            var expr = convert_strong(ex);
             expr = convert_if_typed_expression_to_function_call(expr);
 
             var t = ConvertSemanticTypeNodeToNETType(expr.type);
@@ -23,9 +23,27 @@ namespace PascalABCCompiler.TreeConverter
             if (!t.FullName.StartsWith("System.Tuple"))
                 AddError(expr.location, "TUPLE_EXPECTED");
 
-            var n = asstup.vars.variables.Count();
+            var n = vars.variables.Count();
             if (n > t.GetGenericArguments().Count())
-                AddError(get_location(asstup.vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+                AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
+        }
+
+        public void semantic_check_assign_var_tuple(ident_list vars, expression ex) 
+        {
+            // Проверить, что справа - Tuple
+            var expr = convert_strong(ex);
+            expr = convert_if_typed_expression_to_function_call(expr);
+
+            var t = ConvertSemanticTypeNodeToNETType(expr.type);
+            if (t == null)
+                AddError(expr.location, "TUPLE_EXPECTED");
+
+            if (!t.FullName.StartsWith("System.Tuple"))
+                AddError(expr.location, "TUPLE_EXPECTED");
+
+            var n = vars.idents.Count();
+            if (n > t.GetGenericArguments().Count())
+                AddError(get_location(vars), "TOO_MANY_ELEMENTS_ON_LEFT_SIDE_OF_TUPLE_ASSIGNMRNT");
         }
 
         void semantic_check_method_call_as_slice_expr(SyntaxTree.method_call mc)
@@ -86,5 +104,20 @@ namespace PascalABCCompiler.TreeConverter
             //if (tup.el.expressions.Count > 7) 
 			//	AddError(get_location(tup),"TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7");
         }*/
+
+        public void semantic_check_dot_question(SyntaxTree.question_colon_expression qce)
+        {
+            var av = convert_strong((qce.condition as bin_expr).left);
+            if (!av.type.is_class)
+                AddError(av.location, "OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE");
+        }
+
+        public void semantic_check_loop_stmt(SyntaxTree.expression ex)
+        {
+            var sem_ex = convert_strong(ex);
+            var b = convertion_data_and_alghoritms.can_convert_type(sem_ex, SystemLibrary.SystemLibrary.integer_type);
+            if (!b)
+                AddError(sem_ex.location, "INTEGER_VALUE_EXPECTED");
+        }
     }
 }

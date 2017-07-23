@@ -78,7 +78,9 @@ namespace SyntaxVisitors
                 var fpids = fp.params_list.SelectMany(tp => tp.idents.idents);
                 foreach (var v in fpids)
                 {
-                    BlockNamesStack[CurrentLevel].Add(v.name, "$fp_"+v.name);
+                    var low = v.name/*.ToLower()*/;
+                    //BlockNamesStack[CurrentLevel].Add(low, "$fp_"+ low);
+                    BlockNamesStack[CurrentLevel][low] = "$fp_" + low;
                 }
             }
             // DO NOTHING
@@ -113,8 +115,11 @@ namespace SyntaxVisitors
 
             var newLocalNames = vs.var_def.vars.idents.Select(id => 
                 {
-                    var newName = this.CreateNewVariableName(id.name);
-                    BlockNamesStack[CurrentLevel].Add(id.name, newName);
+                    var low = id.name/*.ToLower()*/;
+
+                    var newName = this.CreateNewVariableName(low);
+                    //BlockNamesStack[CurrentLevel].Add(low, newName);
+                    BlockNamesStack[CurrentLevel][low] = newName;
                     return new ident(newName, id.source_context);
                 });
 
@@ -145,8 +150,11 @@ namespace SyntaxVisitors
                 {
                     var newLocalNames = vds.vars.idents.Select(id =>
                     {
-                        var newName = this.CreateNewVariableName(id.name);
-                        BlockNamesStack[CurrentLevel].Add(id.name, newName);
+                        var low = id.name/*.ToLower()*/;
+
+                        var newName = this.CreateNewVariableName(low);
+                        //BlockNamesStack[CurrentLevel].Add(low, newName);
+                        BlockNamesStack[CurrentLevel][low] = newName;
                         return new ident(newName, id.source_context);
                     });
 
@@ -160,8 +168,8 @@ namespace SyntaxVisitors
 
         public override void visit(ident id)
         {
-            var newName = this.GetNewVariableName(id.name);
-            if ((object)newName != null)
+            var newName = this.GetNewVariableName(id.name/*.ToLower()*/);
+            if (newName != null)
             {
                 Replace(id, new ident(newName, id.source_context));
             }

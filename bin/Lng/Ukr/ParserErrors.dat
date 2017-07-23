@@ -1,0 +1,12 @@
+﻿//Parser errors in PascalABCCompiler.Errors
+%PREFIX%=PARSER_ERRORS_
+
+BAD_FLOAT=Занадто велике дійсне число
+BAD_INT=Занадто велике ціле число
+BAD_HEX=Неправильний запис hex числа
+UNEXPECTED_SYMBOL{0}=Несподіваний символ '{0}'
+BAD_EXPR=Неправильний вираз
+EXPECTED{0}=Очікувалося {0}
+BIG_CHAR_NUMBER=Занадто велика константа
+BAD_SOURCEFILE{0}_EXT=Не можу вибрати відповідний парсер для файлу '{0}'
+COMPILATION_ERROR{0}{1}{2}={0}{1} Помилка компіляції: {2}

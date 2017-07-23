@@ -1,0 +1,1 @@
+uses u_explicitinterface; begin end.

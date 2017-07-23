@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 // SSM 21/11/16 Ћ€мбда выражени€ вынесены на верхний уровень (п.ч. присваивани€ и параметры)
 %{
 // Ёти объ€влени€ добавл€ютс€ в класс GPPGParser, представл€ющий собой парсер, генерируемый системой gppg
@@ -29,11 +31,12 @@
 
 %start parse_goal
 
-%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkQuestionSquareOpen
+%token <ti> tkDirectiveName tkAmpersend tkColon tkDotDot tkPoint tkRoundOpen tkRoundClose tkSemiColon tkSquareOpen tkSquareClose tkQuestion tkQuestionPoint tkDoubleQuestion tkQuestionSquareOpen
 %token <ti> tkSizeOf tkTypeOf tkWhere tkArray tkCase tkClass tkAuto tkConst tkConstructor tkDestructor tkElse  tkExcept tkFile tkFor tkForeach tkFunction tkMatch
 %token <ti> tkIf tkImplementation tkInherited tkInterface tkProcedure tkOperator tkProperty tkRaise tkRecord tkSet tkType tkThen tkUses tkVar tkWhile tkWith tkNil 
 %token <ti> tkGoto tkOf tkLabel tkLock tkProgram tkEvent tkDefault tkTemplate tkPacked tkExports tkResourceString tkThreadvar tkSealed tkPartial tkTo tkDownto
-%token <ti> tkCycle tkSequence tkYield
+%token <ti> tkLoop 
+%token <ti> tkSequence tkYield
 %token <id> tkNew
 %token <id> tkOn 
 %token <id> tkName tkPrivate tkProtected tkPublic tkInternal tkRead tkWrite  
@@ -77,12 +80,12 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_l1 simple_expr range_term range_factor 
-%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing // var_question_colon
+%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr double_question_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
 %type <stn> foreach_stmt  
-%type <stn> for_stmt yield_stmt yield_sequence_stmt
+%type <stn> for_stmt loop_stmt yield_stmt yield_sequence_stmt
 %type <stn> fp_list fp_sect_list  
 %type <td> file_type sequence_type 
 %type <stn> var_address  
@@ -166,7 +169,7 @@
 %type <ex> func_decl_lambda expl_func_decl_lambda
 %type <td> lambda_type_ref lambda_type_ref_noproctype
 %type <stn> full_lambda_fp_list lambda_simple_fp_sect lambda_function_body lambda_procedure_body optional_full_lambda_fp_list
-%type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_variable_list
+%type <ob> field_in_unnamed_object list_fields_in_unnamed_object func_class_name_ident_list rem_lambda variable_list var_ident_list
 %type <ti> tkAssignOrEqual
 %type <stn> pattern match_with pattern_case pattern_cases
 
@@ -418,7 +421,7 @@ initialization_part
 interface_decl_sect_list
     : int_decl_sect_list1         
         {
-			if (($1 as declarations).defs.Count > 0) 
+			if (($1 as declarations).Count > 0) 
 				$$ = $1; 
 			else 
 				$$ = $1;
@@ -441,7 +444,7 @@ int_decl_sect_list1
 decl_sect_list
     : decl_sect_list1                      
         {
-			if (($1 as declarations).defs.Count > 0) 
+			if (($1 as declarations).Count > 0) 
 				$$ = $1; 
 			else 
 				$$ = $1;
@@ -464,7 +467,7 @@ decl_sect_list1
 inclass_decl_sect_list
     : inclass_decl_sect_list1                  
         {
-			if (($1 as declarations).defs.Count > 0) 
+			if (($1 as declarations).Count > 0) 
 				$$ = $1; 
 			else 
 				$$ = $1;
@@ -1072,6 +1075,13 @@ type_decl_type
 type_ref
     : simple_type
 		{ $$ = $1; }
+	| simple_type tkQuestion
+		{ 	
+			var l = new List<ident>();
+			l.Add(new ident("System"));
+            l.Add(new ident("Nullable"));
+			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		}
     | string_type
 		{ $$ = $1; }
     | pointer_type
@@ -1113,6 +1123,13 @@ template_param_list
 template_param
     : simple_type
 		{ $$ = $1; }
+    | simple_type tkQuestion
+		{ 	
+			var l = new List<ident>();
+			l.Add(new ident("System"));
+            l.Add(new ident("Nullable"));
+			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		}
     | structured_type
 		{ $$ = $1; }
     | procedural_type
@@ -1361,14 +1378,14 @@ proc_type_decl
 object_type
     : class_attributes class_or_interface_keyword optional_base_classes optional_where_section optional_component_list_seq_end
         { 
-			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body, @$);
+			$$ = NewObjectType((class_attribute)$1, $2, $3 as named_type_reference_list, $4 as where_definition_list, $5 as class_body_list, @$);
 		}
     ;
 
 record_type 
     : tkRecord optional_base_classes optional_where_section member_list_section tkEnd   
         { 
-			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body, @$);
+			$$ = NewRecordType($2 as named_type_reference_list, $3 as where_definition_list, $4 as class_body_list, @$);
 		}
     ;
 
@@ -1527,15 +1544,15 @@ type_ref_or_secific
 member_list_section
     : member_list      
         { 
-			$$ = new class_body($1 as class_members, @$);
+			$$ = new class_body_list($1 as class_members, @$);
         }
     | member_list_section ot_visibility_specifier member_list
         { 
 		    ($3 as class_members).access_mod = $2 as access_modifer_node;
-			($1 as class_body).Add($3 as class_members,@$);
+			($1 as class_body_list).Add($3 as class_members,@$);
 			
-			if (($1 as class_body).class_def_blocks[0].members.Count == 0)
-                ($1 as class_body).class_def_blocks.RemoveAt(0);
+			if (($1 as class_body_list).class_def_blocks[0].Count == 0)
+                ($1 as class_body_list).class_def_blocks.RemoveAt(0);
 			
 			$$ = $1;
         } 
@@ -1874,7 +1891,7 @@ typed_var_init_expression
     | tkRoundOpen typed_const_list tkRoundClose tkArrow lambda_function_body
 		{  
 		    var el = $2 as expression_list;
-		    var cnt = el.expressions.Count;
+		    var cnt = el.Count;
 		    
 			var idList = new ident_list();
 			idList.source_context = @2;
@@ -1933,25 +1950,25 @@ proc_func_decl_noclass
         }
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign expr_l1 tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@5));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign expr_l1 tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@3));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 		}
 	| tkFunction func_name fp_list tkColon fptype optional_method_modificators1 tkAssign func_decl_lambda tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@5));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $6 as procedure_attributes_list, $2 as method_name, $5 as type_definition, $8, @1.Merge(@6));
 		}
 	| tkFunction func_name fp_list optional_method_modificators1 tkAssign func_decl_lambda tkSemiColon
 		{
-			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@3));
+			$$ = SyntaxTreeBuilder.BuildShortFuncDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, null, $6, @1.Merge(@4));
 		}
 	| tkProcedure proc_name fp_list optional_method_modificators1 tkAssign unlabelled_stmt tkSemiColon
 		{
 			if ($6 is empty_statement)
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
-			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@3));
+			$$ = SyntaxTreeBuilder.BuildShortProcDefinition($3 as formal_parameters, $4 as procedure_attributes_list, $2 as method_name, $6 as statement, @1.Merge(@4));
 		}
 	| proc_func_header tkForward tkSemiColon
 		{
@@ -2016,7 +2033,7 @@ func_name
     | func_class_name_ident_list tkPoint func_meth_name_ident  
         { 
         	var ln = $1 as List<ident>;
-        	var cnt = ($1 as List<ident>).Count;
+        	var cnt = ln.Count;
         	if (cnt == 1)
 				$$ = new method_name(null, ln[cnt-1], $3, null, @$);
 			else 	
@@ -2273,10 +2290,19 @@ unlabelled_stmt
 		{ $$ = $1; }
 	| yield_sequence_stmt	
 		{ $$ = $1; }
+	| loop_stmt	
+		{ $$ = $1; }
     | match_with
         { $$ = $1; }
     ;
     
+loop_stmt
+	: tkLoop expr_l1 tkDo unlabelled_stmt 
+		{
+			$$ = new loop_stmt($2,$4 as statement,@$);
+		}
+	;
+	
 yield_stmt
 	: tkYield expr_l1
 		{
@@ -2307,18 +2333,26 @@ assignment
 		{
 			if ($6.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($4 as addressed_value_list).variables.Insert(0,$2 as addressed_value);
-			($4 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
+			($4 as addressed_value_list).Insert(0,$2 as addressed_value);
+			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
-    | tkRoundOpen tkVar variable tkComma var_variable_list tkRoundClose assign_operator expr
+    | tkRoundOpen tkVar identifier tkComma var_ident_list tkRoundClose assign_operator expr
 		{
 			if ($7.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as addressed_value_list).variables.Insert(0,$3 as addressed_value);
-			($5 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($5 as addressed_value_list, $8, @$);
+			($5 as ident_list).Insert(0,$3);
+			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
 		}		
+    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose assign_operator expr
+	    {
+			if ($7.type != Operators.Assignment)
+			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
+			($5 as ident_list).Insert(0,$3);
+			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+	    }
     ;
     
 variable_list
@@ -2329,20 +2363,20 @@ variable_list
 	| variable_list tkComma variable
 	{
 		($1 as addressed_value_list).Add($3 as addressed_value);
-		($1 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3);
+		($1 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3);
 		$$ = $1;
 	}
 	;
 
-var_variable_list
-	: tkVar variable
+var_ident_list
+	: tkVar identifier
 	{
-		$$ = new addressed_value_list($2 as addressed_value,@$);
+		$$ = new ident_list($2,@$);
 	}
-	| var_variable_list tkComma tkVar variable
+	| var_ident_list tkComma tkVar identifier
 	{
-		($1 as addressed_value_list).Add($4 as addressed_value);
-		($1 as addressed_value_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4);
+		($1 as ident_list).Add($4);
+		($1 as ident_list).source_context = LexLocation.MergeAll(@1,@2,@3,@4);
 		$$ = $1;
 	}
 	;
@@ -2706,11 +2740,18 @@ expr
     ;
 
 expr_l1
-    : relop_expr
+    : double_question_expr
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
     ;
+	
+double_question_expr
+	: relop_expr
+		{ $$ = $1; }
+	| double_question_expr tkDoubleQuestion relop_expr
+		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
+	;
     
 sizeof_expr
     : tkSizeOf tkRoundOpen simple_or_template_type_reference tkRoundClose
@@ -2769,7 +2810,7 @@ new_expr
         		var cnt = 0;
         		var ac = $6 as array_const;
         		if (ac != null && ac.elements != null)
-	        	    cnt = ac.elements.expressions.Count;
+	        	    cnt = ac.elements.Count;
 	        	else parsertools.AddErrorFromResource("WITHOUT_INIT_AND_SIZE",@5);
         		el = new expression_list(new int32_const(cnt),@1);
         	}	
@@ -3014,9 +3055,9 @@ tuple
 			if ($6 != null) 
 				parsertools.AddErrorFromResource("BAD_TUPLE",@6);*/
 
-			if (($4 as expression_list).expressions.Count>7) 
+			if (($4 as expression_list).Count>7) 
 				parsertools.AddErrorFromResource("TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7",@$);
-            ($4 as expression_list).expressions.Insert(0,$2);
+            ($4 as expression_list).Insert(0,$2);
 			$$ = new tuple_node($4 as expression_list,@$);
 		}	
     ; 
@@ -3061,17 +3102,16 @@ literal_or_number
     ;
 
 
-/*var_question_colon
+var_question_point
 	: variable tkQuestionPoint variable
 	{
 		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
 	}
-	| variable tkQuestionPoint var_question_colon 
+	| variable tkQuestionPoint var_question_point 
 	{
 		$$ = new dot_question_node($1 as addressed_value,$3 as addressed_value,@$);
 	}
 	;
-*/	
 
 var_reference
     : var_address variable                   
@@ -3080,8 +3120,8 @@ var_reference
 		}
     | variable 
 		{ $$ = $1; }
-    /*| var_question_colon 
-		{ $$ = $1; }*/
+    | var_question_point 
+		{ $$ = $1; }
     ;
  
 var_address
@@ -3145,7 +3185,7 @@ variable
     | variable tkSquareOpen expr_list tkSquareClose                
         {
         	var el = $3 as expression_list; // SSM 10/03/16
-        	if (el.expressions.Count==1 && el.expressions[0] is format_expr) 
+        	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
@@ -3165,9 +3205,13 @@ variable
         {
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
         }
-    /*| variable tkQuestionPoint identifier_keyword_operatorname                
+    | tuple tkPoint identifier_keyword_operatorname
         {
 			$$ = new dot_node($1 as addressed_value, $3 as addressed_value, @$);
+        }
+    /*| variable tkQuestionPoint identifier_keyword_operatorname                
+        {
+			$$ = new dot_question_node($1 as addressed_value, $3 as addressed_value, @$);
         }*/
     | variable tkDeref              
         {
@@ -3578,7 +3622,7 @@ func_decl_lambda
 		{
 			var idList = new ident_list($2, @2);
 			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @2), LexLocation.MergeAll(@2,@3,@4));
-			for (int i = 0; i < ($4 as formal_parameters).params_list.Count; i++)
+			for (int i = 0; i < ($4 as formal_parameters).Count; i++)
 				formalPars.Add(($4 as formal_parameters).params_list[i]);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $6, $8 as statement_list, @$);
 		}
@@ -3587,7 +3631,7 @@ func_decl_lambda
 			var idList = new ident_list($2, @2);
             var loc = LexLocation.MergeAll(@2,@3,@4);
 			var formalPars = new formal_parameters(new typed_parameters(idList, $4, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
-			for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+			for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 				formalPars.Add(($6 as formal_parameters).params_list[i]);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, $8, $10 as statement_list, @$);
 		}
@@ -3616,7 +3660,7 @@ func_decl_lambda
 				}
 				
 				if ($6 != null)
-					for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+					for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 						formal_pars.Add(($6 as formal_parameters).params_list[i]);		
 					
 				formal_pars.source_context = LexLocation.MergeAll(@2,@3,@4,@5);
@@ -3638,13 +3682,13 @@ func_decl_lambda
 					var idd2 = iddlist[j] as ident;
 					if (idd2==null)
 						parsertools.AddErrorFromResource("ONE_TKIDENTIFIER",idd2.source_context);
-					idList.idents.Add(idd2);
+					idList.Add(idd2);
 				}	
 				var parsType = $5;
 				var formalPars = new formal_parameters(new typed_parameters(idList, parsType, parametr_kind.none, null, loc), LexLocation.MergeAll(@2,@3,@4,@5,@6));
 				
 				if ($6 != null)
-					for (int i = 0; i < ($6 as formal_parameters).params_list.Count; i++)
+					for (int i = 0; i < ($6 as formal_parameters).Count; i++)
 						formalPars.Add(($6 as formal_parameters).params_list[i]);
 					
 				$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, pair.tn, pair.exprs, @$);

@@ -51,7 +51,7 @@ SectionEnd
 
 ;Function .onInit
 
-;  !insertmacro MUI_LANGDLL_DISPLAY
+
   
 ;FunctionEnd
 
@@ -100,8 +100,8 @@ SectionEnd
   LangString DESC_ConsoleCompiler_Desc ${LANG_ENGLISH} " "
   LangString DESC_INTERNAL_ERROR_REPORT_Desc ${LANG_RUSSIAN} "Позволяет отправить разработчикам отчет о ошибках в работе компилятора"
   LangString DESC_INTERNAL_ERROR_REPORT_Desc ${LANG_ENGLISH} " "
-  LangString DESC_PT4_Desc ${LANG_RUSSIAN} "Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2014"
-  LangString DESC_PT4_Desc ${LANG_ENGLISH} "Programming Taskbook Copyright (c) M.E. Abramyan, 1998-2014"
+  LangString DESC_PT4_Desc ${LANG_RUSSIAN} "Электронный задачник Programming Taskbook Copyright (c)М.Э.Абрамян, 1998-2017"
+  LangString DESC_PT4_Desc ${LANG_ENGLISH} "Programming Taskbook Copyright (c) M.E. Abramyan, 1998-2017"
   LangString DESC_Samples_Desc ${LANG_RUSSIAN} "Файлы примеров"
   LangString DESC_Samples_Desc ${LANG_ENGLISH} "Samples"
   LangString DESC_RusLoc_Desc ${LANG_RUSSIAN} "Поддержка русcкого языка"
@@ -136,6 +136,8 @@ SectionEnd
   LangString DESC_Remove ${LANG_ENGLISH} "Remove"
   LangString DESC_PT4Setup ${LANG_RUSSIAN} "Настройка задачника PT4"
   LangString DESC_PT4Setup ${LANG_ENGLISH} "PT4 Setup"
+  LangString DESC_IsRunning ${LANG_RUSSIAN} "Невозможно начать установку, так как запущена среда PascalABC.NET. Закройте PascalABC.NET и нажмите Повторить"
+  LangString DESC_IsRunning ${LANG_ENGLISH} "PascalABC.NET is running. Please close it first"
   LicenseLangString MUILicense ${LANG_RUSSIAN} "License.rtf"
   LicenseLangString MUILicense ${LANG_ENGLISH} "License_en.rtf"
 

@@ -603,7 +603,7 @@ namespace CodeFormatters
             return ident;
         }
 
-        private bool has_members(class_body body)
+        private bool has_members(class_body_list body)
         {
             return body.class_def_blocks.Count != 0;
         }
@@ -632,7 +632,7 @@ namespace CodeFormatters
                         output_caret_col = sn.source_context.begin_position.column_num;
                     }
                 }
-                if (!(sn is block) && !(sn is declarations) && !(sn is class_body && has_members(sn as class_body)) && 
+                if (!(sn is block) && !(sn is declarations) && !(sn is class_body_list && has_members(sn as class_body_list)) && 
                     !(sn is class_members) && !(sn is procedure_attributes_list) && !(sn is property_accessors) &&
                     !(sn is exception_block) && !(sn is exception_handler_list))
                 {
@@ -647,14 +647,14 @@ namespace CodeFormatters
                         || sn is constructor || sn is destructor || sn is type_declarations || sn is consts_definitions_list
                         || sn is label_definitions || sn is class_definition || sn is uses_list || sn is unit_name || sn is program_name ||
                         sn is new_expr || sn is raise_stmt || sn is interface_node || sn is implementation_node
-                        || sn is lock_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
+                        || sn is lock_stmt || sn is loop_stmt || sn is simple_property || sn is read_accessor_name || sn is write_accessor_name
                         || sn is formal_parameters || sn is bracket_expr || sn is record_const || sn is array_const || sn is exception_handler
                         || sn is try_handler_finally || sn is try_handler_except || sn is external_directive || sn is where_definition
                         || (sn is simple_const_definition && in_class && !in_procedure) || (sn is typed_const_definition && in_class && !in_procedure))
                         read_from_beg_pos = true;
                 }
                 sn.visit(this);
-                if (!(sn is block) && !(sn is declarations) && !(sn is class_body) && !(sn is class_members))
+                if (!(sn is block) && !(sn is declarations) && !(sn is class_body_list) && !(sn is class_members))
                 {
                     if (sn.source_context != null)
                         WritePossibleCommentAfter(sn);
@@ -1177,14 +1177,15 @@ namespace CodeFormatters
             {
                 visit_node(_procedure_header.parameters);
             }
-            if (_procedure_header.where_defs != null)
-                visit_node(_procedure_header.where_defs);
+            
             if (_procedure_header.proc_attributes != null && has_attributes(_procedure_header.proc_attributes))
             {
                 if (is_forward(_procedure_header))
                     _procedure_header.source_context = new SourceContext(_procedure_header.source_context.begin_position.line_num, _procedure_header.source_context.begin_position.column_num, _procedure_header.proc_attributes.source_context.end_position.line_num, _procedure_header.proc_attributes.source_context.end_position.column_num);
                 visit_node(_procedure_header.proc_attributes);
             }
+            if (_procedure_header.where_defs != null)
+                visit_node(_procedure_header.where_defs);
             keyword_offset = 0;
             read_from_beg_pos = false;
             multiline_stack_pop(_procedure_header);
@@ -1215,15 +1216,16 @@ namespace CodeFormatters
             //sb.Append(": ");
             add_space_after = true;
             visit_node(_function_header.return_type);
-            if (_function_header.where_defs != null)
-            {
-                visit_node(_function_header.where_defs);
-            }
+            
             if (_function_header.proc_attributes != null && has_attributes(_function_header.proc_attributes))
             {
                 if (is_forward(_function_header))
                     _function_header.source_context = new SourceContext(_function_header.source_context.begin_position.line_num, _function_header.source_context.begin_position.column_num, _function_header.proc_attributes.source_context.end_position.line_num, _function_header.proc_attributes.source_context.end_position.column_num);
                 visit_node(_function_header.proc_attributes);
+            }
+            if (_function_header.where_defs != null)
+            {
+                visit_node(_function_header.where_defs);
             }
             keyword_offset = 0;
             read_from_beg_pos = false;
@@ -1246,6 +1248,11 @@ namespace CodeFormatters
                     add_newline_after = true;
                 else
                     sb.AppendLine();
+            }
+            if (_procedure_definition.proc_body is block && (_procedure_definition.proc_body as block).program_code.left_logical_bracket == null)
+            {
+                add_space_before = true;
+                add_space_after = true;
             }
             visit_node(_procedure_definition.proc_body);
             in_procedure = tmp_in_proc;
@@ -1542,9 +1549,10 @@ namespace CodeFormatters
         {
             sb.Append("with");
             SetKeywordOffset("with");
+            multiline_stack_push(_with_statement.do_with);
             visit_node(_with_statement.do_with);
+            multiline_stack_pop(_with_statement.do_with);
             //sb.Append(" do");
-            add_newline_after = true;
             add_space_before = true;
             bool need_off = !(_with_statement.what_do is statement_list);
             if (need_off)
@@ -1700,7 +1708,7 @@ namespace CodeFormatters
             sb.Append(GetAccessModifier(_access_modifer_node.access_level));
         }
 
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             in_class = true;
             if (_class_body.class_def_blocks.Count == 0)
@@ -2293,9 +2301,24 @@ namespace CodeFormatters
             throw new NotImplementedException();
         }
 
-        public override void visit(loop_stmt _loop_stmt)
+        public override void visit(loop_stmt loop)
         {
-            throw new NotImplementedException();
+            sb.Append("loop");
+            SetKeywordOffset("loop");
+
+            multiline_stack_push(loop.count);
+            visit_node(loop.count);
+            multiline_stack_pop(loop.count);
+            if (!in_one_row(loop.stmt))
+                add_newline_after = true;
+            add_space_before = true;
+            //WriteKeyword(" do");
+            bool need_off = !(loop.stmt is statement_list);
+            if (need_off)
+                IncOffset();
+            visit_node(loop.stmt);
+            if (need_off)
+                DecOffset();
         }
 
         public override void visit(foreach_stmt _foreach_stmt)
@@ -2827,15 +2850,18 @@ namespace CodeFormatters
         public override void visit(assign_var_tuple _assign_var_tuple)
         {
             read_from_beg_pos = true;
-            for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+            for (int i = 0; i < _assign_var_tuple.idents.idents.Count; i++)
             {
-                if (options.SpaceBetweenArguments == 1)
+                if (options.SpaceBetweenArguments == 1 && i > 0)
                 {
                     add_space_after = true;
                 }  
-                visit_node(_assign_var_tuple.vars.variables[i]);
-                add_space_before = true;
+                visit_node(_assign_var_tuple.idents.idents[i]);
             }
+            sb.Append(")");
+            add_space_after = true;
+            add_space_before = true;
+            prev_sn = _assign_var_tuple.idents;
             visit_node(_assign_var_tuple.expr);
         }
 

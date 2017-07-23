@@ -1141,15 +1141,12 @@ namespace VisualPascalABC
             List<IListItem> list = new List<IListItem>();
             if (val != null)
             {
-            	NamedValueCollection nvc = val.Dereference.GetMembers(type, flags);
+            	NamedValueCollection nvc = val.GetMembers(type, flags);
             	foreach (NamedValue v in nvc)
             	{
                 	try
                 	{
-                    //bool b = v.IsObject;
-                    //if (v != null)
                     	list.Add(new ValueItem(v,this.DebugType));
-                    //list.Add(new FixedItem(v.Name,"","",v));
                 	}
                 	catch (System.Exception e)
                 	{
@@ -1331,24 +1328,10 @@ namespace VisualPascalABC
                 }
                 List<IListItem> publicStatic = GetMembers(BindingFlags.Public | BindingFlags.Static);
                 List<IListItem> privateStatic = GetMembers(BindingFlags.NonPublic | BindingFlags.Static);
-                //List<ListItem> publicStatic = new List<ListItem>();
-                //List<ListItem> privateInstance = new List<ListItem>();
-                //List<ListItem> privateStatic = new List<ListItem>();
-
 
                 if (type.BaseType != null && type.BaseType.FullName != "System.Object" && type.BaseType.FullName != "System.ValueType")
                 {
                     list.Add(new BaseTypeItem(val, type.BaseType));
-                    //            	BaseTypeItem bti = new BaseTypeItem(val, type.BaseType);
-                    //            	try
-                    //            	{
-                    //            		if (bti.GetSubItems(true).Count > 0)
-                    //            		list.Add(new BaseTypeItem(val, type.BaseType));
-                    //            	}
-                    //            	catch
-                    //            	{
-                    //            		
-                    //            	}
                 }
                 if (val != null)
                 {

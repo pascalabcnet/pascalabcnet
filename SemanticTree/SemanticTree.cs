@@ -166,7 +166,12 @@ namespace PascalABCCompiler.SemanticTree
         {
             get;
         }
-
+        
+        bool is_nullable_type
+        {
+        	get;
+        }
+        
         type_special_kind type_special_kind
         {
             get;
@@ -517,6 +522,11 @@ namespace PascalABCCompiler.SemanticTree
 	{
 		//Тип выражения.
 		ITypeNode type
+		{
+			get;
+		}
+		
+		ITypeNode conversion_type
 		{
 			get;
 		}

@@ -21,6 +21,7 @@ SectionGroupEnd
 SectionGroup $(DESC_Localization) Localization
   !include sect_LocRus.nsh
   !include sect_LocEng.nsh
+  !include sect_LocUkr.nsh
 SectionGroupEnd
 
 

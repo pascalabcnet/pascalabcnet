@@ -1711,23 +1711,23 @@ namespace PascalABCCompiler
         }
         
         private ProjectInfo project;
-        
+
         private void PrepareCompileOptionsForProject()
         {
-        	project = new ProjectInfo();
-        	project.Load(CompilerOptions.SourceFileName);
-        	//LoadProject(CompilerOptions.SourceFileName);
-        	switch (project.ProjectType)
-        	{
-        		case ProjectType.ConsoleApp : CompilerOptions.OutputFileType = CompilerOptions.OutputType.ConsoleApplicaton; break;
-        		case ProjectType.WindowsApp : CompilerOptions.OutputFileType = CompilerOptions.OutputType.WindowsApplication; break;
-        		case ProjectType.Library : CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; break;
-        	}
-        	CompilerOptions.SourceFileName = project.main_file;
-        	CompilerOptions.Debug = project.include_debug_info;
-        	CompilerOptions.OutputFileName = project.output_file_name;
-        	CompilerOptions.OutputDirectory = project.output_directory;
-            
+            project = new ProjectInfo();
+            project.Load(CompilerOptions.SourceFileName);
+            //LoadProject(CompilerOptions.SourceFileName);
+            switch (project.ProjectType)
+            {
+                case ProjectType.ConsoleApp: CompilerOptions.OutputFileType = CompilerOptions.OutputType.ConsoleApplicaton; break;
+                case ProjectType.WindowsApp: CompilerOptions.OutputFileType = CompilerOptions.OutputType.WindowsApplication; break;
+                case ProjectType.Library: CompilerOptions.OutputFileType = CompilerOptions.OutputType.ClassLibrary; break;
+            }
+            CompilerOptions.SourceFileName = project.main_file;
+            CompilerOptions.Debug = project.include_debug_info;
+            CompilerOptions.OutputFileName = project.output_file_name;
+
+            CompilerOptions.OutputDirectory = project.output_directory;
         }
         
 		public string Compile()
@@ -2005,7 +2005,7 @@ namespace PascalABCCompiler
                         case false: cdo.dbg_attrs = NETGenerator.DebugAttributes.Release; break;
                     }
                     if (CompilerOptions.ForDebugging)
-                        cdo.dbg_attrs = NETGenerator.DebugAttributes.ForDebbuging;
+                        cdo.dbg_attrs = NETGenerator.DebugAttributes.ForDebugging;
 
 
                     //TODO: Разобратся c location для program_node и правильно передавать main_function. Добавить генератор main_function в SyntaxTreeToSemanticTreeConverter.

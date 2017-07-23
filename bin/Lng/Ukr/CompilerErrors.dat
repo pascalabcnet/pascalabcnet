@@ -1,0 +1,18 @@
+﻿//Compiler error messages
+
+%PREFIX%=COMPILATIONERROR_
+PROGRAM_MODULE_EXPECTED=Очікувалася програма, а отримано модуль
+UNIT_MODULE_EXPECTED=Очікувався модуль, а отримана програма
+READ_PCU{0}_ERROR=Помилка читання PCU файлу '{0}'
+ASSEMBLY_{0}_NOT_FOUND=Збірка '{0}' не знайдена
+UNIT_{0}_NOT_FOUND=Модуль '{0}' не знайдено
+SOURCE_FILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
+NO_ACCESS_TO_FILE{0}=Не можу отримати доступ до файлу '{0}'
+CYCLIC_UNIT_REFERENCE_WITH_UNIT_{0}=Циклічний зв'язок з модулем '{0}'
+UNDEFINED_SEMANTIC_ERROR{0}=Невизначена семантична помилка : {0} 
+RESOURCEFILE_{0}_NOT_FOUND=Файл '{0}' не знайдено
+DUPLICATE_USES_UNIT{0}=Повторне підключення модуля {0} в секції uses
+MAINRESOURCE_NOT_ALLOWED=Неприпустимо сумісне використання директиви mainresource і директив product, version, company, trademark
+
+%PREFIX%=
+COMPILER_INTERNAL_ERROR_IN_UNIT_{0}_:{1}=Внутрішня помилка компілятора в модулі {0} :'{1}'

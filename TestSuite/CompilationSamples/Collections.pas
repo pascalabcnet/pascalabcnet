@@ -1,3 +1,5 @@
+// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 /// Модуль содержит шаблоны классов
 ///   Stack — стек
 ///   Queue — очередь
@@ -6,12 +8,6 @@
 ///   AssocArray — простой ассоциативный массив на основе динамического массива пар
 ///   LinkedList — двусвязный список
 unit Collections;
-
-//------------------------------------------------------------------------------
-// Модуль упрощенных классов коллекций для обучения
-// Версия 1.0
-// Copyright (c) 2009 Белякова Ю., Михалкович С.С., Саатчи А.
-//------------------------------------------------------------------------------
 
 interface
 

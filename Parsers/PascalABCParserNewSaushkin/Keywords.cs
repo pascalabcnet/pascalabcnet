@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+// This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -90,6 +92,7 @@ namespace GPPGParserScanner
             keywords.Add(Convert("interface"), (int)Tokens.tkInterface);
             keywords.Add(Convert("label"), (int)Tokens.tkLabel);
             keywords.Add(Convert("lock"), (int)Tokens.tkLock);
+            keywords.Add(Convert("loop"), (int)Tokens.tkLoop);
             keywords.Add(Convert("nil"), (int)Tokens.tkNil);
             keywords.Add(Convert("procedure"), (int)Tokens.tkProcedure);
             keywords.Add(Convert("of"), (int)Tokens.tkOf);

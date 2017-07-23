@@ -1,0 +1,38 @@
+﻿//PABCNETC
+%PREFIX%=PABCNETC_
+
+ERROR_INVALID_DIRECTORY=Помилка: неправильний каталог
+FULL_ERROR_LIST=Повний список помилок:
+OK_{0}MS_{1}LINES=OK {0}ms ({1}рядків)
+TOTAL{0}_FILES{1}_LINES_{2}_TIME{3}=Усього: {0} файлів ({1}kb,{2}рядків). Час: {3}ms
+TOTAL{0}_SUCCESS{1}_PROCENT{2}=Усього файлів {0}, відкомпільовано {1} ({2}%)
+COMPILING_ASSEMBLY{0}=Компілюю збірку {0}...
+RESTARTING_COMPILER=Завантажую ядро...
+ERROR_PARSERS_NOT_FOUND=Попередження: жоден парсер не подключений!
+CONNECTED_PARSER{0}=Підключений парсер {0}
+CONNECTED_PARSERS=Підключені парсери: 
+CONNECTED_CONVERSIONS=Підключені перетворення: 
+STARTING=Запуск...
+COMMANDLINEISABSENT=Відсутній командний рядок
+FILEISABSENT{0}=Відсутній файл {0}
+COMPILEERRORS=Помилки компіляції:
+
+HELP=17LINES
+Аргументи командного рядка: 
+pabcnetc source_file_name [target_file_name [dll|exe|winexe]]
+Команди: ([x] -> x - значення за замовчуванням)
+? 			- Допомога
+cd <dir>  		- Перехід в каталог <dir>
+<file name> 		- Компілювати файл
+<files mask> 		- Компілювати файли по масці
+Reset 			- Перезавантажити компілятор
+ResetOnCompile=<0|1> 	- Перезавантажувати компілятор перед компіляцією [0]
+Rebuild=<0|1> 		- Перекомпілювати PCU файли [0]
+Debug=<0|1> 		- Генерувати зневадження (PDB файли) [0]
+UseDll=<0|1> 		- Підключати бібліотеку PABCRtl.dll [0]
+OutDir=<output directory>-Задати вихідний каталог
+OutType=<dll|exe|winexe>- Задати тип вихідного файлу [exe]
+ClrScr 			- Очистити екран
+ShowAllMessages=<0|1>	- Виводити всі повідомлення компілятора [0]
+Language=<n> 		- Обрати мову, де n:
+                

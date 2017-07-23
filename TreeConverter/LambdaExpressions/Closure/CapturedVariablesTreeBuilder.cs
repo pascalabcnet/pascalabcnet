@@ -63,13 +63,21 @@ namespace TreeConverter.LambdaExpressions.Closure
             _identsReferences = new Dictionary<SubstitutionKey, List<ident>>();
         }
 
+        public override void visit(semantic_check_sugared_statement_node sn)
+        {
+            // Не обходить проверочные узлы в визиторе строительства дерева - SSM 1.05.17
+        }
+
         public override void visit(var_def_statement varDefStmt)
         {
             _visitor.visit(varDefStmt);
             
             foreach (var id in varDefStmt.vars.idents)
             {
-                var si = _visitor.context.find(id.name);
+                SymbolInfoUnit si = null;
+                var temp = _visitor.context.find(id.name);
+                if (temp != null)
+                    si = temp.First();
                 _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(varDefStmt, si));
             }
 
@@ -128,7 +136,10 @@ namespace TreeConverter.LambdaExpressions.Closure
         {
             var idName = id.name.ToLower();
 
-            var si = _visitor.context.find(idName);
+            SymbolInfoUnit si = null;
+            var temp = _visitor.context.find(idName);
+            if (temp != null)
+                si = temp.First();
             
             if (si == null)
             {
@@ -168,7 +179,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 return;
             }
 
-            if (si.sym_info.semantic_node_type == semantic_node_type.class_field && InLambdaContext)
+            /*if (si.sym_info.semantic_node_type == semantic_node_type.class_field && InLambdaContext)
             {
                 var semClassField = (class_field)si.sym_info;
                 if (semClassField.polymorphic_state != polymorphic_state.ps_common)
@@ -176,7 +187,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                     _visitor.AddError(new ThisTypeOfVariablesCannotBeCaptured(_visitor.get_location(id)));
                     return;
                 }
-            }
+            }*/
 
             if (si.scope == null)
             {
@@ -415,8 +426,8 @@ namespace TreeConverter.LambdaExpressions.Closure
             type_node elemType = null;
             if (inWhat.type == null)
                 inWhat = tmp;
-
-            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType);
+            bool bb; // здесь bb не нужно. Оно нужно в foreach
+            _visitor.FindIEnumerableElementType(/*_foreach_stmt, */inWhat.type, ref elemType, out bb);
 
             if (_foreach_stmt.type_name == null)
             {
@@ -442,10 +453,13 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                 _visitor.context.close_var_definition_list(tn, null);
 
-                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_foreach_stmt, _visitor.context.find(loopIdentName)));
+                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_foreach_stmt, _visitor.context.find(loopIdentName).First()));
             }
 
-            newTreeNode.SymbolInfoLoopVar = _visitor.context.find(loopIdentName);
+            newTreeNode.SymbolInfoLoopVar = null;
+            var temp2 = _visitor.context.find(loopIdentName);
+            if (temp2 != null)
+                newTreeNode.SymbolInfoLoopVar = temp2.First();
 
             if (!(vdn.type is compiled_generic_instance_type_node))
                 _visitor.convertion_data_and_alghoritms.check_convert_type_with_inheritance(vdn.type, elemType, _visitor.get_location(_foreach_stmt.identifier));
@@ -518,11 +532,14 @@ namespace TreeConverter.LambdaExpressions.Closure
                                                           _visitor.get_location(_for_node.loop_variable), tn,
                                                           polymorphic_state.ps_common);
 
-                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_for_node, _visitor.context.find(loopIdentName)));
+                _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(_for_node, _visitor.context.find(loopIdentName).First()));
             }
 
 
-            newTreeNode.SymbolInfoLoopVar = _visitor.context.find(loopIdentName);
+            newTreeNode.SymbolInfoLoopVar = null;
+            var temp2 =_visitor.context.find(loopIdentName);
+            if (tmp != null)
+                newTreeNode.SymbolInfoLoopVar = temp2.First();
 
             var fn = new PascalABCCompiler.TreeRealization.for_node(null, null, null, null, null, _visitor.get_location(_for_node));
             if (vdn.type == SystemLibrary.bool_type)
@@ -615,7 +632,19 @@ namespace TreeConverter.LambdaExpressions.Closure
             ProcessNode(nae.expr);
         }
 
-
+        public override void visit(with_statement _with_statement)
+        {
+            _visitor.AddError(_visitor.get_location(_with_statement), "WITH_AND_LAMBDAS_NOT_ALLOWED");
+        }
+        
+        public override void visit(PascalABCCompiler.SyntaxTree.goto_statement _goto_statement)
+        {
+        	if (_goto_statement.source_context != null)
+            	_visitor.AddError(_visitor.get_location(_goto_statement), "GOTO_AND_LAMBDAS_NOT_ALLOWED");
+        	else
+        		base.visit(_goto_statement);
+        }
+        
         private void VisitProcParameters(formal_parameters procParametres)
         {
             if (procParametres == null ||
@@ -628,7 +657,10 @@ namespace TreeConverter.LambdaExpressions.Closure
             {
                 foreach (var id in tp.idents.idents)
                 {
-                    var si = _visitor.context.find(id.name);
+                    SymbolInfoUnit si = null;
+                    var temp = _visitor.context.find(id.name);
+                    if (temp != null)
+                        si = temp.First();
                     _currentTreeNode.VariablesDefinedInScope.Add(new CapturedVariablesTreeNode.CapturedSymbolInfo(tp, si));
                 }
             }

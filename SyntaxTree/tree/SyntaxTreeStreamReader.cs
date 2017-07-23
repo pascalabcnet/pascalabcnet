@@ -177,7 +177,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 77:
 					return new access_modifer_node();
 				case 78:
-					return new class_body();
+					return new class_body_list();
 				case 79:
 					return new class_definition();
 				case 80:
@@ -463,17 +463,7 @@ namespace PascalABCCompiler.SyntaxTree
 				case 220:
 					return new sugared_addressed_value();
 				case 221:
-					return new pattern_node();
-				case 222:
-					return new type_pattern();
-				case 223:
-					return new is_pattern_expr();
-				case 224:
-					return new match_with();
-				case 225:
-					return new pattern_case();
-				case 226:
-					return new pattern_cases();
+					return new double_question_node();
 			}
 			return null;
 		}
@@ -1720,25 +1710,25 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(class_body _class_body)
+		public void visit(class_body_list _class_body_list)
 		{
-			read_class_body(_class_body);
+			read_class_body_list(_class_body_list);
 		}
 
-		public void read_class_body(class_body _class_body)
+		public void read_class_body_list(class_body_list _class_body_list)
 		{
-			read_syntax_tree_node(_class_body);
+			read_syntax_tree_node(_class_body_list);
 			if (br.ReadByte() == 0)
 			{
-				_class_body.class_def_blocks = null;
+				_class_body_list.class_def_blocks = null;
 			}
 			else
 			{
-				_class_body.class_def_blocks = new List<class_members>();
+				_class_body_list.class_def_blocks = new List<class_members>();
 				Int32 ssyy_count = br.ReadInt32();
 				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
 				{
-					_class_body.class_def_blocks.Add(_read_node() as class_members);
+					_class_body_list.class_def_blocks.Add(_read_node() as class_members);
 				}
 			}
 		}
@@ -1753,7 +1743,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			read_type_definition(_class_definition);
 			_class_definition.class_parents = _read_node() as named_type_reference_list;
-			_class_definition.body = _read_node() as class_body;
+			_class_definition.body = _read_node() as class_body_list;
 			_class_definition.keyword = (class_keyword)br.ReadByte();
 			_class_definition.template_args = _read_node() as ident_list;
 			_class_definition.where_section = _read_node() as where_definition_list;
@@ -2370,7 +2360,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_format_expr(format_expr _format_expr)
 		{
-			read_expression(_format_expr);
+			read_addressed_value(_format_expr);
 			_format_expr.expr = _read_node() as expression;
 			_format_expr.format1 = _read_node() as expression;
 			_format_expr.format2 = _read_node() as expression;
@@ -2640,6 +2630,7 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_loop_stmt(loop_stmt _loop_stmt)
 		{
 			read_statement(_loop_stmt);
+			_loop_stmt.count = _read_node() as expression;
 			_loop_stmt.stmt = _read_node() as statement;
 		}
 
@@ -3728,7 +3719,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_tuple_node(tuple_node _tuple_node)
 		{
-			read_expression(_tuple_node);
+			read_addressed_value(_tuple_node);
 			_tuple_node.el = _read_node() as expression_list;
 		}
 
@@ -3848,7 +3839,9 @@ namespace PascalABCCompiler.SyntaxTree
 
 		public void read_assign_var_tuple(assign_var_tuple _assign_var_tuple)
 		{
-			read_assign_tuple(_assign_var_tuple);
+			read_statement(_assign_var_tuple);
+			_assign_var_tuple.idents = _read_node() as ident_list;
+			_assign_var_tuple.expr = _read_node() as expression;
 		}
 
 
@@ -3871,7 +3864,20 @@ namespace PascalABCCompiler.SyntaxTree
 		public void read_semantic_check_sugared_statement_node(semantic_check_sugared_statement_node _semantic_check_sugared_statement_node)
 		{
 			read_statement(_semantic_check_sugared_statement_node);
-			_semantic_check_sugared_statement_node.stat = (object)br.ReadByte();
+			_semantic_check_sugared_statement_node.typ = (object)br.ReadByte();
+			if (br.ReadByte() == 0)
+			{
+				_semantic_check_sugared_statement_node.lst = null;
+			}
+			else
+			{
+				_semantic_check_sugared_statement_node.lst = new List<syntax_tree_node>();
+				Int32 ssyy_count = br.ReadInt32();
+				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
+				{
+					_semantic_check_sugared_statement_node.lst.Add(_read_node() as syntax_tree_node);
+				}
+			}
 		}
 
 
@@ -3901,90 +3907,16 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 
 
-		public void visit(pattern_node _pattern_node)
+		public void visit(double_question_node _double_question_node)
 		{
-			read_pattern_node(_pattern_node);
+			read_double_question_node(_double_question_node);
 		}
 
-		public void read_pattern_node(pattern_node _pattern_node)
+		public void read_double_question_node(double_question_node _double_question_node)
 		{
-			read_syntax_tree_node(_pattern_node);
-		}
-
-
-		public void visit(type_pattern _type_pattern)
-		{
-			read_type_pattern(_type_pattern);
-		}
-
-		public void read_type_pattern(type_pattern _type_pattern)
-		{
-			read_pattern_node(_type_pattern);
-			_type_pattern.identifier = _read_node() as ident;
-			_type_pattern.type = _read_node() as type_definition;
-		}
-
-
-		public void visit(is_pattern_expr _is_pattern_expr)
-		{
-			read_is_pattern_expr(_is_pattern_expr);
-		}
-
-		public void read_is_pattern_expr(is_pattern_expr _is_pattern_expr)
-		{
-			read_expression(_is_pattern_expr);
-			_is_pattern_expr.left = _read_node() as expression;
-			_is_pattern_expr.right = _read_node() as pattern_node;
-		}
-
-
-		public void visit(match_with _match_with)
-		{
-			read_match_with(_match_with);
-		}
-
-		public void read_match_with(match_with _match_with)
-		{
-			read_statement(_match_with);
-			_match_with.expr = _read_node() as expression;
-			_match_with.case_list = _read_node() as pattern_cases;
-		}
-
-
-		public void visit(pattern_case _pattern_case)
-		{
-			read_pattern_case(_pattern_case);
-		}
-
-		public void read_pattern_case(pattern_case _pattern_case)
-		{
-			read_statement(_pattern_case);
-			_pattern_case.pattern = _read_node() as pattern_node;
-			_pattern_case.case_action = _read_node() as statement;
-		}
-
-
-		public void visit(pattern_cases _pattern_cases)
-		{
-			read_pattern_cases(_pattern_cases);
-		}
-
-		public void read_pattern_cases(pattern_cases _pattern_cases)
-		{
-			read_statement(_pattern_cases);
-			if (br.ReadByte() == 0)
-			{
-				_pattern_cases.elements = null;
-			}
-			else
-			{
-				_pattern_cases.elements = new List<pattern_case>();
-				Int32 ssyy_count = br.ReadInt32();
-				for(Int32 ssyy_i = 0; ssyy_i < ssyy_count; ssyy_i++)
-				{
-					_pattern_cases.elements.Add(_read_node() as pattern_case);
-				}
-			}
+			read_addressed_value_funcname(_double_question_node);
+			_double_question_node.left = _read_node() as expression;
+			_double_question_node.right = _read_node() as expression;
 		}
 
 	}

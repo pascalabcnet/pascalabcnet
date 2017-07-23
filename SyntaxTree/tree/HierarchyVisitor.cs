@@ -629,11 +629,11 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
-		public virtual void pre_do_visit(class_body _class_body)
+		public virtual void pre_do_visit(class_body_list _class_body_list)
 		{
 		}
 
-		public virtual void post_do_visit(class_body _class_body)
+		public virtual void post_do_visit(class_body_list _class_body_list)
 		{
 		}
 
@@ -1773,6 +1773,14 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 		}
 
+		public virtual void pre_do_visit(double_question_node _double_question_node)
+		{
+		}
+
+		public virtual void post_do_visit(double_question_node _double_question_node)
+		{
+		}
+
 		public virtual void pre_do_visit(pattern_node _pattern_node)
 		{
 		}
@@ -2500,13 +2508,13 @@ namespace PascalABCCompiler.SyntaxTree
 			post_do_visit(_access_modifer_node);
 		}
 
-		public override void visit(class_body _class_body)
+		public override void visit(class_body_list _class_body_list)
 		{
-			DefaultVisit(_class_body);
-			pre_do_visit(_class_body);
+			DefaultVisit(_class_body_list);
+			pre_do_visit(_class_body_list);
 			for (int i = 0; i < class_def_blocks.Count; i++)
-				visit(class_body.class_def_blocks[i]);
-			post_do_visit(_class_body);
+				visit(class_body_list.class_def_blocks[i]);
+			post_do_visit(_class_body_list);
 		}
 
 		public override void visit(class_definition _class_definition)
@@ -3036,6 +3044,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_loop_stmt);
 			pre_do_visit(_loop_stmt);
+			visit(loop_stmt.count);
 			visit(loop_stmt.stmt);
 			post_do_visit(_loop_stmt);
 		}
@@ -3677,6 +3686,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_assign_var_tuple);
 			pre_do_visit(_assign_var_tuple);
+			visit(assign_var_tuple.idents);
+			visit(assign_var_tuple.expr);
 			post_do_visit(_assign_var_tuple);
 		}
 
@@ -3691,6 +3702,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_semantic_check_sugared_statement_node);
 			pre_do_visit(_semantic_check_sugared_statement_node);
+			for (int i = 0; i < lst.Count; i++)
+				visit(semantic_check_sugared_statement_node.lst[i]);
 			post_do_visit(_semantic_check_sugared_statement_node);
 		}
 
@@ -3708,6 +3721,15 @@ namespace PascalABCCompiler.SyntaxTree
 			pre_do_visit(_sugared_addressed_value);
 			visit(sugared_addressed_value.new_addr_value);
 			post_do_visit(_sugared_addressed_value);
+		}
+
+		public override void visit(double_question_node _double_question_node)
+		{
+			DefaultVisit(_double_question_node);
+			pre_do_visit(_double_question_node);
+			visit(double_question_node.left);
+			visit(double_question_node.right);
+			post_do_visit(_double_question_node);
 		}
 
 		public override void visit(pattern_node _pattern_node)

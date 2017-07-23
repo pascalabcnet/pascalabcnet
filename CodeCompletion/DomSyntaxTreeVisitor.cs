@@ -840,7 +840,7 @@ namespace CodeCompletion
         				}
         				if (eq)
         				{
-        					if (ps.return_type == null && return_type == null) return ps;
+        					if (return_type == null) return ps;
         					if (ps.return_type != null && return_type != null)
         					{
         						if ((ps.return_type as TypeScope).IsEqual(return_type))
@@ -1472,7 +1472,12 @@ namespace CodeCompletion
         	ps.is_static = _function_header.class_keyword;
         	if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_function_header))
         		ps.AddDocumentation(this.converter.controller.docs[_function_header]);
-        	if (is_proc_realization) ps.already_defined = true;
+        	if (is_proc_realization)
+            {
+                ps.already_defined = true;
+                if (ps.loc == null)
+                    ps.loc = loc;
+            } 
         	else 
         	{
         		ps.loc = loc;
@@ -1568,7 +1573,17 @@ namespace CodeCompletion
             		ret_tn.AddName("Result",new ElementScope(new SymInfo("Result", SymbolKind.Variable,"Result"),(ret_tn as ProcScope).return_type,cur_scope));
             	}*/
                 if (!parse_only_interface)
-            	    _procedure_definition.proc_body.visit(this);
+                {
+                	try
+                	{
+                		_procedure_definition.proc_body.visit(this);
+                	}
+                	catch
+                	{
+                		
+                	}
+                }
+            	    
                 if (cur_scope != null && cur_scope is ProcScope)
                 {
                     ProcRealization pr = (cur_scope as ProcScope).proc_realization;
@@ -2641,6 +2656,19 @@ namespace CodeCompletion
         	for (int i=0; i<good_procs.Count; i++)
         	if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
         		return good_procs[i].GetInstance(arg_types2);
+            if (good_procs.Count == 0)
+            {
+                for (int i = 0; i < meths.Length; i++)
+                {
+                    if (meths[i] is ProcScope)
+                    {
+                        if (obj != null && !(meths[i] as ProcScope).IsStatic)
+                        {
+                            good_procs.Add(meths[i] as ProcScope);
+                        }
+                    }
+                }
+            }
         	if (good_procs.Count > 0)
             {
                 if (obj != null)
@@ -2873,7 +2901,7 @@ namespace CodeCompletion
         }
 		
         private access_modifer cur_access_mod = access_modifer.none;
-        public override void visit(class_body _class_body)
+        public override void visit(class_body_list _class_body)
         {
             //throw new Exception("The method or operation is not implemented.");
             foreach (class_members mems in _class_body.class_def_blocks)
@@ -3959,7 +3987,14 @@ namespace CodeCompletion
 
         public override void visit(loop_stmt _loop_stmt)
         {
-            throw new Exception("The method or operation is not implemented.");
+            SymScope tmp = cur_scope;
+            SymScope stmt_scope = new BlockScope(cur_scope);
+            cur_scope.AddName("$block_scope", stmt_scope);
+            stmt_scope.loc = get_location(_loop_stmt);
+            cur_scope = stmt_scope;
+            if (_loop_stmt.stmt != null)
+                _loop_stmt.stmt.visit(this);
+            cur_scope = tmp;
         }
 
         public override void visit(foreach_stmt _foreach_stmt)
@@ -4507,9 +4542,9 @@ namespace CodeCompletion
             TypeScope ts = returned_scope as TypeScope;
             if (ts != null && ts.instances != null && ts.instances.Count > 0)
             {
-                for (int i = 0; i < _assign_var_tuple.vars.variables.Count; i++)
+                for (int i = 0; i < _assign_var_tuple.idents.idents.Count; i++)
                 {
-                    ident id = _assign_var_tuple.vars.variables[i] as ident;
+                    ident id = _assign_var_tuple.idents.idents[i];
                     if (id != null)
                     {
                         SymInfo si = new SymInfo(id.name, SymbolKind.Variable, id.name);
@@ -4532,7 +4567,7 @@ namespace CodeCompletion
             mc.dereferencing_value = new dot_node(new ident("Tuple"), new ident("Create"));
             mc.visit(this);
         }
-
+		
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();

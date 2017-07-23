@@ -3190,7 +3190,10 @@ namespace PascalABCCompiler.PCU
                 if (CanWriteObject(ef.filter_type))
                     WriteTypeReference(ef.filter_type);
                 if (CanWriteObject(ef.exception_var))
+                {
+                    VisitLocalBlockVariable(ef.exception_var.var);
                     VisitLocalBlockVariableReference(ef.exception_var);
+                }
                 VisitStatement(ef.exception_handler);
                 WriteDebugInfo(ef.location);
             }
@@ -3761,6 +3764,7 @@ namespace PascalABCCompiler.PCU
 		{
 			bw.Write((System.Int16)expr.function_node.basic_function_type);
             WriteTypeReference(expr.ret_type);
+            WriteTypeReference(expr.conversion_type);
             bw.Write(expr.parameters.Count);
 			for (int i=0; i<expr.parameters.Count; i++)
 			    VisitExpression(expr.parameters[i]);

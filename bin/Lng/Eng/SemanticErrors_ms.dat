@@ -11,4 +11,4 @@ ONE_TKIDENTIFIER=Type here must be identifier
 SUGARED_NODE_{0}_IN_SYNTAX_TREE_VISITOR=Sugared node {0} must not be visited in syntax_tree_visitor
 MISSED_SEMANTIC_CHECK_FOR_SUGARED_NODE_{0}=Missed semantic check for sugared node {0}
 TUPLE_ELEMENTS_COUNT_MUST_BE_LESSEQUAL_7=Count of Tuple elements must be <=7
-
+OPERATOR_DQ_MUST_BE_USED_WITH_A_REFERENCE_TYPE_VALUETYPE=Left operand of ?. operation must have reference type

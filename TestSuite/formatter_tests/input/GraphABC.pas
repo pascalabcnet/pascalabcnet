@@ -1,4 +1,4 @@
-// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
+﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 
 ///Модуль предоставляет константы, типы, процедуры, функции и классы для рисования в графическом окне
@@ -7,8 +7,8 @@ unit GraphABC;
 //ne udaljat, IB 7.10.08 
 //с дополнениями 2015.01 (mabr) 
 {$apptype windows} 
-{$reference 'System.Windows.Forms.dll'}
-{$reference 'System.Drawing.dll'}
+{$reference '%GAC%\System.Windows.Forms.dll'}
+{$reference '%GAC%\System.Drawing.dll'}
 {$gendoc true}
 
 interface
@@ -234,15 +234,25 @@ function GetPixel(x,y: integer): Color;
 
 /// Устанавливает текущую позицию рисования в точку (x,y)
 procedure MoveTo(x,y: integer);
+/// Перемещает текущую позицию рисования на вектор (dx,dy)
+procedure MoveRel(dx,dy: integer);
 /// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: integer);
 /// Рисует отрезок от текущей позиции до точки (x,y) цветом c. Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: integer; c: Color);
+/// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineRel(dx,dy: integer);
+/// Рисует отрезок цветом c от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
+procedure LineRel(dx,dy: integer; c: Color);
 
 /// Рисует отрезок от точки (x1,y1) до точки (x2,y2)
 procedure Line(x1,y1,x2,y2: integer);
+/// Рисует отрезок от точки p1 до точки p2
+procedure Line(p1,p2: Point);
 /// Рисует отрезок от точки (x1,y1) до точки (x2,y2) цветом c
 procedure Line(x1,y1,x2,y2: integer; c: Color);
+/// Рисует отрезок от точки p1 до точки p2 цветом c
+procedure Line(p1,p2: Point; c: Color);
 
 /// Заполняет внутренность окружности с центром (x,y) и радиусом r
 procedure FillCircle(x,y,r: integer);
@@ -286,20 +296,36 @@ function Pnt(x,y: integer): Point;
 
 /// Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
 procedure DrawPolygon(points: array of Point);
+/// Рисует замкнутую ломаную по точкам, координаты которых заданы в массиве points
+procedure DrawPolygon(params points: array of (integer,integer));
 /// Заполняет многоугольник, координаты вершин которого заданы в массиве points
 procedure FillPolygon(points: array of Point);
+/// Заполняет многоугольник, координаты вершин которого заданы в массиве points
+procedure FillPolygon(params points: array of (integer,integer));
 /// Рисует заполненный многоугольник, координаты вершин которого заданы в массиве points
 procedure Polygon(points: array of Point);
+/// Рисует заполненный многоугольник, координаты вершин которого заданы в массиве points
+procedure Polygon(params points: array of (integer,integer));
 /// Рисует ломаную по точкам, координаты которых заданы в массиве points
 procedure Polyline(points: array of Point);
+/// Рисует ломаную по точкам, координаты которых заданы в массиве points
+procedure Polyline(params points: array of (integer,integer));
 /// Рисует кривую по точкам, координаты которых заданы в массиве points
 procedure Curve(points: array of Point);
+/// Рисует кривую по точкам, координаты которых заданы в массиве points
+procedure Curve(params points: array of (integer,integer));
 /// Рисует замкнутую кривую по точкам, координаты которых заданы в массиве points
 procedure DrawClosedCurve(points: array of Point);
+/// Рисует замкнутую кривую по точкам, координаты которых заданы в массиве points
+procedure DrawClosedCurve(params points: array of (integer,integer));
 /// Заполняет замкнутую кривую по точкам, координаты которых заданы в массиве points
 procedure FillClosedCurve(points: array of Point);
+/// Заполняет замкнутую кривую по точкам, координаты которых заданы в массиве points
+procedure FillClosedCurve(params points: array of (integer,integer));
 /// Рисует заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
 procedure ClosedCurve(points: array of Point);
+/// Рисует заполненную замкнутую кривую по точкам, координаты которых заданы в массиве points
+procedure ClosedCurve(params points: array of (integer,integer));
 
 /// Выводит строку s в прямоугольник к координатами левого верхнего угла (x,y)
 procedure TextOut(x,y: integer; s: string); 
@@ -313,6 +339,12 @@ procedure DrawTextCentered(x,y,x1,y1: integer; s: string);
 procedure DrawTextCentered(x,y,x1,y1: integer; n: integer); 
 /// Выводит вещественное значение r, отцентрированное в прямоугольнике с координатами (x,y,x1,y1)
 procedure DrawTextCentered(x,y,x1,y1: integer; r: real); 
+/// Выводит строку s, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; s: string); 
+/// Выводит целое n, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; n: integer); 
+/// Выводит вещественное r, отцентрированное по точке с координатами (x,y)
+procedure DrawTextCentered(x,y: integer; r: real); 
 /// Заливает область одного цвета цветом c, начиная с точки (x,y).
 procedure FloodFill(x,y: integer; c: Color);
 
@@ -580,16 +612,22 @@ function ClientRectangle: System.Drawing.Rectangle;
 //------------------------------------------
 ////        Рисование графиков функций 
 //------------------------------------------
-/// Рисует график функции f на отрезке [a,b] в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
-procedure Draw(f: Func<real,real>; a,b: real; x1,y1,x2,y2: integer);
-/// Рисует график функции f на отрезке [a,b] в прямоугольнике r 
-procedure Draw(f: Func<real,real>; a,b: real; r: System.Drawing.Rectangle);
-/// Рисует график функции f на отрезке [-5,5] в прямоугольнике r 
-procedure Draw(f: Func<real,real>; r: System.Drawing.Rectangle);
-/// Рисует график функции f на отрезке [a,b] на полное графическое окно 
-procedure Draw(f: Func<real,real>; a,b: real);
-/// Рисует график функции f на отрезке [-5,5] на полное графическое окно  
-procedure Draw(f: Func<real,real>);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
+procedure Draw(f: real -> real; a,b,min,max: real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
+procedure Draw(f: real -> real; a,b,min,max: real);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
+procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
+procedure Draw(f: real -> real; a,b: real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
+procedure Draw(f: real -> real; r: System.Drawing.Rectangle);
+/// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
+procedure Draw(f: real -> real; a,b: real);
+/// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
+procedure Draw(f: real -> real);
 
 //------------------------------------------
 ////        Рисование изображений
@@ -732,6 +770,15 @@ type
     procedure SetMathematic;
     /// Устанавливает левую систему координат (ось OY направлена вниз, ось OX - вправо)
     procedure SetStandard;
+    
+    procedure ScaleOn(scale: real);
+
+    procedure Transform(x,y: real);
+
+    procedure Rotate(angle: real);
+    
+    procedure ClearMatrix;
+
     /// X-координата начала координат относительно левого верхнего угла окна
     property OriginX: integer read GetOriginX write SetOriginX;
     /// Y-координата начала координат относительно левого верхнего угла окна
@@ -808,10 +855,35 @@ type
 /// Возвращает центр графического окна
     function Center: Point;
   end;
+  
+  GraphABCStatusPanel = class
+  private
+    p: System.Windows.Forms.ToolStripStatusLabel;
+    procedure SetText(s: string);
+    function GetText: string;
+  public
+    constructor (pp: System.Windows.Forms.ToolStripStatusLabel);
+    property Text: string read GetText write SetText;
+  end;
+  
+  GraphABCStatus = class
+  private
+    procedure SetText(s: string);
+    function GetText: string;
+    procedure SetPanelsCount(n: integer);
+    function GetPanelsCount: integer;
+    function GetItem(i: integer): GraphABCStatusPanel;
+  public
+    procedure Show;
+    procedure Hide;
+    property Text: string read GetText write SetText;
+    property Items[i: integer]: GraphABCStatusPanel read GetItem; default;
+    property PanelsCount: integer read GetPanelsCount write SetPanelsCount;
+  end;
 
 /// Тип рисунка GraphABC
   Picture = class
-  private
+  public
     bmp,savedbmp: Bitmap;
     gb: Graphics;
     istransp: boolean;
@@ -863,7 +935,7 @@ type
 /// Выводит часть рисунка, заключенную в прямоугольнике r, в позиции (x,y), масштабируя его к размеру (w,h), на поверхность рисования g
     procedure Draw(x,y,w,h: integer; r: System.Drawing.Rectangle; g: Graphics);
 /// Выводит рисунок, повернутый на угол rotateAngle, масштабируя его к размеру (w,h)
-    procedure Picture.Draw(x,y: integer; rotateAngle: real; w,h: integer);
+    procedure Draw(x,y: integer; rotateAngle: real; w,h: integer);
 /// Копирует прямоугольник src рисунка p в прямоугольник dst текущего рисунка
     procedure CopyRect(dst: System.Drawing.Rectangle; p: Picture; src: System.Drawing.Rectangle);
 /// Копирует прямоугольник src битового образа bmp в прямоугольник dst текущего рисунка
@@ -982,6 +1054,8 @@ function Brush: GraphABCBrush;
 function Font: GraphABCFont;
 /// Возвращает систему координат GraphABC
 function Coordinate: GraphABCCoordinate;
+/// Строка статуса
+function StatusBar: GraphABCStatus;
 
 function GraphWindowGraphics: Graphics;
 function GraphBufferGraphics: Graphics;
@@ -1059,6 +1133,7 @@ var
   _Brush := new GraphABCBrush;
   _Font := new GraphABCFont;
   _Coordinate := new GraphABCCoordinate;
+  _StatusBar := new GraphABCStatus;
 
   __buffer: Bitmap;
   bmp: Bitmap; 
@@ -1276,6 +1351,42 @@ procedure GraphABCCoordinate.SetStandard;
 begin
   coef := 1;
   SetTransform(OriginX,OriginY,Angle,ScaleX,ScaleY);
+end;
+
+procedure GraphABCCoordinate.ScaleOn(scale: real);
+begin
+  lock f do
+  begin
+    gr.ScaleTransform(scale,scale);
+    gbmp.ScaleTransform(scale,scale);
+  end;
+end;
+
+procedure GraphABCCoordinate.Transform(x,y: real);
+begin
+  lock f do
+  begin
+    gr.TranslateTransform(x,y);
+    gbmp.TranslateTransform(x,y)
+  end;
+end;
+
+procedure GraphABCCoordinate.Rotate(angle: real);
+begin
+  lock f do
+  begin
+    gr.RotateTransform(angle);
+    gbmp.RotateTransform(angle);
+  end;
+end;
+
+procedure GraphABCCoordinate.ClearMatrix;
+begin
+  lock f do
+  begin
+    gr.Transform := new System.Drawing.Drawing2D.Matrix();
+    gbmp.Transform := new System.Drawing.Drawing2D.Matrix();
+  end;
 end;
 
 procedure GraphABCCoordinate.SetOriginX(x: integer);
@@ -1609,6 +1720,108 @@ begin
   Result := FontName;
 end;
 
+var _StatusStrip: System.Windows.Forms.StatusStrip := nil;
+
+procedure AddStatusBarP;
+begin
+  _StatusStrip := new System.Windows.Forms.StatusStrip;
+  _StatusStrip.Items.Add(new System.Windows.Forms.ToolStripStatusLabel);
+  _StatusStrip.BackColor := Color.White;
+  MainForm.Controls.Add(_StatusStrip);
+end;
+
+procedure AddStatusBar;
+begin
+  f.Invoke(AddStatusBarP);
+end;
+
+// GraphABCStatusPanel
+constructor GraphABCStatusPanel.Create(pp: System.Windows.Forms.ToolStripStatusLabel);
+begin
+  p := pp
+end;
+
+procedure SetTextP(p: System.Windows.Forms.ToolStripStatusLabel; s: string);
+begin
+  p.Text := s
+end;
+
+procedure GraphABCStatusPanel.SetText(s: string);
+begin
+  f.Invoke(SetTextP,p,s)
+end;
+
+function GraphABCStatusPanel.GetText: string;
+begin
+  Result := p.Text
+end;
+
+procedure SetStatusTextP(s: string);
+begin
+  _StatusStrip.Items[0].Text := s
+end;
+
+// GraphABCStatus
+procedure GraphABCStatus.SetText(s: string);
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  f.Invoke(SetStatusTextP,s);  
+end;
+
+function GraphABCStatus.GetText: string;
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  Result := _StatusStrip.Items[0].Text
+end;
+
+procedure SetPanelsCountP(n: integer);
+begin
+  if n<1 then n := 1;
+  if n>10 then n := 10;
+  if n>_StatusStrip.Items.Count then
+  begin
+    var d := n - _StatusStrip.Items.Count;
+    for var i:=1 to d do
+      _StatusStrip.Items.Add(new System.Windows.Forms.ToolStripStatusLabel);
+  end;
+end;
+
+procedure GraphABCStatus.SetPanelsCount(n: integer);
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  f.Invoke(SetPanelsCountP,n);       
+end;
+
+function GraphABCStatus.GetPanelsCount := _StatusStrip.Items.Count;
+
+function GraphABCStatus.GetItem(i: integer): GraphABCStatusPanel;
+begin
+  if (_StatusStrip=nil) or (_StatusStrip.Visible = False) then
+    Show;
+  var p := _StatusStrip.Items[i] as System.Windows.Forms.ToolStripStatusLabel; 
+  Result := new GraphABCStatusPanel(p);
+end;
+
+procedure GraphABCStatus.Show;
+begin
+  if _StatusStrip<>nil then 
+   _StatusStrip.Visible := True
+  else AddStatusBar   
+end;
+
+procedure PHide;
+begin
+  _StatusStrip.Visible := False;
+end;
+
+procedure GraphABCStatus.Hide;
+begin
+  f.Invoke(PHide);
+end;
+
 // Picture
 constructor Picture.Create(w,h: integer);
 begin
@@ -1875,9 +2088,9 @@ begin
   //(x+w/2, y+h/2) - центр масштабированного изображения
   //(x+new_w/2, y+new_h/2) - центр масштабированного и повернутого изображения
   if NotLockDrawing then
-  gr.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
+    gr.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
   if DrawInBuffer then
-  gbmp.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
+    gbmp.DrawImage(newImg, x-(new_w-w)/2, y-(new_h-h)/2, new_w, new_h);
   Monitor.Exit(f);
 end;     
 
@@ -2231,10 +2444,9 @@ begin
 end;
 
 procedure ResizeHelper;
-var t: SmoothingMode;
 begin
   Monitor.Enter(f);
-  t := gr.SmoothingMode;
+  var t := gr.SmoothingMode;
   var m := gr.Transform;
   gr := Graphics.FromHwnd(f.Handle);
   gr.Transform := m;
@@ -2254,6 +2466,16 @@ procedure System.Drawing.Rectangle.MoveTo(x,y: integer);
 begin
   Self.X := x;
   Self.Y := y;
+end;
+
+function operator implicit(Self: Point): (integer,integer); extensionmethod;
+begin
+  Result := (Self.X,Self.Y)
+end;
+
+function operator implicit(Self: (integer,integer)): Point; extensionmethod;
+begin
+  Result := new Point(Self[0],Self[1])
 end;
 
 // Primitives
@@ -2301,6 +2523,12 @@ begin
   y_coord := y;
 end;
 
+procedure MoveRel(dx,dy: integer);
+begin
+  x_coord += dx;
+  y_coord += dy;
+end;
+
 procedure LineTo(x,y: integer);
 begin
   Line(x_coord,y_coord,x,y);
@@ -2315,6 +2543,16 @@ begin
   y_coord := y;
 end;
 
+procedure LineRel(dx,dy: integer);
+begin
+  LineTo(x_coord + dx,y_coord + dy);
+end;
+
+procedure LineRel(dx,dy: integer; c: Color);
+begin
+  LineTo(x_coord + dx,y_coord + dy,c);
+end;
+
 procedure Line(x1,y1,x2,y2: integer; c: Color);
 begin
   Monitor.Enter(f);
@@ -2325,6 +2563,11 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure Line(p1,p2: Point; c: Color);
+begin
+  Line(p1.X,p1.Y,p2.X,p2.Y,c)
+end;
+
 procedure Line(x1,y1,x2,y2: integer);
 begin
   Monitor.Enter(f);
@@ -2333,6 +2576,11 @@ begin
   if DrawInBuffer then   
     Line(x1,y1,x2,y2,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure Line(p1,p2: Point);
+begin
+  Line(p1.X,p1.Y,p2.X,p2.Y)
 end;
 
 procedure FillCircle(x,y,r: integer);
@@ -2525,6 +2773,30 @@ begin
   DrawTextCentered(x,y,x1,y1,r.ToString(nfi));  
 end;
 
+procedure DrawTextCentered(x,y: integer; s: string); 
+begin
+  Monitor.Enter(f);
+  if NotLockDrawing then
+    DrawTextCentered(x,y,s,gr);
+  if DrawInBuffer then   
+    DrawTextCentered(x,y,s,gbmp);
+  Monitor.Exit(f);
+end;
+
+procedure DrawTextCentered(x,y: integer; n: integer); 
+begin
+  DrawTextCentered(x,y,n.ToString);  
+end;
+
+procedure DrawTextCentered(x,y: integer; r: real); 
+begin
+  var nfi := new System.Globalization.NumberFormatInfo();
+  nfi.NumberGroupSeparator := '.';
+
+  DrawTextCentered(x,y,r.ToString(nfi));  
+end;
+
+
 function Pnt(x,y: integer): Point;
 begin
   Result := new Point(x,y);
@@ -2540,6 +2812,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure DrawPolygon(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  DrawPolygon(pnts.ToArray);
+end;
+
 procedure FillPolygon(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2550,12 +2828,24 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure FillPolygon(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  FillPolygon(pnts.ToArray);
+end;
+
 procedure Polygon(points: array of Point);
 begin
   if Brush.NETBrush <> nil then 
     FillPolygon(points);
   if Pen.NETPen.DashStyle <> DashStyle.Custom then
     DrawPolygon(points);
+end;
+
+procedure Polygon(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  Polygon(pnts.ToArray);
 end;
 
 procedure Polyline(points: array of Point);
@@ -2568,6 +2858,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure Polyline(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  Polyline(pnts.ToArray);
+end;
+
 procedure Curve(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2576,6 +2872,12 @@ begin
   if DrawInBuffer then   
     Curve(points,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure Curve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  Curve(pnts.ToArray);
 end;
 
 procedure DrawClosedCurve(points: array of Point);
@@ -2588,6 +2890,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure DrawClosedCurve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  DrawClosedCurve(pnts.ToArray);
+end;
+
 procedure FillClosedCurve(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2598,6 +2906,12 @@ begin
   Monitor.Exit(f);
 end;
 
+procedure FillClosedCurve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  FillClosedCurve(pnts.ToArray);
+end;
+
 procedure ClosedCurve(points: array of Point);
 begin
   Monitor.Enter(f);
@@ -2606,6 +2920,12 @@ begin
   if DrawInBuffer then   
     ClosedCurve(points,gbmp);
   Monitor.Exit(f);
+end;
+
+procedure ClosedCurve(params points: array of (integer,integer));
+begin
+  var pnts := points.Select(p -> Pnt(p[0],p[1]));
+  ClosedCurve(pnts.ToArray);
 end;
 
 // Fills
@@ -2735,7 +3055,10 @@ end;
 procedure SetPenWidth(Width: integer);
 begin
   lock f do
+  begin
     Pen.NETPen.Width := Width;
+    _ColorLinePen.Width := Width;
+  end;  
 end;
 
 function PenWidth: integer;
@@ -3076,10 +3399,8 @@ begin
 end;
 
 procedure SetWindowPos(l,t: integer);
-var p: Proc2Integer;
 begin
-  p := ChangeFormPos;
-  f.Invoke(p,l,t);
+  f.Invoke(ChangeFormPos,l,t);
 end;
 
 procedure ChangeFormClientSize(w,h: integer); // вспомогательная
@@ -3089,11 +3410,8 @@ begin
 end;
 
 procedure SetWindowSize(w,h: integer);
-var p: Proc2Integer;
 begin
-  p := ChangeFormClientSize;
-  f.Invoke(p,w,h);
-  //ResizeHelper;
+  f.Invoke(ChangeFormClientSize,w,h);
 end;
 
 function GraphBoxWidth: integer;
@@ -3140,10 +3458,8 @@ begin
 end;
 
 procedure SetWindowTitle(s: string);
-var p: Proc1String;
 begin
-  p := ChangeFormTitle;
-  f.Invoke(p,s);
+  f.Invoke(ChangeFormTitle,s);
 end;
 
 procedure SetWindowCaption(s: string);
@@ -3251,6 +3567,8 @@ end;
 procedure Redraw;
 var tempbmp: Bitmap;
 begin
+  if IsUnix then
+    exit;
   //TODO Без этого падает если свернуто
   if MainForm.WindowState=FormWindowState.Minimized then 
     exit;
@@ -3269,6 +3587,8 @@ end;
 
 procedure FullRedraw;
 begin
+  if IsUnix then
+    exit;
   Monitor.Enter(f);
   if gr<>nil then 
     gr.DrawImage(bmp,0,0);
@@ -3277,6 +3597,8 @@ end;
 
 procedure LockDrawing;
 begin
+  if IsUnix then
+    exit;
   NotLockDrawing := False;
 end;
 
@@ -3339,6 +3661,11 @@ end;
 function Coordinate: GraphABCCoordinate;
 begin
   Result := _Coordinate;
+end;
+
+function StatusBar: GraphABCStatus;
+begin
+  Result := _StatusBar;
 end;
 
 procedure GraphABCWindow.SetLeft(l: integer);
@@ -3482,27 +3809,103 @@ begin
 end;
 
 type FS = auto class
-  mx,my,a,max: real;
-  x0,y0: integer;
-  f: Func<real,real>;
+  mx,my,a,min,max: real;
+  x1,y1: integer;
+  f: real -> real;
 
   function Apply(x: real): Point;
   begin
-    Result := Pnt(x0+Round(mx*(x-a)),y0+Round(my*(max-f(x))));
+    Result := Pnt(x1+Round(mx*(x-a)),y1+Round(my*(max-f(x))));
   end;
+  
+  function RealToScreenX(x: real): integer := Round(x1 + mx * (x-a));
+
+  function RealToScreenY(y: real): integer := Round(y1 - my * (y+min));
 end;
 
-procedure Draw(f: Func<real,real>; a,b: real; x1,y1,x2,y2: integer);
+procedure Draw(f: real -> real; a,b,min,max: real; x1,y1,x2,y2: integer);
 begin
+  var coefx := (x2-x1)/(b-a);
+  var coefy := (y2-y1)/(max-min);
+  
+  Pen.Color := Color.Black;
   Rectangle(x1,y1,x2+1,y2+1);
+
+  var fso := new FS(coefx,coefy,a,min,max,x1,y1,f);
+
+  // Линии 
+  {Pen.Color := Color.LightGray;
+
+  var hx := 1.0;
+  var xx := hx;
+  while xx<b do
+  begin
+    var x0 := fso.RealToScreenX(xx);
+    Line(x0,y1,x0,y2);
+    xx += hx
+  end;
+
+  xx := -hx;
+  while xx>a do
+  begin
+    var x0 := fso.RealToScreenX(xx);
+    Line(x0,y1,x0,y2);
+    xx -= hx
+  end;
+  
+  var hy := 1.0;
+  var yy := hy;
+  while yy<max do
+  begin
+    var y0 := fso.RealToScreenY(yy);
+    Line(x1,y0,x2,y0);
+    yy += hy
+  end;
+
+  yy := -hy;
+  while yy>min do
+  begin
+    var y0 := fso.RealToScreenY(yy);
+    Line(x1,y0,x2,y0);
+    yy -= hy
+  end;
+
+  // Оси 
+  Pen.Color := Color.Blue;
+
+  var x0 := fso.RealToScreenX(0);
+  var y0 := fso.RealToScreenY(0);
+  
+  Line(x0,y1,x0,y2);
+  Line(x1,y0,x2,y0);}
+
+  // График
+
+  Pen.Color := Color.Black;
   var n := (x2-x1) div 3;
-  var min := Range(a,b,n).Min(f);
-  var max := Range(a,b,n).Max(f);
-  var fso := new FS((x2-x1)/(b-a),(y2-y1)/(max-min),a,max,x1,y1,f);
-  Polyline(Range(a,b,n).Select(fso.Apply).ToArray)
+  Polyline(Range(a,b,n).Select(fso.Apply).ToArray);
 end;
 
-procedure Draw(f: Func<real,real>; a,b: real; r: System.Drawing.Rectangle);
+procedure Draw(f: real -> real; a,b,min,max: real; r: System.Drawing.Rectangle);
+var x1 := r.X; y1 := r.Y;
+    x2 := r.X+r.Width-1;
+    y2 := r.Y+r.Height-1;
+begin
+  Draw(f,a,b,min,max,x1,y1,x2,y2);  
+end;
+
+procedure Draw(f: real -> real; a,b,min,max: real);
+begin
+  Draw(f,a,b,min,max,ClientRectangle);
+end;
+
+procedure Draw(f: real -> real; a,b: real; x1,y1,x2,y2: integer);
+begin
+  var n := (x2-x1) div 3;
+  Draw(f,a,b,Range(a,b,n).Min(f),Range(a,b,n).Max(f),x1,y1,x2,y2)
+end;
+
+procedure Draw(f: real -> real; a,b: real; r: System.Drawing.Rectangle);
 var x1 := r.X; y1 := r.Y;
     x2 := r.X+r.Width-1;
     y2 := r.Y+r.Height-1;
@@ -3510,12 +3913,12 @@ begin
   Draw(f,a,b,x1,y1,x2,y2);
 end;
 
-procedure Draw(f: Func<real,real>; r: System.Drawing.Rectangle);
+procedure Draw(f: real -> real; r: System.Drawing.Rectangle);
 begin
   Draw(f,-5,5,r);
 end;
 
-procedure Draw(f: Func<real,real>; a,b: real);
+procedure Draw(f: real -> real; a,b: real);
 var x1 := 0; y1 := 0;
     x2 := Window.Width-1;
     y2 := Window.Height-1;
@@ -3523,7 +3926,7 @@ begin
   Draw(f,a,b,x1,y1,x2,y2);
 end;
 
-procedure Draw(f: Func<real,real>);
+procedure Draw(f: real -> real);
 begin
   Draw(f,-5,5);
 end;
