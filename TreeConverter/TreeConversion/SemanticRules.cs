@@ -94,7 +94,7 @@ namespace PascalABCCompiler.TreeConverter
         /// <summary>
         /// Разрешить неазависимость от порядка объявления методов
         /// </summary>
-        public static bool OrderIndependedMethodNames = false;
+        public static bool OrderIndependedMethodNames = true;
 
         /// <summary>
         /// Разрешить неазависимость от порядка объявления функций
