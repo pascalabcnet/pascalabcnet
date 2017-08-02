@@ -1,0 +1,17 @@
+.vs
+
+bin/Lib/*.pcu
+bin/*.pdb
+bin/*.config
+bin/*.xml
+
+TestSuite/CompilationSamples/*.xml
+TestSuite/exe
+TestSuite/formatter_tests/output
+
+ReleaseGenerators/*.pdb
+ReleaseGenerators/PABCRtl/*.dll
+ReleaseGenerators/PABCRtl/*.pcu
+ReleaseGenerators/PABCRtl/*.pdb
+
+**/obj
