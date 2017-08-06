@@ -180,10 +180,12 @@ namespace GPPGParserScanner
             return nsnpd;
         }
 
-        public simple_property NewSimplePropertyDefinition(method_name qualified_identifier, property_interface property_interface, property_accessors property_specifiers, property_array_default array_defaultproperty, LexLocation loc)
+        public simple_property NewSimplePropertyDefinition(method_name qualified_identifier, property_interface property_interface, property_accessors property_specifiers, proc_attribute virt_over_none_attr, property_array_default array_defaultproperty, LexLocation loc)
         {
-            var nnspd = new simple_property(); 
-			nnspd.property_name = qualified_identifier.meth_name;
+            var nnspd = new simple_property();
+            nnspd.virt_over_none_attr = virt_over_none_attr;
+
+            nnspd.property_name = qualified_identifier.meth_name;
 			if (property_interface != null)
 			{
 				nnspd.parameter_list = property_interface.parameter_list;

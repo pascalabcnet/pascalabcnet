@@ -117,7 +117,7 @@
 %type <stn> property_specifiers
 %type <stn> array_defaultproperty 
 %type <stn> meth_modificators optional_method_modificators optional_method_modificators1  
-%type <id> meth_modificator 
+%type <id> meth_modificator property_modificator 
 %type <stn> proc_call  
 %type <stn> proc_func_constr_destr_decl proc_func_decl inclass_proc_func_decl inclass_proc_func_decl_noclass constr_destr_decl inclass_constr_destr_decl
 %type <stn> method_decl proc_func_constr_destr_decl_with_attr proc_func_decl_noclass  
@@ -1765,7 +1765,16 @@ simple_prim_property_definition
 simple_property_definition
     : tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
-			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, $6 as property_array_default, @$);
+			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, proc_attribute.attr_none, $6 as property_array_default, @$);
+        }
+    | tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+        { 
+            proc_attribute pa = proc_attribute.attr_none;
+            if ($6.name.ToLower() == "virtual")
+               	pa = proc_attribute.attr_virtual;
+ 			else if ($6.name.ToLower() == "override") 
+ 			    pa = proc_attribute.attr_override;
+			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
     ;
 
@@ -3310,6 +3319,13 @@ meth_modificator
     | tkVirtual
 		{ $$ = $1; }
     ;
+    
+property_modificator
+	: tkVirtual
+		{ $$ = $1; }
+	| tkOverride
+		{ $$ = $1; }
+	;
     
 property_specifier_directives
     : tkRead
