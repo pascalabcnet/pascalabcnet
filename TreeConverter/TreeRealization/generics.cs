@@ -1774,7 +1774,7 @@ namespace PascalABCCompiler.TreeRealization
 
         private void conform_basic_function(string name, int base_func_num)
         {
-            SymbolInfoList si1 = _original_generic.find_in_type(name);
+            SymbolInfoList si1 = _original_generic.find_in_type(name, true);
             AddMember(si1.First().sym_info, temp_names[base_func_num].sym_info);
         }
 

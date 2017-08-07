@@ -1904,7 +1904,8 @@ namespace PascalABCCompiler.NetHelper
                     return null;
                 TypeInfo ti = fi.GetTypeByNamespaceList(_unar);
                 if (ti != null)
-                    return ti.type;
+                    if (cur_used_assemblies.ContainsKey(ti.type.Assembly))
+                        return ti.type;
             }
             object o = types[name];
             if (o == null)
@@ -1928,7 +1929,10 @@ namespace PascalABCCompiler.NetHelper
                         {
                             fi.type_infos.Add(new TypeNamespaceInfo(t, _unar[i]));
                         }
-                        return t.type;
+                        if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                            return t.type;
+                        else
+                            return null;
                     }
                     
                 }
@@ -1951,8 +1955,10 @@ namespace PascalABCCompiler.NetHelper
                             {
                                 fi.type_infos.Add(new TypeNamespaceInfo(t, _unar[i]));
                             }
-                            
-                            return t.type;
+                            if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                                return t.type;
+                            else
+                                return null;
                         }
                     }
                 }
@@ -1972,7 +1978,7 @@ namespace PascalABCCompiler.NetHelper
                     if (cur_used_assemblies.ContainsKey(t.type.Assembly))
                         founded_types.Add(t);
                 }
-                if (founded_types.Count == 1)
+                if (founded_types.Count == 1 && cur_used_assemblies.ContainsKey(founded_types[0].type.Assembly))
                     return founded_types[0].type;
                 else
                     return null;
