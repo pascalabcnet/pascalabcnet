@@ -150,60 +150,18 @@ namespace PascalABCCompiler.TreeConverter
                 to.semantic_node_type == semantic_node_type.non_static_property_reference)
             {
                 property_node pn = null;
-                base_function_call prop_expr = null;
                 if (to.semantic_node_type == semantic_node_type.static_property_reference)
                     pn = (to as static_property_reference).property;
                 else
                     pn = (to as non_static_property_reference).property;
 
-                PascalABCCompiler.SyntaxTree.Operators ot = PascalABCCompiler.SyntaxTree.Operators.Undefined;
-                switch (_assign.operator_type)
-                {
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentAddition:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.Plus;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseAND:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseAND;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseLeftShift:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseLeftShift;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseOR:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseOR;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseRightShift:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseRightShift;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseXOR:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseXOR;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentDivision:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.Division;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentModulus:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.ModulusRemainder;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentMultiplication:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.Multiplication;
-                        oper_ass_in_prop = true;
-                        break;
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentSubtraction:
-                        ot = PascalABCCompiler.SyntaxTree.Operators.Minus;
-                        oper_ass_in_prop = true;
-                        break;
-                }
+                var ot = MapCompositeAssignmentOperatorToSameBinaryOperator(_assign);
+                oper_ass_in_prop = ot != Operators.Undefined;
                 if (oper_ass_in_prop)
                 {
                     if (pn.get_function == null)
                         AddError(new ThisPropertyCanNotBeReaded(pn, loc));
+                    base_function_call prop_expr = null;
                     if (to.semantic_node_type == semantic_node_type.non_static_property_reference)
                     {
                         prop_expr = create_not_static_method_call(pn.get_function, (to as non_static_property_reference).expression, loc, false);
@@ -249,85 +207,9 @@ namespace PascalABCCompiler.TreeConverter
                 if ((to as simple_array_indexing).simple_arr_expr is class_field_reference && ((to as simple_array_indexing).simple_arr_expr as class_field_reference).obj != null &&
                    ((to as simple_array_indexing).simple_arr_expr as class_field_reference).obj is constant_node)
                     AddError(loc, "LEFT_SIDE_CANNOT_BE_ASSIGNED_TO");
-            if ((to.semantic_node_type == semantic_node_type.static_event_reference)
-                    || (to.semantic_node_type == semantic_node_type.nonstatic_event_reference))
-            {
-                statement_node event_assign = null;
-                if (_assign.operator_type == PascalABCCompiler.SyntaxTree.Operators.Assignment)
-                {
-                    //throw new CanNotAssignToEvent();
-                }
-                static_event_reference ser = (static_event_reference)to;
-                expression_node right_del = convertion_data_and_alghoritms.convert_type(from, ser.en.delegate_type);
-                switch (_assign.operator_type)
-                {
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentAddition:
-                        {
-                            if (to.semantic_node_type == semantic_node_type.static_event_reference)
-                            {
-                                event_assign = convertion_data_and_alghoritms.create_simple_function_call(
-                                    ser.en.add_method, loc, right_del);
-                            }
-                            else
-                            {
-                                if (ser.en.semantic_node_type == semantic_node_type.compiled_event)
-                                {
-                                    nonstatic_event_reference nser = (nonstatic_event_reference)ser;
-                                    compiled_function_node cfn = (compiled_function_node)ser.en.add_method;
-                                    compiled_function_call tmp_event_assign = new compiled_function_call(cfn, nser.obj, loc);
-                                    tmp_event_assign.parameters.AddElement(right_del);
-                                    event_assign = tmp_event_assign;
-                                }
-                                else if (ser.en.semantic_node_type == semantic_node_type.common_event)
-                                {
-                                    nonstatic_event_reference nser = (nonstatic_event_reference)ser;
-                                    common_method_node cfn = (common_method_node)ser.en.add_method;
-                                    common_method_call tmp_event_assign = new common_method_call(cfn, nser.obj, loc);
-                                    tmp_event_assign.parameters.AddElement(right_del);
-                                    event_assign = tmp_event_assign;
-                                }
-                            }
-                            break;
-                        }
-                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentSubtraction:
-                        {
-                            if (to.semantic_node_type == semantic_node_type.static_event_reference)
-                            {
-                                event_assign = convertion_data_and_alghoritms.create_simple_function_call(
-                                    ser.en.remove_method, loc, right_del);
-                            }
-                            else
-                            {
-                                if (ser.en.semantic_node_type == semantic_node_type.compiled_event)
-                                {
-                                    nonstatic_event_reference nser = (nonstatic_event_reference)ser;
-                                    compiled_function_node cfn = (compiled_function_node)ser.en.remove_method;
-                                    compiled_function_call tmp_event_assign = new compiled_function_call(cfn, nser.obj, loc);
-                                    tmp_event_assign.parameters.AddElement(right_del);
-                                    event_assign = tmp_event_assign;
-                                }
-                                else if (ser.en.semantic_node_type == semantic_node_type.common_event)
-                                {
-                                    nonstatic_event_reference nser = (nonstatic_event_reference)ser;
-                                    common_method_node cfn = (common_method_node)ser.en.remove_method;
-                                    common_method_call tmp_event_assign = new common_method_call(cfn, nser.obj, loc);
-                                    tmp_event_assign.parameters.AddElement(right_del);
-                                    event_assign = tmp_event_assign;
-                                }
-                            }
-                            break;
-                        }
-                    default:
-                        {
-                            AddError(loc, "ASSIGN_TO_EVENT");
-                            //throw new CanNotApplyThisOperationToEvent
 
-                            break;
-                        }
-                }
-                return_value(event_assign);
+            if (ProcessAssignmentToEventIfPossible(_assign, to, @from, loc))
                 return;
-            }
 
             if (_assign.operator_type == PascalABCCompiler.SyntaxTree.Operators.Assignment || oper_ass_in_prop)
             {
@@ -346,7 +228,6 @@ namespace PascalABCCompiler.TreeConverter
                         true);
                     bfc.parameters.AddRange(spr.fact_parametres);
                     return_value((statement_node)bfc);
-                    return;
                 }
                 else if (to.semantic_node_type == semantic_node_type.non_static_property_reference)
                 {
@@ -384,7 +265,6 @@ namespace PascalABCCompiler.TreeConverter
                         true);
                     bfc.parameters.AddRange(nspr.fact_parametres);
                     return_value((statement_node)bfc);
-                    return;
                 }
                 else if (to is simple_array_indexing && (to as simple_array_indexing).simple_arr_expr.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                 {
@@ -393,7 +273,6 @@ namespace PascalABCCompiler.TreeConverter
                     from = convertion_data_and_alghoritms.convert_type(from, SystemLibrary.SystemLibrary.char_type);
                     ind_expr = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.SetCharInShortStringProcedure.sym_info as function_node, loc, expr, ind_expr, new int_const_node((expr.type as short_string_type_node).Length, null), from);
                     return_value(find_operator(compiler_string_consts.assign_name, expr, ind_expr, get_location(_assign)));
-                    return;
                 }
                 else if (to.type.type_special_kind == SemanticTree.type_special_kind.short_string)
                 {
@@ -402,7 +281,6 @@ namespace PascalABCCompiler.TreeConverter
                     expression_node clip_expr = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.ClipShortStringProcedure.sym_info as function_node, loc, convertion_data_and_alghoritms.convert_type(from, SystemLibrary.SystemLibrary.string_type), new int_const_node((to.type as short_string_type_node).Length, null));
                     statement_node en = find_operator(compiler_string_consts.assign_name, to, clip_expr, get_location(_assign));
                     return_value(en);
-                    return;
                 }
                 else
                 {
@@ -411,7 +289,6 @@ namespace PascalABCCompiler.TreeConverter
                     statement_node en = find_operator(compiler_string_consts.assign_name, to, from, get_location(_assign));
                     assign_is_converting = false;
                     return_value(en);
-                    return;
                 }
             }
             else
@@ -420,11 +297,141 @@ namespace PascalABCCompiler.TreeConverter
                 statement_node en = find_operator(_assign.operator_type, to, from, get_location(_assign));
                 assign_is_converting = false;
                 return_value(en);
-                return;
             }
             //throw new CompilerInternalError("Undefined assign to type");
         }
 
 
+
+        /// <summary>
+        /// Сопоставляет составному присваиванию его аналог.
+        /// Оператору '+=' возвращает '+', для '-=' возвращает '-', и т.д.
+        /// </summary>
+        /// <returns>Возвращает оператор. Если было передано не присваивание возвращает Operators.Undefined</returns>
+        private static Operators MapCompositeAssignmentOperatorToSameBinaryOperator(assign _assign)
+        {
+            PascalABCCompiler.SyntaxTree.Operators ot = PascalABCCompiler.SyntaxTree.Operators.Undefined;
+            switch (_assign.operator_type)
+            {
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentAddition:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.Plus;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseAND:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseAND;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseLeftShift:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseLeftShift;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseOR:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseOR;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseRightShift:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseRightShift;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentBitwiseXOR:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.BitwiseXOR;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentDivision:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.Division;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentModulus:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.ModulusRemainder;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentMultiplication:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.Multiplication;
+                    break;
+                case PascalABCCompiler.SyntaxTree.Operators.AssignmentSubtraction:
+                    ot = PascalABCCompiler.SyntaxTree.Operators.Minus;
+                    break;
+            }
+            return ot;
+        }
+
+
+
+        /// <summary>
+        /// Обрабатывает случай, когда левая часть присваивания имеет тип event.
+        /// </summary>
+        /// <returns>True - обработка прошла, иначе False.</returns>
+        private bool ProcessAssignmentToEventIfPossible(assign _assign, addressed_expression to, expression_node @from,
+            location loc)
+        {
+            if ((to.semantic_node_type == semantic_node_type.static_event_reference)
+                || (to.semantic_node_type == semantic_node_type.nonstatic_event_reference))
+            {
+                statement_node event_assign = null;
+                static_event_reference ser = (static_event_reference) to;
+                expression_node right_del = convertion_data_and_alghoritms.convert_type(@from, ser.en.delegate_type);
+                switch (_assign.operator_type)
+                {
+                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentAddition:
+                    {
+                        if (to.semantic_node_type == semantic_node_type.static_event_reference)
+                        {
+                            event_assign = convertion_data_and_alghoritms.create_simple_function_call(
+                                ser.en.add_method, loc, right_del);
+                        }
+                        else
+                        {
+                            if (ser.en.semantic_node_type == semantic_node_type.compiled_event)
+                            {
+                                nonstatic_event_reference nser = (nonstatic_event_reference) ser;
+                                compiled_function_node cfn = (compiled_function_node) ser.en.add_method;
+                                compiled_function_call tmp_event_assign = new compiled_function_call(cfn, nser.obj, loc);
+                                tmp_event_assign.parameters.AddElement(right_del);
+                                event_assign = tmp_event_assign;
+                            }
+                            else if (ser.en.semantic_node_type == semantic_node_type.common_event)
+                            {
+                                nonstatic_event_reference nser = (nonstatic_event_reference) ser;
+                                common_method_node cfn = (common_method_node) ser.en.add_method;
+                                common_method_call tmp_event_assign = new common_method_call(cfn, nser.obj, loc);
+                                tmp_event_assign.parameters.AddElement(right_del);
+                                event_assign = tmp_event_assign;
+                            }
+                        }
+                        break;
+                    }
+                    case PascalABCCompiler.SyntaxTree.Operators.AssignmentSubtraction:
+                    {
+                        if (to.semantic_node_type == semantic_node_type.static_event_reference)
+                        {
+                            event_assign = convertion_data_and_alghoritms.create_simple_function_call(
+                                ser.en.remove_method, loc, right_del);
+                        }
+                        else
+                        {
+                            if (ser.en.semantic_node_type == semantic_node_type.compiled_event)
+                            {
+                                nonstatic_event_reference nser = (nonstatic_event_reference) ser;
+                                compiled_function_node cfn = (compiled_function_node) ser.en.remove_method;
+                                compiled_function_call tmp_event_assign = new compiled_function_call(cfn, nser.obj, loc);
+                                tmp_event_assign.parameters.AddElement(right_del);
+                                event_assign = tmp_event_assign;
+                            }
+                            else if (ser.en.semantic_node_type == semantic_node_type.common_event)
+                            {
+                                nonstatic_event_reference nser = (nonstatic_event_reference) ser;
+                                common_method_node cfn = (common_method_node) ser.en.remove_method;
+                                common_method_call tmp_event_assign = new common_method_call(cfn, nser.obj, loc);
+                                tmp_event_assign.parameters.AddElement(right_del);
+                                event_assign = tmp_event_assign;
+                            }
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        AddError(loc, "ASSIGN_TO_EVENT");
+                        //throw new CanNotApplyThisOperationToEvent
+
+                        break;
+                    }
+                }
+                return_value(event_assign);
+                return true;
+            }
+            return false;
+        }
     }
 }
