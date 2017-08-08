@@ -1,25 +1,6 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
 
-using SyntaxTreeBuilder = PascalABCCompiler.SyntaxTree.SyntaxTreeBuilder;
-using SymTable = SymbolTable;
-using array_const = PascalABCCompiler.TreeRealization.array_const;
-using compiler_directive = PascalABCCompiler.TreeRealization.compiler_directive;
-using empty_statement = PascalABCCompiler.TreeRealization.empty_statement;
-using for_node = PascalABCCompiler.TreeRealization.for_node;
-using goto_statement = PascalABCCompiler.TreeRealization.goto_statement;
-using if_node = PascalABCCompiler.TreeRealization.if_node;
-using labeled_statement = PascalABCCompiler.TreeRealization.labeled_statement;
-using question_colon_expression = PascalABCCompiler.TreeRealization.question_colon_expression;
-using repeat_node = PascalABCCompiler.TreeRealization.repeat_node;
-using sizeof_operator = PascalABCCompiler.TreeRealization.sizeof_operator;
-using typeof_operator = PascalABCCompiler.TreeRealization.typeof_operator;
-using while_node = PascalABCCompiler.TreeRealization.while_node;
-using TreeConverter.LambdaExpressions.Closure;
 using TreeConverter.LambdaExpressions;
 
 namespace PascalABCCompiler.TreeConverter

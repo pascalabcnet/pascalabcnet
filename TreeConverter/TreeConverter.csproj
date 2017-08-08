@@ -165,6 +165,7 @@
     <Compile Include="TreeConversion\SyntaxTreeToSemanticTreeConverter.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Assign.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\Foreach.cs" />
     <Compile Include="TreeConversion\SyntaxTreeVisitorNodes\ForLoop.cs" />
     <Compile Include="TreeConversion\syntax_tree_visitor.cs">
