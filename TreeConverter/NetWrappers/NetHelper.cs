@@ -253,7 +253,7 @@ namespace PascalABCCompiler.NetHelper
     }
 	
 	public static class NetHelper {
-		private static Hashtable namespaces; 
+		private static Hashtable namespaces;
 		private static Hashtable types;
         private static Dictionary<string,FoundInfo> type_search_cache;
 		private static Hashtable compiled_pascal_types;
@@ -433,12 +433,12 @@ namespace PascalABCCompiler.NetHelper
                         //if (namespaces[s] == null) ns_ht.Add(s,s);
                         ns_ht[s] = s;
                         namespaces[s] = t;
-
                         if (pos != -1)
                         {
                             string[] sub_ns_arr = s.Split('.');
                             string sub_ns_str = sub_ns_arr[sub_ns_arr.Length - 1];
                             namespaces[sub_ns_str] = t;
+                            ns_ht[sub_ns_str] = s;
                             int ind = sub_ns_arr.Length - 2;
                             while (ind != 0)
                             {
@@ -452,10 +452,8 @@ namespace PascalABCCompiler.NetHelper
                             pos = s.LastIndexOf('.');
                             //if (pos == -1)
                             if (namespaces[s] == null)
-                            { 
-                                ns_ht.Add(s, s);
                                 namespaces[s] = t;
-                            }
+                            ns_ht[s] = s;
                         }
                     }
                     TypeInfo ti = new TypeInfo(t, t.FullName);
@@ -821,7 +819,8 @@ namespace PascalABCCompiler.NetHelper
        		
         	if (t != null && cur_used_assemblies.ContainsKey(t.Assembly)) return true;
         	foreach (Assembly a in namespace_assemblies.Keys)
-        		if (cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(Namespace)) return true;
+        		if (cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(Namespace))
+                    return true;
         	return false;
         }
 
