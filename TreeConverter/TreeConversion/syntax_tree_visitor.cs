@@ -3945,6 +3945,9 @@ namespace PascalABCCompiler.TreeConverter
             //pn.loc=get_location(_simple_property.property_name);
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
             	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual)
+                pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+            
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
@@ -4071,7 +4074,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 AddError(loc1, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", read_accessor.name);
                             }
-                            read_accessor = GenerateGetMethod(pn,read_accessor as common_method_node,pn.loc);
+                            read_accessor = GenerateGetMethod(pn, read_accessor as common_method_node, pn.loc);
                            
                         }
                         else
@@ -4233,6 +4236,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             make_attributes_for_declaration(_simple_property,pn);
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
+                context.set_override(pn);
             //TODO: Можно сделать множество свойств по умолчанию.
             if (_simple_property.array_default != null)
             {
@@ -4262,7 +4267,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)
@@ -4297,7 +4302,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)

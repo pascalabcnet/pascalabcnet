@@ -3554,6 +3554,71 @@ namespace PascalABCCompiler.TreeConverter
             return fn;
         }
 
+        public property_node FindPropertyToOverride(common_property_node cpn)
+        {
+            type_node base_class = cpn.common_comprehensive_type.base_type;
+            if (base_class == null)
+            {
+                return null;
+            }
+            SymbolInfoList si = base_class.find_in_type(cpn.name, CurrentScope);
+            property_node pn = null;
+            SymbolInfoUnit find_property = null;
+            if (si != null)
+            {
+                foreach (SymbolInfoUnit si_unit in si.InfoUnitList)
+                {
+                    if (si_unit.sym_info.general_node_type != general_node_type.property_node)
+                    {
+                        return null;
+                    }
+                    pn = si_unit.sym_info as property_node;
+                    //(ssyy) Сверяем как параметры функций, так и типы возвращаемых значений
+                    if (convertion_data_and_alghoritms.function_eq_params_and_result(cpn.get_function, pn.get_function))
+                    {
+                        find_property = si_unit;
+                        break;
+                    }
+                }
+            }
+            if (find_property == null)
+            {
+                return null;
+            }
+            common_property_node cpn_sec = pn as common_property_node;
+            if (cpn_sec != null)
+            {
+                if (cpn_sec.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual && cpn_sec.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                compiled_property_node cmpn_sec = pn as compiled_property_node;
+                if (cmpn_sec != null)
+                {
+                    if (cmpn_sec.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual && cmpn_sec.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    throw new CompilerInternalError("Undefined property type.");
+                }
+            }
+            return pn;
+        }
+
+        public void set_override(common_property_node cpn)
+        {
+            cpn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+            property_node overrided_property = FindPropertyToOverride(cpn);
+            if (overrided_property == null)
+                AddError(cpn.loc, "NO_PROPERTY_TO_OVERRIDE");
+        }
+
         public void set_override(common_method_node cmn)
         {
             cmn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;

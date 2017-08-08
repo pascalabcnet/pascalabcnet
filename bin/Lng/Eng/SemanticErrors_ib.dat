@@ -127,6 +127,7 @@ EXPECTED_TYPE_AFTER_NEW=type after 'new' expected
 USE_ANONYMOUS_FUNCTION_TYPE_WITH_GENERICS=Using of anonymous delegates in generic subroutine. Define a generic-delegate outside the procedure and instant it with generic-parameters of function
 WITH_AND_LAMBDAS_NOT_ALLOWED=Cannot use 'with' and lambdas in the same function
 GOTO_AND_LAMBDAS_NOT_ALLOWED=Cannot use 'goto' and lambdas in the same function
+NO_PROPERTY_TO_OVERRIDE=No property to override
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'
