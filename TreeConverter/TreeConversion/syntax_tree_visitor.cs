@@ -3945,7 +3945,7 @@ namespace PascalABCCompiler.TreeConverter
             //pn.loc=get_location(_simple_property.property_name);
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
             	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
-            if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual)
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
                 pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
             
             parameter_list pal_big = new parameter_list();
