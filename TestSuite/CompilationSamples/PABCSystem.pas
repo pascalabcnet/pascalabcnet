@@ -5,7 +5,7 @@
 /// !! System unit
 unit PABCSystem;
 
- {$define PascalABC}
+{$define PascalABC}
 
 {$gendoc true}
 
