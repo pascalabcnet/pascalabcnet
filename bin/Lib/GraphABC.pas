@@ -4015,7 +4015,7 @@ begin
 
   gr := Graphics.FromHwnd(f.Handle);
   
-  if (System.Environment.OSVersion.Version.Major >= 6) then SetProcessDPIAware();
+  //if (System.Environment.OSVersion.Version.Major >= 6) then SetProcessDPIAware();
   InitBMP;
 
 end;  
