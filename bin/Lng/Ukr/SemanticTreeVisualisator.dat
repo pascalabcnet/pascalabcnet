@@ -1,0 +1,8 @@
+﻿//Semantic Tree Visualisator Plugin
+
+%PREFIX%=VPP_SEMTRV_
+NAME=Семантичне дерево
+DESCRIPTION=Візуалізатор семантичного дерева
+FORMNAME=Візуалізатор семантичного дерева
+M_BUILD=Побудувати поточне
+M_REBUILD=Побудувати все

@@ -3270,7 +3270,7 @@ begin
   var sb := new StringBuilder;
   loop n do
     sb.Append(str);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет строку str n раз
@@ -3279,7 +3279,7 @@ begin
   var sb := new StringBuilder;
   loop n do
     sb.Append(str);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет символ c n раз
@@ -3307,7 +3307,7 @@ begin
   var sb := new StringBuilder(n,n);
   loop n do
     sb.Append(c);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Добавляет к строке str строковое представление числа n
@@ -3474,6 +3474,20 @@ begin
   Result := v;
 end;
 
+function operator+<T>(x: HashSet<T>; y: T): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.Add(y);
+  Result := v;
+end;
+
+function operator-<T>(x: HashSet<T>; y: T): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.Remove(y);
+  Result := v;
+end;
+
 function operator*<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
   var v := new HashSet<T>(x);
@@ -3533,6 +3547,20 @@ function operator+<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
 begin
   var v := new SortedSet<T>(x);
   v.UnionWith(y);
+  Result := v;
+end;
+
+function operator+<T>(x: SortedSet<T>; y: T): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.Add(y);
+  Result := v;
+end;
+
+function operator-<T>(x: SortedSet<T>; y: T): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.Remove(y);
   Result := v;
 end;
 

@@ -1,4 +1,8 @@
 //winonly
+{$reference 'PresentationFramework.dll'}
+{$reference 'WindowsBase.dll'}
+{$reference 'PresentationCore.dll'}
+{$reference 'WindowsFormsIntegration.dll'}
 uses System, System.Windows, System.Collections, System.Collections.Generic;
 
 begin

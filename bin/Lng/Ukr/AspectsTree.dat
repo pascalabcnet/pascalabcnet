@@ -1,0 +1,13 @@
+﻿//Aspects Tree Plugin
+
+%PREFIX%=VPP_ASPTRV_
+NAME=Аспекти
+DESCRIPTION=Візуалізатор аспектів
+FORMNAME=Аспекти
+M_BUILD=Побудувати аспекти
+M_COMPILE=Побудувати і компілювати
+SAVE=Зберегти аспекти
+SAVE_CURRENT=Зберегти поточний аспект
+CREATE_TEMPLATE=Створити шаблон
+INSERT_AUTHOR=Усі аспекти цього автора
+INSERT_VERSION=Усі аспекти цієї версії

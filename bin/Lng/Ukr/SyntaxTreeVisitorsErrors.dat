@@ -1,0 +1,18 @@
+﻿// Syntax tree conversion errors
+%PREFIX%=SYNTAXTREEVISITORSERROR_
+
+YIELD_FUNC_MUST_RETURN_SEQUENCE=Функції з yield повинні повертати послідовність
+ONLY_FUNCTIONS_CAN_CONTAIN_YIELDS=Тільки функції можуть містити yield
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_VAR_CONST_PARAMS_MODIFIERS=У параметрах функції з yield не повинно бути модифікаторів 'var', 'const' або 'params'
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_DEFAULT_PARAMETERS=Функція з yield не повинна мати параметрів за замовчуванням
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_RESULT=Функція з yield не може містити змінну Result
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCK=Функції з yield не можуть містити оператор lock
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_TRY_EXCEPT_FINALLY=Функції з yield не можуть містити блоків try..except і try..finally
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_NESTED_SUBROUTINES=Функції з yield не можуть містити вкладені підпрограми і самі бути вкладеними 
+FUNCTIONS_WITH_YIELDS_CANNOT_CONTAIN_LOCAL_TYPE_DEFINITIONS=Функції з yield не можуть містити локальні визначення типів
+YIELDS_INSIDE_WITH_ARE_ILLEGAL=Оператор yield заборонений всередині with
+LAMBDA_EXPRESSIONS_CANNOT_CONTAIN_YIELD=Лямбда-вирази не можуть містити yield
+
+Var_{0}_is_already_defined=Змінна {0} уже визначена
+
+

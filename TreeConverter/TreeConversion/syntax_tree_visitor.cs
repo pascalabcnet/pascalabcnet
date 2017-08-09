@@ -1613,6 +1613,7 @@ namespace PascalABCCompiler.TreeConverter
             	names.names[names.names.Count-1].name += "Attribute";
                 si = context.find_definition_node(names, loc);
             }
+            
             if (si != null && si.First().sym_info != null && si.First().sym_info.general_node_type == general_node_type.generic_indicator)
             {
                 generic_indicator gi = si.First().sym_info as generic_indicator;
@@ -3944,6 +3945,9 @@ namespace PascalABCCompiler.TreeConverter
             //pn.loc=get_location(_simple_property.property_name);
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
             	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
+                pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+            
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
@@ -4070,7 +4074,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 AddError(loc1, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", read_accessor.name);
                             }
-                            read_accessor = GenerateGetMethod(pn,read_accessor as common_method_node,pn.loc);
+                            read_accessor = GenerateGetMethod(pn, read_accessor as common_method_node, pn.loc);
                            
                         }
                         else
@@ -4232,6 +4236,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             make_attributes_for_declaration(_simple_property,pn);
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
+                context.set_override(pn);
             //TODO: Можно сделать множество свойств по умолчанию.
             if (_simple_property.array_default != null)
             {
@@ -4261,7 +4267,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)
@@ -4296,7 +4302,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)
@@ -8316,11 +8322,20 @@ namespace PascalABCCompiler.TreeConverter
         public override void visit(SyntaxTree.labeled_statement _labeled_statement)
         {
             convertion_data_and_alghoritms.check_node_parser_error(_labeled_statement.label_name);
+            if (_labeled_statement.to_statement is var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
+            {
+            	var stmt = new SyntaxTree.labeled_statement(_labeled_statement.label_name,new SyntaxTree.empty_statement());
+            	ReplaceStatementUsingParent(_labeled_statement, new List<statement>
+            	                            {stmt, _labeled_statement.to_statement
+                                        });
+            	ProcessNode(stmt);
+            	return;
+            }
             SymbolInfoList si = context.CurrentScope.FindOnlyInScopeAndBlocks(_labeled_statement.label_name.name);
-            if (_labeled_statement.to_statement is SyntaxTree.var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
+            /*if (_labeled_statement.to_statement is SyntaxTree.var_statement || _labeled_statement.to_statement is SyntaxTree.assign_var_tuple)
             {
                 AddError(get_location(_labeled_statement.label_name), "LABELED_DECLARATION_NOT_ALLOWED");
-            }
+            }*/
             if (si == null)
             {
                 AddError(new UndefinedNameReference(_labeled_statement.label_name.name, get_location(_labeled_statement.label_name)));
@@ -15457,7 +15472,7 @@ namespace PascalABCCompiler.TreeConverter
 
         private expression_node ident_value_reciving(SyntaxTree.ident _ident)
         {
-            SymbolInfoList si = context.find(_ident.name);
+        	SymbolInfoList si = context.find(_ident.name);
             return ident_value_reciving(si, _ident);
         }
 		

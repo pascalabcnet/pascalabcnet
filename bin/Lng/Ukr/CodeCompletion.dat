@@ -1,0 +1,13 @@
+﻿%PREFIX%=CODE_COMPLETION_
+{0}_FROM_{1}={0} из {1}
+GLOBAL=Глобальні імена
+INTERFACE=Розділ інтерфейсу
+IMPLEMENTATION=Розділ реалізації
+EXTENSION=розширення
+RETURN_VALUE=Значення, що повертається: 
+PARAMETER=Параметр 
+FIELDS=Поля
+METHODS=Методи
+PROPERTIES=Властивості
+CONSTRUCTORS=Конструктори
+EVENTS=Події

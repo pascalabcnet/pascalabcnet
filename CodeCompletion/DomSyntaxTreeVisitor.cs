@@ -2050,6 +2050,11 @@ namespace CodeCompletion
             if (_program_module.compiler_directives != null)
                 foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _program_module.compiler_directives)
                 {
+#if DEBUG
+                    // SSM test 05.08.17
+                    if (dir == null)
+                        File.AppendAllText("log.txt", "dir == null" + Environment.NewLine + _program_module.compiler_directives.Count + Environment.NewLine);
+#endif
                     if (dir.Name.text.ToLower() == "reference")
                     {
                         try
@@ -4568,6 +4573,16 @@ namespace CodeCompletion
             mc.visit(this);
         }
 		
+		public override void visit(slice_expr _slice_expr)
+		{
+			_slice_expr.v.visit(this);
+		}
+
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            _slice_expr_question.v.visit(this);
+        }
+
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();

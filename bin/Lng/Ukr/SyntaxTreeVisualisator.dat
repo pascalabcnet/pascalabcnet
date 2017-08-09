@@ -1,0 +1,11 @@
+﻿//Syntax Tree Visualisator Plugin
+
+%PREFIX%=VPP_SYNTRV_
+NAME=Cинтаксичне дерево
+DESCRIPTION=Візуалізатор синтаксичного дерева
+FORMNAME=Візуалізатор синтаксичного дерева
+CHOSEN_SYNTAX_TREE=Вибране синтаксичне дерево:
+SHOW_ALL_TREES=Показати все
+M_BUILD=Побудувати поточне
+M_REBUILD=Побудувати все
+PARSE=Парсити поточний файл

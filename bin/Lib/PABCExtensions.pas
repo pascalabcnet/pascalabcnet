@@ -97,7 +97,6 @@ begin
   Result := () -> for var i:=1 to n do p
 end;
 
-
 {procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
 begin
   foreach var x in vals do

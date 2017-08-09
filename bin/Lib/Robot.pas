@@ -49,6 +49,8 @@ procedure Field(n,m: integer);
 procedure Start;
 /// Остановить Робота
 procedure Stop;
+/// Запустить процедуру без параметров
+procedure Run(p: procedure);
 
 // Русские подпрограммы
 /// Переместить Робота вправо
@@ -110,6 +112,9 @@ procedure Stop;
 begin
   RobField.Stop;  
 end;
+
+procedure Run(p: procedure) := p;
+
 
 procedure Speed(n: integer);
 begin

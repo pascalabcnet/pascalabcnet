@@ -38,7 +38,7 @@ namespace SyntaxVisitors
             VarIdent.source_context = yn.ex.source_context;
             var_statement vs;
             if (yn.ex is nil_const)
-                vs = new var_statement(VarIdent, new named_type_reference("System.Object"), yn.ex);
+                vs = new var_statement(VarIdent, new named_type_reference("$yield_element_type"), yn.ex);
             else
                 vs = new var_statement(VarIdent, yn.ex);
             vs.source_context = yn.ex.source_context;

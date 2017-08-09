@@ -3083,25 +3083,25 @@ namespace PascalABCCompiler.TreeRealization
 
 		// .
 		public override type_node base_type
-		{
-			get
-			{
-				if (_base_type!=null)
-				{
-					return _base_type;
-				}
+        {
+            get
+            {
+                if (_base_type != null)
+                {
+                    return _base_type;
+                }
                 if (base_type_is_null)
                     return null;
-				System.Type bn=_compiled_type.BaseType;
-				if (bn==null)
-				{
+                System.Type bn = _compiled_type.BaseType;
+                if (bn == null)
+                {
                     base_type_is_null = true;
-					return null;
-				}
-				_base_type=get_type_node(bn);
-				return _base_type;
-			}
-		}
+                    return null;
+                }
+                _base_type = get_type_node(bn, SystemLibrary.SystemLibrary.symtab);
+                return _base_type;
+            }
+        }
 
 		// .
 		public override string name

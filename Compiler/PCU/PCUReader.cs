@@ -477,9 +477,10 @@ namespace PascalABCCompiler.PCU
                     type_node tn = GetSpecialTypeReference(names[i].offset);
                     if (tn is compiled_type_node)
                     {
-                        if ((tn as compiled_type_node).scope == null)
-                            (tn as compiled_type_node).init_scope();
-                        (tn as compiled_type_node).scope.AddSymbol(names[i].name, si);
+                        compiled_type_node ctn = tn as compiled_type_node;
+                        if (ctn.scope == null)
+                            ctn.init_scope();
+                        ctn.scope.AddSymbol(names[i].name, si);
                     }
                     else if (tn is generic_instance_type_node)
                         tn.Scope.AddSymbol(names[i].name, si);
@@ -2532,12 +2533,6 @@ namespace PascalABCCompiler.PCU
         private void RestoreAllFields(common_type_node ctn)
         {
             //восстанавливаем все методы
-
-            //(ssyy) Внимание!!! Данный код удваивает все методы!
-            //Я изменил его.
-            //DarkStar - посмотри: NETGenerator после этого кода
-            //дважды переводит каждую функцию.
-            //DarkStar: Да, Ты прав!. Метод я переписал.
             string[] mnames = class_names[ctn];
             WrappedClassScope wcs = ctn.scope as WrappedClassScope;
             foreach (string mname in mnames)
@@ -2908,10 +2903,6 @@ namespace PascalABCCompiler.PCU
 			for (int i=0; i<num_nest_funcs; i++)
 				cnfn.functions_nodes_list.AddElement(GetNestedFunction());
 			//br.ReadInt32();//code;
-            if (cnfn.name == "*")
-            {
-
-            }
 			cnfn.loc = ReadDebugInfo();
             cnfn.function_code = (restore_code /*|| cnfn.is_generic_function*/) ? GetCode(br.ReadInt32()) : new wrapped_function_body(this, br.ReadInt32());
             cnfn.ConnectedToType = ConnectedToType;

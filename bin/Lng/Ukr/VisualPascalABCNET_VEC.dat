@@ -1,0 +1,55 @@
+﻿//VisualPascalABCNET.VisualEnvironmentCompiler
+
+%PREFIX%=VP_VEC_
+DIALOGS_FILTER_PART_{0}{1}|{1}|=Програми на {0} ({1})|{1}|
+DIALOGS_PROJECT_FILTER_PART_{0}{1}|{1}|=Проекти на {0} ({1})|{1}|
+DIALOGS_FILTER_PARTALL_{0}|{0}|{1}=Усі підтримувані ({0})|{0}|{1}
+DIALOGS_FILTER_ALLFILES=Усі файли
+DIALOGS_FILTER_ALLPROJECTS=Усі проекти
+DIALOGS_FILTER_ICO_FILES=Файли іконок (ico)
+ASSEMBLIES=Виконувані модулі
+
+CM_LANGUAGE_{0}=Мова {0}
+CM_OK_{0}MS=OK {0}ms
+CM_{0}_ERROS={0} помилок
+
+LOAD_PLUGINS=Завантажую плагіни...
+PLUGINS_NOTFOUND=Немає плагінів.
+PLUGINS_LOADING_ERRORS=При завантаженні плагінів сталися помилки:
+
+STATE_START_COMPILING_ASSEMBLY{0}=Старт компіляції збірки {0}...
+STATE_BEGINCOMPILEFILE{0}=Початок компіляції {0}...
+STATE_COMPILEINTERFACE{0}=Компіляція interface {0}...
+STATE_COMPILEIMPLEMENTATION{0}=Компіляція implementation {0}...
+STATE_ENDCOMPILEFILE{0}=Кінець компіляції {0}
+STATE_CODEGENERATION{0}=Генерація коду {0}...
+STATE_READDLL{0}=Читання {0}... 
+STATE_SAVEPCUFILE{0}=Збереження {0}...
+STATE_READPCUFILE{0}=Читання {0}...
+STATE_COMPILATIONFINISHED{0}=Компіляція завершена {0}
+STATE_RELOADING=Завантажую ядро...
+STATE_PCUREADINGERROR{0}=Збій при читанні {0}
+STATE_PCUWRITINGERROR{0}=Збій при записуванні {0}
+STATE_SEMANTICTREECONVERSION{0}=Обробка за допомогою семантичного перетворення {0}...
+STATE_SEMANTICTREECONVERTERCONNECTED{0}=Підключено семантичне перетворення "{0}"
+STATE_SYNTAXTREECONVERSION{0}=Обробка за допомогою синтаксичного перетворення {0}...
+STATE_SYNTAXTREECONVERTERCONNECTED{0}=Підключено синтаксичне перетворення "{0}"
+STATE_READY=Готовий
+
+STATETEXT_BEGINCOMPILEFILE{0}=Компіляція {0}...
+STATETEXT_CODEGENERATION{0}=Генерація коду {0}...
+STATETEXT_{0}_ERROS={0} помилок
+STATETEXT_COMPILATION_SUCCESS_{0}LINES=Компіляція завершилася успішно ({0} рядків)
+STATETEXT_COMPILATION_SUCCESS_{0}LINES_{1}WARNINGS=Компіляція завершилася успішно ({0} рядків), {1} попереджень
+STATETEXT_RELOADING=Завантаження...
+STATETEXT_READY=Готовий
+STATETEXT_FINDREFERNCES=Пошук...
+STATETEXT_FINDREFERNCES_RESULT{0}=Знайдено {0} посилань
+STATETEXT_NOTFOUND=Нічого не знайдено
+
+SUPPORTED_LANGUAGES=Підключені вхідні мови:
+PARSER_CONNECTED{0}{1}=Подключено парсер {0} ({1})
+PARSER_CONNECTED{0}=Подключено парсер {0}
+
+REMOTE_COMPILER_PREFIX=[pabcnetc.exe]
+LOCAL_COMPILER_PREFIX=[local]
