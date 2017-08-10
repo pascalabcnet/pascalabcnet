@@ -18544,10 +18544,14 @@ namespace PascalABCCompiler.TreeConverter
                         // Надо посмотреть, как это делается для преобразования типов T(x). А пока так
                         expression_node qq = null;
                         delegated_methods dm = null;
+                        common_type_node delegate_type = null;
                         try
                         {
                             qq = convert_strong(ff.dereferencing_value);
                             dm = qq.type as delegated_methods;
+                            if (dm == null && qq.type.IsDelegate)
+                                delegate_type = qq.type as common_type_node;
+
                         }
                         catch (Exception e)
                         {
@@ -18561,6 +18565,15 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 // Очищаем от Result :=
                                 stl.list[0] = new procedure_call(ff, ff.source_context); // заменить result := Print(x) на Print(x)
+                                _function_lambda_definition.return_type = null;
+                            }
+                        }
+                        else if (delegate_type != null)
+                        {
+                            function_node fn = delegate_type.find_in_type("Invoke").InfoUnitList[0].sym_info as function_node;
+                            if (fn.return_value_type == null && stl.expr_lambda_body)
+                            {
+                                stl.list[0] = new procedure_call(ff, ff.source_context);
                                 _function_lambda_definition.return_type = null;
                             }
                         }
