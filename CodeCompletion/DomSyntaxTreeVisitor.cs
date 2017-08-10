@@ -2562,18 +2562,22 @@ namespace CodeCompletion
                     return true;
                 else
                     return false;
-            if (args.Count == ps.parameters.Count)
+            if (args.Count == ps.parameters.Count || ps.IsExtension && args.Count == ps.parameters.Count - 1)
             {
+                int off = 0;
+                if (ps.IsExtension && args.Count == ps.parameters.Count - 1)
+                    off = 1;
                 for (int i = 0; i < args.Count; i++)
                 {
                     if (!(args[i] is TypeScope))
                         return false;
                     TypeScope ts = args[i] as TypeScope;
-                    if (!ts.IsEqual(ps.parameters[i].sc as TypeScope))
+                    ElementScope parameter = ps.parameters[i + off];
+                    if (!ts.IsEqual(parameter.sc as TypeScope))
                     {
-                        if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
+                        if (parameter.param_kind == parametr_kind.params_parametr)
                         {
-                            if (!(ps.parameters[i].sc is ArrayScope && ts.IsEqual((ps.parameters[i].sc as ArrayScope).elementType)))
+                            if (!(parameter.sc is ArrayScope && ts.IsEqual((parameter.sc as ArrayScope).elementType)))
                                 return false;
                         }
                         else

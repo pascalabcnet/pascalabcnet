@@ -1915,7 +1915,8 @@ namespace CodeCompletion
                     gen_args.RemoveRange(i, gen_args.Count - i);
             }
             instance.si = this.si;
-            instance.return_type = this.return_type.GetInstance(gen_args);
+            if (this.return_type != null)
+                instance.return_type = this.return_type.GetInstance(gen_args);
             return instance;
         }
 
@@ -5058,6 +5059,8 @@ namespace CodeCompletion
         public override bool IsConvertable(TypeScope ts)
         {
             CompiledScope cs = ts as CompiledScope;
+            if (ts == null)
+                return true;
             if (ts is NullTypeScope && !ctn.IsValueType)
                 return true;
             if (cs == null)
