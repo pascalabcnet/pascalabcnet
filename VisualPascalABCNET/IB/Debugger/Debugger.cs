@@ -1325,17 +1325,32 @@ namespace VisualPascalABC
                         IList<FieldInfo> fields = global_nv.Type.GetFields(BindingFlags.All);
                         foreach (FieldInfo fi in fields)
                             if (string.Compare(fi.Name, var, true) == 0) return new ValueItem(fi.GetValue(global_nv), fi.DeclaringType);
+                        Type global_type = AssemblyHelper.GetType(global_nv.Type.FullName);
+                        if (global_type != null)
+                        {
+                            System.Reflection.FieldInfo fi = global_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                            if (fi != null && fi.IsLiteral)
+                                return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, global_nv.Type);
+                        }
                     }
 
-                    
-                        List<DebugType> types = AssemblyHelper.GetUsesTypes(debuggedProcess, debuggedProcess.SelectedFunction.DeclaringType);
-                        foreach (DebugType dt in types)
+
+                    List<DebugType> types = AssemblyHelper.GetUsesTypes(debuggedProcess, debuggedProcess.SelectedFunction.DeclaringType);
+                    foreach (DebugType dt in types)
+                    {
+                        IList<FieldInfo> fields = dt.GetFields(BindingFlags.All);
+                        foreach (FieldInfo fi in fields)
+                            if (fi.IsStatic && string.Compare(fi.Name, var, true) == 0)
+                                return new ValueItem(fi.GetValue(null), fi.DeclaringType);
+                        Type unit_type = AssemblyHelper.GetType(dt.FullName);
+                        if (unit_type != null)
                         {
-                            IList<FieldInfo> fields = dt.GetFields(BindingFlags.All);
-                            foreach (FieldInfo fi in fields)
-                                if (fi.IsStatic && string.Compare(fi.Name, var, true) == 0) return new ValueItem(fi.GetValue(null), fi.DeclaringType);
+                            System.Reflection.FieldInfo fi = unit_type.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                            if (fi != null && fi.IsLiteral)
+                                return new ValueItem(DebugUtils.MakeValue(fi.GetRawConstantValue()), var, dt);
                         }
-                    
+                    }
+
                     /*foreach (NamedValue nv in unit_vars)
                     {
                         IList<FieldInfo> fields = nv.Type.GetFields(BindingFlags.All);

@@ -413,7 +413,7 @@ namespace VisualPascalABC
             }
             if (_assign.to is ident)
             {
-                NamedValue nv = GetValue((_assign.to as ident).name);
+                Value nv = GetValue((_assign.to as ident).name);
                 if (ret_val.prim_val != null)
                     nv.SetValue(DebugUtils.MakeValue(ret_val.prim_val));
                 else if (ret_val.obj_val != null)
@@ -4944,7 +4944,7 @@ namespace VisualPascalABC
             throw new NotImplementedException();
         }
 
-        public NamedValue GetValue(string var)
+        public Value GetValue(string var)
         {
             try
             {
@@ -5031,6 +5031,13 @@ namespace VisualPascalABC
                     IList<FieldInfo> fields = global_nv.Type.GetFields(BindingFlags.All);
                     foreach (FieldInfo fi in fields)
                         if (string.Compare(fi.Name, var, true) == 0) return fi.GetValue(global_nv);
+                    Type t = AssemblyHelper.GetType(global_nv.Type.FullName);
+                    if (t != null)
+                    {
+                        System.Reflection.FieldInfo fi = t.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                        if (fi != null && fi.IsLiteral)
+                            return DebugUtils.MakeValue(fi.GetRawConstantValue());
+                    }
                 }
 
                 List<DebugType> types = AssemblyHelper.GetUsesTypes(debuggedProcess, debuggedProcess.SelectedFunction.DeclaringType);
@@ -5038,7 +5045,15 @@ namespace VisualPascalABC
                 {
                     IList<FieldInfo> fields = dt.GetFields(BindingFlags.All);
                     foreach (FieldInfo fi in fields)
-                        if (fi.IsStatic && string.Compare(fi.Name, var, true) == 0) return fi.GetValue(null);
+                        if (fi.IsStatic && string.Compare(fi.Name, var, true) == 0)
+                            return fi.GetValue(null);
+                    Type t = AssemblyHelper.GetType(dt.FullName);
+                    if (t != null)
+                    {
+                        System.Reflection.FieldInfo fi = t.GetField(var, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.IgnoreCase);
+                        if (fi != null && fi.IsLiteral)
+                            return DebugUtils.MakeValue(fi.GetRawConstantValue());
+                    }
                 }
                 /*foreach (NamedValue nv in unit_vars)
                 {
