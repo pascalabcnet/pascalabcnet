@@ -1,7 +1,8 @@
-﻿using PascalABCCompiler.SyntaxTree;
+﻿using PascalABCCompiler.SemanticTree;
+using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
-
 using TreeConverter.LambdaExpressions;
+using for_node = PascalABCCompiler.SyntaxTree.for_node;
 
 namespace PascalABCCompiler.TreeConverter
 {
@@ -10,7 +11,7 @@ namespace PascalABCCompiler.TreeConverter
 
 
 
-        public override void visit(SyntaxTree.foreach_stmt _foreach_stmt)
+        public override void visit(foreach_stmt _foreach_stmt)
         {
             statements_list sl2 = new statements_list(get_location(_foreach_stmt));            
             convertion_data_and_alghoritms.statement_list_stack_push(sl2);
@@ -98,7 +99,7 @@ namespace PascalABCCompiler.TreeConverter
                     get_location(_foreach_stmt.identifier));
 
                 type_node tn;
-                if (_foreach_stmt.type_name is SyntaxTree.no_type_foreach) // значит, это for var x in a
+                if (_foreach_stmt.type_name is no_type_foreach) // значит, это for var x in a
                 {
                     tn = elem_type;
                 }
@@ -129,14 +130,14 @@ namespace PascalABCCompiler.TreeConverter
         {
             var is1dimdynarr = false;
             var comptn = in_what.type as compiled_type_node;
-            if (comptn != null && comptn.type_special_kind == SemanticTree.type_special_kind.array_kind && comptn.rank == 1)
+            if (comptn != null && comptn.type_special_kind == type_special_kind.array_kind && comptn.rank == 1)
             {
                 is1dimdynarr = true;
             }
             if (!is1dimdynarr)
             {
                 var comtn = in_what.type as common_type_node;
-                if (comtn != null && comtn.internal_type_special_kind == SemanticTree.type_special_kind.array_kind &&
+                if (comtn != null && comtn.internal_type_special_kind == type_special_kind.array_kind &&
                     comtn.rank == 1)
                 {
                     is1dimdynarr = true;
@@ -175,9 +176,9 @@ namespace PascalABCCompiler.TreeConverter
 
                 var high = arrid.dot_node("Length").Minus(1);
 
-                var fornode = new SyntaxTree.for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
+                var fornode = new for_node(i, 0, high, newbody, for_cycle_type.to, null, null, true);
 
-                var stl = new SyntaxTree.statement_list(vdarr, fornode);
+                var stl = new statement_list(vdarr, fornode);
                 // Замена 1 оператора на 1 оператор. Всё хорошо даже если оператор помечен меткой
                 ReplaceUsingParent(_foreach_stmt, stl);
 

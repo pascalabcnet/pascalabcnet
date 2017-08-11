@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
+using PascalABCCompiler.SemanticTree;
 using PascalABCCompiler.SyntaxTree;
 using PascalABCCompiler.TreeRealization;
-
-using for_node = PascalABCCompiler.TreeRealization.for_node;
+using for_node = PascalABCCompiler.SyntaxTree.for_node;
 
 namespace PascalABCCompiler.TreeConverter
 {
     public partial class syntax_tree_visitor
     {
-        public override void visit(SyntaxTree.for_node _for_node)
+        public override void visit(for_node _for_node)
         {
             #region MikhailoMMX, обработка omp parallel for
             bool isGenerateParallel = false;
@@ -83,7 +80,7 @@ namespace PascalABCCompiler.TreeConverter
                 //	AddError(new VoidNotValid(get_location(_for_node.type_name)))
                 if (_for_node.type_name != null)
                     check_for_type_allowed(tn, get_location(_for_node.type_name));
-                vdn = context.add_var_definition(_for_node.loop_variable.name, get_location(_for_node.loop_variable), tn, SemanticTree.polymorphic_state.ps_common);
+                vdn = context.add_var_definition(_for_node.loop_variable.name, get_location(_for_node.loop_variable), tn, polymorphic_state.ps_common);
             }
             internal_interface ii = vdn.type.get_internal_interface(internal_interface_kind.ordinal_interface);
             if (ii == null)
@@ -120,7 +117,7 @@ namespace PascalABCCompiler.TreeConverter
             expression_node right_border = create_variable_reference(vdn_finish, finishValueLocation);
             switch (_for_node.cycle_type)
             {
-                case SyntaxTree.for_cycle_type.to:
+                case for_cycle_type.to:
                 {
                     sn_inc =
                         convertion_data_and_alghoritms.create_simple_function_call(oti.inc_method, loopVariableLocation,
@@ -131,7 +128,7 @@ namespace PascalABCCompiler.TreeConverter
                         finishValueLocation, right, right_border);
                     break;
                 }
-                case SyntaxTree.for_cycle_type.downto:
+                case for_cycle_type.downto:
                 {
                     sn_inc =
                         convertion_data_and_alghoritms.create_simple_function_call(oti.dec_method, loopVariableLocation,
@@ -148,7 +145,7 @@ namespace PascalABCCompiler.TreeConverter
 
             //DarkStar Modifed
             //исправил ошибку:  не работали break в циклах
-            for_node forNode = new for_node(null, sn_while, sn_init_while, sn_inc, null, get_location(_for_node));
+            TreeRealization.for_node forNode = new TreeRealization.for_node(null, sn_while, sn_init_while, sn_inc, null, get_location(_for_node));
             if (vdn.type == SystemLibrary.SystemLibrary.bool_type)
                 forNode.bool_cycle = true;
             context.cycle_stack.push(forNode);
