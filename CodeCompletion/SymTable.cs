@@ -1735,6 +1735,7 @@ namespace CodeCompletion
         public bool is_extension = false;
         public List<string> generic_params;
         public List<string> generic_args;
+        public ProcScope original_function;
 
         public ProcScope()
         {
@@ -1883,6 +1884,7 @@ namespace CodeCompletion
                 return this;
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
             instance.is_extension = this.is_extension;
+            instance.original_function = this;
             instance.loc = this.loc;
             instance.body_loc = this.body_loc;
             instance.parameters = new List<ElementScope>(this.parameters.Count);

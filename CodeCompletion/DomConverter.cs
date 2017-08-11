@@ -930,7 +930,16 @@ namespace CodeCompletion
                         else if (ss is TypeScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as TypeScope));
                         else if (ss is ProcScope)
-                            ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as ProcScope));
+                        {
+                            ProcScope ps = ss as ProcScope;
+                            if (ps.original_function != null)
+                                ps = ps.original_function;
+                            if (ps is CompiledMethodScope)
+                                ss.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledMethodScope).mi));
+                            else
+                                ss.AddDocumentation(UnitDocCache.GetDocumentation(ps));
+                        }
+                            
                         else if (ss is InterfaceUnitScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
                         else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
