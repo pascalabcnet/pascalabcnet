@@ -2050,6 +2050,11 @@ namespace CodeCompletion
             if (_program_module.compiler_directives != null)
                 foreach (PascalABCCompiler.SyntaxTree.compiler_directive dir in _program_module.compiler_directives)
                 {
+#if DEBUG
+                    // SSM test 05.08.17
+                    if (dir == null)
+                        File.AppendAllText("log.txt", "dir == null" + Environment.NewLine + _program_module.compiler_directives.Count + Environment.NewLine);
+#endif
                     if (dir.Name.text.ToLower() == "reference")
                     {
                         try
@@ -2557,18 +2562,22 @@ namespace CodeCompletion
                     return true;
                 else
                     return false;
-            if (args.Count == ps.parameters.Count)
+            if (args.Count == ps.parameters.Count || ps.IsExtension && args.Count == ps.parameters.Count - 1)
             {
+                int off = 0;
+                if (ps.IsExtension && args.Count == ps.parameters.Count - 1)
+                    off = 1;
                 for (int i = 0; i < args.Count; i++)
                 {
                     if (!(args[i] is TypeScope))
                         return false;
                     TypeScope ts = args[i] as TypeScope;
-                    if (!ts.IsEqual(ps.parameters[i].sc as TypeScope))
+                    ElementScope parameter = ps.parameters[i + off];
+                    if (!ts.IsEqual(parameter.sc as TypeScope))
                     {
-                        if (ps.parameters[i].param_kind == parametr_kind.params_parametr)
+                        if (parameter.param_kind == parametr_kind.params_parametr)
                         {
-                            if (!(ps.parameters[i].sc is ArrayScope && ts.IsEqual((ps.parameters[i].sc as ArrayScope).elementType)))
+                            if (!(parameter.sc is ArrayScope && ts.IsEqual((parameter.sc as ArrayScope).elementType)))
                                 return false;
                         }
                         else
@@ -4568,6 +4577,16 @@ namespace CodeCompletion
             mc.visit(this);
         }
 		
+		public override void visit(slice_expr _slice_expr)
+		{
+			_slice_expr.v.visit(this);
+		}
+
+        public override void visit(slice_expr_question _slice_expr_question)
+        {
+            _slice_expr_question.v.visit(this);
+        }
+
         public override void visit(modern_proc_type _modern_proc_type)
         {
             template_type_reference ttr = new template_type_reference();

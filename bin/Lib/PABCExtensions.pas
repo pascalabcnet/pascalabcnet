@@ -107,7 +107,6 @@ var __initialized: boolean;
 
 procedure __InitModule;
 begin
-
 end;
 
 procedure __InitModule__;

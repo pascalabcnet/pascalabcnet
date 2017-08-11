@@ -173,7 +173,7 @@ namespace PascalABCCompiler.SyntaxTree
 
 	public enum for_cycle_type {to,downto};
 	
-	public enum proc_attribute {attr_override, attr_forward, attr_virtual, attr_overload, attr_reintroduce, attr_abstract, attr_static, attr_extension };
+	public enum proc_attribute {attr_override, attr_forward, attr_virtual, attr_overload, attr_reintroduce, attr_abstract, attr_static, attr_extension, attr_none }; // attr_none нужно дл€ свойств когда virtual » override не указываетс€
 
     public enum definition_attribute {None, Static, Const};
 

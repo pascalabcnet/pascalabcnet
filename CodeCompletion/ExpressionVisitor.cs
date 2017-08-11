@@ -930,14 +930,26 @@ namespace CodeCompletion
             }
             if (good_procs.Count > 0)
             {
+                int ind = 0;
                 if (obj != null)
                 {
+                    for (int i = 0; i < good_procs.Count; i++)
+                    {
+                        TypeScope param_type = good_procs[i].parameters[0].sc as TypeScope;
+                        if (param_type.original_type != null)
+                            param_type = param_type.original_type;
+                        if (good_procs[i].IsExtension && param_type.IsEqual(obj))
+                        {
+                            ind = i;
+                            break;
+                        }
+                    }
                     if (obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
                         obj = obj.GetElementType();
                     arg_types2.Insert(0, obj);
                 }
 
-                return good_procs[0].GetInstance(arg_types2);
+                return good_procs[ind].GetInstance(arg_types2);
             }
             return null;
         }
@@ -1008,10 +1020,13 @@ namespace CodeCompletion
                     ProcScope proc = ss as ProcScope;
                     if (_method_call.dereferencing_value is dot_node)
                     {
+                        bool tmp = by_dot;
+                        by_dot = true;
                         (_method_call.dereferencing_value as dot_node).left.visit(this);
                         if (returned_scope is ElementScope)
                             returned_scope = (returned_scope as ElementScope).sc;
                         obj = returned_scope as TypeScope;
+                        by_dot = tmp;
                         if (obj != null && proc.parameters != null && proc.parameters.Count > 0 && !(proc.parameters[0].sc is TemplateParameterScope || proc.parameters[0].sc is UnknownScope))
                         {
                             TypeScope param_type = proc.parameters[0].sc as TypeScope;
@@ -1235,7 +1250,7 @@ namespace CodeCompletion
 
         public override void visit(procedure_call _procedure_call)
         {
-            throw new NotImplementedException();
+            _procedure_call.func_name.visit(this);
         }
 
         public override void visit(class_predefinition _class_predefinition)

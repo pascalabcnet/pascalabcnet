@@ -5,7 +5,7 @@
 /// !! System unit
 unit PABCSystem;
 
- {$define PascalABC}
+{$define PascalABC}
 
 {$gendoc true}
 
@@ -3270,7 +3270,7 @@ begin
   var sb := new StringBuilder;
   loop n do
     sb.Append(str);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет строку str n раз
@@ -3279,7 +3279,7 @@ begin
   var sb := new StringBuilder;
   loop n do
     sb.Append(str);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет символ c n раз
@@ -3307,7 +3307,7 @@ begin
   var sb := new StringBuilder(n,n);
   loop n do
     sb.Append(c);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Добавляет к строке str строковое представление числа n
