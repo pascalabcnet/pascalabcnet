@@ -10355,7 +10355,8 @@ namespace PascalABCCompiler.NETGenerator
             EnterSafeBlock();
             ConvertStatement(value.Body);
             LeaveSafeBlock();
-            MarkSequencePoint(value.Location);
+            //MarkSequencePoint(value.Location);
+            il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
             il.MarkLabel(l2);
             if (lb.LocalType.IsValueType)
                 il.Emit(OpCodes.Ldloca, lb);
