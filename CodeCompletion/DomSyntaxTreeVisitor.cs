@@ -144,6 +144,8 @@ namespace CodeCompletion
             //throw new Exception("The method or operation is not implemented.");
             //if (_assign.to is ident && (_assign.to as ident).name == "result")
             //    _assign.from.visit(this);
+            if (_assign.from is function_lambda_definition)
+                _assign.from.visit(this);
         }
 
 
@@ -4461,6 +4463,7 @@ namespace CodeCompletion
         {
             ProcScope ps = new ProcScope(_function_lambda_definition.lambda_name, this.cur_scope);
             ps.loc = get_location(_function_lambda_definition);
+            
             cur_scope.AddName(_function_lambda_definition.lambda_name, ps);
             if (_function_lambda_definition.ident_list != null)
                 foreach (ident id in _function_lambda_definition.ident_list.idents)
@@ -4482,7 +4485,10 @@ namespace CodeCompletion
                     ps.AddParameter(es);
                     es.loc = get_location(id);
                 }
+            SymScope tmp = cur_scope;
+            cur_scope = ps;
             _function_lambda_definition.proc_body.visit(this);
+            cur_scope = tmp;
             ps.return_type = returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
         }
