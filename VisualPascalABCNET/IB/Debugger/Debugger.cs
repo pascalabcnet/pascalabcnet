@@ -1616,7 +1616,18 @@ namespace VisualPascalABC
             try
             {
                 workbench.WidgetController.SetStartDebugDisabled();
-                dbg.Processes[0].StepOver();
+                if (debuggedProcess.SelectedFunction.Name == ".cctor")
+                {
+                    var sequencePoints = debuggedProcess.SelectedFunction.symMethod.SequencePoints;
+                    if (sequencePoints != null && debuggedProcess.NextStatement.StartLine == sequencePoints[sequencePoints.Length-1].Line)
+                    {
+                        debuggedProcess.StepOut();
+                    }
+                    else
+                        debuggedProcess.StepOver();
+                }
+                else
+                    debuggedProcess.StepOver();
                 CurrentLineBookmark.Remove();
             }
             catch (System.Exception e)
@@ -1632,11 +1643,6 @@ namespace VisualPascalABC
         {
             try
             {
-                /*if (dbg.Processes[0].SelectedThread.Suspended)
-                {
-                    dbg.Processes[0].Pause(false);
-                    dbg.Processes[0].SelectedThread.Suspended = false;
-                }*/
                 workbench.WidgetController.SetStartDebugDisabled();
                 dbg.Processes[0].Continue();
                 CurrentLineBookmark.Remove();
