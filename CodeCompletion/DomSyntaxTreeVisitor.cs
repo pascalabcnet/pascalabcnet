@@ -1308,7 +1308,10 @@ namespace CodeCompletion
                         ps.is_extension = true;
                         _function_header.parameters.params_list[0].vars_type.visit(this);
                         topScope = returned_scope;
+                        if (topScope is ProcScope)
+                            topScope = new ProcType(topScope as ProcScope);
                         ps.declaringType = topScope as TypeScope;
+                        
                         TypeScope ts = topScope as TypeScope;
                         if (topScope is TypeSynonim)
                             ts = (ts as TypeSynonim).actType;
