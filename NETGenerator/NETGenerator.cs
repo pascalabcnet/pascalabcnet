@@ -5581,7 +5581,10 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Brfalse, FalseLabel);
             labels.Push(FalseLabel);//break
             clabels.Push(TrueLabel);//continue
+            bool tmp_lb = gen_left_brackets;
+            gen_left_brackets = false;
             ConvertStatement(value.body);
+            gen_left_brackets = tmp_lb;
             il.Emit(OpCodes.Br, TrueLabel);
             il.MarkLabel(FalseLabel);
             clabels.Pop();

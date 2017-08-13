@@ -302,7 +302,7 @@ namespace VisualPascalABC
         private bool MustDebug = false;
         public bool IsRunning = false;
         public string ExeFileName;
-		public bool show_debug_tabs=true;
+		public bool ShowDebugTabs=true;
 		public PascalABCCompiler.Parsers.IParser parser = null;
 		EventHandler<EventArgs> debuggerStateEvent;
 		
@@ -606,7 +606,7 @@ namespace VisualPascalABC
             if (Exited != null && ExeFileName != null)
                 Exited(ExeFileName);
             curPage = null;            
-            show_debug_tabs = true;
+            ShowDebugTabs = true;
             workbench.WidgetController.SetPlayButtonsVisible(false);
             workbench.WidgetController.SetAddExprMenuVisible(false);
             workbench.WidgetController.SetDisassemblyMenuVisible(false);
@@ -663,9 +663,6 @@ namespace VisualPascalABC
             TooltipServiceManager.hideToolTip();
             IsRunning = true;
             evaluator = new ExpressionEvaluator(e.Process,workbench.VisualEnvironmentCompiler, FileName);
-            //CodeFileDocumentControl page = frm.CurrentTabPage;
-            //(page.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.TextArea.ToolTipRequest += TextAreaToolTipRequest;
-            //(page.ag as CodeFileDocumentControl).TextEditor.ActiveTextAreaControl.TextArea.MouseLeave += TextAreaMouseLeave;
         }
 		
         /// <summary>
@@ -812,9 +809,9 @@ namespace VisualPascalABC
                     string save_PrevFullFileName = PrevFullFileName;
                     //CodeFileDocumentControl page = null;
                     //DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
-                    if (!show_debug_tabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
+                    if (!ShowDebugTabs)//esli eshe ne pokazany watch i lokal, pokazyvaem
                     {
-                        show_debug_tabs = true;
+                        ShowDebugTabs = true;
                         workbench.WidgetController.SetDebugTabsVisible(true);
                         workbench.WidgetController.SetAddExprMenuVisible(true);
                     }
@@ -834,7 +831,7 @@ namespace VisualPascalABC
                         
                         return;
                     }
-                    else if (is_out == true)
+                    else if (is_out)
                     {
                         is_out = false;
                         if (stepin_stmt.SourceFullFilename == debuggedProcess.NextStatement.SourceFullFilename && stepin_stmt.StartLine != debuggedProcess.NextStatement.StartLine)
@@ -1090,10 +1087,6 @@ namespace VisualPascalABC
         public string GetVariable(TextArea textArea, out int num_line)
         {
             IDocument doc = textArea.Document;
-            /*LineSegment seg = doc.GetLineSegment(logicPos.Y);
-            num_line = seg.LineNumber;
-            if (logicPos.X > seg.Length - 1)
-                return null;*/
             string textContent = doc.TextContent;
             num_line = textArea.Caret.Line;
             int start_off = 0;
