@@ -653,8 +653,15 @@ namespace CodeCompletion
     		s = parser.LanguageInformation.FindExpressionForMethod(off,test_str,line,col,',',ref num_param);
     		assert(s.Trim(' ','\n','\t') == "new RGB");
     		assert(num_param == 2);
-    		
-    		string str = null;
+
+            test_str = "Power(10 div 2";
+            off = test_str.Length;
+            num_param = 1;
+            s = parser.LanguageInformation.FindExpressionForMethod(off, test_str, line, col, ',', ref num_param);
+            assert(s.Trim(' ', '\n', '\t') == "Power");
+            assert(num_param == 2);
+
+            string str = null;
     		//mouse hover
     		test_str = "sin(2)";
     		off = 1;

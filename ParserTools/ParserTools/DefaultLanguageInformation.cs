@@ -2424,56 +2424,88 @@ namespace PascalABCCompiler.Parsers
         	sb.AppendLine("end;");
         	return sb.ToString();
 		}
-		
-		private void TestForKeyword(string Text, int i, ref int bound, bool sym_punkt, out KeywordKind keyword)
+
+        private bool isOperator(string Text, int i, out int next)
         {
-        	StringBuilder sb = new StringBuilder();
-        	while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
-        	{
-        		sb.Insert(0,Text[i]);
-        		i--;
-        	}
+            next = i;
+            if (i >= 3)
+            {
+                string op = Text.Substring(i - 2, 3).ToLower().Trim();
+                if (op == "and" || op == "div" || op == "mod" || op == "xor")
+                {
+                    if (!char.IsLetterOrDigit(Text[i - 3]) && Text[i - 3] != '_' && Text[i - 3] != '&')
+                    {
+                        next = i - 3;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            if (i >= 2)
+            {
+                string op = Text.Substring(i - 1, 2).ToLower().Trim();
+                if (op == "or")
+                {
+                    if (!char.IsLetterOrDigit(Text[i - 2]) && Text[i - 2] != '_' && Text[i - 2] != '&')
+                    {
+                        next = i - 2;
+                        return true;
+                    }   
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        private void TestForKeyword(string Text, int i, ref int bound, bool sym_punkt, out KeywordKind keyword)
+        {
+            StringBuilder sb = new StringBuilder();
+            while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
+            {
+                sb.Insert(0, Text[i]);
+                i--;
+            }
             while (i >= 0 && char.IsWhiteSpace(Text[i]))
             {
                 i--;
             }
             if (i >= 0 && (Text[i] == '.' || Text[i] == '&'))
                 sb.Insert(0, Text[i]);
-        	string s = sb.ToString().ToLower();
-        	if (s == "new")
-        	{
-        		bound = i+1;
-        		keyword = KeywordKind.New;
-        	}
-        	else if ((s == "procedure" || s == "function") && !sym_punkt )
-        	{
-        		keyword = KeywordKind.Function;
-        	}
-        	else if (s == "constructor" && !sym_punkt)
-        	{
-        		keyword = KeywordKind.Constructor;
-        	}
-        	else if (s == "destructor" && !sym_punkt)
-        	{
-        		keyword = KeywordKind.Destructor;
-        	}
-        	else if (s == "uses")
-        	{
-        		keyword = KeywordKind.Uses;
-        	}
-        	else if (s == "inherited")
-        	{
-        		keyword = KeywordKind.Inherited;
-        	}
-        	else if (s == "raise")
-        	{
-        		keyword = KeywordKind.Raise;
-        	}
-        	else if (keywords.ContainsKey(s))
-        	{
-        		keyword = KeywordKind.CommonKeyword;
-        	}
-        	else keyword = KeywordKind.None;
+            string s = sb.ToString().ToLower();
+            if (s == "new")
+            {
+                bound = i + 1;
+                keyword = KeywordKind.New;
+            }
+            else if ((s == "procedure" || s == "function") && !sym_punkt)
+            {
+                keyword = KeywordKind.Function;
+            }
+            else if (s == "constructor" && !sym_punkt)
+            {
+                keyword = KeywordKind.Constructor;
+            }
+            else if (s == "destructor" && !sym_punkt)
+            {
+                keyword = KeywordKind.Destructor;
+            }
+            else if (s == "uses")
+            {
+                keyword = KeywordKind.Uses;
+            }
+            else if (s == "inherited")
+            {
+                keyword = KeywordKind.Inherited;
+            }
+            else if (s == "raise")
+            {
+                keyword = KeywordKind.Raise;
+            }
+            else if (keywords.ContainsKey(s))
+            {
+                keyword = KeywordKind.CommonKeyword;
+            }
+            else keyword = KeywordKind.None;
         }
 		
 		private bool CheckForComment(string Text, int off)
@@ -2757,37 +2789,37 @@ namespace PascalABCCompiler.Parsers
         }
 
         public virtual string FindExpressionFromAnyPosition(int off, string Text, int line, int col, out KeywordKind keyw, out string expr_without_brackets)
-		{
-			int i = off-1;
-			expr_without_brackets = null;
-			keyw = KeywordKind.None;
+        {
+            int i = off - 1;
+            expr_without_brackets = null;
+            keyw = KeywordKind.None;
             if (i < 0)
                 return "";
             bool is_char = false;
-        	System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        	if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        	{
-        		//sb.Remove(0,sb.Length);
-        		while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        		{
-        			//sb.Insert(0,Text[i]);//.Append(Text[i]);
-        			i--;
-        		}
-        		is_char = true;
-        	}
-        	i = off;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            if (Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+            {
+                //sb.Remove(0,sb.Length);
+                while (i >= 0 && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                {
+                    //sb.Insert(0,Text[i]);//.Append(Text[i]);
+                    i--;
+                }
+                is_char = true;
+            }
+            i = off;
             if (i < Text.Length && Text[i] != ' ' && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        	{
-        		while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
-        		{
-        			//sb.Append(Text[i]);//.Append(Text[i]);
-        			i++;
-        		}
-        		is_char = true;
-        	}
+            {
+                while (i < Text.Length && (Char.IsLetterOrDigit(Text[i]) || Text[i] == '_'))
+                {
+                    //sb.Append(Text[i]);//.Append(Text[i]);
+                    i++;
+                }
+                is_char = true;
+            }
             if (is_char)
             {
-            	expr_without_brackets = FindExpression(i, Text, line, col, out keyw);
+                expr_without_brackets = FindExpression(i, Text, line, col, out keyw);
             }
             bool is_new = keyw == KeywordKind.New;
             bool meth_call = false;
@@ -2795,131 +2827,131 @@ namespace PascalABCCompiler.Parsers
             int j = i;
             bool in_comment = false;
             bool brackets = false;
-            while (j<Text.Length)
+            while (j < Text.Length)
             {
-            	char c = Text[j];
-            	
-            	if (c == '(' && !in_comment)
-            	{
-            		Stack<char> sk_stack = new Stack<char>();
-            		in_comment = false;
-            		bool in_kav = false;
-            		sk_stack.Push('(');
-            		j++;
-            		while (j<Text.Length)
-            		{
-            			c = Text[j];
-            			if (c == '(' && !in_kav)
-            				sk_stack.Push('(');
-            			else
-            			if (c == ')' && !in_kav)
-            			{
-            				if (sk_stack.Count == 0)
-            				{
-            					break;
-            				}
-            				else
-            				{
-            					sk_stack.Pop();
-            					if (sk_stack.Count == 0)
-            					{
-            						i = j+1;
-            						meth_call = true;
-            						break;
-            					}
-            				}
-            			}
-            			else if (c == '\'' && !in_comment)
-            			{
-            				in_kav = !in_kav;
-            			}
-            			else if (c == '{' && !in_kav)
-            			{
-            				in_comment = true;
-            			}
-            			else if (c == '}' && !in_kav)
-            			{
-            				in_comment = false;
-            			}
-            			else if (c == '/' && !in_kav && !in_comment)
-            			{
-            				if (j+1 < Text.Length && Text[j+1] == '/')
-            					break;
-            			}
-            			j++;
-            		}
-            		break;
-            	}
-            	else if (c == '<' && !in_comment)
-            	{
-            		Stack<char> sk_stack = new Stack<char>();
-            		sk_stack.Push('<');
-            		j++;
-            		bool generic = false;
-            		while (j<Text.Length)
-            		{
-            			c = Text[j];
-            			if (c == '>')
-            			{
-            				sk_stack.Pop();
-            				if (sk_stack.Count == 0)
-            				{
+                char c = Text[j];
+
+                if (c == '(' && !in_comment)
+                {
+                    Stack<char> sk_stack = new Stack<char>();
+                    in_comment = false;
+                    bool in_kav = false;
+                    sk_stack.Push('(');
+                    j++;
+                    while (j < Text.Length)
+                    {
+                        c = Text[j];
+                        if (c == '(' && !in_kav)
+                            sk_stack.Push('(');
+                        else
+                        if (c == ')' && !in_kav)
+                        {
+                            if (sk_stack.Count == 0)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                sk_stack.Pop();
+                                if (sk_stack.Count == 0)
+                                {
+                                    i = j + 1;
+                                    meth_call = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (c == '\'' && !in_comment)
+                        {
+                            in_kav = !in_kav;
+                        }
+                        else if (c == '{' && !in_kav)
+                        {
+                            in_comment = true;
+                        }
+                        else if (c == '}' && !in_kav)
+                        {
+                            in_comment = false;
+                        }
+                        else if (c == '/' && !in_kav && !in_comment)
+                        {
+                            if (j + 1 < Text.Length && Text[j + 1] == '/')
+                                break;
+                        }
+                        j++;
+                    }
+                    break;
+                }
+                else if (c == '<' && !in_comment)
+                {
+                    Stack<char> sk_stack = new Stack<char>();
+                    sk_stack.Push('<');
+                    j++;
+                    bool generic = false;
+                    while (j < Text.Length)
+                    {
+                        c = Text[j];
+                        if (c == '>')
+                        {
+                            sk_stack.Pop();
+                            if (sk_stack.Count == 0)
+                            {
                                 i = j + 1;
-            					generic = true;
-            					break;
-            				}
-            			}
-            			else if (c=='<')
-            			{
-            				sk_stack.Push('<');
-            				
-            			}
-            			else if (!char.IsLetterOrDigit(c) && c != '&' && c != '.' && c != ' ' && c != '\t' && c != '\n' && c != ',')
-            			{
-            				break;
-            			}
-            			j++;
-            		}
-            		if (generic)
-            		{
-            			break;
-            		}
-            	}
-            	else if (c == '[' && !in_comment)
-            	{
+                                generic = true;
+                                break;
+                            }
+                        }
+                        else if (c == '<')
+                        {
+                            sk_stack.Push('<');
+
+                        }
+                        else if (!char.IsLetterOrDigit(c) && c != '&' && c != '.' && c != ' ' && c != '\t' && c != '\n' && c != ',')
+                        {
+                            break;
+                        }
+                        j++;
+                    }
+                    if (generic)
+                    {
+                        break;
+                    }
+                }
+                else if (c == '[' && !in_comment)
+                {
                     brackets = true;
                     break;
-            	}
-            	else if (c == '{')
-            	{
-            		in_comment = true;
-            	}
-            	else if (c == '}')
-            	{
-            		if (!in_comment)
-            			break;
-            		else
-            			in_comment = false;
-            	}
-            	else if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
-            	{
-            		
-            	}
-            	else
-            	{
-            		if (!in_comment)
-            			break;
-            	}
-            	j++;
+                }
+                else if (c == '{')
+                {
+                    in_comment = true;
+                }
+                else if (c == '}')
+                {
+                    if (!in_comment)
+                        break;
+                    else
+                        in_comment = false;
+                }
+                else if (c == ' ' || c == '\t' || c == '\n' || c == '\r')
+                {
+
+                }
+                else
+                {
+                    if (!in_comment)
+                        break;
+                }
+                j++;
             }
-            if (is_new && string.Compare(expr_without_brackets.Trim(' ','\n','\t','\r'),"new",true) == 0 && !meth_call)
+            if (is_new && string.Compare(expr_without_brackets.Trim(' ', '\n', '\t', '\r'), "new", true) == 0 && !meth_call)
             {
-            	expr_without_brackets = null;
-            	return null;
+                expr_without_brackets = null;
+                return null;
             }
-        	if (is_char) 
-        	{
-        		string ss = FindExpression(i, Text, line, col, out new_keyw);
+            if (is_char)
+            {
+                string ss = FindExpression(i, Text, line, col, out new_keyw);
                 if (brackets && is_new)
                 {
                     int ind = ss.ToLower().IndexOf("new");
@@ -2927,9 +2959,9 @@ namespace PascalABCCompiler.Parsers
                         return ss.Substring(ind + 3);
                 }
                 return ss;
-        	}
+            }
             return null;
-		}
+        }
 
         public virtual KeywordKind TestForKeyword(string Text, int i)
         {
@@ -3020,281 +3052,290 @@ namespace PascalABCCompiler.Parsers
         	}
         	return expr;
         }
-		
-		public virtual string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param)
-		{
-			int i = off-1;
-        	string pattern = null;
-        	int bound = 0;
-        	System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        	Stack<char> tokens = new Stack<char>();
-        	Stack<char> kav = new Stack<char>();
-        	Stack<char> skobki = new Stack<char>();
-        	Stack<char> ugl_skobki = new Stack<char>();
-        	bool comma_pressed = pressed_key == ',';
-        	int num_in_ident = -1;
-        	bool punkt_sym = false;
-        	KeywordKind keyw = TestForKeyword(Text,i);
-        	bool on_skobka = false;
-        	if (keyw == KeywordKind.Punkt)
-        		return "";
-        	try
-        	{
-        	while (i >= bound)
-        	{
-        		bool end = false;
-        		char ch = Text[i];
-        		if (char.IsLetterOrDigit(ch) || ch == '_' || ch == '&')
-        		{
-        			num_in_ident = i;
-        			if (kav.Count == 0 && tokens.Count == 0)
-        			{
-        				int tmp = i;
-        				while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        				{
-        					i--;
-        				}
-        				while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i]=='}')) 
-        				{
-        					if (Text[i] != '}')
-        						i--;
-        					else
-        					{
-        						while (i>=0 && Text[i] != '{') //propusk kommentariev
-        							i--;
-        						if (i>=0)
-        							i--;
-        					}
-        				}
-        				if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        				{
-        					bound = i+1;
-        					TestForKeyword(Text,i, ref bound,punkt_sym, out keyw);
-        					if (keyw == KeywordKind.New && comma_pressed)
-        						bound = 0;
-        					if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Destructor)
-        						return "";
-        				}
-        				else if (i >= 0 && Text[i] == '\'') return "";
-        				i = tmp;
-        			}
-        			sb.Insert(0, ch);//.Append(Text[i]);
-        		}
-        		else if (ch == '.') sb.Insert(0,ch);
-        		else if (ch == '}')
-        		{
-        			if (kav.Count == 0)
-        			{
-        				while (i >= 0 && Text[i] != '{') 
-        				{
-        					sb.Insert(0,Text[i]);
-        					i--;
-        				}
-        				if (i < 0) 
-        				{
-        					break;
-        				}
-        				else if (Text[i] == '{')
-        				{
-        					sb.Insert(0,'{');
-        				}
-        			}
-        			else
-        				sb.Insert(0,ch);
-        		}
-        		else if (ch == '{')
-        		{
-        			if (kav.Count == 0)
-        			{
-        				sb.Insert(0,ch);
-        				break;
-        			}
-        			else sb.Insert(0,ch);
-        		}
-        		else 
-        		switch (ch)
-        		{
-        			case ')':
-        			case ']':
-        			case '>': 
-        			if (kav.Count == 0)
-        			{
-        				if (ch != '>')
-        				tokens.Push(ch);
-        				if (ch == ')')
-        				skobki.Push(ch);
-        				if (tokens.Count > 0 || pressed_key == ',')
-        					sb.Insert(0,ch);
-        				else if (i == off-1 || ugl_skobki.Count > 0 || i+1 < Text.Length && (Text[i+1]=='.' || Text[i+1] == '('))
-        				{
-        					tokens.Push(ch);
-        					ugl_skobki.Push(ch);
-        					sb.Insert(0,ch);
-        				}
-        				else
-        					end = true;
-        			}
-        			else
-        			sb.Insert(0,ch); break;
-        			case '[':
-        			case '<':
-        			case '(': 
-        				if (kav.Count == 0)//esli ne v kavychkah
-        				{
-        					if (ch == '(')
-        						if (skobki.Count > 0)
-        						skobki.Pop();
-        					else skobki.Push('(');
-        					//esli byli zakryvaushie tokeny (polagaem, chto skobki korrektny, esli net, to parser v lubom sluchae ne proparsit
-        					if (tokens.Count > 0)
-        					{
-        						if (ch != '<')
-        						tokens.Pop();
-        						else if (ugl_skobki.Count > 0)
-        						{
-        							tokens.Pop();
-        							ugl_skobki.Pop();
-        						}
-        						sb.Insert(0,ch);//dobavljaem k stroke
-        						if (ch == '(')
-        						{
-        							int tmp = i--;
-        							/*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        							{
-        								i--;
-        							}*/
-        							while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i]=='}')) 
-        							{
-        								if (Text[i] != '}')
-        								{
-        									i--;
-        								}
-        								else
-        								{
-        									while (i>=0 && Text[i] != '{')
-        									{
-        										//propusk kommentariev
-        										i--;
-        									}
-        									if (i>=0)
-        										i--;
-        								}
-        							}
-        								        								
-        							if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
-        							{
-        								bound = i+1;
-        								TestForKeyword(Text,i, ref bound,punkt_sym, out keyw);
-        								if (keyw == KeywordKind.New)
-        									bound = 0;
-        								else
-        								if (keyw != KeywordKind.None)
-        									end = true;
-        								else
-        									bound = 0;
-        							}
-        							else if (i >= 0 && Text[i] == '\'') return "";
-        							i = tmp;
-        						}
-        					}
-        					else if (ch == '<' || ch == '>')
-        					{
-        						if (tokens.Count > 0 || pressed_key == ',')
-        							sb.Insert(0,ch);
-        						else
-        							end = true;
-        					}
-        					else 
-        					if (!comma_pressed) //esli my ne v parametrah
-        						end = true; //zakonchili, tak kak doshli do pervoj skobki
-        					else
-        					{
-        						sb.Remove(0,sb.Length);//doshli do skobki, byla nazhata zapjataja, poetomu udaljaem vse parametry
-        						if (ch == '(')
-        							on_skobka = true;
-        						//on_skobka = true;
-        						comma_pressed = false;
-        					}
-        				} 
-        				else sb.Insert(0,ch);
-        				break;
-        			case '\'': 
-        				if (kav.Count == 0) 
-        					kav.Push(ch); 
-        				else 
-        					kav.Pop();
-        				sb.Insert(0,ch); 
-        				break;
-        			default:
-        				if (!(ch == ' ' || char.IsControl(ch)))
-        				{
-        					if (ch == '^')
-        						sb.Insert(0,ch);
-        					else
-        					if (kav.Count == 0)//ne v kavychkah
-        					{
-        						if (tokens.Count == 0) 
-        						{
-        							if (ch != ',' && !comma_pressed)
-        								end = true;//esli ne na zapjatoj i ne v parametrah, to finish
-        							else if (ch == ',' && !comma_pressed)
-        								end = true;
-        							else if (ch == ',' && (pressed_key == '('||pressed_key == '['))
-        								end = true;
-        							else 
-        								sb.Insert(0,ch);//prodolzhaem
-        						}
-        						else
-        							sb.Insert(0,ch);//esli est skobki, prodolzhaem
-        						if (!end && ch == ',')
-        						{
-        							if (tokens.Count == 0) 
-        								num_param++;//esli na zapjatoj, uvelichivaem nomer parametra
-        						}
-        					}
-        					else 
-        						sb.Insert(0,ch);//prodolzhaem
-        					
-        				}
-        				else 
-        				if (Text[i] == '\n')
-        				{
-        					if (CheckForComment(Text,i-1)) //proverjaem, net li kommenta ne predydushej stroke
-        						end = true;//esli est to finish
-        					else 
-        						sb.Insert(0,ch);//a inache vyrazhenie na neskolkih strokah
-        				}
-        				else
-        				sb.Insert(0,ch);
-        				break;
-        		}
-        		
-        		if (end) 
-        		{
-        			if (comma_pressed && !on_skobka)
-        				return "";
-        			if (CheckForComment(Text,i))//proverka na kommentarii
-        			{
-        				int new_line_ind = sb.ToString().IndexOf('\n');
-        				if (new_line_ind != -1) sb = sb.Remove(0,new_line_ind+1);
-        				else sb = sb.Remove(0,sb.Length);
-        			}
-        			break;
-        		}
-        		i--;
-        	}
-        	if (pressed_key == ',') 
-        		num_param++;
-        	}
-        	catch(Exception e)
-        	{
-        		
-        	}
-        	if (pressed_key == ',' && (!on_skobka || skobki.Count == 0))
-        		return "";
-        	//return RemovePossibleKeywords(sb);
-        	return sb.ToString();
-		}
+
+        public virtual string FindExpressionForMethod(int off, string Text, int line, int col, char pressed_key, ref int num_param)
+        {
+            int i = off - 1;
+            string pattern = null;
+            int bound = 0;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            Stack<char> tokens = new Stack<char>();
+            Stack<char> kav = new Stack<char>();
+            Stack<char> skobki = new Stack<char>();
+            Stack<char> ugl_skobki = new Stack<char>();
+            bool comma_pressed = pressed_key == ',';
+            int num_in_ident = -1;
+            bool punkt_sym = false;
+            int next;
+            KeywordKind keyw = TestForKeyword(Text, i);
+            bool on_brace = false;
+            if (keyw == KeywordKind.Punkt)
+                return "";
+            try
+            {
+                while (i >= bound)
+                {
+                    bool end = false;
+                    char ch = Text[i];
+                    if ((char.IsLetterOrDigit(ch) || ch == '_' || ch == '&') && !isOperator(Text, i, out next))
+                    {
+                        num_in_ident = i;
+                        if (kav.Count == 0 && tokens.Count == 0)
+                        {
+                            int tmp = i;
+                            while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&') && !isOperator(Text, i, out next))
+                            {
+                                i--;
+                            }
+                            while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
+                            {
+                                if (Text[i] != '}')
+                                    i--;
+                                else
+                                {
+                                    while (i >= 0 && Text[i] != '{') //propusk kommentariev
+                                        i--;
+                                    if (i >= 0)
+                                        i--;
+                                }
+                            }
+                            if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&') && !isOperator(Text, i, out next))
+                            {
+                                bound = i + 1;
+                                TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                                if (keyw == KeywordKind.New && comma_pressed)
+                                    bound = 0;
+                                if (keyw == KeywordKind.Function || keyw == KeywordKind.Constructor || keyw == KeywordKind.Destructor)
+                                    return "";
+                            }
+                            else if (i >= 0 && Text[i] == '\'') return "";
+                            i = tmp;
+                        }
+                        sb.Insert(0, ch);//.Append(Text[i]);
+                    }
+                    else if (ch == '.') sb.Insert(0, ch);
+                    else if (ch == '}')
+                    {
+                        if (kav.Count == 0)
+                        {
+                            while (i >= 0 && Text[i] != '{')
+                            {
+                                sb.Insert(0, Text[i]);
+                                i--;
+                            }
+                            if (i < 0)
+                            {
+                                break;
+                            }
+                            else if (Text[i] == '{')
+                            {
+                                sb.Insert(0, '{');
+                            }
+                        }
+                        else
+                            sb.Insert(0, ch);
+                    }
+                    else if (ch == '{')
+                    {
+                        if (kav.Count == 0)
+                        {
+                            sb.Insert(0, ch);
+                            break;
+                        }
+                        else sb.Insert(0, ch);
+                    }
+                    else
+                        switch (ch)
+                        {
+                            case ')':
+                            case ']':
+                            case '>':
+                                if (kav.Count == 0)
+                                {
+                                    if (ch != '>')
+                                        tokens.Push(ch);
+                                    if (ch == ')')
+                                        skobki.Push(ch);
+                                    if (tokens.Count > 0 || pressed_key == ',')
+                                        sb.Insert(0, ch);
+                                    else if (i == off - 1 || ugl_skobki.Count > 0 || i + 1 < Text.Length && (Text[i + 1] == '.' || Text[i + 1] == '('))
+                                    {
+                                        tokens.Push(ch);
+                                        ugl_skobki.Push(ch);
+                                        sb.Insert(0, ch);
+                                    }
+                                    else
+                                        end = true;
+                                }
+                                else
+                                    sb.Insert(0, ch); break;
+                            case '[':
+                            case '<':
+                            case '(':
+                                if (kav.Count == 0)//esli ne v kavychkah
+                                {
+                                    if (ch == '(')
+                                        if (skobki.Count > 0)
+                                            skobki.Pop();
+                                        else skobki.Push('(');
+                                    //esli byli zakryvaushie tokeny (polagaem, chto skobki korrektny, esli net, to parser v lubom sluchae ne proparsit
+                                    if (tokens.Count > 0)
+                                    {
+                                        if (ch != '<')
+                                            tokens.Pop();
+                                        else if (ugl_skobki.Count > 0)
+                                        {
+                                            tokens.Pop();
+                                            ugl_skobki.Pop();
+                                        }
+                                        sb.Insert(0, ch);//dobavljaem k stroke
+                                        if (ch == '(')
+                                        {
+                                            int tmp = i--;
+                                            /*while (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                            {
+                                                i--;
+                                            }*/
+                                            while (i >= 0 && (Text[i] == ' ' || char.IsControl(Text[i]) || Text[i] == '}'))
+                                            {
+                                                if (Text[i] != '}')
+                                                {
+                                                    i--;
+                                                }
+                                                else
+                                                {
+                                                    while (i >= 0 && Text[i] != '{')
+                                                    {
+                                                        //propusk kommentariev
+                                                        i--;
+                                                    }
+                                                    if (i >= 0)
+                                                        i--;
+                                                }
+                                            }
+
+                                            if (i >= 0 && (char.IsLetterOrDigit(Text[i]) || Text[i] == '_' || Text[i] == '&'))
+                                            {
+                                                bound = i + 1;
+                                                TestForKeyword(Text, i, ref bound, punkt_sym, out keyw);
+                                                if (keyw == KeywordKind.New)
+                                                    bound = 0;
+                                                else
+                                                if (keyw != KeywordKind.None)
+                                                    end = true;
+                                                else
+                                                    bound = 0;
+                                            }
+                                            else if (i >= 0 && Text[i] == '\'') return "";
+                                            i = tmp;
+                                        }
+                                    }
+                                    else if (ch == '<' || ch == '>')
+                                    {
+                                        if (tokens.Count > 0 || pressed_key == ',')
+                                            sb.Insert(0, ch);
+                                        else
+                                            end = true;
+                                    }
+                                    else
+                                    if (!comma_pressed) //esli my ne v parametrah
+                                        end = true; //zakonchili, tak kak doshli do pervoj skobki
+                                    else
+                                    {
+                                        sb.Remove(0, sb.Length);//doshli do skobki, byla nazhata zapjataja, poetomu udaljaem vse parametry
+                                        if (ch == '(')
+                                            on_brace = true;
+                                        //on_skobka = true;
+                                        comma_pressed = false;
+                                    }
+                                }
+                                else sb.Insert(0, ch);
+                                break;
+                            case '\'':
+                                if (kav.Count == 0)
+                                    kav.Push(ch);
+                                else
+                                    kav.Pop();
+                                sb.Insert(0, ch);
+                                break;
+                            default:
+                                if (!(ch == ' ' || char.IsControl(ch)))
+                                {
+                                    if (ch == '^')
+                                        sb.Insert(0, ch);
+                                    else
+                                    if (kav.Count == 0)//ne v kavychkah
+                                    {
+                                        if (tokens.Count == 0)
+                                        {
+                                            if (ch != ',' && !comma_pressed)
+                                                end = true;//esli ne na zapjatoj i ne v parametrah, to finish
+                                            else if (ch == ',' && !comma_pressed)
+                                                end = true;
+                                            else if (ch == ',' && (pressed_key == '(' || pressed_key == '['))
+                                                end = true;
+                                            else
+                                            {
+                                                sb.Insert(0, ch);//prodolzhaem
+                                                if (isOperator(Text, i, out next))
+                                                {
+                                                    i = next;
+                                                    continue;
+                                                }
+                                            }
+                                                
+                                        }
+                                        else
+                                            sb.Insert(0, ch);//esli est skobki, prodolzhaem
+                                        if (!end && ch == ',')
+                                        {
+                                            if (tokens.Count == 0)
+                                                num_param++;//esli na zapjatoj, uvelichivaem nomer parametra
+                                        }
+                                    }
+                                    else
+                                        sb.Insert(0, ch);//prodolzhaem
+
+                                }
+                                else
+                                if (Text[i] == '\n')
+                                {
+                                    if (CheckForComment(Text, i - 1)) //proverjaem, net li kommenta ne predydushej stroke
+                                        end = true;//esli est to finish
+                                    else
+                                        sb.Insert(0, ch);//a inache vyrazhenie na neskolkih strokah
+                                }
+                                else
+                                    sb.Insert(0, ch);
+                                break;
+                        }
+
+                    if (end)
+                    {
+                        if (comma_pressed && !on_brace)
+                            return "";
+                        if (CheckForComment(Text, i))//proverka na kommentarii
+                        {
+                            int new_line_ind = sb.ToString().IndexOf('\n');
+                            if (new_line_ind != -1) sb = sb.Remove(0, new_line_ind + 1);
+                            else sb = sb.Remove(0, sb.Length);
+                        }
+                        break;
+                    }
+                    i--;
+                }
+                if (pressed_key == ',')
+                    num_param++;
+            }
+            catch (Exception e)
+            {
+
+            }
+            if (pressed_key == ',' && (!on_brace || skobki.Count == 0))
+                return "";
+            //return RemovePossibleKeywords(sb);
+            return sb.ToString();
+        }
 		
 		public virtual string FindOnlyIdentifier(int off, string Text, int line, int col, ref string name)
 		{
