@@ -3133,26 +3133,17 @@ namespace CodeCompletion
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
             ArrayScope arrs = ts as ArrayScope;
+            if (ts is CompiledScope && (ts as CompiledScope).IsArray)
+            {
+                return this.elementType.IsEqual(ts.GetElementType());
+            }
             if (arrs == null || !arrs.is_dynamic_arr)
                 if (ts is TypeSynonim) return this.IsEqual((ts as TypeSynonim).actType);
                 else return false;
             if (arrs.elementType == null) return true;
             if (!this.elementType.IsEqual(arrs.elementType)) return false;
             return true;
-            if (this.indexes == null && arrs.indexes == null) return true;//?????
-            if (this.indexes != null && arrs.indexes != null)
-            {
-                if (this.indexes.Length != arrs.indexes.Length) return false;
-                for (int i = 0; i < this.indexes.Length; i++)
-                    if (this.indexes[i] == null && arrs.indexes[i] == null)
-                        continue;
-                    else if (this.indexes[i] == null && arrs.indexes[i] != null || this.indexes[i] != null && arrs.indexes[i] == null)
-                        return false;
-                    else
-                        if (!this.indexes[i].IsEqual(arrs.indexes[i])) return false;
-                return true;
-            }
-            return false;
+            
         }
 
         public override ProcScope GetConstructor()
