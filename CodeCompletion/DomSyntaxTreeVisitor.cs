@@ -1633,7 +1633,7 @@ namespace CodeCompletion
             //else
             if (returned_scope != null && returned_scope is TypeScope)
             {
-                if (!(_type_declaration.type_def is named_type_reference))
+                if (!(_type_declaration.type_def is named_type_reference) && !(returned_scope is CompiledScope && _type_declaration.type_def is enum_type_definition))
                 {
                     //(ret_tn as TypeScope).name = _type_declaration.type_name.name;
                     returned_scope.si.name = _type_declaration.type_name.name;

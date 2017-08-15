@@ -1735,9 +1735,9 @@ namespace PascalABCCompiler.Parsers
                             if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
                                 class_generic_table.Add(class_generic_args[i].Name, j);
                             if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
-                                generic_param_args.Add(class_generic_args[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[0]));
+                                generic_param_args[class_generic_args[i].Name] = GetSimpleDescription(scope.DeclaringType.GenericInstances[0]);
                             else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > j)
-                                generic_param_args.Add(class_generic_args[i].Name, scope.DeclaringType.TemplateArguments[j]);
+                                generic_param_args[class_generic_args[i].Name] = scope.DeclaringType.TemplateArguments[j];
                         }
                         break;
                     }
