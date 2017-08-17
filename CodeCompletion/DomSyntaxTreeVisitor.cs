@@ -454,7 +454,8 @@ namespace CodeCompletion
         }
 
         public System.Collections.Hashtable vars = new System.Collections.Hashtable();
-		
+        private TypeScope varScope;
+
         public override void visit(var_def_statement _var_def_statement)
         {
         	try
@@ -465,7 +466,10 @@ namespace CodeCompletion
         		if (_var_def_statement.vars_type == null && _var_def_statement.inital_value != null || _var_def_statement.inital_value is function_lambda_definition)
         		{
                     SymScope tmp_scope = returned_scope;
+                    if (_var_def_statement.inital_value is function_lambda_definition)
+                        varScope = tmp_scope as TypeScope;
         			_var_def_statement.inital_value.visit(this);
+                    varScope = null;
                     if (tmp_scope != null && _var_def_statement.inital_value is function_lambda_definition)
                         returned_scope = tmp_scope;
                 }
@@ -4479,6 +4483,13 @@ namespace CodeCompletion
                 foreach (ident id in _function_lambda_definition.ident_list.idents)
                 {
                     TypeScope param_type = new UnknownScope(new SymInfo("T", SymbolKind.Type, "T"));
+                    if (varScope != null)
+                    {
+                        if (varScope.IsDelegate && varScope.instances != null && varScope.instances.Count > 0)
+                        {
+                            param_type = varScope.instances[0];
+                        }
+                    }
                     /*if (selected_methods != null)
                     {
                         foreach (ProcScope meth in selected_methods)
