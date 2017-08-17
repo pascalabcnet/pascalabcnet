@@ -2656,12 +2656,12 @@ namespace PascalABCCompiler.Parsers
                         case '>':
                             if (tokens.Count == 0)
                             {
-                                if (ugl_skobki.Count > 0 || i == off - 1 || i + 1 < Text.Length && (Text[i + 1] == '.' || Text[i + 1] == '('))
+                                if (ugl_skobki.Count > 0 || i == off - 1 || i + 1 < Text.Length && Text[i - 1] != '-' && (Text[i + 1] == '.' || Text[i + 1] == '('))
                                 {
                                     ugl_skobki.Push('>');
                                     sb.Insert(0, ch);
                                 }
-                                else if (i >=1 && Text[i - 1] == '-')
+                                else if (i >= 1 && Text[i - 1] == '-')
                                 {
                                     if (!(kav.Count == 0 && tokens.Count == 0))
                                         sb.Insert(0, ch);
@@ -3158,7 +3158,7 @@ namespace PascalABCCompiler.Parsers
                                         skobki.Push(ch);
                                     if (tokens.Count > 0 || pressed_key == ',')
                                         sb.Insert(0, ch);
-                                    else if (i == off - 1 || ugl_skobki.Count > 0 || i + 1 < Text.Length && (Text[i + 1] == '.' || Text[i + 1] == '('))
+                                    else if (i == off - 1 || ugl_skobki.Count > 0 || i + 1 < Text.Length && Text[i-1] != '-' && (Text[i + 1] == '.' || Text[i + 1] == '('))
                                     {
                                         tokens.Push(ch);
                                         ugl_skobki.Push(ch);
