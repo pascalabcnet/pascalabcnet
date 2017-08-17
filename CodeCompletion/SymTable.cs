@@ -6692,7 +6692,10 @@ namespace CodeCompletion
 
         public override SymInfo[] GetNames()
         {
-            return return_type.GetNames();
+            if (return_type != null)
+                return return_type.GetNames();
+            else
+                return new SymInfo[0];
         }
 
         //		public override SymInfo[] GetNames(ExpressionVisitor ev)
@@ -6702,7 +6705,10 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
-            return return_type.FindName(name);
+            if (return_type != null)
+                return return_type.FindName(name);
+            else
+                return null;
         }
 
         public override SymScope FindNameOnlyInType(string name)
