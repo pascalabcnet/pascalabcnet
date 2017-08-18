@@ -3783,6 +3783,12 @@ namespace CodeCompletion
             {
                 ts.elementType = internalInstance(this.elementType, gen_args);
             }
+            if (implemented_interfaces != null)
+            {
+                ts.implemented_interfaces = new List<TypeScope>();
+                for (int j = 0; j < this.implemented_interfaces.Count; j++)
+                    ts.implemented_interfaces.Add(internalInstance(this.implemented_interfaces[j], gen_args));
+            }
             if (this.indexers != null && this.indexers.Count > 0)
             {
                 ts.indexers = new List<TypeScope>();
@@ -4888,8 +4894,8 @@ namespace CodeCompletion
                                 sc.generic_params.Add(gen_args[i].si.name);
                             sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
-                        
-                    }   
+
+                    }
                 }
             else
                 for (int i = 0; i < gen_args.Count; i++)
@@ -4898,6 +4904,10 @@ namespace CodeCompletion
                         sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
                 }
+            sc.implemented_interfaces = new List<TypeScope>();
+            if (this.implemented_interfaces != null)
+                for (int i = 0; i < this.implemented_interfaces.Count; i++)
+                    sc.implemented_interfaces.Add(this.implemented_interfaces[i].GetInstance(gen_args));
             sc.si.description = sc.GetDescription();
             return sc;
         }

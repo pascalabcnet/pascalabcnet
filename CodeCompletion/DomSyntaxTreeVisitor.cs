@@ -106,6 +106,33 @@ namespace CodeCompletion
         	return false;
         }
 
+        private bool has_lambdas(expression node)
+        {
+            if (node is function_lambda_definition)
+                return true;
+            else if (node is dot_node)
+            {
+                dot_node dn = node as dot_node;
+                if (has_lambdas(dn.left))
+                    return true;
+                if (has_lambdas(dn.right))
+                    return true;
+            }
+            else if (node is method_call)
+            {
+                method_call mc = node as method_call;
+                if (has_lambdas(mc.dereferencing_value))
+                    return true;
+                if (mc.parameters != null)
+                foreach (expression e in mc.parameters.expressions)
+                {
+                    if (has_lambdas(e))
+                        return true;
+                }
+            }
+            return false;
+        }
+
         public override void visit(template_type_name node)
         {
             throw new Exception("The method or operation is not implemented.");
@@ -141,14 +168,22 @@ namespace CodeCompletion
 
         public override void visit(assign _assign)
         {
-            //throw new Exception("The method or operation is not implemented.");
-            //if (_assign.to is ident && (_assign.to as ident).name == "result")
-            //    _assign.from.visit(this);
             if (_assign.from is function_lambda_definition)
+            {
+                _assign.to.visit(this);
+                TypeScope tmp_awaitedProcType = awaitedProcType;
+                if (returned_scope != null && returned_scope is TypeScope)
+                {
+                    if (returned_scope is ProcScope)
+                        returned_scope = new ProcType(returned_scope as ProcScope);
+                    awaitedProcType = returned_scope as TypeScope;
+                }
+                _assign.from.visit(this);
+                awaitedProcType = tmp_awaitedProcType;
+            }
+            else if (has_lambdas(_assign.from))
                 _assign.from.visit(this);
         }
-
-
 
         public override void visit(bin_expr _bin_expr)
         {
@@ -354,9 +389,9 @@ namespace CodeCompletion
                         if (returned_scope == null)
                         {
                             returned_scope = returned_scopes[0];
-                            if (returned_scope is ProcScope && (returned_scope as ProcScope).return_type == null )
+                            if (returned_scope is ProcScope && (returned_scope as ProcScope).return_type == null)
                                 returned_scope = new ProcType(returned_scope as ProcScope);
-                        }   
+                        }
                         else if (returned_scopes.Count > 0 && returned_scopes[0] is ProcScope && (returned_scopes[0] as ProcScope).return_type == null)
                             returned_scope = new ProcType(returned_scopes[0] as ProcScope);
                     }
@@ -454,7 +489,7 @@ namespace CodeCompletion
         }
 
         public System.Collections.Hashtable vars = new System.Collections.Hashtable();
-        private TypeScope varScope;
+        private TypeScope awaitedProcType;
 
         public override void visit(var_def_statement _var_def_statement)
         {
@@ -466,10 +501,16 @@ namespace CodeCompletion
         		if (_var_def_statement.vars_type == null && _var_def_statement.inital_value != null || _var_def_statement.inital_value is function_lambda_definition)
         		{
                     SymScope tmp_scope = returned_scope;
+                    TypeScope tmp_awaitedProcType = awaitedProcType;
                     if (_var_def_statement.inital_value is function_lambda_definition)
-                        varScope = tmp_scope as TypeScope;
+                    {
+                        if (tmp_scope is ProcScope)
+                            tmp_scope = new ProcType(tmp_scope as ProcScope);
+                        awaitedProcType = tmp_scope as TypeScope;
+                    }
+                        
         			_var_def_statement.inital_value.visit(this);
-                    varScope = null;
+                    awaitedProcType = tmp_awaitedProcType;
                     if (tmp_scope != null && _var_def_statement.inital_value is function_lambda_definition)
                         returned_scope = tmp_scope;
                 }
@@ -2631,6 +2672,7 @@ namespace CodeCompletion
         }
 
         private SymScope[] selected_methods = null;
+        private bool disable_lambda_compilation = false;
 
         private ProcScope select_method(SymScope[] meths, TypeScope tleft, TypeScope tright, TypeScope obj, params expression[] args)
         {
@@ -2653,6 +2695,8 @@ namespace CodeCompletion
             }
             else if (args != null)
             {
+                bool tmp_disable_lambda_compilation = disable_lambda_compilation;
+                disable_lambda_compilation = true;
                 foreach (expression e in args)
                 {
                     e.visit(this);
@@ -2660,6 +2704,8 @@ namespace CodeCompletion
                     arg_types.Add(returned_scope);
                     arg_types2.Add(returned_scope as TypeScope);
                 }
+                disable_lambda_compilation = false;
+                disable_lambda_compilation = tmp_disable_lambda_compilation;
             }
             selected_methods = saved_selected_methods;
         	List<ProcScope> good_procs = new List<ProcScope>();
@@ -2750,8 +2796,24 @@ namespace CodeCompletion
                 }
             }
             if (_method_call.parameters != null)
+            {
                 parameters.AddRange(_method_call.parameters.expressions);
+            }
+                
             ProcScope ps = select_method(names, null, null, obj, parameters.ToArray());
+            if (_method_call.parameters != null && ps != null)
+                for (int i = 0; i < _method_call.parameters.expressions.Count; i++)
+                {
+                    expression e = _method_call.parameters.expressions[i];
+                    if (e is function_lambda_definition)
+                    {
+                        TypeScope tmp_awaitedProcType = awaitedProcType;
+                        if (ps.parameters != null && ps.parameters.Count > i)
+                            awaitedProcType = ps.parameters[i + (ps.IsExtension ? 1 : 0)].sc as TypeScope;
+                        e.visit(this);
+                        awaitedProcType = tmp_awaitedProcType;
+                    }
+                }
             returned_scopes.Clear();
 
             if (ps != null)
@@ -3260,11 +3322,17 @@ namespace CodeCompletion
             method_call mc = _procedure_call.func_name as method_call;
             if (mc != null && mc.parameters != null)
             {
+                bool has_lambdas = false;
                 foreach (expression arg in mc.parameters.expressions)
                 {
                     if (arg is function_lambda_definition)
-                        arg.visit(this);
+                    {
+                        has_lambdas = true;
+                        break;
+                    }
                 }
+                if (has_lambdas)
+                    mc.visit(this);
             }
         }
 
@@ -4477,17 +4545,23 @@ namespace CodeCompletion
         {
             ProcScope ps = new ProcScope(_function_lambda_definition.lambda_name, this.cur_scope);
             ps.loc = get_location(_function_lambda_definition);
-            
-            cur_scope.AddName(_function_lambda_definition.lambda_name, ps);
+            if (!disable_lambda_compilation)
+                cur_scope.AddName(_function_lambda_definition.lambda_name, ps);
             if (_function_lambda_definition.ident_list != null)
-                foreach (ident id in _function_lambda_definition.ident_list.idents)
+                for (int i=0; i<_function_lambda_definition.ident_list.idents.Count; i++)
                 {
+                    ident id = _function_lambda_definition.ident_list.idents[i];
                     TypeScope param_type = new UnknownScope(new SymInfo("T", SymbolKind.Type, "T"));
-                    if (varScope != null)
+                    if (awaitedProcType != null)
                     {
-                        if (varScope.IsDelegate && varScope.instances != null && varScope.instances.Count > 0)
+                        if (awaitedProcType is ProcType)
                         {
-                            param_type = varScope.instances[0];
+                            if ((awaitedProcType as ProcType).target.parameters.Count > 0)
+                                param_type = (awaitedProcType as ProcType).target.parameters[i].sc as TypeScope;
+                        }
+                        else if (awaitedProcType.IsDelegate && awaitedProcType.instances != null && awaitedProcType.instances.Count > 0)
+                        {
+                            param_type = awaitedProcType.instances[i];
                         }
                     }
                     /*if (selected_methods != null)
@@ -4508,11 +4582,13 @@ namespace CodeCompletion
                 }
             SymScope tmp = cur_scope;
             cur_scope = ps;
-            _function_lambda_definition.proc_body.visit(this);
+            if (!disable_lambda_compilation)
+                _function_lambda_definition.proc_body.visit(this);
             cur_scope = tmp;
             ps.return_type = returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
         }
+
         public override void visit(function_lambda_call _function_lambda_call)
         {
             //
