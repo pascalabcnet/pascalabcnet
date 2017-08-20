@@ -130,6 +130,15 @@ namespace CodeCompletion
                         return true;
                 }
             }
+            else if (node is tuple_node)
+            {
+                tuple_node tn = node as tuple_node;
+                foreach (expression e in tn.el.expressions)
+                {
+                    if (has_lambdas(e))
+                        return true;
+                }
+            }
             return false;
         }
 
@@ -2444,8 +2453,8 @@ namespace CodeCompletion
                         TypeScope ts = returned_scope as TypeScope;
                         if (returned_scope is ProcScope)
                             ts = (returned_scope as ProcScope).return_type;
-                            
-						returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
+                        if (ts != null)  
+						    returned_scope = ts.FindNameOnlyInType((_dot_node.right as ident).name);
                         if (returned_scope == null)
                         {
                             List<ProcScope> meths = entry_scope.GetExtensionMethods((_dot_node.right as ident).name, ts);
@@ -3319,20 +3328,9 @@ namespace CodeCompletion
         public override void visit(procedure_call _procedure_call)
         {
             //throw new Exception("The method or operation is not implemented.");
-            method_call mc = _procedure_call.func_name as method_call;
-            if (mc != null && mc.parameters != null)
+            if (has_lambdas(_procedure_call.func_name))
             {
-                bool has_lambdas = false;
-                foreach (expression arg in mc.parameters.expressions)
-                {
-                    if (arg is function_lambda_definition)
-                    {
-                        has_lambdas = true;
-                        break;
-                    }
-                }
-                if (has_lambdas)
-                    mc.visit(this);
+                _procedure_call.func_name.visit(this);
             }
         }
 
@@ -4554,6 +4552,8 @@ namespace CodeCompletion
                     TypeScope param_type = new UnknownScope(new SymInfo("T", SymbolKind.Type, "T"));
                     if (awaitedProcType != null)
                     {
+                        if (awaitedProcType is TypeSynonim)
+                            awaitedProcType = (awaitedProcType as TypeSynonim).actType;
                         if (awaitedProcType is ProcType)
                         {
                             if ((awaitedProcType as ProcType).target.parameters.Count > 0)
