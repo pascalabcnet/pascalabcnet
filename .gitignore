@@ -18,6 +18,9 @@ TestSuite/formatter_tests/output
 
 TestSuite/usesunits/*.pcu
 
+TestSuite/pabcrtl_tests/*.pdb
+TestSuite/pabcrtl_tests/*.exe
+
 ReleaseGenerators/*.pdb
 ReleaseGenerators/PABCRtl/*.dll
 ReleaseGenerators/PABCRtl/*.pcu
