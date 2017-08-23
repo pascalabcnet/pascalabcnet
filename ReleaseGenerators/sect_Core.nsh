@@ -80,6 +80,7 @@
     File ..\bin\Lib\FilesOperations.pcu
     File ..\bin\Lib\FormsABC.pcu
     File ..\bin\Lib\GraphABC.pcu
+    File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
     File ..\bin\Lib\PABCSystem.pcu
@@ -128,6 +129,7 @@
     ${AddFile} "FormsABC.pcu"
     ${AddFile} "GOLDParserEngine.pcu"
     ${AddFile} "GraphABC.pcu"
+    ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
     ${AddFile} "IniFile.pcu"
     ${AddFile} "PABCSystem.pcu"
@@ -177,6 +179,7 @@
     File ..\bin\Lib\FilesOperations.pas
     File ..\bin\Lib\FormsABC.pas
     File ..\bin\Lib\GraphABC.pas
+    File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
     File ..\bin\Lib\PABCSystem.pas
@@ -224,6 +227,7 @@
     ${AddFile} "FilesOperations.pas"
     ${AddFile} "FormsABC.pas"
     ${AddFile} "GraphABC.pas"
+    ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"
     ${AddFile} "PABCSystem.pas"

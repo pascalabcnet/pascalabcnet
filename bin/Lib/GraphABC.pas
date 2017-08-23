@@ -3951,7 +3951,7 @@ begin
   _MainForm.ClientSize := new Size(defaultWindowWidth, defaultWindowHeight);
   _MainForm.BackColor := Color.White;
   _MainForm.Controls.Add(f);
-  _MainForm.TopMost := True;
+  //_MainForm.TopMost := True;
   _MainForm.StartPosition := FormStartPosition.CenterScreen;
   _MainForm.FormClosing += f.OnClosing;
   // Поле ввода

@@ -5326,7 +5326,10 @@ namespace PascalABCCompiler.NETGenerator
         {
             if (save_debug_info)
             {
-                MarkSequencePoint(value.LeftLogicalBracketLocation);
+                if (gen_left_brackets)
+                    MarkSequencePoint(value.LeftLogicalBracketLocation);
+                else
+                    il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
                 //il.MarkSequencePoint(doc,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF);
                 il.Emit(OpCodes.Nop);
             }
@@ -5368,14 +5371,16 @@ namespace PascalABCCompiler.NETGenerator
 
         public override void visit(SemanticTree.IStatementsListNode value)
         {
-            //TODO: переделать. придумать как.
+            IStatementNode[] statements = value.statements;
             if (save_debug_info)
             {
-                MarkSequencePoint(value.LeftLogicalBracketLocation);
-                //il.MarkSequencePoint(doc,0xFFFFFF,0xFFFFFF,0xFFFFFF,0xFFFFFF);
+                if (gen_left_brackets || value.LeftLogicalBracketLocation == null)
+                    MarkSequencePoint(value.LeftLogicalBracketLocation);
+                else
+                    il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
                 il.Emit(OpCodes.Nop);
             }
-            IStatementNode[] statements = value.statements;
+            
             ILocalBlockVariableNode[] localVariables = value.LocalVariables;
             for (int i = 0; i < localVariables.Length; i++)
             {
@@ -5482,11 +5487,9 @@ namespace PascalABCCompiler.NETGenerator
         }
 
         private bool gen_right_brackets = true;
+        private bool gen_left_brackets = true;
         public override void visit(SemanticTree.IForNode value)
         {
-            //if (save_debug_info)
-            //    MarkSequencePoint(value.Location);
-
             Label l1 = il.DefineLabel();
             Label l2 = il.DefineLabel();
             Label lcont = il.DefineLabel();
@@ -5507,18 +5510,14 @@ namespace PascalABCCompiler.NETGenerator
             labels.Push(lbreak);
             clabels.Push(lcont);
             bool tmp_rb = gen_right_brackets;
+            bool tmp_lb = gen_left_brackets;
             gen_right_brackets = false;
+            gen_left_brackets = false;
             ConvertStatement(value.body);
             gen_right_brackets = tmp_rb;
-
+            gen_left_brackets = tmp_lb;
             il.MarkLabel(lcont);
-
-            //tmp = save_debug_info;
-            //save_debug_info = false;
-            //if (save_debug_info) MarkForCicles(value.Location, value.increment_statement.Location);
             tmp = save_debug_info;
-            //if (save_debug_info) MarkSequencePoint(il, value.initialization_statement.Location.begin_line_num, 0, value.initialization_statement.Location.begin_line_num,20);
-            //save_debug_info = false;
 
             if (value.init_while_expr == null)
             {
@@ -5527,7 +5526,6 @@ namespace PascalABCCompiler.NETGenerator
                 ConvertStatement(value.increment_statement);
                 save_debug_info = tmp;
             }
-            //save_debug_info = tmp;
             il.MarkLabel(l1);
             MarkSequencePoint(il, value.increment_statement.Location);
             value.while_expr.visit(this);
@@ -5545,10 +5543,7 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Br, l2);
                 il.MarkLabel(l3);
             }
-            //if (value.IsBoolCycle)
-            //ConvertStatement(value.increment_statement);
             il.MarkLabel(lbreak);
-            //il.Emit(OpCodes.Pop);
             labels.Pop();
             clabels.Pop();
         }
@@ -5586,7 +5581,10 @@ namespace PascalABCCompiler.NETGenerator
             il.Emit(OpCodes.Brfalse, FalseLabel);
             labels.Push(FalseLabel);//break
             clabels.Push(TrueLabel);//continue
+            bool tmp_lb = gen_left_brackets;
+            gen_left_brackets = false;
             ConvertStatement(value.body);
+            gen_left_brackets = tmp_lb;
             il.Emit(OpCodes.Br, TrueLabel);
             il.MarkLabel(FalseLabel);
             clabels.Pop();
@@ -10355,7 +10353,8 @@ namespace PascalABCCompiler.NETGenerator
             EnterSafeBlock();
             ConvertStatement(value.Body);
             LeaveSafeBlock();
-            MarkSequencePoint(value.Location);
+            //MarkSequencePoint(value.Location);
+            il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
             il.MarkLabel(l2);
             if (lb.LocalType.IsValueType)
                 il.Emit(OpCodes.Ldloca, lb);

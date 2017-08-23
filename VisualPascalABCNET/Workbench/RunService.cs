@@ -150,13 +150,13 @@ namespace VisualPascalABC
                             BuildService.CompilerOptions.ForDebugging = false;
                             if (startWithGoto)
                             {
-                                DebuggerManager.show_debug_tabs = true;
+                                DebuggerManager.ShowDebugTabs = true;
                                 DebuggerManager.CurrentBreakpoint = DebuggerManager.AddBreakPoint(DocumentService.CurrentCodeFileDocument.FileName, DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Line + 1, false);
                                 DebuggerManager.AddGoToBreakPoint(DebuggerManager.CurrentBreakpoint);
                             }
                             else if (needFirstBreakpoint)
                             {
-                                DebuggerManager.show_debug_tabs = true;
+                                DebuggerManager.ShowDebugTabs = true;
                                 if (Workbench.VisualEnvironmentCompiler.Compiler.VarBeginOffset != 0)
                                 {
                                     DebuggerManager.SetFirstBreakpoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.VarBeginOffset);
@@ -166,7 +166,7 @@ namespace VisualPascalABC
                                     DebuggerManager.SetFirstBreakpoint(tabPage.FileName, Workbench.VisualEnvironmentCompiler.Compiler.BeginOffset);
                             }
                             else
-                                DebuggerManager.show_debug_tabs = false;
+                                DebuggerManager.ShowDebugTabs = false;
                         }
                         RunActiveTabPage = false;
                         try

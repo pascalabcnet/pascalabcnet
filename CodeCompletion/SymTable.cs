@@ -1735,6 +1735,7 @@ namespace CodeCompletion
         public bool is_extension = false;
         public List<string> generic_params;
         public List<string> generic_args;
+        public ProcScope original_function;
 
         public ProcScope()
         {
@@ -1883,6 +1884,7 @@ namespace CodeCompletion
                 return this;
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
             instance.is_extension = this.is_extension;
+            instance.original_function = this;
             instance.loc = this.loc;
             instance.body_loc = this.body_loc;
             instance.parameters = new List<ElementScope>(this.parameters.Count);
@@ -3131,26 +3133,17 @@ namespace CodeCompletion
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
             ArrayScope arrs = ts as ArrayScope;
+            if (ts is CompiledScope && (ts as CompiledScope).IsArray)
+            {
+                return this.elementType.IsEqual(ts.GetElementType());
+            }
             if (arrs == null || !arrs.is_dynamic_arr)
                 if (ts is TypeSynonim) return this.IsEqual((ts as TypeSynonim).actType);
                 else return false;
             if (arrs.elementType == null) return true;
             if (!this.elementType.IsEqual(arrs.elementType)) return false;
             return true;
-            if (this.indexes == null && arrs.indexes == null) return true;//?????
-            if (this.indexes != null && arrs.indexes != null)
-            {
-                if (this.indexes.Length != arrs.indexes.Length) return false;
-                for (int i = 0; i < this.indexes.Length; i++)
-                    if (this.indexes[i] == null && arrs.indexes[i] == null)
-                        continue;
-                    else if (this.indexes[i] == null && arrs.indexes[i] != null || this.indexes[i] != null && arrs.indexes[i] == null)
-                        return false;
-                    else
-                        if (!this.indexes[i].IsEqual(arrs.indexes[i])) return false;
-                return true;
-            }
-            return false;
+            
         }
 
         public override ProcScope GetConstructor()
@@ -3789,6 +3782,12 @@ namespace CodeCompletion
             if (this.elementType != null)
             {
                 ts.elementType = internalInstance(this.elementType, gen_args);
+            }
+            if (implemented_interfaces != null)
+            {
+                ts.implemented_interfaces = new List<TypeScope>();
+                for (int j = 0; j < this.implemented_interfaces.Count; j++)
+                    ts.implemented_interfaces.Add(internalInstance(this.implemented_interfaces[j], gen_args));
             }
             if (this.indexers != null && this.indexers.Count > 0)
             {
@@ -4895,8 +4894,8 @@ namespace CodeCompletion
                                 sc.generic_params.Add(gen_args[i].si.name);
                             sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
-                        
-                    }   
+
+                    }
                 }
             else
                 for (int i = 0; i < gen_args.Count; i++)
@@ -4905,6 +4904,10 @@ namespace CodeCompletion
                         sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
                 }
+            sc.implemented_interfaces = new List<TypeScope>();
+            if (this.implemented_interfaces != null)
+                for (int i = 0; i < this.implemented_interfaces.Count; i++)
+                    sc.implemented_interfaces.Add(this.implemented_interfaces[i].GetInstance(gen_args));
             sc.si.description = sc.GetDescription();
             return sc;
         }
@@ -6699,7 +6702,10 @@ namespace CodeCompletion
 
         public override SymInfo[] GetNames()
         {
-            return return_type.GetNames();
+            if (return_type != null)
+                return return_type.GetNames();
+            else
+                return new SymInfo[0];
         }
 
         //		public override SymInfo[] GetNames(ExpressionVisitor ev)
@@ -6709,7 +6715,10 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
-            return return_type.FindName(name);
+            if (return_type != null)
+                return return_type.FindName(name);
+            else
+                return null;
         }
 
         public override SymScope FindNameOnlyInType(string name)

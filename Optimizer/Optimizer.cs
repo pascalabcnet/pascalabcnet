@@ -1047,6 +1047,21 @@ namespace PascalABCCompiler
         private void VisitCommonNamespaceFunctionCall(common_namespace_function_call en)
         {
             CheckInfiniteRecursion(en);
+            if ((en.function_node.name == "Reset" || en.function_node.name == "Rewrite" || en.function_node.name == "Assign") && en.function_node.comprehensive_namespace.namespace_name == "PABCSystem")
+            {
+                expression_node p = en.parameters[0];
+                switch (p.semantic_node_type)
+                {
+                    case semantic_node_type.local_variable_reference: IncreaseNumAssVar((local_variable_reference)p); break;
+                    case semantic_node_type.local_block_variable_reference: IncreaseNumAssVar((local_block_variable_reference)p); break;
+                    case semantic_node_type.namespace_variable_reference: IncreaseNumAssVar((namespace_variable_reference)p); break;
+                    case semantic_node_type.class_field_reference: VisitExpression((p as class_field_reference).obj); IncreaseNumAssField((class_field_reference)p); break;
+                    case semantic_node_type.static_class_field_reference: IncreaseNumAssField((static_class_field_reference)p); break;
+                    case semantic_node_type.common_parameter_reference: IncreaseNumAssParam((common_parameter_reference)p); break;
+                    case semantic_node_type.deref_node: CheckAssign(((dereference_node)p).deref_expr); break;
+                    case semantic_node_type.simple_array_indexing: VisitSimpleArrayIndexing((simple_array_indexing)p); break;
+                }
+            }
             for (int i = 0; i < en.parameters.Count; i++)
             {
                 CheckVarParameter(en.parameters[i], en.function_node, i);

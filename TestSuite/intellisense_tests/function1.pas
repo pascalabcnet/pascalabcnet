@@ -29,4 +29,6 @@ begin
   Test{@function Test(a: string): integer;@}('333');
   Test{@function Test(a: boolean): integer;@}(true);
   Test{@function Test(a: List<integer>): integer;@}(Lst(2,3,4));
+  var delim: array of char;
+  'aa'.Split{@function string.Split(separator: array of char; options: StringSplitOptions): array of string;@}(delim, System.StringSplitOptions.RemoveEmptyEntries);
 end.
