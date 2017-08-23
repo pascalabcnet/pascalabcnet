@@ -1,3 +1,4 @@
+uses Graph3D;
 procedure p(f:complex->real);
 begin
   
@@ -23,4 +24,5 @@ begin
   var f5: IntFunc := x{@parameter x: integer;@}->x*4;
   var f6: RealFunc := x{@parameter x: real;@}->x*4;
   Range(1,20).Select(x{@parameter x: integer;@}->x*x).Println;
+  MainWindow.Closed += procedure(sender,e{@parameter e: EventArgs;@}) -> begin Halt; end;
 end.

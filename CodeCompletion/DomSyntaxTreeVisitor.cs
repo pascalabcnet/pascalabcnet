@@ -2808,7 +2808,7 @@ namespace CodeCompletion
             {
                 parameters.AddRange(_method_call.parameters.expressions);
             }
-                
+            List<TypeScope> lambda_types = new List<TypeScope>();    
             ProcScope ps = select_method(names, null, null, obj, parameters.ToArray());
             if (_method_call.parameters != null && ps != null)
                 for (int i = 0; i < _method_call.parameters.expressions.Count; i++)
@@ -4563,6 +4563,14 @@ namespace CodeCompletion
                         {
                             param_type = awaitedProcType.instances[i];
                         }
+                        else if (awaitedProcType.IsDelegate)
+                        {
+                            var invokeMeth = awaitedProcType.FindNameOnlyInType("Invoke") as ProcScope;
+                            if (invokeMeth != null && invokeMeth.parameters != null && invokeMeth.parameters.Count > i)
+                            {
+                                param_type = invokeMeth.parameters[i].sc as TypeScope;
+                            }
+                        }
                     }
                     /*if (selected_methods != null)
                     {
@@ -4583,7 +4591,15 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             cur_scope = ps;
             if (!disable_lambda_compilation)
-                _function_lambda_definition.proc_body.visit(this);
+            {
+                statement_list sl = _function_lambda_definition.proc_body as statement_list;
+                if (sl != null && sl.list.Count == 1 && sl.list[0] is assign && (sl.list[0] as assign).to is ident
+                    && ((sl.list[0] as assign).to as ident).name.ToLower() == "result")
+                    (sl.list[0] as assign).from.visit(this);
+                else
+                    _function_lambda_definition.proc_body.visit(this);
+            }
+                
             cur_scope = tmp;
             ps.return_type = returned_scope as TypeScope;
             returned_scope = new ProcType(ps);
