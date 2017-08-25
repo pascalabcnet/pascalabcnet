@@ -425,8 +425,10 @@ namespace CodeCompletion
             }
             SymInfo[] elems = null;
             if (si == null) return null;
-            if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
-            else elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            if (pattern == null || pattern == "")
+                elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            else
+                elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
             List<SymInfo> result_names = new List<SymInfo>();
             if (elems == null) return null;
             for (int i = 0; i < elems.Length; i++)

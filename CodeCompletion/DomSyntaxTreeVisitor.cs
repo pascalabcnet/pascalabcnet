@@ -260,7 +260,7 @@ namespace CodeCompletion
                     List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
                     foreach (ProcScope meth in meths)
                         lst.Add(meth);
-                    ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, _bin_expr.left, _bin_expr.right);
+                    ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, false, _bin_expr.left, _bin_expr.right);
                     if (ps != null)
                         returned_scope = ps.return_type;
                     else
@@ -2683,21 +2683,21 @@ namespace CodeCompletion
         private SymScope[] selected_methods = null;
         private bool disable_lambda_compilation = false;
 
-        private ProcScope select_method(SymScope[] meths, TypeScope tleft, TypeScope tright, TypeScope obj, params expression[] args)
+        private ProcScope select_method(SymScope[] meths, TypeScope tleft, TypeScope tright, TypeScope obj, bool obj_instanced, params expression[] args)
         {
-        	List<SymScope> arg_types = new List<SymScope>();
+            List<SymScope> arg_types = new List<SymScope>();
             List<TypeScope> arg_types2 = new List<TypeScope>();
             SymScope[] saved_selected_methods = selected_methods;
             selected_methods = meths;
             if (tleft != null || tright != null)
             {
                 if (tleft != null)
-                { 
+                {
                     arg_types.Add(tleft);
                     arg_types2.Add(tleft);
                 }
                 if (tright != null)
-                { 
+                {
                     arg_types.Add(tright);
                     arg_types2.Add(tright);
                 }
@@ -2717,24 +2717,24 @@ namespace CodeCompletion
                 disable_lambda_compilation = tmp_disable_lambda_compilation;
             }
             selected_methods = saved_selected_methods;
-        	List<ProcScope> good_procs = new List<ProcScope>();
-        	for (int i=0; i<meths.Length; i++)
-        	{
-        		if (meths[i] is ProcScope)
-        		{
-        			if (is_good_overload(meths[i] as ProcScope, arg_types))
-        				good_procs.Add(meths[i] as ProcScope);
-        		}
-        		else if (meths[i] is ProcType)
-        		{
-        			if (is_good_overload((meths[i] as ProcType).target, arg_types))
-        				good_procs.Add((meths[i] as ProcType).target);
-        		}
-        	}
-        	if (good_procs.Count > 1)
-        	for (int i=0; i<good_procs.Count; i++)
-        	if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
-        		return good_procs[i].GetInstance(arg_types2);
+            List<ProcScope> good_procs = new List<ProcScope>();
+            for (int i = 0; i < meths.Length; i++)
+            {
+                if (meths[i] is ProcScope)
+                {
+                    if (is_good_overload(meths[i] as ProcScope, arg_types))
+                        good_procs.Add(meths[i] as ProcScope);
+                }
+                else if (meths[i] is ProcType)
+                {
+                    if (is_good_overload((meths[i] as ProcType).target, arg_types))
+                        good_procs.Add((meths[i] as ProcType).target);
+                }
+            }
+            if (good_procs.Count > 1)
+                for (int i = 0; i < good_procs.Count; i++)
+                    if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
+                        return good_procs[i].GetInstance(arg_types2);
             if (good_procs.Count == 0)
             {
                 for (int i = 0; i < meths.Length; i++)
@@ -2748,18 +2748,18 @@ namespace CodeCompletion
                     }
                 }
             }
-        	if (good_procs.Count > 0)
+            if (good_procs.Count > 0)
             {
                 if (obj != null)
                 {
-                    if (obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
+                    if (!obj_instanced && obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
                         obj = obj.GetElementType();
                     arg_types2.Insert(0, obj);
                 }
-                    
+
                 return good_procs[0].GetInstance(arg_types2);
-            } 
-        	return null;
+            }
+            return null;
         }
 
         public override void visit(method_call _method_call)
@@ -2771,6 +2771,7 @@ namespace CodeCompletion
             SymScope[] names = returned_scopes.ToArray();
             List<expression> parameters = new List<expression>();
             TypeScope obj = null;
+            bool obj_instanced = false;
             if (names.Length > 0 && names[0] is TypeScope)
             {
                 returned_scope = names[0];
@@ -2796,7 +2797,11 @@ namespace CodeCompletion
                                     {
                                         List<TypeScope> generic_args = interf.GetInstances();
                                         if (generic_args != null && generic_args.Count > 0)
+                                        {
                                             obj = generic_args[0];
+                                            obj_instanced = true;
+                                        }
+                                            
                                     }
                                 }
                             }
@@ -2809,7 +2814,7 @@ namespace CodeCompletion
                 parameters.AddRange(_method_call.parameters.expressions);
             }
             List<TypeScope> lambda_types = new List<TypeScope>();    
-            ProcScope ps = select_method(names, null, null, obj, parameters.ToArray());
+            ProcScope ps = select_method(names, null, null, obj, obj_instanced, parameters.ToArray());
             if (_method_call.parameters != null && ps != null)
                 for (int i = 0; i < _method_call.parameters.expressions.Count; i++)
                 {

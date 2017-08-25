@@ -25,4 +25,7 @@ begin
   var f6: RealFunc := x{@parameter x: real;@}->x*4;
   Range(1,20).Select(x{@parameter x: integer;@}->x*x).Println;
   MainWindow.Closed += procedure(sender,e{@parameter e: EventArgs;@}) -> begin Halt; end;
+  var s := ' hello  aha paap   zz ';
+  s.ToWords.Where(w -> w{@parameter w: string;@}.Inverse = w).
+        OrderBy(s->s{@parameter s: string;@}.Length).Println(',');
 end.
