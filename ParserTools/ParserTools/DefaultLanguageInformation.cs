@@ -92,6 +92,11 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("program", "program"); keys.Add("program"); keyword_kinds.Add("program", KeywordKind.Program);
             keywords.Add("new", "new"); keys.Add("new"); keyword_kinds.Add("new", KeywordKind.New);
             keywords.Add("nil", "nil"); keys.Add("nil");
+            keywords.Add("loop", "loop"); keys.Add("loop");
+            keywords.Add("yield", "yield"); keys.Add("yield");
+            keywords.Add("sequence", "sequence"); keys.Add("sequence");
+            keywords.Add("extensionmethod", "extensionmethod"); keys.Add("extensionmethod");
+            keywords.Add("params", "params"); keys.Add("params");
             keywords_array = keys.ToArray();
             type_keywords_array = type_keys.ToArray();
 		}

@@ -621,7 +621,11 @@ namespace VisualPascalABC
                     string FileName = Tools.FileNameToLower((string)obj);
                     if (!OpenDocuments.ContainsKey(FileName))
                         return false;
-                    SaveFileAs(OpenDocuments[FileName], (string)obj);
+                    var doc = OpenDocuments[FileName];
+                    if (doc.DocumentSavedToDisk)
+                        SaveFileAs(doc, (string)obj);
+                    else
+                        ExecuteSaveAs(doc);
                     return true;
             }
             return false;

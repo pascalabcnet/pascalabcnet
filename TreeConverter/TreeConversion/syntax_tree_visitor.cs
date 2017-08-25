@@ -14941,7 +14941,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (is_event)
                     AddError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
-            	expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
+                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
                 if (cn is constant_node)
                     (cn as constant_node).SetType(DeduceType(cn.type, get_location(_var_def_statement.inital_value)));
                 inital_value = cn;

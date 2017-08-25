@@ -1796,6 +1796,14 @@ namespace CodeCompletion
             }
         }
 
+        public bool OfTypeInstance
+        {
+            get
+            {
+                return original_function != null || declaringType != null && declaringType.instances != null && declaringType.instances.Count > 0;
+            }
+        }
+
         public virtual bool IsStatic
         {
             get
