@@ -1623,7 +1623,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 check_possible_generic_names(names, loc);
             }
-            di = context.check_name_node_type(names.names[names.names.Count - 1].name, si, loc, general_node_type.type_node);
+            var lastname = names.names[names.names.Count - 1];
+            di = context.check_name_node_type(lastname.name, si, get_location(lastname), general_node_type.type_node);
             return (type_node)di;
         }
 
