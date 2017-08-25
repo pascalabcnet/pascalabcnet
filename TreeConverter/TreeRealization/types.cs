@@ -4113,6 +4113,12 @@ namespace PascalABCCompiler.TreeRealization
                         if (cnfn.num_of_default_parameters == cnfn.parameters.Count)
                             return bfc;
                     }
+                    else if (bfc.function is common_method_node)
+                    {
+                        common_method_node cmn = bfc.function as common_method_node;
+                        if (cmn.num_of_default_parameters == cmn.parameters.Count)
+                            return bfc;
+                    }
                     else if (bfc.function is compiled_function_node)
                     {
                         compiled_function_node cfn = bfc.function as compiled_function_node;
