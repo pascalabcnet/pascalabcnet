@@ -1776,25 +1776,25 @@ namespace CodeCompletion
         public override void visit(simple_const_definition _simple_const_definition)
         {
             //throw new Exception("The method or operation is not implemented.");
-           try
-           {
-            	_simple_const_definition.const_value.visit(this);
-           }
-           catch (Exception e)
-           {
-           	
-           }
-           if (returned_scope != null /*&& cnst_val.prim_val != null*/)
-           {
-           		ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant,_simple_const_definition.const_name.name),returned_scope, cnst_val.prim_val,cur_scope);
-           		cur_scope.AddName(_simple_const_definition.const_name.name, es);
-           		es.loc = get_location(_simple_const_definition);
-           		es.declaringUnit = entry_scope;
-           		if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_simple_const_definition))
-        		es.AddDocumentation(this.converter.controller.docs[_simple_const_definition]);
-           }
-           returned_scope = null;
-           cnst_val.prim_val = null;
+            try
+            {
+                _simple_const_definition.const_value.visit(this);
+            }
+            catch (Exception e)
+            {
+
+            }
+            if (returned_scope != null /*&& cnst_val.prim_val != null*/)
+            {
+                ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant, _simple_const_definition.const_name.name), returned_scope, cnst_val.prim_val, cur_scope);
+                cur_scope.AddName(_simple_const_definition.const_name.name, es);
+                es.loc = get_location(_simple_const_definition);
+                es.declaringUnit = entry_scope;
+                if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_simple_const_definition))
+                    es.AddDocumentation(this.converter.controller.docs[_simple_const_definition]);
+            }
+            returned_scope = null;
+            cnst_val.prim_val = null;
         }
 
         public override void visit(typed_const_definition _typed_const_definition)

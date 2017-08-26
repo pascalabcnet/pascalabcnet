@@ -1,3 +1,5 @@
+var a13{@var a13: integer;@} := Round(2);
+
 begin
   var a1{@var a1: integer;@} := 2;
   var a2{@var a2: char;@} := '3';
@@ -10,5 +12,6 @@ begin
   var a9{@var a9: real;@} := 2+3.4;
   var a10{@var a10: List<integer>;@} := a8+2;
   var a11{@var a11: integer;@} := a8[2];
+  var a12 := sin{@function Sin(x: real): real;@}(2);
   writeln(a1{@var a1: integer;@}+a4);
 end.

@@ -645,7 +645,10 @@ namespace CodeCompletion
                     {
                         res = ss;
                         SymScope tmp = ss.FindScopeByLocation(line, column);
-                        if (tmp != null) return res = tmp;
+                        if (tmp != null)
+                            return tmp;
+                        else
+                            return res;
                     }
                     else if (!(ss is CompiledScope))
                     {
@@ -1308,7 +1311,10 @@ namespace CodeCompletion
 
         public override List<SymScope> FindOverloadNames(string name)
         {
-            return sc.FindOverloadNamesOnlyInType(name);
+            List<SymScope> names = sc.FindOverloadNames(name);
+            if (topScope != null)
+                names.AddRange(topScope.FindOverloadNames(name));
+            return names;
         }
 
         public override TypeScope GetElementType()
