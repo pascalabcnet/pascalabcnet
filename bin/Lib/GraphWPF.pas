@@ -422,7 +422,9 @@ procedure DrawSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(
 procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), nil);
 
 procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenClone);
+procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
 procedure PolyLineP(points: array of Point) := PolyLinePFull(points,Pen.PenClone);
+procedure PolyLinePC(points: array of Point; c: GColor) := PolyLinePFull(points,ColorPen(c));
 
 procedure PolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushClone,Pen.PenClone);
 procedure DrawPolygonP(points: array of Point) := PolygonPFull(points,nil,Pen.PenClone);
@@ -469,6 +471,7 @@ procedure DrawSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(D
 procedure FillSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(FillSectorPC,x, y, r, angle1, angle2, c);
 
 procedure Line(x,y,x1,y1: real) := InvokeVisual(LineP,x,y,x1,y1);
+procedure Line(x,y,x1,y1: real; c: GColor) := InvokeVisual(LinePC,x,y,x1,y1,c);
 procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
 procedure LineTo(x,y: real);
 begin 
@@ -481,6 +484,7 @@ procedure MoveOn(dx,dy: real) := MoveRel(dx,dy);
 procedure LineOn(dx,dy: real) := LineRel(dx,dy);
 
 procedure PolyLine(points: array of Point) := InvokeVisual(PolyLineP,points);
+procedure PolyLine(points: array of Point; c: GColor) := InvokeVisual(PolyLinePC,points,c);
 
 procedure Polygon(points: array of Point) := InvokeVisual(PolygonP,points);
 procedure DrawPolygon(points: array of Point) := InvokeVisual(DrawPolygonP,points);
