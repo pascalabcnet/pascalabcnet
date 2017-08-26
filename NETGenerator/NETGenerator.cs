@@ -2351,7 +2351,7 @@ namespace PascalABCCompiler.NETGenerator
             funcs.Add(func); //здесь наверное дублирование
             MethodBuilder tmp = cur_meth;
             cur_meth = methb;
-            ConvertCommonFunctionConstantDefinitions(func.constants);
+            
             //если функция не содержит вложенных процедур, то
             //переводим переменные как локальные
             if (func.functions_nodes.Length > 0)
@@ -2413,6 +2413,7 @@ namespace PascalABCCompiler.NETGenerator
             il = cur_meth.GetILGenerator();
             smi.Push(mi);
             funcs.Add(func);
+            ConvertCommonFunctionConstantDefinitions(func.constants);
             if (func.functions_nodes.Length == 0)
                 ConvertLocalVariables(func.var_definition_nodes);
 
