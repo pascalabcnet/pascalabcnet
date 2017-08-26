@@ -10,7 +10,7 @@ begin
   Brush.Color := RandomColor;
   Rectangle(220,80,70,50);
   Line(220,80,220+70,80+50);
-  DrawImage(200,140,'cofe.jpg');
+  //DrawImage(200,140,'cofe.jpg');
   Brush.Color := RGB(200,200,255);
   Polygon(Arr(Pnt(20,20),Pnt(20,120),Pnt(120,20)));
   Brush.Color := Colors.Black;

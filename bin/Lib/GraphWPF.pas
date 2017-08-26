@@ -207,6 +207,8 @@ function RandomColor := RGB(PABCSystem.Random(256), PABCSystem.Random(256), PABC
 function clRandom := RandomColor();
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
+function ColorBrush(c: Color) := new SolidColorBrush(c);
+function ColorPen(c: Color) := new GPen(ColorBrush(c),Pen.Width);
 
 ///---- Helpers
 procedure SetLeft(Self: UIElement; l: integer); extensionmethod := Canvas.SetLeft(Self,l);
@@ -392,26 +394,44 @@ begin
   dc.Close;
 end;
 
-procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) 
-  := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
+procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, nil, p, false);
 
-procedure SectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen)
-  := ArcSectorPFull(x, y, r, angle1, angle2, b, p, true);
+procedure SectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, b, p, true);
 
 procedure EllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushClone,Pen.PenClone);
 procedure DrawEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,nil,Pen.PenClone);
 procedure FillEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushClone,nil);
+procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),Pen.PenClone);
+procedure DrawEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,nil,ColorPen(c));
+procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),nil);
+
 procedure RectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushClone,Pen.PenClone);
 procedure DrawRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,nil,Pen.PenClone);
 procedure FillRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushClone,nil);
+procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),Pen.PenClone);
+procedure DrawRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,nil,ColorPen(c));
+procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),nil);
+
+procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenClone);
+
+procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushClone, Pen.PenClone);
+procedure DrawSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, nil, Pen.PenClone);
+procedure FillSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushClone, nil);
+procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), Pen.PenClone);
+procedure DrawSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, nil, ColorPen(c));
+procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), nil);
+
 procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenClone);
 procedure PolyLineP(points: array of Point) := PolyLinePFull(points,Pen.PenClone);
+
 procedure PolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushClone,Pen.PenClone);
 procedure DrawPolygonP(points: array of Point) := PolygonPFull(points,nil,Pen.PenClone);
 procedure FillPolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushClone,nil);
+procedure PolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,ColorBrush(c),Pen.PenClone);
+procedure DrawPolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,nil,ColorPen(c));
+procedure FillPolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,ColorBrush(c),nil);
+
 procedure DrawTextP(x,y: real; text: string) := TextPFull(x,y,text,Brush.BrushClone);
-procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenClone);
-procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushClone, Pen.PenClone);
 
 procedure EllipseNew(x,y,r1,r2: real) 
   := InvokeVisual(DrawGeometryP,VE.Create(()->EllipseGeometry.Create(Pnt(x,y),r1,r2)));
@@ -419,24 +439,57 @@ procedure EllipseNew(x,y,r1,r2: real)
 procedure Ellipse(x,y,r1,r2: real) := InvokeVisual(EllipseP,x,y,r1,r2);
 procedure DrawEllipse(x,y,r1,r2: real) := InvokeVisual(DrawEllipseP,x,y,r1,r2);
 procedure FillEllipse(x,y,r1,r2: real) := InvokeVisual(FillEllipseP,x,y,r1,r2);
+procedure Ellipse(x,y,r1,r2: real; c: GColor) := InvokeVisual(EllipsePC,x,y,r1,r2,c);
+procedure DrawEllipse(x,y,r1,r2: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,r1,r2,c);
+procedure FillEllipse(x,y,r1,r2: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,r1,r2,c);
+
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);
 procedure FillCircle(x,y,r: real) := InvokeVisual(FillEllipseP,x,y,r,r);
+procedure Circle(x,y,r: real; c: GColor) := InvokeVisual(EllipsePC,x,y,r,r,c);
+procedure DrawCircle(x,y,r: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,r,r,c);
+procedure FillCircle(x,y,r: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,r,r,c);
+
 procedure Rectangle(x,y,w,h: real) := InvokeVisual(RectangleP,x,y,w,h);
 procedure DrawRectangle(x,y,w,h: real) := InvokeVisual(DrawRectangleP,x,y,w,h);
 procedure FillRectangle(x,y,w,h: real) := InvokeVisual(FillRectangleP,x,y,w,h);
+procedure Rectangle(x,y,w,h: real; c: GColor) := InvokeVisual(RectanglePC,x,y,w,h,c);
+procedure DrawRectangle(x,y,w,h: real; c: GColor) := InvokeVisual(DrawRectanglePC,x,y,w,h,c);
+procedure FillRectangle(x,y,w,h: real; c: GColor) := InvokeVisual(FillRectanglePC,x,y,w,h,c);
+
+/// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+procedure Arc(x, y, r, angle1, angle2: real) := InvokeVisual(ArcP,x, y, r, angle1, angle2);
+
+/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+procedure Sector(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, angle1, angle2);
+procedure DrawSector(x, y, r, angle1, angle2: real) := InvokeVisual(DrawSectorP,x, y, r, angle1, angle2);
+procedure FillSector(x, y, r, angle1, angle2: real) := InvokeVisual(FillSectorP,x, y, r, angle1, angle2);
+procedure Sector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(SectorPC,x, y, r, angle1, angle2, c);
+procedure DrawSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(DrawSectorPC,x, y, r, angle1, angle2, c);
+procedure FillSector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(FillSectorPC,x, y, r, angle1, angle2, c);
+
 procedure Line(x,y,x1,y1: real) := InvokeVisual(LineP,x,y,x1,y1);
-procedure DrawImage(x,y: real; fname: string) := InvokeVisual(DrawImageP,x,y,fname);
-procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageUnscaledP,x,y,fname);
-procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
+procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
+procedure LineTo(x,y: real);
+begin 
+  Line(Pen.fx,Pen.fy,x,y);
+  MoveTo(x,y);
+end;
+procedure MoveRel(dx,dy: real) := (Pen.fx,Pen.fy) := (Pen.fx + dx, Pen.fy + dy);
+procedure LineRel(dx,dy: real) := LineTo(Pen.fx + dx, Pen.fy + dy);
+procedure MoveOn(dx,dy: real) := MoveRel(dx,dy);
+procedure LineOn(dx,dy: real) := LineRel(dx,dy);
+
 procedure PolyLine(points: array of Point) := InvokeVisual(PolyLineP,points);
+
 procedure Polygon(points: array of Point) := InvokeVisual(PolygonP,points);
 procedure DrawPolygon(points: array of Point) := InvokeVisual(DrawPolygonP,points);
 procedure FillPolygon(points: array of Point) := InvokeVisual(FillPolygonP,points);
-/// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
-procedure Arc(x, y, r, angle1, angle2: real) := InvokeVisual(ArcP,x, y, r, angle1, angle2);
-/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
-procedure Sector(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, angle1, angle2);
+
+
+procedure DrawImage(x,y: real; fname: string) := InvokeVisual(DrawImageP,x,y,fname);
+procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageUnscaledP,x,y,fname);
+procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
 
 /// Ширина текста при выводе
 function TextWidth(text: string) := Invoke&<real>(TextV.Create(text).TextWidth);
@@ -468,17 +521,6 @@ procedure DrawTextCentered(r: GRect; number: integer) := DrawTextCentered(r.x,r.
 /// Выводит вещественное в прямоугольник
 procedure DrawTextCentered(r: GRect; number: real) := DrawTextCentered(r.x,r.y,r.Width,r.Height,number);
 
-
-procedure MoveTo(x,y: real) := (Pen.fx,Pen.fy) := (x,y);
-procedure LineTo(x,y: real);
-begin 
-  Line(Pen.fx,Pen.fy,x,y);
-  MoveTo(x,y);
-end;
-procedure MoveRel(dx,dy: real) := (Pen.fx,Pen.fy) := (Pen.fx + dx, Pen.fy + dy);
-procedure LineRel(dx,dy: real) := LineTo(Pen.fx + dx, Pen.fy + dy);
-procedure MoveOn(dx,dy: real) := MoveRel(dx,dy);
-procedure LineOn(dx,dy: real) := LineRel(dx,dy);
 
 type
   FS = auto class
