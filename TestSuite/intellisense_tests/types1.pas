@@ -1,3 +1,6 @@
+type TRec = record
+end;
+
 type 
   myint{@type myint = integer@} = integer;
   myptr{@type myptr = ^real@} = ^real;
@@ -5,6 +8,7 @@ type
   myset{@type myset = set of char@} = set of char;
   myarr{@type myarr = array of (integer,integer)@} = array of (integer, integer);
   myarr2{@type myarr2 = array[,] of List<string>@} = array[,] of List<string>;
+  myrec = TRec;
   
 begin
   

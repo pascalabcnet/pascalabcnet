@@ -5124,6 +5124,10 @@ namespace CodeCompletion
 
             if (this.ctn.IsSubclassOf(cs.ctn))
                 return true;
+            if (implemented_interfaces != null)
+                foreach (TypeScope interf in implemented_interfaces)
+                    if (interf.IsEqual(ts))
+                        return true;
             TypeCode code1 = Type.GetTypeCode(this.ctn);
             TypeCode code2 = Type.GetTypeCode(cs.ctn);
             bool left = false;

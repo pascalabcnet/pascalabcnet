@@ -119,7 +119,8 @@ namespace CodeCompletion
         private static ProcScope char_smeq;
         private static ProcScope char_gr;
         private static ProcScope char_greq;
-        
+        private static ProcScope char_plus;
+
         private static ProcScope string_plus;
         private static ProcScope string_eq;
         private static ProcScope string_noteq;
@@ -798,7 +799,7 @@ namespace CodeCompletion
             int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, int64_plus);
             int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.minus_name, int64_minus);
             int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mul_name, int64_mul);
-            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.div_name, int64_div);
+            int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.idiv_name, int64_div);
             int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.mod_name, int64_mod);
             int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shl_name, int64_shl);
             int_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.shr_name, int64_shr);
@@ -967,6 +968,23 @@ namespace CodeCompletion
             ps.AddParameter(left);
             ps.AddParameter(right);
             char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.gr_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, char_type);
+            char_plus = ps;
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            ps.return_type = string_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
+
+            ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, char_type);
+            left = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), char_type, char_type);
+            right = new ElementScope(new SymInfo("", SymbolKind.Parameter, ""), string_type, char_type);
+            ps.return_type = string_type;
+            ps.AddParameter(left);
+            ps.AddParameter(right);
+            char_type.AddName(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, ps);
 
             //string type
             ps = new ProcScope(PascalABCCompiler.TreeConverter.compiler_string_consts.plus_name, string_type);
