@@ -624,8 +624,8 @@ namespace VisualPascalABC
                     var doc = OpenDocuments[FileName];
                     if (doc.DocumentSavedToDisk)
                         SaveFileAs(doc, (string)obj);
-                    else
-                        ExecuteSaveAs(doc);
+                    //else
+                    //    ExecuteSaveAs(doc);
                     return true;
             }
             return false;
