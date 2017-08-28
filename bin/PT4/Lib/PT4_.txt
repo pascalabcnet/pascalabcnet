@@ -1,8 +1,8 @@
 [=PascalABC]
 [0]
 uses PT4;
-[1-999]
 
+[1-999]
 begin
   Task('%{task}');
 
