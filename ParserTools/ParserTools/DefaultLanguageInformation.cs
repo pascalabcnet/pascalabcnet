@@ -1166,8 +1166,8 @@ namespace PascalABCCompiler.Parsers
             return getLambdaRepresentation(scope.CompiledType, has_return_value, parameters);
         }
 
-		protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
-		{
+        protected string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope, bool fullName)
+        {
             if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Func`"))
             {
                 return getLambdaRepresentation(scope, true);
@@ -1202,7 +1202,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                string s = GetShortTypeName(scope.CompiledType);
+                string s = !fullName?GetShortTypeName(scope.CompiledType):GetFullTypeName(scope.CompiledType);
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
                 {
@@ -1222,6 +1222,11 @@ namespace PascalABCCompiler.Parsers
                 }
                 return s;
             }
+        }
+
+        protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
+		{
+            return GetSimpleDescriptionForCompiledType(scope, false);
 		}
 		
 		protected virtual string GetDescriptionForArray(IArrayScope scope)
@@ -2065,8 +2070,11 @@ namespace PascalABCCompiler.Parsers
 		}
 		
 		public string GetSynonimDescription(ITypeSynonimScope scope)
-		{ 
-			return "type "+scope.Name+GetGenericString(scope.TemplateArguments) + " = "+GetSimpleDescription(scope.ActType);
+		{
+            if (scope.ActType is ICompiledTypeScope && !(scope.ActType as ICompiledTypeScope).Aliased)
+                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescriptionForCompiledType(scope.ActType as ICompiledTypeScope, true);
+            else
+			    return "type " + scope.Name+GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescription(scope.ActType);
 		}
 		
 		public string GetSynonimDescription(IProcScope scope)

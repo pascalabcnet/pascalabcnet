@@ -675,6 +675,15 @@ namespace CodeCompletion
             return lst.ToArray();
         }
 
+        protected bool IsClassMember(SymScope scope)
+        {
+            if (scope is ProcScope && (scope as ProcScope).declaringType != null)
+                return true;
+            if (scope is ElementScope && (scope as ElementScope).declaringUnit is TypeScope)
+                return true;
+            return false;
+        }
+
         protected bool IsAfterDefinition(int def_line, int def_col)
         {
             if (cur_line == -1 || cur_col == -1) return true;
@@ -794,7 +803,7 @@ namespace CodeCompletion
                 {
                     if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
                     {
-                        if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                         {
                             return ss;
                         }
@@ -812,7 +821,7 @@ namespace CodeCompletion
                         {
                             if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0 && this != ss)
                             {
-                                if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                                if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
                                     return ss;
                                 }
@@ -1306,6 +1315,8 @@ namespace CodeCompletion
 
         public override SymScope FindName(string s)
         {
+            if (string.Compare(si.name, s, true) == 0)
+                return this;
             return sc.FindNameOnlyInType(s);
         }
 
@@ -2677,7 +2688,9 @@ namespace CodeCompletion
             TypeScope original_type = actType;
             if (actType.original_type != null)
                 original_type = actType.original_type;
-            return original_type.GetInstance(gen_args);
+            TypeScope ts = original_type.GetInstance(gen_args);
+            ts.aliased = true;
+            return ts;
         }
 
         public override void AddIndexer(TypeScope ts)
@@ -3067,6 +3080,8 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
+            if (string.Compare(si.name, name, true) == 0)
+                return this;
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return null;
             SymScope sc = null;
