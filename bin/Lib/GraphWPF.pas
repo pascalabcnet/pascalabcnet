@@ -38,6 +38,16 @@ procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispat
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
 function Invoke<T>(d: Func0<T>) := app.Dispatcher.Invoke&<T>(d);
 
+function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (real, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
+function operator implicit(Self: (real, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
+
+function operator implicit(Self: array of (real, real)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
+function operator implicit(Self: array of (integer, integer)): array of Point; extensionmethod := 
+  Self.Select(t->new Point(t[0],t[1])).ToArray;
+
 type 
   Key = System.Windows.Input.Key;
   Colors = System.Windows.Media.Colors;
@@ -45,6 +55,7 @@ type
   GRect = System.Windows.Rect;
   GWindow = Window;
   GPen = System.Windows.Media.Pen;
+  GPoint = System.Windows.Point;
   GBrush = System.Windows.Media.Brush;
   ///!#
   FontStyle = (Normal,Bold,Italic,BoldItalic);
@@ -52,7 +63,7 @@ type
   BrushType = class
   private
     c := Colors.White;
-    function BrushClone := new SolidColorBrush(c);
+    function BrushConstruct := new SolidColorBrush(c);
   public  
     property Color: GColor read c write c;
   end;
@@ -62,7 +73,11 @@ type
     c: Color := Colors.Black;
     th: real := 1;
     fx,fy: real;
-    function PenClone := new GPen(new SolidColorBrush(c),th);
+    function PenConstruct: GPen;
+    begin
+      Result := new GPen(new SolidColorBrush(c),th);
+      Result.LineJoin := PenLineJoin.Round;
+    end;
   public  
     property Color: GColor read c write c;
     property Width: real read th write th;
@@ -75,10 +90,7 @@ type
   private
     tf := new Typeface('Arial');
     sz: real := 12;
-    br := new SolidColorBrush(Colors.Black);
-    function GetC := br.Color;
-    procedure SetCP(c: Color) := br := new SolidColorBrush(c);
-    procedure SetC(c: Color) := Invoke(SetCP,c);
+    c: GColor := Colors.Black;
     procedure SetNameP(s: string) := tf := new Typeface(new FontFamily(s),FontStyles.Normal,FontWeights.Normal,FontStretches.Normal); 
     function GetName := tf.FontFamily.ToString;
     procedure SetName(s: string) := Invoke(SetNameP,s);
@@ -95,9 +107,11 @@ type
     end;
     procedure SetFS(fs: FontStyle) := Invoke(SetFSP,fs);
     function TypefaceClone := tf;
+    function BrushConstruct := new SolidColorBrush(c);
   public  
-    property Color: GColor read GetC write SetC;
+    property Color: GColor read c write c;
     property Name: string read GetName write SetName;
+    /// Размер шрифта в единицах по 1/96 дюйма
     property Size: real read sz write sz;
     property Style: FontStyle write SetFS;
   end;
@@ -178,6 +192,10 @@ type
     property VisualChildrenCount: integer read get_VisualChildrenCount; override;
   end;
 
+  CoordType = (MathematicalCoords,ScreenCoords);
+  Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
+
+
 var MainFormThread: Thread;
 //var LeftPanel: StackPanel;
 var Host: MyVisualHost;
@@ -186,6 +204,12 @@ var Brush: BrushType;
 var Pen: PenType;
 var Font: FontType;
 var Window: WindowType;
+
+var 
+  XOrigin := 0.0;
+  YOrigin := 0.0;
+  GlobalScale := 1.0;
+  CurrentCoordType: CoordType := ScreenCoords;
 
 var
   /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
@@ -221,20 +245,31 @@ begin
   Canvas.SetTop(Self,t);
 end;
 
-function GetDC1: DrawingContext;
+function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
-  //visual.Drawing.
   Host.children.Add(visual);
   CountVisuals += 1;
   Result := visual.RenderOpen();
 end;
 
-var GetDC: function : DrawingContext := GetDC1;
+function GetDC(t: Transform): DrawingContext;
+begin
+  var visual := new DrawingVisual();
+  visual.Transform := t;
+  Host.children.Add(visual);
+  CountVisuals += 1;
+  Result := visual.RenderOpen();
+end;
 
 function ScaleToDevice: (real,real);
 begin
   var pSource := PresentationSource.FromVisual(MainWindow);
+  if pSource = nil then // не знаю, почему
+  begin
+    Result := (1.0,1.0);
+    exit
+  end;
   var m := pSource.CompositionTarget.TransformToDevice;
   Result := (m.M11,m.M22);
 end;
@@ -249,7 +284,7 @@ function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.Window
 procedure EllipsePFull(x,y,r1,r2: real; b: GBrush; p: GPen);
 begin
   var dc := GetDC();
-  dc.DrawEllipse(b, p, Pnt(x+0.5, y+0.5), r1, r2);
+  dc.DrawEllipse(b, p, Pnt(x, y), r1, r2);
   dc.Close();
 end;
 
@@ -260,14 +295,24 @@ end;
 procedure DrawGeometryP(g: VE);
 begin
   var dc := GetDC();
-  dc.DrawGeometry(Brush.BrushClone,Pen.PenClone,g.g());
+  dc.DrawGeometry(Brush.BrushConstruct,Pen.PenConstruct,g.g());
   dc.Close();
 end;
 
 procedure RectanglePFull(x,y,w,h: real; b: GBrush; p: GPen);
 begin
+  if h<0 then
+  begin
+    h := -h;
+    y -= h;
+  end;
+  if w<0 then
+  begin
+    w := -w;
+    x -= w;
+  end;
   var dc := GetDC();
-  dc.DrawRectangle(b, p, Rect(x+0.5,y+0.5,w,h));
+  dc.DrawRectangle(b, p, Rect(x,y,w,h));
   dc.Close();
   var f := Host.children[0] as DrawingVisual;
   var geo := f.Drawing.Children[0] as GeometryDrawing;
@@ -277,14 +322,18 @@ end;
 procedure LinePFull(x,y,x1,y1: real; p: GPen);
 begin
   var dc := GetDC();
-  dc.DrawLine(p, Pnt(x+0.5,y+0.5), Pnt(x1+0.5,y1+0.5));
+  dc.DrawLine(p, Pnt(x,y), Pnt(x1,y1));
   dc.Close();
 end;
 
 function FormText(text: string) := 
   new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), FlowDirection.LeftToRight, 
-                    Font.TypefaceClone, Font.Size, Font.br.Clone);
+                    Font.TypefaceClone, Font.Size, Font.BrushConstruct);
   
+function FormTextC(text: string; c: GColor): FormattedText := 
+  new FormattedText(text,new System.Globalization.CultureInfo('ru-ru'), FlowDirection.LeftToRight, 
+                    Font.TypefaceClone, Font.Size, ColorBrush(c));
+    
 function TextWidthP(text: string) := FormText(text).Width;
 function TextHeightP(text: string) := FormText(text).Height;
 
@@ -299,19 +348,66 @@ type TextV = auto class
   end;
 end;
 
-procedure TextPFull(x,y: real; text: string; b: GBrush);
+procedure TextPFull(x,y: real; text: string);
 begin
-  var dc := GetDC();
+  var dc: DrawingContext;
+  if CurrentCoordType = ScreenCoords then
+  begin
+    dc := GetDC();
+    dc.DrawText(FormText(text),new Point(x,y));
+  end  
+  else   
+  begin
+    var m := Host.RenderTransform.Value;
+    var mt := new MatrixTransform(1/m.M11,0,0,1/m.M22,x,y);
+    dc := GetDC(mt);
+    dc.DrawText(FormText(text),new Point(0,0));
+  end;
   //dc.DrawRectangle(Brushes.White,nil,new GRect(new Point(x,y),TextV.Create(text).TextSize));
-  dc.DrawText(FormText(text),new Point(x,y));
   dc.Close();
+end;
+
+procedure TextPFull(x,y: real; text: string; c: Color);
+begin
+  var dc: DrawingContext;
+  if CurrentCoordType = ScreenCoords then
+  begin
+    dc := GetDC();
+    dc.DrawText(FormTextC(text,c),new Point(x,y));
+  end  
+  else   
+  begin
+    var m := Host.RenderTransform.Value;
+    var mt := new MatrixTransform(1/m.M11,0,0,1/m.M22,x,y);
+    dc := GetDC(mt);
+    dc.DrawText(FormTextC(text,c),new Point(0,0));
+  end;  
+  //dc.DrawRectangle(Brushes.White,nil,new GRect(new Point(x,y),TextV.Create(text).TextSize));
+  dc.Close();
+end;
+
+var dpic := new Dictionary<string, BitmapImage>;
+
+function GetBitmapImage(fname: string): BitmapImage;
+begin
+  if not dpic.ContainsKey(fname) then 
+    dpic[fname] := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  Result := dpic[fname];
 end;
 
 procedure DrawImageP(x,y: real; fname: string);
 begin
   var dc := GetDC();
-  var img := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth, img.PixelHeight));
+  dc.Close();
+end;
+
+procedure DrawImageWHP(x,y,w,h: real; fname: string);
+begin
+  var dc := GetDC();
+  var img := GetBitmapImage(fname);
+  dc.DrawImage(img, Rect(x, y, w, h));
   dc.Close();
 end;
 
@@ -319,10 +415,26 @@ procedure DrawImageUnscaledP(x,y: real; fname: string);
 begin
   var dc := GetDC();
   var (scalex,scaley) := ScaleToDevice;
-  var img := new BitmapImage(new System.Uri(fname,System.UriKind.Relative));
+  var img := GetBitmapImage(fname);
   dc.DrawImage(img, Rect(x, y, img.PixelWidth/scalex, img.PixelHeight/scaley));
   dc.Close();
 end;
+
+function ImageWidthP(fname: string) := GetBitmapImage(fname).PixelWidth;
+function ImageHeightP(fname: string) := GetBitmapImage(fname).PixelHeight;
+function ImageSizeP(fname: string) := (GetBitmapImage(fname).PixelWidth,GetBitmapImage(fname).PixelHeight);
+
+type ImHelper = auto class
+  fname: string;
+  function IW := ImageWidthP(fname);
+  function IH := ImageHeightP(fname);
+  function ISz := ImageSizeP(fname);
+end;
+
+function ImageWidth(fname: string) := Invoke&<integer>(ImHelper.Create(fname).IW);
+function ImageHeight(fname: string) := Invoke&<integer>(ImHelper.Create(fname).IH);
+function ImageSize(fname: string) := Invoke&<(integer,integer)>(ImHelper.Create(fname).ISz);
+
 
 // Нет свойств посмотреть размеры видео!
 procedure DrawVideoP(x,y,w,h: real; fname: string);
@@ -331,7 +443,7 @@ begin
   var pl := new MediaPlayer();
   pl.Open(new System.Uri(fname, System.UriKind.Relative));
   pl.Play();
-  dc.DrawVideo(pl, Rect(x+0.5, y+0.5, w, h));
+  dc.DrawVideo(pl, Rect(x, y, w, h));
   dc.Close();
 end;
 
@@ -343,8 +455,8 @@ begin
   geo.FillRule := FillRule.EvenOdd;
 
   var context: StreamGeometryContext := geo.Open();
-  context.BeginFigure(Pnt(points[0].X + 0.5,points[0].Y + 0.5), true, draw_polygon);
-  context.PolyLineTo(points.Select(p->Pnt(p.x+0.5,p.y+0.5)).Skip(1).ToArray(), true, false);
+  context.BeginFigure(Pnt(points[0].X,points[0].Y), true, draw_polygon);
+  context.PolyLineTo(points.Select(p->Pnt(p.x,p.y)).Skip(1).ToArray(), true, false);
   context.Close;   
   
   Self.DrawGeometry(b, p, geo);
@@ -374,13 +486,18 @@ procedure ArcSectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen; isse
 begin
   if angle1>angle2 then Swap(angle1,angle2);
   if angle2-angle1 >= 360 then
-    (angle1,angle2) := (0,360-0.00001);
+    (angle1,angle2) := (0,360-0.0001);
   var dc := GetDC();
   var geo := new PathGeometry();
   var f := new PathFigure();
   geo.Figures.Add(f);
-  var p1 := Pnt(x + r * cos(angle1*Pi/180), y - r * sin(angle1*Pi/180));
-  var p2 := Pnt(x + r * cos(angle2*Pi/180), y - r * sin(angle2*Pi/180));
+  var sgn := CurrentCoordType = MathematicalCoords ? 1 : -1;
+  var p1 := Pnt(x + r * cos(angle1*Pi/180), y + sgn * r * sin(angle1*Pi/180));
+  var p2 := Pnt(x + r * cos(angle2*Pi/180), y + sgn * r * sin(angle2*Pi/180));
+  if CurrentCoordType = MathematicalCoords then
+    Swap(p1,p2);
+  Println(p1);  
+  Println(p2);  
   f.StartPoint := p1;
   var a := new ArcSegment(p2, new Size(r,r), 0, abs(angle2-angle1)>180, SweepDirection.Counterclockwise, true);
   f.Segments.Add(a);
@@ -398,42 +515,43 @@ procedure ArcPFull(x, y, r, angle1, angle2: real; p: GPen) := ArcSectorPFull(x, 
 
 procedure SectorPFull(x, y, r, angle1, angle2: real; b: GBrush; p: GPen) := ArcSectorPFull(x, y, r, angle1, angle2, b, p, true);
 
-procedure EllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushClone,Pen.PenClone);
-procedure DrawEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,nil,Pen.PenClone);
-procedure FillEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushClone,nil);
-procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),Pen.PenClone);
+procedure EllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,Pen.PenConstruct);
+procedure DrawEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,nil,Pen.PenConstruct);
+procedure FillEllipseP(x,y,r1,r2: real) := EllipsePFull(x,y,r1,r2,Brush.BrushConstruct,nil);
+procedure EllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
 procedure DrawEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,nil,ColorPen(c));
 procedure FillEllipsePC(x,y,r1,r2: real; c: GColor) := EllipsePFull(x,y,r1,r2,ColorBrush(c),nil);
 
-procedure RectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushClone,Pen.PenClone);
-procedure DrawRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,nil,Pen.PenClone);
-procedure FillRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushClone,nil);
-procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),Pen.PenClone);
+procedure RectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,Pen.PenConstruct);
+procedure DrawRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,nil,Pen.PenConstruct);
+procedure FillRectangleP(x,y,w,h: real) := RectanglePFull(x,y,w,h,Brush.BrushConstruct,nil);
+procedure RectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),Pen.PenConstruct);
 procedure DrawRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,nil,ColorPen(c));
 procedure FillRectanglePC(x,y,r1,r2: real; c: GColor) := RectanglePFull(x,y,r1,r2,ColorBrush(c),nil);
 
-procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenClone);
+procedure ArcP(x, y, r, angle1, angle2: real) := ArcPFull(x, y, r, angle1, angle2, Pen.PenConstruct);
 
-procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushClone, Pen.PenClone);
-procedure DrawSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, nil, Pen.PenClone);
-procedure FillSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushClone, nil);
-procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), Pen.PenClone);
+procedure SectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, Pen.PenConstruct);
+procedure DrawSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, nil, Pen.PenConstruct);
+procedure FillSectorP(x, y, r, angle1, angle2: real) := SectorPFull(x, y, r, angle1, angle2, Brush.BrushConstruct, nil);
+procedure SectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), Pen.PenConstruct);
 procedure DrawSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, nil, ColorPen(c));
 procedure FillSectorPC(x, y, r, angle1, angle2: real; c: GColor) := SectorPFull(x, y, r, angle1, angle2, ColorBrush(c), nil);
 
-procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenClone);
+procedure LineP(x,y,x1,y1: real) := LinePFull(x,y,x1,y1,Pen.PenConstruct);
 procedure LinePC(x,y,x1,y1: real; c: GColor) := LinePFull(x,y,x1,y1,ColorPen(c));
-procedure PolyLineP(points: array of Point) := PolyLinePFull(points,Pen.PenClone);
+procedure PolyLineP(points: array of Point) := PolyLinePFull(points,Pen.PenConstruct);
 procedure PolyLinePC(points: array of Point; c: GColor) := PolyLinePFull(points,ColorPen(c));
 
-procedure PolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushClone,Pen.PenClone);
-procedure DrawPolygonP(points: array of Point) := PolygonPFull(points,nil,Pen.PenClone);
-procedure FillPolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushClone,nil);
-procedure PolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,ColorBrush(c),Pen.PenClone);
+procedure PolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushConstruct,Pen.PenConstruct);
+procedure DrawPolygonP(points: array of Point) := PolygonPFull(points,nil,Pen.PenConstruct);
+procedure FillPolygonP(points: array of Point) := PolygonPFull(points,Brush.BrushConstruct,nil);
+procedure PolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,ColorBrush(c),Pen.PenConstruct);
 procedure DrawPolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,nil,ColorPen(c));
 procedure FillPolygonPC(points: array of Point; c: GColor) := PolygonPFull(points,ColorBrush(c),nil);
 
-procedure DrawTextP(x,y: real; text: string) := TextPFull(x,y,text,Brush.BrushClone);
+procedure DrawTextP(x,y: real; text: string) := TextPFull(x,y,text);
+procedure DrawTextPC(x,y: real; text: string; c: GColor) := TextPFull(x,y,text,c);
 
 procedure EllipseNew(x,y,r1,r2: real) 
   := InvokeVisual(DrawGeometryP,VE.Create(()->EllipseGeometry.Create(Pnt(x,y),r1,r2)));
@@ -489,9 +607,13 @@ procedure PolyLine(points: array of Point; c: GColor) := InvokeVisual(PolyLinePC
 procedure Polygon(points: array of Point) := InvokeVisual(PolygonP,points);
 procedure DrawPolygon(points: array of Point) := InvokeVisual(DrawPolygonP,points);
 procedure FillPolygon(points: array of Point) := InvokeVisual(FillPolygonP,points);
+procedure Polygon(points: array of Point; c: GColor) := InvokeVisual(PolygonPC,points,c);
+procedure DrawPolygon(points: array of Point; c: GColor) := InvokeVisual(DrawPolygonPC,points,c);
+procedure FillPolygon(points: array of Point; c: GColor) := InvokeVisual(FillPolygonPC,points,c);
 
 
 procedure DrawImage(x,y: real; fname: string) := InvokeVisual(DrawImageP,x,y,fname);
+procedure DrawImage(x,y,w,h: real; fname: string) := InvokeVisual(DrawImageWHP,x,y,w,h,fname);
 procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageUnscaledP,x,y,fname);
 procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
 
@@ -501,29 +623,108 @@ function TextWidth(text: string) := Invoke&<real>(TextV.Create(text).TextWidth);
 function TextHeight(text: string) := Invoke&<real>(TextV.Create(text).TextHeight);
 /// Размер текста при выводе
 function TextSize(text: string): Size := Invoke&<Size>(TextV.Create(text).TextSize);
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure TextOut(x,y: real; text: string) := InvokeVisual(DrawTextP,x,y,text);
-/// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
-procedure TextOut(x,y: real; number: integer) := TextOut(x,y,'' + number);
-/// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
-procedure TextOut(x,y: real; number: real) := TextOut(x,y,'' + number);
-/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawTextCentered(x, y, w, h: real; text: string);
+
+procedure TextOutHelper(x,y: real; text: string) := InvokeVisual(DrawTextP,x,y,text);
+//procedure TextOut(x,y: real; number: integer) := TextOut(x,y,'' + number);
+//procedure TextOut(x,y: real; number: real) := TextOut(x,y,'' + number);
+procedure TextOutHelper(x,y: real; text: string; c: GColor) := InvokeVisual(DrawTextPC,x,y,text,c);
+//procedure TextOut(x,y: real; number: integer; c: GColor) := TextOut(x,y,'' + number,c);
+//procedure TextOut(x,y: real; number: real; c: GColor) := TextOut(x,y,'' + number,c);
+
+procedure DrawTextHelper(var x, y: real; w, h: real; text: string; align: Alignment := Alignment.Center);
 begin
+  if h<0 then
+  begin
+    h := -h;
+    y -= h;
+  end;
+  if w<0 then
+  begin
+    w := -w;
+    x -= w;
+  end;
   var sz := TextSize(text);
-  var (dw,dh) := ((w-sz.Width)/2,(h-sz.Height)/2);
-  TextOut(x+dw,y+dh,text)
+  var dw,dh: real;
+  if CurrentCoordType = ScreenCoords then
+    (dw,dh) := ((w-sz.Width)/2,(h-sz.Height)/2)
+  else 
+  begin
+    var (szw,szh) := (sz.Width/GlobalScale,sz.Height/GlobalScale);
+    (dw,dh) := ((w-szw)/2,(h-szh)/2);
+    dh := h-dh;
+  end;
+//  Println(dw,dh);
+  case align of
+    Alignment.LeftTop: {ничего};
+    Alignment.LeftCenter: y += dh;
+    Alignment.LeftBottom: y += 2*dh;
+    Alignment.CenterTop: x += dw;
+    Alignment.Center: begin x += dw; y += dh; end;
+    Alignment.CenterBottom: begin x += dw; y += 2*dh; end;
+    Alignment.RightTop: x += 2*dw;
+    Alignment.RightCenter: begin x += 2*dw; y += dh; end;
+    Alignment.RightBottom: begin x += 2*dw; y += 2*dh; end;
+  end;
+  if CurrentCoordType = MathematicalCoords then
+    case align of
+      Alignment.LeftTop, Alignment.CenterTop, Alignment.RightTop: y += h;
+      Alignment.LeftBottom, Alignment.CenterBottom, Alignment.RightBottom: y -= h;
+    end;
+end;
+/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: string; align: Alignment := Alignment.Center);
+begin
+  DrawTextHelper(x, y, w, h, text,align);
+  TextOutHelper(x,y,text)
+end;
+/// Выводит строку в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; text: string; c: GColor; align: Alignment := Alignment.Center);
+begin
+  DrawTextHelper(x, y, w, h,text,align);
+  TextOutHelper(x,y,text,c)
 end;
 /// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawTextCentered(x, y, w, h: real; number: integer) := DrawTextCentered(x, y, w, h, '' + number);
+procedure DrawText(x, y, w, h: real; number: integer; align: Alignment := Alignment.Center) := DrawText(x, y, w, h, '' + number,align);
 /// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
-procedure DrawTextCentered(x, y, w, h: real; number: real) := DrawTextCentered(x, y, w, h, '' + number);
+procedure DrawText(x, y, w, h: real; number: real; align: Alignment := Alignment.Center) := DrawText(x, y, w, h, '' + number,align);
 /// Выводит строку в прямоугольник
-procedure DrawTextCentered(r: GRect; text: string) := DrawTextCentered(r.x,r.y,r.Width,r.Height,text);
+procedure DrawText(r: GRect; text: string; align: Alignment := Alignment.Center) := DrawText(r.x,r.y,r.Width,r.Height,text,align);
 /// Выводит целое в прямоугольник
-procedure DrawTextCentered(r: GRect; number: integer) := DrawTextCentered(r.x,r.y,r.Width,r.Height,number);
+procedure DrawText(r: GRect; number: integer; align: Alignment := Alignment.Center) := DrawText(r.x,r.y,r.Width,r.Height,number,align);
 /// Выводит вещественное в прямоугольник
-procedure DrawTextCentered(r: GRect; number: real) := DrawTextCentered(r.x,r.y,r.Width,r.Height,number);
+procedure DrawText(r: GRect; number: real; align: Alignment := Alignment.Center) := DrawText(r.x,r.y,r.Width,r.Height,number,align);
+/// Выводит целое в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: integer; c: GColor; align: Alignment := Alignment.Center) := DrawText(x, y, w, h, '' + number,c,align);
+/// Выводит вещественное в прямоугольник к координатами левого верхнего угла (x,y)
+procedure DrawText(x, y, w, h: real; number: real; c: GColor; align: Alignment := Alignment.Center) := DrawText(x, y, w, h, '' + number,c,align);
+/// Выводит строку в прямоугольник
+procedure DrawText(r: GRect; text: string; c: GColor; align: Alignment := Alignment.Center) := DrawText(r.x,r.y,r.Width,r.Height,text,c,align);
+/// Выводит целое в прямоугольник
+procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Alignment.Center) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align);
+/// Выводит вещественное в прямоугольник
+procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center) := DrawText(r.x,r.y,r.Width,r.Height,number,c,align);
+
+function ConvertAlign(align: Alignment): Alignment;
+begin
+  Result := align;
+  case align of
+    Alignment.LeftTop: Result := Alignment.RightBottom;
+    Alignment.LeftCenter: Result := Alignment.RightCenter;
+    Alignment.LeftBottom: Result := Alignment.RightTop;
+    Alignment.CenterTop: Result := Alignment.CenterBottom;
+    Alignment.CenterBottom: Result := Alignment.CenterTop;
+    Alignment.RightTop: Result := Alignment.LeftBottom;
+    Alignment.RightCenter: Result := Alignment.LeftCenter;
+    Alignment.RightBottom: Result := Alignment.LeftTop;
+  end;
+end;
+
+procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.RightBottom) := DrawText(x, y, 0, 0, text,ConvertAlign(align));
+procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.RightBottom) := DrawText(x, y, 0, 0, text, c,ConvertAlign(align));
+procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.RightBottom) := TextOut(x, y, ''+text,align);
+procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.RightBottom) := TextOut(x, y, ''+text, c,align);
+procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.RightBottom) := TextOut(x, y, ''+text,align);
+procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.RightBottom) := TextOut(x, y, ''+text, c,align);
 
 
 type
@@ -652,7 +853,7 @@ procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP,c);
 function WindowTypeGetCaptionP := MainWindow.Title;
 function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
 
-procedure WindowTypeClearP := Host.children.Clear;
+procedure WindowTypeClearP := begin Host.children.Clear; CountVisuals := 0; end;
 procedure WindowType.Clear := app.Dispatcher.Invoke(WindowTypeClearP);
 
 procedure WindowType.Clear(c: Color);
@@ -727,6 +928,85 @@ function WindowType.Center := Pnt(Width/2,Height/2);
 
 function WindowType.ClientRect := Rect(0,0,Window.Width,Window.Height);
 
+function XMin := -XOrigin/GlobalScale;
+function XMax := (Window.Width-XOrigin)/GlobalScale;
+function YMin := -(Window.Height-YOrigin)/GlobalScale;
+function YMax := YOrigin/GlobalScale;
+
+procedure DrawGridP;
+begin
+  if CurrentCoordType = ScreenCoords then
+    raise new Exception('Рисование координатной сетки возможно только в математическом режиме');
+  
+  var xfrom := Round(XMin);
+  var xto := Round(XMax);
+  var yfrom := Round(YMin);
+  var yto := Round(YMax);
+  
+  Range(yfrom,yto).ForEach(y->Line(XMin,y,XMax,y,Colors.LightGray));
+  Range(xfrom,xto).ForEach(x->Line(x,YMin,x,YMax,Colors.LightGray));
+  Line(XMin,0,XMax,0);
+  Line(0,YMin,0,YMax);
+end;
+procedure DrawGrid := Invoke(DrawGridP);
+
+procedure SetMathematicCoordsScaleP(x0,y0,scale: real);
+begin
+  CurrentCoordType := MathematicalCoords;
+  XOrigin := x0;
+  YOrigin := y0;
+  GlobalScale := scale;
+  var m: Transform := new MatrixTransform(scale,0,0,-scale,x0,y0);
+  Host.RenderTransform := m;
+  Pen.Width := Pen.Width / scale;
+end;
+procedure SetMathematicCoordsScale(x0,y0,scale: real) := Invoke(SetMathematicCoordsScaleP,x0,y0,scale);
+
+procedure SetMathematicCoordsP(x1,x2: real; drawcoords: boolean);
+begin
+  Window.Clear;
+  CurrentCoordType := MathematicalCoords;
+  // x1 0 x2
+  // 0 x0 Window.Width
+  GlobalScale := Window.Width/(x2-x1);
+  XOrigin := -x1*GlobalScale;
+  YOrigin := Window.Height/2;
+  //Print(XOrigin,YOrigin,GlobalScale);
+  SetMathematicCoordsScaleP(XOrigin,YOrigin,GlobalScale);
+  if drawcoords then
+    DrawGridP
+end;
+procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawcoords: boolean);
+begin
+  Window.Clear;
+  CurrentCoordType := MathematicalCoords;
+  // x1 0 x2
+  // 0 x0 Window.Width
+  GlobalScale := Window.Width/(x2-x1);
+  XOrigin := -x1*GlobalScale;
+  //Print(XOrigin,YOrigin,GlobalScale);
+  // -ymin*scale - сколько надо отступить от низа окна
+  // Window.Height + ymin*scale
+  YOrigin := Window.Height + ymin*GlobalScale;
+  SetMathematicCoordsScaleP(XOrigin,YOrigin,GlobalScale);
+  if drawcoords then
+    DrawGridP
+end;
+procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawcoords: boolean := true) := Invoke(SetMathematicCoordsP,x1,x2,drawcoords);
+procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean := true) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawcoords);
+
+procedure SetStandardCoordsP;
+begin
+  Window.Clear;
+  CurrentCoordType := ScreenCoords;
+  XOrigin := 0;
+  YOrigin := 0;
+  GlobalScale := 1;
+  Host.RenderTransform := Transform.Identity;
+  Pen.Width := 1;
+end;
+procedure SetStandardCoords := Invoke(SetStandardCoordsP);
+
 
 /// --- SystemMouseEvents
 procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
@@ -782,9 +1062,44 @@ end;}
 
 var mre := new ManualResetEvent(false);
 
+var OnDraw: procedure := nil;
+
+var FrameRate := 60; // кадров в секунду. Можно меньше!
+var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
+
+procedure RenderFrame(o: Object; e: System.EventArgs);
+begin
+  // Надо вычесть старое время
+  if OnDraw<>nil then
+  begin
+    var e1 := RenderingEventArgs(e).RenderingTime;
+    var dt := e1 - LastUpdatedTime;
+    var delta := 1000/Framerate; // через какое время обновлять
+    if dt.TotalMilliseconds < delta then
+      exit
+    else LastUpdatedTime := e1;  
+    Window.Clear;
+    OnDraw();
+  end;  
+end;
+
+procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
+begin
+  OnDraw := Draw;
+  FrameRate := frate;
+end;
+
+procedure EndFrameBasedAnimation;
+begin
+  OnDraw := nil;
+  FrameRate := 60;
+end;  
+
 procedure InitForm0;
 begin
   app := new Application();
+  
+  app.Dispatcher.UnhandledException += (o,e) -> Println(e);
   MainWindow := new GWindow;
   host := new MyVisualHost();
   MainWindow.Content := host;
@@ -800,7 +1115,7 @@ begin
   (MainWindow.Width, MainWindow.Height) := (w + wplus, h + hplus);
   MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
   
-  MainWindow.Show;
+  //MainWindow.Show;
   MainWindow.Closed += procedure(sender,e) -> begin Halt; end;
   MainWindow.MouseDown += SystemOnMouseDown;
   MainWindow.MouseUp += SystemOnMouseUp;
@@ -810,10 +1125,9 @@ begin
   
   mre.Set();
 
-  //CompositionTarget.Rendering += RenderFrame;
-  app.Dispatcher.UnhandledException += (o,e) -> Println(e);
+  CompositionTarget.Rendering += RenderFrame;
   
-  app.Run();
+  app.Run(MainWindow);
 end;
 
 begin
