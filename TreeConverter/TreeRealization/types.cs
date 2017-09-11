@@ -1963,15 +1963,20 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return base_generic_instance.ConvertSymbolInfo(si);
             }
-            else if (si == null)
+            else //if (si == null)
             {
                 if (ImplementingInterfaces != null)
                 {
                     foreach (type_node ii_tn in ImplementingInterfaces)
                     {
-                        si = ii_tn.find_in_type(name, CurrentScope);
-                        if (si != null)
-                            return si;
+                        SymbolInfoList isi = ii_tn.find_in_type(name, CurrentScope);
+                        if (isi != null)
+                        {
+                            if (si == null)
+                                si = isi;
+                            else
+                                si.Add(isi);
+                        }
                     }
                 }
             }

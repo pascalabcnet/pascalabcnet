@@ -443,7 +443,8 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            used_units.Add(unit);
+            if (!hasUsesCycle(unit))
+                used_units.Add(unit);
         }
 
         public virtual string GetFullName()
