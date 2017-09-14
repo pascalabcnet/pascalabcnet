@@ -1703,7 +1703,12 @@ namespace CodeCompletion
                     returned_scope.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
                     if (_type_declaration.type_def is class_definition)
                     {
-                        string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword((_type_declaration.type_def as class_definition).keyword);
+                        class_definition cl_def = _type_declaration.type_def as class_definition;
+                        string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword(cl_def.keyword);
+                        if (cl_def.attribute == class_attribute.Auto)
+                            key = "auto " + key;
+                        else if (cl_def.attribute == class_attribute.Abstract)
+                            key = "abstract " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
