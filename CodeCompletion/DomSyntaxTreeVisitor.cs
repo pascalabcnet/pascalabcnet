@@ -854,7 +854,7 @@ namespace CodeCompletion
                     ps.is_reintroduce = true;
         }
 
-        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType)
+        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false)
         {
             SymScope tmp = returned_scope;
             List<ElementScope> lst = new List<ElementScope>();
@@ -929,13 +929,17 @@ namespace CodeCompletion
                 {
                     if (ps.parameters == null || ps.parameters.Count == 0)
                     {
-                        if (ps.return_type == null && return_type == null) return ps;
+                        if (function && ps.return_type != null && return_type == null)
+                            return ps;
+                        if (ps.return_type == null && return_type == null)
+                            return ps;
                         if (ps.return_type != null && return_type != null)
                         {
                             if ((ps.return_type as TypeScope).IsEqual(return_type))
                                 return ps;
                         }
-                        else return null;
+                        else
+                            return null;
                     }
                     ps = ps.nextProc;
                 }
@@ -1001,7 +1005,8 @@ namespace CodeCompletion
                             }
                         }
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
-                        else ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
+                        else
+                            ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
                         if (ps == null)
                         {
                             ps = new ProcScope(meth_name, cur_scope);
@@ -1305,7 +1310,8 @@ namespace CodeCompletion
                                 topScope.AddExtensionMethod(meth_name, ps, ts);
                             }
                         }
-                        else ps = select_function_definition(ps, _function_header.parameters, return_type, topScope as TypeScope);
+                        else
+                            ps = select_function_definition(ps, _function_header.parameters, return_type, topScope as TypeScope, true);
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {
@@ -1404,7 +1410,7 @@ namespace CodeCompletion
                                 {
                                     //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
                                     //ps = ss as ProcScope;
-                                    ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null);
+                                    ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null, true);
                                     if (ps == null)
                                     {
                                         ps = new ProcScope(meth_name, cur_scope);
@@ -3631,7 +3637,10 @@ namespace CodeCompletion
 
         public override void visit(typecast_node _typecast_node)
         {
-        	_typecast_node.type_def.visit(this);
+            if (_typecast_node.cast_op == op_typecast.is_op)
+                returned_scope = TypeTable.bool_type;
+            else
+                _typecast_node.type_def.visit(this);
         }
 
         public override void visit(interface_node _interface_node)

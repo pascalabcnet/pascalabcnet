@@ -443,7 +443,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            if (!hasUsesCycle(unit))
+            //if (!hasUsesCycle(unit))
                 used_units.Add(unit);
         }
 
