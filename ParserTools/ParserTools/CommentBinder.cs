@@ -1021,7 +1021,7 @@ namespace PascalABCCompiler.Parsers
             _diapason_expr.right.visit(this);
         }
 
-        public void visit(var_def_list_for_record _var_def_list)
+        public override void visit(var_def_list_for_record _var_def_list)
         {
             throw new NotImplementedException();
         }

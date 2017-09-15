@@ -92,6 +92,11 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("program", "program"); keys.Add("program"); keyword_kinds.Add("program", KeywordKind.Program);
             keywords.Add("new", "new"); keys.Add("new"); keyword_kinds.Add("new", KeywordKind.New);
             keywords.Add("nil", "nil"); keys.Add("nil");
+            keywords.Add("loop", "loop"); keys.Add("loop");
+            keywords.Add("yield", "yield"); keys.Add("yield");
+            keywords.Add("sequence", "sequence"); keys.Add("sequence");
+            keywords.Add("extensionmethod", "extensionmethod"); keys.Add("extensionmethod");
+            keywords.Add("params", "params"); keys.Add("params");
             keywords_array = keys.ToArray();
             type_keywords_array = type_keys.ToArray();
 		}
@@ -1161,8 +1166,8 @@ namespace PascalABCCompiler.Parsers
             return getLambdaRepresentation(scope.CompiledType, has_return_value, parameters);
         }
 
-		protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
-		{
+        protected string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope, bool fullName)
+        {
             if (scope.CompiledType.Name != null && scope.CompiledType.Name.Contains("Func`"))
             {
                 return getLambdaRepresentation(scope, true);
@@ -1197,7 +1202,7 @@ namespace PascalABCCompiler.Parsers
             }
             else
             {
-                string s = GetShortTypeName(scope.CompiledType);
+                string s = !fullName?GetShortTypeName(scope.CompiledType):GetFullTypeName(scope.CompiledType);
                 ITypeScope[] instances = scope.GenericInstances;
                 if (instances != null && instances.Length > 0)
                 {
@@ -1217,6 +1222,11 @@ namespace PascalABCCompiler.Parsers
                 }
                 return s;
             }
+        }
+
+        protected virtual string GetSimpleDescriptionForCompiledType(ICompiledTypeScope scope)
+		{
+            return GetSimpleDescriptionForCompiledType(scope, false);
 		}
 		
 		protected virtual string GetDescriptionForArray(IArrayScope scope)
@@ -2060,8 +2070,11 @@ namespace PascalABCCompiler.Parsers
 		}
 		
 		public string GetSynonimDescription(ITypeSynonimScope scope)
-		{ 
-			return "type "+scope.Name+GetGenericString(scope.TemplateArguments) + " = "+GetSimpleDescription(scope.ActType);
+		{
+            if (scope.ActType is ICompiledTypeScope && !(scope.ActType as ICompiledTypeScope).Aliased)
+                return "type " + scope.Name + GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescriptionForCompiledType(scope.ActType as ICompiledTypeScope, true);
+            else
+			    return "type " + scope.Name+GetGenericString(scope.TemplateArguments) + " = " + GetSimpleDescription(scope.ActType);
 		}
 		
 		public string GetSynonimDescription(IProcScope scope)

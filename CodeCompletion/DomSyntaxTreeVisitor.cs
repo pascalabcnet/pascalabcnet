@@ -260,7 +260,7 @@ namespace CodeCompletion
                     List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
                     foreach (ProcScope meth in meths)
                         lst.Add(meth);
-                    ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, _bin_expr.left, _bin_expr.right);
+                    ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, false, _bin_expr.left, _bin_expr.right);
                     if (ps != null)
                         returned_scope = ps.return_type;
                     else
@@ -854,7 +854,7 @@ namespace CodeCompletion
                     ps.is_reintroduce = true;
         }
 
-        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType)
+        private ProcScope select_function_definition(ProcScope ps, formal_parameters prms, TypeScope return_type, TypeScope declType, bool function=false)
         {
             SymScope tmp = returned_scope;
             List<ElementScope> lst = new List<ElementScope>();
@@ -929,13 +929,17 @@ namespace CodeCompletion
                 {
                     if (ps.parameters == null || ps.parameters.Count == 0)
                     {
-                        if (ps.return_type == null && return_type == null) return ps;
+                        if (function && ps.return_type != null && return_type == null)
+                            return ps;
+                        if (ps.return_type == null && return_type == null)
+                            return ps;
                         if (ps.return_type != null && return_type != null)
                         {
                             if ((ps.return_type as TypeScope).IsEqual(return_type))
                                 return ps;
                         }
-                        else return null;
+                        else
+                            return null;
                     }
                     ps = ps.nextProc;
                 }
@@ -1001,7 +1005,8 @@ namespace CodeCompletion
                             }
                         }
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
-                        else ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
+                        else
+                            ps = select_function_definition(ps, _procedure_header.parameters, null, topScope as TypeScope);
                         if (ps == null)
                         {
                             ps = new ProcScope(meth_name, cur_scope);
@@ -1305,7 +1310,8 @@ namespace CodeCompletion
                                 topScope.AddExtensionMethod(meth_name, ps, ts);
                             }
                         }
-                        else ps = select_function_definition(ps, _function_header.parameters, return_type, topScope as TypeScope);
+                        else
+                            ps = select_function_definition(ps, _function_header.parameters, return_type, topScope as TypeScope, true);
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
                         if (ps == null)
                         {
@@ -1404,7 +1410,7 @@ namespace CodeCompletion
                                 {
                                     //while ((ss as ProcScope).already_defined && (ss as ProcScope).nextProc != null) ss = (ss as ProcScope).nextProc;
                                     //ps = ss as ProcScope;
-                                    ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null);
+                                    ps = select_function_definition(ss as ProcScope, _function_header.parameters, return_type, null, true);
                                     if (ps == null)
                                     {
                                         ps = new ProcScope(meth_name, cur_scope);
@@ -1697,7 +1703,12 @@ namespace CodeCompletion
                     returned_scope.loc = get_location(_type_declaration);//new location(loc.begin_line_num,loc.begin_column_num,ret_tn.loc.end_line_num,ret_tn.loc.end_column_num,ret_tn.loc.doc);
                     if (_type_declaration.type_def is class_definition)
                     {
-                        string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword((_type_declaration.type_def as class_definition).keyword);
+                        class_definition cl_def = _type_declaration.type_def as class_definition;
+                        string key = this.converter.controller.Parser.LanguageInformation.GetClassKeyword(cl_def.keyword);
+                        if (cl_def.attribute == class_attribute.Auto)
+                            key = "auto " + key;
+                        else if (cl_def.attribute == class_attribute.Abstract)
+                            key = "abstract " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
@@ -1776,25 +1787,25 @@ namespace CodeCompletion
         public override void visit(simple_const_definition _simple_const_definition)
         {
             //throw new Exception("The method or operation is not implemented.");
-           try
-           {
-            	_simple_const_definition.const_value.visit(this);
-           }
-           catch (Exception e)
-           {
-           	
-           }
-           if (returned_scope != null /*&& cnst_val.prim_val != null*/)
-           {
-           		ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant,_simple_const_definition.const_name.name),returned_scope, cnst_val.prim_val,cur_scope);
-           		cur_scope.AddName(_simple_const_definition.const_name.name, es);
-           		es.loc = get_location(_simple_const_definition);
-           		es.declaringUnit = entry_scope;
-           		if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_simple_const_definition))
-        		es.AddDocumentation(this.converter.controller.docs[_simple_const_definition]);
-           }
-           returned_scope = null;
-           cnst_val.prim_val = null;
+            try
+            {
+                _simple_const_definition.const_value.visit(this);
+            }
+            catch (Exception e)
+            {
+
+            }
+            if (returned_scope != null /*&& cnst_val.prim_val != null*/)
+            {
+                ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant, _simple_const_definition.const_name.name), returned_scope, cnst_val.prim_val, cur_scope);
+                cur_scope.AddName(_simple_const_definition.const_name.name, es);
+                es.loc = get_location(_simple_const_definition);
+                es.declaringUnit = entry_scope;
+                if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_simple_const_definition))
+                    es.AddDocumentation(this.converter.controller.docs[_simple_const_definition]);
+            }
+            returned_scope = null;
+            cnst_val.prim_val = null;
         }
 
         public override void visit(typed_const_definition _typed_const_definition)
@@ -2683,21 +2694,21 @@ namespace CodeCompletion
         private SymScope[] selected_methods = null;
         private bool disable_lambda_compilation = false;
 
-        private ProcScope select_method(SymScope[] meths, TypeScope tleft, TypeScope tright, TypeScope obj, params expression[] args)
+        private ProcScope select_method(SymScope[] meths, TypeScope tleft, TypeScope tright, TypeScope obj, bool obj_instanced, params expression[] args)
         {
-        	List<SymScope> arg_types = new List<SymScope>();
+            List<SymScope> arg_types = new List<SymScope>();
             List<TypeScope> arg_types2 = new List<TypeScope>();
             SymScope[] saved_selected_methods = selected_methods;
             selected_methods = meths;
             if (tleft != null || tright != null)
             {
                 if (tleft != null)
-                { 
+                {
                     arg_types.Add(tleft);
                     arg_types2.Add(tleft);
                 }
                 if (tright != null)
-                { 
+                {
                     arg_types.Add(tright);
                     arg_types2.Add(tright);
                 }
@@ -2717,24 +2728,24 @@ namespace CodeCompletion
                 disable_lambda_compilation = tmp_disable_lambda_compilation;
             }
             selected_methods = saved_selected_methods;
-        	List<ProcScope> good_procs = new List<ProcScope>();
-        	for (int i=0; i<meths.Length; i++)
-        	{
-        		if (meths[i] is ProcScope)
-        		{
-        			if (is_good_overload(meths[i] as ProcScope, arg_types))
-        				good_procs.Add(meths[i] as ProcScope);
-        		}
-        		else if (meths[i] is ProcType)
-        		{
-        			if (is_good_overload((meths[i] as ProcType).target, arg_types))
-        				good_procs.Add((meths[i] as ProcType).target);
-        		}
-        	}
-        	if (good_procs.Count > 1)
-        	for (int i=0; i<good_procs.Count; i++)
-        	if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
-        		return good_procs[i].GetInstance(arg_types2);
+            List<ProcScope> good_procs = new List<ProcScope>();
+            for (int i = 0; i < meths.Length; i++)
+            {
+                if (meths[i] is ProcScope)
+                {
+                    if (is_good_overload(meths[i] as ProcScope, arg_types))
+                        good_procs.Add(meths[i] as ProcScope);
+                }
+                else if (meths[i] is ProcType)
+                {
+                    if (is_good_overload((meths[i] as ProcType).target, arg_types))
+                        good_procs.Add((meths[i] as ProcType).target);
+                }
+            }
+            if (good_procs.Count > 1)
+                for (int i = 0; i < good_procs.Count; i++)
+                    if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
+                        return good_procs[i].GetInstance(arg_types2);
             if (good_procs.Count == 0)
             {
                 for (int i = 0; i < meths.Length; i++)
@@ -2748,18 +2759,18 @@ namespace CodeCompletion
                     }
                 }
             }
-        	if (good_procs.Count > 0)
+            if (good_procs.Count > 0)
             {
                 if (obj != null)
                 {
-                    if (obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
+                    if (!obj_instanced && obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
                         obj = obj.GetElementType();
                     arg_types2.Insert(0, obj);
                 }
-                    
+
                 return good_procs[0].GetInstance(arg_types2);
-            } 
-        	return null;
+            }
+            return null;
         }
 
         public override void visit(method_call _method_call)
@@ -2771,6 +2782,7 @@ namespace CodeCompletion
             SymScope[] names = returned_scopes.ToArray();
             List<expression> parameters = new List<expression>();
             TypeScope obj = null;
+            bool obj_instanced = false;
             if (names.Length > 0 && names[0] is TypeScope)
             {
                 returned_scope = names[0];
@@ -2796,7 +2808,11 @@ namespace CodeCompletion
                                     {
                                         List<TypeScope> generic_args = interf.GetInstances();
                                         if (generic_args != null && generic_args.Count > 0)
+                                        {
                                             obj = generic_args[0];
+                                            obj_instanced = true;
+                                        }
+                                            
                                     }
                                 }
                             }
@@ -2808,8 +2824,8 @@ namespace CodeCompletion
             {
                 parameters.AddRange(_method_call.parameters.expressions);
             }
-                
-            ProcScope ps = select_method(names, null, null, obj, parameters.ToArray());
+            List<TypeScope> lambda_types = new List<TypeScope>();    
+            ProcScope ps = select_method(names, null, null, obj, obj_instanced, parameters.ToArray());
             if (_method_call.parameters != null && ps != null)
                 for (int i = 0; i < _method_call.parameters.expressions.Count; i++)
                 {
@@ -3626,7 +3642,10 @@ namespace CodeCompletion
 
         public override void visit(typecast_node _typecast_node)
         {
-        	_typecast_node.type_def.visit(this);
+            if (_typecast_node.cast_op == op_typecast.is_op)
+                returned_scope = TypeTable.bool_type;
+            else
+                _typecast_node.type_def.visit(this);
         }
 
         public override void visit(interface_node _interface_node)
@@ -4563,6 +4582,14 @@ namespace CodeCompletion
                         {
                             param_type = awaitedProcType.instances[i];
                         }
+                        else if (awaitedProcType.IsDelegate)
+                        {
+                            var invokeMeth = awaitedProcType.FindNameOnlyInType("Invoke") as ProcScope;
+                            if (invokeMeth != null && invokeMeth.parameters != null && invokeMeth.parameters.Count > i)
+                            {
+                                param_type = invokeMeth.parameters[i].sc as TypeScope;
+                            }
+                        }
                     }
                     /*if (selected_methods != null)
                     {
@@ -4583,7 +4610,15 @@ namespace CodeCompletion
             SymScope tmp = cur_scope;
             cur_scope = ps;
             if (!disable_lambda_compilation)
-                _function_lambda_definition.proc_body.visit(this);
+            {
+                statement_list sl = _function_lambda_definition.proc_body as statement_list;
+                if (sl != null && sl.list.Count == 1 && sl.list[0] is assign && (sl.list[0] as assign).to is ident
+                    && ((sl.list[0] as assign).to as ident).name.ToLower() == "result")
+                    (sl.list[0] as assign).from.visit(this);
+                else
+                    _function_lambda_definition.proc_body.visit(this);
+            }
+                
             cur_scope = tmp;
             ps.return_type = returned_scope as TypeScope;
             returned_scope = new ProcType(ps);

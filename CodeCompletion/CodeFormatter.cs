@@ -1680,25 +1680,30 @@ namespace CodeFormatters
         }
 
         public override void visit(class_members _class_members)
-        {   
+        {
             if (_class_members.access_mod != null && _class_members.access_mod.source_context != null)
             {
                 bool already_off = true;
-                if (_class_members.members.Count > 0 && _class_members.members[0].source_context != null && _class_members.access_mod.source_context.end_position.line_num == _class_members.members[0].source_context.begin_position.line_num)
+                declaration first_decl = null;
+                if (_class_members.members.Count > 0)
+                    first_decl = _class_members.members[0];
+                if (first_decl is short_func_definition)
+                    first_decl = (first_decl as short_func_definition).procdef;
+                if (first_decl != null && first_decl.source_context != null && _class_members.access_mod.source_context.end_position.line_num == first_decl.source_context.begin_position.line_num)
                     IncOffset();
                 else
                     already_off = false;
                 visit_node(_class_members.access_mod);
-                if (_class_members.members.Count > 0)
-                sb.Append(" ");
+                if (first_decl != null && !(_class_members.members[0] is short_func_definition))
+                    sb.Append(" ");
                 if (!already_off)
                     IncOffset();
             }
             else
-            IncOffset();
+                IncOffset();
             foreach (declaration decl in _class_members.members)
-            { 
-               visit_node(decl);
+            {
+                visit_node(decl);
             }
             DecOffset();
         }
@@ -1736,7 +1741,7 @@ namespace CodeFormatters
             }
             if (_class_definition.body != null)
             {
-                if (!(/*(_class_definition.keyword == class_keyword.Record || _class_definition.keyword == class_keyword.TemplateRecord) &&*/ (_class_definition.body.class_def_blocks.Count == 0 || _class_definition.body.class_def_blocks[0].members != null && _class_definition.body.class_def_blocks[0].members.Count == 0) && _class_definition.class_parents == null))
+                if (!((_class_definition.body.class_def_blocks.Count == 0 || _class_definition.body.class_def_blocks[0].members != null && _class_definition.body.class_def_blocks[0].members.Count == 0) && _class_definition.class_parents == null))
                 {
                     class_pred = false;
                     visit_node(_class_definition.body);

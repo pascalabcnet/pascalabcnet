@@ -1154,6 +1154,8 @@ function Abs(x: int64): int64;
 function Abs(x: uint64): uint64;
 ///--
 function Abs(x: real): real;
+///--
+function Abs(x: single): single;
 /// Возвращает синус числа x
 function Sin(x: real): real;
 /// Возвращает гиперболический синус числа x
@@ -6832,6 +6834,11 @@ begin
 end;
 
 function Abs(x: real): real;
+begin
+  Result := Math.Abs(x);
+end;
+
+function Abs(x: single): single;
 begin
   Result := Math.Abs(x);
 end;

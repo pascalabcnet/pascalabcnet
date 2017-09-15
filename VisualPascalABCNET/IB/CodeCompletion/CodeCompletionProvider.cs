@@ -533,9 +533,6 @@ namespace VisualPascalABC
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(fileName, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            //System.Threading.Thread th = new System.Threading.Thread(new System.Threading.ThreadStart(CompileInThread));
-            //th.Start();
-            //while (th.ThreadState == System.Threading.ThreadState.Running) {}
             ICompletionData[] data = GetCompletionData(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();
@@ -590,9 +587,6 @@ namespace VisualPascalABC
             string text = textArea.Document.TextContent.Substring(0, textArea.Caret.Offset);
             //controller.Compile(fileName, text /*+ ")))));end."*/);
             FileName = fileName; Text = text;
-            //System.Threading.Thread th = new System.Threading.Thread(new System.Threading.ThreadStart(CompileInThread));
-            //th.Start();
-            //while (th.ThreadState == System.Threading.ThreadState.Running) {}
             ICompletionData[] data = GetCompletionDataByFirst(off, text, textArea.Caret.Line, textArea.Caret.Column, charTyped, keyw);
             CodeCompletion.AssemblyDocCache.CompleteDocumentation();
             CodeCompletion.UnitDocCache.CompleteDocumentation();

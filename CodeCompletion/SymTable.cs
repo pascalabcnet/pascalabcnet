@@ -443,7 +443,8 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            used_units.Add(unit);
+            //if (!hasUsesCycle(unit))
+                used_units.Add(unit);
         }
 
         public virtual string GetFullName()
@@ -645,7 +646,10 @@ namespace CodeCompletion
                     {
                         res = ss;
                         SymScope tmp = ss.FindScopeByLocation(line, column);
-                        if (tmp != null) return res = tmp;
+                        if (tmp != null)
+                            return tmp;
+                        else
+                            return res;
                     }
                     else if (!(ss is CompiledScope))
                     {
@@ -670,6 +674,15 @@ namespace CodeCompletion
                 }
             }
             return lst.ToArray();
+        }
+
+        protected bool IsClassMember(SymScope scope)
+        {
+            if (scope is ProcScope && (scope as ProcScope).declaringType != null)
+                return true;
+            if (scope is ElementScope && (scope as ElementScope).declaringUnit is TypeScope)
+                return true;
+            return false;
         }
 
         protected bool IsAfterDefinition(int def_line, int def_col)
@@ -791,7 +804,7 @@ namespace CodeCompletion
                 {
                     if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
                     {
-                        if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                         {
                             return ss;
                         }
@@ -809,7 +822,7 @@ namespace CodeCompletion
                         {
                             if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0 && this != ss)
                             {
-                                if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                                if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
                                     return ss;
                                 }
@@ -1303,12 +1316,17 @@ namespace CodeCompletion
 
         public override SymScope FindName(string s)
         {
+            if (string.Compare(si.name, s, true) == 0)
+                return this;
             return sc.FindNameOnlyInType(s);
         }
 
         public override List<SymScope> FindOverloadNames(string name)
         {
-            return sc.FindOverloadNamesOnlyInType(name);
+            List<SymScope> names = sc.FindOverloadNames(name);
+            if (topScope != null)
+                names.AddRange(topScope.FindOverloadNames(name));
+            return names;
         }
 
         public override TypeScope GetElementType()
@@ -1793,6 +1811,14 @@ namespace CodeCompletion
             get
             {
                 return is_override;
+            }
+        }
+
+        public bool OfTypeInstance
+        {
+            get
+            {
+                return original_function != null || declaringType != null && declaringType.instances != null && declaringType.instances.Count > 0;
             }
         }
 
@@ -2663,7 +2689,9 @@ namespace CodeCompletion
             TypeScope original_type = actType;
             if (actType.original_type != null)
                 original_type = actType.original_type;
-            return original_type.GetInstance(gen_args);
+            TypeScope ts = original_type.GetInstance(gen_args);
+            ts.aliased = true;
+            return ts;
         }
 
         public override void AddIndexer(TypeScope ts)
@@ -3053,6 +3081,8 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
+            if (string.Compare(si.name, name, true) == 0)
+                return this;
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return null;
             SymScope sc = null;
@@ -5110,6 +5140,10 @@ namespace CodeCompletion
 
             if (this.ctn.IsSubclassOf(cs.ctn))
                 return true;
+            if (implemented_interfaces != null)
+                foreach (TypeScope interf in implemented_interfaces)
+                    if (interf.IsEqual(ts))
+                        return true;
             TypeCode code1 = Type.GetTypeCode(this.ctn);
             TypeCode code2 = Type.GetTypeCode(cs.ctn);
             bool left = false;

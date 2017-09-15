@@ -80,6 +80,7 @@
     File ..\bin\Lib\FilesOperations.pcu
     File ..\bin\Lib\FormsABC.pcu
     File ..\bin\Lib\GraphABC.pcu
+    File ..\bin\Lib\GraphWPF.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
     File ..\bin\Lib\IniFile.pcu
@@ -107,7 +108,8 @@
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\Speech.pcu
     File ..\bin\Lib\PABCRtl.dll
-	File ..\bin\Lib\PABCRtl32.dll
+    File ..\bin\Lib\PABCRtl32.dll
+    File ..\bin\Lib\HelixToolkit.Wpf.dll
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
@@ -129,6 +131,7 @@
     ${AddFile} "FormsABC.pcu"
     ${AddFile} "GOLDParserEngine.pcu"
     ${AddFile} "GraphABC.pcu"
+    ${AddFile} "GraphWPF.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
     ${AddFile} "IniFile.pcu"
@@ -155,9 +158,12 @@
     ${AddFile} "OpenGL.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "Speech.pcu"
-	${AddFile} "PABCRtl.dll"
-	${AddFile} "PABCRtl.pdb"
-	Push "Lib\PABCRtl.dll"
+    ${AddFile} "PABCRtl.dll"
+    ${AddFile} "HelixToolkit.Wpf.dll"
+    ${AddFile} "PABCRtl.pdb"
+    Push "Lib\PABCRtl.dll"
+    Call NGEN
+    Push "Lib\HelixToolkit.Wpf.dll"
     Call NGEN
 	
     SetOutPath "$INSTDIR\LibSource"
@@ -179,6 +185,7 @@
     File ..\bin\Lib\FilesOperations.pas
     File ..\bin\Lib\FormsABC.pas
     File ..\bin\Lib\GraphABC.pas
+    File ..\bin\Lib\GraphWPF.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
     File ..\bin\Lib\IniFile.pas
@@ -227,6 +234,7 @@
     ${AddFile} "FilesOperations.pas"
     ${AddFile} "FormsABC.pas"
     ${AddFile} "GraphABC.pas"
+    ${AddFile} "GraphWPF.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
     ${AddFile} "IniFile.pas"

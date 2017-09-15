@@ -794,9 +794,9 @@ namespace PascalABCSavParser
                 return ntr.names[0];
             else
             {
-                var dn = new dot_node(ntr.names[0], ntr.names[1]);
+                var dn = new dot_node(ntr.names[0], ntr.names[1], ntr.names[0].source_context.Merge(ntr.names[1].source_context));
                 for (var i = 2; i < ntr.names.Count; i++)
-                    dn = new dot_node(dn, ntr.names[i]);
+                    dn = new dot_node(dn, ntr.names[i],dn.source_context.Merge(ntr.names[i].source_context));
                 dn.source_context = ntr.source_context;
                 return dn;
             }
@@ -808,6 +808,7 @@ namespace PascalABCSavParser
             if (en is dot_node)
             {
                 var dn = en as dot_node;
+                var sc = dn.source_context;
                 var ids = new List<ident>();
                 ids.Add(dn.right as ident);
                 while (dn.left is dot_node)
@@ -817,7 +818,7 @@ namespace PascalABCSavParser
                 }
                 ids.Add(dn.left as ident);
                 ids.Reverse();
-                return new named_type_reference(ids, dn.source_context);
+                return new named_type_reference(ids, sc);
             }
             this.AddErrorFromResource("TYPE_NAME_EXPECTED",  en.source_context);
             return null;

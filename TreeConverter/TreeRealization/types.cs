@@ -1963,15 +1963,20 @@ namespace PascalABCCompiler.TreeRealization
             {
                 return base_generic_instance.ConvertSymbolInfo(si);
             }
-            else if (si == null)
+            else //if (si == null)
             {
                 if (ImplementingInterfaces != null)
                 {
                     foreach (type_node ii_tn in ImplementingInterfaces)
                     {
-                        si = ii_tn.find_in_type(name, CurrentScope);
-                        if (si != null)
-                            return si;
+                        SymbolInfoList isi = ii_tn.find_in_type(name, CurrentScope);
+                        if (isi != null)
+                        {
+                            if (si == null)
+                                si = isi;
+                            else
+                                si.Add(isi);
+                        }
                     }
                 }
             }
@@ -4111,6 +4116,12 @@ namespace PascalABCCompiler.TreeRealization
                             return bfc;
                         }
                         if (cnfn.num_of_default_parameters == cnfn.parameters.Count)
+                            return bfc;
+                    }
+                    else if (bfc.function is common_method_node)
+                    {
+                        common_method_node cmn = bfc.function as common_method_node;
+                        if (cmn.num_of_default_parameters == cmn.parameters.Count)
                             return bfc;
                     }
                     else if (bfc.function is compiled_function_node)

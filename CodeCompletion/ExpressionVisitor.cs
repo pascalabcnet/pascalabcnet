@@ -297,7 +297,7 @@ namespace CodeCompletion
                     if (returned_scope == null)
                         returned_scope = returned_scopes[0];
                 }
-                if (returned_scope == null && entry_scope.topScope == null)
+                /*if (returned_scope == null && entry_scope.topScope == null)
                 {
                     try
                     {
@@ -313,17 +313,13 @@ namespace CodeCompletion
                     try
                     {
                         returned_scope = entry_scope.topScope.FindNameInAnyOrder(_ident.name);
-                        /*if (ret_scope != null)
-                        {
-                            if (!ret_scope.IsInScope(ret_scope.loc,_ident.source_context.begin_position.line_num,_ident.source_context.begin_position.column_num))
-                                ret_scope = null;
-                        }*/
+                        
                     }
                     catch (Exception e)
                     {
 
                     }
-                }
+                }*/
                 if (returned_scope != null)
                 {
                     if (returned_scope is ProcScope)

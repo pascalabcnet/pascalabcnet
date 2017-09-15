@@ -1623,7 +1623,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 check_possible_generic_names(names, loc);
             }
-            di = context.check_name_node_type(names.names[names.names.Count - 1].name, si, loc, general_node_type.type_node);
+            var lastname = names.names[names.names.Count - 1];
+            di = context.check_name_node_type(lastname.name, si, get_location(lastname), general_node_type.type_node);
             return (type_node)di;
         }
 
@@ -14754,7 +14755,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (is_event)
                     AddError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
-            	expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
+                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
                 if (cn is constant_node)
                     (cn as constant_node).SetType(DeduceType(cn.type, get_location(_var_def_statement.inital_value)));
                 inital_value = cn;
