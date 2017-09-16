@@ -4464,6 +4464,12 @@ end;
 procedure IOStandardSystem.readln;
 begin
   while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do;
+  {while True do
+  begin
+    var sym := CurrentIOSystem.read_symbol;
+    if (sym = END_OF_LINE_SYMBOL) or (sym = char(-1)) then
+      exit;
+  end;}
 end;
 
 procedure IOStandardSystem.write(obj: object);

@@ -1772,7 +1772,7 @@ begin
 // == Версия 4.17. Дополнения ==
     else if args[i].GetType.FullName.StartsWith('System.Tuple') then
        foreach var e in args[i].GetType.GetProperties do
-          InternalWrite(Arr(e.GetValue(args[i])))
+          InternalWrite(Arr(e.GetValue(args[i],nil)))
     else if args[i] is IEnumerable then
     begin
        var e := (args[i] as IEnumerable).GetEnumerator;
