@@ -17143,7 +17143,7 @@ namespace PascalABCCompiler.TreeConverter
             List<type_node> tparams = new List<type_node>();
             foreach (SyntaxTree.type_definition id in types)
             {
-                type_node tn = ret.visit(id);
+                type_node tn = convert_strong(id);
                 if (tn == null)
                 {
                     AddError(get_location(id), "TYPE_NAME_EXPECTED");
@@ -17158,7 +17158,7 @@ namespace PascalABCCompiler.TreeConverter
             List<type_node> tparams = new List<type_node>();
             foreach (SyntaxTree.type_definition id in types)
             {
-                type_node tn = ret.visit(id);
+                type_node tn = convert_strong(id);
                 CompilationErrorWithLocation not_useful = generic_parameter_eliminations.check_type_generic_useful(tn, get_location(id));
                 if (not_useful != null)
                 {
