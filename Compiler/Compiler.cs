@@ -260,6 +260,24 @@ namespace PascalABCCompiler
 
     }
 
+    public class IncludeNamespaceInUnit: CompilerCompilationError
+    {
+        public IncludeNamespaceInUnit(string FileName, SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_INCLUDE_NAMESPACE_IN_UNIT")), FileName)
+        {
+            this.source_context = sc;
+        }
+    }
+
+    public class NamespaceModuleExpected : CompilerCompilationError
+    {
+        public NamespaceModuleExpected(SyntaxTree.SourceContext sc)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_NAMESPACE_MODULE_EXPECTED")))
+        {
+            this.source_context = sc;
+        }
+    }
+
     public class MainResourceNotAllowed : CompilerCompilationError
     {
         public MainResourceNotAllowed(TreeRealization.location sl)
@@ -2645,8 +2663,8 @@ namespace PascalABCCompiler
         {
             TreeRealization.location loc = cd.location;
             SyntaxTree.SourceContext sc = null;
-            if (loc!=null)
-                sc = new SyntaxTree.SourceContext(loc.begin_line_num,loc.begin_column_num,loc.end_line_num,loc.end_column_num,0,0);
+            if (loc != null)
+                sc = new SyntaxTree.SourceContext(loc.begin_line_num, loc.begin_column_num, loc.end_line_num, loc.end_column_num, 0, 0);
             string UnitName = null;
             try
             {
@@ -2656,7 +2674,7 @@ namespace PascalABCCompiler
             {
                 throw;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new InvalidAssemblyPathError(CurrentCompilationUnit.SyntaxTree.file_name, sc);
             }
@@ -2670,9 +2688,145 @@ namespace PascalABCCompiler
             }
             else
                 //throw new DLLReadingError(UnitName);
-            	throw new AssemblyReadingError(CurrentCompilationUnit.SyntaxTree.file_name,UnitName,sc);
+                throw new AssemblyReadingError(CurrentCompilationUnit.SyntaxTree.file_name, UnitName, sc);
         }
-        
+
+        private bool HasIncludeNamespacesDirective(CompilationUnit Unit)
+        {
+            var directives = ConvertDirectives(Unit.SyntaxTree);
+            foreach (TreeRealization.compiler_directive cd in directives)
+            {
+                if (cd.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void IncludeNamespaces(CompilationUnit Unit)
+        {
+            if (HasIncludeNamespacesDirective(Unit) && Unit.SyntaxTree is SyntaxTree.unit_module && (Unit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library)
+                throw new IncludeNamespaceInUnit(CurrentCompilationUnit.SyntaxTree.file_name, CurrentCompilationUnit.SyntaxTree.source_context);
+            var directives = ConvertDirectives(Unit.SyntaxTree);
+            SyntaxTree.unit_module main_library = Unit.SyntaxTree as SyntaxTree.unit_module;
+            SyntaxTree.program_module main_program = Unit.SyntaxTree as SyntaxTree.program_module;
+            List<string> files = new List<string>();
+            
+            foreach (TreeRealization.compiler_directive cd in directives)
+            {
+                if (cd.name.ToLower() == TreeConverter.compiler_string_consts.include_namespace_directive)
+                {
+                    string directive = cd.directive.Replace('/', Path.DirectorySeparatorChar).Replace('\\', Path.DirectorySeparatorChar);
+
+                    if (directive == "*.pas" || directive.EndsWith(Path.DirectorySeparatorChar + "*.pas"))
+                    {
+                        string dir = Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive.Replace(Path.DirectorySeparatorChar + "*.pas", ""));
+                        foreach (string file in Directory.EnumerateFiles(dir, "*.pas"))
+                            files.Add(file);
+                    }
+                    else
+                        files.Add(Path.Combine(Path.GetDirectoryName(Unit.SyntaxTree.file_name), directive));
+
+
+                }
+            }
+            Dictionary<string, SyntaxTree.syntax_namespace_node> namespaces = new Dictionary<string, SyntaxTree.syntax_namespace_node>();
+            List<SyntaxTree.unit_or_namespace> namespace_modules = new List<SyntaxTree.unit_or_namespace>();
+            foreach (string file in files)
+            {
+                if (!File.Exists(file))
+                    throw new FileNotFound(file);
+                SyntaxTree.compilation_unit tree = GetNamespaceSyntaxTree(file);
+                if (!(tree is SyntaxTree.unit_module))
+                    throw new NamespaceModuleExpected(tree.source_context);
+                SyntaxTree.unit_module unit = tree as SyntaxTree.unit_module;
+                if (unit.unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Namespace)
+                    throw new NamespaceModuleExpected(unit.unit_name.source_context);
+                if (unit.implementation_part != null)
+                    throw new NamespaceModuleExpected(unit.implementation_part.source_context);
+                if (unit.finalization_part != null)
+                    throw new NamespaceModuleExpected(unit.finalization_part.source_context);
+                if (unit.initialization_part != null && unit.initialization_part.list.Count > 0)
+                    throw new NamespaceModuleExpected(unit.initialization_part.source_context);
+                SyntaxTree.syntax_namespace_node ns = null;
+                if (!namespaces.TryGetValue(unit.unit_name.idunit_name.name, out ns))
+                {
+                    ns = new SyntaxTree.syntax_namespace_node(unit.unit_name.idunit_name.name);
+                    ns.referenced_units = new TreeRealization.unit_node_list();
+                    namespaces[unit.unit_name.idunit_name.name] = ns;
+                }
+                if (unit.interface_part.interface_definitions != null)
+                {
+                    foreach (SyntaxTree.declaration decl in unit.interface_part.interface_definitions.defs)
+                    {
+                        ns.defs.Add(decl);
+                    }
+                    if (unit.interface_part.uses_modules != null)
+                    {
+                        checkDuplicateUsesUnit(unit.interface_part.uses_modules.units);
+                        foreach (SyntaxTree.unit_or_namespace name_space in unit.interface_part.uses_modules.units)
+                        {
+                            if (IsPossibleNamespace(name_space, false))
+                            {
+                                ns.referenced_units.AddElement(new TreeRealization.namespace_unit_node(GetNamespace(name_space)));
+                            }
+                            else
+                            {
+                                namespace_modules.Add(name_space);
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (string s in namespaces.Keys)
+            {
+                if (main_library != null)
+                    main_library.interface_part.interface_definitions.Insert(0, namespaces[s]);
+                else
+                    main_program.program_block.defs.Insert(0, namespaces[s]);
+            }
+            SyntaxTree.uses_list main_uses = null;
+            if (main_library != null)
+            {
+                if (main_library.interface_part.uses_modules != null)
+                    main_uses = main_library.interface_part.uses_modules;
+            }
+            else if (main_program.used_units != null)
+                main_uses = main_program.used_units;
+            if (main_uses == null)
+                main_uses = new SyntaxTree.uses_list();
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+            foreach (SyntaxTree.unit_or_namespace name_space in namespace_modules)
+            {
+                string name = SyntaxTree.Utils.IdentListToString(name_space.name.idents, ".").ToLower();
+                if (!dict.ContainsKey(name))
+                {
+                    main_uses.Add(name_space);
+                    dict.Add(name, name);
+                }
+            }
+            if (main_library != null)
+                main_library.interface_part.uses_modules = main_uses;
+            else
+                main_program.used_units = main_uses;
+        }
+
+        private SyntaxTree.compilation_unit GetNamespaceSyntaxTree(string FileName)
+        {
+            string SourceText = GetSourceFileText(FileName);
+            List<string> DefinesList = new List<string>();
+            if (!compilerOptions.Debug && !compilerOptions.ForDebugging)
+                DefinesList.Add("RELEASE");
+            else
+                DefinesList.Add("DEBUG");
+            SyntaxTree.compilation_unit SyntaxTree = InternalParseText(FileName, SourceText, errorsList, warnings, DefinesList);
+            if (errorsList.Count > 0)
+                throw errorsList[0];
+            SyntaxTree = syntaxTreeConvertersController.Convert(SyntaxTree) as SyntaxTree.compilation_unit;
+            return SyntaxTree;
+        }
+
         public TreeRealization.unit_node_list GetReferences(CompilationUnit Unit)
         {
             //TODO переделать, ConvertDirectives определена дважды и вызывается дважды!
@@ -2912,19 +3066,6 @@ namespace PascalABCCompiler
                     string SourceFileName = FindSourceFileName(Path.Combine(Path.GetDirectoryName(UnitName), Path.GetFileNameWithoutExtension(UnitName)));
                     try
                     {
-                        //TODO: подумать как это нормально сделать
-                        /*if (CompilerOptions.Debug)
-                        {
-                            PCUReader.PCUFileHeadState PCUFileHeadState = PCUReader.GetPCUFileHeadState(UnitName);
-                            if (PCUFileHeadState.IsPCUFile && 
-                                PCUFileHeadState.SupportedVersion && 
-                                !PCUFileHeadState.IncludetDebugInfo && 
-                                SourceFileName != null)
-                            {
-                                //перекомпилируем файл для получения отладочной информации
-                                throw new Exception("");
-                            }
-                        }*/
                         if ((CurrentUnit = ReadPCU(UnitName)) != null)
                         {
                             Units.AddElement(CurrentUnit.SemanticTree);
@@ -2979,6 +3120,7 @@ namespace PascalABCCompiler
                 if (errorsList.Count == 0) // SSM 2/05/16 - для преобразования синтаксических деревьев извне
                 {
                     CurrentUnit.SyntaxTree = syntaxTreeConvertersController.Convert(CurrentUnit.SyntaxTree) as SyntaxTree.compilation_unit;
+                    
                 }
 
                 if (errorsList.Count == 0 && need_gen_doc(CurrentUnit.SyntaxTree))
@@ -3053,7 +3195,7 @@ namespace PascalABCCompiler
                 }
             }
             TreeRealization.unit_node_list References = GetReferences(CurrentUnit);
-
+            IncludeNamespaces(CurrentUnit);
             if (SyntaxUsesList != null)
             {
                 
@@ -3100,7 +3242,7 @@ namespace PascalABCCompiler
 
             AddNamespaces(CurrentUnit.InterfaceUsingNamespaceList, CurrentUnit.PossibleNamespaces, true);
             AddNamespaces(CurrentUnit.InterfaceUsingNamespaceList, GetInterfaceSyntaxUsingList(CurrentUnit.SyntaxTree));
-
+            
             //Console.WriteLine("Compile Interface "+UnitName);//DEBUG
 #if DEBUG
             if (InternalDebug.SemanticAnalysis)

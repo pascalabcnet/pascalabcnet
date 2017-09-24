@@ -252,7 +252,8 @@ namespace PascalABCCompiler.TreeConverter
 
         private Dictionary<common_namespace_node, Dictionary<string, template_class>> compiled_tc_cache = new Dictionary<common_namespace_node, Dictionary<string, template_class>>();
         internal System.Collections.Hashtable member_decls = new System.Collections.Hashtable();
-        
+        internal bool namespace_converted = false;
+
         public compilation_context(convertion_data_and_alghoritms convertion_data_and_alghoritms, syntax_tree_visitor syntax_tree_visitor)
         {
             this.convertion_data_and_alghoritms = convertion_data_and_alghoritms;
@@ -324,6 +325,11 @@ namespace PascalABCCompiler.TreeConverter
             _has_nested_functions = false;
         }
         
+        public void clear_type_prededinitions()
+        {
+            _types_predefined.Clear();
+        }
+
         public bool inStaticArea()
         {
             if (converted_type != null && top_function != null)
@@ -404,17 +410,27 @@ namespace PascalABCCompiler.TreeConverter
         public common_function_node get_method_to_realize(SyntaxTree.declaration dc)
         {
         	return member_decls[dc] as common_function_node;
-        	
         }
-        
+
+        public common_type_node get_type_to_realize(SyntaxTree.declaration dc)
+        {
+            return member_decls[dc] as common_type_node;
+        }
+
         public void add_method_header(SyntaxTree.declaration dc, definition_node dn)
         {
         	member_decls.Add(dc,dn);
         }
+
+        public void add_type_header(SyntaxTree.type_declaration td, common_type_node ctn)
+        {
+            member_decls.Add(td, ctn);
+        }
         
         public void clear_member_bindings()
         {
-        	member_decls.Clear();
+            if (!namespace_converted)
+        	    member_decls.Clear();
         }
 
         public void BeginSkipGenericInstanceChecking()

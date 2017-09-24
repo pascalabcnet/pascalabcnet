@@ -2742,7 +2742,7 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else
                     {
-                        common_unit_node cun = _referenced_units[i] as common_unit_node;
+                        common_unit_node cun = referenced_units[i] as common_unit_node;
                         if (cun != null)
                         {
                             if (try_get_system_module && cun.IsSystemUnit)
@@ -3805,8 +3805,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     generate_default_constructor();
                 }
-                
-                visit_class_member_realizations(_class_body);
+                if (!context.namespace_converted)
+                    visit_class_member_realizations(_class_body);
             }
             
             if (!SemanticRules.OrderIndependedMethodNames)
@@ -9932,7 +9932,6 @@ namespace PascalABCCompiler.TreeConverter
             reset_for_interface();
 
             UpdateUnitDefinitionItemForUnit(_compiled_unit);
-
             hard_node_test_and_visit(_program_module.program_block);
             context.check_labels(context.converted_namespace.labels);
 
@@ -9956,6 +9955,7 @@ namespace PascalABCCompiler.TreeConverter
 
             _compiled_unit.main_function = main_function;
         }
+
 
         private void reset_for_interface()
         {
@@ -10023,6 +10023,130 @@ namespace PascalABCCompiler.TreeConverter
             context.leave_interface_part();
             _is_interface_part = false;
            
+        }
+
+        public void convert_pabc_namespaces(syntax_namespace_node[] namespaces)
+        {
+            context.namespace_converted = true;
+            Dictionary<syntax_namespace_node, common_namespace_node> dict = new Dictionary<syntax_namespace_node, common_namespace_node>();
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                _syntax_namespace_node.referenced_units.AddRange(referenced_units);
+                var names = _syntax_namespace_node.name.Split('.');
+                SymTable.Scope scope = null;
+                SymTable.Scope parent_scope = context.CurrentScope;
+                for (int i = 0; i < names.Length; i++)
+                {
+                    var si_list = context.CurrentScope.Find(names[i]);
+                    if (si_list == null)
+                    {
+                        List<SymTable.Scope> top_scopes = new List<SymTable.Scope>();
+                        top_scopes.AddRange(build_referenced_units(_syntax_namespace_node.referenced_units, false));
+                        if (parent_scope != context.CurrentScope)
+                            top_scopes.Add(parent_scope);
+                        scope = convertion_data_and_alghoritms.symbol_table.CreateNamespaceScope(top_scopes.ToArray(), parent_scope);
+                        common_namespace_node cmn = new common_namespace_node(null, _compiled_unit, names[i], scope, null);
+                        parent_scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
+                        if (i == names.Length - 1)
+                            dict.Add(_syntax_namespace_node, cmn);
+                    }
+                    else
+                    {
+                        foreach (SymbolInfoUnit si in si_list.InfoUnitList)
+                            if (si.sym_info is common_namespace_node)
+                            {
+                                scope = (si.sym_info as common_namespace_node).scope;
+                            }
+                    }
+                    parent_scope = scope;
+                }
+                
+                context.enter_scope(scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            if (td.type_def is class_definition)
+                            {
+                                class_definition cl_def = td.type_def as class_definition;
+                                if (cl_def.body == null)
+                                    AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
+                                common_type_node ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), false, false);
+                                ctn.ForwardDeclarationOnly = true;
+                                context.converted_type = null;
+                                context.add_type_header(td, ctn);
+                            }
+                            else if (td.type_def is procedure_header || td.type_def is function_header)
+                            {
+
+                            }
+                            else if (td.type_def is enum_type_definition)
+                            {
+                                hard_node_test_and_visit(td);
+                            }
+                            else
+                                AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                        }
+                        
+                    }
+                    else
+                        AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                }
+
+                context.leave_scope();
+                
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            hard_node_test_and_visit(td);
+                            if (td.type_def is class_definition)
+                            {
+                                common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
+                                ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
+                            }
+                        }
+                    }
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            if (td.type_def is class_definition)
+                            {
+                                context.converted_type = context.get_type_to_realize(td);
+                                class_definition cl_def = td.type_def as class_definition;
+                                visit_class_member_realizations(cl_def.body);
+                                context.converted_type = null;
+                            }
+                        }
+                    }
+                }
+                context.leave_scope();
+            }
+            context.namespace_converted = false;
+            context.clear_member_bindings();
+
         }
 
         public override void visit(SyntaxTree.compilation_unit _compilation_unit)
@@ -10384,6 +10508,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        
         public override void visit(SyntaxTree.type_declaration _type_declaration)
         {
             //bool is_template_synonym = false;
@@ -14777,10 +14902,20 @@ namespace PascalABCCompiler.TreeConverter
         			}
             	}
         	}
+            List<syntax_namespace_node> namespaces = new List<syntax_namespace_node>();
+            foreach (SyntaxTree.declaration sd in _subprogram_definitions.defs)
+            {
+                convertion_data_and_alghoritms.check_node_parser_error(sd);
+                if (sd is syntax_namespace_node)
+                    namespaces.Add(sd as syntax_namespace_node);
+            }
+            if (namespaces.Count > 0)
+                convert_pabc_namespaces(namespaces.ToArray());
         	foreach (SyntaxTree.declaration sd in _subprogram_definitions.defs)
             {
                 convertion_data_and_alghoritms.check_node_parser_error(sd);
-                sd.visit(this);
+                if (!(sd is syntax_namespace_node))
+                    sd.visit(this);
             }
             if (SemanticRules.OrderIndependedFunctionNames)
             {
@@ -18052,7 +18187,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void LeaveTypeDeclarationsSection()
         {
             type_section_converting = false;
-            if (context.types_predefined.Count > 0)
+            if (context.types_predefined.Count > 0 && !context.namespace_converted)
             {
             	AddError(context.types_predefined[0].loc, "NO_TYPE_{0}_DEFINITION", context.types_predefined[0].name);
             }
@@ -19571,5 +19706,7 @@ namespace PascalABCCompiler.TreeConverter
 
             visit(mc);*/
         }
+
+        
     }
 }

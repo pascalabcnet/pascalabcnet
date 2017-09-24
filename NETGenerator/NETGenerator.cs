@@ -1258,7 +1258,7 @@ namespace PascalABCCompiler.NETGenerator
         private void AddTypeWithoutConvert(ICommonTypeNode t)
         {
             if (helper.GetTypeReference(t) != null) return;
-            TypeBuilder tb = mb.DefineType(cur_unit + "." + t.name, ConvertAttributes(t), null, new Type[0]);
+            TypeBuilder tb = mb.DefineType(BuildTypeName(t.name), ConvertAttributes(t), null, new Type[0]);
             helper.AddType(t, tb);
             //(ssyy) обрабатываем generics
             if (t.is_generic_type_definition)
@@ -1862,6 +1862,13 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private string BuildTypeName(string type_name)
+        {
+            if (type_name.IndexOf(".") == -1)
+                return cur_unit + "." + type_name;
+            return type_name;
+        }
+
         //Перевод заголовка типа
         private void ConvertTypeHeader(ICommonTypeNode value)
         {
@@ -1924,7 +1931,7 @@ namespace PascalABCCompiler.NETGenerator
                 ta = TypeAttributes.Public;
                 if (value.type_access_level == type_access_level.tal_internal)
                     ta = TypeAttributes.NotPublic;
-                EnumBuilder emb = mb.DefineEnum(cur_unit + "." + value.name, ta, TypeFactory.Int32Type);
+                EnumBuilder emb = mb.DefineEnum(BuildTypeName(value.name), ta, TypeFactory.Int32Type);
                 //int num = 0;
                 foreach (IClassConstantDefinitionNode ccfn in value.constants)
                 {
@@ -1938,7 +1945,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (not_exist)
                 {
-                    tb = mb.DefineType(cur_unit + "." + value.name, ta, null, interfaces);
+                    tb = mb.DefineType(BuildTypeName(value.name), ta, null, interfaces);
                 }
                 else
                 {
