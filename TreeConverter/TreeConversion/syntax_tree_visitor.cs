@@ -10046,7 +10046,9 @@ namespace PascalABCCompiler.TreeConverter
                             top_scopes.Add(parent_scope);
                         scope = convertion_data_and_alghoritms.symbol_table.CreateNamespaceScope(top_scopes.ToArray(), parent_scope);
                         common_namespace_node cmn = new common_namespace_node(null, _compiled_unit, names[i], scope, null);
+                        
                         parent_scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
+                        scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
                         if (i == names.Length - 1)
                             dict.Add(_syntax_namespace_node, cmn);
                     }
@@ -10101,6 +10103,56 @@ namespace PascalABCCompiler.TreeConverter
             }
             foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
             {
+                var cmn = dict[_syntax_namespace_node];
+                List<SymTable.Scope> scopes = new List<SymTable.Scope>();
+                SymTable.NamespaceScope ns_scope = cmn.scope as SymTable.NamespaceScope;
+                if (ns_scope.TopScopeArray != null)
+                    scopes.AddRange(ns_scope.TopScopeArray);
+                foreach (unit_node un in _syntax_namespace_node.referenced_units)
+                {
+                    if (un is namespace_unit_node)
+                    {
+                        var nun = un as namespace_unit_node;
+                        var names = nun.namespace_name.namespace_name.Split('.');
+                        var si_list = context.CurrentScope.Find(names[0]);
+                        if (si_list != null && si_list.First().sym_info is common_namespace_node)
+                        {
+                            SymTable.Scope ns_scope2 = (si_list.First().sym_info as common_namespace_node).scope;
+                            for (int i = 1; i < names.Length; i++)
+                            {
+                                si_list = ns_scope2.Find(names[i]);
+                                ns_scope2 = (si_list.First().sym_info as common_namespace_node).scope;
+                            }
+                            scopes.Add(ns_scope2);
+                        }
+                    }
+                }
+                ns_scope.TopScopeArray = scopes.ToArray();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        { 
+                            if (td.type_def is procedure_header || td.type_def is function_header)
+                            {
+                                hard_node_test_and_visit(td);
+                                common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
+                                ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
+                            }
+                        }
+                    }
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
                 common_namespace_node cmn = dict[_syntax_namespace_node];
                 context.enter_scope(cmn.scope);
                 foreach (declaration decl in _syntax_namespace_node.defs)
@@ -10110,9 +10162,9 @@ namespace PascalABCCompiler.TreeConverter
                         type_declarations type_decls = decl as type_declarations;
                         foreach (type_declaration td in type_decls.types_decl)
                         {
-                            hard_node_test_and_visit(td);
                             if (td.type_def is class_definition)
                             {
+                                hard_node_test_and_visit(td);
                                 common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
                                 ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
                             }
