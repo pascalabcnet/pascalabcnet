@@ -193,14 +193,16 @@ namespace PascalABCCompiler.NETGenerator
             return true;
         }
 
-        public void EnterSafeBlock()
+        public bool EnterSafeBlock()
         {
+            bool tmp = safe_block;
             safe_block = true;
+            return tmp;
         }
 
-        public void LeaveSafeBlock()
+        public void LeaveSafeBlock(bool value)
         {
-            safe_block = false;
+            safe_block = value;
         }
 
         protected void MarkSequencePoint(SemanticTree.ILocation Location)
@@ -5602,9 +5604,9 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(SemanticTree.ITryBlockNode value)
         {
             Label exBl = il.BeginExceptionBlock();
-            EnterSafeBlock();
+            var safe_block = EnterSafeBlock();
             ConvertStatement(value.TryStatements);
-            LeaveSafeBlock();
+            LeaveSafeBlock(safe_block);
             if (value.ExceptionFilters.Length != 0)
             {
                 foreach (SemanticTree.IExceptionFilterBlockNode iefbn in value.ExceptionFilters)
@@ -5628,17 +5630,17 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         il.Emit(OpCodes.Pop);
                     }
-                    EnterSafeBlock();
+                    safe_block = EnterSafeBlock();
                     ConvertStatement(iefbn.ExceptionHandler);
-                    LeaveSafeBlock();
+                    LeaveSafeBlock(safe_block);
                 }
             }
             if (value.FinallyStatements != null)
             {
                 il.BeginFinallyBlock();
-                EnterSafeBlock();
+                safe_block = EnterSafeBlock();
                 ConvertStatement(value.FinallyStatements);
-                LeaveSafeBlock();
+                LeaveSafeBlock(safe_block);
             }
             il.EndExceptionBlock();
         }
@@ -10358,9 +10360,9 @@ namespace PascalABCCompiler.NETGenerator
             }
             labels.Push(leave_label);
             clabels.Push(l2);
-            EnterSafeBlock();
+            var safe_block = EnterSafeBlock();
             ConvertStatement(value.Body);
-            LeaveSafeBlock();
+            LeaveSafeBlock(safe_block);
             //MarkSequencePoint(value.Location);
             il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
             il.MarkLabel(l2);
@@ -10378,6 +10380,8 @@ namespace PascalABCCompiler.NETGenerator
 
             il.EndExceptionBlock();
             il.MarkLabel(leave_label);
+            labels.Pop();
+            clabels.Pop();
         }
 
 
