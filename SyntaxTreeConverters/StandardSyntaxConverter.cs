@@ -33,6 +33,20 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // assign_tuple и assign_var_tuple
             AssignTuplesDesugarVisitor.New.ProcessNode(root);
 
+            /*#if DEBUG
+                        try
+                        {
+                            //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
+                        }
+                        catch
+                        {
+
+                        }
+
+            #endif*/
+
+
+
             // slice_expr и slice_expr_question
             SliceDesugarVisitor.New.ProcessNode(root);
 
@@ -46,18 +60,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             // Всё, связанное с yield
             MarkMethodHasYieldAndCheckSomeErrorsVisitor.New.ProcessNode(root);
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
-
-/*#if DEBUG
-            try
-            {
-                //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
-            }
-            catch
-            {
-
-            }
-
-#endif*/
 
             return root;
         }

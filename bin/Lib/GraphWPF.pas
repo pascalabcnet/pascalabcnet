@@ -359,25 +359,39 @@ procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Ali
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center);
 
+/// Выводит строку в позицию (x,y)
 procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop);
+/// Выводит строку в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop);
+/// Выводит целое в позицию (x,y)
 procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop);
+/// Выводит целое в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop);
+/// Выводит вещественное в позицию (x,y)
 procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop);
+/// Выводит вещественное в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop);
 
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
 procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect);  
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
 procedure DrawGraph(f: real -> real; a, b, min, max: real);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
 procedure DrawGraph(f: real -> real; a, b: real; r: GRect);
+/// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
 procedure DrawGraph(f: real -> real; r: GRect);
+/// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
 procedure DrawGraph(f: real -> real; a, b: real);
+/// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
 procedure DrawGraph(f: real -> real);
 
 procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawcoords: boolean := true);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean := true);
-procedure SetStandardCoords;
+procedure SetStandardCoords(scale: real := 1.0);
 procedure DrawGrid;
 
 function XMin: real;
@@ -1214,17 +1228,18 @@ end;
 procedure SetMathematicCoords(x1: real; x2: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawcoords);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawcoords);
 
-procedure SetStandardCoordsP;
+procedure SetStandardCoordsP(scale: real := 1.0);
 begin
   Window.Clear;
   CurrentCoordType := ScreenCoords;
   XOrigin := 0;
   YOrigin := 0;
-  GlobalScale := 1;
-  Host.RenderTransform := Transform.Identity;
-  Pen.Width := 1;
+  GlobalScale := scale;
+  var m: Transform := new MatrixTransform(scale,0,0,scale,0,0);
+  Host.RenderTransform := m;
+  Pen.Width := Pen.Width / scale;
 end;
-procedure SetStandardCoords := Invoke(SetStandardCoordsP);
+procedure SetStandardCoords(scale: real) := Invoke(SetStandardCoordsP,scale);
 
 
 /// --- SystemMouseEvents
