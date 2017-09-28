@@ -3928,6 +3928,8 @@ namespace CodeCompletion
                 return true;
             if (this.IsGenericParameter && ts.IsGenericParameter && this.Name == ts.Name)
                 return true;
+            if (ts is TemplateParameterScope)
+                return true;
             TypeScope tmp = this.baseScope;
             while (tmp != null)
                 if (tmp.IsEqual(ts))

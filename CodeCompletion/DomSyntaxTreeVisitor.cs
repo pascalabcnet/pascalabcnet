@@ -4657,7 +4657,7 @@ namespace CodeCompletion
         {
             SymScope tmp = cur_scope;
             TypeScope ts = null;
-            cur_scope = ts = new TypeScope(SymbolKind.Class, tmp, null);
+            cur_scope = ts = new TypeScope(SymbolKind.Class, entry_scope, null);
             tmp.AddName("class", cur_scope);
             ts.loc = get_location(_unnamed_type_object);
             ts.si = new SymInfo("class", SymbolKind.Class, "");
