@@ -43,7 +43,7 @@
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
-%token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams 
+%token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams tkNamespace
 %token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
@@ -362,6 +362,10 @@ unit_header
         { 
 			$$ = NewUnitHeading(new ident($1.text, @1), $2, @$); 
 		}
+    | tkNamespace ident_or_keyword_pointseparator_list tkSemiColon optional_head_compiler_directives
+        {
+            $$ = NewNamespaceHeading(new ident($1.text, @1), $2 as ident_list, @$);
+        }
     ;
 
 unit_key_word
@@ -3486,6 +3490,8 @@ keyword
     | tkUnit
 		{ $$ = $1; }
     | tkLibrary
+		{ $$ = $1; }
+    | tkNamespace
 		{ $$ = $1; }
     | tkExternal
 		{ $$ = $1; }

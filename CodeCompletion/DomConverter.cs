@@ -524,7 +524,7 @@ namespace CodeCompletion
             if (elems == null) return null;
             for (int i = 0; i < elems.Length; i++)
             {
-                if (!elems[i].name.StartsWith("$") && (elems[i].kind == SymbolKind.Class || elems[i].kind == SymbolKind.Namespace) && elems[i].kind != SymbolKind.Interface)
+                if (!elems[i].name.StartsWith("$") && (elems[i].kind == SymbolKind.Class || elems[i].kind == SymbolKind.Struct || elems[i].kind == SymbolKind.Namespace) && elems[i].kind != SymbolKind.Interface)
                 {
                     if (expr != null && si != null && si is ElementScope &&
                     string.Compare(elems[i].name, (si as ElementScope).sc.si.name, true) == 0)
