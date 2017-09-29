@@ -5655,7 +5655,10 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(IGotoStatementNode value)
         {
             Label lab = helper.GetLabel(value.label, il);
-            il.Emit(OpCodes.Br, lab);
+            if (safe_block)
+                il.Emit(OpCodes.Leave, lab);
+            else
+                il.Emit(OpCodes.Br, lab);
         }
 
         private Stack<Label> if_stack = new Stack<Label>();
