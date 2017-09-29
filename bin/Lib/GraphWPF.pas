@@ -391,7 +391,7 @@ procedure DrawGraph(f: real -> real);
 
 procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawcoords: boolean := true);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean := true);
-procedure SetStandardCoords(scale: real := 1.0);
+procedure SetStandardCoords(scale: real := 1.0; x0: real := 0; y0: real := 0);
 procedure DrawGrid;
 
 function XMin: real;
@@ -1228,18 +1228,18 @@ end;
 procedure SetMathematicCoords(x1: real; x2: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawcoords);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawcoords);
 
-procedure SetStandardCoordsP(scale: real := 1.0);
+procedure SetStandardCoordsP(scale: real := 1.0; x0: real := 0; y0: real := 0);
 begin
   Window.Clear;
   CurrentCoordType := ScreenCoords;
   XOrigin := 0;
   YOrigin := 0;
   GlobalScale := scale;
-  var m: Transform := new MatrixTransform(scale,0,0,scale,0,0);
+  var m: Transform := new MatrixTransform(scale,0,0,scale,x0,y0);
   Host.RenderTransform := m;
-  Pen.Width := Pen.Width / scale;
+  Pen.Width := Pen.Width * scale;
 end;
-procedure SetStandardCoords(scale: real) := Invoke(SetStandardCoordsP,scale);
+procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
 
 
 /// --- SystemMouseEvents

@@ -650,14 +650,14 @@ var_decl_sect
         { 
 			$$ = ($1 as variable_definitions).Add($2 as var_def_statement, @$);
 		} 
-    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr tkSemiColon
+/*    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr tkSemiColon
 	    {
 			if ($7.type != Operators.Assignment)
 			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
 			($5 as ident_list).Insert(0,$3);
 			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }
+	    }*/
     ;
 
 const_decl
@@ -2346,12 +2346,12 @@ var_stmt
 			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
 		}		
-/*    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr
+    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr
 	    {
 			($5 as ident_list).Insert(0,$3);
 			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }*/
+	    }
     ;
 
 assignment
