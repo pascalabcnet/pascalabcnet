@@ -1807,7 +1807,7 @@ namespace PascalABCCompiler
                         //Console.WriteLine("Compile Implementation "+UnitName);//DEBUG
                         //TODO: Избавиться от преобразования типа.
 
-                        AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.PossibleNamespaces, true);
+                        AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.PossibleNamespaces, true, null);
 
 #if DEBUG
                         if (InternalDebug.SemanticAnalysis)
@@ -2704,7 +2704,7 @@ namespace PascalABCCompiler
             return false;
         }
 
-        private void IncludeNamespaces(CompilationUnit Unit)
+        private Dictionary<string, SyntaxTree.syntax_namespace_node> IncludeNamespaces(CompilationUnit Unit)
         {
             if (HasIncludeNamespacesDirective(Unit) && Unit.SyntaxTree is SyntaxTree.unit_module && (Unit.SyntaxTree as SyntaxTree.unit_module).unit_name.HeaderKeyword != SyntaxTree.UnitHeaderKeyword.Library)
                 throw new IncludeNamespaceInUnit(CurrentCompilationUnit.SyntaxTree.file_name, CurrentCompilationUnit.SyntaxTree.source_context);
@@ -2810,6 +2810,7 @@ namespace PascalABCCompiler
                 main_library.interface_part.uses_modules = main_uses;
             else
                 main_program.used_units = main_uses;
+            return namespaces;
         }
 
         private SyntaxTree.compilation_unit GetNamespaceSyntaxTree(string FileName)
@@ -2917,9 +2918,9 @@ namespace PascalABCCompiler
             return new TreeRealization.using_namespace(SyntaxTree.Utils.IdentListToString(_name_space.name.idents, "."));
         }
 
-        private TreeRealization.using_namespace GetNamespace(TreeRealization.using_namespace_list using_list, string full_namespace_name, SyntaxTree.unit_or_namespace _name_space, bool possible_is_unit)
+        private TreeRealization.using_namespace GetNamespace(TreeRealization.using_namespace_list using_list, string full_namespace_name, SyntaxTree.unit_or_namespace _name_space, bool possible_is_unit, Dictionary<string, SyntaxTree.syntax_namespace_node> pabc_namespaces)
         {
-            if (!NetHelper.NetHelper.NamespaceExists(full_namespace_name))
+            if (!NetHelper.NetHelper.NamespaceExists(full_namespace_name) && !(pabc_namespaces != null && pabc_namespaces.ContainsKey(full_namespace_name)))
             {
             	if (possible_is_unit)
                     if (!full_namespace_name.Contains("."))
@@ -2929,16 +2930,16 @@ namespace PascalABCCompiler
             return new TreeRealization.using_namespace(full_namespace_name);
         }
 
-        public void AddNamespaces(TreeRealization.using_namespace_list using_list, List<SyntaxTree.unit_or_namespace> namespaces, bool possible_is_units)
+        public void AddNamespaces(TreeRealization.using_namespace_list using_list, List<SyntaxTree.unit_or_namespace> namespaces, bool possible_is_units, Dictionary<string, SyntaxTree.syntax_namespace_node> pabc_namespaces)
         {
             foreach (SyntaxTree.unit_or_namespace ns in namespaces)
-                using_list.AddElement(GetNamespace(using_list, SyntaxTree.Utils.IdentListToString(ns.name.idents, "."), ns, possible_is_units));
+                using_list.AddElement(GetNamespace(using_list, SyntaxTree.Utils.IdentListToString(ns.name.idents, "."), ns, possible_is_units, pabc_namespaces));
         }
         
         public void AddNamespaces(TreeRealization.using_namespace_list using_list, SyntaxTree.using_list ul)
         {
             if (ul != null) 
-                AddNamespaces(using_list, ul.namespaces, false);
+                AddNamespaces(using_list, ul.namespaces, false, null);
         }
 
         public SyntaxTree.using_list GetInterfaceSyntaxUsingList(SyntaxTree.compilation_unit cu)
@@ -3195,7 +3196,7 @@ namespace PascalABCCompiler
                 }
             }
             TreeRealization.unit_node_list References = GetReferences(CurrentUnit);
-            IncludeNamespaces(CurrentUnit);
+            var namespaces = IncludeNamespaces(CurrentUnit);
             if (SyntaxUsesList != null)
             {
                 
@@ -3240,7 +3241,7 @@ namespace PascalABCCompiler
 
             CurrentUnit.InterfaceUsedUnits.AddRange(References);
 
-            AddNamespaces(CurrentUnit.InterfaceUsingNamespaceList, CurrentUnit.PossibleNamespaces, true);
+            AddNamespaces(CurrentUnit.InterfaceUsingNamespaceList, CurrentUnit.PossibleNamespaces, true, namespaces);
             AddNamespaces(CurrentUnit.InterfaceUsingNamespaceList, GetInterfaceSyntaxUsingList(CurrentUnit.SyntaxTree));
             
             //Console.WriteLine("Compile Interface "+UnitName);//DEBUG
@@ -3305,7 +3306,7 @@ namespace PascalABCCompiler
 
             CurrentCompilationUnit = CurrentUnit;
 
-            AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.PossibleNamespaces, true);
+            AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, CurrentUnit.PossibleNamespaces, true, namespaces);
             AddNamespaces(CurrentUnit.ImplementationUsingNamespaceList, GetImplementationSyntaxUsingList(CurrentUnit.SyntaxTree));
 
             if (!interfcompile)

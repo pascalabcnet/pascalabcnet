@@ -333,6 +333,7 @@ PRJ_TRADEMARK=Торговая марка
 PRJ_COPYRIGHT=Copyright
 PRJ_GENERATE_XML_DOC=Генерировать XML документацию
 PRJ_NUGET=NuGet
+PRJ_NAMESPACE=Пространство имен
 NUGET_PACKAGE=Идентификатор пакета
 NUGET_INSTALL=Установить пакет
 NUGET_LOG=Лог

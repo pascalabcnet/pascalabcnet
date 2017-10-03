@@ -585,6 +585,7 @@ namespace PascalABCCompiler.TreeRealization
         /// Имя (полное) пространства имен.
         /// </summary>
 		private string _name;
+        private common_namespace_node _common_namespace;
 
         private SymbolTable.TreeConverterSymbolTable _tcst;
 
@@ -613,6 +614,19 @@ namespace PascalABCCompiler.TreeRealization
             return new string(_name.ToCharArray(last_dot_ind,_name.Length-last_dot_ind));
         }
 
+        private static Dictionary<string, compiled_namespace_node> compiled_namespaces = new Dictionary<string, compiled_namespace_node>();
+        public static compiled_namespace_node get_compiled_namespace(string full_name, SymbolTable.TreeConverterSymbolTable tcst)
+        {
+            compiled_namespace_node cnn = null;
+            if (!compiled_namespaces.TryGetValue(full_name, out cnn))
+            {
+                cnn = new compiled_namespace_node(full_name, tcst);
+                compiled_namespaces.Add(full_name, cnn);
+            }
+            cnn._tcst = tcst;
+            return cnn;
+        }
+
         /// <summary>
         /// Имя пространства имен (не полное).
         /// </summary>
@@ -635,6 +649,18 @@ namespace PascalABCCompiler.TreeRealization
 			}
 		}
 
+        public common_namespace_node common_namespace
+        {
+            get
+            {
+                return _common_namespace;
+            }
+            set
+            {
+                _common_namespace = value;
+            }
+        }
+
         /// <summary>
         /// Поиск символа в пространстве имен.
         /// </summary>
@@ -644,15 +670,21 @@ namespace PascalABCCompiler.TreeRealization
 		{
             bool is_ns = NetHelper.NetHelper.IsNetNamespace(_name + "." + name);
             SymbolInfoList si = null;
-            if (is_ns == true)
+            if (is_ns)
             {
-                compiled_namespace_node cnn = new compiled_namespace_node(_name + "." + name,_tcst);
+                compiled_namespace_node cnn = compiled_namespace_node.get_compiled_namespace(_name + "." + name, _tcst);
                 si = new SymbolInfoList(new SymbolInfoUnit(cnn));
             }
             else
             {
                 //Kolay changed next string.   throwOnError=false  ignoreCase=true,   .
                 //Type t = Type.GetType(_name+"."+name,false,true);
+                if (common_namespace != null)
+                {
+                    si = common_namespace.scope.FindOnlyInScope(name);
+                    if (si != null)
+                        return si;
+                }
                 Type t = NetHelper.NetHelper.FindType(_name + "." + name);
                 if (t != null)
                 {

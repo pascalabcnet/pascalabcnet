@@ -130,6 +130,7 @@ GOTO_AND_LAMBDAS_NOT_ALLOWED=Cannot use 'goto' and lambdas in the same function
 NO_PROPERTY_TO_OVERRIDE=No property to override
 TYPE_PREDEFINITION_NOT_ALLOWED=Type predefinition in namespaces
 NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES=class, record, enumeration type or functional type expected
+NAMESPACE_REDECLARATION=Namespaces cannot be the same as the names of units or .NET namespaces
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

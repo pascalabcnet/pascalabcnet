@@ -99,14 +99,25 @@ namespace VisualPascalABC
 				PascalABCCompiler.IFileInfo fi = ProjectFactory.Instance.AddSourceFile(frm.FileName);
 				ProjectExplorerWindow.AddSourceFile(fi,false);
 				string full_file_name = Path.Combine(Path.GetDirectoryName(ProjectFactory.Instance.CurrentProject.Path),frm.FileName);
-				StreamWriter sw = File.CreateText(full_file_name);
-				sw.WriteLine("unit "+Path.GetFileNameWithoutExtension(frm.FileName)+";");
-				sw.WriteLine();
-				sw.WriteLine("interface");
-				sw.WriteLine();
-				sw.WriteLine("implementation");
-				sw.WriteLine();
-				sw.WriteLine("end.");
+                StreamWriter sw = File.CreateText(full_file_name);
+                if (frm.GetFileFilter() == FileType.Unit)
+                {
+                    sw.WriteLine("unit " + Path.GetFileNameWithoutExtension(frm.FileName) + ";");
+                    sw.WriteLine();
+                    sw.WriteLine("interface");
+                    sw.WriteLine();
+                    sw.WriteLine("implementation");
+                    sw.WriteLine();
+                    sw.Write("end.");
+                }
+                else
+                {
+                    sw.WriteLine("namespace "+ProjectFactory.Instance.CurrentProject.Name+";");
+                    sw.WriteLine();
+                    sw.Write("end.");
+                    ProjectFactory.Instance.AddNamespaceFileReference(full_file_name);
+                }
+				
 				sw.Close();
                 WorkbenchServiceFactory.FileService.OpenFile(full_file_name, null);
 			}
@@ -199,6 +210,7 @@ namespace VisualPascalABC
 		public static void ExcludeFile(PascalABCCompiler.IFileInfo fi)
 		{
 			ProjectFactory.Instance.ExcludeFile(fi);
+			ProjectFactory.Instance.RemoveNamespaceFileReference(fi.Path);
 		}
 		
 		private static TypeLibConverter type_conv = new TypeLibConverter();

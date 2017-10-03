@@ -2730,6 +2730,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (referenced_units[i] is namespace_unit_node)
                     {
+                        namespace_unit_node nun = referenced_units[i] as namespace_unit_node;
                         for (int j = 0; j < assembly_references.Length; j++)
                         {
                             using_namespace_list unl = new using_namespace_list();
@@ -2739,6 +2740,8 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (_compiled_unit != null)
                             _compiled_unit.used_namespaces.Add((referenced_units[i] as namespace_unit_node).namespace_name.namespace_name);
+                        if (nun.scope != null)
+                            used_units.Add(nun.scope);
                     }
                     else
                     {
@@ -10050,15 +10053,59 @@ namespace PascalABCCompiler.TreeConverter
                         parent_scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
                         scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
                         if (i == names.Length - 1)
+                        {
                             dict.Add(_syntax_namespace_node, cmn);
+                            var unit_scope = context.converted_namespace.scope as SymTable.UnitInterfaceScope;
+                            if (unit_scope.TopScopeArray != null)
+                                for (int j = 0; j < unit_scope.TopScopeArray.Length; j++)
+                                {
+                                    if (unit_scope.TopScopeArray[j] is NetHelper.NetScope)
+                                    {
+                                        NetHelper.NetScope netScope = unit_scope.TopScopeArray[j] as NetHelper.NetScope;
+                                        if (netScope.used_namespaces.Count > 0 && string.Compare(netScope.used_namespaces[0].namespace_name, _syntax_namespace_node.name, true) == 0)
+                                        {
+                                            unit_scope.TopScopeArray[j] = scope;
+                                        }
+                                    }
+                                }
+                        }
+                            
                     }
                     else
                     {
                         foreach (SymbolInfoUnit si in si_list.InfoUnitList)
                             if (si.sym_info is common_namespace_node)
                             {
-                                scope = (si.sym_info as common_namespace_node).scope;
+                                common_namespace_node cmn = si.sym_info as common_namespace_node;
+                                scope = cmn.scope;
+                                if (!(scope is SymTable.NamespaceScope))
+                                {
+                                    if (i == names.Length - 1)
+                                        dict.Add(_syntax_namespace_node, cmn);
+                                }
+                                break;
                             }
+                            else if (si.sym_info is compiled_namespace_node)
+                            {
+                                List<SymTable.Scope> top_scopes = new List<SymTable.Scope>();
+                                top_scopes.AddRange(build_referenced_units(_syntax_namespace_node.referenced_units, false));
+                                if (parent_scope != context.CurrentScope)
+                                    top_scopes.Add(parent_scope);
+                                compiled_namespace_node cnn = si.sym_info as compiled_namespace_node;
+                                if (cnn.common_namespace == null)
+                                {
+                                    scope = convertion_data_and_alghoritms.symbol_table.CreateNamespaceScope(top_scopes.ToArray(), parent_scope);
+                                    common_namespace_node cmn = new common_namespace_node(null, _compiled_unit, names[i], scope, null);
+                                    cnn.common_namespace = cmn;
+                                }
+                                else
+                                    scope = cnn.common_namespace.scope;
+                                if (i == names.Length - 1 && !dict.ContainsKey(_syntax_namespace_node))
+                                    dict.Add(_syntax_namespace_node, cnn.common_namespace);
+                            }
+                            
+                        if (scope == null)
+                            AddError(get_location(_syntax_namespace_node), "NAMESPACE_REDECLARATION");
                     }
                     parent_scope = scope;
                 }
@@ -10105,7 +10152,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 var cmn = dict[_syntax_namespace_node];
                 List<SymTable.Scope> scopes = new List<SymTable.Scope>();
-                SymTable.NamespaceScope ns_scope = cmn.scope as SymTable.NamespaceScope;
+                SymTable.UnitInterfaceScope ns_scope = cmn.scope as SymTable.UnitInterfaceScope;
                 if (ns_scope.TopScopeArray != null)
                     scopes.AddRange(ns_scope.TopScopeArray);
                 foreach (unit_node un in _syntax_namespace_node.referenced_units)
@@ -19082,113 +19129,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             body_exists = false;
         }
-        public void lambda_body_visit(SyntaxTree.block _block)
-        {
-            //weak_node_test_and_visit(_block.defs);
-
-            //ssyy добавил генерацию вызова конструктора предка без параметров
-            if (context.converting_block() == block_type.function_block)
-            {
-                common_method_node cmn = context.top_function as common_method_node;
-                if (cmn != null && cmn.is_constructor && !(cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static))
-                {
-                    context.allow_inherited_ctor_call = true;
-                    if (_block.program_code != null && _block.program_code.subnodes != null)
-                    {
-                        //(ssyy) Для записей конструктор предка не вызываем.
-                        bool should_ctor_add = context.converted_type.is_class;
-                        if (should_ctor_add)
-                        {
-                            if (_block.program_code.subnodes.Count > 0)
-                            {
-                                SyntaxTree.procedure_call pc = _block.program_code.subnodes[0] as SyntaxTree.procedure_call;
-                                if (pc != null || _block.program_code.subnodes[0] is SyntaxTree.inherited_message)
-                                {
-                                    //SyntaxTree.inherited_ident ii = pc.func_name as SyntaxTree.inherited_ident;
-                                    //SyntaxTree.method_call mc = pc.func_name as SyntaxTree.method_call;
-                                    //SyntaxTree.ident id = pc.func_name as SyntaxTree.ident;
-                                    //if (/*ii != null*/id != null || mc != null /*&& mc.dereferencing_value is SyntaxTree.inherited_ident*/)
-                                    {
-                                        //(ssyy) Не уверен, что следующий оператор необходим.
-                                        convertion_data_and_alghoritms.check_node_parser_error(_block.program_code);
-
-                                        statement_node inh = convert_strong(_block.program_code.subnodes[0]);
-
-                                        compiled_constructor_call c1 = inh as compiled_constructor_call;
-                                        if (c1 != null && !c1._new_obj_awaited)
-                                        {
-                                            should_ctor_add = false;
-                                        }
-                                        else
-                                        {
-                                            common_constructor_call c2 = inh as common_constructor_call;
-                                            if (c2 != null && !c2._new_obj_awaited)
-                                            {
-                                                should_ctor_add = false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (should_ctor_add)
-                        {
-                            //Пытаемся добавить вызов .ctor() предка...
-                            //Для начала проверим, есть ли у предка таковой.
-                            bool not_found = true;
-                            SymbolInfoList sym = context.converted_type.base_type.find_in_type(compiler_string_consts.default_constructor_name, context.CurrentScope);
-                            if (sym != null)
-                            {
-                                foreach (SymbolInfoUnit sym_unit in sym.InfoUnitList)
-                                {
-                                    if (!not_found)
-                                        break;
-                                    compiled_constructor_node ccn = sym_unit.sym_info as compiled_constructor_node;
-                                    if (ccn != null && ccn.parameters.Count == 0)
-                                    {
-                                        not_found = false;
-                                    }
-                                    else
-                                    {
-                                        common_method_node cnode = sym_unit.sym_info as common_method_node;
-                                        if (cnode != null && cnode.is_constructor && (cnode.parameters.Count == 0 || cnode.parameters[0].default_value != null))
-                                        {
-                                            not_found = false;
-                                        }
-                                    }
-                                }
-                            }
-                            if (not_found)
-                            {
-                                //У предка нет конструктора по умолчанию
-                                AddError(get_location(_block.program_code), "INHERITED_CONSTRUCTOR_CALL_EXPECTED");
-                            }
-                            else
-                            {
-                                //Генерируем вызов .ctor() предка
-                                SyntaxTree.inherited_ident ii = new SyntaxTree.inherited_ident();
-                                ii.name = compiler_string_consts.default_constructor_name;
-                                _block.program_code.subnodes.Insert(0, new SyntaxTree.procedure_call(ii));
-                                //context.allow_inherited_ctor_call = false;
-                            }
-                        }
-                    }
-                }
-            }
-            //\ssyy
-
-            //ssyy
-            if (context.converting_block() == block_type.namespace_block)
-            {
-                context.check_predefinition_defined();
-            }
-
-            context.enter_code_block_with_bind();
-            statement_node sn = convert_strong(_block.program_code);
-            context.leave_code_block();
-
-            context.code = sn;
-        }
+        
 		
 		public override void visit(SyntaxTree.lambda_inferred_type lit) //lroman//
         {

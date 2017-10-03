@@ -142,7 +142,7 @@ namespace PascalABCCompiler.NetHelper
             string full_ns = null;
             if (NetHelper.IsNetNamespace(name, _unar, out full_ns) == true)
             {
-                compiled_namespace_node cnn = new compiled_namespace_node(full_ns, _tcst);
+                compiled_namespace_node cnn = compiled_namespace_node.get_compiled_namespace(full_ns, _tcst);//new compiled_namespace_node(full_ns, _tcst);
                 si = new SymbolInfoList(new SymbolInfoUnit(cnn));
             }
             else
