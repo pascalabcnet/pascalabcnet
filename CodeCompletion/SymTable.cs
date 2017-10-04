@@ -384,31 +384,38 @@ namespace CodeCompletion
                         tmp_ts = tmp_ts.baseScope;
                 }
                 if (ts.implemented_interfaces != null && !(ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr))
-                foreach (TypeScope int_ts in ts.implemented_interfaces)
                 {
-                    TypeScope int_ts2 = int_ts;
-                    if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
-                        int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
-                    if (extension_methods.TryGetValue(int_ts2, out meths))
+                    List<TypeScope> implemented_interfaces = new List<TypeScope>();
+                    implemented_interfaces.AddRange(ts.implemented_interfaces);
+                    if (ts is ArrayScope)
+                        implemented_interfaces.Add((ts as ArrayScope).ilist);
+                    foreach (TypeScope int_ts in implemented_interfaces)
                     {
-                        lst.AddRange(meths);
-                    }
-                    else
-                    {
-                        foreach (TypeScope t in extension_methods.Keys)
+                        TypeScope int_ts2 = int_ts;
+                        if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
+                            int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+                        if (extension_methods.TryGetValue(int_ts2, out meths))
                         {
-                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || 
-                                    (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) || 
-                                    (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
-                                    t is FileScope && int_ts2 is FileScope)
-                            {
-                                lst.AddRange(extension_methods[t]);
-                                //break;
-                            }
+                            lst.AddRange(meths);
                         }
-                        
+                        else
+                        {
+                            foreach (TypeScope t in extension_methods.Keys)
+                            {
+                                if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) ||
+                                        (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) ||
+                                        (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
+                                        t is FileScope && int_ts2 is FileScope)
+                                {
+                                    lst.AddRange(extension_methods[t]);
+                                    //break;
+                                }
+                            }
+
+                        }
                     }
                 }
+                
             }
             if (this.used_units != null)
                 for (int i = 0; i < this.used_units.Count; i++)
@@ -443,7 +450,7 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            //if (!hasUsesCycle(unit))
+            if (this.si.name != "PABCSystem")
                 used_units.Add(unit);
         }
 
@@ -2912,6 +2919,7 @@ namespace CodeCompletion
         public TypeScope[] indexes;
         private bool _is_dynamic_arr = false;
         private bool _is_multi_dyn_arr = false;
+        internal TypeScope ilist;
 
         public ArrayScope()
         {
@@ -2945,6 +2953,7 @@ namespace CodeCompletion
                 lst.Add(elementType);
                 this.implemented_interfaces = new List<TypeScope>();
                 this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IEnumerable<>), lst));
+                ilist = CompiledScope.get_type_instance(typeof(IList<>), lst);
                 //this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IList<>), lst));
             }
             this.si = new SymInfo("$" + this.ToString(), SymbolKind.Type, this.ToString());
