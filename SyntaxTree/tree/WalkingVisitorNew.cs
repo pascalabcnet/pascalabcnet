@@ -70,7 +70,6 @@ namespace PascalABCCompiler.SyntaxTree
                 from.Parent.ReplaceDescendant(from, l, d);
             }
         }
-
     }
 
 }
