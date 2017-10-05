@@ -1237,7 +1237,7 @@ begin
   GlobalScale := scale;
   var m: Transform := new MatrixTransform(scale,0,0,scale,x0,y0);
   Host.RenderTransform := m;
-  Pen.Width := Pen.Width * scale;
+  Pen.Width := Pen.Width * scale; // нет!
 end;
 procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
 

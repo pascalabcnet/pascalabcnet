@@ -80,6 +80,8 @@
     File ..\bin\Lib\FilesOperations.pcu
     File ..\bin\Lib\FormsABC.pcu
     File ..\bin\Lib\GraphABC.pcu
+    File ..\bin\Lib\NumLibABC.pcu
+    File ..\bin\Lib\NumLibABC.pdf
     File ..\bin\Lib\GraphWPF.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
@@ -131,6 +133,8 @@
     ${AddFile} "FormsABC.pcu"
     ${AddFile} "GOLDParserEngine.pcu"
     ${AddFile} "GraphABC.pcu"
+    ${AddFile} "NumLibABC.pcu"
+    ${AddFile} "NumLibABC.pdf"
     ${AddFile} "GraphWPF.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
@@ -185,6 +189,7 @@
     File ..\bin\Lib\FilesOperations.pas
     File ..\bin\Lib\FormsABC.pas
     File ..\bin\Lib\GraphABC.pas
+    File ..\bin\Lib\NumLibABC.pas
     File ..\bin\Lib\GraphWPF.pas
     File ..\bin\Lib\Graph3D.pas
     File ..\bin\Lib\GraphABCHelper.pas
@@ -234,6 +239,7 @@
     ${AddFile} "FilesOperations.pas"
     ${AddFile} "FormsABC.pas"
     ${AddFile} "GraphABC.pas"
+    ${AddFile} "NumLibABC.pas"
     ${AddFile} "GraphWPF.pas"
     ${AddFile} "Graph3D.pas"
     ${AddFile} "GraphABCHelper.pas"
