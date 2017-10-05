@@ -1147,7 +1147,7 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_pattern_cases);
 		}
-	}
+	
 
         public virtual void visit(base_syntax_namespace_node _syntax_namespace_node)
         {
