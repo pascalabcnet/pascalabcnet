@@ -624,7 +624,7 @@ namespace VisualPascalABC
                 {
                     watch_vis = true;
                 }
-                if (WorkbenchServiceFactory.DebuggerManager.show_debug_tabs)
+                if (WorkbenchServiceFactory.DebuggerManager.ShowDebugTabs)
                 {
                     if (!BottomTabsVisible)
                         BottomTabsVisible = true;

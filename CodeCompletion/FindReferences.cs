@@ -68,7 +68,15 @@ namespace CodeCompletion
             if (cur_scope == null)
                 cur_scope = tmp;
             foreach (statement stmt in _statement_list.subnodes)
+            {
+                IBaseScope tmp2 = cur_scope;
+                cur_scope = cur_scope.FindScopeByLocation(stmt.source_context.begin_position.line_num, stmt.source_context.begin_position.column_num);
+                if (cur_scope == null)
+                    cur_scope = tmp2;
                 stmt.visit(this);
+                cur_scope = tmp2;
+            }
+                
             cur_scope = tmp;
         }
 

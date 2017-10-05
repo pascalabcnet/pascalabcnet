@@ -444,206 +444,206 @@ namespace CodeCompletion
 			
 			eval_stack.Push(res);
 		}
-		
-		public void EvalMult()
-		{
-			RetValue right = eval_stack.Pop();
-			RetValue left = eval_stack.Pop();
-			RetValue res = new RetValue();
-			if (left.prim_val != null && right.prim_val != null)
-			{
-				TypeCode lcode = Type.GetTypeCode(left.prim_val.GetType());
-				TypeCode rcode = Type.GetTypeCode(right.prim_val.GetType());
-				switch (lcode) 
-				{
-					case TypeCode.Int32:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (int)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (int)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (int)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (int)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((int)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (int)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (int)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (int)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (int)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)((int)left.prim_val) * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (int)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Double:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (double)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (double)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (double)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (double)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((double)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (double)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (double)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (double)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (double)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (double)left.prim_val * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (double)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Byte:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (byte)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (byte)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (byte)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (byte)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((byte)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (byte)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (byte)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (byte)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (byte)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (byte)left.prim_val * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (byte)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Int16:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.Int16)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.Int16)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.Int16)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.Int16)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.Int16)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.Int16)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.Int16)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.Int16)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.Int16)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)((System.Int16)left.prim_val) * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.Int16)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Int64:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.Int64)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.Int64)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.Int64)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.Int64)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.Int64)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.Int64)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.Int64)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.Int64)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.Int64)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.Int64)left.prim_val * (System.Int64)((System.UInt64)right.prim_val); break;
-								case TypeCode.Single : res.prim_val = (System.Int64)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					
-					case TypeCode.SByte:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.SByte)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.SByte)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.SByte)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.SByte)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.SByte)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.SByte)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.SByte)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.SByte)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.SByte)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)((System.SByte)left.prim_val) * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.SByte)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.UInt16:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.UInt16)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.UInt16)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.UInt16)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.UInt16)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.UInt16)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.UInt16)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.UInt16)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.UInt16)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.UInt16)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt16)left.prim_val * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.UInt16)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.UInt32:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.UInt32)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.UInt32)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.UInt32)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.UInt32)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.UInt32)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.UInt32)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.UInt32)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.UInt32)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.UInt32)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt32)left.prim_val * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.UInt32)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.UInt64:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.UInt64)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)((int)right.prim_val); break;
-								case TypeCode.Double : res.prim_val = (System.UInt64)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (long)((System.UInt64)left.prim_val) * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.UInt64)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)((System.Int16)right.prim_val); break;
-								case TypeCode.SByte : res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)((sbyte)right.prim_val); break;
-								case TypeCode.UInt16 : res.prim_val = (System.UInt64)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.UInt64)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.UInt64)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Single:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.Single)left.prim_val * (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.Single)left.prim_val * (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.Single)left.prim_val * (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.Single)left.prim_val * (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.Single)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.Single)left.prim_val * (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.Single)left.prim_val * (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.Single)left.prim_val * (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.Single)left.prim_val * (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.Single)left.prim_val * (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.Single)left.prim_val * (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					
-				}
-				
-			}
-			
-				eval_stack.Push(res);
-		}
+
+        public void EvalMult()
+        {
+            RetValue right = eval_stack.Pop();
+            RetValue left = eval_stack.Pop();
+            RetValue res = new RetValue();
+            if (left.prim_val != null && right.prim_val != null)
+            {
+                TypeCode lcode = Type.GetTypeCode(left.prim_val.GetType());
+                TypeCode rcode = Type.GetTypeCode(right.prim_val.GetType());
+                switch (lcode)
+                {
+                    case TypeCode.Int32:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (int)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (int)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (int)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (int)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((int)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (int)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (int)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (int)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (int)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.UInt64)((int)left.prim_val) * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (int)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.Double:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (double)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (double)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (double)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (double)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((double)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (double)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (double)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (double)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (double)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (double)left.prim_val * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (double)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.Byte:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (byte)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (byte)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (byte)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (byte)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((byte)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (byte)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (byte)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (byte)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (byte)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (byte)left.prim_val * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (byte)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.Int16:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.Int16)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.Int16)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (System.Int16)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (System.Int16)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.Int16)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.Int16)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (System.Int16)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (System.Int16)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.Int16)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.UInt64)((System.Int16)left.prim_val) * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (System.Int16)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.Int64:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.Int64)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.Int64)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (System.Int64)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (System.Int64)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.Int64)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.Int64)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (System.Int64)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (System.Int64)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.Int64)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.Int64)left.prim_val * (System.Int64)((System.UInt64)right.prim_val); break;
+                                case TypeCode.Single: res.prim_val = (System.Int64)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+
+                    case TypeCode.SByte:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.SByte)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.SByte)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (System.SByte)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (System.SByte)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.SByte)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.SByte)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (System.SByte)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (System.SByte)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.SByte)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.UInt64)((System.SByte)left.prim_val) * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (System.SByte)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.UInt16:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.UInt16)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.UInt16)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (System.UInt16)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (System.UInt16)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.UInt16)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.UInt16)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (System.UInt16)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (System.UInt16)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.UInt16)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.UInt16)left.prim_val * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (System.UInt16)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.UInt32:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.UInt32)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.UInt32)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (System.UInt32)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (System.UInt32)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.UInt32)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.UInt32)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (System.UInt32)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (System.UInt32)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.UInt32)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.UInt32)left.prim_val * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (System.UInt32)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.UInt64:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.UInt64)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)((int)right.prim_val); break;
+                                case TypeCode.Double: res.prim_val = (System.UInt64)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (long)((System.UInt64)left.prim_val) * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.UInt64)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)((System.Int16)right.prim_val); break;
+                                case TypeCode.SByte: res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)((sbyte)right.prim_val); break;
+                                case TypeCode.UInt16: res.prim_val = (System.UInt64)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.UInt64)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.UInt64)left.prim_val * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (System.UInt64)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+                    case TypeCode.Single:
+                        {
+                            switch (rcode)
+                            {
+                                case TypeCode.Byte: res.prim_val = (System.Single)left.prim_val * (byte)right.prim_val; break;
+                                case TypeCode.Int32: res.prim_val = (System.Single)left.prim_val * (int)right.prim_val; break;
+                                case TypeCode.Double: res.prim_val = (System.Single)left.prim_val * (double)right.prim_val; break;
+                                case TypeCode.Int64: res.prim_val = (System.Single)left.prim_val * (long)right.prim_val; break;
+                                //case TypeCode.String : res.prim_val = ((System.Single)left.prim_val).ToString() + (string)right.prim_val; break;
+                                case TypeCode.Int16: res.prim_val = (System.Single)left.prim_val * (System.Int16)right.prim_val; break;
+                                case TypeCode.SByte: res.prim_val = (System.Single)left.prim_val * (sbyte)right.prim_val; break;
+                                case TypeCode.UInt16: res.prim_val = (System.Single)left.prim_val * (System.UInt16)right.prim_val; break;
+                                case TypeCode.UInt32: res.prim_val = (System.Single)left.prim_val * (System.UInt32)right.prim_val; break;
+                                case TypeCode.UInt64: res.prim_val = (System.Single)left.prim_val * (System.UInt64)right.prim_val; break;
+                                case TypeCode.Single: res.prim_val = (System.Single)left.prim_val * (System.Single)right.prim_val; break;
+                            }
+                        }
+                        break;
+
+                }
+
+            }
+
+            eval_stack.Push(res);
+        }
 		
 		public void EvalDiv()
 		{
@@ -652,192 +652,7 @@ namespace CodeCompletion
 			RetValue res = new RetValue();
 			if (left.prim_val != null && right.prim_val != null)
 			{
-				TypeCode lcode = Type.GetTypeCode(left.prim_val.GetType());
-				TypeCode rcode = Type.GetTypeCode(right.prim_val.GetType());
-				switch (lcode) 
-				{
-					case TypeCode.Int32:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (int)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (int)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (int)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (int)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((int)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (int)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (int)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (int)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (int)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)((int)left.prim_val) / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (int)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Double:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (double)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (double)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (double)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (double)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((double)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (double)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (double)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (double)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (double)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (double)left.prim_val / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (double)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Byte:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (byte)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (byte)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (byte)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (byte)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((byte)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (byte)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (byte)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (byte)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (byte)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (byte)left.prim_val / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (byte)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Int16:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.Int16)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.Int16)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.Int16)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.Int16)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.Int16)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.Int16)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.Int16)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.Int16)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.Int16)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)((System.Int16)left.prim_val) / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.Int16)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Int64:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.Int64)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.Int64)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.Int64)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.Int64)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.Int64)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.Int64)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.Int64)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.Int64)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.Int64)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.Int64)left.prim_val / (System.Int64)((System.UInt64)right.prim_val); break;
-								case TypeCode.Single : res.prim_val = (System.Int64)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					
-					case TypeCode.SByte:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.SByte)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.SByte)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.SByte)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.SByte)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.SByte)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.SByte)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.SByte)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.SByte)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.SByte)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)((System.SByte)left.prim_val) / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.SByte)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.UInt16:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.UInt16)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.UInt16)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.UInt16)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.UInt16)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.UInt16)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.UInt16)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.UInt16)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.UInt16)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.UInt16)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt16)left.prim_val / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.UInt16)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.UInt32:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.UInt32)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.UInt32)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.UInt32)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.UInt32)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.UInt32)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.UInt32)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.UInt32)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.UInt32)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.UInt32)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt32)left.prim_val / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.UInt32)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.UInt64:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.UInt64)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.UInt64)left.prim_val / (System.UInt64)((int)right.prim_val); break;
-								case TypeCode.Double : res.prim_val = (System.UInt64)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (long)((System.UInt64)left.prim_val) / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.UInt64)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.UInt64)left.prim_val / (System.UInt64)((System.Int16)right.prim_val); break;
-								case TypeCode.SByte : res.prim_val = (System.UInt64)left.prim_val / (System.UInt64)((sbyte)right.prim_val); break;
-								case TypeCode.UInt16 : res.prim_val = (System.UInt64)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.UInt64)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.UInt64)left.prim_val / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.UInt64)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-					case TypeCode.Single:
-						{
-							switch(rcode)
-							{
-								case TypeCode.Byte : res.prim_val = (System.Single)left.prim_val / (byte)right.prim_val; break;
-								case TypeCode.Int32 : res.prim_val = (System.Single)left.prim_val / (int)right.prim_val; break;
-								case TypeCode.Double : res.prim_val = (System.Single)left.prim_val / (double)right.prim_val; break;
-								case TypeCode.Int64 : res.prim_val = (System.Single)left.prim_val / (long)right.prim_val; break;
-								//case TypeCode.String : res.prim_val = ((System.Single)left.prim_val).ToString() + (string)right.prim_val; break;
-								case TypeCode.Int16 : res.prim_val = (System.Single)left.prim_val / (System.Int16)right.prim_val; break;
-								case TypeCode.SByte : res.prim_val = (System.Single)left.prim_val / (sbyte)right.prim_val; break;
-								case TypeCode.UInt16 : res.prim_val = (System.Single)left.prim_val / (System.UInt16)right.prim_val; break;
-								case TypeCode.UInt32 : res.prim_val = (System.Single)left.prim_val / (System.UInt32)right.prim_val; break;
-								case TypeCode.UInt64 : res.prim_val = (System.Single)left.prim_val / (System.UInt64)right.prim_val; break;
-								case TypeCode.Single : res.prim_val = (System.Single)left.prim_val / (System.Single)right.prim_val; break;
-							}
-						}
-						break;
-				}
+                res.prim_val = Convert.ToDouble(left.prim_val) / Convert.ToDouble(right.prim_val);
 				eval_stack.Push(res);
 			}
 		}

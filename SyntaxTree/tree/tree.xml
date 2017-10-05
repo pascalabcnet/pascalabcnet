@@ -1,16 +1,6 @@
 <?xml version="1.0"?>
 <NodeGeneratorData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SyntaxNodes>
-    <SyntaxNode Name="syntax_tree_node">
-      <Fields>
-        <ExtendedField Name="source_context" Type="SourceContext" CreateVariable="false" DeleteVariable="false" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices />
-        <TagIndices />
-      </Tags>
-    </SyntaxNode>
     <SyntaxNode Name="expression" BaseName="declaration">
       <Fields />
       <Methods />
@@ -21,6 +11,16 @@
         <TagIndices>
           <TagIndex>1</TagIndex>
         </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="source_context" Type="SourceContext" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="statement" BaseName="declaration">

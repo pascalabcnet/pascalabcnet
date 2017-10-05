@@ -384,31 +384,38 @@ namespace CodeCompletion
                         tmp_ts = tmp_ts.baseScope;
                 }
                 if (ts.implemented_interfaces != null && !(ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr))
-                foreach (TypeScope int_ts in ts.implemented_interfaces)
                 {
-                    TypeScope int_ts2 = int_ts;
-                    if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
-                        int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
-                    if (extension_methods.TryGetValue(int_ts2, out meths))
+                    List<TypeScope> implemented_interfaces = new List<TypeScope>();
+                    implemented_interfaces.AddRange(ts.implemented_interfaces);
+                    if (ts is ArrayScope)
+                        implemented_interfaces.Add((ts as ArrayScope).ilist);
+                    foreach (TypeScope int_ts in implemented_interfaces)
                     {
-                        lst.AddRange(meths);
-                    }
-                    else
-                    {
-                        foreach (TypeScope t in extension_methods.Keys)
+                        TypeScope int_ts2 = int_ts;
+                        if (int_ts is CompiledScope && (int_ts as CompiledScope).CompiledType.IsGenericType && !(int_ts as CompiledScope).CompiledType.IsGenericTypeDefinition)
+                            int_ts2 = TypeTable.get_compiled_type((int_ts as CompiledScope).CompiledType.GetGenericTypeDefinition());
+                        if (extension_methods.TryGetValue(int_ts2, out meths))
                         {
-                            if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) || 
-                                    (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) || 
-                                    (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
-                                    t is FileScope && int_ts2 is FileScope)
-                            {
-                                lst.AddRange(extension_methods[t]);
-                                //break;
-                            }
+                            lst.AddRange(meths);
                         }
-                        
+                        else
+                        {
+                            foreach (TypeScope t in extension_methods.Keys)
+                            {
+                                if (t.GenericTypeDefinition == int_ts2.GenericTypeDefinition || t.IsEqual(int_ts2) ||
+                                        (t is ArrayScope && int_ts2.IsArray && t.Rank == int_ts2.Rank) ||
+                                        (int_ts2 is ArrayScope && t.IsArray && int_ts2.Rank == t.Rank) ||
+                                        t is FileScope && int_ts2 is FileScope)
+                                {
+                                    lst.AddRange(extension_methods[t]);
+                                    //break;
+                                }
+                            }
+
+                        }
                     }
                 }
+                
             }
             if (this.used_units != null)
                 for (int i = 0; i < this.used_units.Count; i++)
@@ -443,7 +450,8 @@ namespace CodeCompletion
 
         public void AddUsedUnit(SymScope unit)
         {
-            used_units.Add(unit);
+            if (this.si.name != "PABCSystem")
+                used_units.Add(unit);
         }
 
         public virtual string GetFullName()
@@ -645,7 +653,10 @@ namespace CodeCompletion
                     {
                         res = ss;
                         SymScope tmp = ss.FindScopeByLocation(line, column);
-                        if (tmp != null) return res = tmp;
+                        if (tmp != null)
+                            return tmp;
+                        else
+                            return res;
                     }
                     else if (!(ss is CompiledScope))
                     {
@@ -670,6 +681,15 @@ namespace CodeCompletion
                 }
             }
             return lst.ToArray();
+        }
+
+        protected bool IsClassMember(SymScope scope)
+        {
+            if (scope is ProcScope && (scope as ProcScope).declaringType != null)
+                return true;
+            if (scope is ElementScope && (scope as ElementScope).declaringUnit is TypeScope)
+                return true;
+            return false;
         }
 
         protected bool IsAfterDefinition(int def_line, int def_col)
@@ -791,7 +811,7 @@ namespace CodeCompletion
                 {
                     if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
                     {
-                        if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                         {
                             return ss;
                         }
@@ -809,7 +829,7 @@ namespace CodeCompletion
                         {
                             if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, !CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive) == 0 && this != ss)
                             {
-                                if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                                if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
                                 {
                                     return ss;
                                 }
@@ -1303,12 +1323,17 @@ namespace CodeCompletion
 
         public override SymScope FindName(string s)
         {
+            if (string.Compare(si.name, s, true) == 0)
+                return this;
             return sc.FindNameOnlyInType(s);
         }
 
         public override List<SymScope> FindOverloadNames(string name)
         {
-            return sc.FindOverloadNamesOnlyInType(name);
+            List<SymScope> names = sc.FindOverloadNames(name);
+            if (topScope != null)
+                names.AddRange(topScope.FindOverloadNames(name));
+            return names;
         }
 
         public override TypeScope GetElementType()
@@ -1735,6 +1760,7 @@ namespace CodeCompletion
         public bool is_extension = false;
         public List<string> generic_params;
         public List<string> generic_args;
+        public ProcScope original_function;
 
         public ProcScope()
         {
@@ -1792,6 +1818,14 @@ namespace CodeCompletion
             get
             {
                 return is_override;
+            }
+        }
+
+        public bool OfTypeInstance
+        {
+            get
+            {
+                return original_function != null || declaringType != null && declaringType.instances != null && declaringType.instances.Count > 0;
             }
         }
 
@@ -1883,6 +1917,7 @@ namespace CodeCompletion
                 return this;
             ProcScope instance = new ProcScope(this.name, this.topScope, this.is_constructor);
             instance.is_extension = this.is_extension;
+            instance.original_function = this;
             instance.loc = this.loc;
             instance.body_loc = this.body_loc;
             instance.parameters = new List<ElementScope>(this.parameters.Count);
@@ -1915,7 +1950,8 @@ namespace CodeCompletion
                     gen_args.RemoveRange(i, gen_args.Count - i);
             }
             instance.si = this.si;
-            instance.return_type = this.return_type.GetInstance(gen_args);
+            if (this.return_type != null)
+                instance.return_type = this.return_type.GetInstance(gen_args);
             return instance;
         }
 
@@ -2660,7 +2696,9 @@ namespace CodeCompletion
             TypeScope original_type = actType;
             if (actType.original_type != null)
                 original_type = actType.original_type;
-            return original_type.GetInstance(gen_args);
+            TypeScope ts = original_type.GetInstance(gen_args);
+            ts.aliased = true;
+            return ts;
         }
 
         public override void AddIndexer(TypeScope ts)
@@ -2881,6 +2919,7 @@ namespace CodeCompletion
         public TypeScope[] indexes;
         private bool _is_dynamic_arr = false;
         private bool _is_multi_dyn_arr = false;
+        internal TypeScope ilist;
 
         public ArrayScope()
         {
@@ -2914,7 +2953,8 @@ namespace CodeCompletion
                 lst.Add(elementType);
                 this.implemented_interfaces = new List<TypeScope>();
                 this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IEnumerable<>), lst));
-                this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IList<>), lst));
+                ilist = CompiledScope.get_type_instance(typeof(IList<>), lst);
+                //this.implemented_interfaces.Add(CompiledScope.get_type_instance(typeof(IList<>), lst));
             }
             this.si = new SymInfo("$" + this.ToString(), SymbolKind.Type, this.ToString());
             this.members = new List<SymScope>();
@@ -3050,6 +3090,8 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
+            if (string.Compare(si.name, name, true) == 0)
+                return this;
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return null;
             SymScope sc = null;
@@ -3130,26 +3172,17 @@ namespace CodeCompletion
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
             ArrayScope arrs = ts as ArrayScope;
+            if (ts is CompiledScope && (ts as CompiledScope).IsArray)
+            {
+                return this.elementType.IsEqual(ts.GetElementType());
+            }
             if (arrs == null || !arrs.is_dynamic_arr)
                 if (ts is TypeSynonim) return this.IsEqual((ts as TypeSynonim).actType);
                 else return false;
             if (arrs.elementType == null) return true;
             if (!this.elementType.IsEqual(arrs.elementType)) return false;
             return true;
-            if (this.indexes == null && arrs.indexes == null) return true;//?????
-            if (this.indexes != null && arrs.indexes != null)
-            {
-                if (this.indexes.Length != arrs.indexes.Length) return false;
-                for (int i = 0; i < this.indexes.Length; i++)
-                    if (this.indexes[i] == null && arrs.indexes[i] == null)
-                        continue;
-                    else if (this.indexes[i] == null && arrs.indexes[i] != null || this.indexes[i] != null && arrs.indexes[i] == null)
-                        return false;
-                    else
-                        if (!this.indexes[i].IsEqual(arrs.indexes[i])) return false;
-                return true;
-            }
-            return false;
+            
         }
 
         public override ProcScope GetConstructor()
@@ -3789,6 +3822,12 @@ namespace CodeCompletion
             {
                 ts.elementType = internalInstance(this.elementType, gen_args);
             }
+            if (implemented_interfaces != null)
+            {
+                ts.implemented_interfaces = new List<TypeScope>();
+                for (int j = 0; j < this.implemented_interfaces.Count; j++)
+                    ts.implemented_interfaces.Add(internalInstance(this.implemented_interfaces[j], gen_args));
+            }
             if (this.indexers != null && this.indexers.Count > 0)
             {
                 ts.indexers = new List<TypeScope>();
@@ -3897,6 +3936,8 @@ namespace CodeCompletion
                 || ts is UnknownScope && this is CompiledScope && (this as CompiledScope).CompiledType.IsGenericParameter)
                 return true;
             if (this.IsGenericParameter && ts.IsGenericParameter && this.Name == ts.Name)
+                return true;
+            if (ts is TemplateParameterScope)
                 return true;
             TypeScope tmp = this.baseScope;
             while (tmp != null)
@@ -4894,8 +4935,8 @@ namespace CodeCompletion
                                 sc.generic_params.Add(gen_args[i].si.name);
                             sc.instances.Add(this.instances[i].GetInstance(gen_args));
                         }
-                        
-                    }   
+
+                    }
                 }
             else
                 for (int i = 0; i < gen_args.Count; i++)
@@ -4904,6 +4945,10 @@ namespace CodeCompletion
                         sc.generic_params.Add(gen_args[i].si.name);
                     sc.instances.Add(gen_args[i]);
                 }
+            sc.implemented_interfaces = new List<TypeScope>();
+            if (this.implemented_interfaces != null)
+                for (int i = 0; i < this.implemented_interfaces.Count; i++)
+                    sc.implemented_interfaces.Add(this.implemented_interfaces[i].GetInstance(gen_args));
             sc.si.description = sc.GetDescription();
             return sc;
         }
@@ -5058,6 +5103,8 @@ namespace CodeCompletion
         public override bool IsConvertable(TypeScope ts)
         {
             CompiledScope cs = ts as CompiledScope;
+            if (ts == null)
+                return true;
             if (ts is NullTypeScope && !ctn.IsValueType)
                 return true;
             if (cs == null)
@@ -5104,6 +5151,10 @@ namespace CodeCompletion
 
             if (this.ctn.IsSubclassOf(cs.ctn))
                 return true;
+            if (implemented_interfaces != null)
+                foreach (TypeScope interf in implemented_interfaces)
+                    if (interf.IsEqual(ts))
+                        return true;
             TypeCode code1 = Type.GetTypeCode(this.ctn);
             TypeCode code2 = Type.GetTypeCode(cs.ctn);
             bool left = false;
@@ -6696,7 +6747,10 @@ namespace CodeCompletion
 
         public override SymInfo[] GetNames()
         {
-            return return_type.GetNames();
+            if (return_type != null)
+                return return_type.GetNames();
+            else
+                return new SymInfo[0];
         }
 
         //		public override SymInfo[] GetNames(ExpressionVisitor ev)
@@ -6706,7 +6760,10 @@ namespace CodeCompletion
 
         public override SymScope FindName(string name)
         {
-            return return_type.FindName(name);
+            if (return_type != null)
+                return return_type.FindName(name);
+            else
+                return null;
         }
 
         public override SymScope FindNameOnlyInType(string name)

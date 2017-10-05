@@ -824,7 +824,13 @@ namespace PascalABCCompiler.PCU
             {
                 name_array[i] = new NameRef(cur_cnn.functions[i - j].name, i);
                 if (cur_cnn.functions[i - j].ConnectedToType != null)
+                {
                     name_array[i].special_scope = 1;
+                    if (cur_cnn.functions[i - j].return_value_type != null)
+                        name_array[i].symbol_kind = symbol_kind.sk_overload_function;
+                    else
+                        name_array[i].symbol_kind = symbol_kind.sk_overload_procedure;
+                }
                 pools[cur_cnn.functions[i - j]] = name_array[i];
             }
             j = i;

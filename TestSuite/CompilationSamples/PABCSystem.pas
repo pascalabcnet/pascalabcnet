@@ -5,7 +5,7 @@
 /// !! System unit
 unit PABCSystem;
 
- {$define PascalABC}
+{$define PascalABC}
 
 {$gendoc true}
 
@@ -1154,6 +1154,8 @@ function Abs(x: int64): int64;
 function Abs(x: uint64): uint64;
 ///--
 function Abs(x: real): real;
+///--
+function Abs(x: single): single;
 /// Возвращает синус числа x
 function Sin(x: real): real;
 /// Возвращает гиперболический синус числа x
@@ -4462,6 +4464,12 @@ end;
 procedure IOStandardSystem.readln;
 begin
   while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do;
+  {while True do
+  begin
+    var sym := CurrentIOSystem.read_symbol;
+    if (sym = END_OF_LINE_SYMBOL) or (sym = char(-1)) then
+      exit;
+  end;}
 end;
 
 procedure IOStandardSystem.write(obj: object);
@@ -6832,6 +6840,11 @@ begin
 end;
 
 function Abs(x: real): real;
+begin
+  Result := Math.Abs(x);
+end;
+
+function Abs(x: single): single;
 begin
   Result := Math.Abs(x);
 end;

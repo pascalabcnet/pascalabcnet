@@ -333,8 +333,9 @@ namespace VisualPascalABC
             NavigationManager = new NavigationManager(ExecuteSourceLocationAction);
             NavigationManager.StateChanged += new NavigationManager.NavigationManagerStateChanged(NavigationManager_StateChanged);
 
-            AddNewProgramToTab(MainDockPanel, InstNameNewProgramm(MainDockPanel));
-
+            string newFileName = InstNameNewProgramm(MainDockPanel);
+            AddNewProgramToTab(MainDockPanel, newFileName);
+            
             AddOptionsContent();
             Application.AddMessageFilter(this);
 
@@ -360,7 +361,7 @@ namespace VisualPascalABC
             this.mNEWASPToolStripMenuItem.Visible = DebugModus;
             if (!Tools.IsUnix())
                 AddDesignerSidebars();
-
+            WorkbenchServiceFactory.CodeCompletionParserController.RegisterFileForParsing(newFileName);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -621,7 +622,11 @@ namespace VisualPascalABC
                     string FileName = Tools.FileNameToLower((string)obj);
                     if (!OpenDocuments.ContainsKey(FileName))
                         return false;
-                    SaveFileAs(OpenDocuments[FileName], (string)obj);
+                    var doc = OpenDocuments[FileName];
+                    if (doc.DocumentSavedToDisk)
+                        SaveFileAs(doc, (string)obj);
+                    //else
+                    //    ExecuteSaveAs(doc);
                     return true;
             }
             return false;

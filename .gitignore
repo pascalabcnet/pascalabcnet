@@ -1,6 +1,10 @@
 .vs
 
+*/**/bin
 bin/Lib/*.pcu
+bin/Lib/*.xml
+bin/Lib/*.dll
+bin/*.dll
 bin/*.pdb
 bin/*.config
 bin/*.xml
@@ -15,3 +19,18 @@ ReleaseGenerators/PABCRtl/*.pcu
 ReleaseGenerators/PABCRtl/*.pdb
 
 **/obj
+
+ReleaseGenerators/RebuildStandartModules.exe
+TestSuite/CompilationSamples/ClientServer.pas
+TestSuite/CompilationSamples/PABCExtensions.pas
+TestSuite/CompilationSamples/PT4MakerNetX.pas
+TestSuite/CompilationSamples/Speech.pas
+TestSuite/CompilationSamples/Робот.pas
+TestSuite/CompilationSamples/Чертежник.pas
+bin/PascalABCNET.exe
+bin/System.Data.dll.txt
+bin/System.Xml.dll.txt
+bin/System.dll.txt
+bin/mscorlib.txt
+bin/pabcnetc.exe
+bin/pabcnetcclear.exe

@@ -53,7 +53,8 @@ namespace PascalABCCompiler.Parsers
         Colon,
         Punkt,
         ThrowNew,
-        CommonKeyword
+        CommonKeyword,
+        CommonExpressionKeyword
     }
     public class Keyword
     {
