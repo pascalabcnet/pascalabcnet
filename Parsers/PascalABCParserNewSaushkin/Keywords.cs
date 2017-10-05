@@ -142,6 +142,7 @@ namespace GPPGParserScanner
             keywords.Add(Convert("sequence"), (int)Tokens.tkSequence);
             keywords.Add(Convert("yield"), (int)Tokens.tkYield);
             keywords.Add(Convert("match"), (int)Tokens.tkMatch);
+            keywords.Add(Convert("namespace"), (int)Tokens.tkNamespace);
         }
 
         static Keywords()

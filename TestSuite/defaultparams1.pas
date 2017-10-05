@@ -33,6 +33,16 @@ begin
   raise new Exception;
 end;
 
+type
+  TClass=class
+
+  function f(a: integer := 1; b: integer := 2): integer;
+  begin
+    Result:=2;
+  end;
+  
+  end;
+
 begin
 assert(test3=4);
 assert(test(2)=3);
@@ -48,4 +58,7 @@ assert(k = 6);
 tt(ff);
 assert(ArrRandomReal <> nil);
 assert(ArrRandomReal.Any = true);
+var obj := new TClass;
+var l := obj.f;
+assert(l = 2);
 end.

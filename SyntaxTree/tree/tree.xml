@@ -1,16 +1,6 @@
 <?xml version="1.0"?>
 <NodeGeneratorData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SyntaxNodes>
-    <SyntaxNode Name="syntax_tree_node">
-      <Fields>
-        <ExtendedField Name="source_context" Type="SourceContext" CreateVariable="false" DeleteVariable="false" />
-      </Fields>
-      <Methods />
-      <Tags>
-        <CategoryIndices />
-        <TagIndices />
-      </Tags>
-    </SyntaxNode>
     <SyntaxNode Name="expression" BaseName="declaration">
       <Fields />
       <Methods />
@@ -21,6 +11,16 @@
         <TagIndices>
           <TagIndex>1</TagIndex>
         </TagIndices>
+      </Tags>
+    </SyntaxNode>
+    <SyntaxNode Name="syntax_tree_node">
+      <Fields>
+        <ExtendedField Name="source_context" Type="SourceContext" CreateVariable="false" DeleteVariable="false" />
+      </Fields>
+      <Methods />
+      <Tags>
+        <CategoryIndices />
+        <TagIndices />
       </Tags>
     </SyntaxNode>
     <SyntaxNode Name="statement" BaseName="declaration">
@@ -1014,6 +1014,7 @@
         <SyntaxField Name="array_default" SyntaxType="property_array_default" />
         <SyntaxField Name="parameter_list" SyntaxType="property_parameter_list" />
         <ExtendedField Name="attr" Type="definition_attribute" CreateVariable="false" DeleteVariable="false" />
+        <ExtendedField Name="virt_over_none_attr" Type="proc_attribute" CreateVariable="false" DeleteVariable="false" />
       </Fields>
       <Methods />
       <Tags>
@@ -3966,7 +3967,7 @@
       <HelpData Key="simple_const_definition" Value="" />
       <HelpData Key="simple_const_definition." Value="" />
       <HelpData Key="simple_const_definition.simple_const_definition(ident name, expression value, SourceContext sc)" Value="" />
-      <HelpData Key="simple_property" Value="property property_name[parameter_list]:property_type index index_expression accessors;array_default;" />
+      <HelpData Key="simple_property" Value="property property_name[parameter_list]:property_type index index_expression accessors; [virtual;] array_default;" />
       <HelpData Key="simple_property." Value="" />
       <HelpData Key="simple_property.accessors" Value="" />
       <HelpData Key="simple_property.array_default" Value="" />
@@ -3977,6 +3978,7 @@
       <HelpData Key="simple_property.property_type" Value="" />
       <HelpData Key="simple_property.simple_property(ident _property_name,type_definition _property_type,expression _index_expression,property_accessors _accessors,property_array_default _array_default,property_parameter_list _parameter_list,definition_attribute _attr)" Value="" />
       <HelpData Key="simple_property.simple_property(ident name, type_definition type, property_accessors accessors): this(name, type, null, accessors, null, null, definition_attribute.None)" Value="" />
+      <HelpData Key="simple_property.virt_over_none_attr" Value="" />
       <HelpData Key="sizeof_operator" Value="" />
       <HelpData Key="sizeof_operator." Value="" />
       <HelpData Key="sizeof_operator.expr" Value="" />

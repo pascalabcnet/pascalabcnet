@@ -63,6 +63,21 @@ namespace GPPGParserScanner
             return un;
         }
 
+        public unit_name NewNamespaceHeading(ident unitkeyword, ident_list nname, LexLocation loc)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < nname.idents.Count; i++)
+            {
+                sb.Append(nname.idents[i]);
+                if (i < nname.idents.Count - 1)
+                    sb.Append(".");
+            }
+            ident uname = new ident(sb.ToString());
+            var un = new unit_name(uname, UnitHeaderKeyword.Unit, loc);
+            un.HeaderKeyword = UnitHeaderKeyword.Namespace;
+            return un;
+        }
+
         public procedure_header NewProcedureHeader(attribute_list attrlist, procedure_header nprh, procedure_attribute forw, LexLocation loc)
         {
             if (nprh.proc_attributes == null) 
@@ -180,10 +195,12 @@ namespace GPPGParserScanner
             return nsnpd;
         }
 
-        public simple_property NewSimplePropertyDefinition(method_name qualified_identifier, property_interface property_interface, property_accessors property_specifiers, property_array_default array_defaultproperty, LexLocation loc)
+        public simple_property NewSimplePropertyDefinition(method_name qualified_identifier, property_interface property_interface, property_accessors property_specifiers, proc_attribute virt_over_none_attr, property_array_default array_defaultproperty, LexLocation loc)
         {
-            var nnspd = new simple_property(); 
-			nnspd.property_name = qualified_identifier.meth_name;
+            var nnspd = new simple_property();
+            nnspd.virt_over_none_attr = virt_over_none_attr;
+
+            nnspd.property_name = qualified_identifier.meth_name;
 			if (property_interface != null)
 			{
 				nnspd.parameter_list = property_interface.parameter_list;

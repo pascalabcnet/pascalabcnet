@@ -24,6 +24,7 @@ namespace PascalABCCompiler.TreeRealization
     public class namespace_unit_node : unit_node
     {
         public using_namespace namespace_name;
+        public SymbolTable.Scope scope;
         public namespace_unit_node(using_namespace namespace_name)
         {
             this.namespace_name = namespace_name;

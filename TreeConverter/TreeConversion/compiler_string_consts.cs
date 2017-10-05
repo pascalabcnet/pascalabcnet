@@ -320,6 +320,7 @@ namespace PascalABCCompiler.TreeConverter
         // SSM - Константы директив компилятора. Вообще разбросаны по коду. Пусть будут здесь (3.1.2011)
         public static string compiler_directive_apptype = "apptype";
         public static string compiler_directive_reference = "reference";
+        public static string include_namespace_directive = "includenamespace";
         public static string compiler_savepcu = "savepcu";
         public static string compiler_directive_nullbasedstrings = "nullbasedstrings";
         public static string compiler_directive_nullbasedstrings_ON = "string_nullbased+";

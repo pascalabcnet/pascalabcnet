@@ -160,6 +160,8 @@ namespace VisualPascalABC
                         is_comp = true;
                         CodeCompletion.CodeCompletionController controller = new CodeCompletion.CodeCompletionController();
                         string text = visualEnvironmentCompiler.SourceFilesProvider(FileName, PascalABCCompiler.SourceFileOperation.GetText) as string;
+                        if (string.IsNullOrEmpty(text))
+                            text = "begin end.";
                         CodeCompletion.DomConverter tmp = CodeCompletion.CodeCompletionController.comp_modules[FileName] as CodeCompletion.DomConverter;
                         long cur_mem = Environment.WorkingSet;
                         CodeCompletion.DomConverter dc = controller.Compile(FileName, text);

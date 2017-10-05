@@ -292,7 +292,6 @@
   </tag>
   <tag value="Ключевые слова">
     <name value="meth_modificator" />
-    <name value="property_specifier_directives" />
     <name value="non_reserved" />
     <name value="visibility_specifier" />
     <name value="keyword" />

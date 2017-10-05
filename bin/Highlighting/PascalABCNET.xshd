@@ -101,6 +101,7 @@
 	<KeyWords name = "ProgramSections" bold = "true" italic = "false" color = "Black">
 		<Key word = "unit" />
 		<Key word = "library" />
+        <Key word = "namespace" />
 		<Key word = "program" />
 		<Key word = "interface" />	
 		<Key word = "implementation" />	

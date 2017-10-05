@@ -5,7 +5,7 @@
 /// !! System unit
 unit PABCSystem;
 
- {$define PascalABC}
+{$define PascalABC}
 
 {$gendoc true}
 
@@ -1154,6 +1154,8 @@ function Abs(x: int64): int64;
 function Abs(x: uint64): uint64;
 ///--
 function Abs(x: real): real;
+///--
+function Abs(x: single): single;
 /// Возвращает синус числа x
 function Sin(x: real): real;
 /// Возвращает гиперболический синус числа x
@@ -3278,7 +3280,7 @@ begin
   var sb := new StringBuilder;
   loop n do
     sb.Append(str);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет строку str n раз
@@ -3287,7 +3289,7 @@ begin
   var sb := new StringBuilder;
   loop n do
     sb.Append(str);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Повторяет символ c n раз
@@ -3315,7 +3317,7 @@ begin
   var sb := new StringBuilder(n, n);
   loop n do
     sb.Append(c);
-  result := sb.ToString;
+  Result := sb.ToString;
 end;
 
 /// Добавляет к строке str строковое представление числа n
@@ -3482,7 +3484,21 @@ begin
   Result := v;
 end;
 
-function operator*<T>(x, y: HashSet<T>): HashSet<T>; extensionmethod;
+function operator+<T>(x: HashSet<T>; y: T): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.Add(y);
+  Result := v;
+end;
+
+function operator-<T>(x: HashSet<T>; y: T): HashSet<T>; extensionmethod;
+begin
+  var v := new HashSet<T>(x);
+  v.Remove(y);
+  Result := v;
+end;
+
+function operator*<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
   var v := new HashSet<T>(x);
   v.IntersectWith(y);
@@ -3544,7 +3560,21 @@ begin
   Result := v;
 end;
 
-function operator*<T>(x, y: SortedSet<T>): SortedSet<T>; extensionmethod;
+function operator+<T>(x: SortedSet<T>; y: T): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.Add(y);
+  Result := v;
+end;
+
+function operator-<T>(x: SortedSet<T>; y: T): SortedSet<T>; extensionmethod;
+begin
+  var v := new SortedSet<T>(x);
+  v.Remove(y);
+  Result := v;
+end;
+
+function operator*<T>(x,y: SortedSet<T>): SortedSet<T>; extensionmethod;
 begin
   var v := new SortedSet<T>(x);
   v.IntersectWith(y);
@@ -4457,6 +4487,12 @@ end;
 procedure IOStandardSystem.readln;
 begin
   while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do;
+  {while True do
+  begin
+    var sym := CurrentIOSystem.read_symbol;
+    if (sym = END_OF_LINE_SYMBOL) or (sym = char(-1)) then
+      exit;
+  end;}
 end;
 
 procedure IOStandardSystem.write(obj: object);
@@ -6858,6 +6894,11 @@ begin
 end;
 
 function Abs(x: real): real;
+begin
+  Result := Math.Abs(x);
+end;
+
+function Abs(x: single): single;
 begin
   Result := Math.Abs(x);
 end;

@@ -43,7 +43,7 @@
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
-%token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams 
+%token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams tkNamespace
 %token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
@@ -117,7 +117,7 @@
 %type <stn> property_specifiers
 %type <stn> array_defaultproperty 
 %type <stn> meth_modificators optional_method_modificators optional_method_modificators1  
-%type <id> meth_modificator 
+%type <id> meth_modificator property_modificator 
 %type <stn> proc_call  
 %type <stn> proc_func_constr_destr_decl proc_func_decl inclass_proc_func_decl inclass_proc_func_decl_noclass constr_destr_decl inclass_constr_destr_decl
 %type <stn> method_decl proc_func_constr_destr_decl_with_attr proc_func_decl_noclass  
@@ -363,6 +363,10 @@ unit_header
         { 
 			$$ = NewUnitHeading(new ident($1.text, @1), $2, @$); 
 		}
+    | tkNamespace ident_or_keyword_pointseparator_list tkSemiColon optional_head_compiler_directives
+        {
+            $$ = NewNamespaceHeading(new ident($1.text, @1), $2 as ident_list, @$);
+        }
     ;
 
 unit_key_word
@@ -647,6 +651,14 @@ var_decl_sect
         { 
 			$$ = ($1 as variable_definitions).Add($2 as var_def_statement, @$);
 		} 
+/*    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr tkSemiColon
+	    {
+			if ($7.type != Operators.Assignment)
+			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
+			($5 as ident_list).Insert(0,$3);
+			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+	    }*/
     ;
 
 const_decl
@@ -1766,7 +1778,16 @@ simple_prim_property_definition
 simple_property_definition
     : tkProperty qualified_identifier property_interface property_specifiers tkSemiColon array_defaultproperty
         { 
-			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, $6 as property_array_default, @$);
+			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, proc_attribute.attr_none, $6 as property_array_default, @$);
+        }
+    | tkProperty qualified_identifier property_interface property_specifiers tkSemiColon property_modificator tkSemiColon array_defaultproperty
+        { 
+            proc_attribute pa = proc_attribute.attr_none;
+            if ($6.name.ToLower() == "virtual")
+               	pa = proc_attribute.attr_virtual;
+ 			else if ($6.name.ToLower() == "override") 
+ 			    pa = proc_attribute.attr_override;
+			$$ = NewSimplePropertyDefinition($2 as method_name, $3 as property_interface, $4 as property_accessors, pa, $8 as property_array_default, @$);
         }
     ;
 
@@ -2322,6 +2343,18 @@ var_stmt
         { 
 			$$ = new var_statement($2 as var_def_statement, @$);
 		}
+    | tkRoundOpen tkVar identifier tkComma var_ident_list tkRoundClose tkAssign expr
+		{
+			($5 as ident_list).Insert(0,$3);
+			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+		}		
+    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr
+	    {
+			($5 as ident_list).Insert(0,$3);
+			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+	    }
     ;
 
 assignment
@@ -2337,22 +2370,6 @@ assignment
 			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
-    | tkRoundOpen tkVar identifier tkComma var_ident_list tkRoundClose assign_operator expr
-		{
-			if ($7.type != Operators.Assignment)
-			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as ident_list).Insert(0,$3);
-			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-		}		
-    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose assign_operator expr
-	    {
-			if ($7.type != Operators.Assignment)
-			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as ident_list).Insert(0,$3);
-			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }
     ;
     
 variable_list
@@ -3367,6 +3384,13 @@ meth_modificator
 		{ $$ = $1; }
     ;
     
+property_modificator
+	: tkVirtual
+		{ $$ = $1; }
+	| tkOverride
+		{ $$ = $1; }
+	;
+    
 property_specifier_directives
     : tkRead
 		{ $$ = $1; }
@@ -3522,6 +3546,8 @@ keyword
     | tkUnit
 		{ $$ = $1; }
     | tkLibrary
+		{ $$ = $1; }
+    | tkNamespace
 		{ $$ = $1; }
     | tkExternal
 		{ $$ = $1; }

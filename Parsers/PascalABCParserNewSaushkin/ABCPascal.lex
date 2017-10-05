@@ -348,6 +348,7 @@ UNICODEARROW \x890
     case (int)Tokens.tkTo:
     case (int)Tokens.tkDownto:
     case (int)Tokens.tkUnit:
+    case (int)Tokens.tkNamespace:
     case (int)Tokens.tkLibrary:
     case (int)Tokens.tkExternal:
     case (int)Tokens.tkYield:

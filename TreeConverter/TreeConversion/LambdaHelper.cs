@@ -252,7 +252,13 @@ namespace PascalABCCompiler.TreeConverter
                 delegate_internal_interface dii_left =
                     (delegate_internal_interface)leftType.get_internal_interface(internal_interface_kind.delegate_interface);
                 if (dii_left == null)
-                    visitor.AddError(visitor.get_location(lambdaDef), "ILLEGAL_LAMBDA_VARIABLE_TYPE");
+                {
+                    if (leftType != SystemLibrary.SystemLibrary.system_delegate_type)
+                        visitor.AddError(visitor.get_location(lambdaDef), "ILLEGAL_LAMBDA_VARIABLE_TYPE");
+                    else
+                        return;
+                }
+                    
                 int leftTypeParamsNumber = dii_left.parameters.Count;
                 int lambdaDefParamsCount = 0;
                 if (lambdaDef.formal_parameters != null && lambdaDef.formal_parameters.params_list.Count != 0)

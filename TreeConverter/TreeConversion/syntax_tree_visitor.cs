@@ -1623,7 +1623,8 @@ namespace PascalABCCompiler.TreeConverter
             {
                 check_possible_generic_names(names, loc);
             }
-            di = context.check_name_node_type(names.names[names.names.Count - 1].name, si, loc, general_node_type.type_node);
+            var lastname = names.names[names.names.Count - 1];
+            di = context.check_name_node_type(lastname.name, si, get_location(lastname), general_node_type.type_node);
             return (type_node)di;
         }
 
@@ -2729,6 +2730,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     if (referenced_units[i] is namespace_unit_node)
                     {
+                        namespace_unit_node nun = referenced_units[i] as namespace_unit_node;
                         for (int j = 0; j < assembly_references.Length; j++)
                         {
                             using_namespace_list unl = new using_namespace_list();
@@ -2738,10 +2740,12 @@ namespace PascalABCCompiler.TreeConverter
                         }
                         if (_compiled_unit != null)
                             _compiled_unit.used_namespaces.Add((referenced_units[i] as namespace_unit_node).namespace_name.namespace_name);
+                        if (nun.scope != null)
+                            used_units.Add(nun.scope);
                     }
                     else
                     {
-                        common_unit_node cun = _referenced_units[i] as common_unit_node;
+                        common_unit_node cun = referenced_units[i] as common_unit_node;
                         if (cun != null)
                         {
                             if (try_get_system_module && cun.IsSystemUnit)
@@ -3804,8 +3808,8 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     generate_default_constructor();
                 }
-                
-                visit_class_member_realizations(_class_body);
+                if (!context.namespace_converted)
+                    visit_class_member_realizations(_class_body);
             }
             
             if (!SemanticRules.OrderIndependedMethodNames)
@@ -3945,6 +3949,9 @@ namespace PascalABCCompiler.TreeConverter
             //pn.loc=get_location(_simple_property.property_name);
             if (_simple_property.attr == SyntaxTree.definition_attribute.Static)
             	pn.polymorphic_state = SemanticTree.polymorphic_state.ps_static;
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_virtual || _simple_property.virt_over_none_attr == proc_attribute.attr_override)
+                pn.polymorphic_state = SemanticTree.polymorphic_state.ps_virtual;
+            
             parameter_list pal_big = new parameter_list();
             //TODO: Спросить у Саши как получить тип параметра - var,const и т.д.
             if (_simple_property.parameter_list != null)
@@ -4071,7 +4078,7 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 AddError(loc1, "NO_OVERLOAD_FUNCTION_{0}_USEFUL_FOR_ACCESSOR", read_accessor.name);
                             }
-                            read_accessor = GenerateGetMethod(pn,read_accessor as common_method_node,pn.loc);
+                            read_accessor = GenerateGetMethod(pn, read_accessor as common_method_node, pn.loc);
                            
                         }
                         else
@@ -4233,6 +4240,8 @@ namespace PascalABCCompiler.TreeConverter
                 }
             }
             make_attributes_for_declaration(_simple_property,pn);
+            if (_simple_property.virt_over_none_attr == proc_attribute.attr_override)
+                context.set_override(pn);
             //TODO: Можно сделать множество свойств по умолчанию.
             if (_simple_property.array_default != null)
             {
@@ -4262,7 +4271,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)
@@ -4297,7 +4306,7 @@ namespace PascalABCCompiler.TreeConverter
                 cmn.parameters.AddElement(new_cp);
             }
             expression_node meth_call;
-            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common)
+            if (cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_common || cpn.polymorphic_state == SemanticTree.polymorphic_state.ps_virtual)
             {
                 meth_call = new common_method_call(accessor, new this_node(cpn.common_comprehensive_type, loc), loc);
                 foreach (common_parameter cp in cmn.parameters)
@@ -9926,7 +9935,6 @@ namespace PascalABCCompiler.TreeConverter
             reset_for_interface();
 
             UpdateUnitDefinitionItemForUnit(_compiled_unit);
-
             hard_node_test_and_visit(_program_module.program_block);
             context.check_labels(context.converted_namespace.labels);
 
@@ -9950,6 +9958,7 @@ namespace PascalABCCompiler.TreeConverter
 
             _compiled_unit.main_function = main_function;
         }
+
 
         private void reset_for_interface()
         {
@@ -10017,6 +10026,226 @@ namespace PascalABCCompiler.TreeConverter
             context.leave_interface_part();
             _is_interface_part = false;
            
+        }
+
+        public void convert_pabc_namespaces(syntax_namespace_node[] namespaces)
+        {
+            context.namespace_converted = true;
+            Dictionary<syntax_namespace_node, common_namespace_node> dict = new Dictionary<syntax_namespace_node, common_namespace_node>();
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                _syntax_namespace_node.referenced_units.AddRange(referenced_units);
+                var names = _syntax_namespace_node.name.Split('.');
+                SymTable.Scope scope = null;
+                SymTable.Scope parent_scope = context.CurrentScope;
+                for (int i = 0; i < names.Length; i++)
+                {
+                    var si_list = context.CurrentScope.Find(names[i]);
+                    if (si_list == null)
+                    {
+                        List<SymTable.Scope> top_scopes = new List<SymTable.Scope>();
+                        top_scopes.AddRange(build_referenced_units(_syntax_namespace_node.referenced_units, false));
+                        if (parent_scope != context.CurrentScope)
+                            top_scopes.Add(parent_scope);
+                        scope = convertion_data_and_alghoritms.symbol_table.CreateNamespaceScope(top_scopes.ToArray(), parent_scope);
+                        common_namespace_node cmn = new common_namespace_node(null, _compiled_unit, names[i], scope, null);
+                        
+                        parent_scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
+                        scope.AddSymbol(names[i], new SymbolInfoUnit(cmn));
+                        if (i == names.Length - 1)
+                        {
+                            dict.Add(_syntax_namespace_node, cmn);
+                            var unit_scope = context.converted_namespace.scope as SymTable.UnitInterfaceScope;
+                            if (unit_scope.TopScopeArray != null)
+                                for (int j = 0; j < unit_scope.TopScopeArray.Length; j++)
+                                {
+                                    if (unit_scope.TopScopeArray[j] is NetHelper.NetScope)
+                                    {
+                                        NetHelper.NetScope netScope = unit_scope.TopScopeArray[j] as NetHelper.NetScope;
+                                        if (netScope.used_namespaces.Count > 0 && string.Compare(netScope.used_namespaces[0].namespace_name, _syntax_namespace_node.name, true) == 0)
+                                        {
+                                            unit_scope.TopScopeArray[j] = scope;
+                                        }
+                                    }
+                                }
+                        }
+                            
+                    }
+                    else
+                    {
+                        foreach (SymbolInfoUnit si in si_list.InfoUnitList)
+                            if (si.sym_info is common_namespace_node)
+                            {
+                                common_namespace_node cmn = si.sym_info as common_namespace_node;
+                                scope = cmn.scope;
+                                if (!(scope is SymTable.NamespaceScope))
+                                {
+                                    if (i == names.Length - 1)
+                                        dict.Add(_syntax_namespace_node, cmn);
+                                }
+                                break;
+                            }
+                            else if (si.sym_info is compiled_namespace_node)
+                            {
+                                List<SymTable.Scope> top_scopes = new List<SymTable.Scope>();
+                                top_scopes.AddRange(build_referenced_units(_syntax_namespace_node.referenced_units, false));
+                                if (parent_scope != context.CurrentScope)
+                                    top_scopes.Add(parent_scope);
+                                compiled_namespace_node cnn = si.sym_info as compiled_namespace_node;
+                                if (cnn.common_namespace == null)
+                                {
+                                    scope = convertion_data_and_alghoritms.symbol_table.CreateNamespaceScope(top_scopes.ToArray(), parent_scope);
+                                    common_namespace_node cmn = new common_namespace_node(null, _compiled_unit, names[i], scope, null);
+                                    cnn.common_namespace = cmn;
+                                }
+                                else
+                                    scope = cnn.common_namespace.scope;
+                                if (i == names.Length - 1 && !dict.ContainsKey(_syntax_namespace_node))
+                                    dict.Add(_syntax_namespace_node, cnn.common_namespace);
+                            }
+                            
+                        if (scope == null)
+                            AddError(get_location(_syntax_namespace_node), "NAMESPACE_REDECLARATION");
+                    }
+                    parent_scope = scope;
+                }
+                
+                context.enter_scope(scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            if (td.type_def is class_definition)
+                            {
+                                class_definition cl_def = td.type_def as class_definition;
+                                if (cl_def.body == null)
+                                    AddError(get_location(cl_def), "TYPE_PREDEFINITION_NOT_ALLOWED");
+                                common_type_node ctn = context.advanced_create_type(td.type_name.name, get_location(td.type_name), false, false);
+                                ctn.ForwardDeclarationOnly = true;
+                                context.converted_type = null;
+                                context.add_type_header(td, ctn);
+                            }
+                            else if (td.type_def is procedure_header || td.type_def is function_header)
+                            {
+
+                            }
+                            else if (td.type_def is enum_type_definition)
+                            {
+                                hard_node_test_and_visit(td);
+                            }
+                            else
+                                AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                        }
+                        
+                    }
+                    else
+                        AddError(get_location(decl), "NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES");
+                }
+
+                context.leave_scope();
+                
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                var cmn = dict[_syntax_namespace_node];
+                List<SymTable.Scope> scopes = new List<SymTable.Scope>();
+                SymTable.UnitInterfaceScope ns_scope = cmn.scope as SymTable.UnitInterfaceScope;
+                if (ns_scope.TopScopeArray != null)
+                    scopes.AddRange(ns_scope.TopScopeArray);
+                foreach (unit_node un in _syntax_namespace_node.referenced_units)
+                {
+                    if (un is namespace_unit_node)
+                    {
+                        var nun = un as namespace_unit_node;
+                        var names = nun.namespace_name.namespace_name.Split('.');
+                        var si_list = context.CurrentScope.Find(names[0]);
+                        if (si_list != null && si_list.First().sym_info is common_namespace_node)
+                        {
+                            SymTable.Scope ns_scope2 = (si_list.First().sym_info as common_namespace_node).scope;
+                            for (int i = 1; i < names.Length; i++)
+                            {
+                                si_list = ns_scope2.Find(names[i]);
+                                ns_scope2 = (si_list.First().sym_info as common_namespace_node).scope;
+                            }
+                            scopes.Add(ns_scope2);
+                        }
+                    }
+                }
+                ns_scope.TopScopeArray = scopes.ToArray();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        { 
+                            if (td.type_def is procedure_header || td.type_def is function_header)
+                            {
+                                hard_node_test_and_visit(td);
+                                common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
+                                ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
+                            }
+                        }
+                    }
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            if (td.type_def is class_definition)
+                            {
+                                hard_node_test_and_visit(td);
+                                common_type_node ctn = context.converted_namespace.types[context.converted_namespace.types.Count - 1];
+                                ctn.SetName(_syntax_namespace_node.name + "." + ctn.name);
+                            }
+                        }
+                    }
+                }
+                context.leave_scope();
+            }
+            foreach (syntax_namespace_node _syntax_namespace_node in namespaces)
+            {
+                common_namespace_node cmn = dict[_syntax_namespace_node];
+                context.enter_scope(cmn.scope);
+                foreach (declaration decl in _syntax_namespace_node.defs)
+                {
+                    if (decl is type_declarations)
+                    {
+                        type_declarations type_decls = decl as type_declarations;
+                        foreach (type_declaration td in type_decls.types_decl)
+                        {
+                            if (td.type_def is class_definition)
+                            {
+                                context.converted_type = context.get_type_to_realize(td);
+                                class_definition cl_def = td.type_def as class_definition;
+                                visit_class_member_realizations(cl_def.body);
+                                context.converted_type = null;
+                            }
+                        }
+                    }
+                }
+                context.leave_scope();
+            }
+            context.namespace_converted = false;
+            context.clear_member_bindings();
+
         }
 
         public override void visit(SyntaxTree.compilation_unit _compilation_unit)
@@ -10378,6 +10607,7 @@ namespace PascalABCCompiler.TreeConverter
             }
         }
 
+        
         public override void visit(SyntaxTree.type_declaration _type_declaration)
         {
             //bool is_template_synonym = false;
@@ -14771,10 +15001,20 @@ namespace PascalABCCompiler.TreeConverter
         			}
             	}
         	}
+            List<syntax_namespace_node> namespaces = new List<syntax_namespace_node>();
+            foreach (SyntaxTree.declaration sd in _subprogram_definitions.defs)
+            {
+                convertion_data_and_alghoritms.check_node_parser_error(sd);
+                if (sd is syntax_namespace_node)
+                    namespaces.Add(sd as syntax_namespace_node);
+            }
+            if (namespaces.Count > 0)
+                convert_pabc_namespaces(namespaces.ToArray());
         	foreach (SyntaxTree.declaration sd in _subprogram_definitions.defs)
             {
                 convertion_data_and_alghoritms.check_node_parser_error(sd);
-                sd.visit(this);
+                if (!(sd is syntax_namespace_node))
+                    sd.visit(this);
             }
             if (SemanticRules.OrderIndependedFunctionNames)
             {
@@ -14935,7 +15175,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (is_event)
                     AddError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
-            	expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
+                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
                 if (cn is constant_node)
                     (cn as constant_node).SetType(DeduceType(cn.type, get_location(_var_def_statement.inital_value)));
                 inital_value = cn;
@@ -16950,7 +17190,7 @@ namespace PascalABCCompiler.TreeConverter
             List<type_node> tparams = new List<type_node>();
             foreach (SyntaxTree.type_definition id in types)
             {
-                type_node tn = ret.visit(id);
+                type_node tn = convert_strong(id);
                 if (tn == null)
                 {
                     AddError(get_location(id), "TYPE_NAME_EXPECTED");
@@ -16965,7 +17205,7 @@ namespace PascalABCCompiler.TreeConverter
             List<type_node> tparams = new List<type_node>();
             foreach (SyntaxTree.type_definition id in types)
             {
-                type_node tn = ret.visit(id);
+                type_node tn = convert_strong(id);
                 CompilationErrorWithLocation not_useful = generic_parameter_eliminations.check_type_generic_useful(tn, get_location(id));
                 if (not_useful != null)
                 {
@@ -18046,7 +18286,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void LeaveTypeDeclarationsSection()
         {
             type_section_converting = false;
-            if (context.types_predefined.Count > 0)
+            if (context.types_predefined.Count > 0 && !context.namespace_converted)
             {
             	AddError(context.types_predefined[0].loc, "NO_TYPE_{0}_DEFINITION", context.types_predefined[0].name);
             }
@@ -18539,10 +18779,14 @@ namespace PascalABCCompiler.TreeConverter
                         // Надо посмотреть, как это делается для преобразования типов T(x). А пока так
                         expression_node qq = null;
                         delegated_methods dm = null;
+                        common_type_node delegate_type = null;
                         try
                         {
                             qq = convert_strong(ff.dereferencing_value);
                             dm = qq.type as delegated_methods;
+                            if (dm == null && qq.type.IsDelegate)
+                                delegate_type = qq.type as common_type_node;
+
                         }
                         catch (Exception e)
                         {
@@ -18556,6 +18800,15 @@ namespace PascalABCCompiler.TreeConverter
                             {
                                 // Очищаем от Result :=
                                 stl.list[0] = new procedure_call(ff, ff.source_context); // заменить result := Print(x) на Print(x)
+                                _function_lambda_definition.return_type = null;
+                            }
+                        }
+                        else if (delegate_type != null)
+                        {
+                            function_node fn = delegate_type.find_in_type("Invoke").InfoUnitList[0].sym_info as function_node;
+                            if (fn.return_value_type == null && stl.expr_lambda_body)
+                            {
+                                stl.list[0] = new procedure_call(ff, ff.source_context);
                                 _function_lambda_definition.return_type = null;
                             }
                         }
@@ -18876,113 +19129,7 @@ namespace PascalABCCompiler.TreeConverter
             }
             body_exists = false;
         }
-        public void lambda_body_visit(SyntaxTree.block _block)
-        {
-            //weak_node_test_and_visit(_block.defs);
-
-            //ssyy добавил генерацию вызова конструктора предка без параметров
-            if (context.converting_block() == block_type.function_block)
-            {
-                common_method_node cmn = context.top_function as common_method_node;
-                if (cmn != null && cmn.is_constructor && !(cmn.polymorphic_state == SemanticTree.polymorphic_state.ps_static))
-                {
-                    context.allow_inherited_ctor_call = true;
-                    if (_block.program_code != null && _block.program_code.subnodes != null)
-                    {
-                        //(ssyy) Для записей конструктор предка не вызываем.
-                        bool should_ctor_add = context.converted_type.is_class;
-                        if (should_ctor_add)
-                        {
-                            if (_block.program_code.subnodes.Count > 0)
-                            {
-                                SyntaxTree.procedure_call pc = _block.program_code.subnodes[0] as SyntaxTree.procedure_call;
-                                if (pc != null || _block.program_code.subnodes[0] is SyntaxTree.inherited_message)
-                                {
-                                    //SyntaxTree.inherited_ident ii = pc.func_name as SyntaxTree.inherited_ident;
-                                    //SyntaxTree.method_call mc = pc.func_name as SyntaxTree.method_call;
-                                    //SyntaxTree.ident id = pc.func_name as SyntaxTree.ident;
-                                    //if (/*ii != null*/id != null || mc != null /*&& mc.dereferencing_value is SyntaxTree.inherited_ident*/)
-                                    {
-                                        //(ssyy) Не уверен, что следующий оператор необходим.
-                                        convertion_data_and_alghoritms.check_node_parser_error(_block.program_code);
-
-                                        statement_node inh = convert_strong(_block.program_code.subnodes[0]);
-
-                                        compiled_constructor_call c1 = inh as compiled_constructor_call;
-                                        if (c1 != null && !c1._new_obj_awaited)
-                                        {
-                                            should_ctor_add = false;
-                                        }
-                                        else
-                                        {
-                                            common_constructor_call c2 = inh as common_constructor_call;
-                                            if (c2 != null && !c2._new_obj_awaited)
-                                            {
-                                                should_ctor_add = false;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (should_ctor_add)
-                        {
-                            //Пытаемся добавить вызов .ctor() предка...
-                            //Для начала проверим, есть ли у предка таковой.
-                            bool not_found = true;
-                            SymbolInfoList sym = context.converted_type.base_type.find_in_type(compiler_string_consts.default_constructor_name, context.CurrentScope);
-                            if (sym != null)
-                            {
-                                foreach (SymbolInfoUnit sym_unit in sym.InfoUnitList)
-                                {
-                                    if (!not_found)
-                                        break;
-                                    compiled_constructor_node ccn = sym_unit.sym_info as compiled_constructor_node;
-                                    if (ccn != null && ccn.parameters.Count == 0)
-                                    {
-                                        not_found = false;
-                                    }
-                                    else
-                                    {
-                                        common_method_node cnode = sym_unit.sym_info as common_method_node;
-                                        if (cnode != null && cnode.is_constructor && (cnode.parameters.Count == 0 || cnode.parameters[0].default_value != null))
-                                        {
-                                            not_found = false;
-                                        }
-                                    }
-                                }
-                            }
-                            if (not_found)
-                            {
-                                //У предка нет конструктора по умолчанию
-                                AddError(get_location(_block.program_code), "INHERITED_CONSTRUCTOR_CALL_EXPECTED");
-                            }
-                            else
-                            {
-                                //Генерируем вызов .ctor() предка
-                                SyntaxTree.inherited_ident ii = new SyntaxTree.inherited_ident();
-                                ii.name = compiler_string_consts.default_constructor_name;
-                                _block.program_code.subnodes.Insert(0, new SyntaxTree.procedure_call(ii));
-                                //context.allow_inherited_ctor_call = false;
-                            }
-                        }
-                    }
-                }
-            }
-            //\ssyy
-
-            //ssyy
-            if (context.converting_block() == block_type.namespace_block)
-            {
-                context.check_predefinition_defined();
-            }
-
-            context.enter_code_block_with_bind();
-            statement_node sn = convert_strong(_block.program_code);
-            context.leave_code_block();
-
-            context.code = sn;
-        }
+        
 		
 		public override void visit(SyntaxTree.lambda_inferred_type lit) //lroman//
         {
@@ -19552,5 +19699,7 @@ namespace PascalABCCompiler.TreeConverter
 
             visit(mc);*/
         }
+
+        
     }
 }

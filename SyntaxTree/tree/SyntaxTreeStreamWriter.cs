@@ -2184,6 +2184,7 @@ namespace PascalABCCompiler.SyntaxTree
 				_simple_property.parameter_list.visit(this);
 			}
 			bw.Write((byte)_simple_property.attr);
+			bw.Write((byte)_simple_property.virt_over_none_attr);
 		}
 
 

@@ -242,7 +242,8 @@ namespace SymbolTable
 
 	public class DotNETScope:Scope
 	{
-		public DotNETScope(DSSymbolTable vSymbolTable):base(vSymbolTable,null,false)
+        public NamespaceScope AdditionalNamespaceScope;
+        public DotNETScope(DSSymbolTable vSymbolTable):base(vSymbolTable,null,false)
 		{
 
 		}
@@ -259,6 +260,7 @@ namespace SymbolTable
 	}
 	public class UnitInterfaceScope:UnitPartScope
 	{
+        
 		public UnitInterfaceScope(DSSymbolTable vSymbolTable,Scope TopScope,Scope[] vTopScopeArray):
 			base(vSymbolTable,TopScope,vTopScopeArray)
 		{
@@ -271,6 +273,13 @@ namespace SymbolTable
 			base(vSymbolTable,TopScope,vTopScopeArray)
 		{}
 	}
+    public class NamespaceScope: UnitInterfaceScope
+    {
+        public NamespaceScope(DSSymbolTable vSymbolTable, Scope TopScope, Scope[] vTopScopeArray):
+			base(vSymbolTable,TopScope,vTopScopeArray)
+		{
+        }
+    }
 	public class ClassScope:Scope
 	{
 		public int BaseClassScopeNum;
@@ -544,7 +553,11 @@ namespace SymbolTable
 		{
 			return new UnitInterfaceScope(this,null,UsedUnits);
 		}
-		public UnitImplementationScope CreateUnitImplementationScope(Scope InterfaceScope,Scope[] UsedUnits)
+        public NamespaceScope CreateNamespaceScope(Scope[] UsedUnits, Scope TopScope)
+        {
+            return new NamespaceScope(this, TopScope, UsedUnits);
+        }
+        public UnitImplementationScope CreateUnitImplementationScope(Scope InterfaceScope,Scope[] UsedUnits)
 		{
 			return new UnitImplementationScope(this,InterfaceScope,UsedUnits);
 		}

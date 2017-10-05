@@ -494,19 +494,19 @@ namespace PascalABCCompiler.SyntaxTree
 
     public partial class var_def_statement
     {
-        public var_def_statement(ident_list vars, type_definition vars_type) : this(vars, vars_type, null, definition_attribute.None, false)
+        public var_def_statement(ident_list vars, type_definition vars_type, SourceContext sc = null) : this(vars, vars_type, null, definition_attribute.None, false, sc)
         { }
 
-        public var_def_statement(ident_list vars, type_definition vars_type, expression iv) : this(vars, vars_type, iv, definition_attribute.None, false)
+        public var_def_statement(ident_list vars, type_definition vars_type, expression iv, SourceContext sc = null) : this(vars, vars_type, iv, definition_attribute.None, false, sc)
         { }
 
-        public var_def_statement(ident id, type_definition type) : this(new ident_list(id), type)
+        public var_def_statement(ident id, type_definition type, SourceContext sc = null) : this(new ident_list(id), type, sc)
         { }
 
-        public var_def_statement(ident id, type_definition type, expression iv) : this(new ident_list(id), type, iv)
+        public var_def_statement(ident id, type_definition type, expression iv, SourceContext sc = null) : this(new ident_list(id), type, iv,sc)
         { }
 
-        public var_def_statement(ident id, expression iv) : this(new ident_list(id), null, iv)
+        public var_def_statement(ident id, expression iv, SourceContext sc = null) : this(new ident_list(id), null, iv, sc)
         { }
 
         public var_def_statement(ident id, string type) : this(new ident_list(id), new named_type_reference(type))
@@ -1045,7 +1045,7 @@ namespace PascalABCCompiler.SyntaxTree
     public partial class simple_property
     {
         public simple_property(ident name, type_definition type, property_accessors accessors, SourceContext sc = null) 
-            : this(name, type, null, accessors, null, null, definition_attribute.None,sc)
+            : this(name, type, null, accessors, null, null, definition_attribute.None,proc_attribute.attr_none,sc)
         { }
     }
 

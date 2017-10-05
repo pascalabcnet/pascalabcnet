@@ -1149,6 +1149,12 @@ namespace PascalABCCompiler.SyntaxTree
 		}
 	}
 
+        public virtual void visit(base_syntax_namespace_node _syntax_namespace_node)
+        {
+            DefaultVisit(_syntax_namespace_node);
+        }
+    }
+
 
 }
 

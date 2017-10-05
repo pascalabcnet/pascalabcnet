@@ -142,7 +142,7 @@ namespace PascalABCCompiler.NetHelper
             string full_ns = null;
             if (NetHelper.IsNetNamespace(name, _unar, out full_ns) == true)
             {
-                compiled_namespace_node cnn = new compiled_namespace_node(full_ns, _tcst);
+                compiled_namespace_node cnn = compiled_namespace_node.get_compiled_namespace(full_ns, _tcst);//new compiled_namespace_node(full_ns, _tcst);
                 si = new SymbolInfoList(new SymbolInfoUnit(cnn));
             }
             else
@@ -253,7 +253,7 @@ namespace PascalABCCompiler.NetHelper
     }
 	
 	public static class NetHelper {
-		private static Hashtable namespaces; 
+		private static Hashtable namespaces;
 		private static Hashtable types;
         private static Dictionary<string,FoundInfo> type_search_cache;
 		private static Hashtable compiled_pascal_types;
@@ -433,12 +433,12 @@ namespace PascalABCCompiler.NetHelper
                         //if (namespaces[s] == null) ns_ht.Add(s,s);
                         ns_ht[s] = s;
                         namespaces[s] = t;
-
                         if (pos != -1)
                         {
                             string[] sub_ns_arr = s.Split('.');
                             string sub_ns_str = sub_ns_arr[sub_ns_arr.Length - 1];
                             namespaces[sub_ns_str] = t;
+                            ns_ht[sub_ns_str] = s;
                             int ind = sub_ns_arr.Length - 2;
                             while (ind != 0)
                             {
@@ -452,10 +452,8 @@ namespace PascalABCCompiler.NetHelper
                             pos = s.LastIndexOf('.');
                             //if (pos == -1)
                             if (namespaces[s] == null)
-                            { 
-                                ns_ht.Add(s, s);
                                 namespaces[s] = t;
-                            }
+                            ns_ht[s] = s;
                         }
                     }
                     TypeInfo ti = new TypeInfo(t, t.FullName);
@@ -821,7 +819,8 @@ namespace PascalABCCompiler.NetHelper
        		
         	if (t != null && cur_used_assemblies.ContainsKey(t.Assembly)) return true;
         	foreach (Assembly a in namespace_assemblies.Keys)
-        		if (cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(Namespace)) return true;
+        		if (cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(Namespace))
+                    return true;
         	return false;
         }
 
@@ -1904,7 +1903,8 @@ namespace PascalABCCompiler.NetHelper
                     return null;
                 TypeInfo ti = fi.GetTypeByNamespaceList(_unar);
                 if (ti != null)
-                    return ti.type;
+                    if (cur_used_assemblies.ContainsKey(ti.type.Assembly))
+                        return ti.type;
             }
             object o = types[name];
             if (o == null)
@@ -1928,7 +1928,10 @@ namespace PascalABCCompiler.NetHelper
                         {
                             fi.type_infos.Add(new TypeNamespaceInfo(t, _unar[i]));
                         }
-                        return t.type;
+                        if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                            return t.type;
+                        else
+                            return null;
                     }
                     
                 }
@@ -1951,8 +1954,10 @@ namespace PascalABCCompiler.NetHelper
                             {
                                 fi.type_infos.Add(new TypeNamespaceInfo(t, _unar[i]));
                             }
-                            
-                            return t.type;
+                            if (cur_used_assemblies.ContainsKey(t.type.Assembly))
+                                return t.type;
+                            else
+                                return null;
                         }
                     }
                 }
@@ -1972,7 +1977,7 @@ namespace PascalABCCompiler.NetHelper
                     if (cur_used_assemblies.ContainsKey(t.type.Assembly))
                         founded_types.Add(t);
                 }
-                if (founded_types.Count == 1)
+                if (founded_types.Count == 1 && cur_used_assemblies.ContainsKey(founded_types[0].type.Assembly))
                     return founded_types[0].type;
                 else
                     return null;

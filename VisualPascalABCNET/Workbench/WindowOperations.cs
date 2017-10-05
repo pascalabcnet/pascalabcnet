@@ -478,7 +478,7 @@ namespace VisualPascalABC
                 tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_FROM_METADATA"));
             if (!ProjectFactory.Instance.ProjectLoaded && !tp.FromMetadata)
             {
-                if (tp.Run && (!WorkbenchServiceFactory.DebuggerManager.IsRun(tp.EXEFileName) || !WorkbenchServiceFactory.DebuggerManager.show_debug_tabs))
+                if (tp.Run && (!WorkbenchServiceFactory.DebuggerManager.IsRun(tp.EXEFileName) || !WorkbenchServiceFactory.DebuggerManager.ShowDebugTabs))
                     tp.Text += string.Format(" [{0}]", PascalABCCompiler.StringResources.Get("VP_MF_TS_RUN"));
                 else
                     if (WorkbenchServiceFactory.DebuggerManager.IsRun(tp.EXEFileName, tp.FileName))

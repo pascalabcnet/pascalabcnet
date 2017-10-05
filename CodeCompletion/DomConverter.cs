@@ -425,8 +425,10 @@ namespace CodeCompletion
             }
             SymInfo[] elems = null;
             if (si == null) return null;
-            if (pattern == null || pattern == "") elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
-            else elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            if (pattern == null || pattern == "")
+                elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
+            else
+                elems = si.GetNamesInAllTopScopes(all_names, new ExpressionVisitor(si, visitor), false);
             List<SymInfo> result_names = new List<SymInfo>();
             if (elems == null) return null;
             for (int i = 0; i < elems.Length; i++)
@@ -522,7 +524,7 @@ namespace CodeCompletion
             if (elems == null) return null;
             for (int i = 0; i < elems.Length; i++)
             {
-                if (!elems[i].name.StartsWith("$") && (elems[i].kind == SymbolKind.Class || elems[i].kind == SymbolKind.Namespace) && elems[i].kind != SymbolKind.Interface)
+                if (!elems[i].name.StartsWith("$") && (elems[i].kind == SymbolKind.Class || elems[i].kind == SymbolKind.Struct || elems[i].kind == SymbolKind.Namespace) && elems[i].kind != SymbolKind.Interface)
                 {
                     if (expr != null && si != null && si is ElementScope &&
                     string.Compare(elems[i].name, (si as ElementScope).sc.si.name, true) == 0)
@@ -930,7 +932,16 @@ namespace CodeCompletion
                         else if (ss is TypeScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as TypeScope));
                         else if (ss is ProcScope)
-                            ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as ProcScope));
+                        {
+                            ProcScope ps = ss as ProcScope;
+                            if (ps.original_function != null)
+                                ps = ps.original_function;
+                            if (ps is CompiledMethodScope)
+                                ss.AddDocumentation(AssemblyDocCache.GetDocumentation((ps as CompiledMethodScope).mi));
+                            else
+                                ss.AddDocumentation(UnitDocCache.GetDocumentation(ps));
+                        }
+                            
                         else if (ss is InterfaceUnitScope)
                             ss.AddDocumentation(UnitDocCache.GetDocumentation(ss as InterfaceUnitScope));
                         else if (ss is ElementScope && string.IsNullOrEmpty(ss.si.description) && (ss as ElementScope).sc is TypeScope)
