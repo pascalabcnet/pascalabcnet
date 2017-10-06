@@ -270,7 +270,7 @@ namespace PascalABCCompiler.TreeRealization
             ((common_namespace_node)_main_function.comprehensive_namespace).functions.AddElement(init_func);
             namespace_variable init_var = new namespace_variable("$is_init",SystemLibrary.SystemLibrary.bool_type,(common_namespace_node)_main_function.comprehensive_namespace,null);
             ((common_namespace_node)_main_function.comprehensive_namespace).variables.AddElement(init_var);
-            if (SystemLibrary.SystemLibInitializer.ConfigVariable.Found)
+            if (SystemLibrary.SystemLibInitializer.ConfigVariable != null && SystemLibrary.SystemLibInitializer.ConfigVariable.Found)
             {
                 namespace_variable conf_nv = null;
                 compiled_variable_definition conf_cf = null;
