@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
-using System.Collections;
+using System.Linq;
 using PascalABCCompiler.TreeConverter;
 using System.Collections.Generic;
 using SymbolTable;
@@ -144,7 +144,16 @@ namespace SymbolTable
 	//при создании добавляет себя в vSymbolTable
 	public class Scope:BaseScope
 	{
-		public DSSymbolTable SymbolTable;
+        private string ScopeName()
+        {
+            var s = this.GetType().Name;
+            if (s == "UnitInterfaceScope")
+                return "GLOBAL";
+            return s;
+        }
+        public override string ToString() => ScopeNum + "->" + TopScopeNum + " ," + ScopeName();
+
+        public DSSymbolTable SymbolTable;
         public bool CaseSensitive;
 		public int TopScopeNum;
         public bool AddStatementsToFront = false; // SSM - введено для необходимости добавлять statements не только в конец statement_list, но и в начало. Нужно для синтаксически сахарных конструкций: например, для создания объекта класса при замыканиях
@@ -454,7 +463,8 @@ namespace SymbolTable
 	#region AreaListNode элемент списка областей видимости
 	public class AreaListNode
 	{
-		public int Area;
+        public override string ToString() => InfoList.JoinIntoString();
+        public int Area;
 		public List<SymbolInfoUnit> InfoList;//для перегузки
 		public AreaListNode()
 		{
@@ -466,7 +476,7 @@ namespace SymbolTable
 			Area=ar;
 			InfoList.Add(inf);
 		}
-	}
+    }
 	#endregion
 	
 	#region HashTableNode элемент хеш-таблицы
@@ -479,7 +489,11 @@ namespace SymbolTable
 			Name=name;
 			NumAreaList=new AreaNodesList(SymbolTableConstants.AreaList_StartSize);
 		}
-	}
+        public override string ToString()
+        {
+            return NumAreaList.ToString();
+        }
+    }
 	#endregion 
 	
 
@@ -611,9 +625,10 @@ namespace SymbolTable
             //{
             Inf.scope = InScope;
             if (!InScope.CaseSensitive) Name = Name.ToLower();
-            int hn = HashTable.Add(new HashTableNode(Name));//ЗДЕСь ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАНЯ ОШИБКА
+            var hn = HashTable.Add(Name);//ЗДЕСь ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАНЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
+            // SSM 07.10.17 - переделал внутреннее представление HashTable на основе Dictionary
 
-            HashTable.hash_arr[hn].NumAreaList.Add(new AreaListNode(InScope.ScopeNum, Inf));
+            hn.NumAreaList.Add(new AreaListNode(InScope.ScopeNum, Inf));
             //}
             // catch (Exception e)
             //{
@@ -636,8 +651,8 @@ namespace SymbolTable
             SymbolInfoList FirstInfo = new SymbolInfoList();
 
             int Area = scope.ScopeNum;
-            int tn = HashTable.Find(Name);		//найдем имя в хеше
-            if (tn < 0 || scope is DotNETScope)//если нет такого ищем в областях .NET
+            var tn = HashTable.Find(Name);		//найдем имя в хеше
+            if (tn == null || scope is DotNETScope)//если нет такого ищем в областях .NET
             {
                 Scope an;
                 an = ScopeTable[Area];
@@ -648,7 +663,7 @@ namespace SymbolTable
                 return FirstInfo.InfoUnitList.Count > 0 ? FirstInfo : null;
             }
 
-            AreaNodesList AreaList = HashTable.hash_arr[tn].NumAreaList;
+            AreaNodesList AreaList = tn.NumAreaList;
             int CurrentArea = Area, ai, bs;
             do
             {
@@ -950,14 +965,14 @@ namespace SymbolTable
 
             int Area = scope.ScopeNum;
             Scope[] used_units = null;
-            int tn = HashTable.Find(Name);		//найдем имя в хеше
+            var tn = HashTable.Find(Name);		//найдем имя в хеше
 
             // SSM 21.01.16
             if (Name.StartsWith("?"))     // это значит, надо искать в областях .NET
                 Name = Name.Substring(1); // съели ? и ищем т.к. tn<0
             // end SSM 
 
-            if (tn < 0 || scope is DotNETScope)//если нет такого ищем в областях .NET
+            if (tn == null || scope is DotNETScope)//если нет такого ищем в областях .NET
             {
                 //ssyy
                 int NextUnitArea = -2;
@@ -968,13 +983,13 @@ namespace SymbolTable
                     an = ScopeTable[Area];
                     if (an is DotNETScope)
                     {
-                        if (tn < 0)
+                        if (tn == null)
                         {
                             AddToSymbolInfo(FirstInfo, (DotNETScope)an, Name);
                         }
                         else
                         {
-                            FindAllInClass(Name, Area, HashTable.hash_arr[tn].NumAreaList, false, FirstInfo);
+                            FindAllInClass(Name, Area, tn.NumAreaList, false, FirstInfo);
                         }
                     }
                     if (FirstInfo.InfoUnitList.Count > 1)
@@ -1075,7 +1090,7 @@ namespace SymbolTable
                 return null;                //если такого нет то поиск окончен
             }
 
-            AreaNodesList AreaList = HashTable.hash_arr[tn].NumAreaList;
+            AreaNodesList AreaList = tn.NumAreaList;
             int CurrentArea = Area, ai;
             while (CurrentArea >= 0)
             {
