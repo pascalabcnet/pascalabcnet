@@ -1117,7 +1117,8 @@ namespace PascalABCCompiler.SyntaxTree
 		{
 			DefaultVisit(_double_question_node);
 		}
-	}
+
+    }
 
 
 }

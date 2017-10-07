@@ -193,14 +193,16 @@ namespace PascalABCCompiler.NETGenerator
             return true;
         }
 
-        public void EnterSafeBlock()
+        public bool EnterSafeBlock()
         {
+            bool tmp = safe_block;
             safe_block = true;
+            return tmp;
         }
 
-        public void LeaveSafeBlock()
+        public void LeaveSafeBlock(bool value)
         {
-            safe_block = false;
+            safe_block = value;
         }
 
         protected void MarkSequencePoint(SemanticTree.ILocation Location)
@@ -1258,7 +1260,7 @@ namespace PascalABCCompiler.NETGenerator
         private void AddTypeWithoutConvert(ICommonTypeNode t)
         {
             if (helper.GetTypeReference(t) != null) return;
-            TypeBuilder tb = mb.DefineType(cur_unit + "." + t.name, ConvertAttributes(t), null, new Type[0]);
+            TypeBuilder tb = mb.DefineType(BuildTypeName(t.name), ConvertAttributes(t), null, new Type[0]);
             helper.AddType(t, tb);
             //(ssyy) обрабатываем generics
             if (t.is_generic_type_definition)
@@ -1862,6 +1864,13 @@ namespace PascalABCCompiler.NETGenerator
             }
         }
 
+        private string BuildTypeName(string type_name)
+        {
+            if (type_name.IndexOf(".") == -1)
+                return cur_unit + "." + type_name;
+            return type_name;
+        }
+
         //Перевод заголовка типа
         private void ConvertTypeHeader(ICommonTypeNode value)
         {
@@ -1924,7 +1933,7 @@ namespace PascalABCCompiler.NETGenerator
                 ta = TypeAttributes.Public;
                 if (value.type_access_level == type_access_level.tal_internal)
                     ta = TypeAttributes.NotPublic;
-                EnumBuilder emb = mb.DefineEnum(cur_unit + "." + value.name, ta, TypeFactory.Int32Type);
+                EnumBuilder emb = mb.DefineEnum(BuildTypeName(value.name), ta, TypeFactory.Int32Type);
                 //int num = 0;
                 foreach (IClassConstantDefinitionNode ccfn in value.constants)
                 {
@@ -1938,7 +1947,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (not_exist)
                 {
-                    tb = mb.DefineType(cur_unit + "." + value.name, ta, null, interfaces);
+                    tb = mb.DefineType(BuildTypeName(value.name), ta, null, interfaces);
                 }
                 else
                 {
@@ -5595,9 +5604,9 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(SemanticTree.ITryBlockNode value)
         {
             Label exBl = il.BeginExceptionBlock();
-            EnterSafeBlock();
+            var safe_block = EnterSafeBlock();
             ConvertStatement(value.TryStatements);
-            LeaveSafeBlock();
+            LeaveSafeBlock(safe_block);
             if (value.ExceptionFilters.Length != 0)
             {
                 foreach (SemanticTree.IExceptionFilterBlockNode iefbn in value.ExceptionFilters)
@@ -5621,17 +5630,17 @@ namespace PascalABCCompiler.NETGenerator
                     {
                         il.Emit(OpCodes.Pop);
                     }
-                    EnterSafeBlock();
+                    safe_block = EnterSafeBlock();
                     ConvertStatement(iefbn.ExceptionHandler);
-                    LeaveSafeBlock();
+                    LeaveSafeBlock(safe_block);
                 }
             }
             if (value.FinallyStatements != null)
             {
                 il.BeginFinallyBlock();
-                EnterSafeBlock();
+                safe_block = EnterSafeBlock();
                 ConvertStatement(value.FinallyStatements);
-                LeaveSafeBlock();
+                LeaveSafeBlock(safe_block);
             }
             il.EndExceptionBlock();
         }
@@ -5646,7 +5655,10 @@ namespace PascalABCCompiler.NETGenerator
         public override void visit(IGotoStatementNode value)
         {
             Label lab = helper.GetLabel(value.label, il);
-            il.Emit(OpCodes.Br, lab);
+            if (safe_block)
+                il.Emit(OpCodes.Leave, lab);
+            else
+                il.Emit(OpCodes.Br, lab);
         }
 
         private Stack<Label> if_stack = new Stack<Label>();
@@ -10351,9 +10363,9 @@ namespace PascalABCCompiler.NETGenerator
             }
             labels.Push(leave_label);
             clabels.Push(l2);
-            EnterSafeBlock();
+            var safe_block = EnterSafeBlock();
             ConvertStatement(value.Body);
-            LeaveSafeBlock();
+            LeaveSafeBlock(safe_block);
             //MarkSequencePoint(value.Location);
             il.MarkSequencePoint(doc, 0xFeeFee, 0xFeeFee, 0xFeeFee, 0xFeeFee);
             il.MarkLabel(l2);
@@ -10371,6 +10383,8 @@ namespace PascalABCCompiler.NETGenerator
 
             il.EndExceptionBlock();
             il.MarkLabel(leave_label);
+            labels.Pop();
+            clabels.Pop();
         }
 
 

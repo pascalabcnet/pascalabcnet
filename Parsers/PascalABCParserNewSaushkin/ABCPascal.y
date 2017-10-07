@@ -43,7 +43,7 @@
 %token <ti> tkParseModeExpression tkParseModeStatement tkParseModeType tkBegin tkEnd 
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
-%token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams 
+%token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams tkNamespace
 %token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
@@ -362,6 +362,10 @@ unit_header
         { 
 			$$ = NewUnitHeading(new ident($1.text, @1), $2, @$); 
 		}
+    | tkNamespace ident_or_keyword_pointseparator_list tkSemiColon optional_head_compiler_directives
+        {
+            $$ = NewNamespaceHeading(new ident($1.text, @1), $2 as ident_list, @$);
+        }
     ;
 
 unit_key_word
@@ -646,6 +650,14 @@ var_decl_sect
         { 
 			$$ = ($1 as variable_definitions).Add($2 as var_def_statement, @$);
 		} 
+/*    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr tkSemiColon
+	    {
+			if ($7.type != Operators.Assignment)
+			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
+			($5 as ident_list).Insert(0,$3);
+			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+	    }*/
     ;
 
 const_decl
@@ -2328,6 +2340,18 @@ var_stmt
         { 
 			$$ = new var_statement($2 as var_def_statement, @$);
 		}
+    | tkRoundOpen tkVar identifier tkComma var_ident_list tkRoundClose tkAssign expr
+		{
+			($5 as ident_list).Insert(0,$3);
+			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+		}		
+    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr
+	    {
+			($5 as ident_list).Insert(0,$3);
+			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
+	    }
     ;
 
 assignment
@@ -2343,22 +2367,6 @@ assignment
 			($4 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5);
 			$$ = new assign_tuple($4 as addressed_value_list, $7, @$);
 		}		
-    | tkRoundOpen tkVar identifier tkComma var_ident_list tkRoundClose assign_operator expr
-		{
-			if ($7.type != Operators.Assignment)
-			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as ident_list).Insert(0,$3);
-			($5 as syntax_tree_node).source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-		}		
-    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose assign_operator expr
-	    {
-			if ($7.type != Operators.Assignment)
-			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
-			($5 as ident_list).Insert(0,$3);
-			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
-			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }
     ;
     
 variable_list
@@ -3482,6 +3490,8 @@ keyword
     | tkUnit
 		{ $$ = $1; }
     | tkLibrary
+		{ $$ = $1; }
+    | tkNamespace
 		{ $$ = $1; }
     | tkExternal
 		{ $$ = $1; }

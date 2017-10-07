@@ -2489,7 +2489,9 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_type_node : wrapped_type, SemanticTree.ICompiledTypeNode , SemanticTree.ILocated
 	{
-		internal System.Type _compiled_type;
+        public override string ToString() => compiled_type.Name.ToString();
+
+        internal System.Type _compiled_type;
 		protected compiled_type_node _base_type;
 
         //Если это не чистить, будет ошибка. Т.к. при следуйщей компиляции области видимости могут изменится.

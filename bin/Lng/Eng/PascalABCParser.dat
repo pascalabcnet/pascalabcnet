@@ -59,3 +59,4 @@ ONE_TYPE_PARAMETER_MUSTBE_WITHOUT_PARENTHESES=The alone typed parameter must be 
 USING_UNLOCAL_FOR_VARIABLE=Cycle counter variable should be declared in for cycle
 USING_UNLOCAL_FOREACH_VARIABLE=Cycle counter variable should be declared in foreach cycle
 OVERLOAD_IS_NOT_USED=overload is not used in PascalABC.NET
+ONLY_BASE_ASSIGNMENT_FOR_TUPLE=Tuple allows only base assignment :=

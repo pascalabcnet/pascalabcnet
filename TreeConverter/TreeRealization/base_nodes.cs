@@ -91,7 +91,9 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class definition_node : semantic_node, SemanticTree.IDefinitionNode
 	{
-		protected string doc;
+        public override string ToString() => this.GetType().Name;
+
+        protected string doc;
 		
 		protected attributes_list _attributes;
 		

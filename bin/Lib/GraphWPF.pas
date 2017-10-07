@@ -28,26 +28,34 @@ var CountVisuals := 0;
 procedure Invoke(d: System.Delegate; params args: array of object);
 
 type 
+  /// Тип клавиши
   Key = System.Windows.Input.Key;
+  /// Цветовые константы
   Colors = System.Windows.Media.Colors;
+  /// Тип цвета
   Color = System.Windows.Media.Color;
+  /// Тип цвета
   GColor = System.Windows.Media.Color;
+  /// Тип прямоугольника
   GRect = System.Windows.Rect;
   GWindow = Window;
   GPen = System.Windows.Media.Pen;
   GPoint = System.Windows.Point;
   GBrush = System.Windows.Media.Brush;
-  ///!#
+  /// Тип стиля шрифта
   FontStyle = (Normal,Bold,Italic,BoldItalic);
   
+  ///!#
   BrushType = class
   private
     c := Colors.White;
     function BrushConstruct := new SolidColorBrush(c);
   public  
+    /// Цвет кисти
     property Color: GColor read c write c;
   end;
   
+  ///!#
   PenType = class
   private
     c: Color := Colors.Black;
@@ -59,9 +67,13 @@ type
       Result.LineJoin := PenLineJoin.Round;
     end;
   public  
+    /// Цвет пера
     property Color: GColor read c write c;
+    /// Ширина пера
     property Width: real read th write th;
+    /// Текущая координата X пера
     property X: real read fx;
+    /// Текущая координата Y пера
     property Y: real read fy;
   end;
 
@@ -88,11 +100,14 @@ type
     procedure SetFS(fs: FontStyle) := Invoke(SetFSP,fs);
     function TypefaceClone := tf;
     function BrushConstruct := new SolidColorBrush(c);
-  public  
+  public
+    /// Цвет шрифта
     property Color: GColor read c write c;
+    /// Имя шрифта
     property Name: string read GetName write SetName;
     /// Размер шрифта в единицах по 1/96 дюйма
     property Size: real read sz write sz;
+    /// Стиль шрифта
     property Style: FontStyle write SetFS;
   end;
   
@@ -110,13 +125,13 @@ type
     procedure SetCaption(c: string);
     function GetCaption: string;
   public 
-    /// Отступ графического окна от левого края экрана в пикселах
+    /// Отступ графического окна от левого края экрана 
     property Left: real read GetLeft write SetLeft;
-    /// Отступ графического окна от верхнего края экрана в пикселах
+    /// Отступ графического окна от верхнего края экрана 
     property Top: real read GetTop write SetTop;
-    /// Ширина клиентской части графического окна в пикселах
+    /// Ширина клиентской части графического окна
     property Width: real read GetWidth write SetWidth;
-    /// Высота клиентской части графического окна в пикселах
+    /// Высота клиентской части графического окна
     property Height: real read GetHeight write SetHeight;
     /// Заголовок графического окна
     property Caption: string read GetCaption write SetCaption;
@@ -126,9 +141,9 @@ type
     procedure Clear;
     /// Очищает графическое окно цветом c
     procedure Clear(c: Color);
-    /// Устанавливает размеры клиентской части графического окна в пикселах
+    /// Устанавливает размеры клиентской части графического окна 
     procedure SetSize(w, h: real);
-    /// Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
+    /// Устанавливает отступ графического окна от левого верхнего края экрана 
     procedure SetPos(l, t: real);
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
@@ -157,63 +172,113 @@ type
   /// Константы выравнивания текста относительно точки
   Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
 
-procedure Ellipse(x,y,r1,r2: real);
-procedure DrawEllipse(x,y,r1,r2: real);
-procedure FillEllipse(x,y,r1,r2: real);
-procedure Ellipse(x,y,r1,r2: real; c: GColor);
-procedure DrawEllipse(x,y,r1,r2: real; c: GColor);
-procedure FillEllipse(x,y,r1,r2: real; c: GColor);
+/// Рисует эллипс с центром в точке (x,y) и радиусами rx и ry
+procedure Ellipse(x,y,rx,ry: real);
+/// Рисует контур эллипса с центром в точке (x,y) и радиусами rx и ry
+procedure DrawEllipse(x,y,rx,ry: real);
+/// Рисует внутренность эллипса с центром в точке (x,y) и радиусами rx и ry
+procedure FillEllipse(x,y,rx,ry: real);
+/// Рисует эллипс с центром в точке (x,y), радиусами rx и ry и цветом внутренности c
+procedure Ellipse(x,y,rx,ry: real; c: Color);
+/// Рисует контур эллипса с центром в точке (x,y), радиусами rx и ry и цветом c
+procedure DrawEllipse(x,y,rx,ry: real; c: Color);
+/// Рисует внутренность эллипса с центром в точке (x,y), радиусами rx и ry и цветом c
+procedure FillEllipse(x,y,rx,ry: real; c: Color);
 
+/// Рисует окружность с центром в точке (x,y) и радиусом r
 procedure Circle(x,y,r: real);
+/// Рисует контур окружности с центром в точке (x,y) и радиусом r
 procedure DrawCircle(x,y,r: real);
+/// Рисует внутренность окружности с центром в точке (x,y) и радиусом r
 procedure FillCircle(x,y,r: real);
-procedure Circle(x,y,r: real; c: GColor);
-procedure DrawCircle(x,y,r: real; c: GColor);
-procedure FillCircle(x,y,r: real; c: GColor);
+/// Рисует окружность с центром в точке (x,y), радиусом r и цветом c
+procedure Circle(x,y,r: real; c: Color);
+/// Рисует контур окружности с центром в точке (x,y), радиусом r и цветом c
+procedure DrawCircle(x,y,r: real; c: Color);
+/// Рисует внутренность окружности с центром в точке (x,y), радиусом r и цветом c
+procedure FillCircle(x,y,r: real; c: Color);
 
+/// Рисует прямоугольник с координатами вершин (x,y) и (x+w,y+h)
 procedure Rectangle(x,y,w,h: real);
+/// Рисует контур прямоугольника с координатами вершин (x,y) и (x+w,y+h)
 procedure DrawRectangle(x,y,w,h: real);
+/// Рисует внутренность прямоугольника с координатами вершин (x,y) и (x+w,y+h)
 procedure FillRectangle(x,y,w,h: real);
-procedure Rectangle(x,y,w,h: real; c: GColor);
-procedure DrawRectangle(x,y,w,h: real; c: GColor);
-procedure FillRectangle(x,y,w,h: real; c: GColor);
+/// Рисует прямоугольник с координатами вершин (x,y) и (x+w,y+h) цветом c
+procedure Rectangle(x,y,w,h: real; c: Color);
+/// Рисует контур прямоугольника с координатами вершин (x,y) и (x+w,y+h) цветом c
+procedure DrawRectangle(x,y,w,h: real; c: Color);
+/// Рисует внутренность прямоугольника с координатами вершин (x,y) и (x+w,y+h) цветом c
+procedure FillRectangle(x,y,w,h: real; c: Color);
 
-/// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+/// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure Arc(x, y, r, angle1, angle2: real);
-procedure Arc(x, y, r, angle1, angle2: real; c: GColor);
+/// Рисует дугу окружности с центром в точке (x,y) и радиусом r, заключенную между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+procedure Arc(x, y, r, angle1, angle2: real; c: Color);
 
-/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
+/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure Sector(x, y, r, angle1, angle2: real);
+/// Рисует контур сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure DrawSector(x, y, r, angle1, angle2: real);
+/// Рисует внутренность сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure FillSector(x, y, r, angle1, angle2: real);
-procedure Sector(x, y, r, angle1, angle2: real; c: GColor);
-procedure DrawSector(x, y, r, angle1, angle2: real; c: GColor);
-procedure FillSector(x, y, r, angle1, angle2: real; c: GColor);
+/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+procedure Sector(x, y, r, angle1, angle2: real; c: Color);
+/// Рисует контур сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+procedure DrawSector(x, y, r, angle1, angle2: real; c: Color);
+/// Рисует внутренность сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX, цветом c
+procedure FillSector(x, y, r, angle1, angle2: real; c: Color);
 
+/// Рисует отрезок прямой от точки (x,y) до точки (x1,y1)
 procedure Line(x,y,x1,y1: real);
-procedure Line(x,y,x1,y1: real; c: GColor);
+/// Рисует отрезок прямой от точки (x,y) до точки (x1,y1) цветом c
+procedure Line(x,y,x1,y1: real; c: Color);
+/// Устанавливает текущую позицию рисования в точку (x,y)
 procedure MoveTo(x,y: real);
+/// Рисует отрезок от текущей позиции до точки (x,y). Текущая позиция переносится в точку (x,y)
 procedure LineTo(x,y: real);
+/// Перемещает текущую позицию рисования на вектор (dx,dy)
 procedure MoveRel(dx,dy: real);
+/// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
 procedure LineRel(dx,dy: real);
+/// Перемещает текущую позицию рисования на вектор (dx,dy)
 procedure MoveOn(dx,dy: real);
+/// Рисует отрезок от текущей позиции до точки, смещённой на вектор (dx,dy). Текущая позиция переносится в новую точку
 procedure LineOn(dx,dy: real);
 
+/// Рисует ломаную, заданную массивом точек 
 procedure PolyLine(points: array of Point);
-procedure PolyLine(points: array of Point; c: GColor);
+/// Рисует ломаную заданную массивом точек и цветом
+procedure PolyLine(points: array of Point; c: Color);
 
+/// Рисует многоугольник, заданный массивом точек 
 procedure Polygon(points: array of Point);
+/// Рисует контур многоугольника, заданного массивом точек 
 procedure DrawPolygon(points: array of Point);
+/// Рисует внутренность многоугольника, заданного массивом точек 
 procedure FillPolygon(points: array of Point);
-procedure Polygon(points: array of Point; c: GColor);
+/// Рисует многоугольник, заданный массивом точек и цветом
+procedure Polygon(points: array of Point; c: Color);
+/// Рисует контур многоугольника, заданного массивом точек и цветом 
 procedure DrawPolygon(points: array of Point; c: GColor);
+/// Рисует внутренность многоугольника, заданного массивом точек и цветом
 procedure FillPolygon(points: array of Point; c: GColor);
 
-
+/// Рисует изображение из файла fname в позиции (x,y)
 procedure DrawImage(x,y: real; fname: string);
+/// Рисует изображение из файла fname в позиции (x,y) размера w на h
 procedure DrawImage(x,y,w,h: real; fname: string);
+/// Рисует немасштабированное изображение из файла fname в позиции (x,y)
 procedure DrawImageUnscaled(x,y: real; fname: string);
+/// Выводит видеоиз файла fname в позицию (x,y)
 procedure DrawVideo(x,y: real; fname: string);
+
+/// Ширина изображения в пикселах
+function ImageWidth(fname: string): integer;
+/// Высота изображения в пикселах
+function ImageHeight(fname: string): integer;
+/// Размер изображения в пикселах
+function ImageSize(fname: string): (integer,integer);
 
 /// Ширина текста при выводе
 function TextWidth(text: string): real;
@@ -222,9 +287,13 @@ function TextHeight(text: string): real;
 /// Размер текста при выводе
 function TextSize(text: string): Size;
 
+/// Текущая кисть
 var Brush: BrushType;
+/// Текущее перо
 var Pen: PenType;
+/// Текущий шрифт
 var Font: FontType;
+/// Текущее окно
 var Window: WindowType;
 
 var
@@ -241,18 +310,27 @@ var
   /// Событие нажатия символьной клавиши
   OnKeyPress: procedure(ch: char);
 
+/// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r,g,b: byte): Color;
-
+/// Возвращает цвет по красной, зеленой и синей составляющей и параметру прозрачности (в диапазоне 0..255)
 function ARGB(a,r,g,b: byte): Color;
+/// Возвращает случайный цвет
 function RandomColor: Color;
+/// Возвращает случайный цвет
 function clRandom: Color;
+/// Возвращает точку с координатами (x,y)
 function Pnt(x,y: real): GPoint;
+/// Возвращает прямоугольник с координатами угла (x,y), шириной w и высотой h
 function Rect(x,y,w,h: real): GRect;
+/// Возвращает однотонную цветную кисть, заданную цветом
 function ColorBrush(c: Color): GBrush;
+/// Возвращает однотонное цветное перо, заданное цветом
 function ColorPen(c: Color): GPen;
 
 /// Начать анимацию, основанную на кадре
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer := 60);
+/// Начать анимацию, основанную на кадре
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer := 60);
 /// Завершить анимацию, основанную на кадре
 procedure EndFrameBasedAnimation;
 
@@ -281,25 +359,39 @@ procedure DrawText(r: GRect; number: integer; c: GColor; align: Alignment := Ali
 /// Выводит вещественное в прямоугольник
 procedure DrawText(r: GRect; number: real; c: GColor; align: Alignment := Alignment.Center);
 
+/// Выводит строку в позицию (x,y)
 procedure TextOut(x, y: real; text: string; align: Alignment := Alignment.LeftTop);
+/// Выводит строку в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: string; c: GColor; align: Alignment := Alignment.LeftTop);
+/// Выводит целое в позицию (x,y)
 procedure TextOut(x, y: real; text: integer; align: Alignment := Alignment.LeftTop);
+/// Выводит целое в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: integer; c: GColor; align: Alignment := Alignment.LeftTop);
+/// Выводит вещественное в позицию (x,y)
 procedure TextOut(x, y: real; text: real; align: Alignment := Alignment.LeftTop);
+/// Выводит вещественное в позицию (x,y) цветом c
 procedure TextOut(x, y: real; text: real; c: GColor; align: Alignment := Alignment.LeftTop);
 
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure DrawGraph(f: real -> real; a, b, min, max, x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, в прямоугольнике r
 procedure DrawGraph(f: real -> real; a, b, min, max: real; r: GRect);  
+/// Рисует график функции f, заданной на отрезке [a,b] по оси абсцисс и на отрезке [min,max] по оси ординат, на полное графическое окно
 procedure DrawGraph(f: real -> real; a, b, min, max: real);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике, задаваемом координатами x1,y1,x2,y2, 
 procedure DrawGraph(f: real -> real; a, b: real; x, y, w, h: real);
+/// Рисует график функции f, заданной на отрезке [a,b], в прямоугольнике r 
 procedure DrawGraph(f: real -> real; a, b: real; r: GRect);
+/// Рисует график функции f, заданной на отрезке [-5,5], в прямоугольнике r 
 procedure DrawGraph(f: real -> real; r: GRect);
+/// Рисует график функции f, заданной на отрезке [a,b], на полное графическое окно 
 procedure DrawGraph(f: real -> real; a, b: real);
+/// Рисует график функции f, заданной на отрезке [-5,5], на полное графическое окно  
 procedure DrawGraph(f: real -> real);
 
 procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawcoords: boolean := true);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean := true);
-procedure SetStandardCoords;
+procedure SetStandardCoords(scale: real := 1.0; x0: real := 0; y0: real := 0);
 procedure DrawGrid;
 
 function XMin: real;
@@ -695,12 +787,12 @@ procedure DrawTextPC(x,y: real; text: string; c: GColor) := TextPFull(x,y,text,c
 procedure EllipseNew(x,y,r1,r2: real) 
   := InvokeVisual(DrawGeometryP,VE.Create(()->EllipseGeometry.Create(Pnt(x,y),r1,r2)));
 
-procedure Ellipse(x,y,r1,r2: real) := InvokeVisual(EllipseP,x,y,r1,r2);
-procedure DrawEllipse(x,y,r1,r2: real) := InvokeVisual(DrawEllipseP,x,y,r1,r2);
-procedure FillEllipse(x,y,r1,r2: real) := InvokeVisual(FillEllipseP,x,y,r1,r2);
-procedure Ellipse(x,y,r1,r2: real; c: GColor) := InvokeVisual(EllipsePC,x,y,r1,r2,c);
-procedure DrawEllipse(x,y,r1,r2: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,r1,r2,c);
-procedure FillEllipse(x,y,r1,r2: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,r1,r2,c);
+procedure Ellipse(x,y,rx,ry: real) := InvokeVisual(EllipseP,x,y,rx,ry);
+procedure DrawEllipse(x,y,rx,ry: real) := InvokeVisual(DrawEllipseP,x,y,rx,ry);
+procedure FillEllipse(x,y,rx,ry: real) := InvokeVisual(FillEllipseP,x,y,rx,ry);
+procedure Ellipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(EllipsePC,x,y,rx,ry,c);
+procedure DrawEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(DrawEllipsePC,x,y,rx,ry,c);
+procedure FillEllipse(x,y,rx,ry: real; c: GColor) := InvokeVisual(FillEllipsePC,x,y,rx,ry,c);
 
 procedure Circle(x,y,r: real) := InvokeVisual(EllipseP,x,y,r,r);
 procedure DrawCircle(x,y,r: real) := InvokeVisual(DrawEllipseP,x,y,r,r);
@@ -1087,6 +1179,9 @@ begin
   Range(xfrom,xto).ForEach(x->Line(x,YMin,x,YMax,Colors.LightGray));
   Line(XMin,0,XMax,0);
   Line(0,YMin,0,YMax);
+  
+  //Range(yfrom,yto).Where(y->y<>0).ForEach(y->TextOut(xmin+0.1,y,y,Alignment.LeftCenter));
+  //Range(xfrom,xto).Where(x->x<>0).ForEach(x->TextOut(x,ymin+0.05,x,Alignment.CenterBottom));
 end;
 procedure DrawGrid := Invoke(DrawGridP);
 
@@ -1111,7 +1206,6 @@ begin
   GlobalScale := Window.Width/(x2-x1);
   XOrigin := -x1*GlobalScale;
   YOrigin := Window.Height/2;
-  //Print(XOrigin,YOrigin,GlobalScale);
   SetMathematicCoordsScaleP(XOrigin,YOrigin,GlobalScale);
   if drawcoords then
     DrawGridP
@@ -1124,7 +1218,6 @@ begin
   // 0 x0 Window.Width
   GlobalScale := Window.Width/(x2-x1);
   XOrigin := -x1*GlobalScale;
-  //Print(XOrigin,YOrigin,GlobalScale);
   // -ymin*scale - сколько надо отступить от низа окна
   // Window.Height + ymin*scale
   YOrigin := Window.Height + ymin*GlobalScale;
@@ -1135,17 +1228,18 @@ end;
 procedure SetMathematicCoords(x1: real; x2: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP,x1,x2,drawcoords);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean) := Invoke(SetMathematicCoordsP1,x1,x2,ymin,drawcoords);
 
-procedure SetStandardCoordsP;
+procedure SetStandardCoordsP(scale: real := 1.0; x0: real := 0; y0: real := 0);
 begin
   Window.Clear;
   CurrentCoordType := ScreenCoords;
   XOrigin := 0;
   YOrigin := 0;
-  GlobalScale := 1;
-  Host.RenderTransform := Transform.Identity;
-  Pen.Width := 1;
+  GlobalScale := scale;
+  var m: Transform := new MatrixTransform(scale,0,0,scale,x0,y0);
+  Host.RenderTransform := m;
+  Pen.Width := Pen.Width * scale; // нет!
 end;
-procedure SetStandardCoords := Invoke(SetStandardCoordsP);
+procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
 
 
 /// --- SystemMouseEvents
@@ -1203,14 +1297,16 @@ end;}
 var mre := new ManualResetEvent(false);
 
 var OnDraw: procedure := nil;
+var OnDraw1: procedure(frame: integer) := nil;
 
 var FrameRate := 60; // кадров в секунду. Можно меньше!
 var LastUpdatedTime := new System.TimeSpan(integer.MinValue); 
 
+var FrameNum := 0;
+
 procedure RenderFrame(o: Object; e: System.EventArgs);
 begin
-  // Надо вычесть старое время
-  if OnDraw<>nil then
+  if (OnDraw<>nil) or (OnDraw1<>nil) then
   begin
     var e1 := RenderingEventArgs(e).RenderingTime;
     var dt := e1 - LastUpdatedTime;
@@ -1218,15 +1314,29 @@ begin
     if dt.TotalMilliseconds < delta then
       exit
     else LastUpdatedTime := e1;  
+    FrameNum += 1;
     Window.Clear;
     CountVisuals := integer.MinValue; // чтобы не было паузы после 1000 объектов
-    OnDraw();
   end;  
+  if OnDraw<>nil then
+    OnDraw() 
+  else if OnDraw1<>nil then
+    OnDraw1(FrameNum);
 end;
 
 procedure BeginFrameBasedAnimation(Draw: procedure; frate: integer);
 begin
+  FrameNum := 0;
   OnDraw := Draw;
+  OnDraw1 := nil;
+  FrameRate := frate;
+end;
+
+procedure BeginFrameBasedAnimation(Draw: procedure(frame: integer); frate: integer);
+begin
+  FrameNum := 0;
+  OnDraw1 := Draw;
+  OnDraw := nil;
   FrameRate := frate;
 end;
 
@@ -1234,6 +1344,7 @@ procedure EndFrameBasedAnimation;
 begin
   CountVisuals := 0;
   OnDraw := nil;
+  OnDraw1 := nil;
   FrameRate := 60;
 end;  
 
@@ -1265,10 +1376,10 @@ begin
   MainWindow.KeyDown += SystemOnKeyDown;
   MainWindow.KeyUp += SystemOnKeyUp;
   
-  mre.Set();
-
   CompositionTarget.Rendering += RenderFrame;
   
+  MainWindow.Loaded += (o,e) -> mre.Set();
+
   app.Run(MainWindow);
 end;
 

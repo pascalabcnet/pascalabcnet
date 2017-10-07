@@ -2746,6 +2746,7 @@ namespace CodeFormatters
             multiline_stack_push(_short_func_definition);
             
             add_space_after = true;
+            add_space_before = true;
             add_newline_after = false;
             visit_node(_short_func_definition.procdef.proc_header);
             bool tmp_in_procedure = in_procedure;

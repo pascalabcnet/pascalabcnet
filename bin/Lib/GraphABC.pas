@@ -2421,13 +2421,12 @@ end;
 
 // Primitives
 procedure SetPixel(x, y: integer; c: Color);
-var
-  b: boolean;
 begin
-  lock f do 
+  PutPixel(x,y,c);
+  {lock f do 
   begin
     if NotLockDrawing then begin
-      b := SmoothingIsOn;
+      var b := SmoothingIsOn;
       SetSmoothingOff;
       PixelBrush.Color := c;  
       gr.FillRectangle(PixelBrush, x, y, 1, 1);
@@ -2435,15 +2434,13 @@ begin
     end;
     if DrawInBuffer then   
       bmp.SetPixel(x, y, c);
-  end;
+  end;}
 end;
 
 procedure PutPixel(x, y: integer; c: Color);
-var
-  b: boolean;
 begin
   Monitor.Enter(f);
-  b := SmoothingIsOn;
+  var b := SmoothingIsOn;
   SetSmoothingOff;
   PixelBrush.Color := c;
   if NotLockDrawing then
