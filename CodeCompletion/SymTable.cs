@@ -5893,11 +5893,23 @@ namespace CodeCompletion
             return FindName(name);
         }
 
+        private bool HasEnumerable()
+        {
+            if (ctn == typeof(IEnumerable<>))
+                return true;
+            if (ctn.IsGenericType && ctn.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                return true;
+            if (implemented_interfaces != null)
+                foreach (TypeScope t in implemented_interfaces)
+                    if (t is CompiledScope && (t as CompiledScope).HasEnumerable())
+                        return true;
+            return false;
+        }
         public override TypeScope GetElementType()
         {
             if (!is_def_prop_searched)
                 get_default_property();
-            if ((ctn == typeof(IEnumerable<>) || ctn.IsGenericType && ctn.GetGenericTypeDefinition() == typeof(IEnumerable<>)) && instances.Count > 0)
+            if (HasEnumerable() && instances.Count > 0)
             {
                 return instances[0];
             }
