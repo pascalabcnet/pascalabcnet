@@ -137,7 +137,7 @@ namespace VisualPascalABC
                 if (VisualPABCSingleton.MainForm.UserOptions.CodeCompletionDot)
                 {
                     PascalABCCompiler.Parsers.KeywordKind keyw = KeywordChecker.TestForKeyword(editor.Document.TextContent, editor.ActiveTextAreaControl.TextArea.Caret.Offset - 1);
-                    if (keyw == PascalABCCompiler.Parsers.KeywordKind.New || VisualPABCSingleton.MainForm.UserOptions.EnableSmartIntellisense && keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
+                    if (keyw == PascalABCCompiler.Parsers.KeywordKind.New || keyw == PascalABCCompiler.Parsers.KeywordKind.Uses)
                     {
                         completionDataProvider = new CodeCompletionProvider();
                         codeCompletionWindow = PABCNETCodeCompletionWindow.ShowCompletionWindow(

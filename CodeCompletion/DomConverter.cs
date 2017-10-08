@@ -38,9 +38,13 @@ namespace CodeCompletion
                 int i = 0;
                 foreach (string s in files)
                 {
+                    string fname = Path.GetFileNameWithoutExtension(s);
+                    if (fname == "__RedirectIOMode" || fname == "__RunMode" || fname == "PABCExtensions")
+                        continue;
                     SymInfo si = new SymInfo(Path.GetFileNameWithoutExtension(s), SymbolKind.Namespace, null);
-
                     si.IsUnitNamespace = true;
+
+                    si.description = GetUnitDescription(s);
                     standard_units[i++] = si;
                 }
             }
@@ -48,6 +52,23 @@ namespace CodeCompletion
             {
                 //standard_units = new SymInfo[0];
             }
+        }
+
+        private string GetUnitDescription(string fileName)
+        {
+            var reader = File.OpenText(fileName);
+            string line = null;
+            string doc = "";
+            while (!reader.EndOfStream)
+            {
+                line = reader.ReadLine();
+                if (line.StartsWith("///"))
+                    doc += line.Substring(3) + Environment.NewLine;
+                else if (line.StartsWith("unit"))
+                    break;
+            }
+            reader.Close();
+            return doc;
         }
 
         bool ICodeCompletionDomConverter.IsCompiled
