@@ -746,8 +746,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     nodesToAdd.Add(generatedClass.AssignNodeForUpperClassFieldInitialization);
                 }
-
-                statementList.subnodes.InsertRange(0, nodesToAdd);
+                int ind = 0;
+                if (statementList.subnodes.Count > 0 && statementList.subnodes[0] is procedure_call && (statementList.subnodes[0] as procedure_call).func_name is inherited_ident)
+                    ind = 1;
+                statementList.subnodes.InsertRange(ind, nodesToAdd);
             }
         }
 
