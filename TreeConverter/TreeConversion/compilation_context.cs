@@ -282,7 +282,14 @@ namespace PascalABCCompiler.TreeConverter
         
         internal bool can_call_inherited_ctor_call(statements_list lst)
         {
-        	return lst.statements.Count == 0;
+            if (lst.statements.Count == 0)
+                return true;
+            if (lst.statements[0] is basic_function_call)
+            {
+                base_function_call bfc = lst.statements[0] as basic_function_call;
+                
+            }
+            return false;
         }
         
         public void reset()

@@ -567,9 +567,10 @@ namespace PascalABCCompiler.TreeConverter
 
     public class SymbolInfoUnit
     {
+        public override string ToString() => "("+scope.ToString() + "," + sym_info.ToString()+")";
+
         //private readonly name_information_type _name_information_type;
         private definition_node _sym_info;
-
 
         private access_level _access_level;
 
@@ -578,7 +579,6 @@ namespace PascalABCCompiler.TreeConverter
         public SymbolTable.Scope scope;
 
         //public SymbolInfo reference;
-
 
         public access_level access_level
         {

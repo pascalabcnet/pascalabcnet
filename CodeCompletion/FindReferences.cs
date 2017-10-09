@@ -530,7 +530,7 @@ namespace CodeCompletion
         {
             if (for_refactoring)
             {
-                IBaseScope ss = entry_scope.FindScopeByLocation(_simple_const_definition.source_context.begin_position.line_num, _simple_const_definition.source_context.begin_position.column_num);
+                IBaseScope ss = entry_scope.FindScopeByLocation(_simple_const_definition.const_name.source_context.begin_position.line_num, _simple_const_definition.const_name.source_context.begin_position.column_num);
                 if (ss != null && ss.IsEqual(founded_scope))
                     pos_list.Add(get_position(_simple_const_definition.const_name));
             }

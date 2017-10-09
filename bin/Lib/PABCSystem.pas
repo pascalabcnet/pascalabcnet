@@ -3466,9 +3466,18 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x, y: HashSet<T>); extensionmethod := x.SetEquals(y);
+function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod;
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.SetEquals(y);
+end;   
 
-function operator<><T>(x, y: HashSet<T>); extensionmethod := not x.SetEquals(y);
+function operator<><T>(x,y: HashSet<T>); extensionmethod := not (x=y);
 
 function operator-<T>(x, y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
@@ -3542,7 +3551,16 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x, y: SortedSet<T>); extensionmethod := x.SetEquals(y);
+function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.SetEquals(y);
+end;   
 
 function operator<><T>(x, y: SortedSet<T>); extensionmethod := not x.SetEquals(y);
 
@@ -10259,9 +10277,9 @@ begin
 end;
 
 ///--
-function operator=<T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := Self.Equals(v );
+function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
 ///--
-function operator<><T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := not Self.Equals(v );
+function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := not (Self = v);
 ///--
 function CompareToTup2<T1, T2>(v1: (T1, T2); v2: (T1, T2)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10274,9 +10292,9 @@ function operator><T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := Comp
 function operator>=<T1, T2>(Self: (T1, T2); v: (T1, T2)); extensionmethod := CompareToTup2(Self, v) >= 0;
 
 ///--
-function operator=<T1, T2, T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmethod := Self.Equals(v );
+function operator=<T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
 ///--
-function operator<><T1, T2, T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmethod := not Self.Equals(v );
+function operator<><T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := not (Self = v);
 ///--
 function CompareToTup3<T1, T2, T3>(v1: (T1, T2, T3); v2: (T1, T2, T3)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
@@ -10289,9 +10307,9 @@ function operator><T1,T2,T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmeth
 function operator>=<T1,T2,T3>(Self: (T1, T2, T3); v: (T1, T2, T3)); extensionmethod := CompareToTup3(Self, v) >= 0;
 
 ///--
-function operator=<T1, T2, T3, T4>(Self: (T1, T2, T3, T4); v: (T1, T2, T3, T4)); extensionmethod := Self.Equals(v );
+function operator=<T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
 ///--
-function operator<><T1, T2, T3, T4>(Self: (T1, T2, T3, T4); v: (T1, T2, T3, T4)); extensionmethod := not Self.Equals(v );
+function operator<><T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := not (Self = v);
 ///--
 function CompareToTup4<T1, T2, T3, T4>(v1: (T1, T2, T3, T4); v2: (T1, T2, T3, T4)) := (v1 as System.IComparable).CompareTo(v2);
 ///--
