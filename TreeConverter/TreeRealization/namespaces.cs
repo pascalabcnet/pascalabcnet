@@ -743,13 +743,11 @@ namespace PascalABCCompiler.SyntaxTree
 {
     public class syntax_namespace_node : base_syntax_namespace_node
     {
-        PascalABCCompiler.TreeRealization.unit_node_list _referenced_units;
-
         public syntax_namespace_node(string name):base(name)
         {
 
         }
 
-        public unit_node_list referenced_units { get => _referenced_units; set => _referenced_units = value; }
+        public unit_node_list referenced_units { get; set; }
     }
 }
