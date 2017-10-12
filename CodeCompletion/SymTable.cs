@@ -1511,11 +1511,12 @@ namespace CodeCompletion
         public override SymScope FindName(string name)
         {
             //SymScope sc = ht[name] as SymScope;
-            SymScope sc = def_proc.FindNameOnlyInType(name);
+            /*SymScope sc = def_proc.FindNameOnlyInType(name);
             if (sc != null) return sc;
             if (top_mod_scope != null) 
                 return top_mod_scope.FindName(name);
-            return null;
+            return null;*/
+            return def_proc.FindName(name);
         }
 
         public override SymScope FindNameOnlyInType(string name)
