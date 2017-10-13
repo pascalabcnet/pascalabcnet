@@ -1147,6 +1147,7 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
     public class common_type_node : wrapped_type, SemanticTree.ICommonTypeNode
 	{
+        public override string ToString() => "("+GetType().Name + " " + name + "," + scope.ToString() + ")";
         /// <summary>
         /// Имя типа.
         /// </summary>

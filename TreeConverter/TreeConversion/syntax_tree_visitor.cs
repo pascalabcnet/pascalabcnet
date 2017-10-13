@@ -9956,6 +9956,13 @@ namespace PascalABCCompiler.TreeConverter
 
             context.leave_block();
 
+#if DEBUG
+            /*var fname = "d:\\st1.txt";
+            if (System.IO.File.Exists(fname))
+                System.IO.File.Delete(fname);
+            System.IO.File.AppendAllText(fname, SymbolTable.ToString());*/
+#endif
+
             _compiled_unit.main_function = main_function;
         }
 
@@ -18844,19 +18851,13 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         visit((dot_node)_function_lambda_definition.substituting_node);
                     }
-                    else
+                    else if (_function_lambda_definition.substituting_node is ident)
                     {
-                        if (_function_lambda_definition.substituting_node is ident)
-                        {
-                            visit((ident)_function_lambda_definition.substituting_node);
-                        }
-                        else
-                        {
-                            if (_function_lambda_definition.substituting_node is ident_with_templateparams)
-                            {
-                                visit((ident_with_templateparams)_function_lambda_definition.substituting_node);
-                            }
-                        }
+                        visit((ident)_function_lambda_definition.substituting_node);
+                    }
+                    else if (_function_lambda_definition.substituting_node is ident_with_templateparams)
+                    {
+                        visit((ident_with_templateparams)_function_lambda_definition.substituting_node);
                     }
                     return;
                 }

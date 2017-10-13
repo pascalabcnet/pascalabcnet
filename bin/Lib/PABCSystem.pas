@@ -3620,115 +3620,45 @@ end;
 //------------------------------------------------------------------------------
 //          Операции для BigInteger
 //------------------------------------------------------------------------------
-function BigInteger.operator/(p: BigInteger; q: real): real;
-begin
-  Result := real(p)/q;
-end;
+function BigInteger.operator/(p: BigInteger; q: real) := real(p)/q;
 
-function BigInteger.operator/(q: real; p: BigInteger): real;
-begin
-  Result := q/real(p);
-end;
+function BigInteger.operator/(q: real; p: BigInteger) := q/real(p);
 
-function BigInteger.operator>(p: BigInteger; q: integer): boolean;
-begin
-  Result := p > BigInteger.Create(q);
-end;
+function BigInteger.operator>(p: BigInteger; q: integer) := p > BigInteger.Create(q);
 
-function BigInteger.operator>(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) > q;
-end;
+function BigInteger.operator>(p: integer; q: BigInteger) := BigInteger.Create(p) > q;
 
-function BigInteger.operator<(p: BigInteger; q: integer): boolean;
-begin
-  Result := p < BigInteger.Create(q);
-end;
+function BigInteger.operator<(p: BigInteger; q: integer) := p < BigInteger.Create(q);
 
-function BigInteger.operator<(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) < q;
-end;
+function BigInteger.operator<(p: integer; q: BigInteger) := BigInteger.Create(p) < q;
 
-function BigInteger.operator>=(p: BigInteger; q: integer): boolean;
-begin
-  Result := p >= BigInteger.Create(q);
-end;
+function BigInteger.operator>=(p: BigInteger; q: integer) := p >= BigInteger.Create(q);
 
-function BigInteger.operator>=(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) >= q;
-end;
+function BigInteger.operator>=(p: integer; q: BigInteger) := BigInteger.Create(p) >= q;
 
-function BigInteger.operator<=(p: BigInteger; q: integer): boolean;
-begin
-  Result := p <= BigInteger.Create(q);
-end;
+function BigInteger.operator<=(p: BigInteger; q: integer) := p <= BigInteger.Create(q);
 
-function BigInteger.operator<=(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) <= q;
-end;
+function BigInteger.operator<=(p: integer; q: BigInteger) := BigInteger.Create(p) <= q;
 
-function BigInteger.operator=(p: BigInteger; q: integer): boolean;
-begin
-  Result := p = BigInteger.Create(q);
-end;
+function BigInteger.operator=(p: BigInteger; q: integer) := p = BigInteger.Create(q);
 
-function BigInteger.operator=(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) = q;
-end;
+function BigInteger.operator=(p: integer; q: BigInteger) := BigInteger.Create(p) = q;
 
-function BigInteger.operator<>(p: BigInteger; q: integer): boolean;
-begin
-  Result := p <> BigInteger.Create(q);
-end;
+function BigInteger.operator<>(p: BigInteger; q: integer) := p <> BigInteger.Create(q);
 
-function BigInteger.operator<>(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) <> q;
-end;
+function BigInteger.operator<>(p: integer; q: BigInteger) := BigInteger.Create(p) <> q;
 
-procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger);
-begin
-  p := p + q;
-end;
+procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger) := p := p + q;
 
-procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger);
-begin
-  p := p * q;
-end;
+procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
-procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger);
-begin
-  p := p - q;
-end;
+procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
-function BigInteger.operator div(p,q: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Divide(p,q);
-end;
+function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
-function BigInteger.operator mod(p,q: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Remainder(p,q);
-end;
+function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
 
-function BigInteger.operator-(p: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Negate(p)
-end;
-
-{function BigInteger.operator+(p: BigInteger): BigInteger;
-begin
-  Result := p
-end;
-
-function BigInteger.operator+(p,q: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Add(p,q);
-end;}
+function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 
 //------------------------------------------------------------------------------
 //          Операции для Complex
@@ -4313,7 +4243,6 @@ function read_lexem(f: Text): string;
 var
   c: char;
   i: integer;
-  sb: System.Text.StringBuilder;
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
@@ -4323,7 +4252,7 @@ begin
     i := f.sr.Read();
   until not char.IsWhiteSpace(char(i)); // pass spaces
   c := char(i);
-  sb := System.Text.StringBuilder.Create;
+  var sb := System.Text.StringBuilder.Create;
   repeat
     sb.Append(c);
     i := f.sr.Peek();
@@ -4518,11 +4447,11 @@ end;
 // -----------------------------------------------------
 //     Read - Readln
 // -----------------------------------------------------
-procedure read;
+procedure Read;
 begin
 end;
 
-procedure readln;
+procedure Readln;
 begin
   if input.sr <> nil then
     input.sr.ReadLine
@@ -8957,7 +8886,7 @@ begin
     if from<0 then
       from += (step - from - 1) div step * step;
     // from может оказаться > Len - 1
-    var m := min(Len,&to);
+    var m := Min(Len,&to);
     if from >= m then 
       Result := 0
     else Result := (m - from - 1) div step + 1  
@@ -8967,7 +8896,7 @@ begin
     if from > Len - 1 then
       from -= (from - Len - step) div step * step;
     // from может оказаться < 0   
-    var m := max(&to,-1);
+    var m := Max(&to,-1);
     if from <= m then
       Result := 0
     else Result := (from - m - 1) div (-step) + 1

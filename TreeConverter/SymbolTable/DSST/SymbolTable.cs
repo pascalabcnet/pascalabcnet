@@ -144,6 +144,14 @@ namespace SymbolTable
 	//при создании добавляет себя в vSymbolTable
 	public class Scope:BaseScope
 	{
+        public override bool Equals(object obj)
+        {
+            return ScopeNum == ((Scope)obj).ScopeNum;
+        }
+        public override int GetHashCode()
+        {
+            return ScopeNum;
+        }
         private string ScopeName()
         {
             var s = this.GetType().Name;
@@ -151,7 +159,7 @@ namespace SymbolTable
                 return "GLOBAL";
             return s;
         }
-        public override string ToString() => ScopeNum + "->" + TopScopeNum + " ," + ScopeName();
+        public override string ToString() => ScopeNum + "->" + TopScopeNum + "," + ScopeName();
 
         public DSSymbolTable SymbolTable;
         public bool CaseSensitive;
@@ -465,7 +473,7 @@ namespace SymbolTable
 	{
         public override string ToString() => InfoList.JoinIntoString();
         public int Area;
-		public List<SymbolInfoUnit> InfoList;//для перегузки
+		public List<SymbolInfoUnit> InfoList;//для перегрузки
 		public AreaListNode()
 		{
             InfoList = new List<SymbolInfoUnit>(SymbolTableConstants.InfoList_StartSize);
@@ -512,8 +520,45 @@ namespace SymbolTable
 		//private SymbolInfo FirstInfo;
         private Scope CurrentScope;
 
-		#region DSSymbolTable(int hash_size,bool case_sensitive)
-		public DSSymbolTable(int hash_size,bool case_sensitive)
+        public override string ToString()
+        {
+
+            var sb = new System.Text.StringBuilder();
+            var a = ScopeTable.SkipWhile(s => !(s.GetType() == typeof(UnitInterfaceScope))).Skip(1).SkipWhile(s => !(s.GetType() == typeof(UnitInterfaceScope)));
+            var globscopenum = a.First().ScopeNum;
+            var d = new Dictionary<Scope,List<Tuple<string,SymbolInfoUnit>>>();
+            foreach (var x in a)
+            {
+                sb.Append(x.ToString()+"\n");
+                //d[x.ScopeNum] = x;
+            }
+            foreach (var x in HashTable.dict)
+            {
+                foreach (var y in x.Value.NumAreaList.data.Take(x.Value.NumAreaList.Count))
+                {
+                    foreach (var z in y.InfoList)
+                    {
+                        if (z.scope.ScopeNum >= globscopenum)
+                        {
+                            if (!d.ContainsKey(z.scope))
+                                d[z.scope] = new List<Tuple<string, SymbolInfoUnit>>();
+                            d[z.scope].Add(new Tuple<string, SymbolInfoUnit>(x.Key,z));
+                        }
+                    }
+                }
+            }
+            sb.Append("\n");
+            foreach (var x in d.OrderBy(x=>x.Key.ScopeNum))
+            {
+                sb.Append(x.Key+"\n");
+                foreach (var y in x.Value)
+                    sb.Append("  " + y.Item1 + ": " + y.Item2.sym_info.ToString()+ "\n");
+            }
+            return sb.ToString();
+        }
+
+        #region DSSymbolTable(int hash_size,bool case_sensitive)
+        public DSSymbolTable(int hash_size,bool case_sensitive)
 		{
 			CaseSensitive=case_sensitive;
 			HashTable=new DSHashTable(hash_size);
