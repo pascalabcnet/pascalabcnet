@@ -1798,6 +1798,7 @@ namespace CodeCompletion
             if (returned_scope != null /*&& cnst_val.prim_val != null*/)
             {
                 ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant, _simple_const_definition.const_name.name), returned_scope, cnst_val.prim_val, cur_scope);
+                es.is_static = true;
                 cur_scope.AddName(_simple_const_definition.const_name.name, es);
                 es.loc = get_location(_simple_const_definition.const_name);
                 es.declaringUnit = entry_scope;
@@ -1826,6 +1827,7 @@ namespace CodeCompletion
             ElementScope es = new ElementScope(new SymInfo(_typed_const_definition.const_name.name, SymbolKind.Constant,_typed_const_definition.const_name.name),cnst_type,cnst_val.prim_val,cur_scope);
             cur_scope.AddName(_typed_const_definition.const_name.name, es);
             es.loc = get_location(_typed_const_definition);
+            es.is_static = true;
             es.declaringUnit = entry_scope;
             if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_typed_const_definition))
         		es.AddDocumentation(this.converter.controller.docs[_typed_const_definition]);
