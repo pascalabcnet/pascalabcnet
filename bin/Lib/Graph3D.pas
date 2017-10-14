@@ -710,13 +710,99 @@ type
     property Height: real read GetH write SetH;
   end;
   
+type LegoVisual3D = class(MeshElement3D)
+private
+public
+  {class HeightProperty: DependencyProperty;
+  class RowsProperty: DependencyProperty;
+  class ColumnsProperty: DependencyProperty;
+  class DivisionsProperty: DependencyProperty;}
+private    
+  {procedure SetHeight(value: integer) := SetValue(HeightProperty, value);
+  function GetHeight := integer(GetValue(HeightProperty));
+  procedure SetRows(value: integer) := SetValue(RowsProperty, value);
+  function GetRows := integer(GetValue(RowsProperty));
+  procedure SetColumns(value: integer) := SetValue(ColumnsProperty, value);
+  function GetColumns := integer(GetValue(ColumnsProperty));
+  procedure SetDivisions(value: integer) := SetValue(DivisionsProperty, value);
+  function GetDivisions := integer(GetValue(DivisionsProperty));}
+public
+  {class constructor;
+  begin
+    HeightProperty := DependencyProperty.Register('Height', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
+    RowsProperty := DependencyProperty.Register('Raws', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
+    ColumnsProperty := DependencyProperty.Register('Columns', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
+    DivisionsProperty := DependencyProperty.Register('Divisions', typeof(integer), typeof(LegoVisual3D), new UIPropertyMetadata(12));
+  end;}
 
+  {property Height: integer read GetHeight write SetHeight;  
+  property Rows: integer read GetRows write SetRows;  
+  property Columns: integer read GetColumns write SetColumns;  
+  property Divisions: integer read GetDivisions write SetDivisions;  }
+  {Height := 1;
+  Rows := 5;
+  Columns := 4;
+  Divisions := 2;}
+  
+  function Tessellate(): MeshGeometry3D; override;
+  {const grid = 0.008;
+  const margin = 0.0001;
+  const wallThickness = 0.001;
+  const plateThickness = 0.0032;
+  const brickThickness = 0.0096;
+  const knobHeight = 0.0018;
+  const knobDiameter = 0.0048;
+  const outerDiameter = 0.00651;
+  const axleDiameter = 0.00475;
+  const holeDiameter = 0.00485;}
+  begin
+    {var width := Columns*grid - margin*2;
+    var length := Rows*grid - margin*2;
+    var height := Height*plateThickness;
+    var builder := new MeshBuilder(true, true);
+
+    for var i := 0 to Columns-1 do
+    for var j := 0 to Rows -1 do
+    begin
+        var o := new Point3D((i + 0.5)*grid, (j + 0.5)*grid, height);
+        builder.AddCone(o, new Vector3D(0, 0, 1), knobDiameter/2, knobDiameter/2, knobHeight, false, true,
+                        Divisions);
+        builder.AddPipe(new Point3D(o.X, o.Y, o.Z - wallThickness), new Point3D(o.X, o.Y, wallThickness),
+                        knobDiameter, outerDiameter, Divisions);
+    end;
+
+    builder.AddBox(new Point3D(Columns * 0.5 * grid, Rows * 0.5 * grid, height - wallThickness / 2), width, length,
+                  wallThickness,
+                  MeshBuilder.BoxFaces.All);
+    builder.AddBox(new Point3D(margin + wallThickness / 2, Rows * 0.5 * grid, height / 2 - wallThickness / 2),
+                   wallThickness, length, height - wallThickness,
+                   MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    builder.AddBox(
+        new Point3D(Columns * grid - margin - wallThickness / 2, Rows * 0.5 * grid, height / 2 - wallThickness / 2),
+        wallThickness, length, height - wallThickness,
+        MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    builder.AddBox(new Point3D(Columns * 0.5 * grid, margin + wallThickness / 2, height / 2 - wallThickness / 2),
+                   width, wallThickness, height - wallThickness,
+                   MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    builder.AddBox(
+        new Point3D(Columns * 0.5 * grid, Rows * grid - margin - wallThickness / 2, height / 2 - wallThickness / 2),
+        width, wallThickness, height - wallThickness,
+        MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+
+    Result := builder.ToMesh();}
+    var builder := new MeshBuilder(true, true);
+    Result := builder.ToMesh();
+  end;
+                                        
+end;   
+
+type
   AnyT = class(BaseT)
     constructor(x,y,z: real; c: GColor);
     begin
       //HelixToolkit.Wpf.LinesVisual3D
       
-      var a := new HelixToolkit.Wpf.LinesVisual3D;
+      {var a := new LinesVisual3D;
       
       var aa := 1;
       var b := 80;
@@ -728,7 +814,7 @@ type
       a.Points := Lst(q1);
       a.Color := Colors.Blue;
       
-      a.Thickness := 1.5;
+      a.Thickness := 1.5;}
 
       {var a := new HelixToolkit.Wpf.PieSliceVisual3D;
       a.StartAngle := 0;
@@ -740,10 +826,14 @@ type
       a.Diameter := 0.05;
       a.Path := p;}
       
-      
+      var a := new LegoVisual3D();
+      {a.Rows := 3;
+      a.Columns := 5;
+      a.Height := 1;
+      a.Fill := Brushes.Blue;  }
+      //var a := new LinesVisual3D;
       
       CreateBase0(a,x,y,z);
-      //a.Fill := Brushes.Aqua;
     end;
   end;
   
