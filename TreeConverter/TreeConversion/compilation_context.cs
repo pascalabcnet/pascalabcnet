@@ -2130,7 +2130,16 @@ namespace PascalABCCompiler.TreeConverter
             
             	
             SymbolInfoList si = curscope.Find(name, curscope);
-            
+            SymbolInfoList si2 = null;
+            if (si != null && si.First().scope is SymbolTable.ClassScope && curscope.TopScope is SymbolTable.BlockScope && curscope.TopScope.TopScope is SymbolTable.ClassMethodScope && curscope.TopScope.TopScope.TopScope is SymbolTable.BlockScope)
+            {
+                si2 = curscope.TopScope.TopScope.TopScope.Find(name, curscope.TopScope.TopScope.TopScope);
+                if (si2 != null && si2.First().scope is SymbolTable.ClassMethodScope)
+                {
+                    si = si2;
+                }
+            }
+                
             if (si == null && _compiled_tn != null && curscope.TopScope != null)
             {
                 SymbolTable.Scope tmp = curscope.TopScope;
