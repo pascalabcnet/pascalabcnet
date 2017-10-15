@@ -2829,7 +2829,7 @@ namespace PascalABCCompiler.TreeConverter
                             throw new CompilerInternalError("Unknown interface type.");
                         }
 #endif
-                        System.Reflection.MemberInfo[] interf_members = compiled_interf.compiled_type.GetMembers();
+                        System.Reflection.MemberInfo[] interf_members = compiled_interf.compiled_type.GetMembers(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance);
                         foreach (System.Reflection.MemberInfo mi in interf_members)
                         {
                             if (mi.MemberType == System.Reflection.MemberTypes.Method)
