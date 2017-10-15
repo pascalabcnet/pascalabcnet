@@ -1403,6 +1403,7 @@ namespace CodeCompletion
         {
             this.def_proc = def_proc;
             this.top_mod_scope = top_mod_scope;
+            def_proc.proc_realization = this;
             if (def_proc != null)
                 this.topScope = def_proc.topScope;
             this.si = new SymInfo(def_proc.si.name, def_proc.si.kind, def_proc.si.description);
