@@ -713,88 +713,119 @@ type
 type LegoVisual3D = class(MeshElement3D)
 private
 public
-  {class HeightProperty: DependencyProperty;
+  class HeightProperty: DependencyProperty;
   class RowsProperty: DependencyProperty;
   class ColumnsProperty: DependencyProperty;
-  class DivisionsProperty: DependencyProperty;}
+  class DivisionsProperty: DependencyProperty;
 private    
-  {procedure SetHeight(value: integer) := SetValue(HeightProperty, value);
+  procedure SetHeight(value: integer) := SetValue(HeightProperty, value);
   function GetHeight := integer(GetValue(HeightProperty));
   procedure SetRows(value: integer) := SetValue(RowsProperty, value);
   function GetRows := integer(GetValue(RowsProperty));
   procedure SetColumns(value: integer) := SetValue(ColumnsProperty, value);
   function GetColumns := integer(GetValue(ColumnsProperty));
   procedure SetDivisions(value: integer) := SetValue(DivisionsProperty, value);
-  function GetDivisions := integer(GetValue(DivisionsProperty));}
+  function GetDivisions := integer(GetValue(DivisionsProperty));
 public
-  {class constructor;
+  class constructor;
   begin
     HeightProperty := DependencyProperty.Register('Height', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
     RowsProperty := DependencyProperty.Register('Raws', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
     ColumnsProperty := DependencyProperty.Register('Columns', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
-    DivisionsProperty := DependencyProperty.Register('Divisions', typeof(integer), typeof(LegoVisual3D), new UIPropertyMetadata(12));
-  end;}
+    DivisionsProperty := DependencyProperty.Register('Divisions', typeof(integer), typeof(LegoVisual3D), new UIPropertyMetadata(48));
+  end;
 
-  {property Height: integer read GetHeight write SetHeight;  
+  property Height: integer read GetHeight write SetHeight;  
   property Rows: integer read GetRows write SetRows;  
   property Columns: integer read GetColumns write SetColumns;  
-  property Divisions: integer read GetDivisions write SetDivisions;  }
-  {Height := 1;
-  Rows := 5;
-  Columns := 4;
-  Divisions := 2;}
-  
+  property Divisions: integer read GetDivisions write SetDivisions;  
+public
   function Tessellate(): MeshGeometry3D; override;
-  {const grid = 0.008;
-  const margin = 0.0001;
-  const wallThickness = 0.001;
-  const plateThickness = 0.0032;
-  const brickThickness = 0.0096;
-  const knobHeight = 0.0018;
-  const knobDiameter = 0.0048;
-  const outerDiameter = 0.00651;
-  const axleDiameter = 0.00475;
-  const holeDiameter = 0.00485;}
+  const m = 126;
+  const grid = 0.008*m;
+  const margin = 0.0001*m;
+  const wallThickness = 0.001*m;
+  const plateThickness = 0.0032*m;
+  const brickThickness = 0.0096*m;
+  const knobHeight = 0.0018*m;
+  const knobDiameter = 0.0048*m;
+  const outerDiameter = 0.00651*m;
+  const axleDiameter = 0.00475*m;
+  const holeDiameter = 0.00485*m;
   begin
-    {var width := Columns*grid - margin*2;
+    var width := Columns*grid - margin*2;
     var length := Rows*grid - margin*2;
-    var height := Height*plateThickness;
+    var height1 := Height*plateThickness;
     var builder := new MeshBuilder(true, true);
-
+    //Divisions := 100;
+    //Print(Divisions,Rows,Columns,Height);
     for var i := 0 to Columns-1 do
-    for var j := 0 to Rows -1 do
+    for var j := 0 to Rows-1 do
     begin
-        var o := new Point3D((i + 0.5)*grid, (j + 0.5)*grid, height);
+        var o := new Point3D((i + 0.5)*grid, (j + 0.5)*grid, height1);
         builder.AddCone(o, new Vector3D(0, 0, 1), knobDiameter/2, knobDiameter/2, knobHeight, false, true,
                         Divisions);
         builder.AddPipe(new Point3D(o.X, o.Y, o.Z - wallThickness), new Point3D(o.X, o.Y, wallThickness),
                         knobDiameter, outerDiameter, Divisions);
     end;
 
-    builder.AddBox(new Point3D(Columns * 0.5 * grid, Rows * 0.5 * grid, height - wallThickness / 2), width, length,
+    builder.AddBox(new Point3D(Columns * 0.5 * grid, Rows * 0.5 * grid, height1 - wallThickness / 2), width, length,
                   wallThickness,
                   MeshBuilder.BoxFaces.All);
-    builder.AddBox(new Point3D(margin + wallThickness / 2, Rows * 0.5 * grid, height / 2 - wallThickness / 2),
-                   wallThickness, length, height - wallThickness,
+    builder.AddBox(new Point3D(margin + wallThickness / 2, Rows * 0.5 * grid, height1 / 2 - wallThickness / 2),
+                   wallThickness, length, height1 - wallThickness,
                    MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
     builder.AddBox(
-        new Point3D(Columns * grid - margin - wallThickness / 2, Rows * 0.5 * grid, height / 2 - wallThickness / 2),
-        wallThickness, length, height - wallThickness,
+        new Point3D(Columns * grid - margin - wallThickness / 2, Rows * 0.5 * grid, height1 / 2 - wallThickness / 2),
+        wallThickness, length, height1 - wallThickness,
         MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
-    builder.AddBox(new Point3D(Columns * 0.5 * grid, margin + wallThickness / 2, height / 2 - wallThickness / 2),
-                   width, wallThickness, height - wallThickness,
+    builder.AddBox(new Point3D(Columns * 0.5 * grid, margin + wallThickness / 2, height1 / 2 - wallThickness / 2),
+                   width, wallThickness, height1 - wallThickness,
                    MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
     builder.AddBox(
-        new Point3D(Columns * 0.5 * grid, Rows * grid - margin - wallThickness / 2, height / 2 - wallThickness / 2),
-        width, wallThickness, height - wallThickness,
+        new Point3D(Columns * 0.5 * grid, Rows * grid - margin - wallThickness / 2, height1 / 2 - wallThickness / 2),
+        width, wallThickness, height1 - wallThickness,
         MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
-
-    Result := builder.ToMesh();}
-    var builder := new MeshBuilder(true, true);
-    Result := builder.ToMesh();
+    Result := builder.ToMesh(false);
   end;
-                                        
 end;   
+
+type
+  LegoT = class(BaseT)
+  private
+    procedure SetWP(r: integer) := (model as LegoVisual3D).Rows := r;
+    procedure SetW(r: integer) := Invoke(SetWP,r);
+    function GetW: integer := Invoke&<integer>(()->(model as LegoVisual3D).Rows);
+    
+    procedure SetHP(r: integer) := (model as LegoVisual3D).Height := r;
+    procedure SetH(r: integer) := Invoke(SetHP,r); 
+    function GetH: integer := Invoke&<integer>(()->(model as LegoVisual3D).Height);
+
+    procedure SetLP(r: integer) := (model as LegoVisual3D).Columns := r;
+    procedure SetL(r: integer) := Invoke(SetLP,r);
+    function GetL: integer := Invoke&<integer>(()->(model as LegoVisual3D).Columns);
+
+    {procedure SetSzP(r: Size3D);
+    begin
+      var mmm := model as LegoVisual3D;
+      (mmm.Columns,mmm.Rows,mmm.Height) := (r.X,r.Y,r.Z);
+    end;
+    procedure SetSz(r: Size3D) := Invoke(SetSzP,r);
+    function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as LegoVisual3D; Result := Sz3D(mmm.Length,mmm.Width,mmm.Height) end);}
+  public
+    constructor(x,y,z: real; col,r,h: integer; c: GColor);
+    begin
+      var bx := new LegoVisual3D;
+      //bx.Center := P3D(0,0,0);
+      (bx.Rows,bx.Height,bx.Columns) := (r,h,col);
+      CreateBase(bx,x,y,z,c);
+    end;
+    property Columns: integer read GetL write SetL;
+    property Rows: integer read GetW write SetW;
+    property Height: integer read GetH write SetH;
+    {property Size: Size3D read GetSz write SetSz;}
+  end;
+
 
 type
   AnyT = class(BaseT)
@@ -827,10 +858,12 @@ type
       a.Path := p;}
       
       var a := new LegoVisual3D();
-      {a.Rows := 3;
-      a.Columns := 5;
-      a.Height := 1;
-      a.Fill := Brushes.Blue;  }
+      a.Rows := 1;
+      a.Columns := 2;
+      a.Height := 3;
+      //a.Divisions := 100;
+      a.Fill := Brushes.Blue;
+
       //var a := new LinesVisual3D;
       
       CreateBase0(a,x,y,z);
@@ -963,6 +996,8 @@ function FileModel3D(x,y,z: real; fname: string): FileModelT
   := Invoke&<FileModelT>(()->FileModelT.Create(x,y,z,fname));
 function FileModel3D(p: Point3D; fname: string) :=  FileModel3D(p.x,p.y,p.z,fname);
 
+
+function Lego(x,y,z: real; col,r,h: integer; c: Color): LegoT := Invoke&<LegoT>(()->LegoT.Create(x,y,z,col,r,h,c));
 
 function Any(x,y,z: real; c: Color): AnyT := Invoke&<AnyT>(()->AnyT.Create(x,y,z,c));
 
