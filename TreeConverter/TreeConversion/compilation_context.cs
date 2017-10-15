@@ -2130,6 +2130,7 @@ namespace PascalABCCompiler.TreeConverter
             
             	
             SymbolInfoList si = curscope.Find(name, curscope);
+            
             if (si == null && _compiled_tn != null && curscope.TopScope != null)
             {
                 SymbolTable.Scope tmp = curscope.TopScope;
@@ -2144,6 +2145,7 @@ namespace PascalABCCompiler.TreeConverter
                 return _ctn.base_generic_instance.ConvertSymbolInfo(si);
             }
 
+            
             return si;
         }
 
