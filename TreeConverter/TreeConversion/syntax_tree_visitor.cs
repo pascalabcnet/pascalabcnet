@@ -2577,11 +2577,7 @@ namespace PascalABCCompiler.TreeConverter
                                         //(ssyy) Не уверен, что следующий оператор необходим.
                                         convertion_data_and_alghoritms.check_node_parser_error(_block.program_code);
                                         var lambdaSearcher = new LambdaSearcher(_block.program_code.subnodes[0]);
-                                        if (lambdaSearcher.CheckIfContainsLambdas())
-                                        {
-                                            should_ctor_add = false;
-                                        }
-                                        else
+                                        if (!lambdaSearcher.CheckIfContainsLambdas())
                                         {
                                             statement_node inh = convert_strong(_block.program_code.subnodes[0]);
 
