@@ -4432,6 +4432,15 @@ namespace CodeCompletion
             }
         }
 
+        private SymInfo convertToDefaultNETNames(Type t, SymInfo si)
+        {
+            if (!t.IsPrimitive)
+                return si;
+            SymInfo new_si = new SymInfo(si);
+            new_si.name = t.Name;
+            return new_si;
+        }
+
         public SymInfo[] GetNames(ExpressionVisitor ev, PascalABCCompiler.Parsers.KeywordKind keyword)
         {
             List<SymInfo> syms = new List<SymInfo>();
@@ -4451,7 +4460,7 @@ namespace CodeCompletion
                             else
                                 if (t.IsClass)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Type, "class "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).si);
+                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Class, null), t).si));
                                 else if (t.IsInterface)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Interface, "interface "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
                                     syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Interface, null), t).si);
@@ -4460,7 +4469,7 @@ namespace CodeCompletion
                                     syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Enum, null), t).si);
                                 else if (t.IsValueType)
                                     //syms.Add(new SymInfo(TypeUtility.GetShortTypeName(t), SymbolKind.Struct, "record "+TypeUtility.GetTypeName(t)+ "\n" +AssemblyDocCache.GetDocumentation(t)));
-                                    syms.Add(TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).si);
+                                    syms.Add(convertToDefaultNETNames(t, TypeTable.get_compiled_type(new SymInfo(null, SymbolKind.Struct, null), t).si));
                         }
                     }
 
