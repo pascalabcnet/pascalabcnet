@@ -2576,22 +2576,26 @@ namespace PascalABCCompiler.TreeConverter
                                     {
                                         //(ssyy) Не уверен, что следующий оператор необходим.
                                         convertion_data_and_alghoritms.check_node_parser_error(_block.program_code);
-
-                                        statement_node inh = convert_strong(_block.program_code.subnodes[0]);
-
-                                        compiled_constructor_call c1 = inh as compiled_constructor_call;
-                                        if (c1 != null && !c1._new_obj_awaited)
+                                        var lambdaSearcher = new LambdaSearcher(_block.program_code.subnodes[0]);
+                                        if (!lambdaSearcher.CheckIfContainsLambdas())
                                         {
-                                            should_ctor_add = false;
-                                        }
-                                        else
-                                        {
-                                            common_constructor_call c2 = inh as common_constructor_call;
-                                            if (c2 != null && !c2._new_obj_awaited)
+                                            statement_node inh = convert_strong(_block.program_code.subnodes[0]);
+
+                                            compiled_constructor_call c1 = inh as compiled_constructor_call;
+                                            if (c1 != null && !c1._new_obj_awaited)
                                             {
                                                 should_ctor_add = false;
                                             }
+                                            else
+                                            {
+                                                common_constructor_call c2 = inh as common_constructor_call;
+                                                if (c2 != null && !c2._new_obj_awaited)
+                                                {
+                                                    should_ctor_add = false;
+                                                }
+                                            }
                                         }
+                                        
                                     }
                                 }
                             }
