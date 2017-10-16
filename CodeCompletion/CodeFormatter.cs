@@ -2222,9 +2222,19 @@ namespace CodeFormatters
             }
             if (_exception_block.else_stmt_list != null)
             {
-                add_new_line_else_specific = true;
-                IncOffset();
-                visit_node(_exception_block.else_stmt_list);
+                add_space_before = true;
+                if (!(_exception_block.else_stmt_list.Count == 1 && _exception_block.else_stmt_list.list[0] is empty_statement))
+                {
+                    add_new_line_else_specific = true;
+                    IncOffset();
+                    visit_node(_exception_block.else_stmt_list);
+                }
+                else
+                {
+                    add_newline_after = false;
+                }
+                    
+                //DecOffset();
             }
         }
 
