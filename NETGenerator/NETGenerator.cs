@@ -539,7 +539,7 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     else
                         doc = first_doc;
-                    if (!sym_docs.ContainsKey(cnns_document_file_name))
+                    if (cnns_document_file_name != null && !sym_docs.ContainsKey(cnns_document_file_name))
                         sym_docs.Add(cnns_document_file_name, doc);//сохраняем его в таблице документов
                 }
                 first_doc = sym_docs[cnns[0].Location == null ? SourceFileName : cnns[0].Location.document.file_name];
