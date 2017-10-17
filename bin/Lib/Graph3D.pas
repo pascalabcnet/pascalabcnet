@@ -877,7 +877,6 @@ begin
   case CurrentModelType of 
 TetrahedronType:
   begin
-    //var a := 0.5;
     pmb.AddPanel(a, a, a, -a, a, -a, a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, -a, a, a, -a, -a);
     pmb.AddPanel(a, a, a, a, -a, -a, -a, -a, a);
@@ -885,8 +884,8 @@ TetrahedronType:
   end;
 OctahedronType:
   begin
-    //var a := 1.0 / (2 * Sqrt(2));
-    var b := 0.5 * 2 * a;
+    //a := 1.0 / (2 * Sqrt(2));
+    var b := 0.5 * (2 * Sqrt(2)) * a;// * 2 * a;
     pmb.AddPanel(-a, 0, a, -a, 0, -a, 0, b, 0);
     pmb.AddPanel(-a, 0, -a, a, 0, -a, 0, b, 0);
     pmb.AddPanel(a, 0, -a, a, 0, a, 0, b, 0);
@@ -898,7 +897,6 @@ OctahedronType:
   end;
 HexahedronType:
   begin
-    //var a := 0.5;
     pmb.AddPanel(-a, -a, a, a, -a, a, a, -a, -a, -a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, a, a, -a, -a, a, -a, -a, -a);
     pmb.AddPanel(-a, a, a, a, a, a, a, -a, a, -a, -a, a);
@@ -909,7 +907,6 @@ HexahedronType:
 IcosahedronType:
   begin
     var phi := (1 + Sqrt(5)) / 2;
-    //a := 0.5;
     var b := 1.0 / (2 * phi) * 2 * a;
     pmb.AddPanel(0, b, -a, b, a, 0, -b, a, 0);
     pmb.AddPanel(0, b, a, -b, a, 0, b, a, 0);
@@ -935,9 +932,8 @@ IcosahedronType:
 DodecahedronType:
   begin
     var phi := (1 + Sqrt(5)) / 2;
-    //var a := 0.5;
-    var b := 0.5 / phi;
-    var c := 0.5 * (2 - phi);
+    var b := 1 / phi * a;
+    var c := (2 - phi) * a;
     pmb.AddPanel(c, 0, a, -c, 0, a, -b, b, b, 0, a, c, b, b, b);
     pmb.AddPanel(-c, 0, a, c, 0, a, b, -b, b, 0, -a, c, -b, -b, b);
     pmb.AddPanel(c, 0, -a, -c, 0, -a, -b, -b, -b, 0, -a, -c, b, -b, -b);
@@ -955,7 +951,6 @@ DodecahedronType:
   end;
 StellatedOctahedronType:
   begin
-    //var a := 0.5;
     pmb.AddPanel(a, a, a, -a, a, -a, a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, -a, a, a, -a, -a);
     pmb.AddPanel(a, a, a, a, -a, -a, -a, -a, a);
@@ -970,7 +965,7 @@ end;
 end;
 
 type 
-  PlatonicAbstractVisual3D = class(MeshElement3D)
+  PlatonicAbstractVisual3D = abstract class(MeshElement3D)
   private    
     fa: real;
     procedure SetA(value: real);
@@ -985,25 +980,53 @@ type
       Self.Length := Length;
     end;
     property Length: real read fa write SetA;
-    function Tessellate(): MeshGeometry3D; override; begin Result := nil end;
   end;
   IcosahedronVisual3D = class(PlatonicAbstractVisual3D)
-  public
-    function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.IcosahedronType,Length);
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.IcosahedronType,Length);
+  end;   
+  DodecahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.DodecahedronType,Length);
+  end;   
+  TetrahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.TetrahedronType,Length);
+  end;   
+  OctahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.OctahedronType,Length);
   end;   
   
-  IcosahedronT = class(BaseT)
+  PlatonicAbstractT = class(BaseT)
   private
-    procedure SetLengthP(r: real) := (model as IcosahedronVisual3D).Length := r;
+    procedure SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
     procedure SetLength(r: real) := Invoke(SetLengthP,r); 
-    function GetLength: real := Invoke&<real>(()->(model as IcosahedronVisual3D).Length);
+    function GetLength: real := Invoke&<real>(()->(model as PlatonicAbstractVisual3D).Length);
   public
-    constructor(x,y,z,Length: real; c: GColor);
+    property Length: real read GetLength write SetLength;
+  end;
+  IcosahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
     begin
       CreateBase(new IcosahedronVisual3D(Length),x,y,z,c);
     end;
-    property Length: real read GetLength write SetLength;
   end;
+  DodecahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new DodecahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+  TetrahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new TetrahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+  OctahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new OctahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+
 
 type
   AnyT = class(BaseT)
@@ -1173,7 +1196,10 @@ function FileModel3D(p: Point3D; fname: string) :=  FileModel3D(p.x,p.y,p.z,fnam
 
 function Lego(x,y,z: real; col,r,h: integer; c: Color): LegoT := Invoke&<LegoT>(()->LegoT.Create(x,y,z,col,r,h,c));
 
-function Icosahedron(x,y,z,a: real; c: Color): IcosahedronT := Invoke&<IcosahedronT>(()->IcosahedronT.Create(x,y,z,a,c));
+function Icosahedron(x,y,z,Length: real; c: Color): IcosahedronT := Invoke&<IcosahedronT>(()->IcosahedronT.Create(x,y,z,Length,c));
+function Dodecahedron(x,y,z,Length: real; c: Color): DodecahedronT := Invoke&<DodecahedronT>(()->DodecahedronT.Create(x,y,z,Length,c));
+function Tetrahedron(x,y,z,Length: real; c: Color): TetrahedronT := Invoke&<TetrahedronT>(()->TetrahedronT.Create(x,y,z,Length,c));
+function Octahedron(x,y,z,Length: real; c: Color): OctahedronT := Invoke&<OctahedronT>(()->OctahedronT.Create(x,y,z,Length,c));
 
 function Any(x,y,z: real; c: Color): AnyT := Invoke&<AnyT>(()->AnyT.Create(x,y,z,c));
 
