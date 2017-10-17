@@ -6585,6 +6585,8 @@ namespace CodeCompletion
                 this.param_kind = parametr_kind.var_parametr;
             else if (is_params(pi))
                 this.param_kind = parametr_kind.params_parametr;
+            if (pi.IsOptional)
+                this.cnst_val = pi.DefaultValue;
             //MakeDescription();
         }
 

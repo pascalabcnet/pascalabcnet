@@ -1658,12 +1658,15 @@ namespace PascalABCCompiler.Parsers
                 if (!pis[i].ParameterType.IsByRef)
                 {
                     sb.Append(GetFullTypeName(pis[i].ParameterType));
+                    if (pis[i].IsOptional)
+                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
                 }
                 else
                 {
                     Type t = pis[i].ParameterType.GetElementType();
                     sb.Append(GetFullTypeName(t));
                 }
+                
                 if (i < pis.Length - 1)
                     sb.Append("; ");
             }
@@ -1806,6 +1809,8 @@ namespace PascalABCCompiler.Parsers
                         sb.Append(GetShortTypeName(pis[i].ParameterType, false));
                     else
                         sb.Append(inst_type);
+                    if (pis[i].IsOptional)
+                        sb.Append(":=" + (pis[i].DefaultValue != null ? pis[i].DefaultValue.ToString() : "nil"));
                 }
                 else
                 {
