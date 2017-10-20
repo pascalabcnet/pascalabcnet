@@ -710,13 +710,329 @@ type
     property Height: real read GetH write SetH;
   end;
   
+type LegoVisual3D = class(MeshElement3D)
+private
+public
+  class HeightProperty: DependencyProperty;
+  class RowsProperty: DependencyProperty;
+  class ColumnsProperty: DependencyProperty;
+  class DivisionsProperty: DependencyProperty;
+private    
+  procedure SetHeight(value: integer) := SetValue(HeightProperty, value);
+  function GetHeight := integer(GetValue(HeightProperty));
+  procedure SetRows(value: integer) := SetValue(RowsProperty, value);
+  function GetRows := integer(GetValue(RowsProperty));
+  procedure SetColumns(value: integer) := SetValue(ColumnsProperty, value);
+  function GetColumns := integer(GetValue(ColumnsProperty));
+  procedure SetDivisions(value: integer) := SetValue(DivisionsProperty, value);
+  function GetDivisions := integer(GetValue(DivisionsProperty));
+public
+  class constructor;
+  begin
+    HeightProperty := DependencyProperty.Register('Height', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
+    RowsProperty := DependencyProperty.Register('Raws', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
+    ColumnsProperty := DependencyProperty.Register('Columns', typeof (integer), typeof (LegoVisual3D), new UIPropertyMetadata(3, GeometryChanged));
+    DivisionsProperty := DependencyProperty.Register('Divisions', typeof(integer), typeof(LegoVisual3D), new UIPropertyMetadata(48));
+  end;
 
+  property Height: integer read GetHeight write SetHeight;  
+  property Rows: integer read GetRows write SetRows;  
+  property Columns: integer read GetColumns write SetColumns;  
+  property Divisions: integer read GetDivisions write SetDivisions;  
+public
+  function Tessellate(): MeshGeometry3D; override;
+  const m = 1/0.008;
+  const grid = 0.008*m;
+  const margin = 0.0001*m;
+  const wallThickness = 0.001*m;
+  const plateThickness = 0.0032*m;
+  const brickThickness = 0.0096*m;
+  const knobHeight = 0.0018*m;
+  const knobDiameter = 0.0048*m;
+  const outerDiameter = 0.00651*m;
+  const axleDiameter = 0.00475*m;
+  const holeDiameter = 0.00485*m;
+  begin
+    var width := Columns*grid - margin*2;
+    var length := Rows*grid - margin*2;
+    var height1 := Height*plateThickness;
+    var builder := new MeshBuilder(true, true);
+    for var i := 0 to Columns-1 do
+    for var j := 0 to Rows-1 do
+    begin
+      var o := new Point3D((i + 0.5)*grid, (j + 0.5)*grid, height1);
+      builder.AddCone(o, new Vector3D(0, 0, 1), knobDiameter/2, knobDiameter/2, knobHeight, false, true, Divisions);
+      builder.AddPipe(new Point3D(o.X, o.Y, o.Z - wallThickness), new Point3D(o.X, o.Y, wallThickness),
+                      knobDiameter, outerDiameter, Divisions);
+    end;
+
+    builder.AddBox(new Point3D(Columns * 0.5 * grid, Rows * 0.5 * grid, height1 - wallThickness / 2), width, length,
+                  wallThickness,
+                  MeshBuilder.BoxFaces.All);
+    builder.AddBox(new Point3D(margin + wallThickness / 2, Rows * 0.5 * grid, height1 / 2 - wallThickness / 2),
+                   wallThickness, length, height1 - wallThickness,
+                   MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    builder.AddBox(
+        new Point3D(Columns * grid - margin - wallThickness / 2, Rows * 0.5 * grid, height1 / 2 - wallThickness / 2),
+        wallThickness, length, height1 - wallThickness,
+        MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    builder.AddBox(new Point3D(Columns * 0.5 * grid, margin + wallThickness / 2, height1 / 2 - wallThickness / 2),
+                   width, wallThickness, height1 - wallThickness,
+                   MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    builder.AddBox(
+        new Point3D(Columns * 0.5 * grid, Rows * grid - margin - wallThickness / 2, height1 / 2 - wallThickness / 2),
+        width, wallThickness, height1 - wallThickness,
+        MeshBuilder.BoxFaces.All xor MeshBuilder.BoxFaces.Top);
+    Result := builder.ToMesh(false);
+  end;
+end;   
+
+type
+  LegoT = class(BaseT)
+  private
+    procedure SetWP(r: integer) := (model as LegoVisual3D).Rows := r;
+    procedure SetW(r: integer) := Invoke(SetWP,r);
+    function GetW: integer := Invoke&<integer>(()->(model as LegoVisual3D).Rows);
+    
+    procedure SetHP(r: integer) := (model as LegoVisual3D).Height := r;
+    procedure SetH(r: integer) := Invoke(SetHP,r); 
+    function GetH: integer := Invoke&<integer>(()->(model as LegoVisual3D).Height);
+
+    procedure SetLP(r: integer) := (model as LegoVisual3D).Columns := r;
+    procedure SetL(r: integer) := Invoke(SetLP,r);
+    function GetL: integer := Invoke&<integer>(()->(model as LegoVisual3D).Columns);
+
+    {procedure SetSzP(r: Size3D);
+    begin
+      var mmm := model as LegoVisual3D;
+      (mmm.Columns,mmm.Rows,mmm.Height) := (r.X,r.Y,r.Z);
+    end;
+    procedure SetSz(r: Size3D) := Invoke(SetSzP,r);
+    function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as LegoVisual3D; Result := Sz3D(mmm.Length,mmm.Width,mmm.Height) end);}
+  public
+    constructor(x,y,z: real; col,r,h: integer; c: GColor);
+    begin
+      var bx := new LegoVisual3D;
+      //bx.Center := P3D(0,0,0);
+      (bx.Rows,bx.Height,bx.Columns) := (r,h,col);
+      CreateBase(bx,x,y,z,c);
+    end;
+    property Columns: integer read GetL write SetL;
+    property Rows: integer read GetW write SetW;
+    property Height: integer read GetH write SetH;
+    {property Size: Size3D read GetSz write SetSz;}
+  end;
+
+type
+  Panel = class
+    Points: array of Point3D;
+    TriangleIndex: integer;
+  end;
+  
+  ModelTypes = (TetrahedronType,OctahedronType,HexahedronType,IcosahedronType,DodecahedronType,StellatedOctahedronType);
+
+  PanelModelBuilder = class
+    Panels: List<Panel> := new List<Panel>;
+    TriangleIndexToPanelIndex: List<integer>;
+  
+    procedure AddPanel(params points: array of Point3D);
+    begin
+      var p := new Panel;
+      p.points := points;
+      Panels.Add(p);
+    end;
+  
+    procedure AddPanel(params coords: array of real);
+    begin
+      var points := new Point3D[coords.Length div 3];
+      for var i := 0 to coords.Length div 3 - 1 do
+        points[i] := new Point3D(coords[i * 3], coords[i * 3 + 1], coords[i * 3 + 2]);
+      Reverse(points);
+      AddPanel(points);
+    end;
+  
+    function ToMeshGeometry3D(): MeshGeometry3D;
+    begin
+      TriangleIndexToPanelIndex := new List<integer>;
+  
+      var tm := new MeshBuilder(false, false);
+      var panelIndex := 0;
+      foreach var p in Panels do
+      begin
+        p.TriangleIndex := tm.Positions.Count;
+        tm.AddTriangleFan(p.Points,nil,nil);
+        for var i := 0 to p.Points.Length - 3 do
+          TriangleIndexToPanelIndex.Add(panelIndex);
+        panelIndex += 1;
+      end;
+      var panelsGeometry := tm.ToMesh(false);
+      
+      Result := panelsGeometry;
+    end;
+  end;
+
+function CreateModel(CurrentModelType: ModelTypes; a: real): MeshGeometry3D;
+begin
+  var pmb := new PanelModelBuilder();
+  case CurrentModelType of 
+TetrahedronType:
+  begin
+    pmb.AddPanel(a, a, a, -a, a, -a, a, -a, -a);
+    pmb.AddPanel(-a, a, -a, -a, -a, a, a, -a, -a);
+    pmb.AddPanel(a, a, a, a, -a, -a, -a, -a, a);
+    pmb.AddPanel(a, a, a, -a, -a, a, -a, a, -a);
+  end;
+OctahedronType:
+  begin
+    //a := 1.0 / (2 * Sqrt(2));
+    var b := 0.5 * (2 * Sqrt(2)) * a;// * 2 * a;
+    pmb.AddPanel(-a, 0, a, -a, 0, -a, 0, b, 0);
+    pmb.AddPanel(-a, 0, -a, a, 0, -a, 0, b, 0);
+    pmb.AddPanel(a, 0, -a, a, 0, a, 0, b, 0);
+    pmb.AddPanel(a, 0, a, -a, 0, a, 0, b, 0);
+    pmb.AddPanel(a, 0, -a, -a, 0, -a, 0, -b, 0);
+    pmb.AddPanel(-a, 0, -a, -a, 0, a, 0, -b, 0);
+    pmb.AddPanel(a, 0, a, a, 0, -a, 0, -b, 0);
+    pmb.AddPanel(-a, 0, a, a, 0, a, 0, -b, 0);
+  end;
+HexahedronType:
+  begin
+    pmb.AddPanel(-a, -a, a, a, -a, a, a, -a, -a, -a, -a, -a);
+    pmb.AddPanel(-a, a, -a, -a, a, a, -a, -a, a, -a, -a, -a);
+    pmb.AddPanel(-a, a, a, a, a, a, a, -a, a, -a, -a, a);
+    pmb.AddPanel(a, a, -a, a, a, a, -a, a, a, -a, a, -a);
+    pmb.AddPanel(a, -a, a, a, a, a, a, a, -a, a, -a, -a);
+    pmb.AddPanel(a, -a, -a, a, a, -a, -a, a, -a, -a, -a, -a);
+  end;
+IcosahedronType:
+  begin
+    var phi := (1 + Sqrt(5)) / 2;
+    var b := 1.0 / (2 * phi) * 2 * a;
+    pmb.AddPanel(0, b, -a, b, a, 0, -b, a, 0);
+    pmb.AddPanel(0, b, a, -b, a, 0, b, a, 0);
+    pmb.AddPanel(0, b, a, 0, -b, a, -a, 0, b);
+    pmb.AddPanel(0, b, a, a, 0, b, 0, -b, a);
+    pmb.AddPanel(0, b, -a, 0, -b, -a, a, 0, -b);
+    pmb.AddPanel(0, b, -a, -a, 0, -b, 0, -b, -a);
+    pmb.AddPanel(0, -b, a, b, -a, 0, -b, -a, 0);
+    pmb.AddPanel(0, -b, -a, -b, -a, 0, b, -a, 0);
+    pmb.AddPanel(-b, a, 0, -a, 0, b, -a, 0, -b);
+    pmb.AddPanel(-b, -a, 0, -a, 0, -b, -a, 0, b);
+    pmb.AddPanel(b, a, 0, a, 0, -b, a, 0, b);
+    pmb.AddPanel(b, -a, 0, a, 0, b, a, 0, -b);
+    pmb.AddPanel(0, b, a, -a, 0, b, -b, a, 0);
+    pmb.AddPanel(0, b, a, b, a, 0, a, 0, b);
+    pmb.AddPanel(0, b, -a, -b, a, 0, -a, 0, -b);
+    pmb.AddPanel(0, b, -a, a, 0, -b, b, a, 0);
+    pmb.AddPanel(0, -b, -a, -a, 0, -b, -b, -a, 0);
+    pmb.AddPanel(0, -b, -a, b, -a, 0, a, 0, -b);
+    pmb.AddPanel(0, -b, a, -b, -a, 0, -a, 0, b);
+    pmb.AddPanel(0, -b, a, a, 0, b, b, -a, 0);
+  end;
+DodecahedronType:
+  begin
+    var phi := (1 + Sqrt(5)) / 2;
+    var b := 1 / phi * a;
+    var c := (2 - phi) * a;
+    pmb.AddPanel(c, 0, a, -c, 0, a, -b, b, b, 0, a, c, b, b, b);
+    pmb.AddPanel(-c, 0, a, c, 0, a, b, -b, b, 0, -a, c, -b, -b, b);
+    pmb.AddPanel(c, 0, -a, -c, 0, -a, -b, -b, -b, 0, -a, -c, b, -b, -b);
+    pmb.AddPanel(-c, 0, -a, c, 0, -a, b, b, -b, 0, a, -c, -b, b, -b);
+    pmb.AddPanel(b, b, -b, a, c, 0, b, b, b, 0, a, c, 0, a, -c);
+
+    pmb.AddPanel(-b, b, b, -a, c, 0, -b, b, -b, 0, a, -c, 0, a, c);
+    pmb.AddPanel(-b, -b, -b, -a, -c, 0, -b, -b, b, 0, -a, c, 0, -a, -c);
+
+    pmb.AddPanel(b, -b, b, a, -c, 0, b, -b, -b, 0, -a, -c, 0, -a, c);
+    pmb.AddPanel(a, c, 0, a, -c, 0, b, -b, b, c, 0, a, b, b, b);
+    pmb.AddPanel(a, -c, 0, a, c, 0, b, b, -b, c, 0, -a, b, -b, -b);
+    pmb.AddPanel(-a, c, 0, -a, -c, 0, -b, -b, -b, -c, 0, -a, -b, b, -b);
+    pmb.AddPanel(-a, -c, 0, -a, c, 0, -b, b, b, -c, 0, a, -b, -b, b);
+  end;
+StellatedOctahedronType:
+  begin
+    pmb.AddPanel(a, a, a, -a, a, -a, a, -a, -a);
+    pmb.AddPanel(-a, a, -a, -a, -a, a, a, -a, -a);
+    pmb.AddPanel(a, a, a, a, -a, -a, -a, -a, a);
+    pmb.AddPanel(a, a, a, -a, -a, a, -a, a, -a);
+    pmb.AddPanel(-a, a, a, a, a, -a, -a, -a, -a);
+    pmb.AddPanel(a, a, -a, a, -a, a, -a, -a, -a);
+    pmb.AddPanel(-a, a, a, -a, -a, -a, a, -a, a);
+    pmb.AddPanel(-a, a, a, a, -a, a, a, a, -a);
+  end;
+end;
+  Result := pmb.ToMeshGeometry3D;
+end;
+
+type 
+  PlatonicAbstractVisual3D = abstract class(MeshElement3D)
+  private    
+    fa: real;
+    procedure SetA(value: real);
+    begin
+      fa := value;
+      OnGeometryChanged;
+    end;
+  public
+    constructor(Length: real);
+    begin
+      inherited Create;
+      Self.Length := Length;
+    end;
+    property Length: real read fa write SetA;
+  end;
+  IcosahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.IcosahedronType,Length);
+  end;   
+  DodecahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.DodecahedronType,Length);
+  end;   
+  TetrahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.TetrahedronType,Length);
+  end;   
+  OctahedronVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.OctahedronType,Length);
+  end;   
+  
+  PlatonicAbstractT = class(BaseT)
+  private
+    procedure SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
+    procedure SetLength(r: real) := Invoke(SetLengthP,r); 
+    function GetLength: real := Invoke&<real>(()->(model as PlatonicAbstractVisual3D).Length);
+  public
+    property Length: real read GetLength write SetLength;
+  end;
+  IcosahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new IcosahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+  DodecahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new DodecahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+  TetrahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new TetrahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+  OctahedronT = class(PlatonicAbstractT)
+    public constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new OctahedronVisual3D(Length),x,y,z,c);
+    end;
+  end;
+
+
+type
   AnyT = class(BaseT)
     constructor(x,y,z: real; c: GColor);
     begin
-      //HelixToolkit.Wpf.LinesVisual3D
-      
-      var a := new HelixToolkit.Wpf.LinesVisual3D;
+      {var a := new LinesVisual3D;
       
       var aa := 1;
       var b := 80;
@@ -728,7 +1044,7 @@ type
       a.Points := Lst(q1);
       a.Color := Colors.Blue;
       
-      a.Thickness := 1.5;
+      a.Thickness := 1.5;}
 
       {var a := new HelixToolkit.Wpf.PieSliceVisual3D;
       a.StartAngle := 0;
@@ -740,10 +1056,14 @@ type
       a.Diameter := 0.05;
       a.Path := p;}
       
-      
-      
+      var a := new LegoVisual3D();
+      a.Rows := 1;
+      a.Columns := 2;
+      a.Height := 3;
+      //a.Divisions := 100;
+      a.Fill := Brushes.Blue;
+
       CreateBase0(a,x,y,z);
-      //a.Fill := Brushes.Aqua;
     end;
   end;
   
@@ -873,6 +1193,13 @@ function FileModel3D(x,y,z: real; fname: string): FileModelT
   := Invoke&<FileModelT>(()->FileModelT.Create(x,y,z,fname));
 function FileModel3D(p: Point3D; fname: string) :=  FileModel3D(p.x,p.y,p.z,fname);
 
+
+function Lego(x,y,z: real; col,r,h: integer; c: Color): LegoT := Invoke&<LegoT>(()->LegoT.Create(x,y,z,col,r,h,c));
+
+function Icosahedron(x,y,z,Length: real; c: Color): IcosahedronT := Invoke&<IcosahedronT>(()->IcosahedronT.Create(x,y,z,Length,c));
+function Dodecahedron(x,y,z,Length: real; c: Color): DodecahedronT := Invoke&<DodecahedronT>(()->DodecahedronT.Create(x,y,z,Length,c));
+function Tetrahedron(x,y,z,Length: real; c: Color): TetrahedronT := Invoke&<TetrahedronT>(()->TetrahedronT.Create(x,y,z,Length,c));
+function Octahedron(x,y,z,Length: real; c: Color): OctahedronT := Invoke&<OctahedronT>(()->OctahedronT.Create(x,y,z,Length,c));
 
 function Any(x,y,z: real; c: Color): AnyT := Invoke&<AnyT>(()->AnyT.Create(x,y,z,c));
 
