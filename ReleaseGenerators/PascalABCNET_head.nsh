@@ -112,6 +112,7 @@ Section
 	${AddDirectory} "$INSTDIR\Highlighting"
 	${AddDirectory} "$INSTDIR\PT4"
 	${AddDirectory} "$INSTDIR\Ico"
+	${AddDirectory} "$INSTDIR\Doc"
 	${AddInstallerFile} "Uninstall.exe"
 SectionEnd
 

@@ -81,7 +81,6 @@
     File ..\bin\Lib\FormsABC.pcu
     File ..\bin\Lib\GraphABC.pcu
     File ..\bin\Lib\NumLibABC.pcu
-    File ..\bin\Lib\NumLibABC.pdf
     File ..\bin\Lib\GraphWPF.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
@@ -134,7 +133,6 @@
     ${AddFile} "GOLDParserEngine.pcu"
     ${AddFile} "GraphABC.pcu"
     ${AddFile} "NumLibABC.pcu"
-    ${AddFile} "NumLibABC.pdf"
     ${AddFile} "GraphWPF.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
@@ -165,6 +163,12 @@
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "PABCRtl.pdb"
+
+    SetOutPath "$INSTDIR\Doc"
+    File ..\Doc\NumLibABC.pdf
+    ${AddFile} "NumLibABC.pdf"
+
+
     Push "Lib\PABCRtl.dll"
     Call NGEN
     Push "Lib\HelixToolkit.Wpf.dll"
