@@ -7550,11 +7550,11 @@ namespace PascalABCCompiler.NETGenerator
         private void BoxAssignToParameter(IExpressionNode to, IExpressionNode from)
         {
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
-            else if (from.conversion_type != null && (from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            else if (from.conversion_type != null && (from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
             	il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
@@ -7940,11 +7940,15 @@ namespace PascalABCCompiler.NETGenerator
                 return;
             }
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
-            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            else if ((from.type.is_value_type || from.type.is_generic_parameter) && to.type.IsInterface)
+            {
+                il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
+            }
+            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
@@ -7977,11 +7981,11 @@ namespace PascalABCCompiler.NETGenerator
             }
             //ICompiledTypeNode ctn = from.type as ICompiledTypeNode;
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface)))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
-            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
