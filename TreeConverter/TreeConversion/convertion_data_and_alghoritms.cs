@@ -1712,14 +1712,14 @@ namespace PascalABCCompiler.TreeConverter
 
             function_node_list set_of_possible_functions = new function_node_list();
 
-            bool is_alone_method_defined = (functions.InfoUnitList.Count == 1);
+            bool is_alone_method_defined = (functions.Count() == 1);
             function_node first_function = functions.First().sym_info as function_node;
             bool _is_assigment = first_function.name == compiler_string_consts.assign_name;
             basic_function_node _tmp_bfn = functions.First().sym_info as basic_function_node;
 
             List<function_node> indefinits = new List<function_node>();
 
-            foreach (SymbolInfoUnit function in functions.InfoUnitList)
+            foreach (SymbolInfo function in functions.list)
             {
 #if (DEBUG)
                 if (function.sym_info.general_node_type != general_node_type.function_node && function.sym_info.general_node_type != general_node_type.property_node)
@@ -1739,7 +1739,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     indefinits.Add(fn);
                 }
-                else if (fn.node_kind == SemanticTree.node_kind.common)
+                else if (fn.node_kind == node_kind.common)
                 {
                     common_function_node cfn = (common_function_node)fn;
                     if ((parameters.Count >= cfn.parameters.Count - cfn.num_of_default_variables) &&
@@ -2225,7 +2225,7 @@ namespace PascalABCCompiler.TreeConverter
 			return (compiler_string_consts.function_return_value_prefix+function_name);
 		}
 
-        public void create_function_return_variable(common_function_node cfn, SymbolInfoUnit ret_var)
+        public void create_function_return_variable(common_function_node cfn, SymbolInfo ret_var)
         {
             if (!SemanticRules.AddResultVariable)
                 return;

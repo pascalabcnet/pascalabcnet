@@ -451,6 +451,11 @@ namespace PascalABCCompiler.TreeRealization
 		{
             return _scope.Find(name);//c,cc,c,cc
         }
+        public SymbolInfo findFirstOnlyInNamespace(string name)
+        {
+            var temp = _scope.FindOnlyInScope(name);//c,cc,c,cc
+            return temp?.First();
+        }
         public SymbolInfoList findOnlyInNamespace(string name)
         {
             return _scope.FindOnlyInScope(name);//c,cc,c,cc
@@ -669,11 +674,11 @@ namespace PascalABCCompiler.TreeRealization
 		public override SymbolInfoList find(string name)
 		{
             bool is_ns = NetHelper.NetHelper.IsNetNamespace(_name + "." + name);
-            SymbolInfoList si = null;
+            SymbolInfoList sil = null;
             if (is_ns)
             {
                 compiled_namespace_node cnn = compiled_namespace_node.get_compiled_namespace(_name + "." + name, _tcst);
-                si = new SymbolInfoList(new SymbolInfoUnit(cnn));
+                sil = new SymbolInfoList(new SymbolInfo(cnn));
             }
             else
             {
@@ -681,37 +686,37 @@ namespace PascalABCCompiler.TreeRealization
                 //Type t = Type.GetType(_name+"."+name,false,true);
                 if (common_namespace != null)
                 {
-                    si = common_namespace.scope.FindOnlyInScope(name);
-                    if (si != null)
-                        return si;
+                    sil = common_namespace.scope.FindOnlyInScope(name);
+                    if (sil != null)
+                        return sil;
                 }
                 Type t = NetHelper.NetHelper.FindType(_name + "." + name);
                 if (t != null)
                 {
-                    si = new SymbolInfoList(new SymbolInfoUnit(compiled_type_node.get_type_node(t,_tcst)));
+                    sil = new SymbolInfoList(new SymbolInfo(compiled_type_node.get_type_node(t,_tcst)));
                 }
                 else
                 {
                 	t = NetHelper.NetHelper.FindType(_name+"."+_name);
                 	if (t != null && NetHelper.NetHelper.IsEntryType(t))
                 	{
-                		si = NetHelper.NetHelper.FindName(t,name);
-                        if (si == null)
+                		sil = NetHelper.NetHelper.FindName(t,name);
+                        if (sil == null)
                         {
                             type_node tn = NetHelper.NetHelper.FindCompiledPascalType(_name + "." + name);
                             if (tn != null)
-                                si = new SymbolInfoList(new SymbolInfoUnit(tn));
+                                sil = new SymbolInfoList(new SymbolInfo(tn));
                             else
                             {
                                 template_class tc = NetHelper.NetHelper.FindCompiledTemplateType(_name + "." + name);
                                 if (tc != null)
-                                    si = new SymbolInfoList(new SymbolInfoUnit(tc));
+                                    sil = new SymbolInfoList(new SymbolInfo(tc));
                             }
                         }
                 	}
                 }
             }
-            return si;
+            return sil;
 
 		}
 
