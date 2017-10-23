@@ -8644,12 +8644,12 @@ begin
   end
 end;
 
-/// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
-function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
+/// Группирует одинаковые подряд идущие элементы, получая последовательность массивов 
+function AdjacentGroup<T>(Self: sequence of T): sequence of array of T; extensionmethod;
 begin
   var c := new AdjGroupClass<T>(Self);
   while c.fin do
-    yield c.TakeGroup();
+    yield c.TakeGroup().ToArray;
 end;
 
 // ToDo Сделать AdjacentGroup с функцией сравнения

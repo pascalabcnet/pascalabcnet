@@ -670,9 +670,10 @@ namespace SymbolTable
             //{
             Inf.scope = InScope;
             if (!InScope.CaseSensitive) Name = Name.ToLower();
-            var hn = HashTable.Add(Name);//ЗДЕСь ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАНЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
+            var hn = HashTable.Add(Name);//ЗДЕСЬ ВОЗНИКАЕТ НЕДЕТЕРМЕНИРОВАННАЯ ОШИБКА - SSM 07.10.17 - странный комментарий. Вроде всё нормально.
             // SSM 07.10.17 - переделал внутреннее представление HashTable на основе Dictionary
-
+            if (hn == null)
+                throw new Exception("Попытка добавить уже добавленное имя "+ Name + " в HashTable. Обратитесь к разработчикам");
             hn.NumAreaList.Add(new AreaListNode(InScope.ScopeNum, Inf));
             //}
             // catch (Exception e)

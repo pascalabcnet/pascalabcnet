@@ -165,7 +165,7 @@
     ${AddFile} "PABCRtl.pdb"
 
     SetOutPath "$INSTDIR\Doc"
-    File ..\Doc\NumLibABC.pdf
+    File ..\doc\NumLibABC.pdf
     ${AddFile} "NumLibABC.pdf"
 
 

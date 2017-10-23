@@ -15,6 +15,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 {
     internal class SubstitutionKey
     {
+        public override string ToString() => _variableName;
         private readonly string _variableName;
         private readonly syntax_tree_node _syntaxTreeNodeWhereVaribleIsDeclared;
         private readonly syntax_tree_node _syntaxTreeUnderSubstitution;
