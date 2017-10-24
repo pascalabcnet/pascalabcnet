@@ -207,8 +207,8 @@ type
     function GetUD: Vector3D := Invoke&<Vector3D>(()->Cam.UpDirection);
     procedure SetDP(d: real);
     begin
-      var dist := Position.DistanceTo(P3D(0,0,0));
-      Position := Position.Multiply(d/dist);
+      var dist := Cam.Position.DistanceTo(P3D(0,0,0));
+      Cam.Position := Cam.Position.Multiply(d/dist);
     end;
     procedure SetD(d: real) := Invoke(SetDP,d);
     function GetD: real := Invoke&<real>(()->Cam.Position.DistanceTo(P3D(0,0,0)));
