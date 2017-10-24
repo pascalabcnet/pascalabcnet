@@ -1118,10 +1118,6 @@ namespace PascalABCCompiler.SyntaxTree
 			DefaultVisit(_double_question_node);
 		}
 
-        public virtual void visit(base_syntax_namespace_node _syntax_namespace_node)
-        {
-            DefaultVisit(_syntax_namespace_node);
-        }
     }
 
 

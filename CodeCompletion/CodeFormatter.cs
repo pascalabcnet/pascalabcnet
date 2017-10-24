@@ -235,11 +235,15 @@ namespace CodeFormatters
             sb.Append(node_text);
         }
 
-        private void WriteNode(syntax_tree_node sn, int off)
+        private void WriteNode(syntax_tree_node sn, int offset)
         {
-            int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num)+off;
+            int start_pos = GetPosition(sn.source_context.begin_position.line_num, sn.source_context.begin_position.column_num) + offset;
             int end_pos = GetPosition(sn.source_context.end_position.line_num, sn.source_context.end_position.column_num);
-            sb.Append(Text.Substring(start_pos, end_pos - start_pos + 1));
+            bool tmp_add_space_after = add_space_after;
+            add_space_after = false;
+            WriteCommentWithIndent(Text.Substring(start_pos, end_pos - start_pos + 1), true);
+            add_space_after = tmp_add_space_after;
+            //sb.Append(new string(' ', off) + Text.Substring(start_pos, end_pos - start_pos + 1));
         }
 
         private string prepare_comment(string s, bool off_first_line=true)
@@ -2218,9 +2222,19 @@ namespace CodeFormatters
             }
             if (_exception_block.else_stmt_list != null)
             {
-                add_new_line_else_specific = true;
-                IncOffset();
-                visit_node(_exception_block.else_stmt_list);
+                add_space_before = true;
+                if (!(_exception_block.else_stmt_list.Count == 1 && _exception_block.else_stmt_list.list[0] is empty_statement))
+                {
+                    add_new_line_else_specific = true;
+                    IncOffset();
+                    visit_node(_exception_block.else_stmt_list);
+                }
+                else
+                {
+                    add_newline_after = false;
+                }
+                    
+                //DecOffset();
             }
         }
 

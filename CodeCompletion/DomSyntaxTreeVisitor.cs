@@ -1021,7 +1021,6 @@ namespace CodeCompletion
                         {
                             pr = new ProcRealization(ps, cur_scope);
                             pr.already_defined = true;
-                            ps.proc_realization = pr;
                             pr.loc = cur_loc;
                             pr.head_loc = loc;
                             is_realization = true;
@@ -1031,7 +1030,6 @@ namespace CodeCompletion
                         {
                             pr = new ProcRealization(ps, impl_scope);
                             pr.already_defined = true;
-                            ps.proc_realization = pr;
                             pr.loc = cur_loc;
                             is_realization = true;
                             pr.head_loc = loc;
@@ -1071,7 +1069,6 @@ namespace CodeCompletion
                         topScope.AddExtensionMethod(meth_name, ps, ts);
                         pr = new ProcRealization(ps, cur_scope);
                         pr.already_defined = true;
-                        ps.proc_realization = pr;
                         pr.loc = cur_loc;
                         pr.head_loc = loc;
                         if (impl_scope != null)
@@ -1114,7 +1111,6 @@ namespace CodeCompletion
                                     pr = new ProcRealization(ps, cur_scope);
                                     pr.already_defined = true;
                                     pr.loc = cur_loc;
-                                    ps.proc_realization = pr;
                                     pr.head_loc = loc;
                                     is_realization = true;
                                     cur_scope.AddName("$method", pr);
@@ -1127,7 +1123,7 @@ namespace CodeCompletion
                                 ss = cur_scope.FindName(meth_name);
                                 if (ss != null && ss is ProcScope)
                                 {
-                                    if ((ss as ProcScope).is_forward)
+                                    if ((ss as ProcScope).is_forward && ss == select_function_definition(ss as ProcScope, _procedure_header.parameters, null, null))
                                     {
                                         //if ((ss as ProcScope).parameters.Count != 0 && _procedure_header.parameters != null) (ss as ProcScope).parameters.Clear();
                                         pr = new ProcRealization(ss as ProcScope, cur_scope);
@@ -1328,7 +1324,6 @@ namespace CodeCompletion
                         {
                             pr = new ProcRealization(ps, cur_scope);
                             pr.already_defined = true;
-                            ps.proc_realization = pr;
                             pr.loc = cur_loc;
                             is_realization = true;
                             pr.head_loc = loc;
@@ -1338,7 +1333,6 @@ namespace CodeCompletion
                         {
                             pr = new ProcRealization(ps, impl_scope);
                             pr.already_defined = true;
-                            ps.proc_realization = pr;
                             pr.loc = cur_loc;
                             pr.head_loc = loc;
                             is_realization = true;
@@ -1384,7 +1378,6 @@ namespace CodeCompletion
                             TypeTable.obj_type.AddExtensionMethod(meth_name, ps, ts);*/
                         pr = new ProcRealization(ps, cur_scope);
                         pr.already_defined = true;
-                        ps.proc_realization = pr;
                         pr.loc = cur_loc;
                         pr.head_loc = loc;
                         if (impl_scope != null)
@@ -1424,7 +1417,6 @@ namespace CodeCompletion
                                     pr = new ProcRealization(ps, cur_scope);
                                     pr.already_defined = true;
                                     pr.loc = cur_loc;
-                                    ps.proc_realization = pr;
                                     pr.head_loc = loc;
                                     is_realization = true;
                                     cur_scope.AddName("$method", pr);
@@ -1437,7 +1429,7 @@ namespace CodeCompletion
                                 ss = cur_scope.FindName(meth_name);
                                 if (ss != null && ss is ProcScope)
                                 {
-                                    if ((ss as ProcScope).is_forward)
+                                    if ((ss as ProcScope).is_forward && ss == select_function_definition(ss as ProcScope, _function_header.parameters, (ss as ProcScope).return_type, null, true))
                                     {
                                         //if ((ss as ProcScope).parameters.Count != 0 && _function_header.parameters != null) (ss as ProcScope).parameters.Clear();
                                         pr = new ProcRealization(ss as ProcScope, cur_scope);
@@ -1798,8 +1790,9 @@ namespace CodeCompletion
             if (returned_scope != null /*&& cnst_val.prim_val != null*/)
             {
                 ElementScope es = new ElementScope(new SymInfo(_simple_const_definition.const_name.name, SymbolKind.Constant, _simple_const_definition.const_name.name), returned_scope, cnst_val.prim_val, cur_scope);
+                es.is_static = true;
                 cur_scope.AddName(_simple_const_definition.const_name.name, es);
-                es.loc = get_location(_simple_const_definition);
+                es.loc = get_location(_simple_const_definition.const_name);
                 es.declaringUnit = entry_scope;
                 if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_simple_const_definition))
                     es.AddDocumentation(this.converter.controller.docs[_simple_const_definition]);
@@ -1826,6 +1819,7 @@ namespace CodeCompletion
             ElementScope es = new ElementScope(new SymInfo(_typed_const_definition.const_name.name, SymbolKind.Constant,_typed_const_definition.const_name.name),cnst_type,cnst_val.prim_val,cur_scope);
             cur_scope.AddName(_typed_const_definition.const_name.name, es);
             es.loc = get_location(_typed_const_definition);
+            es.is_static = true;
             es.declaringUnit = entry_scope;
             if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_typed_const_definition))
         		es.AddDocumentation(this.converter.controller.docs[_typed_const_definition]);
@@ -3554,7 +3548,6 @@ namespace CodeCompletion
                     {
                         ProcRealization pr = new ProcRealization(ps, cur_scope);
                         pr.already_defined = true;
-                        ps.proc_realization = pr;
                         pr.loc = cur_loc;
                         pr.head_loc = loc;
                         is_realization = true;
@@ -3565,7 +3558,6 @@ namespace CodeCompletion
                     {
                         ProcRealization pr = new ProcRealization(ps, impl_scope);
                         pr.already_defined = true;
-                        ps.proc_realization = pr;
                         pr.loc = cur_loc;
                         pr.head_loc = loc;
                         is_realization = true;

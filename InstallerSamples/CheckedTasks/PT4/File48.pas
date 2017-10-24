@@ -1,4 +1,4 @@
-// Пример решения задачи File48 из электронного задачника Programming Taskbook
+﻿// Пример решения задачи File48 из электронного задачника Programming Taskbook
 uses PT4;
 var
   f: array [1..4] of file of integer;

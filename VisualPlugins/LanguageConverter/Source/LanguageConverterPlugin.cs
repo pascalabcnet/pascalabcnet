@@ -62,7 +62,8 @@ namespace VisualPascalABCPlugins
         public LanguageConverter_VisualPascalABCPlugin(IWorkbench Workbench)
         {
             Languages = LoadLanguages();
-            currentLanguage = Languages[0];
+            if (Languages.Count>0)
+                currentLanguage = Languages[0];
             this.VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             //TextFormatter = new TextFormatter();
             TextFormatterForm = new TextFormatterForm();

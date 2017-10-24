@@ -1,12 +1,30 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
+using System.Collections.Generic;
+
+namespace System.Linq
+{
+    public static class ExtSeqMy
+    {
+        public static string JoinIntoString<T>(this IEnumerable<T> seq, string delim = " ")
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (var x in seq)
+                sb.Append(x.ToString() + delim);
+            return sb.ToString();
+        }
+    }
+}
 
 namespace SymbolTable
 {
 	public class AreaNodesList
 	{
-		public AreaListNode[] data;
+        public override string ToString() => data.Take(count).JoinIntoString();
+
+        public AreaListNode[] data;
 		int count;
 
 		public int Count

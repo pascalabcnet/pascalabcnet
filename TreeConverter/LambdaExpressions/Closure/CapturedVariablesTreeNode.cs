@@ -18,7 +18,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 private set;
             }
 
-            public SymbolInfoUnit SymbolInfo
+            public SymbolInfo SymbolInfo
             {
                 get;
                 private set;
@@ -30,7 +30,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                 private set;
             }
 
-            public CapturedSymbolInfo(syntax_tree_node syntaxTreeNodeWithVarDeclaration, SymbolInfoUnit symbolInfo)
+            public CapturedSymbolInfo(syntax_tree_node syntaxTreeNodeWithVarDeclaration, SymbolInfo symbolInfo)
             {
                 ReferencingLambdas = new List<CapturedVariablesTreeNodeLambdaScope>();
                 SyntaxTreeNodeWithVarDeclaration = syntaxTreeNodeWithVarDeclaration;
@@ -140,7 +140,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             private set;
         }
 
-        public SymbolInfoUnit SymbolInfoLoopVar
+        public SymbolInfo SymbolInfoLoopVar
         {
             get;
             set;
@@ -161,7 +161,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
     internal class CapturedVariablesTreeNodeForEachScope : CapturedVariablesTreeNode
     {
-        public SymbolInfoUnit SymbolInfoLoopVar
+        public SymbolInfo SymbolInfoLoopVar
         {
             get;
             set;
@@ -176,7 +176,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 
     internal class CapturedVariablesTreeNodeLambdaScope : CapturedVariablesTreeNode
     {
-        public List<SymbolInfoUnit> CapturedVarsSymbolInfo
+        public List<SymbolInfo> CapturedVarsSymbolInfo
         {
             get;
             private set;
@@ -198,7 +198,7 @@ namespace TreeConverter.LambdaExpressions.Closure
             : base(parentNode, scopeNum, correspondingSyntaxTreeNode)
         {
             LambdaDefinition = lambdaDef;
-            CapturedVarsSymbolInfo = new List<SymbolInfoUnit>();
+            CapturedVarsSymbolInfo = new List<SymbolInfo>();
             ScopeIndexOfClassWhereLambdaWillBeAddedAsMethod = null;
         }
     }

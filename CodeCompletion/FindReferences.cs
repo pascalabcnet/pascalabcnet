@@ -70,7 +70,8 @@ namespace CodeCompletion
             foreach (statement stmt in _statement_list.subnodes)
             {
                 IBaseScope tmp2 = cur_scope;
-                cur_scope = cur_scope.FindScopeByLocation(stmt.source_context.begin_position.line_num, stmt.source_context.begin_position.column_num);
+                if (stmt.source_context != null)
+                    cur_scope = cur_scope.FindScopeByLocation(stmt.source_context.begin_position.line_num, stmt.source_context.begin_position.column_num);
                 if (cur_scope == null)
                     cur_scope = tmp2;
                 stmt.visit(this);
@@ -530,7 +531,7 @@ namespace CodeCompletion
         {
             if (for_refactoring)
             {
-                IBaseScope ss = entry_scope.FindScopeByLocation(_simple_const_definition.source_context.begin_position.line_num, _simple_const_definition.source_context.begin_position.column_num);
+                IBaseScope ss = entry_scope.FindScopeByLocation(_simple_const_definition.const_name.source_context.begin_position.line_num, _simple_const_definition.const_name.source_context.begin_position.column_num);
                 if (ss != null && ss.IsEqual(founded_scope))
                     pos_list.Add(get_position(_simple_const_definition.const_name));
             }

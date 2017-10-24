@@ -10,7 +10,9 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class var_definition_node : definition_node, SemanticTree.IVAriableDefinitionNode
 	{
-		private string _name;
+        public override string ToString() => this.GetType().Name + ": "+ type.ToString();
+
+        private string _name;
 		private type_node _type;
         private expression_node _inital_value;
         private bool _is_ret_value;

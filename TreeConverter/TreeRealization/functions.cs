@@ -593,7 +593,9 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public abstract class common_function_node : function_node, SemanticTree.ICommonFunctionNode
 	{
-		protected string _name;
+        public override string ToString() => "(" + GetType().Name + " " + name + "," + scope + ")";
+
+        protected string _name;
 
         protected readonly local_variable_list _var_defs = new local_variable_list();
 
@@ -610,18 +612,18 @@ namespace PascalABCCompiler.TreeRealization
         }
 
         //TODO: Возможно вынести в ассоциированную с функцией информацию.
-		//Только указание - какая переменная возвтащается. Ссылка на эту-же переменную есть в _var_defs.
+		//Только указание - какая переменная возвращается. Ссылка на эту-же переменную есть в _var_defs.
 		private local_variable _return_variable;
 
         private readonly common_in_function_function_node_list _fnl = new common_in_function_function_node_list();
 		private statement_node _function_code;
 
         //TODO: Возможно вынести оба этих поля в ассоциированную с функцией информацию.
-		private bool _overload=false;
-		private bool _is_forward=false;
+		private bool _overload = false;
+		private bool _is_forward = false;
 
         //TODO: Вынести в ассоциированную с функцией информацию.
-		private statement_node_stack _cycles_stack=new statement_node_stack();
+		private statement_node_stack _cycles_stack = new statement_node_stack();
 
 		private SymbolTable.Scope _scope;
 

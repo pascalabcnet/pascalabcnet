@@ -1,6 +1,8 @@
 // Copyright (c) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 using System;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace SymbolTable
 {
@@ -10,7 +12,9 @@ namespace SymbolTable
     /// </summary>
     public class DSHashTable
     {
-        private int count;
+        public override string ToString() => dict.SkipWhile(x=>x.Key != "").Skip(1).JoinIntoString(Environment.NewLine);
+
+        /*private int count;
         private int hash_size
         {
             get
@@ -19,7 +23,7 @@ namespace SymbolTable
             }
         }
 
-        public HashTableNode[] hash_arr;
+        private HashTableNode[] hash_arr;
 
         private int HashFunc(string s)
         {
@@ -29,9 +33,11 @@ namespace SymbolTable
             return Math.Abs(n % hash_size);
         }
 
-        private System.Collections.Generic.Dictionary<int, object> ht = new System.Collections.Generic.Dictionary<int, object>();
+        private System.Collections.Generic.Dictionary<int, object> ht = new System.Collections.Generic.Dictionary<int, object>();*/
 
-        private int GetHash(string s)
+        public Dictionary<string,HashTableNode> dict = new Dictionary<string, HashTableNode>();
+
+        /*private int GetHash(string s)
         {
             int hash = HashFunc(s);
             int i = 1;
@@ -59,25 +65,43 @@ namespace SymbolTable
             if (hat.Length > new_size) return;
             for (int i = 0; i < hat.Length; i++)
                 if (hat[i] != null) Add(hat[i]);
-        }
+        }*/
 
 
         public DSHashTable(int start_size)
         {
-            hash_arr = new HashTableNode[start_size];
-            ClearTable();
+            //hash_arr = new HashTableNode[start_size];
+            //ClearTable();
         }
 
         public void ClearTable()
         {
-            count = 0;
-            for (int i = 0; i < hash_size; i++)
-                hash_arr[i] = null;
+            dict.Clear();
+            //count = 0;
+            //for (int i = 0; i < hash_size; i++)
+            //    hash_arr[i] = null;
         }
 
-        public int Add(HashTableNode node)
+        public HashTableNode Add(string name)
         {
-            if (count / hash_size * 100 > SymbolTableConstants.HashTable_StartResise)
+            HashTableNode node = null;
+            var b = dict.TryGetValue(name, out node);
+            if (!b)
+            {
+                node = new HashTableNode(name);
+                dict[name] = node;
+            }
+            return node;
+
+            /*if (!dict.ContainsKey(name))
+            {
+                var node = new HashTableNode(name);
+                dict[name] = node;
+                return node;
+            }
+            return dict[name];*/
+
+            /*if (count / hash_size * 100 > SymbolTableConstants.HashTable_StartResise)
                 Resize(hash_size + hash_size / 100 * SymbolTableConstants.HashTable_ProcResize);
             int tn = GetHash(node.Name);
             if (hash_arr[tn] == null)
@@ -85,15 +109,22 @@ namespace SymbolTable
                 hash_arr[tn] = node;
                 count++;
             }
-            return tn;
+            return hash_arr[tn];*/
         }
 
-        public int Find(string name)
+        public HashTableNode Find(string name)
         {
-            int h = GetHash(name);
-            if (hash_arr[h] != null)
-                return h;
-            return -1;
+            HashTableNode node = null;
+            dict.TryGetValue(name, out node);
+            return node;
+            /*if (dict.ContainsKey(name))
+                return dict[name];
+            else return null;*/
+
+            /*int h = GetHash(name);
+            //if (hash_arr[h] != null)
+            //    return hash_arr[h];
+            return hash_arr[h];*/
         }
 
 

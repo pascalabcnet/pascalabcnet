@@ -23,7 +23,7 @@ namespace VisualPascalABC
         public void SetDisassembledCode(string code)
         {
             DisassemblyEditor.Document.TextContent = code;
-            DisassemblyEditor.Refresh();
+            //DisassemblyEditor.Refresh();
         }
 
         public void ClearWindow()
