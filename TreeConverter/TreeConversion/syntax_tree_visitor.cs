@@ -9961,10 +9961,10 @@ namespace PascalABCCompiler.TreeConverter
             context.leave_block();
 
 #if DEBUG
-            var fname = "C:\\st1.txt";
+            /*var fname = "C:\\st1.txt";
             if (System.IO.File.Exists(fname))
                 System.IO.File.Delete(fname);
-            System.IO.File.AppendAllText(fname, SymbolTable.ToString());
+            System.IO.File.AppendAllText(fname, SymbolTable.ToString());*/
 #endif
 
             _compiled_unit.main_function = main_function;

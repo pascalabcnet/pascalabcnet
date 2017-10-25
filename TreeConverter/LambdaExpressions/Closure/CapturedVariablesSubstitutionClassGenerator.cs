@@ -196,16 +196,15 @@ namespace TreeConverter.LambdaExpressions.Closure
                     var upperScopeWhereVarsAreCaptured = scope;
                     var upperScopeWhereVarsAreCapturedClass =
                         _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex].ClassDeclaration;
+                    var ClassName = upperScopeWhereVarsAreCapturedClass.type_name;
+                    var ClassField = symbolInfo.SymbolInfo.sym_info as class_field;
 
                     var substKey = new SubstitutionKey(varName, symbolInfo.SyntaxTreeNodeWithVarDeclaration,
                                                        scope.CorrespondingSyntaxTreeNode);
                     if (!_substitutions.ContainsKey(substKey))
                     {
                         // SSM 22.10.17 Тут ошибка в случае захвата классовых полей - первый параметр должен быть не self, а имя класса
-                        var cl = _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex].ClassDeclaration;
-                        var ClassName = cl.type_name;
-                        var cf = symbolInfo.SymbolInfo.sym_info as class_field;
-                        if (cf != null && cf.IsStatic)
+                        if (ClassField != null && ClassField.IsStatic)
                             _substitutions.Add(substKey, new dot_node(ClassName, new ident(varName)));// sc не заполнен, что плохо!
                         else
                         _substitutions.Add(substKey,
@@ -376,7 +375,10 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                             if (!_substitutions.ContainsKey(substKey))
                             {
-                                _substitutions.Add(substKey, dot);
+                                if (ClassField != null && ClassField.IsStatic)
+                                    _substitutions.Add(substKey, new dot_node(ClassName, new ident(varName)));// sc не заполнен, что плохо!
+                                else
+                                    _substitutions.Add(substKey, dot);
                             }
 
                             upperScopeWhereVarsAreCaptured = nextNodeWhereVarsAreCaptured;

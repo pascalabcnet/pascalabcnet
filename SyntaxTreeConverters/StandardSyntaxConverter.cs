@@ -48,6 +48,11 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             ProcessYieldCapturedVarsVisitor.New.ProcessNode(root);
 
 #if DEBUG
+            /*
+            var cv = CollectLightSymInfoVisitor.New;
+            cv.ProcessNode(root);
+            cv.Output(@"d:\\Light1.txt");
+            */
             /*try
             {
                 //root.visit(new SimplePrettyPrinterVisitor(@"d:\\zzz4.txt"));
@@ -58,10 +63,6 @@ namespace PascalABCCompiler.SyntaxTreeConverters
             }*/
 
 #endif
-
-
-
-
             return root;
         }
     }

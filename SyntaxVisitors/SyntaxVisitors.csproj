@@ -48,6 +48,7 @@
     <Compile Include="BaseVisitors\HasStatementVisitor.cs" />
     <Compile Include="BaseVisitors\SmallHelperVisitors.cs" />
     <Compile Include="ChangeWhileVisitor.cs" />
+    <Compile Include="LightSymInfoVisitors\SymInfoCollect1.cs" />
     <Compile Include="SugarVisitors\AssignTuplesDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\DoubleQuestionDesugarVisitor.cs" />
     <Compile Include="SugarVisitors\LoopDesugarVisitor.cs" />
