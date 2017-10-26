@@ -1138,6 +1138,12 @@ namespace VisualPascalABCPlugins
             prepare_node(node.left, "left");
             prepare_node(node.right, "right");
         }
+        public override void visit(short_func_definition node)
+        {
+            prepare_node(node.proc_header, "proc_header");
+            prepare_node(node.proc_body, "proc_body");
+            prepare_node(node.procdef, "procdef");
+        }
     }
 
 
