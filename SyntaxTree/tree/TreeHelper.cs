@@ -1713,5 +1713,11 @@ namespace PascalABCCompiler.SyntaxTree
         public override string ToString() => "loop " + this.count.ToString() + " do \n" + this.stmt.ToString();
     }
 
+    public partial class lambda_inferred_type
+    {
+        public override string ToString() => "lam_inferred";
+    }
+
+
 }
 

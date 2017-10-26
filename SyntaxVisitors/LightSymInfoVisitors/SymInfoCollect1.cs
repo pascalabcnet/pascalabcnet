@@ -18,47 +18,7 @@ using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-    public enum SymKind { var, field, param };
-    public class SymInfoSyntax
-    {
-        public override string ToString() => "("+Id.ToString()+"{"+SK.ToString()+"}"+": "+ Td.ToString()+")";
-        public ident Id { get; set; }
-        public type_definition Td { get; set; }
-        public SymKind SK { get; set; }
-        public SymInfoSyntax(ident Id, SymKind SK, type_definition Td = null)
-        {
-            this.Id = Id;
-            this.Td = Td;
-            this.SK = SK;
-        }
-    }
-
-    public class ScopeSyntax
-    {
-        public ScopeSyntax Parent { get; set; }
-        public List<ScopeSyntax> Children = new List<ScopeSyntax>();
-        public List<SymInfoSyntax> Symbols = new List<SymInfoSyntax>();
-        public override string ToString()
-        {
-            var s = GetType().Name;
-            return s.Replace("Syntax", "");
-        }
-    }
-    public class ScopeWithDefsSyntax : ScopeSyntax { } // 
-    public class ProgramScopeSyntax : ScopeWithDefsSyntax { } // program_module
-    public class ProcScopeSyntax : ScopeWithDefsSyntax // procedure_definition
-    {
-        public string Name { get; set; }
-        public ProcScopeSyntax(string Name)
-        {
-            this.Name = Name;
-        }
-    } 
-    public class ParamsScopeSyntax : ScopeSyntax { } // formal_parameters
-    public class ClassScopeSyntax : ScopeWithDefsSyntax { } // 
-    public class StatListScopeSyntax : ScopeSyntax { } // statement_list
-
-    public class CollectLightSymInfoVisitor : BaseEnterExitVisitor
+    public partial class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
         public ScopeSyntax Root;
         public ScopeSyntax Current;
@@ -70,17 +30,47 @@ namespace PascalABCCompiler.SyntaxTree
             switch (st)
             {
                 case program_module p:
-                    t = new ProgramScopeSyntax();
+                case unit_module u:
+                    t = new GlobalScopeSyntax();
                     Root = t;
                     break;
                 case procedure_definition p:
-                    t = new ProcScopeSyntax(p.proc_header.name.ToString());
+                    var name = p.proc_header.name.meth_name;
+                    if (p.proc_header is function_header)
+                        AddSymbol(name, SymKind.funcname);
+                    else AddSymbol(name, SymKind.procname);
+                    t = new ProcScopeSyntax(name);
                     break;
                 case formal_parameters p:
                     t = new ParamsScopeSyntax();
                     break;
                 case statement_list p:
                     t = new StatListScopeSyntax();
+                    break;
+                case for_node p:
+                    t = new ForScopeSyntax();
+                    break;
+                case foreach_stmt p:
+                    t = new ForeachScopeSyntax();
+                    break;
+                /*case repeat_node p:
+                    t = new RepeatScopeSyntax();
+                    break;*/
+                case case_node p:
+                    t = new CaseScopeSyntax();
+                    break;
+                case class_definition p:
+                    var td = p.Parent as type_declaration;
+                    var tname = td.type_name;
+                    t = new ClassScopeSyntax(tname);
+                    break;
+                case record_type p:
+                    var td1 = p.Parent as type_declaration;
+                    var rname = td1.type_name;
+                    t = new RecordScopeSyntax(rname);
+                    break;
+                case function_lambda_definition p:
+                    t = new LambdaScopeSyntax();
                     break;
             }
             if (t != null)
@@ -89,6 +79,13 @@ namespace PascalABCCompiler.SyntaxTree
                 if (Current != null)
                     Current.Children.Add(t);
                 Current = t;
+                if (st is procedure_definition p)
+                {
+                    if (p.proc_header is function_header fh)
+                    {
+                        AddSymbol(new ident("Result"), SymKind.var, fh.return_type);
+                    }
+                }
             }
         }
         public override void Exit(syntax_tree_node st)
@@ -99,6 +96,13 @@ namespace PascalABCCompiler.SyntaxTree
                 case procedure_definition pd:
                 case formal_parameters fp:
                 case statement_list stl:
+                case for_node f:
+                case foreach_stmt fe:
+                case class_definition cd:
+                case record_type rt:
+                case function_lambda_definition fld:
+                //case repeat_node rep:
+                case case_node cas:
                     Current = Current.Parent;
                     break;
             }
@@ -108,34 +112,28 @@ namespace PascalABCCompiler.SyntaxTree
             if (vd == null || vd.vars == null || vd.vars.list == null)
                 return;
             var type = vd.vars_type;
-            Current.Symbols.AddRange(vd.vars.list.Select(x=>new SymInfoSyntax(x,SymKind.var,type)));
+            var q = vd.vars.list.Select(x => new SymInfoSyntax(x, SymKind.var, type));
+            if (q.Count() > 0)
+                Current.Symbols.AddRange(q);
+            base.visit(vd);
         }
-
-        public override string ToString() => Root.ToString();
-
-        public string Spaces(int n) => new string(' ', n);
-        public void OutputString(string s) => System.IO.File.AppendAllText(fname, s);
-        public void OutputlnString(string s = "") => System.IO.File.AppendAllText(fname, s + '\n');
-        public void Output(string fname)
+        public override void visit(formal_parameters fp)
         {
-#if DEBUG
-            this.fname = fname;
-            if (System.IO.File.Exists(fname))
-                System.IO.File.Delete(fname);
-            OutputElement(0, Root);
-#endif
-        }
-        string fname;
-        public void OutputElement(int d, ScopeSyntax s)
-        {
-            OutputString(Spaces(d));
-            OutputlnString(s.ToString());
-            if (s.Symbols.Count > 0)
-                OutputlnString(Spaces(d+2)+"Symbols: "+ string.Join(", ", s.Symbols.Select(x => x.ToString())));
-            foreach (var sc in s.Children)
-                OutputElement(d + 2, sc);
+            foreach (var pg in fp.params_list)
+            {
+                var type = pg.vars_type;
+                var q = pg.idents.idents.Select(x => new SymInfoSyntax(x, SymKind.param, type));
+                Current.Symbols.AddRange(q);
+            }
+            base.visit(fp);
         }
 
+        public override void visit(for_node f)
+        {
+            if (f.create_loop_variable || f.type_name != null)
+                AddSymbol(f.loop_variable, SymKind.var, f.type_name);
+            base.visit(f);
+        }
     }
 }
 
