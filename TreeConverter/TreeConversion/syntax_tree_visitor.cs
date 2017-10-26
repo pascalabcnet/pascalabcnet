@@ -9801,6 +9801,7 @@ namespace PascalABCCompiler.TreeConverter
                         }
                     }
                     context.enter_code_block_with_bind();
+                    CheckToEmbeddedStatementCannotBeADeclaration(cv.exec_if_true);
                     statement_node stmn = convert_strong(cv.exec_if_true);
                     context.leave_code_block();
                     sem_cv.case_statement = stmn;
@@ -9847,6 +9848,7 @@ namespace PascalABCCompiler.TreeConverter
                             eq_node = new basic_function_call(SystemLibrary.SystemLibrary.bool_or as basic_function_node, null, eq_node, eq_call);
                     }
                     context.enter_code_block_with_bind();
+                    CheckToEmbeddedStatementCannotBeADeclaration(cv.exec_if_true);
                     statement_node stmn = convert_strong(cv.exec_if_true);
                     context.leave_code_block();
                     if (ifn != null)
@@ -9860,6 +9862,7 @@ namespace PascalABCCompiler.TreeConverter
                         main_ifn = ifn;
                 }
                 context.enter_code_block_with_bind();
+                CheckToEmbeddedStatementCannotBeADeclaration(_case_node.else_statement);
                 statement_node else_statement = convert_weak(_case_node.else_statement);
                 context.leave_code_block();
                 if (ifn == null)
