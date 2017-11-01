@@ -2333,6 +2333,11 @@ namespace PascalABCCompiler.PCU
                 }
                 return rez;
             }
+            internal_interface ii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface);
+            if (ii != null)
+            {
+                return sizeof(byte) + 4 * 4 + GetSizeOfReference(tn.element_type) + 4;
+            }
             return sizeof(byte) + sizeof(int);
         }
 
