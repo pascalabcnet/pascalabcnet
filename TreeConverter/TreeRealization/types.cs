@@ -1996,17 +1996,30 @@ namespace PascalABCCompiler.TreeRealization
             {
                 if (ImplementingInterfaces != null)
                 {
+                    Dictionary<definition_node, definition_node> cache = new Dictionary<definition_node, definition_node>();
+                    List<SymbolInfo> props = new List<SymbolInfo>();
                     foreach (type_node ii_tn in ImplementingInterfaces)
                     {
                         SymbolInfoList isi = ii_tn.find_in_type(name, CurrentScope);
                         if (isi != null)
                         {
                             if (sil == null)
-                                sil = isi;
-                            else
-                                sil.Add(isi);
+                                sil = new SymbolInfoList();
+                            foreach (SymbolInfo si in isi.list)
+                            {
+                                if (!cache.ContainsKey(si.sym_info))
+                                {
+                                    if (si.sym_info is function_node && (si.sym_info as function_node).is_extension_method)
+                                        sil.Add(si);
+                                    cache.Add(si.sym_info, si.sym_info);
+                                }
+                            }
+
+
                         }
                     }
+                    if (sil != null && sil.Count() == 0)
+                        sil = null;
                 }
             }
             return sil;
