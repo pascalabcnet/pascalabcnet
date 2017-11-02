@@ -16869,11 +16869,16 @@ namespace PascalABCCompiler.TreeConverter
                         else
                         {
                             var ip = tn.instance_params;
+
+                            var IGrTstring = "System.Linq.IGrouping`2";
+                            if (ct.ToString().StartsWith(IGrTstring))
+                                elem_type = ip[1];
+                            else
+                                elem_type = ip[0];
                             //var Tname = ip[0].name;
                             //elem_type = convert_strong(new SyntaxTree.named_type_reference(Tname, _foreach_stmt.in_what.source_context));
-                            elem_type = ip[0];
                         }
-                            
+
                         //elem_type.instance_params = tn.instance_params;
                         //var ip = tn.instance_params;
                         //var Tname = new string(tn.name.SkipWhile(c => c != '<').Skip(1).TakeWhile(c => c != ',' && c != '>').ToArray());

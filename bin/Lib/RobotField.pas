@@ -1064,7 +1064,6 @@ begin
       labelExState.Text := 'Робот: Работа окончена'
     else    
       labelExState.Text := 'Робот: Работа окончена, задание не выполнено';
-  System.Console.Write(RobField.TaskName);
 end;
 
 var 

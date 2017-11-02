@@ -36,9 +36,10 @@ namespace PascalABCCompiler.SyntaxTree
                     break;
                 case procedure_definition p:
                     var name = p.proc_header.name.meth_name;
+                    var attr = p.proc_header.class_keyword ? Attributes.class_attr : 0;
                     if (p.proc_header is function_header)
-                        AddSymbol(name, SymKind.funcname);
-                    else AddSymbol(name, SymKind.procname);
+                        AddSymbol(name, SymKind.funcname,null, attr);
+                    else AddSymbol(name, SymKind.procname, null, attr);
                     t = new ProcScopeSyntax(name);
                     break;
                 case formal_parameters p:
@@ -61,13 +62,22 @@ namespace PascalABCCompiler.SyntaxTree
                     break;
                 case class_definition p:
                     var td = p.Parent as type_declaration;
-                    var tname = td.type_name;
-                    t = new ClassScopeSyntax(tname);
-                    break;
-                case record_type p:
-                    var td1 = p.Parent as type_declaration;
-                    var rname = td1.type_name;
-                    t = new RecordScopeSyntax(rname);
+                    var tname = td==null ? "NONAME" : td.type_name;
+                    if (p.keyword == class_keyword.Class)
+                    {
+                        AddSymbol(tname, SymKind.classname);
+                        t = new ClassScopeSyntax(tname);
+                    }                        
+                    else if (p.keyword == class_keyword.Record)
+                    {
+                        AddSymbol(tname, SymKind.recordname);
+                        t = new RecordScopeSyntax(tname);
+                    }                        
+                    else if (p.keyword == class_keyword.Interface)
+                    {
+                        AddSymbol(tname, SymKind.interfacename);
+                        t = new InterfaceScopeSyntax(tname);
+                    }                        
                     break;
                 case function_lambda_definition p:
                     t = new LambdaScopeSyntax();
@@ -109,10 +119,11 @@ namespace PascalABCCompiler.SyntaxTree
         }
         public override void visit(var_def_statement vd)
         {
+            var attr = vd.var_attr == definition_attribute.Static ? Attributes.class_attr : 0;
             if (vd == null || vd.vars == null || vd.vars.list == null)
                 return;
             var type = vd.vars_type;
-            var q = vd.vars.list.Select(x => new SymInfoSyntax(x, SymKind.var, type));
+            var q = vd.vars.list.Select(x => new SymInfoSyntax(x, SymKind.var, type, attr));
             if (q.Count() > 0)
                 Current.Symbols.AddRange(q);
             base.visit(vd);

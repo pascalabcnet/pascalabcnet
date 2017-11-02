@@ -20,9 +20,9 @@ namespace PascalABCCompiler.SyntaxTree
 {
     public partial class CollectLightSymInfoVisitor : BaseEnterExitVisitor
     {
-        public void AddSymbol(ident name, SymKind kind, type_definition td = null)
+        public void AddSymbol(ident name, SymKind kind, type_definition td = null, Attributes attr = 0)
         {
-            Current.Symbols.Add(new SymInfoSyntax(name, kind, td));
+            Current.Symbols.Add(new SymInfoSyntax(name, kind, td, attr));
         }
         public string Spaces(int n) => new string(' ', n);
         public void OutputString(string s) => System.IO.File.AppendAllText(fname, s);

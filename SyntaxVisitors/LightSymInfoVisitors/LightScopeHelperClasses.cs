@@ -17,7 +17,10 @@ using System.Text;
 
 namespace PascalABCCompiler.SyntaxTree
 {
-    public enum SymKind { var, field, param, procname, funcname };
+    public enum SymKind { var, field, param, procname, funcname, classname, recordname, interfacename };
+
+    [Flags]
+    public enum Attributes { class_attr = 1, varparam_attr = 2};
 
     public class SymInfoSyntax
     {
@@ -27,16 +30,24 @@ namespace PascalABCCompiler.SyntaxTree
             if (SK == SymKind.var || SK == SymKind.field || SK == SymKind.field || SK == SymKind.param)
                 typepart = ": " + (Td == null ? "NOTYPE" : Td.ToString());
             typepart = typepart.Replace("PascalABCCompiler.SyntaxTree.", "");
-            return "(" + Id.ToString() + "{" + SK.ToString() + "}" + typepart + ")";
+            var attrstr = Attr != 0 ? "[" + Attr.ToString() + "]" : "";
+            var s = "(" + Id.ToString() + "{" + SK.ToString() + "}" + typepart + attrstr + ")";
+            return s;
         }
         public ident Id { get; set; }
         public type_definition Td { get; set; }
         public SymKind SK { get; set; }
-        public SymInfoSyntax(ident Id, SymKind SK, type_definition Td = null)
+        public Attributes Attr { get; set; }
+        public SymInfoSyntax(ident Id, SymKind SK, type_definition Td = null, Attributes Attr = 0)
         {
             this.Id = Id;
             this.Td = Td;
             this.SK = SK;
+            this.Attr = Attr;
+        }
+        public void AddAttribute(Attributes attr)
+        {
+            Attr &= attr;
         }
     }
 
@@ -70,6 +81,10 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public RecordScopeSyntax(ident Name) : base(Name) { }
     } // 
+    public class InterfaceScopeSyntax : NamedScopeSyntax
+    {
+        public InterfaceScopeSyntax(ident Name) : base(Name) { }
+    } 
     public class LightScopeSyntax : ScopeSyntax // предок всех легковесных
     {
         public override string ToString()
@@ -91,6 +106,5 @@ namespace PascalABCCompiler.SyntaxTree
     public class ForScopeSyntax : LightScopeSyntax { } // statement_list
     public class ForeachScopeSyntax : LightScopeSyntax { } // statement_list
     public class LambdaScopeSyntax : ScopeSyntax { }
-
 }
 

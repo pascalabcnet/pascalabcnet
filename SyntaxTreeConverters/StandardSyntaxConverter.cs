@@ -49,9 +49,9 @@ namespace PascalABCCompiler.SyntaxTreeConverters
 
 #if DEBUG
             
-            /*var cv = CollectLightSymInfoVisitor.New;
-            cv.ProcessNode(root);
-            cv.Output(@"d:\\Light1.txt");*/
+            //var cv = CollectLightSymInfoVisitor.New;
+            //cv.ProcessNode(root);
+            //cv.Output(@"Light1.txt");
             
             /*try
             {
