@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 03.11.2017 16:54:39
+// DateTime: 04.11.2017 14:15:58
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -96,8 +96,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       "elem_list1", "enumeration_id", "expr_l1_list", "enumeration_id_list", 
       "const_simple_expr", "term", "typed_const", "typed_const_plus", "typed_var_init_expression", 
       "expr", "expr_with_func_decl_lambda", "const_expr", "elem", "range_expr", 
-      "const_elem", "array_const", "factor", "relop_expr", "double_question_expr", 
-      "expr_l1", "simple_expr", "range_term", "range_factor", "external_directive_ident", 
+      "const_elem", "array_const", "factor", "relop_expr", "expr_dq", "expr_l1", 
+      "simple_expr", "range_term", "range_factor", "external_directive_ident", 
       "init_const_expr", "case_label", "variable", "var_reference", "simple_expr_or_nothing", 
       "var_question_point", "for_cycle_type", "format_expr", "foreach_stmt", 
       "for_stmt", "loop_stmt", "yield_stmt", "yield_sequence_stmt", "fp_list", 
@@ -4761,16 +4761,16 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 546: // expr -> format_expr
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
-      case 547: // expr_l1 -> double_question_expr
+      case 547: // expr_l1 -> expr_dq
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
       case 548: // expr_l1 -> question_expr
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
-      case 549: // double_question_expr -> relop_expr
+      case 549: // expr_dq -> relop_expr
 { CurrentSemanticValue.ex = ValueStack[ValueStack.Depth-1].ex; }
         break;
-      case 550: // double_question_expr -> double_question_expr, tkDoubleQuestion, relop_expr
+      case 550: // expr_dq -> expr_dq, tkDoubleQuestion, relop_expr
 { CurrentSemanticValue.ex = new double_question_node(ValueStack[ValueStack.Depth-3].ex as expression, ValueStack[ValueStack.Depth-1].ex as expression, CurrentLocationSpan);}
         break;
       case 551: // sizeof_expr -> tkSizeOf, tkRoundOpen, simple_or_template_type_reference, 
