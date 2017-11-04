@@ -4,6 +4,8 @@
 D_NAME=View tasks
 L_NAME=Create program template
 R_NAME=View results
+S_NAME=PT4 Setup
 D_DESCRIPTION=View tasks
 L_DESCRIPTION=Create program template
 R_DESCRIPTION=View results
+PT4_Setup=PT4 Setup

@@ -4408,15 +4408,15 @@ begin
   else raise new System.FormatException('Входная строка имела неверный формат');
 end;
 
-procedure IOStandardSystem.readln;
+procedure IOStandardSystem.readln; // SSM 4.11.17 - проверять правку, потенциально могут быть ошибки
 begin
-  while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do;
-  {while True do
+  // while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do; // было
+  while True do
   begin
     var sym := CurrentIOSystem.read_symbol;
     if (sym = END_OF_LINE_SYMBOL) or (sym = char(-1)) then
       exit;
-  end;}
+  end;
 end;
 
 procedure IOStandardSystem.write(obj: object);
@@ -8136,12 +8136,12 @@ function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionm
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
-    write(g.Current);
+    Write(g.Current);
   while g.MoveNext() do
     if delim<>'' then
-      write(delim, g.Current)
-    else write(g.Current);
-  Result := Self;  
+      Write(delim, g.Current)
+    else Write(g.Current);
+  Result := Self; 
 end;
 
 /// Выводит последовательность на экран, используя пробел в качестве разделителя
@@ -8174,6 +8174,13 @@ end;
 function WriteLines(Self: sequence of string; fname: string): sequence of string; extensionmethod;
 begin
   WriteLines(fname,Self);
+  Result := Self
+end;
+
+/// Выводит последовательность, каждый элемент выводится на новой строке
+function PrintLines<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Self.Println(NewLine);
   Result := Self
 end;
 
