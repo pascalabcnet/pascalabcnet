@@ -159,9 +159,9 @@ namespace VisualPascalABCPlugins
             Item = new PluginGUIItem(StringsPrefix + "R_NAME", StringsPrefix + "R_DESCRIPTION", Images.pb_pt4r.Image, Images.pb_pt4r.BackColor, ExecuteB_R, Keys.Control | Keys.Shift | Keys.R, "Ctrl+Shift+R");
             MenuItems.Add(Item); ToolBarItems.Add(Item);
 
-            /*var PT4Dir = SystemDir + "\\PT4";
+            var PT4Dir = SystemDir + "\\PT4";
             Item = new PluginGUIItem(StringsPrefix + "S_NAME", StringsPrefix + "PT4_Setup", null, Images.pb_pt4r.BackColor, ExecuteB_S, Keys.None, "");
-            MenuItems.Add(Item);*/
+            MenuItems.Add(Item);
 
         }
 

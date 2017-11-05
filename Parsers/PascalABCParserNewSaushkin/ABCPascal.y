@@ -80,7 +80,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr double_question_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -2735,16 +2735,16 @@ expr
     ;
 
 expr_l1
-    : double_question_expr
+    : expr_dq
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
     ;
 	
-double_question_expr
+expr_dq
 	: relop_expr
 		{ $$ = $1; }
-	| double_question_expr tkDoubleQuestion relop_expr
+	| expr_dq tkDoubleQuestion relop_expr
 		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
 	;
     
