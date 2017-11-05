@@ -5926,7 +5926,7 @@ namespace CodeCompletion
                     return instances[0];
                 else if (ctn.GetGenericArguments().Length > 0)
                     return CompiledScope.get_type_instance(ctn.GetGenericArguments()[0], new List<TypeScope>());
-                return null;
+                return elementType;
             }
             return elementType;
         }
@@ -7119,7 +7119,7 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            return string.Compare(this.si.name, ts.si.name, true) == 0;
+            return ts != null && string.Compare(this.si.name, ts.si.name, true) == 0;
         }
 
         public override SymScope FindName(string name)
