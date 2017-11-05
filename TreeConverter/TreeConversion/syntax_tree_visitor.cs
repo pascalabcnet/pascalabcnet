@@ -12720,6 +12720,8 @@ namespace PascalABCCompiler.TreeConverter
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType.is_generic_parameter)
                                 top_function.ConnectedToType.base_type.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
+                            else if (top_function.ConnectedToType is compiled_type_node && top_function.ConnectedToType.is_generic_type_instance && top_function.ConnectedToType.original_generic.Scope != null)
+                                top_function.ConnectedToType.original_generic.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType is compiled_generic_instance_type_node && top_function.ConnectedToType.original_generic.Scope != null)
                                 top_function.ConnectedToType.original_generic.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType.IsDelegate && top_function.ConnectedToType.base_type.IsDelegate)

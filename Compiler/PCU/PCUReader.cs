@@ -2805,6 +2805,8 @@ namespace PascalABCCompiler.PCU
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.is_generic_parameter)
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            else if (cnfn.ConnectedToType is compiled_type_node && cnfn.ConnectedToType.is_generic_type_instance && cnfn.ConnectedToType.original_generic.Scope != null)
+                cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
             {
                 cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
@@ -2910,6 +2912,8 @@ namespace PascalABCCompiler.PCU
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType != null && cnfn.ConnectedToType.is_generic_parameter)
                 cnfn.ConnectedToType.base_type.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
+            else if (cnfn.ConnectedToType is compiled_type_node && cnfn.ConnectedToType.is_generic_type_instance && cnfn.ConnectedToType.original_generic.Scope != null)
+                cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
             else if (cnfn.ConnectedToType is compiled_generic_instance_type_node && cnfn.ConnectedToType.original_generic.Scope != null)
             {
                 cnfn.ConnectedToType.original_generic.Scope.AddSymbol(cnfn.name, new SymbolInfo(cnfn));
