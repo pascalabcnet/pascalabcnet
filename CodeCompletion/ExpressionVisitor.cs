@@ -1005,7 +1005,7 @@ namespace CodeCompletion
             }
             if (names.Length > 0 && names[0] is TypeScope)
             {
-                returned_scope = names[0];
+                returned_scope = new ElementScope(names[0]);
                 return;
             }
             TypeScope obj = null;
