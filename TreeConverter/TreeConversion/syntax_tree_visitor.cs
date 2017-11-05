@@ -12106,6 +12106,7 @@ namespace PascalABCCompiler.TreeConverter
             {
             	check_parameter_on_complex_type(_function_header.return_type);
             	tn = convert_strong(_function_header.return_type);
+
             	check_for_type_allowed(tn,get_location(_function_header.return_type));
                 if (_function_header.return_type is function_header || _function_header.return_type is procedure_header)
                     check_delegate_on_generic_parameters(tn as common_type_node, get_location(_function_header.return_type));
@@ -12597,6 +12598,10 @@ namespace PascalABCCompiler.TreeConverter
                             }
 
                             common_function_node ccfn = context.top_function;
+                            if (ccfn.return_value_type is undefined_type)
+                            {
+                                AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS");
+                            }
                             if (ccfn.semantic_node_type != semantic_node_type.common_method_node)
                             {
                                 AddError(get_location(_procedure_attributes_list.proc_attributes[i]), "{0}_KEYWORD_ALLOWED_ONLY_WITH_METHOD", _procedure_attributes_list.proc_attributes[i].name);

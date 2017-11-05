@@ -5920,9 +5920,13 @@ namespace CodeCompletion
         {
             if (!is_def_prop_searched)
                 get_default_property();
-            if (HasEnumerable() && instances.Count > 0)
+            if (HasEnumerable())
             {
-                return instances[0];
+                if (instances.Count > 0)
+                    return instances[0];
+                else if (ctn.GetGenericArguments().Length > 0)
+                    return CompiledScope.get_type_instance(ctn.GetGenericArguments()[0], new List<TypeScope>());
+                return null;
             }
             return elementType;
         }

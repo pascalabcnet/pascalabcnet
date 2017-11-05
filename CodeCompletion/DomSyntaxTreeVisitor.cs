@@ -2643,6 +2643,8 @@ namespace CodeCompletion
                         return false;
                     TypeScope ts = args[i] as TypeScope;
                     ElementScope parameter = ps.parameters[i + off];
+                    if (ps.IsExtension && i == 0 && ts.IsEqual((parameter.sc as TypeScope).GetElementType()))
+                        continue;
                     if (!ts.IsEqual(parameter.sc as TypeScope))
                     {
                         if (parameter.param_kind == parametr_kind.params_parametr)
@@ -2760,8 +2762,12 @@ namespace CodeCompletion
                     if (!obj_instanced && obj.GetElementType() != null && good_procs[0].IsExtension && !(good_procs[0].parameters[0].sc is TemplateParameterScope))
                         obj = obj.GetElementType();
                     arg_types2.Insert(0, obj);
+                    arg_types.Insert(0, obj);
+                    for (int i = 0; i < good_procs.Count; i++)
+                        if (DomSyntaxTreeVisitor.is_good_exact_overload(good_procs[i] as ProcScope, arg_types))
+                            return good_procs[i].GetInstance(arg_types2);
                 }
-
+                
                 return good_procs[0].GetInstance(arg_types2);
             }
             return null;
