@@ -997,6 +997,9 @@ namespace PascalABCCompiler
         {
             VisitExpression(en.simple_arr_expr);
             VisitExpression(en.ind_expr);
+            if (en.expr_indices != null)
+                foreach (expression_node expr in en.expr_indices)
+                    VisitExpression(expr);
         }
 
         private void VisitNonStaticPropertyReference(non_static_property_reference en)
