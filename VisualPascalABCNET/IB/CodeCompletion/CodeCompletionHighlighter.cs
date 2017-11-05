@@ -46,6 +46,11 @@ namespace VisualPascalABC
                 string word = GetWordAtOffset(textArea, out beg_off, out end_off);
                 if (string.Compare(word, "begin", true) == 0 || highlighted_keywords[word] != null)
                 {
+                    if (string.Compare(word, "class", true) == 0)
+                    {
+                        if (isClassMember(beg_off, textArea))
+                            return;
+                    }
                     TmpPos end_pos = GetPositionOfEnd(textArea, end_off);
                     if (end_pos != null)
                     {
@@ -102,6 +107,24 @@ namespace VisualPascalABC
         private static bool remove_pred(TextMarker marker)
         {
             return true;
+        }
+
+        private static bool isClassMember(int beg_off, TextArea textArea)
+        {
+            int off = beg_off - 1;
+            if (CheckForCommentOrKav(textArea.Document.TextContent, beg_off))
+                return false;
+            char c = textArea.Document.TextContent[off];
+            while (char.IsWhiteSpace(c))
+            {
+                off--;
+                if (off < 0)
+                    return false;
+                c = textArea.Document.TextContent[off];
+            }
+            if (c != '=')
+                return true;
+            return false;
         }
 
         private static void RemoveMarkers(TextArea textArea)
@@ -182,7 +205,8 @@ namespace VisualPascalABC
                     if (string.Compare(word, "begin", true) == 0 || highlighted_keywords[word] != null || ignored_keywords[word] != null)
                     {
                         //if (!CheckForCommentOrKavAhead(text, end_off))
-                        beg_stack.Push(word);
+                        if (string.Compare(word, "class", true) != 0 || !isClassMember(end_off, textArea))
+                            beg_stack.Push(word);
                     }
                     else if (string.Compare(word, "end", true) == 0)
                     {
@@ -253,6 +277,15 @@ namespace VisualPascalABC
                     {
                         if (!CheckForCommentOrKavAhead(text, beg_off))
                         {
+                            if (string.Compare(word, "class", true) == 0)
+                            {
+                                if (isClassMember(beg_off, textArea))
+                                {
+                                    sb.Remove(0, sb.Length);
+                                    beg_off--;
+                                    continue;
+                                }
+                            }
                             beg_stack.Pop();
                             if (beg_stack.Count == 0 && (string.Compare(word, "begin", true) == 0 || highlighted_keywords[word] != null))
                             {
