@@ -2755,8 +2755,14 @@ namespace PascalABCCompiler.PCU
             br.ReadInt32();
             if (CanReadObject())
                 ConnectedToType = GetTypeReference();
-            br.ReadBoolean();//пропускаем флаг - интерфейсности
-			br.ReadInt32();
+            if (br.ReadBoolean())
+            {
+                br.ReadInt32();
+            }
+            else
+            {
+                br.ReadString();
+            }
 
             ReadGenericFunctionInformation(cnfn);
             //if (CanReadObject())

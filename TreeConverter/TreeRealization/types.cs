@@ -3224,7 +3224,12 @@ namespace PascalABCCompiler.TreeRealization
                 to = new SymbolInfoList();
                 to.list = old.list;
             }
-            to.Add(from);
+            Dictionary<definition_node, definition_node> defs = new Dictionary<definition_node, definition_node>();
+            foreach (SymbolInfo si in to.list)
+                defs[si.sym_info] = si.sym_info;
+            foreach (SymbolInfo si in from.list)
+                if (!defs.ContainsKey(si.sym_info))
+                    to.Add(si);
             return to;
         }
 
@@ -3353,7 +3358,7 @@ namespace PascalABCCompiler.TreeRealization
                 }
                 if (sil != null)
                 {
-                    sil.Add(sil3);
+                    sil = AddToSymbolInfo(sil, sil3, false);
                 }
                 else if (sil3 != null)
                     sil = sil3;

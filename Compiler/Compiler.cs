@@ -258,6 +258,11 @@ namespace PascalABCCompiler
             this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num,sl.end_column_num);
         }
 
+        public ResourceFileNotFound(string ResFileName)
+            : base(string.Format(StringResources.Get("COMPILATIONERROR_RESOURCEFILE_{0}_NOT_FOUND"), ResFileName), null)
+        {
+            //this.sourceLocation = new SourceLocation(sl.doc.file_name, sl.begin_line_num, sl.begin_column_num, sl.end_line_num, sl.end_column_num);
+        }
     }
 
     public class IncludeNamespaceInUnit: CompilerCompilationError
@@ -1926,6 +1931,12 @@ namespace PascalABCCompiler
                     foreach (TreeRealization.compiler_directive cd in ResourceDirectives)
                         if (!File.Exists(cd.directive))
                         {
+                            if (cd.location.doc == null)
+                            {
+                                ErrorsList.Add(new ResourceFileNotFound(cd.directive));
+                                continue;
+                            }
+                                
                             string fileName = Path.Combine(cd.location.doc.file_name, cd.directive);
                             if (File.Exists(fileName))
                                 ResourceFiles.Add(fileName);

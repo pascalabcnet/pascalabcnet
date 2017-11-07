@@ -5920,6 +5920,8 @@ namespace CodeCompletion
         {
             if (!is_def_prop_searched)
                 get_default_property();
+            if (elementType != null)
+                return elementType;
             if (HasEnumerable())
             {
                 if (instances.Count > 0)
