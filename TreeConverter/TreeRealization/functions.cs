@@ -1654,7 +1654,9 @@ namespace PascalABCCompiler.TreeRealization
 	[Serializable]
 	public class compiled_function_node : function_node, SemanticTree.ICompiledMethodNode
 	{
-		private readonly System.Reflection.MethodInfo _mi;
+        public override string ToString() => _mi.ToString().Replace("System.Collections.Generic.", "").Replace("System.", "").Replace("`1", "").Replace("`2", "");
+
+        private readonly System.Reflection.MethodInfo _mi;
 		private compiled_type_node _cont_type;
         private int _generic_params_count;
         private int _num_of_default_parameters;

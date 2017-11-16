@@ -889,7 +889,7 @@ namespace PascalABCCompiler.TreeRealization
                     {
                         var lambda_syntax_node = lambda_syntax_nodes[formal_delegate.Key];
                         Exception on_lambda_body_compile_exception;
-                            // Исключение которое может возникунть в результате компиляции тела лямбды если мы выберем неправильные типы параметров
+                            // Исключение которое может возникнуть в результате компиляции тела лямбды если мы выберем неправильные типы параметров
                         if (!TryToDeduceTypesInLambda(lambda_syntax_node, formal_delegate.Value, deduced, nils,
                                                       out on_lambda_body_compile_exception))
                             //Пробуем вычислить типы из лямбд

@@ -35,9 +35,9 @@ namespace PascalABCCompiler.SyntaxTree
                     Root = t;
                     break;
                 case procedure_definition p:
-                    var name = p.proc_header.name.meth_name;
+                    var name = p.proc_header?.name?.meth_name;
                     var attr = p.proc_header.class_keyword ? Attributes.class_attr : 0;
-                    if (p.proc_header is function_header)
+                    if (p.proc_header is function_header && name != null)
                         AddSymbol(name, SymKind.funcname,null, attr);
                     else AddSymbol(name, SymKind.procname, null, attr);
                     t = new ProcScopeSyntax(name);
@@ -54,7 +54,7 @@ namespace PascalABCCompiler.SyntaxTree
                 case foreach_stmt p:
                     t = new ForeachScopeSyntax();
                     break;
-                /*case repeat_node p:
+                /*case repeat_node p: // не надо т.к. это StatListScope
                     t = new RepeatScopeSyntax();
                     break;*/
                 case case_node p:

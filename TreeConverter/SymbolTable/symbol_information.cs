@@ -636,7 +636,7 @@ namespace PascalABCCompiler.TreeConverter
 
     public class SymbolInfo
     {
-        public override string ToString() => "("+scope.ToString() + "," + sym_info.ToString()+")";
+        public override string ToString() => scope == null ? sym_info.ToString() : "(" + scope.ToString() + "," + sym_info.ToString()+")";
 
         //private readonly name_information_type _name_information_type;
         private definition_node _sym_info;

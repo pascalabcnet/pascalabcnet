@@ -401,6 +401,8 @@ function XMax: real;
 function YMin: real;
 function YMax: real;
 
+procedure ProbaAnim;
+
 implementation
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
@@ -479,6 +481,27 @@ var
   GlobalScale := 1.0;
   CurrentCoordType: CoordType := ScreenCoords;
 
+procedure ProbaAnimP;
+begin
+  var dv := Host.children[0] as DrawingVisual;
+  
+  var animation := new VectorAnimation();
+  animation.From := new Vector(20,20);
+  animation.To := new Vector(100,200);
+  animation.Duration := System.TimeSpan.FromSeconds(5);
+  dv.BeginAnimation(OffsetProperty, animation);
+  
+  var geo := dv.Drawing.Children[0] as GeometryDrawing;
+  geo.Pen := ColorPen(Colors.Green);
+  var rg := geo.Geometry as RectangleGeometry;
+  
+  //Print(geo.Geometry.);
+  //geo.Brush := Brushes.Blue;
+  dv.Offset := new Vector(200,40);
+end;
+
+procedure ProbaAnim := Invoke(ProbaAnimP);
+
 function GetDC: DrawingContext;
 begin
   var visual := new DrawingVisual();
@@ -549,8 +572,8 @@ begin
   dc.DrawRectangle(b, p, Rect(x,y,w,h));
   dc.Close();
   var f := Host.children[0] as DrawingVisual;
-  var geo := f.Drawing.Children[0] as GeometryDrawing;
-  geo.Brush := Brushes.Blue;
+  {var geo := f.Drawing.Children[0] as GeometryDrawing;
+  geo.Brush := Brushes.Blue;}
 end;
 
 procedure LinePFull(x,y,x1,y1: real; p: GPen);

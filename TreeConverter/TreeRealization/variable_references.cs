@@ -85,6 +85,7 @@ namespace PascalABCCompiler.TreeRealization
     [Serializable]
     public class local_block_variable_reference : variable_reference, SemanticTree.ILocalBlockVariableReferenceNode
     {
+        public override string ToString() => _var.ToString();
         private local_block_variable _var;
 
         public local_block_variable_reference(local_block_variable var, location loc)

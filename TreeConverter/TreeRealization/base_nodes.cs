@@ -356,7 +356,7 @@ namespace PascalABCCompiler.TreeRealization
         /// <summary>
         /// Конструктор адресного выражения.
         /// </summary>
-        /// <param name="tn">Тип выражжения.</param>
+        /// <param name="tn">Тип выражения.</param>
         /// <param name="loc">Расположение выражения.</param>
 		public addressed_expression(type_node tn, location loc) : base(tn,loc)
 		{

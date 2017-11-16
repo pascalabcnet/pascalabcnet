@@ -2048,6 +2048,12 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             // Формирование словаря списков функций с одинаковым значением расстояния
+            // SSM 07/11/17 Для a.Average(x->x) - остаётся 4 функции. На этом уровне выбрать невозможно:
+            // Average(IEnumerable<integer>,integer->real): real
+            // Average(IEnumerable<integer>,integer->int64): real
+            // Average(IEnumerable<integer>,integer->Nullable<integer>): real
+            // Average(IEnumerable<integer>,integer->integer): real
+            // Дело в том, что на этом уровне лямбда x->x имеет тип lambda_anytype->lambda_anytype. Все подходят :)
             foreach (function_node fn in set_of_possible_functions)
             {
                 int distance = 0;
