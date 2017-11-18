@@ -348,6 +348,7 @@ type
     function MoveToAnim(p: Point3D; seconds: real) := MoveToAnim(p.x,p.y,p.z,seconds);
     function ScaleAnim(sc,seconds: real): MyAnimation;
     function RotateAnim(vx,vy,vz,angle,seconds: real): MyAnimation;
+    function RotateAnim(v: Vector3D; angle,seconds: real) := RotateAnim(v.x,v.y,v.z,angle,seconds);
   end;  
   
   BaseT = class(Base0T)
@@ -383,193 +384,197 @@ type
   private
     Element: Base0T;
     Seconds: real;
+  protected 
+    sb: StoryBoard;
+    procedure AddDoubleAnimByName(sb: StoryBoard; toValue,seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
+    begin
+      var d := new DoubleAnimation(toValue,new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds)));
+      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
+      StoryBoard.SetTargetName(d,ttname);
+      StoryBoard.SetTargetProperty(d,new PropertyPath(prop));
+      sb.Children.Add(d);
+    end;
+    function RegisterName(sb: StoryBoard; element: Object; ttname: string): boolean;
+    begin
+      Result := False;
+      if MainWindow.FindName(ttname)=nil then 
+      begin
+        MainWindow.RegisterName(ttname,element);
+        sb.Completed += (o,e) -> begin
+          if MainWindow.FindName(ttname)<>nil then 
+            MainWindow.UnregisterName(ttname); 
+        end;
+        Result := True;
+      end;
+    end;
   public 
     constructor (e: Base0T; sec: real);
     begin
       Element := e;
       Seconds := sec;
     end;
-    {function CreateStoryboard(Element: Base0T): Storyboard; abstract;
-    procedure ApplyValues(sb: Storyboard); abstract;}
-    function &Begin: MyAnimation; virtual;
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); virtual;
     begin
-      {var sb := CreateStoryboard(Element);
-      
-      {if Element <> nil then
-      begin
-        //Element.Resources.Add(ResourceKey, storyboard);
-        foreach var tline in sb.Children do
-          Storyboard.SetTarget(tline, Element.model); // это надо делать в CreateStoryboard
-      end;
-
-      ApplyValues(sb);
-
-      sb.Completed += (sender, e) ->
-      begin
-        //IsStoryboardComplete = true;
-        //OnStoryboardCompleted();
-      end;
-      sb.Begin();
-      //OnAnimationStarted();}
-
-      Result := Self;
     end;
+    class function CreateStoryboard: StoryBoard;
+    begin
+      var sb := new StoryBoard;
+      var storyboardName := 's' + sb.GetHashCode;
+      MainWindow.Resources.Add(storyboardName, sb);
+      sb.Completed += (o,e) -> begin
+        MainWindow.Resources.Remove(storyboardName);
+      end;
+      Result := sb;
+    end;
+
+    procedure BeginT;
+    begin
+      sb := CreateStoryboard;
+      InitAnim(sb);
+      sb.Completed += procedure (o,e) -> sb.Children.Clear;
+      sb.Begin;
+    end;
+    procedure &Begin; virtual := Invoke(BeginT);
+    procedure Pause := sb.Pause;
+    procedure Resume := sb.Resume;
+    function Duration: real; virtual := seconds;
+    procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb,0);
   end;
   
   OffsetAnimation = class(MyAnimation)
   private
     x,y,z: real;
-    function BeginT: MyAnimation;
-    begin
-      var transltransform := Element.transltransform; 
-      var ttname := 't'+transltransform.GetHashCode;
-      MainWindow.RegisterName(ttname,transltransform);
-
-      var dx := new DoubleAnimation(x,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      var dy := new DoubleAnimation(y,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      var dz := new DoubleAnimation(z,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      StoryBoard.SetTargetName(dx,ttname);
-      StoryBoard.SetTargetName(dy,ttname);
-      StoryBoard.SetTargetName(dz,ttname);
-      StoryBoard.SetTargetProperty(dx,new PropertyPath(TranslateTransform3D.OffsetXProperty));
-      StoryBoard.SetTargetProperty(dy,new PropertyPath(TranslateTransform3D.OffsetYProperty));
-      StoryBoard.SetTargetProperty(dz,new PropertyPath(TranslateTransform3D.OffsetZProperty));
-
-      var sb := new StoryBoard;
-      sb.Children.Add(dx);
-      sb.Children.Add(dy);
-      sb.Children.Add(dz);
-
-      var storyboardName := 's' + sb.GetHashCode();
-      MainWindow.Resources.Add(storyboardName, sb);
-      sb.Completed += (o,e) -> begin
-        MainWindow.UnregisterName(ttname); 
-        MainWindow.Resources.Remove(storyboardName);
-        sb.Children.Clear;
-      end;
-
-      sb.Begin;
-      Result := Self;
-    end;
   public  
     constructor (e: Base0T; sec: real; xx,yy,zz: real);
     begin
       inherited Create(e,sec);
       (x,y,z) := (xx,yy,zz);
     end;
-    {function CreateStoryboard(Element: Base0T): Storyboard; override;
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
     begin
-      
+      var el := Element.transltransform;
+      var ttname := 't'+el.GetHashCode;
+      if not RegisterName(sb,el,ttname) then;
+        //exit;
+      AddDoubleAnimByName(sb,x,seconds,ttname,TranslateTransform3D.OffsetXProperty,waittime);
+      AddDoubleAnimByName(sb,y,seconds,ttname,TranslateTransform3D.OffsetYProperty,waittime);
+      AddDoubleAnimByName(sb,z,seconds,ttname,TranslateTransform3D.OffsetZProperty,waittime);
     end;
-    procedure ApplyValues(sb: Storyboard); override;
-    begin
-      
-    end;}
-    function &Begin: MyAnimation; override := Invoke&<MyAnimation>(BeginT);
   end;
 
   ScaleAnimation = class(MyAnimation)
   private
     scale: real;
-    function BeginT: MyAnimation;
-    begin
-      var sctransform := Element.scaletransform; 
-      var ttname := 's'+sctransform.GetHashCode;
-      MainWindow.RegisterName(ttname,sctransform);
-
-      var sx := new DoubleAnimation(scale,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      var sy := new DoubleAnimation(scale,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      var sz := new DoubleAnimation(scale,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      StoryBoard.SetTargetName(sx,ttname);
-      StoryBoard.SetTargetName(sy,ttname);
-      StoryBoard.SetTargetName(sz,ttname);
-      StoryBoard.SetTargetProperty(sx,new PropertyPath(ScaleTransform3D.ScaleXProperty));
-      StoryBoard.SetTargetProperty(sy,new PropertyPath(ScaleTransform3D.ScaleYProperty));
-      StoryBoard.SetTargetProperty(sz,new PropertyPath(ScaleTransform3D.ScaleZProperty));
-
-      var sb := new StoryBoard;
-      sb.Children.Add(sx);
-      sb.Children.Add(sy);
-      sb.Children.Add(sz);
-
-      var storyboardName := 's' + sb.GetHashCode();
-      MainWindow.Resources.Add(storyboardName, sb);
-      sb.Completed += (o,e) -> begin
-        MainWindow.UnregisterName(ttname); 
-        MainWindow.Resources.Remove(storyboardName);
-        sb.Children.Clear;
-      end;
-
-      sb.Begin;
-      Result := Self;
-    end;
   public  
     constructor (e: Base0T; sec: real; sc: real);
     begin
       inherited Create(e,sec);
       scale := sc;
     end;
-    {function CreateStoryboard(Element: Base0T): Storyboard; override;
+    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
-      
+      var sctransform := Element.scaletransform; 
+      var ttname := 's'+sctransform.GetHashCode;
+      if not RegisterName(sb,sctransform,ttname) then;
+        //exit;
+      AddDoubleAnimByName(sb,scale,seconds,ttname,ScaleTransform3D.ScaleXProperty,wait);
+      AddDoubleAnimByName(sb,scale,seconds,ttname,ScaleTransform3D.ScaleYProperty,wait);
+      AddDoubleAnimByName(sb,scale,seconds,ttname,ScaleTransform3D.ScaleZProperty,wait);
     end;
-    procedure ApplyValues(sb: Storyboard); override;
-    begin
-      
-    end;}
-    function &Begin: MyAnimation; override := Invoke&<MyAnimation>(BeginT);
   end;
 
   RotateAnimation = class(MyAnimation)
   private
     vx,vy,vz,angle: real;
-    function BeginT: MyAnimation;
-    begin
-      var rottransform := Element.rotatetransform_anim;
-      var rot := rottransform.Rotation as AxisAngleRotation3D;
-      rot.Angle := 0;
-      rot.Axis := V3D(vx,vy,vz);
-      var ttname := 'r'+rot.GetHashCode;
-      MainWindow.RegisterName(ttname,rot);
-
-      var r := new DoubleAnimation(angle,new Duration(System.TimeSpan.FromSeconds(seconds)));
-      StoryBoard.SetTargetName(r,ttname);
-      StoryBoard.SetTargetProperty(r,new PropertyPath(AxisAngleRotation3D.AngleProperty));
-
-      var sb := new StoryBoard;
-      sb.Children.Add(r);
-
-      var storyboardName := 's' + sb.GetHashCode();
-      MainWindow.Resources.Add(storyboardName, sb);
-      sb.Completed += (o,e) -> begin
-        //MainWindow.UnregisterName(ttname); 
-        MainWindow.Resources.Remove(storyboardName);
-        sb.Children.Clear;
-      end;
-
-      sb.Begin;
-      Result := Self;
-    end;
   public  
     constructor (e: Base0T; sec: real; vvx,vvy,vvz,a: real);
     begin
       inherited Create(e,sec);
       (vx,vy,vz,angle) := (vvx,vvy,vvz,a)
     end;
-    {function CreateStoryboard(Element: Base0T): Storyboard; override;
+    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
+      var rottransform := Element.rotatetransform_anim;
+      var rot := rottransform.Rotation as AxisAngleRotation3D;
+      var ttname := 'r'+rot.GetHashCode;
+      if not RegisterName(sb,rot,ttname) then;
+        //exit;
+
+      rot.Angle := 0; //?
+      rot.Axis := V3D(vx,vy,vz); //?
       
+      var el: Base0T := Element;
+      sb.Completed += (o,e) -> begin
+        rottransform.Rotation := new AxisAngleRotation3D();
+        el.Rotate(rot.Axis,angle); // переходит в основную матрицу
+      end;
+
+      AddDoubleAnimByName(sb,angle,seconds,ttname,AxisAngleRotation3D.AngleProperty,wait);
     end;
-    procedure ApplyValues(sb: Storyboard); override;
-    begin
-      
-    end;}
-    function &Begin: MyAnimation; override := Invoke&<MyAnimation>(BeginT);
   end;
+  
+  GroupAnimation = class(MyAnimation)
+  private
+    ll: List<MyAnimation>;
+  public  
+    constructor (params l: array of MyAnimation);
+    begin
+      ll := Lst(l);
+    end;
+    constructor (l: List<MyAnimation>);
+    begin
+      ll := l;
+    end;
+    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
+    begin
+      foreach var l in ll do
+        l.InitAnimWait(sb,wait);
+    end;
+    function Duration: real; override := ll.Select(l->l.Duration).Max;
+  end;  
+
+  SequenceAnimation = class(MyAnimation)
+  private
+    ll: List<MyAnimation>;
+  public  
+    constructor (params l: array of MyAnimation);
+    begin
+      ll := Lst(l);
+    end;
+    constructor (l: List<MyAnimation>);
+    begin
+      ll := l;
+    end;
+    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
+    begin
+      var w := wait;
+      foreach var l in ll do
+      begin
+        l.InitAnimWait(sb,w);
+        w += l.Duration
+      end;
+    end;
+    function Duration: real; override := ll.Sum(l->l.Duration);
+  end;
+
   
 function Base0T.MoveToAnim(x,y,z,seconds: real) := new OffsetAnimation(Self,seconds,x,y,z);
 function Base0T.ScaleAnim(sc,seconds: real) := new ScaleAnimation(Self,seconds,sc);
 function Base0T.RotateAnim(vx,vy,vz,angle,seconds: real) := new RotateAnimation(Self,seconds,vx,vy,vz,angle);
+
+type
+  Animate = class
+  public 
+    class function Group(params l: array of MyAnimation) := new GroupAnimation(Lst(l));
+    //class function &Then(first,second: MyAnimation) := new ThenAnimation(first,second);
+    class function &Sequence(params l: array of MyAnimation) := new SequenceAnimation(l);
+  end;
+  
+function Sec(Self: integer): real; extensionmethod := Self;
+function Sec(Self: real): real; extensionmethod := Self;
+// А теперь - тадам! - перегрузка + для Animate.Sequence и перегрузка * для Animate.Group
+function operator+(a,b: MyAnimation): MyAnimation; extensionmethod := Animate.Sequence(a,b);
+function operator*(a,b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a,b);
   
 //------------------------------ End Animation -------------------------------
 
@@ -603,37 +608,6 @@ type
       CreateBase(sph,x,y,z,c);
     end;
     property Radius: real read GetR write SetR;
-    //property Radius1: real read GetR1 write SetR1;
-    (*procedure AnimProbaP;
-    begin
-      var sb := new StoryBoard;
-      var da := new DoubleAnimation(1,3,new Duration(System.TimeSpan.FromSeconds(3)));
-      da.FillBehavior := FillBehavior.HoldEnd;
-      //da.RepeatBehavior := RepeatBehavior.Forever;
-      //translatetransform.BeginAnimation(TranslateTransform3D.OffsetXProperty,da);
-      //translatetransform.BeginAnimation(TranslateTransform3D.OffsetYProperty,da);
-      //translatetransform.BeginAnimation(TranslateTransform3D.OffsetZProperty,da);
-      sb.Children.Add(da);
-      {StoryBoard.SetTarget(da,translatetransform);
-      var pi: System.Reflection.PropertyInfo := translatetransform.Gettype.GetProperty('OffsetX');
-      StoryBoard.SetTargetProperty(da,new PropertyPath(SphereVisual3D.RadiusProperty));}
-      StoryBoard.SetTarget(da,translatetransform);
-      StoryBoard.SetTargetProperty(da,new PropertyPath(TranslateTransform3D.OffsetXProperty));
-
-      //StoryBoard.SetTarget(da,scaletransform);
-      //StoryBoard.SetTargetProperty(da,new PropertyPath(ScaleTransform3D.ScaleXProperty));
-      
-      //StoryBoard.SetTarget(da,model);
-      //StoryBoard.SetTargetProperty(da,new PropertyPath(SphereVisual3D.RadiusProperty));
-      sb.Completed += (o,e) -> Print('end!');
-      sb.CurrentTimeInvalidated += (o,e) -> Print(1);
-      
-      var ex := new HelixToolkit.Wpf.XamlExporter('sph.xaml');
-      ex.Export(model);
-
-      sb.Begin;
-    end;*)
-    //procedure AnimProba := Invoke(AnimProbaP);
   end;
   
   EllipsoidT = class(BaseT)

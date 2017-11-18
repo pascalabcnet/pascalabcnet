@@ -401,7 +401,7 @@ function XMax: real;
 function YMin: real;
 function YMax: real;
 
-procedure ProbaAnim;
+//procedure ProbaAnim;
 
 implementation
 
@@ -481,7 +481,7 @@ var
   GlobalScale := 1.0;
   CurrentCoordType: CoordType := ScreenCoords;
 
-procedure ProbaAnimP;
+{procedure ProbaAnimP;
 begin
   var dv := Host.children[0] as DrawingVisual;
   
@@ -500,7 +500,7 @@ begin
   dv.Offset := new Vector(200,40);
 end;
 
-procedure ProbaAnim := Invoke(ProbaAnimP);
+procedure ProbaAnim := Invoke(ProbaAnimP);}
 
 function GetDC: DrawingContext;
 begin
