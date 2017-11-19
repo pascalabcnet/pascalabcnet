@@ -3653,6 +3653,14 @@ namespace CodeCompletion
             }
         }
 
+        public virtual bool IsAbstract
+        {
+            get
+            {
+                return is_abstract;
+            }
+        }
+
         public virtual ITypeScope[] GenericInstances
         {
             get
@@ -4880,6 +4888,14 @@ namespace CodeCompletion
             get
             {
                 return ctn.IsSealed;
+            }
+        }
+
+        public override bool IsAbstract
+        {
+            get
+            {
+                return ctn.IsAbstract;
             }
         }
 

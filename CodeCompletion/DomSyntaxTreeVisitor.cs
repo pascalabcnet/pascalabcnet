@@ -3062,13 +3062,18 @@ namespace CodeCompletion
                 if (_class_definition.keyword == class_keyword.Record)
                 {
                     ss = new TypeScope(SymbolKind.Struct, cur_scope, returned_scope);
-                    if (cur_type_name == null) cur_type_name = "$record";
+                    if (cur_type_name == null)
+                        cur_type_name = "$record";
                 }
                 else if (_class_definition.keyword == class_keyword.Class)
                 {
                     ss = new TypeScope(SymbolKind.Class, cur_scope, returned_scope);
-                    if (_class_definition.attribute == class_attribute.Sealed) ss.is_final = true;
-                    if (cur_type_name == null) cur_type_name = "$class";
+                    if ((_class_definition.attribute & class_attribute.Sealed) == class_attribute.Sealed)
+                        ss.is_final = true;
+                    if ((_class_definition.attribute & class_attribute.Abstract) == class_attribute.Abstract)
+                        ss.is_abstract = true;
+                    if (cur_type_name == null)
+                        cur_type_name = "$class";
                 }
                 else if (_class_definition.keyword == class_keyword.Interface || _class_definition.keyword == class_keyword.TemplateInterface)
                 {

@@ -973,8 +973,8 @@ namespace PascalABCCompiler.Parsers
 			{
 				case SymbolKind.Class : 
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
-						return (scope.IsFinal?"final ":"")+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
-					else return (scope.IsFinal?"final ":"")+"class "+scope.Name+template_str;
+						return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "." +scope.Name+template_str;
+					else return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
 				case SymbolKind.Interface :
 					if (scope.TopScope != null && scope.TopScope.Name != "" && !scope.TopScope.Name.Contains("$"))
 					return "interface "+scope.TopScope.Name + "." +scope.Name+template_str;
@@ -1031,7 +1031,7 @@ namespace PascalABCCompiler.Parsers
 			switch(scope.ElemKind)
 			{
 				case SymbolKind.Class : 					
-					return (scope.IsFinal?"final ":"")+"class "+s;
+					return (scope.IsAbstract ? "abstract " : "")+(scope.IsFinal?"sealed ":"")+"class "+s;
 				case SymbolKind.Interface :
 					return "interface "+s;
 				case SymbolKind.Enum :
@@ -3623,8 +3623,8 @@ namespace PascalABCCompiler.Parsers
 			{
 				case SymbolKind.Class : 
 					if (scope.TopScope != null && scope.TopScope.Name != "")
-						return (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "::" +scope.Name+template_str;
-					else return (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
+						return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.TopScope.Name + "::" +scope.Name+template_str;
+					else return (scope.IsAbstract ? "abstract " : "") + (scope.IsFinal?"sealed ":"")+"class "+scope.Name+template_str;
 				case SymbolKind.Interface :
 					if (scope.TopScope != null && scope.TopScope.Name != "")
 					return "interface class"+scope.TopScope.Name + "::" +scope.Name+template_str;

@@ -654,8 +654,13 @@ namespace PascalABCCompiler.Parsers
     	{
     		get;
     	}
-    	
-    	string[] TemplateArguments
+
+        bool IsAbstract
+        {
+            get;
+        }
+
+        string[] TemplateArguments
     	{
     		get;
     	}
