@@ -755,7 +755,8 @@ namespace CodeCompletion
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
             }
-            if (topScope != null) lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, is_static));
+            if (topScope != null)
+                lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, is_static));
             if (used_units != null && all_names)
                 for (int i = 0; i < used_units.Count; i++)
                 {
@@ -2063,11 +2064,6 @@ namespace CodeCompletion
         public override SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
         {
             List<SymInfo> lst = new List<SymInfo>();
-            /*foreach (string s in ht.Keys)
-            {
-                SymScope sc = ht[s] as SymScope;
-                lst.Add(sc.si);
-            }*/
             foreach (SymScope ss in members)
                 if (ss != this && !ss.si.name.StartsWith("$"))
                 {
@@ -2087,7 +2083,10 @@ namespace CodeCompletion
                     if (!ss.si.has_doc)
                         UnitDocCache.AddDescribeToComplete(ss);
                 }
-            if (topScope != null) lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, this.is_static));
+            if (topScope != null)
+                lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, this.is_static));
+            if (proc_realization != null)
+                lst.AddRange(proc_realization.GetNamesInAllTopScopes(all_names, ev, this.is_static));
             //if (proc_realization != null && proc_realization.top_mod_scope != null) lst.AddRange(proc_realization.top_mod_scope.GetNamesInAllTopScopes(all_names,ev,is_static));
             return lst.ToArray();
         }
