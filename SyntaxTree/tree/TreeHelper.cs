@@ -389,7 +389,7 @@ namespace PascalABCCompiler.SyntaxTree
     {
         public override string ToString()
         {
-            return val.ToString();
+            return val.ToString(System.Globalization.CultureInfo.InvariantCulture);
         }
     }
 
