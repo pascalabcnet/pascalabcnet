@@ -79,7 +79,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("override", "override"); keys.Add("override");
             keywords.Add("reintroduce", "reintroduce"); keys.Add("reintroduce");
             keywords.Add("static", "static"); keys.Add("static");
-
+            keywords.Add("sealed", "sealed"); keys.Add("sealed");
             keywords.Add("case", "case"); keys.Add("case");
             keywords.Add("var", "var"); keys.Add("var"); keyword_kinds.Add("var", KeywordKind.Var);
             keywords.Add("const", "const"); keys.Add("const"); keyword_kinds.Add("const", KeywordKind.Const);
