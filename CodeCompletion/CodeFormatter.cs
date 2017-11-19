@@ -212,9 +212,12 @@ namespace CodeFormatters
 
         private void WriteAmpersandIfNeed(ident id)
         {
-            int pos = GetPosition(id.source_context.begin_position.line_num, id.source_context.begin_position.column_num);
-            if (Text[pos] == '&')
-                sb.Append("&");
+            if (id.source_context != null)
+            {
+                int pos = GetPosition(id.source_context.begin_position.line_num, id.source_context.begin_position.column_num);
+                if (Text[pos] == '&')
+                    sb.Append("&");
+            }
         }
 
         private void WriteNode(syntax_tree_node sn)

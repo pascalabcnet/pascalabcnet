@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  DESKTOP-A6LT9RI
-// DateTime: 04.11.2017 14:15:58
-// UserName: ?????????
+// Machine:  IVAN-PC
+// DateTime: 19.11.2017 18:01:25
+// UserName: Ivan
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -3210,11 +3210,18 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td; }
         break;
       case 209: // type_ref -> simple_type, tkQuestion
-{ 	
-			var l = new List<ident>();
-			l.Add(new ident("System"));
-            l.Add(new ident("Nullable"));
-			CurrentSemanticValue.td = new template_type_reference(new named_type_reference(l), new template_param_list(ValueStack[ValueStack.Depth-2].td), CurrentLocationSpan);
+{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                CurrentSemanticValue.td = new template_type_reference(new named_type_reference(l), new template_param_list(ValueStack[ValueStack.Depth-2].td), CurrentLocationSpan);
+            }
 		}
         break;
       case 210: // type_ref -> string_type
@@ -3257,11 +3264,18 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 { CurrentSemanticValue.td = ValueStack[ValueStack.Depth-1].td; }
         break;
       case 220: // template_param -> simple_type, tkQuestion
-{ 	
-			var l = new List<ident>();
-			l.Add(new ident("System"));
-            l.Add(new ident("Nullable"));
-			CurrentSemanticValue.td = new template_type_reference(new named_type_reference(l), new template_param_list(ValueStack[ValueStack.Depth-2].td), CurrentLocationSpan);
+{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                CurrentSemanticValue.td = ValueStack[ValueStack.Depth-2].td;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                CurrentSemanticValue.td = new template_type_reference(new named_type_reference(l), new template_param_list(ValueStack[ValueStack.Depth-2].td), CurrentLocationSpan);
+            }
 		}
         break;
       case 221: // template_param -> structured_type

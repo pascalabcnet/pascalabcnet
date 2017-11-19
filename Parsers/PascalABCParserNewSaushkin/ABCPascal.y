@@ -1087,11 +1087,18 @@ type_ref
     : simple_type
 		{ $$ = $1; }
 	| simple_type tkQuestion
-		{ 	
-			var l = new List<ident>();
-			l.Add(new ident("System"));
-            l.Add(new ident("Nullable"));
-			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+            }
 		}
     | string_type
 		{ $$ = $1; }
@@ -1135,11 +1142,18 @@ template_param
     : simple_type
 		{ $$ = $1; }
     | simple_type tkQuestion
-		{ 	
-			var l = new List<ident>();
-			l.Add(new ident("System"));
-            l.Add(new ident("Nullable"));
-			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+            }
 		}
     | structured_type
 		{ $$ = $1; }
