@@ -391,7 +391,7 @@ namespace CodeFormatters
             string s = string.Join("\r\n", lines);
             if (add_space_before)
             {
-                if (s.Length > 0 && !char.IsWhiteSpace(s[0]) && s[0] != '{' && !s.StartsWith("//") && !s.StartsWith("(*"))
+                if (s.Length > 0 && !char.IsWhiteSpace(s[0]) && s[0] != '{' && !s.StartsWith("//") && !s.StartsWith("(*") && s[0] != ';' && !char.IsWhiteSpace(s[0]) && (sb.Length == 0 || !char.IsWhiteSpace(sb[sb.Length-1])))
                     sb.Append(' ');
             }
             else
