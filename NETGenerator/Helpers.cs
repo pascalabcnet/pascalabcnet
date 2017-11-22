@@ -792,7 +792,7 @@ namespace PascalABCCompiler.NETGenerator {
 
         public bool IsConstructedGenericType(Type t)
         {
-            if (t is TypeBuilder || t is GenericTypeParameterBuilder)
+            if (t is TypeBuilder || t is GenericTypeParameterBuilder || t is EnumBuilder)
                 return true;
             if (t.IsGenericType)
                 foreach (Type gt in t.GetGenericArguments())
