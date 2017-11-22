@@ -4620,16 +4620,6 @@ namespace PascalABCCompiler.NETGenerator
                 FieldBuilder fb = cur_type.DefineField(value.name, type, fattr);
                 helper.AddField(value, fb);
                 MakeAttribute(value);
-                //временно для поддержки событий
-                //cur_ti.fields[fb.Name] = fb;
-                //для массива выделяем память
-                /*if (ti.is_arr == true)
-                    CreateArray(cur_ti.init_meth.GetILGenerator(), fb, ti, value.inital_value as IArrayConstantNode);
-                else
-                    if (value.type.is_value_type || value.inital_value is IConstantNode)
-                        AddInitCall(fb, cur_ti.init_meth, ti.init_meth, ti.def_cnstr, value.inital_value as IConstantNode);
-                GenerateInitCode(value.inital_value,cur_ti.init_meth.GetILGenerator());
-                 */
                 if (cur_type.IsValueType && cur_ti.clone_meth != null)
                 {
                     NETGeneratorTools.CloneField(cur_ti.clone_meth as MethodBuilder, fb, ti);
@@ -10192,12 +10182,14 @@ namespace PascalABCCompiler.NETGenerator
             FieldBuilder fb = null;
             if (value.type is ICompiledTypeNode && (value.type as ICompiledTypeNode).compiled_type.IsEnum)
                 fb = cur_type.DefineField(value.name, TypeFactory.Int32Type, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
-            else
+            else if (value.constant_value.value != null)
                 fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
+            else
+                fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             if (value.constant_value.value != null)
                 fb.SetConstant(value.constant_value.value);
-            else
-                throw new Errors.CompilerInternalError("NetGenerator", new Exception("Invalid constant value in IClassConstantDefinitionNode"));
+            //else
+            //    throw new Errors.CompilerInternalError("NetGenerator", new Exception("Invalid constant value in IClassConstantDefinitionNode"));
         }
 
         public override void visit(ICompiledStaticMethodCallNodeAsConstant value)
