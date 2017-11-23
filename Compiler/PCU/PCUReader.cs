@@ -3069,7 +3069,7 @@ namespace PascalABCCompiler.PCU
 		private common_parameter GetParameter(common_function_node func)
 		{
 			int offset = (int)br.BaseStream.Position-start_pos;
-			br.ReadByte();
+            br.ReadByte();
 			string s = br.ReadString();
 			type_node tn = GetTypeReference();
 			concrete_parameter_type cpt = (concrete_parameter_type)br.ReadByte();
@@ -3089,7 +3089,9 @@ namespace PascalABCCompiler.PCU
 				p.default_value = CreateExpressionWithOffset();
 			}
 			p.attributes.AddRange(GetAttributes());
-			//members[offset] = p;
+            //members[offset] = p;
+            if (members.ContainsKey(offset))
+                return (common_parameter)members[offset];
             AddMember(p, offset);            
 			return p;
 		}
@@ -3117,7 +3119,8 @@ namespace PascalABCCompiler.PCU
                 p.default_value = CreateExpressionWithOffset();
             }
             p.attributes.AddRange(GetAttributes());
-            //members[offset] = p;
+            if (members.ContainsKey(offset))
+                return (common_parameter)members[offset];
             AddMember(p, offset);            
             return p;
         }
@@ -3982,6 +3985,13 @@ namespace PascalABCCompiler.PCU
 		
 		private common_parameter GetParameterByOffset(int offset)
 		{
+            if (!members.ContainsKey(offset))
+            {
+                int tmp = (int)br.BaseStream.Position;
+                br.BaseStream.Seek(start_pos + offset, SeekOrigin.Begin);
+                var loc_param = GetParameter();
+                br.BaseStream.Seek(tmp, SeekOrigin.Begin);
+            }
 			return (common_parameter)members[offset];
 		}
 		

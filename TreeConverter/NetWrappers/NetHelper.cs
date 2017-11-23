@@ -930,7 +930,8 @@ namespace PascalABCCompiler.NetHelper
                 t = namespaces[name] as Type;
         	if (t != null && cur_used_assemblies.ContainsKey(t.Assembly)) return true;
         	foreach (Assembly a in namespace_assemblies.Keys)
-        		if (cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name)) return true;
+        		if (cur_used_assemblies != null && cur_used_assemblies.ContainsKey(a) && (namespace_assemblies[a] as Hashtable).ContainsKey(name))
+                    return true;
         	return false;
 		}
 		

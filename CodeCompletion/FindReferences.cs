@@ -1570,6 +1570,7 @@ namespace CodeCompletion
             }
             else
             {
+                if (_modern_proc_type.el != null)
                 foreach (enumerator en in _modern_proc_type.el.enumerators)
                 {
                     en.name.visit(this); // Это исправил - SSM 15.1.16
