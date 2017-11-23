@@ -65,6 +65,11 @@ function Sz3D(x,y,z: real) := new Size3D(x,y,z);
 function Pnt(x,y: real) := new Point(x,y);
 function Rect(x,y,w,h: real) := new System.Windows.Rect(x,y,w,h);
 
+var 
+  OrtX := V3D(1,0,0);
+  OrtY := V3D(0,1,0);
+  OrtZ := V3D(0,0,1);
+
 function ChangeAlpha(Self: GColor; value: integer); extensionmethod := ARGB(value,Self.R, Self.G, Self.B);
 
 function MoveX(Self: Point3D; dx: real); extensionmethod := P3D(Self.x + dx, Self.y, Self.z);
@@ -274,10 +279,12 @@ var
 
 type
   MyAnimation = class;
+  GroupT = class;
 ///!#
-  Base0T = class(DependencyObject)
+  Object3D = class//(DependencyObject)
   private
     model: Visual3D;
+    Parent: GroupT;
     transfgroup := new Transform3DGroup; 
     //rotatetransform := new MatrixTransform3D;
     rotatetransform_anim := new RotateTransform3D;
@@ -304,65 +311,89 @@ type
     procedure SetZ(zz: real) := Invoke(()->begin transltransform.OffsetZ := zz; end);
     function GetZ: real := Invoke&<real>(()->transltransform.OffsetZ);
     function GetPos: Point3D := Invoke&<Point3D>(()->P3D(transltransform.OffsetX,transltransform.OffsetY,transltransform.OffsetZ));
+  protected  
+    function CreateObject: Object3D; virtual;
+    begin
+      Result := nil;
+    end;
+    function CloneT: Object3D;
+    begin
+      Result := CreateObject;
+      (Result.model.Transform as Transform3DGroup).Children[0] := (model.Transform as Transform3DGroup).Children[0].Clone;
+      (Result.model.Transform as Transform3DGroup).Children[1] := (model.Transform as Transform3DGroup).Children[1].Clone;
+      (Result.model.Transform as Transform3DGroup).Children[2] := (model.Transform as Transform3DGroup).Children[2].Clone;
+      // (Result.model.Transform as Transform3DGroup).Children[3] := (model.Transform as Transform3DGroup).Children[3].Clone; - почему-то это не нужно!!! с ним не работает!
+    end;
   public  
     property X: real read GetX write SetX;
     property Y: real read GetY write SetY;
     property Z: real read GetZ write SetZ;
 
-    procedure MoveTo(xx,yy,zz: real) := 
-      Invoke(()->begin 
+    function MoveTo(xx,yy,zz: real): Object3D := 
+      Invoke&<Object3D>(()->begin 
         transltransform.OffsetX := xx;
         transltransform.OffsetY := yy;
         transltransform.OffsetZ := zz;
+        Result := Self;
       end);
-    procedure MoveTo(p: Point3D) := MoveTo(p.X,p.y,p.z);
-    procedure MoveOn(dx,dy,dz: real) := MoveTo(x+dx,y+dy,z+dz);
-    procedure MoveOn(v: Vector3D) := MoveOn(v.X,v.Y,v.Z);
-
-    property Position: Point3D read GetPos write MoveTo;
+    function MoveTo(p: Point3D) := MoveTo(p.X,p.y,p.z);
+    function MoveOn(dx,dy,dz: real) := MoveTo(x+dx,y+dy,z+dz);
+    function MoveOn(v: Vector3D) := MoveOn(v.X,v.Y,v.Z);
+    function MoveOnX(dx: real) := MoveOn(dx,0,0);
+    function MoveOnY(dy: real) := MoveOn(0,dy,0);
+    function MoveOnZ(dz: real) := MoveOn(0,0,dz);
+  private
+    procedure MoveToProp(p: Point3D) := MoveTo(p);
+  public
+    property Position: Point3D read GetPos write MoveToProp;
     
-    procedure Scale(f: real) := 
-      Invoke(()->begin
+    function Scale(f: real): Object3D := 
+      Invoke&<Object3D>(()->begin
         scaletransform.ScaleX *= f;
         scaletransform.ScaleY *= f;
         scaletransform.ScaleZ *= f;
+        Result := Self;
       end);
     /// Поворот на угол angle вокруг оси axis
-    procedure Rotate(axis: Vector3D; angle: real) := 
-      Invoke(()->begin
+    function Rotate(axis: Vector3D; angle: real): Object3D := 
+      Invoke&<Object3D>(()->begin
         var m := transfgroup.Children[0].Value; 
         m.Rotate(new Quaternion(axis,angle));
         transfgroup.Children[0] := new MatrixTransform3D(m);
+        Result := Self;
       end);
     /// Поворот на угол angle вокруг оси axis относительно точки center
-    procedure RotateAt(axis: Vector3D; angle: real; center: Point3D);
-    begin
-      Invoke(()->begin
+    function RotateAt(axis: Vector3D; angle: real; center: Point3D): Object3D :=
+      Invoke&<Object3D>(()->begin
         var m := transfgroup.Children[0].Value;    
         m.RotateAt(new Quaternion(axis,angle),center);
         transfgroup.Children[0] := new MatrixTransform3D(m);
+        Result := Self;
       end);
-    end;
-  public  
-    function MoveToAnim(x,y,z,seconds: real): MyAnimation;
-    function MoveToAnim(p: Point3D; seconds: real) := MoveToAnim(p.x,p.y,p.z,seconds);
-    function ScaleAnim(sc,seconds: real): MyAnimation;
-    function RotateAnim(vx,vy,vz,angle,seconds: real): MyAnimation;
-    function RotateAnim(v: Vector3D; angle,seconds: real) := RotateAnim(v.x,v.y,v.z,angle,seconds);
-  end;  
+    function AnimMoveTo(x,y,z: real; seconds: real := 1): MyAnimation;
+    function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x,p.y,p.z,seconds);
+    function AnimMoveOn(dx,dy,dz: real; seconds: real := 1): MyAnimation;
+    function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x,v.y,v.z,seconds);
+    function AnimMoveOnX(dx: real; seconds: real := 1) := AnimMoveOn(dx,0,0,seconds);
+    function AnimMoveOnY(dy: real; seconds: real := 1) := AnimMoveOn(0,dy,0,seconds);
+    function AnimMoveOnZ(dz: real; seconds: real := 1) := AnimMoveOn(0,0,dz,seconds);
+    function AnimScale(sc: real; seconds: real := 1): MyAnimation;
+    function AnimRotate(vx,vy,vz,angle: real; seconds: real := 1): MyAnimation;
+    function AnimRotate(v: Vector3D; angle:real; seconds: real := 1) := AnimRotate(v.x,v.y,v.z,angle,seconds);
+    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): MyAnimation;
+    function Clone: Object3D := Invoke&<Object3D>(CloneT);
+  end;
   
-  BaseT = class(Base0T)
+  ObjectColored3D = class(Object3D)
   private
-    procedure CreateBase(m: MeshElement3D; x,y,z: real; c: Color);
-    begin
-      CreateBase0(m,x,y,z);
-      var ColorMaterial := MaterialHelper.CreateMaterial(c);
-      m.Material := ColorMaterial;
-    end;
     procedure CreateBase(m: MeshElement3D; x,y,z: real; mat: GMaterial);
     begin
       CreateBase0(m,x,y,z);
       m.Material := mat;
+    end;
+    procedure CreateBase(m: MeshElement3D; x,y,z: real; c: Color);
+    begin
+      CreateBase(m,x,y,z,MaterialHelper.CreateMaterial(c));
     end;
     procedure SetColorP(c: GColor) := (model as MeshElement3D).Material := MaterialHelper.CreateMaterial(c);
     procedure SetColor(c: GColor) := Invoke(SetColorP,c); 
@@ -371,19 +402,84 @@ type
     function GetV: boolean := Invoke&<boolean>(()->(model as MeshElement3D).Visible);
 
     procedure SetMP(mat: GMaterial) := (model as MeshElement3D).Material := mat;
-    procedure SetM(mat: GMaterial) := Invoke(SetMP,mat);
-    function GetM: GMaterial := Invoke&<GMaterial>(()->(model as MeshElement3D).Material);
+    procedure SetMaterial(mat: GMaterial) := Invoke(SetMP,mat);
+    function GetMaterial: GMaterial := Invoke&<GMaterial>(()->(model as MeshElement3D).Material);
   public  
     property Color: GColor write SetColor;
-    property Material: GMaterial read GetM write SetM;
+    property Material: GMaterial read GetMaterial write SetMaterial;
     property Visible: boolean read GetV write SetV;
   end; 
 
+  GroupT = class(ObjectColored3D)
+    l := new List<Object3D>;
+  private
+    procedure AddT(obj: Object3D);
+    begin
+      if obj.Parent = Self then
+        exit;
+      if obj.Parent = nil then
+        hvp.Children.Remove(obj.model)
+      else 
+      begin
+        (obj.Parent.model as MeshVisual3D).Children.Remove(obj.model);
+        obj.Parent.l.Remove(obj);
+      end;
+      (model as ModelVisual3D).Children.Add(obj.model);
+      l.Add(obj);  
+      obj.Parent := Self;
+    end;
+    procedure RemoveT(obj: Object3D);
+    begin
+      var b := (model as MeshVisual3D).Children.Remove(obj.model);
+      if not b then exit;
+      l.Remove(obj);
+      hvp.Children.Add(obj.model);
+      obj.Parent := nil;
+    end;
+    function GetObj(i: integer): Object3D := l[i];
+    function CountT: integer := (model as ModelVisual3D).Children.Count;
+  protected
+    function CreateObject: Object3D; override;
+    begin
+      var g  := new GroupT(X,Y,Z);
+      foreach var xx in l do
+        g.Add(xx.Clone);
+      Result := g;  
+    end;  
+  public
+    constructor(x,y,z: real);
+    begin
+      CreateBase0(new MeshVisual3D,x,y,z);
+    end;
+    constructor(x,y,z: real; lst: sequence of Object3D);
+    begin
+      CreateBase0(new MeshVisual3D,x,y,z);
+      foreach var xx in lst do
+        Add(xx);
+    end;
+    function Add(obj: Object3D): GroupT;
+    begin 
+      Invoke(AddT,obj);
+      Result := Self
+    end;
+    function Count: integer := Invoke&<integer>(CountT);
+    procedure Remove(obj: Object3D) := Invoke(RemoveT,obj);
+    property Items[i: integer]: Object3D read GetObj; default;
+    function Clone := (inherited Clone) as GroupT;
+  end;
+  
 //------------------------------ Animation -----------------------------------
   MyAnimation = class
   private
-    Element: Base0T;
+    Element: Object3D;
     Seconds: real;
+    procedure BeginT;
+    begin
+      sb := CreateStoryboard;
+      InitAnim(sb);
+      sb.Completed += procedure (o,e) -> sb.Children.Clear;
+      sb.Begin;
+    end;
   protected 
     sb: StoryBoard;
     procedure AddDoubleAnimByName(sb: StoryBoard; toValue,seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
@@ -407,48 +503,52 @@ type
         Result := True;
       end;
     end;
-  public 
-    constructor (e: Base0T; sec: real);
-    begin
-      Element := e;
-      Seconds := sec;
-    end;
+    procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb,0);
+  private  
+    AnimationCompleted: procedure;
     procedure InitAnimWait(sb: StoryBoard; waittime: real); virtual;
     begin
     end;
-    class function CreateStoryboard: StoryBoard;
+    function CreateStoryboard: StoryBoard;
     begin
       var sb := new StoryBoard;
       var storyboardName := 's' + sb.GetHashCode;
       MainWindow.Resources.Add(storyboardName, sb);
+      var an := AnimationCompleted;
       sb.Completed += (o,e) -> begin
         MainWindow.Resources.Remove(storyboardName);
+        if an<>nil then
+          an;
       end;
       Result := sb;
     end;
-
-    procedure BeginT;
+  public 
+    constructor (e: Object3D; sec: real);
     begin
-      sb := CreateStoryboard;
-      InitAnim(sb);
-      sb.Completed += procedure (o,e) -> sb.Children.Clear;
-      sb.Begin;
+      Element := e;
+      Seconds := sec;
     end;
+    function WhenCompleted(act: procedure): MyAnimation;
+    begin
+      Self.AnimationCompleted := act;
+      Result := Self;
+    end;
+
     procedure &Begin; virtual := Invoke(BeginT);
     procedure Pause := sb.Pause;
     procedure Resume := sb.Resume;
     function Duration: real; virtual := seconds;
-    procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb,0);
   end;
   
   OffsetAnimation = class(MyAnimation)
   private
     x,y,z: real;
   public  
-    constructor (e: Base0T; sec: real; xx,yy,zz: real);
+    constructor (e: Object3D; sec: real; xx,yy,zz: real);
     begin
       inherited Create(e,sec);
       (x,y,z) := (xx,yy,zz);
+      Println(x,y,z)
     end;
     procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
     begin
@@ -466,7 +566,7 @@ type
   private
     scale: real;
   public  
-    constructor (e: Base0T; sec: real; sc: real);
+    constructor (e: Object3D; sec: real; sc: real);
     begin
       inherited Create(e,sec);
       scale := sc;
@@ -487,7 +587,7 @@ type
   private
     vx,vy,vz,angle: real;
   public  
-    constructor (e: Base0T; sec: real; vvx,vvy,vvz,a: real);
+    constructor (e: Object3D; sec: real; vvx,vvy,vvz,a: real);
     begin
       inherited Create(e,sec);
       (vx,vy,vz,angle) := (vvx,vvy,vvz,a)
@@ -503,10 +603,44 @@ type
       rot.Angle := 0; //?
       rot.Axis := V3D(vx,vy,vz); //?
       
-      var el: Base0T := Element;
+      var el: Object3D := Element;
       sb.Completed += (o,e) -> begin
         rottransform.Rotation := new AxisAngleRotation3D();
         el.Rotate(rot.Axis,angle); // переходит в основную матрицу
+      end;
+
+      AddDoubleAnimByName(sb,angle,seconds,ttname,AxisAngleRotation3D.AngleProperty,wait);
+    end;
+  end;
+
+  RotateAtAnimation = class(MyAnimation)
+  private
+    vx,vy,vz,angle: real;
+    center: Point3D;
+  public  
+    constructor (e: Object3D; sec: real; vvx,vvy,vvz,a: real; c: Point3D);
+    begin
+      inherited Create(e,sec);
+      (vx,vy,vz,angle,center) := (vvx,vvy,vvz,a,c)
+    end;
+    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
+    begin
+      var rottransform := Element.rotatetransform_anim;
+      rottransform.CenterX := center.x;
+      rottransform.CenterY := center.y;
+      rottransform.CenterZ := center.z;
+      var rot := rottransform.Rotation as AxisAngleRotation3D;
+      var ttname := 'r'+rot.GetHashCode;
+      if not RegisterName(sb,rot,ttname) then;
+        //exit;
+
+      rot.Angle := 0; //?
+      rot.Axis := V3D(vx,vy,vz); //?
+      
+      var el: Object3D := Element;
+      sb.Completed += (o,e) -> begin
+        rottransform.Rotation := new AxisAngleRotation3D();
+        el.RotateAt(rot.Axis,angle,center); // переходит в основную матрицу
       end;
 
       AddDoubleAnimByName(sb,angle,seconds,ttname,AxisAngleRotation3D.AngleProperty,wait);
@@ -556,11 +690,13 @@ type
     end;
     function Duration: real; override := ll.Sum(l->l.Duration);
   end;
-
   
-function Base0T.MoveToAnim(x,y,z,seconds: real) := new OffsetAnimation(Self,seconds,x,y,z);
-function Base0T.ScaleAnim(sc,seconds: real) := new ScaleAnimation(Self,seconds,sc);
-function Base0T.RotateAnim(vx,vy,vz,angle,seconds: real) := new RotateAnimation(Self,seconds,vx,vy,vz,angle);
+function Object3D.AnimMoveTo(x,y,z,seconds: real) := new OffsetAnimation(Self,seconds,x,y,z);
+function Object3D.AnimMoveOn(dx,dy,dz,seconds: real) := new OffsetAnimation(Self,seconds,x+dx,y+dy,z+dz);
+function Object3D.AnimScale(sc,seconds: real) := new ScaleAnimation(Self,seconds,sc);
+function Object3D.AnimRotate(vx,vy,vz,angle,seconds: real) := new RotateAnimation(Self,seconds,vx,vy,vz,angle);
+function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real) := new RotateAtAnimation(Self,seconds,axis.X,axis.y,axis.z,angle,center);
+
 
 type
   Animate = class
@@ -575,11 +711,11 @@ function Sec(Self: real): real; extensionmethod := Self;
 // А теперь - тадам! - перегрузка + для Animate.Sequence и перегрузка * для Animate.Group
 function operator+(a,b: MyAnimation): MyAnimation; extensionmethod := Animate.Sequence(a,b);
 function operator*(a,b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a,b);
-  
+
 //------------------------------ End Animation -------------------------------
 
 type  
-  SphereT = class(BaseT)
+  SphereT = class(ObjectColored3D)
   private
     procedure SetR(r: real); 
     begin 
@@ -587,30 +723,32 @@ type
       Invoke(()->begin m.Radius := r end);
     end;  
     function GetR: real := Invoke&<real>(()->(model as SphereVisual3D).Radius);
-    {function GetR1: real;
-    begin
-      Result := real(GetValue(RadiusProperty))
-    end;
-    procedure SetR1(r: real); 
-    begin 
-      SetValue(RadiusProperty, r);
-      Print(1);
-    end;  }
-  public
-    {class RadiusProperty: DependencyProperty := DependencyProperty.Register(
-        'Radius', typeof(double), typeof(SphereT), new PropertyMetadata(1.0, GeometryChanged));}
-  
-    constructor(x,y,z,r: real; c: GColor);
+    function NewVisualObject(r: real): SphereVisual3D;
     begin
       var sph := new SphereVisual3D;
       sph.Center := P3D(0, 0, 0);
       sph.Radius := r;
-      CreateBase(sph,x,y,z,c);
+      Result := sph;
+    end;
+  protected
+    function CreateObject: Object3D; override;
+    begin
+      Result := new SphereT(X,Y,Z,Radius,Material.Clone);
+    end;
+  public
+    constructor(x,y,z,r: real; m: Gmaterial);
+    begin
+      CreateBase(NewVisualObject(r),x,y,z,m);
+    end;
+    constructor(x,y,z,r: real; c: GColor);
+    begin
+      CreateBase(NewVisualObject(r),x,y,z,c);
     end;
     property Radius: real read GetR write SetR;
+    function Clone := (inherited Clone) as SphereT;
   end;
   
-  EllipsoidT = class(BaseT)
+  EllipsoidT = class(ObjectColored3D)
   private
     procedure SetRXP(r: real) := (model as EllipsoidVisual3D).RadiusX := r;
     procedure SetRX(r: real) := Invoke(SetRXP,x);
@@ -621,22 +759,33 @@ type
     procedure SetRZP(r: real) := (model as EllipsoidVisual3D).RadiusZ := r;
     procedure SetRZ(r: real) := Invoke(SetRZP,x);
     function GetRZ: real := Invoke&<real>(()->(model as EllipsoidVisual3D).RadiusZ);
-  public
-    constructor(x,y,z,rx,ry,rz: real; c: GColor);
+    function NewVisualObject(rx,ry,rz: real): EllipsoidVisual3D;
     begin
       var ell := new EllipsoidVisual3D;
       ell.Center := P3D(0, 0, 0);
       ell.RadiusX := rx;
       ell.RadiusY := ry;
       ell.RadiusZ := rz;
-      CreateBase(ell,x,y,z,c);
+      Result := ell;
+    end;
+  protected
+    function CreateObject: Object3D; override := new EllipsoidT(X,Y,Z,RadiusX,RadiusY,RadiusZ,Material);
+  public
+    constructor(x,y,z,rx,ry,rz: real; c: GColor);
+    begin
+      CreateBase(NewVisualObject(rx,ry,rz),x,y,z,c);
+    end;
+    constructor(x,y,z,rx,ry,rz: real; m: GMaterial);
+    begin
+      CreateBase(NewVisualObject(rx,ry,rz),x,y,z,m);
     end;
     property RadiusX: real read GetRX write SetRX;
     property RadiusY: real read GetRY write SetRY;
     property RadiusZ: real read GetRZ write SetRZ;
+    function Clone := (inherited Clone) as EllipsoidT;
   end;  
   
-  BoxT = class(BaseT)
+  BoxT = class(ObjectColored3D)
   private
     procedure SetWP(r: real) := (model as BoxVisual3D).Width := r;
     procedure SetW(r: real) := Invoke(SetWP,r);
@@ -657,21 +806,33 @@ type
     end;
     procedure SetSz(r: Size3D) := Invoke(SetSzP,r);
     function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as BoxVisual3D; Result := Sz3D(mmm.Length,mmm.Width,mmm.Height) end);
-  public
-    constructor(x,y,z,l,w,h: real; c: GColor);
+  private  
+    function NewVisualObject(l,w,h: real): BoxVisual3D;
     begin
       var bx := new BoxVisual3D;
       bx.Center := P3D(0,0,0);
       (bx.Width,bx.Height,bx.Length) := (w,h,l);
-      CreateBase(bx,x,y,z,c);
+      Result := bx;
+    end;
+  protected  
+    function CreateObject: Object3D; override := new BoxT(X,Y,Z,Length,Width,Height,Material.Clone);
+  public
+    constructor(x,y,z,l,w,h: real; c: GColor);
+    begin
+      CreateBase(NewVisualObject(l,w,h),x,y,z,c);
+    end;
+    constructor(x,y,z,l,w,h: real; m: GMaterial);
+    begin
+      CreateBase(NewVisualObject(l,w,h),x,y,z,m);
     end;
     property Length: real read GetL write SetL;
     property Width: real read GetW write SetW;
     property Height: real read GetH write SetH;
     property Size: Size3D read GetSz write SetSz;
+    function Clone := (inherited Clone) as BoxT;
   end;
   
-  ArrowT = class(BaseT)
+  ArrowT = class(ObjectColored3D)
   private
     procedure SetDP(r: real) := (model as ArrowVisual3D).Diameter := r;
     procedure SetD(r: real) := Invoke(SetDP,r);
@@ -684,22 +845,37 @@ type
     procedure SetDirP(r: Vector3D) := (model as ArrowVisual3D).Direction := r;
     procedure SetDir(r: Vector3D) := Invoke(SetDirP,r);
     function GetDir: Vector3D := Invoke&<Vector3D>(()->(model as ArrowVisual3D).Direction);
-  public
-    constructor(x,y,z,dx,dy,dz,d,hl: real; c: GColor);
+  private  
+    function NewVisualObject(dx,dy,dz,d,hl: real): ArrowVisual3D;
     begin
       var a := new ArrowVisual3D;
       a.HeadLength := hl;
       a.Diameter := d;
       a.Origin := P3D(0,0,0);
+      Result := a;
+    end;
+  protected  
+    function CreateObject: Object3D; override := new ArrowT(X,Y,Z,Direction.X,Direction.Y,Direction.Z,Diameter,HeadLength,Material.Clone);
+  public
+    constructor(x,y,z,dx,dy,dz,d,hl: real; c: GColor);
+    begin
+      var a := NewVisualObject(dx,dy,dz,d,hl);
       CreateBase(a,x,y,z,c);
+      a.Direction := V3D(dx,dy,dz);
+    end;
+    constructor(x,y,z,dx,dy,dz,d,hl: real; m: GMaterial);
+    begin
+      var a := NewVisualObject(dx,dy,dz,d,hl);
+      CreateBase(a,x,y,z,m);
       a.Direction := V3D(dx,dy,dz);
     end;
     property HeadLength: real read GetL write SetL;
     property Diameter: real read GetD write SetD;
     property Direction: Vector3D read GetDir write SetDir;
+    function Clone := (inherited Clone) as ArrowT;
   end;
   
-  TruncatedConeT = class(BaseT)
+  TruncatedConeT = class(ObjectColored3D)
   private
     procedure SetHP(r: real) := (model as TruncatedConeVisual3D).Height := r;
     procedure SetH(r: real) := Invoke(SetHP,r); 
@@ -716,9 +892,8 @@ type
     procedure SetTCP(r: boolean) := (model as TruncatedConeVisual3D).TopCap := r;
     procedure SetTC(r: boolean) := Invoke(SetTCP,r); 
     function GetTC: boolean := Invoke&<boolean>(()->(model as TruncatedConeVisual3D).TopCap);
-
-  public
-    constructor(x,y,z,h,baser,topr: real; sides: integer; topcap: boolean; c: GColor);
+  private  
+    function NewVisualObject(h,baser,topr: real; sides: integer; topcap: boolean): TruncatedConeVisual3D;
     begin
       var a := new TruncatedConeVisual3D;
       a.Origin := p3D(0,0,0);
@@ -727,35 +902,60 @@ type
       a.Height := h;
       a.TopCap := topcap;
       a.ThetaDiv := sides + 1;
+      Result := a;
+    end;
+  protected  
+    function CreateObject: Object3D; override := new TruncatedConeT(X,Y,Z,Height,BaseRadius,TopRadius,(model as TruncatedConeVisual3D).ThetaDiv-1,Topcap,Material.Clone);
+  public
+    constructor(x,y,z,h,baser,topr: real; sides: integer; topcap: boolean; c: GColor);
+    begin
+      var a := NewVisualObject(h,baser,topr,sides,topcap);
       CreateBase(a,x,y,z,c);
+    end;
+    constructor(x,y,z,h,baser,topr: real; sides: integer; topcap: boolean; m: GMaterial);
+    begin
+      var a := NewVisualObject(h,baser,topr,sides,topcap);
+      CreateBase(a,x,y,z,m);
     end;
     property Height: real read GetH write SetH;
     property BaseRadius: real read GetBR write SetBR;
     property TopRadius: real read GetTR write SetTR;
     property Topcap: boolean read GetTC write SetTC;
+    function Clone := (inherited Clone) as TruncatedConeT;
   end;
   
-  TeapotT = class(BaseT)
+  TeapotT = class(ObjectColored3D)
   private
     procedure SetVP(v: boolean) := (model as MeshElement3D).Visible := v;
     procedure SetV(v: boolean) := Invoke(SetVP,v);
     function GetV: boolean := Invoke&<boolean>(()->(model as MeshElement3D).Visible);
+  protected  
+    function CreateObject: Object3D; override := new TeapotT(X,Y,Z,Material.Clone);
   public
     constructor(x,y,z: real; c: GColor);
     begin
       var a := new Teapot;
       CreateBase(a,x,y,z,c);
-      Rotate(V3D(1,0,0),90);
-      //a.Position := P3D(x,y,z);
+      Rotate(OrtX,90);
+    end;
+    constructor(x,y,z: real; m: GMaterial);
+    begin
+      var a := new Teapot;
+      CreateBase(a,x,y,z,m);
+      Rotate(OrtX,90);
     end;
     property Visible: boolean read GetV write SetV;
+    function Clone := (inherited Clone) as TeapotT;
   end;
 
-  CoordinateSystemT = class(Base0T)
+  CoordinateSystemT = class(Object3D)
   private
     procedure SetALP(r: real) := (model as CoordinateSystemVisual3D).ArrowLengths := r;
     procedure SetAL(r: real) := Invoke(SetALP,r); 
     function GetAL: real := Invoke&<real>(()->(model as CoordinateSystemVisual3D).ArrowLengths);
+    function GetD: real := Invoke&<real>(()->((model as CoordinateSystemVisual3D).Children[0] as ArrowVisual3D).Diameter);
+  protected  
+    function CreateObject: Object3D; override := new CoordinateSystemT(X,Y,Z,ArrowLengths,Diameter);
   public
     constructor(x,y,z,arrlength,diameter: real);
     begin
@@ -768,9 +968,11 @@ type
       (a.Children[3] as CubeVisual3D).SideLength := diameter;
     end;
     property ArrowLengths: real read GetAL write SetAL;
+    property Diameter: real read GetD;
+    function Clone := (inherited Clone) as CoordinateSystemT;
   end;
 
-  BillboardTextT = class(Base0T)
+  BillboardTextT = class(Object3D)
   private
     procedure SetTP(r: string) := (model as BillboardTextVisual3D).Text := r;
     procedure SetT(r: string) := Invoke(SetTP,r); 
@@ -779,6 +981,8 @@ type
     procedure SetFSP(r: real) := (model as BillboardTextVisual3D).FontSize := r;
     procedure SetFS(r: real) := Invoke(SetFS,r); 
     function GetFS: real := Invoke&<real>(()->(model as BillboardTextVisual3D).FontSize);
+  protected  
+    function CreateObject: Object3D; override := new BillboardTextT(X,Y,Z,Text,FontSize);
   public
     constructor(x,y,z: real; text: string; fontsize: real);
     begin
@@ -790,10 +994,12 @@ type
     end;
     property Text: string read GetT write SetT;
     property FontSize: real read GetFS write SetFS;
+    function Clone := (inherited Clone) as BillboardTextT;
   end;
 
-  TextT = class(Base0T)
+  TextT = class(Object3D)
   private
+    fontname: string;
     procedure SetTP(r: string) := (model as TextVisual3D).Text := r;
     procedure SetT(r: string) := Invoke(SetTP,r); 
     function GetT: string := Invoke&<string>(()->(model as TextVisual3D).Text);
@@ -802,30 +1008,36 @@ type
     procedure SetFS(r: real) := Invoke(SetFS,r); 
     function GetFS: real := Invoke&<real>(()->(model as TextVisual3D).Height);
 
-    procedure SetNP(r: string) := (model as TextVisual3D).Text := r;
-    procedure SetN(r: string) := Invoke(SetTP,r); 
-    function GetN: string := Invoke&<string>(()->(model as TextVisual3D).Text);
+    procedure SetNP(fontname: string) := (model as TextVisual3D).FontFamily := new FontFamily(fontname);
+    procedure SetN(fontname: string) := Invoke(SetTP,fontname); 
+    function GetN: string := Invoke&<string>(()->fontname);
 
     procedure SetColorP(c: GColor) := (model as TextVisual3D).Foreground := new SolidColorBrush(c);
     procedure SetColor(c: GColor) := Invoke(SetColorP,c); 
+    function GetColor: GColor := Invoke&<GColor>(()->((model as TextVisual3D).Foreground as SolidColorBrush).Color);
+  protected  
+    function CreateObject: Object3D; override := new TextT(X,Y,Z,Text,Height,Name,Color);
   public
     constructor(x,y,z: real; text: string; height: real; fontname: string; c: Color);
     begin
       var a := new TextVisual3D;
-      CreateBase0(a,x,y,z);
       a.Position := p3D(0,0,0);
       a.Text := text;
       a.Height := height;
+      //a.HorizontalAlignment := HorizontalAlignment.Left;
+      Self.fontname := fontname;
       a.FontFamily := new FontFamily(fontname);
       a.Foreground := new SolidColorBrush(c);
+      CreateBase0(a,x,y,z);
     end;
     property Text: string read GetT write SetT;
     property Height: real read GetFS write SetFS;
     property Name: string read GetN write SetN;
-    property Color: GColor write SetColor;
+    property Color: GColor read GetColor write SetColor;
+    function Clone := (inherited Clone) as TextT;
   end;
 
-  RectangleT = class(BaseT)
+  RectangleT = class(ObjectColored3D)
   private
     procedure SetWP(r: real) := (model as RectangleVisual3D).Width := r;
     procedure SetW(r: real) := Invoke(SetWP,r);
@@ -842,28 +1054,43 @@ type
     procedure SetNP(r: Vector3D) := (model as RectangleVisual3D).Normal := r;
     procedure SetN(r: Vector3D) := Invoke(SetNP,r);
     function GetN: Vector3D := Invoke&<Vector3D>(()->(model as RectangleVisual3D).Normal);
+  protected  
+    function CreateObject: Object3D; override := new RectangleT(X,Y,Z,Length,Width,Normal,LengthDirection,Material);
   public
     constructor(x,y,z,l,w: real; normal,lendirection: Vector3D; c: GColor);
     begin
       var a := new RectangleVisual3D;
-      CreateBase(a,x,y,z,c);
       a.Origin := P3D(0,0,0);
       a.Width := w;
       a.Length := l;
       a.LengthDirection := lendirection;
       a.Normal := normal;
+      CreateBase(a,x,y,z,c);
+    end;
+    constructor(x,y,z,l,w: real; normal,lendirection: Vector3D; m: GMaterial);
+    begin
+      var a := new RectangleVisual3D;
+      a.Origin := P3D(0,0,0);
+      a.Width := w;
+      a.Length := l;
+      a.LengthDirection := lendirection;
+      a.Normal := normal;
+      CreateBase(a,x,y,z,m);
     end;
     property Width: real read GetW write SetW;
     property Length: real read GetL write SetL;
     property LengthDirection: Vector3D read GetLD write SetLD;
     property Normal: Vector3D read GetN write SetN;
+    function Clone := (inherited Clone) as RectangleT;
   end;
 
-  FileModelT = class(Base0T)
+  FileModelT = class(Object3D)
   private
     procedure SetVP(v: boolean) := (model as MeshElement3D).Visible := v;
     procedure SetV(v: boolean) := Invoke(SetVP,v);
     function GetV: boolean := Invoke&<boolean>(()->(model as MeshElement3D).Visible);
+  protected  
+    function CreateObject: Object3D; override := new FileModelT(X,Y,Z,(model as FileModelVisual3D).Source);
   public
     constructor(x,y,z: real; fname: string);
     begin
@@ -872,9 +1099,10 @@ type
       CreateBase0(a,x,y,z);
     end;
     property Visible: boolean read GetV write SetV;
+    function Clone := (inherited Clone) as FileModelT;
   end;
   
-  PipeT = class(BaseT)
+  PipeT = class(ObjectColored3D)
   private
     procedure SetDP(r: real) := (model as PipeVisual3D).Diameter := r*2;
     procedure SetD(r: real) := Invoke(SetDP,r); 
@@ -887,6 +1115,8 @@ type
     procedure SetHP(r: real) := (model as PipeVisual3D).Point2 := P3D(0,0,r);
     procedure SetH(r: real) := Invoke(SetHP,r); 
     function GetH: real := Invoke&<real>(()->(model as PipeVisual3D).Point2.Z);
+  protected  
+    function CreateObject: Object3D; override := new PipeT(X,Y,Z,Height,Radius,InnerRadius,Material);
   public
     constructor(x,y,z,h,r,ir: real; c: GColor);
     begin
@@ -897,9 +1127,19 @@ type
       a.Point2 := P3D(0,0,h);
       CreateBase(a,x,y,z,c);
     end;
+    constructor(x,y,z,h,r,ir: real; m: GMaterial);
+    begin
+      var a := new PipeVisual3D;
+      a.Diameter := r*2;
+      a.InnerDiameter := ir*2;
+      a.Point1 := P3D(0,0,0);
+      a.Point2 := P3D(0,0,h);
+      CreateBase(a,x,y,z,m);
+    end;
     property Radius: real read GetD write SetD;
     property InnerRadius: real read GetID write SetID;
     property Height: real read GetH write SetH;
+    function Clone := (inherited Clone) as PipeT;
   end;
   
 type LegoVisual3D = class(MeshElement3D)
@@ -980,7 +1220,7 @@ public
 end;   
 
 type
-  LegoT = class(BaseT)
+  LegoT = class(ObjectColored3D)
   private
     procedure SetWP(r: integer) := (model as LegoVisual3D).Rows := r;
     procedure SetW(r: integer) := Invoke(SetWP,r);
@@ -1001,18 +1241,26 @@ type
     end;
     procedure SetSz(r: Size3D) := Invoke(SetSzP,r);
     function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as LegoVisual3D; Result := Sz3D(mmm.Length,mmm.Width,mmm.Height) end);}
+  protected  
+    function CreateObject: Object3D; override := new LegoT(X,Y,Z,Columns,Rows,Height,Material);
   public
     constructor(x,y,z: real; col,r,h: integer; c: GColor);
     begin
       var bx := new LegoVisual3D;
-      //bx.Center := P3D(0,0,0);
       (bx.Rows,bx.Height,bx.Columns) := (r,h,col);
       CreateBase(bx,x,y,z,c);
+    end;
+    constructor(x,y,z: real; col,r,h: integer; m: GMaterial);
+    begin
+      var bx := new LegoVisual3D;
+      (bx.Rows,bx.Height,bx.Columns) := (r,h,col);
+      CreateBase(bx,x,y,z,m);
     end;
     property Columns: integer read GetL write SetL;
     property Rows: integer read GetW write SetW;
     property Height: integer read GetH write SetH;
     {property Size: Size3D read GetSz write SetSz;}
+    function Clone := (inherited Clone) as LegoT;
   end;
 
 type
@@ -1186,7 +1434,7 @@ type
     public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.OctahedronType,Length);
   end;   
   
-  PlatonicAbstractT = class(BaseT)
+  PlatonicAbstractT = class(ObjectColored3D)
   private
     procedure SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
     procedure SetLength(r: real) := Invoke(SetLengthP,r); 
@@ -1194,36 +1442,89 @@ type
   public
     property Length: real read GetLength write SetLength;
   end;
+  
   IcosahedronT = class(PlatonicAbstractT)
-    public constructor(x,y,z,Length: real; c: GColor);
+  protected  
+    function CreateObject: Object3D; override := new IcosahedronT(X,Y,Z,Length,Material);
+  public 
+    constructor(x,y,z,Length: real; c: GColor);
     begin
       CreateBase(new IcosahedronVisual3D(Length),x,y,z,c);
     end;
+    constructor(x,y,z,Length: real; m: GMaterial);
+    begin
+      CreateBase(new IcosahedronVisual3D(Length),x,y,z,m);
+    end;
+    function Clone := (inherited Clone) as IcosahedronT;
   end;
+  
   DodecahedronT = class(PlatonicAbstractT)
-    public constructor(x,y,z,Length: real; c: GColor);
+  protected  
+    function CreateObject: Object3D; override := new DodecahedronT(X,Y,Z,Length,Material);
+  public 
+    constructor(x,y,z,Length: real; c: GColor);
     begin
       CreateBase(new DodecahedronVisual3D(Length),x,y,z,c);
     end;
+    constructor(x,y,z,Length: real; m: GMaterial);
+    begin
+      CreateBase(new DodecahedronVisual3D(Length),x,y,z,m);
+    end;
+    function Clone := (inherited Clone) as DodecahedronT;
   end;
+  
   TetrahedronT = class(PlatonicAbstractT)
-    public constructor(x,y,z,Length: real; c: GColor);
+  protected  
+    function CreateObject: Object3D; override := new TetrahedronT(X,Y,Z,Length,Material);
+  public 
+    constructor(x,y,z,Length: real; c: GColor);
     begin
       CreateBase(new TetrahedronVisual3D(Length),x,y,z,c);
     end;
+    constructor(x,y,z,Length: real; m: GMaterial);
+    begin
+      CreateBase(new TetrahedronVisual3D(Length),x,y,z,m);
+    end;
+    function Clone := (inherited Clone) as TetrahedronT;
   end;
+  
   OctahedronT = class(PlatonicAbstractT)
-    public constructor(x,y,z,Length: real; c: GColor);
+  protected  
+    function CreateObject: Object3D; override := new OctahedronT(X,Y,Z,Length,Material);
+  public 
+    constructor(x,y,z,Length: real; c: GColor);
     begin
       CreateBase(new OctahedronVisual3D(Length),x,y,z,c);
     end;
+    constructor(x,y,z,Length: real; m: GMaterial);
+    begin
+      CreateBase(new OctahedronVisual3D(Length),x,y,z,m);
+    end;
+    function Clone := (inherited Clone) as OctahedronT;
   end;
 
+type 
+  My = class(ParametricSurface3D)
+  public
+    function Evaluate(u: real; v: real; var textureCoord: System.Windows.Point): Point3D; override;
+    begin
+      u -= 0.5;
+      v -= 0.5;
+      u *= 3;
+      v *= 3;
+      textureCoord := new Point(u,2*v);
+      Result := P3D(u,v,0.2*u*u+sin(u*v)+2);
+    end;
+  end;
 
 type
-  AnyT = class(BaseT)
+  AnyT = class(ObjectColored3D)
     constructor(x,y,z: real; c: GColor);
     begin
+      var a := new MeshVisual3D;
+      //var a := new TerrainVisual3D;
+      //a.Content := (new SphereVisual3D()).Model;
+      //a.Text := 'PascalABC';
       {var a := new LinesVisual3D;
       
       var aa := 1;
@@ -1248,12 +1549,12 @@ type
       a.Diameter := 0.05;
       a.Path := p;}
       
-      var a := new LegoVisual3D();
+      {var a := new LegoVisual3D();
       a.Rows := 1;
       a.Columns := 2;
       a.Height := 3;
       //a.Divisions := 100;
-      a.Fill := Brushes.Blue;
+      a.Fill := Brushes.Blue;}
 
       CreateBase0(a,x,y,z);
     end;
@@ -1281,7 +1582,15 @@ end;
 
 procedure Proba := Invoke(ProbaP);}
 
+function Group(x,y,z: integer): GroupT := Invoke&<GroupT>(()->GroupT.Create(x,y,z));
+function Group(p: Point3D): GroupT := Invoke&<GroupT>(()->GroupT.Create(p.x,p.y,p.z));
+function Group: GroupT := Invoke&<GroupT>(()->GroupT.Create(0,0,0));
+function Group(params lst: array of Object3D): GroupT := Invoke&<GroupT>(()->GroupT.Create(0,0,0,lst));
+function Group(en: sequence of Object3D): GroupT := Invoke&<GroupT>(()->GroupT.Create(0,0,0,en));
+
+function Sphere(x,y,z,r: real; m: GMaterial): SphereT := Invoke&<SphereT>(()->SphereT.Create(x,y,z,r,m));
 function Sphere(x,y,z,r: real; c: Color): SphereT := Invoke&<SphereT>(()->SphereT.Create(x,y,z,r,c));
+function Sphere(center: Point3D; r: real; m: GMaterial) := Sphere(center.x,center.y,center.z,r,m);
 function Sphere(center: Point3D; r: real; c: Color) := Sphere(center.x,center.y,center.z,r,c);
 
 function Ellipsoid(x,y,z,rx,ry,rz: real; c: Color): EllipsoidT := Invoke&<EllipsoidT>(()->EllipsoidT.Create(x,y,z,rx,ry,rz,c));
@@ -1502,6 +1811,7 @@ begin
   
   View3D := new View3DT;
   
+  // hvp.PreviewMouseDown += (o,e)-> begin e.Handled := True; end; - крутой способ отключить перехват клавиатуры 
   //hvp.Camera.Position := P3D(12,16,20);
 
   mre.Set();
