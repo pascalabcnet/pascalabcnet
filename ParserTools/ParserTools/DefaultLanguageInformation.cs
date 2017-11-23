@@ -97,6 +97,8 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("sequence", "sequence"); keys.Add("sequence");
             keywords.Add("extensionmethod", "extensionmethod"); keys.Add("extensionmethod");
             keywords.Add("params", "params"); keys.Add("params");
+            keywords.Add("implicit", "implicit"); keys.Add("implicit");
+            keywords.Add("explicit", "explicit"); keys.Add("explicit");
             keywords_array = keys.ToArray();
             type_keywords_array = type_keys.ToArray();
 		}
