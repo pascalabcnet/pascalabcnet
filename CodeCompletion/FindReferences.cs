@@ -11,6 +11,7 @@ using PascalABCCompiler;
 using PascalABCCompiler.TreeConverter;
 //using PascalABCCompiler.TreeRealization;
 using SymbolTable;
+using System.IO;
 using PascalABCCompiler.Parsers;
 
 namespace CodeCompletion
@@ -45,7 +46,9 @@ namespace CodeCompletion
             }
             catch (Exception e)
             {
-
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
             return pos_list.ToArray();
         }

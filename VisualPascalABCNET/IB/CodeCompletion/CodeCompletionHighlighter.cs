@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using System.IO;
 using CodeCompletion;
 
 namespace VisualPascalABC
@@ -100,7 +101,9 @@ namespace VisualPascalABC
             }
             catch (Exception e)
             {
-
+#if DEBUG
+                File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
             }
         }
 
@@ -122,8 +125,29 @@ namespace VisualPascalABC
                     return false;
                 c = textArea.Document.TextContent[off];
             }
-            if (c != '=')
+            c = char.ToLower(c);
+            if (c != '=' && c != 't' && c != 'd')
+            {
                 return true;
+            }
+            if (c == 't' || c == 'd')
+            {
+                StringBuilder keyword = new StringBuilder();
+                
+                while (char.IsLetter(c))
+                {
+                    keyword.Insert(0, c);
+                    off--;
+                    if (off < 0)
+                        break;
+                    c = textArea.Document.TextContent[off];
+                }
+                if (keyword.ToString().ToLower() == "sealed" || keyword.ToString().ToLower() == "abstract")
+                {
+                    return isClassMember(off, textArea);
+                }
+                return false;
+            }
             return false;
         }
 
