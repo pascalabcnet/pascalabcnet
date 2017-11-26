@@ -1819,12 +1819,44 @@ begin
   app.Run(MainWindow);
 end;
 
-initialization
+var 
+///--
+__initialized := false;
+
+var 
+///--
+__finalized := false;
+
+procedure __InitModule;
+begin
   MainFormThread := new System.Threading.Thread(InitWPF0);
   MainFormThread.SetApartmentState(ApartmentState.STA);
   MainFormThread.Start;
   
   mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
+end;
+
+///--
+procedure __InitModule__;
+begin
+  if not __initialized then
+  begin
+    __initialized := true;
+    __InitModule;
+  end;
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+  if not __finalized then
+  begin
+    __finalized := true;
+  end;
+end;
+
+initialization
+  __InitModule;
 
 finalization  
 end.
