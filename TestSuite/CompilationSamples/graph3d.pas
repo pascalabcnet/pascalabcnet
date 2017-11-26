@@ -1383,7 +1383,7 @@ type
     TriangleIndex: integer;
   end;
   
-  ModelTypes = (TetrahedronType,OctahedronType,HexahedronType,IcosahedronType,DodecahedronType,StellatedOctahedronType);
+  ModelTypes = (TetrahedronType,OctahedronType,HexahedronType,IcosahedronType,DodecahedronType,StellatedOctahedronType,MyAny);
 
   PanelModelBuilder = class
     Panels: List<Panel> := new List<Panel>;
@@ -1431,6 +1431,7 @@ begin
   case CurrentModelType of 
 TetrahedronType:
   begin
+    a /= Sqrt(8); // тогда длина ребра = 1
     pmb.AddPanel(a, a, a, -a, a, -a, a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, -a, a, a, -a, -a);
     pmb.AddPanel(a, a, a, a, -a, -a, -a, -a, a);
@@ -1438,8 +1439,8 @@ TetrahedronType:
   end;
 OctahedronType:
   begin
-    //a := 1.0 / (2 * Sqrt(2));
-    var b := 0.5 * (2 * Sqrt(2)) * a;// * 2 * a;
+    a /= 2;
+    var b := 0.5 * (2 * Sqrt(2)) * a;
     pmb.AddPanel(-a, 0, a, -a, 0, -a, 0, b, 0);
     pmb.AddPanel(-a, 0, -a, a, 0, -a, 0, b, 0);
     pmb.AddPanel(a, 0, -a, a, 0, a, 0, b, 0);
@@ -1451,6 +1452,7 @@ OctahedronType:
   end;
 HexahedronType:
   begin
+    a /= 2;
     pmb.AddPanel(-a, -a, a, a, -a, a, a, -a, -a, -a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, a, a, -a, -a, a, -a, -a, -a);
     pmb.AddPanel(-a, a, a, a, a, a, a, -a, a, -a, -a, a);
@@ -1460,8 +1462,10 @@ HexahedronType:
   end;
 IcosahedronType:
   begin
+    a /= Sqrt(15)/(1+Sqrt(5));
     var phi := (1 + Sqrt(5)) / 2;
     var b := 1.0 / (2 * phi) * 2 * a;
+    //Print(Sqrt(2*b));
     pmb.AddPanel(0, b, -a, b, a, 0, -b, a, 0);
     pmb.AddPanel(0, b, a, -b, a, 0, b, a, 0);
     pmb.AddPanel(0, b, a, 0, -b, a, -a, 0, b);
@@ -1485,9 +1489,11 @@ IcosahedronType:
   end;
 DodecahedronType:
   begin
+    //a /= (Sqrt(5)-1)/Sqrt(2);
     var phi := (1 + Sqrt(5)) / 2;
     var b := 1 / phi * a;
     var c := (2 - phi) * a;
+    //Println(Sqrt(2*c));
     pmb.AddPanel(c, 0, a, -c, 0, a, -b, b, b, 0, a, c, b, b, b);
     pmb.AddPanel(-c, 0, a, c, 0, a, b, -b, b, 0, -a, c, -b, -b, b);
     pmb.AddPanel(c, 0, -a, -c, 0, -a, -b, -b, -b, 0, -a, -c, b, -b, -b);
@@ -1513,6 +1519,14 @@ StellatedOctahedronType:
     pmb.AddPanel(a, a, -a, a, -a, a, -a, -a, -a);
     pmb.AddPanel(-a, a, a, -a, -a, -a, a, -a, a);
     pmb.AddPanel(-a, a, a, a, -a, a, a, a, -a);
+  end;
+MyAny:
+  begin
+    pmb.AddPanel(0, 0, 0, -a, 0, 0, -a, 0, a, 0, 0, a);
+    pmb.AddPanel(-a, 0, 0, 0, a, 0, 0, a, a, -a, 0, a);
+    pmb.AddPanel(0, a, 0, 0, 0, 0, 0, 0, a, 0, a, a);
+    pmb.AddPanel(0, 0, 0, 0, a, 0, -a, 0, 0);
+    pmb.AddPanel(0, 0, a, -a, 0, a, 0, a, a);
   end;
 end;
   Result := pmb.ToMeshGeometry3D;
@@ -1546,6 +1560,9 @@ type
   end;   
   OctahedronVisual3D = class(PlatonicAbstractVisual3D)
     public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.OctahedronType,Length);
+  end;   
+  MyAnyVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.MyAny,Length);
   end;   
   
   PlatonicAbstractT = class(ObjectColored3D)
@@ -1615,6 +1632,21 @@ type
       CreateBase(new OctahedronVisual3D(Length),x,y,z,m);
     end;
     function Clone := (inherited Clone) as OctahedronT;
+  end;
+
+  MyAnyT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new MyAnyT(X,Y,Z,Length,Material);
+  public 
+    constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new MyAnyVisual3D(Length),x,y,z,c);
+    end;
+    constructor(x,y,z,Length: real; m: GMaterial);
+    begin
+      CreateBase(new MyAnyVisual3D(Length),x,y,z,m);
+    end;
+    function Clone := (inherited Clone) as MyAnyT;
   end;
 
 type 
@@ -1822,6 +1854,7 @@ function Icosahedron(x,y,z,Length: real; c: Color): IcosahedronT := Invoke&<Icos
 function Dodecahedron(x,y,z,Length: real; c: Color): DodecahedronT := Invoke&<DodecahedronT>(()->DodecahedronT.Create(x,y,z,Length,c));
 function Tetrahedron(x,y,z,Length: real; c: Color): TetrahedronT := Invoke&<TetrahedronT>(()->TetrahedronT.Create(x,y,z,Length,c));
 function Octahedron(x,y,z,Length: real; c: Color): OctahedronT := Invoke&<OctahedronT>(()->OctahedronT.Create(x,y,z,Length,c));
+function MyH(x,y,z,Length: real; c: Color): MyAnyT := Invoke&<MyAnyT>(()->MyAnyT.Create(x,y,z,Length,c));
 
 function Any(x,y,z: real; c: Color): AnyT := Invoke&<AnyT>(()->AnyT.Create(x,y,z,c));
 
@@ -1943,12 +1976,44 @@ begin
   app.Run(MainWindow);
 end;
 
-initialization
+var 
+///--
+__initialized := false;
+
+var 
+///--
+__finalized := false;
+
+procedure __InitModule;
+begin
   MainFormThread := new System.Threading.Thread(InitWPF0);
   MainFormThread.SetApartmentState(ApartmentState.STA);
   MainFormThread.Start;
   
   mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
+end;
+
+///--
+procedure __InitModule__;
+begin
+  if not __initialized then
+  begin
+    __initialized := true;
+    __InitModule;
+  end;
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+  if not __finalized then
+  begin
+    __finalized := true;
+  end;
+end;
+
+initialization
+  __InitModule;
 
 finalization  
 end.
