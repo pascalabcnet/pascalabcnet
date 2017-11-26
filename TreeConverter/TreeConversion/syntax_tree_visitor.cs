@@ -15185,7 +15185,7 @@ namespace PascalABCCompiler.TreeConverter
                 check_for_type_allowed(tn,get_location(_var_def_statement.vars_type));
                 if (_var_def_statement.vars_type is function_header || _var_def_statement.vars_type is procedure_header)
                     check_delegate_on_generic_parameters(tn as common_type_node, get_location(_var_def_statement.vars_type));
-                if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type)
+                if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type && _var_def_statement.var_attr != SyntaxTree.definition_attribute.Static)
                     CheckForCircuralInRecord(tn, get_location(_var_def_statement.vars_type));
                 if (_var_def_statement.inital_value != null)
                 	if (is_event) AddError(new NotSupportedError(get_location(_var_def_statement.inital_value)));
@@ -15206,7 +15206,7 @@ namespace PascalABCCompiler.TreeConverter
                 tn = inital_value.type;
                 if (tn is null_type_node)
                 	AddError(cn.location, "CAN_NOT_DEDUCE_TYPE_{0}", tn.name);
-                if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type)
+                if (context.converting_block() == block_type.type_block && context.converted_type.is_value_type && _var_def_statement.var_attr != SyntaxTree.definition_attribute.Static)
                     CheckForCircuralInRecord(tn, get_location(_var_def_statement));
             }
             if (inital_value != null && inital_value is typed_expression)

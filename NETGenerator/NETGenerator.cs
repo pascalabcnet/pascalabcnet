@@ -1338,7 +1338,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 ITypeNode ctn = fld.type;
                 TypeInfo ti = helper.GetTypeReference(ctn);
-                if (ctn is ICommonTypeNode && ti.tp.IsValueType && ti.tp is TypeBuilder)
+                if (ctn is ICommonTypeNode && ti.tp.IsValueType && ti.tp is TypeBuilder && tb != ti.tp)
                 {
                     BuildCloseTypeOrder((ICommonTypeNode)ctn, (TypeBuilder)ti.tp);
                 }
@@ -1724,7 +1724,7 @@ namespace PascalABCCompiler.NETGenerator
                     cfn.type.type_special_kind == type_special_kind.binary_file ||
                     cfn.type.type_special_kind == type_special_kind.set_type))
                     return true;
-                if (cfn.type.type_special_kind == type_special_kind.record && cfn.type is ICommonTypeNode)
+                if (cfn.polymorphic_state != polymorphic_state.ps_static && cfn.type.type_special_kind == type_special_kind.record && cfn.type is ICommonTypeNode)
                     if (NeedAddCloneMethods(cfn.type as ICommonTypeNode))
                         return true;
             }
