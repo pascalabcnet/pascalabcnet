@@ -264,7 +264,13 @@ namespace CodeCompletion
                     if (ps != null)
                         returned_scope = ps.return_type;
                     else
-                        returned_scope = tleft;
+                    {
+                        if (_bin_expr.operation_type == Operators.Division)
+                            returned_scope = TypeTable.real_type;
+                        else
+                            returned_scope = tleft;
+                    }
+                        
                     cnst_val = tmp;
                 }
                 else if (tleft != null)
