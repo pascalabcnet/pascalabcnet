@@ -2772,7 +2772,7 @@ namespace CodeFormatters
             add_space_before = true;
             add_space_after = true;
             visit_node(_short_func_definition.procdef.proc_body);
-            if (in_one_row(_short_func_definition.procdef.proc_body))
+            //if (in_one_row(_short_func_definition.procdef.proc_body))
                 IncOffset();
             in_procedure = tmp_in_procedure;
             multiline_stack_pop(_short_func_definition);
