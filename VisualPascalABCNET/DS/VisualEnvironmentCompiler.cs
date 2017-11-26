@@ -26,7 +26,7 @@ namespace VisualPascalABC
     {
         PascalABCCompiler.CompilerType defaultCompilerType = PascalABCCompiler.CompilerType.Remote;
 
-        public static Encoding DefaultFileEncoding = Encoding.GetEncoding(1251);
+        public static Encoding DefaultFileEncoding = Encoding.UTF8;
 
         private IWorkbench workbench;
         private PascalABCCompiler.RemoteCompiler remoteCompiler;

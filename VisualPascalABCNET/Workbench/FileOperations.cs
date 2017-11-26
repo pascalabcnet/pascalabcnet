@@ -369,7 +369,7 @@ namespace VisualPascalABC
                 CodeFileDocumentControl dt = TbPage;
                 WatcherService.DisableWatcher(FileName);
                 //dt.TextEditor.Encoding = VisualEnvironmentCompiler.DefaultFileEncoding;
-                if (!dt.TextEditor.CanSaveWithCurrentEncoding())
+                if (!dt.TextEditor.CanSaveWithCurrentEncoding() || true)
                 {
                     dt.TextEditor.Encoding = Encoding.UTF8;
                     dt.TextEditor.SaveFile(FileName);
