@@ -69,6 +69,7 @@ var
   OrtX := V3D(1,0,0);
   OrtY := V3D(0,1,0);
   OrtZ := V3D(0,0,1);
+  Origin := P3D(0,0,0);
 
 function ChangeAlpha(Self: GColor; value: integer); extensionmethod := ARGB(value,Self.R, Self.G, Self.B);
 
@@ -280,8 +281,9 @@ var
 type
   MyAnimation = class;
   GroupT = class;
+
 ///!#
-  Object3D = class//(DependencyObject)
+  Object3D = class(DependencyObject)
   private
     model: Visual3D;
     Parent: GroupT;
@@ -344,6 +346,27 @@ type
     function MoveOnZ(dz: real) := MoveOn(0,0,dz);
   private
     procedure MoveToProp(p: Point3D) := MoveTo(p);
+
+///---------------------------------- Ёксперимент - Position дл€ анимации --------------
+(*public
+  class PositionProperty: DependencyProperty;
+private    
+  procedure SetPositionT(value: Point3D);
+  begin
+    MoveTo(value.X,value.Y,value.Z);
+    SetValue(PositionProperty, value);
+  end;
+  procedure SetPosition(value: Point3D) := Invoke(SetPositionT,value);
+  function GetPosition: Point3D := GetPos;
+public
+  class constructor;
+  begin
+    PositionProperty := DependencyProperty.Register('Position1', typeof (Point3D), typeof (Object3D), nil);
+  end;
+
+  property Position1: Point3D read GetPosition write SetPosition;  *)
+///----------------------------------  онец эксперимента
+
   public
     property Position: Point3D read GetPos write MoveToProp;
     
@@ -371,6 +394,8 @@ type
         Result := Self;
       end);
     function AnimMoveTo(x,y,z: real; seconds: real := 1): MyAnimation;
+    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation;
+    //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! —войство не анимируетс€!
     function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x,p.y,p.z,seconds);
     function AnimMoveOn(dx,dy,dz: real; seconds: real := 1): MyAnimation;
     function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x,v.y,v.z,seconds);
@@ -415,13 +440,21 @@ type
   private
     procedure AddT(obj: Object3D);
     begin
+      var p := Self;
+      while p<>nil do
+      begin
+        if obj = p then
+          raise new System.ArgumentException('Group.Add: Ќельз€ в дочерние элементы группы добавить себ€ или своего предка');
+        p := p.Parent  
+      end;
       if obj.Parent = Self then
         exit;
       if obj.Parent = nil then
         hvp.Children.Remove(obj.model)
       else 
       begin
-        (obj.Parent.model as MeshVisual3D).Children.Remove(obj.model);
+        var q := obj.Parent.model as MeshVisual3D;
+        q.Children.Remove(obj.model);
         obj.Parent.l.Remove(obj);
       end;
       (model as ModelVisual3D).Children.Add(obj.model);
@@ -469,10 +502,12 @@ type
   end;
   
 //------------------------------ Animation -----------------------------------
+
   MyAnimation = class
   private
     Element: Object3D;
     Seconds: real;
+    AnimationCompleted: procedure;
     procedure BeginT;
     begin
       sb := CreateStoryboard;
@@ -480,11 +515,48 @@ type
       sb.Completed += procedure (o,e) -> sb.Children.Clear;
       sb.Begin;
     end;
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); virtual;
+    begin
+    end;
   protected 
     sb: StoryBoard;
-    procedure AddDoubleAnimByName(sb: StoryBoard; toValue,seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
+    class procedure AddDoubleAnimByName(sb: StoryBoard; toValue,seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
     begin
       var d := new DoubleAnimation(toValue,new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds)));
+      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
+      StoryBoard.SetTargetName(d,ttname);
+      StoryBoard.SetTargetProperty(d,new PropertyPath(prop));
+      sb.Children.Add(d);
+    end;
+    class procedure AddDoubleAnimOnByName(sb: StoryBoard; toValue,seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
+    begin
+      var d := new DoubleAnimation();
+      d.By := toValue;
+      d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
+      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
+      StoryBoard.SetTargetName(d,ttname);
+      StoryBoard.SetTargetProperty(d,new PropertyPath(prop));
+      sb.Children.Add(d);
+    end;
+    class procedure AddDoubleAnimByNameUsingKeyframes(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
+    begin
+      var d := new DoubleAnimationUsingKeyframes;
+      d.KeyFrames := new DoubleKeyFrameCollection;
+      foreach var x in a do
+        d.KeyFrames.Add(new LinearDoubleKeyFrame(x)); // не указываем keytime - надеемс€, что по секунде
+      d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
+      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
+      StoryBoard.SetTargetName(d,ttname);
+      StoryBoard.SetTargetProperty(d,new PropertyPath(prop));
+      sb.Children.Add(d);
+    end;
+    class procedure AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0); 
+    begin
+      var d := new DoubleAnimationUsingKeyframes;
+      d.KeyFrames := new DoubleKeyFrameCollection;
+      foreach var x in a do
+        d.KeyFrames.Add(new LinearDoubleKeyFrame(x)); // не указываем keytime - надеемс€, что по секунде
+      d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
       d.BeginTime := System.TimeSpan.FromSeconds(waittime);
       StoryBoard.SetTargetName(d,ttname);
       StoryBoard.SetTargetProperty(d,new PropertyPath(prop));
@@ -505,10 +577,6 @@ type
     end;
     procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb,0);
   private  
-    AnimationCompleted: procedure;
-    procedure InitAnimWait(sb: StoryBoard; waittime: real); virtual;
-    begin
-    end;
     function CreateStoryboard: StoryBoard;
     begin
       var sb := new StoryBoard;
@@ -538,18 +606,32 @@ type
     procedure Pause := sb.Pause;
     procedure Resume := sb.Resume;
     function Duration: real; virtual := seconds;
+    function &Then(second: MyAnimation): MyAnimation;
+  end;
+  
+  OffsetAnimationUsingKeyframes = class(MyAnimation)
+  private
+    a: sequence of Point3D;
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
+    begin
+      var el := Element.transltransform;
+      var ttname := 't'+el.GetHashCode;
+      if not RegisterName(sb,el,ttname) then;
+      AddDoubleAnimByNameUsingKeyframes(sb,a.Select(p->p.x),seconds,ttname,TranslateTransform3D.OffsetXProperty,waittime);
+      AddDoubleAnimByNameUsingKeyframes(sb,a.Select(p->p.y),seconds,ttname,TranslateTransform3D.OffsetYProperty,waittime);
+      AddDoubleAnimByNameUsingKeyframes(sb,a.Select(p->p.z),seconds,ttname,TranslateTransform3D.OffsetZProperty,waittime);
+    end;
+  public  
+    constructor (e: Object3D; sec: real; aa: sequence of Point3D);
+    begin
+      inherited Create(e,sec);
+      a := aa;
+    end;
   end;
   
   OffsetAnimation = class(MyAnimation)
   private
     x,y,z: real;
-  public  
-    constructor (e: Object3D; sec: real; xx,yy,zz: real);
-    begin
-      inherited Create(e,sec);
-      (x,y,z) := (xx,yy,zz);
-      Println(x,y,z)
-    end;
     procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
     begin
       var el := Element.transltransform;
@@ -560,17 +642,38 @@ type
       AddDoubleAnimByName(sb,y,seconds,ttname,TranslateTransform3D.OffsetYProperty,waittime);
       AddDoubleAnimByName(sb,z,seconds,ttname,TranslateTransform3D.OffsetZProperty,waittime);
     end;
+  public  
+    constructor (e: Object3D; sec: real; xx,yy,zz: real);
+    begin
+      inherited Create(e,sec);
+      (x,y,z) := (xx,yy,zz);
+    end;
+  end;
+
+  OffsetAnimationOn = class(MyAnimation)
+  private
+    dx,dy,dz: real;
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
+    begin
+      var el := Element.transltransform;
+      var ttname := 't'+el.GetHashCode;
+      if not RegisterName(sb,el,ttname) then;
+        //exit;
+      AddDoubleAnimOnByName(sb,dx,seconds,ttname,TranslateTransform3D.OffsetXProperty,waittime);
+      AddDoubleAnimOnByName(sb,dy,seconds,ttname,TranslateTransform3D.OffsetYProperty,waittime);
+      AddDoubleAnimOnByName(sb,dz,seconds,ttname,TranslateTransform3D.OffsetZProperty,waittime);
+    end;
+  public  
+    constructor (e: Object3D; sec: real; dxx,dyy,dzz: real);
+    begin
+      inherited Create(e,sec);
+      (dx,dy,dz) := (dxx,dyy,dzz);
+    end;
   end;
 
   ScaleAnimation = class(MyAnimation)
   private
     scale: real;
-  public  
-    constructor (e: Object3D; sec: real; sc: real);
-    begin
-      inherited Create(e,sec);
-      scale := sc;
-    end;
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
       var sctransform := Element.scaletransform; 
@@ -581,17 +684,17 @@ type
       AddDoubleAnimByName(sb,scale,seconds,ttname,ScaleTransform3D.ScaleYProperty,wait);
       AddDoubleAnimByName(sb,scale,seconds,ttname,ScaleTransform3D.ScaleZProperty,wait);
     end;
+  public  
+    constructor (e: Object3D; sec: real; sc: real);
+    begin
+      inherited Create(e,sec);
+      scale := sc;
+    end;
   end;
 
   RotateAnimation = class(MyAnimation)
   private
     vx,vy,vz,angle: real;
-  public  
-    constructor (e: Object3D; sec: real; vvx,vvy,vvz,a: real);
-    begin
-      inherited Create(e,sec);
-      (vx,vy,vz,angle) := (vvx,vvy,vvz,a)
-    end;
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
       var rottransform := Element.rotatetransform_anim;
@@ -611,18 +714,18 @@ type
 
       AddDoubleAnimByName(sb,angle,seconds,ttname,AxisAngleRotation3D.AngleProperty,wait);
     end;
+  public  
+    constructor (e: Object3D; sec: real; vvx,vvy,vvz,a: real);
+    begin
+      inherited Create(e,sec);
+      (vx,vy,vz,angle) := (vvx,vvy,vvz,a)
+    end;
   end;
 
   RotateAtAnimation = class(MyAnimation)
   private
     vx,vy,vz,angle: real;
     center: Point3D;
-  public  
-    constructor (e: Object3D; sec: real; vvx,vvy,vvz,a: real; c: Point3D);
-    begin
-      inherited Create(e,sec);
-      (vx,vy,vz,angle,center) := (vvx,vvy,vvz,a,c)
-    end;
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
       var rottransform := Element.rotatetransform_anim;
@@ -645,11 +748,22 @@ type
 
       AddDoubleAnimByName(sb,angle,seconds,ttname,AxisAngleRotation3D.AngleProperty,wait);
     end;
+  public  
+    constructor (e: Object3D; sec: real; vvx,vvy,vvz,a: real; c: Point3D);
+    begin
+      inherited Create(e,sec);
+      (vx,vy,vz,angle,center) := (vvx,vvy,vvz,a,c)
+    end;
   end;
   
   GroupAnimation = class(MyAnimation)
   private
     ll: List<MyAnimation>;
+    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
+    begin
+      foreach var l in ll do
+        l.InitAnimWait(sb,wait);
+    end;
   public  
     constructor (params l: array of MyAnimation);
     begin
@@ -658,11 +772,6 @@ type
     constructor (l: List<MyAnimation>);
     begin
       ll := l;
-    end;
-    procedure InitAnimWait(sb: StoryBoard; wait: real); override;
-    begin
-      foreach var l in ll do
-        l.InitAnimWait(sb,wait);
     end;
     function Duration: real; override := ll.Select(l->l.Duration).Max;
   end;  
@@ -670,15 +779,6 @@ type
   SequenceAnimation = class(MyAnimation)
   private
     ll: List<MyAnimation>;
-  public  
-    constructor (params l: array of MyAnimation);
-    begin
-      ll := Lst(l);
-    end;
-    constructor (l: List<MyAnimation>);
-    begin
-      ll := l;
-    end;
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
     begin
       var w := wait;
@@ -688,11 +788,22 @@ type
         w += l.Duration
       end;
     end;
+  public  
+    constructor (params l: array of MyAnimation);
+    begin
+      ll := Lst(l);
+    end;
+    constructor (l: List<MyAnimation>);
+    begin
+      ll := l;
+    end;
     function Duration: real; override := ll.Sum(l->l.Duration);
   end;
   
 function Object3D.AnimMoveTo(x,y,z,seconds: real) := new OffsetAnimation(Self,seconds,x,y,z);
-function Object3D.AnimMoveOn(dx,dy,dz,seconds: real) := new OffsetAnimation(Self,seconds,x+dx,y+dy,z+dz);
+function Object3D.AnimMoveTrajectory(a: sequence of Point3D; seconds: real) := new OffsetAnimationUsingKeyframes(Self,seconds,a);
+
+function Object3D.AnimMoveOn(dx,dy,dz,seconds: real) := new OffsetAnimationOn(Self,seconds,dx,dy,dz);
 function Object3D.AnimScale(sc,seconds: real) := new ScaleAnimation(Self,seconds,sc);
 function Object3D.AnimRotate(vx,vy,vz,angle,seconds: real) := new RotateAnimation(Self,seconds,vx,vy,vz,angle);
 function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real) := new RotateAtAnimation(Self,seconds,axis.X,axis.y,axis.z,angle,center);
@@ -711,6 +822,8 @@ function Sec(Self: real): real; extensionmethod := Self;
 // ј теперь - тадам! - перегрузка + дл€ Animate.Sequence и перегрузка * дл€ Animate.Group
 function operator+(a,b: MyAnimation): MyAnimation; extensionmethod := Animate.Sequence(a,b);
 function operator*(a,b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a,b);
+
+function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
 
 //------------------------------ End Animation -------------------------------
 
@@ -902,6 +1015,7 @@ type
       a.Height := h;
       a.TopCap := topcap;
       a.ThetaDiv := sides + 1;
+      a.BaseCap := False;
       Result := a;
     end;
   protected  
@@ -1269,7 +1383,7 @@ type
     TriangleIndex: integer;
   end;
   
-  ModelTypes = (TetrahedronType,OctahedronType,HexahedronType,IcosahedronType,DodecahedronType,StellatedOctahedronType);
+  ModelTypes = (TetrahedronType,OctahedronType,HexahedronType,IcosahedronType,DodecahedronType,StellatedOctahedronType,MyAny);
 
   PanelModelBuilder = class
     Panels: List<Panel> := new List<Panel>;
@@ -1317,6 +1431,7 @@ begin
   case CurrentModelType of 
 TetrahedronType:
   begin
+    a /= Sqrt(8); // тогда длина ребра = 1
     pmb.AddPanel(a, a, a, -a, a, -a, a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, -a, a, a, -a, -a);
     pmb.AddPanel(a, a, a, a, -a, -a, -a, -a, a);
@@ -1324,8 +1439,8 @@ TetrahedronType:
   end;
 OctahedronType:
   begin
-    //a := 1.0 / (2 * Sqrt(2));
-    var b := 0.5 * (2 * Sqrt(2)) * a;// * 2 * a;
+    a /= 2;
+    var b := 0.5 * (2 * Sqrt(2)) * a;
     pmb.AddPanel(-a, 0, a, -a, 0, -a, 0, b, 0);
     pmb.AddPanel(-a, 0, -a, a, 0, -a, 0, b, 0);
     pmb.AddPanel(a, 0, -a, a, 0, a, 0, b, 0);
@@ -1337,6 +1452,7 @@ OctahedronType:
   end;
 HexahedronType:
   begin
+    a /= 2;
     pmb.AddPanel(-a, -a, a, a, -a, a, a, -a, -a, -a, -a, -a);
     pmb.AddPanel(-a, a, -a, -a, a, a, -a, -a, a, -a, -a, -a);
     pmb.AddPanel(-a, a, a, a, a, a, a, -a, a, -a, -a, a);
@@ -1346,8 +1462,10 @@ HexahedronType:
   end;
 IcosahedronType:
   begin
+    a /= Sqrt(15)/(1+Sqrt(5));
     var phi := (1 + Sqrt(5)) / 2;
     var b := 1.0 / (2 * phi) * 2 * a;
+    //Print(Sqrt(2*b));
     pmb.AddPanel(0, b, -a, b, a, 0, -b, a, 0);
     pmb.AddPanel(0, b, a, -b, a, 0, b, a, 0);
     pmb.AddPanel(0, b, a, 0, -b, a, -a, 0, b);
@@ -1371,9 +1489,11 @@ IcosahedronType:
   end;
 DodecahedronType:
   begin
+    //a /= (Sqrt(5)-1)/Sqrt(2);
     var phi := (1 + Sqrt(5)) / 2;
     var b := 1 / phi * a;
     var c := (2 - phi) * a;
+    //Println(Sqrt(2*c));
     pmb.AddPanel(c, 0, a, -c, 0, a, -b, b, b, 0, a, c, b, b, b);
     pmb.AddPanel(-c, 0, a, c, 0, a, b, -b, b, 0, -a, c, -b, -b, b);
     pmb.AddPanel(c, 0, -a, -c, 0, -a, -b, -b, -b, 0, -a, -c, b, -b, -b);
@@ -1399,6 +1519,14 @@ StellatedOctahedronType:
     pmb.AddPanel(a, a, -a, a, -a, a, -a, -a, -a);
     pmb.AddPanel(-a, a, a, -a, -a, -a, a, -a, a);
     pmb.AddPanel(-a, a, a, a, -a, a, a, a, -a);
+  end;
+MyAny:
+  begin
+    pmb.AddPanel(0, 0, 0, -a, 0, 0, -a, 0, a, 0, 0, a);
+    pmb.AddPanel(-a, 0, 0, 0, a, 0, 0, a, a, -a, 0, a);
+    pmb.AddPanel(0, a, 0, 0, 0, 0, 0, 0, a, 0, a, a);
+    pmb.AddPanel(0, 0, 0, 0, a, 0, -a, 0, 0);
+    pmb.AddPanel(0, 0, a, -a, 0, a, 0, a, a);
   end;
 end;
   Result := pmb.ToMeshGeometry3D;
@@ -1432,6 +1560,9 @@ type
   end;   
   OctahedronVisual3D = class(PlatonicAbstractVisual3D)
     public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.OctahedronType,Length);
+  end;   
+  MyAnyVisual3D = class(PlatonicAbstractVisual3D)
+    public function Tessellate(): MeshGeometry3D; override := CreateModel(ModelTypes.MyAny,Length);
   end;   
   
   PlatonicAbstractT = class(ObjectColored3D)
@@ -1503,6 +1634,21 @@ type
     function Clone := (inherited Clone) as OctahedronT;
   end;
 
+  MyAnyT = class(PlatonicAbstractT)
+  protected  
+    function CreateObject: Object3D; override := new MyAnyT(X,Y,Z,Length,Material);
+  public 
+    constructor(x,y,z,Length: real; c: GColor);
+    begin
+      CreateBase(new MyAnyVisual3D(Length),x,y,z,c);
+    end;
+    constructor(x,y,z,Length: real; m: GMaterial);
+    begin
+      CreateBase(new MyAnyVisual3D(Length),x,y,z,m);
+    end;
+    function Clone := (inherited Clone) as MyAnyT;
+  end;
+
 type 
   My = class(ParametricSurface3D)
   public
@@ -1521,13 +1667,20 @@ type
   AnyT = class(ObjectColored3D)
     constructor(x,y,z: real; c: GColor);
     begin
-      var a := new MeshVisual3D;
+      {var a := new ExtrudedVisual3D;
+      a.Path := new Point3DCollection(Arr(P3D(1,0,-0.5),P3D(1,0,0.5)));
+      a.Section := new PointCollection(Arr(Pnt(0,0),Pnt(0.5,0),Pnt(0,0.5)));
+      a.IsSectionClosed := True;}
+      
       //var a := new TerrainVisual3D;
       //a.Content := (new SphereVisual3D()).Model;
       //a.Text := 'PascalABC';
-      {var a := new LinesVisual3D;
+      var a := new LinesVisual3D;
+      a.Points := Arr(P3D(0,0,0),P3D(3,3,3));
+      a.Thickness := 2;
+      a.Color := Colors.Blue;
       
-      var aa := 1;
+      {var aa := 1;
       var b := 80;
       
       var q := Partition(0,2*Pi*20,360*20*10).Select(t->P3D(5*cos(1*t),5*sin(1*t),t/5));
@@ -1701,6 +1854,7 @@ function Icosahedron(x,y,z,Length: real; c: Color): IcosahedronT := Invoke&<Icos
 function Dodecahedron(x,y,z,Length: real; c: Color): DodecahedronT := Invoke&<DodecahedronT>(()->DodecahedronT.Create(x,y,z,Length,c));
 function Tetrahedron(x,y,z,Length: real; c: Color): TetrahedronT := Invoke&<TetrahedronT>(()->TetrahedronT.Create(x,y,z,Length,c));
 function Octahedron(x,y,z,Length: real; c: Color): OctahedronT := Invoke&<OctahedronT>(()->OctahedronT.Create(x,y,z,Length,c));
+function MyH(x,y,z,Length: real; c: Color): MyAnyT := Invoke&<MyAnyT>(()->MyAnyT.Create(x,y,z,Length,c));
 
 function Any(x,y,z: real; c: Color): AnyT := Invoke&<AnyT>(()->AnyT.Create(x,y,z,c));
 
@@ -1771,7 +1925,10 @@ var mre := new ManualResetEvent(false);
 procedure InitWPF0;
 begin
   app := new Application;
-  app.Dispatcher.UnhandledException += (o,e) -> Println(e);
+  app.Dispatcher.UnhandledException += (o,e) -> begin 
+    Println(e.Exception.InnerException); 
+    halt; 
+  end;
   MainWindow := new GWindow;
 
   Window := new WindowType;

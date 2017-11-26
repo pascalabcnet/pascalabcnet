@@ -571,7 +571,7 @@ begin
   var dc := GetDC();
   dc.DrawRectangle(b, p, Rect(x,y,w,h));
   dc.Close();
-  var f := Host.children[0] as DrawingVisual;
+  //var f := Host.children[0] as DrawingVisual;
   {var geo := f.Drawing.Children[0] as GeometryDrawing;
   geo.Brush := Brushes.Blue;}
 end;
@@ -1377,7 +1377,10 @@ procedure InitForm0;
 begin
   app := new Application();
   
-  app.Dispatcher.UnhandledException += (o,e) -> Println(e);
+  app.Dispatcher.UnhandledException += (o,e) -> begin 
+    Println(e.Exception.InnerException); 
+    halt; 
+  end;
   MainWindow := new GWindow;
   host := new MyVisualHost();
   MainWindow.Content := host;
