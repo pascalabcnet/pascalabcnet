@@ -527,6 +527,14 @@ namespace PascalABCCompiler.TreeConverter
             return 0;
         }
 
+        public bool HasOnlyExtensionMethods()
+        {
+            for (int i = 0; i < list.Count; ++i)
+                if (!(list[i].sym_info is function_node && (list[i].sym_info as function_node).is_extension_method))
+                    return false;
+            return true;
+        }
+
         public void Insert(int index, SymbolInfo item)
         {
             if (list != null)

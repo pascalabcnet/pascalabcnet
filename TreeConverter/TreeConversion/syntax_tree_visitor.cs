@@ -5284,6 +5284,19 @@ namespace PascalABCCompiler.TreeConverter
                                                         throw LastError();
                                                     }
                                                 }
+                                                else if (fn != null && skip_first_parameter && sil.Count() > 1 && !sil.HasOnlyExtensionMethods())
+                                                {
+                                                    function_node tmp_fn = fn;
+                                                    exprs.remove_at(0);
+                                                    sil = tmp_sil;
+                                                    fn = convertion_data_and_alghoritms.select_function(exprs, sil, subloc, syntax_nodes_parameters);
+                                                    if (fn == null)
+                                                    {
+                                                        fn = tmp_fn;
+                                                        RemoveLastError();
+                                                        exprs.AddElementFirst(exp);
+                                                    }
+                                                }
                                             }
                                             catch (Exception ex)
                                             {
