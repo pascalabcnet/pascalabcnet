@@ -99,6 +99,12 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("params", "params"); keys.Add("params");
             keywords.Add("implicit", "implicit"); keys.Add("implicit");
             keywords.Add("explicit", "explicit"); keys.Add("explicit");
+            keywords.Add("forward", "forward"); keys.Add("forward");
+            keywords.Add("break", "break"); keys.Add("break");
+            keywords.Add("continue", "continue"); keys.Add("continue");
+            keywords.Add("default", "default"); keys.Add("default");
+            keywords.Add("typeof", "typeof"); keys.Add("typeof");
+            keywords.Add("sizeof", "sizeof"); keys.Add("sizeof");
             keywords_array = keys.ToArray();
             type_keywords_array = type_keys.ToArray();
 		}
