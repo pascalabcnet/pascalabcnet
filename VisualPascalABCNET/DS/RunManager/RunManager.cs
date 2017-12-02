@@ -282,8 +282,11 @@ namespace VisualPascalABC
                     EventedStreamReaderList.Add(PRunner.process.StandardError, ErrorStreamId + fileName, InputEncoding);
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
+#if DEBUG
+                File.AppendAllText("logRun.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                 RemoveFromTables(fileName);
                 throw;
             }

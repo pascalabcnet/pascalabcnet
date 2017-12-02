@@ -1,9 +1,9 @@
 // (see accompanying GPPGcopyright.rtf)
 
 // GPPG version 1.3.6
-// Machine:  IVAN-PC
-// DateTime: 19.11.2017 18:01:25
-// UserName: Ivan
+// Machine:  DESKTOP-A6LT9RI
+// DateTime: 02.12.2017 20:23:00
+// UserName: ?????????
 // Input file <ABCPascal.y>
 
 // options: no-lines gplex
@@ -4943,7 +4943,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 575: // format_expr -> tkColon, simple_expr_or_nothing
 { 
-			CurrentSemanticValue.ex = new format_expr(new int32_const(int.MaxValue), ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new format_expr(new int32_const(int.MaxValue,CurrentLocationSpan), ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan); 
 		}
         break;
       case 576: // format_expr -> simple_expr, tkColon, simple_expr_or_nothing, tkColon, 
@@ -4954,7 +4954,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 577: // format_expr -> tkColon, simple_expr_or_nothing, tkColon, simple_expr
 { 
-			CurrentSemanticValue.ex = new format_expr(new int32_const(int.MaxValue), ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new format_expr(new int32_const(int.MaxValue,CurrentLocationSpan), ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
 		}
         break;
       case 578: // relop -> tkEqual

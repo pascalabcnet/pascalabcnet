@@ -2913,7 +2913,7 @@ simple_expr_or_nothing
 	}
 	|
 	{
-		$$ = new int32_const(int.MaxValue);
+		$$ = null;
 	}
 	;
 
@@ -2924,7 +2924,7 @@ format_expr
 		}
     | tkColon simple_expr_or_nothing                        
         { 
-			$$ = new format_expr(new int32_const(int.MaxValue), $2, null, @$); 
+			$$ = new format_expr(null, $2, null, @$); 
 		}
     | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
@@ -2932,7 +2932,7 @@ format_expr
 		}
     | tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
-			$$ = new format_expr(new int32_const(int.MaxValue), $2, $4, @$); 
+			$$ = new format_expr(null, $2, $4, @$); 
 		}
     ;
 
@@ -3169,6 +3169,10 @@ variable
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
+        		if (fe.expr == null)
+        			fe.expr = new int32_const(int.MaxValue,@3);
+        		if (fe.format1 == null)
+        			fe.format1 = new int32_const(int.MaxValue,@3);
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value,el, @$);
