@@ -383,7 +383,7 @@ namespace CodeCompletion
                     else
                         tmp_ts = tmp_ts.baseScope;
                 }
-                if (ts.implemented_interfaces != null && !(ts is ArrayScope && !(ts as ArrayScope).is_dynamic_arr))
+                if (ts.implemented_interfaces != null && !(ts is ArrayScope && (!(ts as ArrayScope).is_dynamic_arr || (ts as ArrayScope).Rank > 1)))
                 {
                     List<TypeScope> implemented_interfaces = new List<TypeScope>();
                     implemented_interfaces.AddRange(ts.implemented_interfaces);
@@ -3819,11 +3819,31 @@ namespace CodeCompletion
             TypeScope ts = new TypeScope(this.kind, this.topScope, this.baseScope);
             ts.original_type = this;
             ts.loc = this.loc;
+            List<TypeScope> new_gen_args = new List<TypeScope>();
             for (int i = 0; i < gen_args.Count; i++)
             {
-                ts.AddGenericParameter(gen_args[i].si.name);
-                ts.AddGenericInstanciation(gen_args[i]);
+                TypeScope gen_arg = gen_args[i];
+                if (gen_arg.instances != null && gen_arg.original_type != null)
+                {
+                    if (gen_arg.original_type.generic_params != null)
+                    for (int j=0; j < gen_arg.original_type.generic_params.Count; j++)
+                    {
+                        if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
+                        {
+                            new_gen_args.Add(gen_arg.instances[j]);
+                            ts.AddGenericParameter(gen_arg.instances[j].si.name);
+                            ts.AddGenericInstanciation(gen_arg.instances[j]);
+                        }
+                    }
+                }
+                else
+                {
+                    ts.AddGenericParameter(gen_args[i].si.name);
+                    ts.AddGenericInstanciation(gen_args[i]);
+                    new_gen_args.Add(gen_args[i]);
+                }
             }
+            gen_args = new_gen_args;
             ts.si.name = this.si.name;
             ts.documentation = this.documentation;
             ts.si.description = ts.GetDescription();
@@ -4733,7 +4753,15 @@ namespace CodeCompletion
             {
                 this.original_type = TypeTable.get_compiled_type(ctn.GetGenericTypeDefinition());
             }
-            
+
+            if (ctn.IsGenericType /*&& ctn.IsGenericTypeDefinition*/)
+            {
+                generic_params = new List<string>();
+                foreach (Type gen_t in ctn.GetGenericArguments())
+                {
+                    generic_params.Add(gen_t.Name);
+                }
+            }
             if (ctn.GetInterfaces().Length > 0)
             {
                 this.implemented_interfaces = new List<TypeScope>();
