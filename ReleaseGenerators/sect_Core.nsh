@@ -69,7 +69,7 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\Arrays.pcu
-    File ..\bin\Lib\Colors.pcu
+    ;File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
     File ..\bin\Lib\DMCollect.pcu
     File ..\bin\Lib\DMTaskMaker.pcu
@@ -120,7 +120,7 @@
     ${AddFile} "ABCSprites.pcu"
     ${AddFile} "Arrays.pcu"
     ${AddFile} "BFSystem.pcu"
-    ${AddFile} "Colors.pcu"
+    ;${AddFile} "Colors.pcu"
     ${AddFile} "CRT.pcu"
     ${AddFile} "DMCollect.pcu"
     ${AddFile} "DMTaskMaker.pcu"
@@ -182,7 +182,7 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\Arrays.pas
-    File ..\bin\Lib\Colors.pas
+    ;File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
     File ..\bin\Lib\DMCollect.pas
     File ..\bin\Lib\DMTaskMaker.pas
@@ -232,7 +232,7 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "Arrays.pas"
-    ${AddFile} "Colors.pas"
+    ;${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
     ${AddFile} "DMCollect.pas"
     ${AddFile} "DMTaskMaker.pas"
