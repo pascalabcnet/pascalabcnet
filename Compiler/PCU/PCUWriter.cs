@@ -3103,7 +3103,10 @@ namespace PascalABCCompiler.PCU
 		{
 			SavePosition(p);
 			bw.Write((byte)p.semantic_node_type);
-			bw.Write(p.name);
+            if (p.name == null)
+                bw.Write("");
+            else
+			    bw.Write(p.name);
 			WriteTypeReference(p.type);
 			bw.Write((byte)p.concrete_parameter_type);
 			bw.Write(p.is_used_as_unlocal);
