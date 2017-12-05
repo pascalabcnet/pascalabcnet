@@ -857,6 +857,14 @@ namespace CodeCompletion
 
         public override void visit(enum_type_definition _enum_type_definition)
         {
+            IBaseScope scope = entry_scope.FindScopeByLocation(_enum_type_definition.source_context.begin_position.line_num, _enum_type_definition.source_context.begin_position.column_num);
+            if (!(scope is IEnumScope))
+            {
+                foreach (enumerator en in _enum_type_definition.enumerators.enumerators)
+                {
+                    en.name.visit(this);
+                }
+            }
             //throw new NotImplementedException();
         }
 
