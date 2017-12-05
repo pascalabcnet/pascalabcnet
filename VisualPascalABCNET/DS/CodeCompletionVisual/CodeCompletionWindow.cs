@@ -231,11 +231,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					return base.ProcessKeyEvent(ch);
 				case CompletionDataProviderKeyResult.NormalKey:
 					// just process normally
-                    if (ch == '_')
+                    /*if (ch == '_')
                     {
                         Close();
                         return true;
-                    }
+                    }*/
 					return base.ProcessKeyEvent(ch);
 				case CompletionDataProviderKeyResult.InsertionKey:
 					return InsertSelectedItem(ch);
