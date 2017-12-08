@@ -1719,7 +1719,7 @@ namespace CodeCompletion
                 }
                 else
                 {
-                    TypeSynonim ts = new TypeSynonim(new SymInfo(_type_declaration.type_name.name, SymbolKind.Type, _type_declaration.type_name.name), returned_scope, generic_params);
+                    TypeSynonim ts = new TypeSynonim(new SymInfo(_type_declaration.type_name.name, returned_scope.si.kind, _type_declaration.type_name.name), returned_scope, generic_params);
                     ts.loc = get_location(_type_declaration);
                     ts.topScope = cur_scope;
                     ts.declaringUnit = entry_scope;
