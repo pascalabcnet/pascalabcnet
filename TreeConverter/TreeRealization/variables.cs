@@ -1042,9 +1042,12 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                if (_par.IsOptional && _par.DefaultValue != null && _default_value == null)
+                if (_par.IsOptional && _default_value == null)
                 {
-                    _default_value = constant_node.make_constant(_par.DefaultValue);
+                    if (_par.DefaultValue == null)
+                        _default_value = new null_const_node(type, null);
+                    else
+                        _default_value = constant_node.make_constant(_par.DefaultValue);
                 }
                 return _default_value;
             }

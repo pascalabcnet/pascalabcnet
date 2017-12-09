@@ -2193,6 +2193,8 @@ namespace PascalABCCompiler.NetHelper
                     return new bool_const_node((bool)val, null);
                 if (t.IsEnum)
                     return new enum_const_node(Convert.ToInt32(val), compiled_type_node.get_type_node(t), null);
+                if (t.FullName == "System.Reflection.Missing")
+                    return new compiled_static_field_reference_as_constant(new static_compiled_variable_reference(new compiled_variable_definition(t.GetField("Value", BindingFlags.Public | BindingFlags.Static)), null), null);
             }
             catch
             {

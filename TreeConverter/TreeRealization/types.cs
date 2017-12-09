@@ -4064,7 +4064,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return true;
+                return false;
             }
         }
         
@@ -4072,7 +4072,7 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                return false;
+                return true;
             }
             set
             {
