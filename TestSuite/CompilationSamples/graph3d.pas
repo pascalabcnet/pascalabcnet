@@ -412,9 +412,9 @@ type
         Result := Self;
       end);
     function AnimMoveTo(x, y, z: real; seconds: real := 1): MyAnimation;
+    function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x, p.y, p.z, seconds);
     function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation;
     //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! Свойство не анимируется!
-    function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x, p.y, p.z, seconds);
     function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): MyAnimation;
     function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds);
     function AnimMoveOnX(dx: real; seconds: real := 1) := AnimMoveOn(dx, 0, 0, seconds);
@@ -433,11 +433,14 @@ type
     begin
       CreateBase0(m, x, y, z);
       m.Material := mat;
+      //var s := new SortingVisual3D();
+      //m.BackMaterial := nil;
     end;
     
     procedure CreateBase(m: MeshElement3D; x, y, z: real; c: Color);
     begin
       CreateBase(m, x, y, z, MaterialHelper.CreateMaterial(c));
+      //m.BackMaterial := nil;
     end;
     
     procedure SetColorP(c: GColor) := (model as MeshElement3D).Material := MaterialHelper.CreateMaterial(c);
@@ -534,10 +537,13 @@ type
     Element: Object3D;
     Seconds: real;
     AnimationCompleted: procedure;
+    ApplyDecorators := new List<Action0>;
     procedure BeginT;
     begin
       sb := CreateStoryboard;
       InitAnim(sb);
+      foreach var d in ApplyDecorators do
+        d();
       sb.Completed += procedure (o, e) -> sb.Children.Clear;
       sb.Begin;
     end;
@@ -548,27 +554,30 @@ type
   
   protected 
     sb: StoryBoard;
-    class procedure AddDoubleAnimByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0);
+    class function AddDoubleAnimByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimation(toValue, new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds)));
       d.BeginTime := System.TimeSpan.FromSeconds(waittime);
       StoryBoard.SetTargetName(d, ttname);
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
+      Result := d;
     end;
     
-    class procedure AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0);
+    class function AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimation();
+      //d.RepeatBehavior := RepeatBehavior.Forever;
       d.By := toValue;
       d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
       d.BeginTime := System.TimeSpan.FromSeconds(waittime);
       StoryBoard.SetTargetName(d, ttname);
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
+      Result := d;
     end;
     
-    class procedure AddDoubleAnimByNameUsingKeyframes(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0);
+    class function AddDoubleAnimByNameUsingKeyframes(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimationUsingKeyframes;
       d.KeyFrames := new DoubleKeyFrameCollection;
@@ -579,9 +588,10 @@ type
       StoryBoard.SetTargetName(d, ttname);
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
+      Result := d;
     end;
     
-    class procedure AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0);
+    class function AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimationUsingKeyframes;
       d.KeyFrames := new DoubleKeyFrameCollection;
@@ -592,6 +602,7 @@ type
       StoryBoard.SetTargetName(d, ttname);
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
+      Result := d;
     end;
     
     function RegisterName(sb: StoryBoard; element: Object; ttname: string): boolean;
@@ -642,9 +653,133 @@ type
     procedure Resume := sb.Resume;
     function Duration: real; virtual := seconds;
     function &Then(second: MyAnimation): MyAnimation;
+    function Forever: MyAnimation; virtual := Self;
+    function AutoReverse: MyAnimation; virtual := Self;
+    function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; virtual := Self;
   end;
   
-  OffsetAnimationUsingKeyframes = class(MyAnimation)
+  Double1AnimationBase = class(MyAnimation)
+  private 
+    v: real;
+    da: DoubleAnimationBase;
+  public  
+    constructor(e: Object3D; sec: real; value: real);
+    begin
+      inherited Create(e, sec);
+      v := value;
+    end;
+    function AutoReverse: MyAnimation; override;
+    begin
+      ApplyDecorators.Add(()-> begin
+        da.AutoReverse := True;
+      end);  
+      Result := Self;
+    end;
+    function Forever: MyAnimation; override;
+    begin
+      ApplyDecorators.Add(()-> begin
+        da.RepeatBehavior := RepeatBehavior.Forever;
+      end);  
+      Result := Self;
+    end;
+    function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; override;
+    begin
+      if acceleration<0 then acceleration := 0;
+      if acceleration>1 then acceleration := 1;
+      if deceleration<0 then deceleration := 0;
+      if deceleration>1 then deceleration := 1;
+      if acceleration+deceleration>1 then
+      begin
+        acceleration /= acceleration+deceleration;
+        deceleration := 1 - acceleration;
+      end;
+      ApplyDecorators.Add(()-> begin
+        da.AccelerationRatio := acceleration;
+        da.DecelerationRatio := deceleration;
+      end);  
+      Result := Self;
+    end;
+  end;
+
+  Double3AnimationBase = class(MyAnimation)
+  private 
+    x, y, z: real;
+    dax,day,daz: DoubleAnimationBase;
+  public  
+    constructor(e: Object3D; sec: real; xx, yy, zz: real);
+    begin
+      inherited Create(e, sec);
+      (x, y, z) := (xx, yy, zz);
+    end;
+    function AutoReverse: MyAnimation; override;
+    begin
+      ApplyDecorators.Add(()-> begin
+        dax.AutoReverse := True;
+        day.AutoReverse := True;
+        daz.AutoReverse := True;
+      end);  
+      Result := Self;
+    end;
+    function Forever: MyAnimation; override;
+    begin
+      ApplyDecorators.Add(()-> begin
+        dax.RepeatBehavior := RepeatBehavior.Forever;
+        day.RepeatBehavior := RepeatBehavior.Forever;
+        daz.RepeatBehavior := RepeatBehavior.Forever;
+      end);  
+      Result := Self;
+    end;
+    function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; override;
+    begin
+      if acceleration<0 then acceleration := 0;
+      if acceleration>1 then acceleration := 1;
+      if deceleration<0 then deceleration := 0;
+      if deceleration>1 then deceleration := 1;
+      if acceleration+deceleration>1 then
+      begin
+        acceleration /= acceleration+deceleration;
+        deceleration := 1 - acceleration;
+      end;
+      ApplyDecorators.Add(()-> begin
+        dax.AccelerationRatio := acceleration;
+        day.AccelerationRatio := acceleration;
+        daz.AccelerationRatio := acceleration;
+        dax.DecelerationRatio := deceleration;
+        day.DecelerationRatio := deceleration;
+        daz.DecelerationRatio := deceleration;
+      end);  
+      Result := Self;
+    end;
+  end;
+  
+  OffsetAnimation = class(Double3AnimationBase)
+  private 
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
+    begin
+      var el := Element.transltransform;
+      var ttname := 't' + el.GetHashCode;
+      if not RegisterName(sb, el, ttname) then;
+      dax := AddDoubleAnimByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
+      day := AddDoubleAnimByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
+      daz := AddDoubleAnimByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
+    end;
+  end;
+  
+  OffsetAnimationOn = class(Double3AnimationBase)
+  private 
+    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
+    begin
+      var el := Element.transltransform;
+      var ttname := 't' + el.GetHashCode;
+      if not RegisterName(sb, el, ttname) then;
+      dax := AddDoubleAnimOnByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
+      day := AddDoubleAnimOnByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
+      daz := AddDoubleAnimOnByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
+    end;
+  public 
+  end;
+  
+  OffsetAnimationUsingKeyframes = class(Double3AnimationBase)
   private 
     a: sequence of Point3D;
     procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
@@ -652,11 +787,10 @@ type
       var el := Element.transltransform;
       var ttname := 't' + el.GetHashCode;
       if not RegisterName(sb, el, ttname) then;
-      AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.x), seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
-      AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.y), seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
-      AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.z), seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
+      dax := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.x), seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
+      day := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.y), seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
+      daz := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.z), seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
     end;
-  
   public 
     constructor(e: Object3D; sec: real; aa: sequence of Point3D);
     begin
@@ -665,51 +799,7 @@ type
     end;
   end;
   
-  OffsetAnimation = class(MyAnimation)
-  private 
-    x, y, z: real;
-    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
-    begin
-      var el := Element.transltransform;
-      var ttname := 't' + el.GetHashCode;
-      if not RegisterName(sb, el, ttname) then;
-        //exit;
-      AddDoubleAnimByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
-      AddDoubleAnimByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
-      AddDoubleAnimByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
-    end;
-  
-  public 
-    constructor(e: Object3D; sec: real; xx, yy, zz: real);
-    begin
-      inherited Create(e, sec);
-      (x, y, z) := (xx, yy, zz);
-    end;
-  end;
-  
-  OffsetAnimationOn = class(MyAnimation)
-  private 
-    dx, dy, dz: real;
-    procedure InitAnimWait(sb: StoryBoard; waittime: real); override;
-    begin
-      var el := Element.transltransform;
-      var ttname := 't' + el.GetHashCode;
-      if not RegisterName(sb, el, ttname) then;
-        //exit;
-      AddDoubleAnimOnByName(sb, dx, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
-      AddDoubleAnimOnByName(sb, dy, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
-      AddDoubleAnimOnByName(sb, dz, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
-    end;
-  
-  public 
-    constructor(e: Object3D; sec: real; dxx, dyy, dzz: real);
-    begin
-      inherited Create(e, sec);
-      (dx, dy, dz) := (dxx, dyy, dzz);
-    end;
-  end;
-  
-  ScaleAnimation = class(MyAnimation)
+  ScaleAnimation = class(Double3AnimationBase)
   private 
     scale: real;
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
@@ -718,9 +808,9 @@ type
       var ttname := 's' + sctransform.GetHashCode;
       if not RegisterName(sb, sctransform, ttname) then;
         //exit;
-      AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleXProperty, wait);
-      AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleYProperty, wait);
-      AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleZProperty, wait);
+      dax := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleXProperty, wait);
+      day := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleYProperty, wait);
+      daz := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleZProperty, wait);
     end;
   
   public 
@@ -731,7 +821,7 @@ type
     end;
   end;
   
-  RotateAnimation = class(MyAnimation)
+  {RotateAnimation = class(Double1AnimationBase)
   private 
     vx, vy, vz, angle: real;
     procedure InitAnimWait(sb: StoryBoard; wait: real); override;
@@ -740,7 +830,6 @@ type
       var rot := rottransform.Rotation as AxisAngleRotation3D;
       var ttname := 'r' + rot.GetHashCode;
       if not RegisterName(sb, rot, ttname) then;
-        //exit;
       
       rot.Angle := 0; //?
       rot.Axis := V3D(vx, vy, vz); //?
@@ -751,7 +840,7 @@ type
         el.Rotate(rot.Axis, angle); // переходит в основную матрицу
       end;
       
-      AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
+      da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
     end;
   
   public 
@@ -760,9 +849,9 @@ type
       inherited Create(e, sec);
       (vx, vy, vz, angle) := (vvx, vvy, vvz, a)
     end;
-  end;
+  end;}
   
-  RotateAtAnimation = class(MyAnimation)
+  RotateAtAnimation = class(Double1AnimationBase)
   private 
     vx, vy, vz, angle: real;
     center: Point3D;
@@ -775,8 +864,7 @@ type
       var rot := rottransform.Rotation as AxisAngleRotation3D;
       var ttname := 'r' + rot.GetHashCode;
       if not RegisterName(sb, rot, ttname) then;
-        //exit;
-      
+
       rot.Angle := 0; //?
       rot.Axis := V3D(vx, vy, vz); //?
       
@@ -786,7 +874,7 @@ type
         el.RotateAt(rot.Axis, angle, center); // переходит в основную матрицу
       end;
       
-      AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
+      da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
     end;
   
   public 
@@ -818,6 +906,22 @@ type
     end;
     
     function Duration: real; override := ll.Select(l -> l.Duration).Max;
+    function AutoReverse: MyAnimation; override;
+    begin
+      ApplyDecorators.Add(()-> begin
+        foreach var l in ll do
+          l.AutoReverse
+      end);  
+      Result := Self;
+    end;
+    function Forever: MyAnimation; override;
+    begin
+      ApplyDecorators.Add(()-> begin
+        foreach var l in ll do
+          l.Forever
+      end);  
+      Result := Self;
+    end;
   end;
   
   SequenceAnimation = class(MyAnimation)
@@ -855,7 +959,7 @@ function Object3D.AnimMoveOn(dx, dy, dz, seconds: real) := new OffsetAnimationOn
 
 function Object3D.AnimScale(sc, seconds: real) := new ScaleAnimation(Self, seconds, sc);
 
-function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real) := new RotateAnimation(Self, seconds, vx, vy, vz, angle);
+function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0,0,0));
 
 function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center);
 
@@ -939,7 +1043,6 @@ type
       ell.RadiusZ := rz;
       Result := ell;
     end;
-  
   protected
     function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material);
   public 
@@ -1278,9 +1381,9 @@ type
   
   FileModelT = class(Object3D)
   private
-    procedure SetVP(v: boolean) := (model as MeshElement3D).Visible := v;
+    {procedure SetVP(v: boolean) := (model as FileModelVisual3D).Visibility := v;
     procedure SetV(v: boolean) := Invoke(SetVP, v);
-    function GetV: boolean := Invoke&<boolean>(()->(model as MeshElement3D).Visible);
+    function GetV: boolean := Invoke&<boolean>(()->(model as FileModelVisual3D).Visibility);}
   protected  
     function CreateObject: Object3D; override := new FileModelT(X, Y, Z, (model as FileModelVisual3D).Source);
   public 
@@ -1291,7 +1394,7 @@ type
       CreateBase0(a, x, y, z);
     end;
     
-    property Visible: boolean read GetV write SetV;
+    //property Visible: boolean read GetV write SetV;
     function Clone := (inherited Clone) as FileModelT;
   end;
   
@@ -1371,25 +1474,15 @@ type
     function Tessellate(): MeshGeometry3D; override;
     const
       m = 1 / 0.008;
-    const
       grid = 0.008 * m;
-    const
       margin = 0.0001 * m;
-    const
       wallThickness = 0.001 * m;
-    const
       plateThickness = 0.0032 * m;
-    const
       brickThickness = 0.0096 * m;
-    const
       knobHeight = 0.0018 * m;
-    const
       knobDiameter = 0.0048 * m;
-    const
       outerDiameter = 0.00651 * m;
-    const
       axleDiameter = 0.00475 * m;
-    const
       holeDiameter = 0.00485 * m;
     begin
       var width := Columns * grid - margin * 2;
@@ -1637,12 +1730,7 @@ type
   PlatonicAbstractVisual3D = abstract class(MeshElement3D)
   private 
     fa: real;
-    procedure SetA(value: real);
-    begin
-      fa := value;
-      OnGeometryChanged;
-    end;
-  
+    procedure SetA(value: real); begin fa := value; OnGeometryChanged; end;
   public 
     constructor(Length: real);
     begin
@@ -1749,36 +1837,27 @@ type
   private 
     fn: integer;
     fh, fr: real;
-    procedure SetR(value: real);
-    begin
-      fr := value;
-      OnGeometryChanged;
-    end;
-    
-    procedure SetH(value: real);
-    begin
-      fh := value;
-      OnGeometryChanged;
-    end;
-    
-    procedure SetN(value: integer);
-    begin
-      fn := value;
-      OnGeometryChanged;
-    end;
-  
+    fw: boolean := False;
+    procedure SetR(value: real); begin fr := value; OnGeometryChanged; end;
+    procedure SetH(value: real); begin fh := value; OnGeometryChanged; end;
+    procedure SetN(value: integer); begin fn := value; OnGeometryChanged; end;
+    procedure SetW(value: boolean); begin fw := value; OnGeometryChanged; end;
   public 
-    constructor(N: integer; Radius, Height: real);
+    constructor(N: integer; Radius, Height: real; wireframe: boolean := False);
     begin
       //inherited Create;
-      (fn, fr, fh) := (n, Radius, Height);
+      (fn, fr, fh,fw) := (n, Radius, Height, wireframe);
+      //AddEdjes;
       OnGeometryChanged;
     end;
     
     property Height: real read fh write SetH;
     property Radius: real read fr write SetR;
     property N: integer read fn write SetN;
-    function Tessellate(): MeshGeometry3D; override;
+    property Wireframe: boolean read fw write SetW;
+  
+  protected
+    function MainObject: MeshGeometry3D; virtual;
     begin
       var pmb := new PanelModelBuilder();
       if N > 0 then
@@ -1792,36 +1871,135 @@ type
       end;
       Result := pmb.ToMeshGeometry3D
     end;
+    
+    function WireframeObject: MeshGeometry3D; virtual;
+    const w = 0.05;
+    begin
+      var mb := new MeshBuilder(true,true);
+      if N > 0 then
+      begin
+        var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+        var b := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), fh)).ToArray;
+        for var i:=0 to a.High-1 do
+          mb.AddCylinder(a[i],b[i],w,10);
+        for var i:=0 to a.High-1 do
+          mb.AddCylinder(a[i],a[i+1],w,10);
+        for var i:=0 to a.High-1 do
+          mb.AddCylinder(b[i],b[i+1],w,10);
+      end;
+      Result := mb.ToMesh(true);      
+    end;
+    
+    function Tessellate(): MeshGeometry3D; override;
+    begin
+      if Wireframe then 
+        Result := WireframeObject
+      else Result := MainObject;
+    end;
   end;
+  
+  PyramidVisual3D = class(PrismVisual3D)
+  protected
+    function MainObject: MeshGeometry3D; override;
+    begin
+      var pmb := new PanelModelBuilder();
+      if N > 0 then
+      begin
+        var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+        var top := P3D(0,0,fh);
+        for var i := 0 to fn - 1 do
+          pmb.AddPanel(a[i + 1].X, a[i + 1].Y, a[i + 1].Z, a[i].X, a[i].Y, a[i].Z, top.X, top.Y, top.Z);
+        pmb.AddPanel(a.Reverse.ToArray);
+      end;
+      Result := pmb.ToMeshGeometry3D
+    end;
+    
+    function WireframeObject: MeshGeometry3D; override;
+    const w = 0.05;
+    begin
+      var mb := new MeshBuilder(true,true);
+      if N > 0 then
+      begin
+        var a := Partition(0, 2 * Pi, N).Select(x -> P3D(fr * cos(x), fr * sin(x), 0)).ToArray;
+        var top := P3D(0,0,fh);
+        for var i:=0 to a.High-1 do
+          mb.AddCylinder(a[i],top,w,10);
+        for var i:=0 to a.High-1 do
+          mb.AddCylinder(a[i],a[i+1],w,10);
+      end;
+      Result := mb.ToMesh(true);      
+    end;
+  end;
+  
   
   PrismT = class(ObjectColored3D)
   private
-    procedure SetRP(r: real) := (model as PrismVisual3D).Radius := r;
-    procedure SetR(r: real) := Invoke(SetRP, r);
-    function GetR: real := Invoke&<real>(()->(model as PrismVisual3D).Radius);
-    procedure SetHP(r: real) := (model as PrismVisual3D).Height := r;
-    procedure SetH(r: real) := Invoke(SetHP, r);
-    function GetH: real := Invoke&<real>(()->(model as PrismVisual3D).Height);
-    procedure SetNP(n: integer) := (model as PrismVisual3D).N := n;
-    procedure SetN(n: integer) := Invoke(SetNP, n);
-    function GetN: integer := Invoke&<integer>(()->(model as PrismVisual3D).N);
+    function Model := inherited model as PrismVisual3D;
+    procedure SetR(r: real) := Invoke(procedure(r: real)->model.Radius := r, r);
+    function  GetR: real := Invoke&<real>(()->model.Radius);
+    procedure SetH(r: real) := Invoke(procedure(r: real)->model.Height := r, r);
+    function  GetH: real := Invoke&<real>(()->model.Height);
+    procedure SetN(n: integer) := Invoke(procedure(n: integer)->model.N := n, n);
+    function  GetN: integer := Invoke&<integer>(()->model.N);
   protected
     function CreateObject: Object3D; override := new PrismT(X, Y, Z, N, Radius, Height, Material.Clone);
   public 
-    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial);
+    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial; wireframe: boolean := False);
     begin
-      CreateBase(new PrismVisual3D(N, r, h), x, y, z, m);
+      CreateBase(new PrismVisual3D(N, r, h, wireframe), x, y, z, m);
     end;
     
-    constructor(x, y, z: real; N: integer; r, h: real; c: GColor);
+    constructor(x, y, z: real; N: integer; r, h: real; c: GColor; wireframe: boolean := False);
     begin
-      CreateBase(new PrismVisual3D(N, r, h), x, y, z, c);
+      CreateBase(new PrismVisual3D(N, r, h, wireframe), x, y, z, c);
     end;
     
     property Radius: real read GetR write SetR;
     property Height: real read GetH write SetH;
     property N: integer read GetN write SetN;
     function Clone := (inherited Clone) as PrismT;
+  end;
+
+  PyramidT = class(PrismT)
+  private
+  protected
+    function CreateObject: Object3D; override := new PyramidT(X, Y, Z, N, Radius, Height, Material.Clone);
+  public 
+    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial; wireframe: boolean := False);
+    begin
+      CreateBase(new PyramidVisual3D(N, r, h, wireframe), x, y, z, m);
+    end;
+    
+    constructor(x, y, z: real; N: integer; r, h: real; c: GColor; wireframe: boolean := False);
+    begin
+      CreateBase(new PyramidVisual3D(N, r, h, wireframe), x, y, z, c);
+    end;
+  end;
+  
+  P3DList = List<Point3D>;
+  SegmentsT = class(Object3D)
+  private
+    function GetTP: real := (model as LinesVisual3D).Thickness;
+    function GetT: real := Invoke&<real>(GetTP);
+    procedure SetT(t: real) := Invoke(SetT,t);
+    function GetCP: GColor := (model as LinesVisual3D).Color;
+    function GetC: GColor := Invoke&<GColor>(GetCP);
+    procedure SetC(t: GColor) := Invoke(SetC,t);
+    function GetPP: P3DList := (model as LinesVisual3D).Points as P3DList;
+    function GetP: P3DList := Invoke&<P3DList>(GetPP);
+  public 
+    constructor(points: List<Point3D>; thickness: real; c: GColor);
+    begin
+      var l := new LinesVisual3D;
+      l.Thickness := thickness;
+      l.Color := c;
+      l.Points := points;
+      CreateBase0(l, 0, 0, 0);
+    end;
+    
+    property Thickness: real read GetT write SetT;
+    property Color: GColor read GetC write SetC;
+    property Points: List<Point3D> read GetP;
   end;
   
   MyAnyT = class(PlatonicAbstractT)
@@ -1868,9 +2046,9 @@ type
       //a.Content := (new SphereVisual3D()).Model;
       //a.Text := 'PascalABC';
       var a := new LinesVisual3D;
-      a.Points := Arr(P3D(0, 0, 0), P3D(3, 3, 3));
-      a.Thickness := 2;
-      a.Color := Colors.Blue;
+      a.Thickness := 1.99;
+      a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
+      a.Color := c;
       
       {var aa := 1;
       var b := 80;
@@ -1905,15 +2083,18 @@ type
     end;
   end;
 
-{procedure ProbaP;
+procedure ProbaP;
 begin
+  var g := hvp.Children[1] as DefaultLights;
+  //Print(g.Children[0] as DefaultLight);
+ 
   //var ms := new TorusMesh();
   //ms.Radius := 4;
   //var ms := new IcosahedronMesh();
   //ms.Geometry.
   //var mg3d := ms.Geometry;
 
-  var blueMaterial := MaterialHelper.CreateMaterial(Colors.Bisque);
+  {var blueMaterial := MaterialHelper.CreateMaterial(Colors.Bisque);
 
 
   var g3d := new GeometryModel3D(mg3d, blueMaterial);
@@ -1921,11 +2102,11 @@ begin
   modelGroup.Children.Add(g3d);
 
   var model := new ModelVisual3D();
-  model.Content := modelGroup;|
-  hvp.Children.Add(model);
+  model.Content := modelGroup;
+  hvp.Children.Add(model);}
 end;
 
-procedure Proba := Invoke(ProbaP);}
+procedure Proba := Invoke(ProbaP);
 
 function Group(x, y, z: integer): GroupT := Invoke&<GroupT>(()->GroupT.Create(x, y, z));
 
@@ -2000,15 +2181,6 @@ function TruncatedCone(p: Point3D; height, baseradius, topradius: real; topcap: 
 function TruncatedCone(p: Point3D; height, baseradius, topradius: real; c: GColor) 
 := TruncatedCone(p.x, p.y, p.z, height, baseradius, topradius, True, c);
 
-{function Prism(x,y,z,height,radius: real; sides: integer; topcap: boolean; c: GColor) 
-  := TruncatedConeAux(x,y,z,height,radius,radius,sides,topcap,c);
-function Prism(x,y,z,height,radius: real; sides: integer; c: GColor) 
-  := TruncatedConeAux(x,y,z,height,radius,radius,sides,True,c);
-function Prism(p: Point3D; height,radius: real; sides: integer; topcap: boolean; c: GColor) 
-  := TruncatedConeAux(p.x,p.y,p.z,height,radius,radius,sides,topcap,c);
-function Prism(p: Point3D; height,radius: real; sides: integer; c: GColor) 
-  := TruncatedConeAux(p.x,p.y,p.z,height,radius,radius,sides,True,c);}
-
 function Cylinder(x, y, z, height, radius: real; topcap: boolean; c: GColor): TruncatedConeT := TruncatedCone(x, y, z, height, radius, radius, topcap, c);
 
 function Cylinder(x, y, z, height, radius: real; c: GColor) := Cylinder(x, y, z, height, radius, True, c);
@@ -2070,22 +2242,22 @@ function Rectangle3D(p: Point3D; l, w: real; c: GColor) := Rectangle3D(p.x, p.y,
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
 function FileModel3D(x, y, z: real; fname: string) := Invoke&<FileModelT>(()->FileModelT.Create(x, y, z, fname));
-
 function FileModel3D(p: Point3D; fname: string) := FileModel3D(p.x, p.y, p.z, fname);
 
-function Prism(x, y, z: real; N: integer; Radius, Height: real; c: GColor): PrismT := Invoke&<PrismT>(()->PrismT.Create(x, y, z, N, Radius, Height, c));
-
-function Prism(p: Point3D; N: integer; Radius, Height: real; c: GColor): PrismT := Prism(p.X, p.Y, p.Z, N, Radius, Height, c);
+function Prism(x, y, z: real; Sides: integer; Radius, Height: real; c: GColor; wireframe: boolean := False): PrismT := Invoke&<PrismT>(()->PrismT.Create(x, y, z, Sides, Radius, Height, c, wireframe));
+function Prism(p: Point3D; Sides: integer; Radius, Height: real; c: GColor; wireframe: boolean := False): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, c, wireframe);
+function Pyramid(x, y, z: real; Sides: integer; Radius, Height: real; c: GColor; wireframe: boolean := False): PyramidT := Invoke&<PyramidT>(()->PyramidT.Create(x, y, z, Sides, Radius, Height, c, wireframe));
+function Pyramid(p: Point3D; Sides: integer; Radius, Height: real; c: GColor; wireframe: boolean := False): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, c, wireframe);
 
 function Lego(x, y, z: real; col, r, h: integer; c: Color): LegoT := Invoke&<LegoT>(()->LegoT.Create(x, y, z, col, r, h, c));
 
 function Icosahedron(x, y, z, Length: real; c: Color): IcosahedronT := Invoke&<IcosahedronT>(()->IcosahedronT.Create(x, y, z, Length, c));
-
 function Dodecahedron(x, y, z, Length: real; c: Color): DodecahedronT := Invoke&<DodecahedronT>(()->DodecahedronT.Create(x, y, z, Length, c));
-
 function Tetrahedron(x, y, z, Length: real; c: Color): TetrahedronT := Invoke&<TetrahedronT>(()->TetrahedronT.Create(x, y, z, Length, c));
-
 function Octahedron(x, y, z, Length: real; c: Color): OctahedronT := Invoke&<OctahedronT>(()->OctahedronT.Create(x, y, z, Length, c));
+
+function Segments3D(points: List<Point3D>; thickness: real; c: GColor): SegmentsT := Invoke&<SegmentsT>(()->SegmentsT.Create(points, thickness, c));
+
 
 function MyH(x, y, z, Length: real; c: Color): MyAnyT := Invoke&<MyAnyT>(()->MyAnyT.Create(x, y, z, Length, c));
 

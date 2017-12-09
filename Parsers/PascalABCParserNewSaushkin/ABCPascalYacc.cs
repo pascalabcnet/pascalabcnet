@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  DESKTOP-A6LT9RI
-// DateTime: 02.12.2017 20:23:00
+// DateTime: 03.12.2017 20:40:43
 // UserName: ?????????
 // Input file <ABCPascal.y>
 
@@ -4933,7 +4933,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 573: // simple_expr_or_nothing -> /* empty */
 {
-		CurrentSemanticValue.ex = new int32_const(int.MaxValue);
+		CurrentSemanticValue.ex = null;
 	}
         break;
       case 574: // format_expr -> simple_expr, tkColon, simple_expr_or_nothing
@@ -4943,7 +4943,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 575: // format_expr -> tkColon, simple_expr_or_nothing
 { 
-			CurrentSemanticValue.ex = new format_expr(new int32_const(int.MaxValue,CurrentLocationSpan), ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new format_expr(null, ValueStack[ValueStack.Depth-1].ex, null, CurrentLocationSpan); 
 		}
         break;
       case 576: // format_expr -> simple_expr, tkColon, simple_expr_or_nothing, tkColon, 
@@ -4954,7 +4954,7 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         break;
       case 577: // format_expr -> tkColon, simple_expr_or_nothing, tkColon, simple_expr
 { 
-			CurrentSemanticValue.ex = new format_expr(new int32_const(int.MaxValue,CurrentLocationSpan), ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
+			CurrentSemanticValue.ex = new format_expr(null, ValueStack[ValueStack.Depth-3].ex, ValueStack[ValueStack.Depth-1].ex, CurrentLocationSpan); 
 		}
         break;
       case 578: // relop -> tkEqual
@@ -5201,6 +5201,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
+        		if (fe.expr == null)
+        			fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
+        		if (fe.format1 == null)
+        			fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
         		CurrentSemanticValue.ex = new slice_expr(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
 			}   
 			else CurrentSemanticValue.ex = new indexer(ValueStack[ValueStack.Depth-4].ex as addressed_value,el, CurrentLocationSpan);
@@ -5209,6 +5213,10 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
       case 639: // variable -> variable, tkQuestionSquareOpen, format_expr, tkSquareClose
 {
         	var fe = ValueStack[ValueStack.Depth-2].ex as format_expr; // SSM 9/01/17
+    		if (fe.expr == null)
+    			fe.expr = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
+    		if (fe.format1 == null)
+    			fe.format1 = new int32_const(int.MaxValue,LocationStack[LocationStack.Depth-2]);
       		CurrentSemanticValue.ex = new slice_expr_question(ValueStack[ValueStack.Depth-4].ex as addressed_value,fe.expr,fe.format1,fe.format2,CurrentLocationSpan);
         }
         break;
