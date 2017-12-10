@@ -2551,8 +2551,9 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						AddError(((common_parameter)def.parameters[param_num]).loc,
                             "DIFFERENT_PARAMETER_NAME_IN_FUNCTION_DEFINITION_{0}_AND_PREDEFINITION_{1}",
-							((common_parameter)predef.parameters[param_num]).name,
-							((common_parameter)def.parameters[param_num]).name);
+                            ((common_parameter)def.parameters[param_num]).name,
+                            ((common_parameter)predef.parameters[param_num]).name
+							);
 					}
                     if(predef.parameters[param_num].parameter_type!=def.parameters[param_num].parameter_type)
                         AddError(def.loc, "FUNCTION_DEFINITION_HAVE_DIFFERENT_PARAMS_WITH_PREDEFINITION");
