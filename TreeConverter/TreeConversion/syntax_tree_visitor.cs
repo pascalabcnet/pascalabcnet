@@ -9389,9 +9389,13 @@ namespace PascalABCCompiler.TreeConverter
                 SyntaxTree.ident_with_templateparams iwt = _dot_node.left as SyntaxTree.ident_with_templateparams;
                 if (iwt != null)
                 {
-                    type_node tn = ret.visit((SyntaxTree.syntax_tree_node)iwt) as type_node;
-                    dot_node_as_type_ident(tn, id_right, mot);
-                    return;
+                    var ret_node = ret.visit((SyntaxTree.syntax_tree_node)iwt);
+                    if (ret_node is type_node)
+                    {
+                        type_node tn = ret.visit((SyntaxTree.syntax_tree_node)iwt) as type_node;
+                        dot_node_as_type_ident(tn, id_right, mot);
+                        return;
+                    }
                 }
                 SyntaxTree.dot_node left_dot = _dot_node.left as SyntaxTree.dot_node;
                 if (left_dot != null)
