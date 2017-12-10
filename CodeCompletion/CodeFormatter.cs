@@ -348,7 +348,16 @@ namespace CodeFormatters
                     {
                         if (multi_line_nodes.Count > 0)
                         {
-                            lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                            if (multi_line_nodes.Count == 1)
+                                lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                            else
+                            {
+                                if (off > lines[i].Length)
+                                    lines[i] = new string(' ', addit_pos_for_multiline + off) + lines[i];
+                                else
+                                    lines[i] = new string(' ', addit_pos_for_multiline) + lines[i];
+                            }
+                                
                         }
                         else
                         {
@@ -2697,9 +2706,10 @@ namespace CodeFormatters
             }
             if (_function_lambda_definition.formal_parameters != null && Text[GetPosition(_function_lambda_definition.formal_parameters.source_context.end_position.line_num, _function_lambda_definition.formal_parameters.source_context.end_position.column_num)+1] != ')')
                 add_space_before = true;
-            multiline_stack_pop(_function_lambda_definition);
+            
             int tmp_off = off;
             visit_node(_function_lambda_definition.proc_body);
+            multiline_stack_pop(_function_lambda_definition);
             off = tmp_off;
         }
         public override void visit(function_lambda_call _function_lambda_call)
