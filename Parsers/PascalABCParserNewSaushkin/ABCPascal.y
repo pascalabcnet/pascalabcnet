@@ -2912,19 +2912,19 @@ relop_expr
         { 
 			$$ = new bin_expr($1, $3, $2.type, @$); 
 		}
-    | is_expr tkRoundOpen identifier tkRoundClose 
+    | is_expr tkRoundOpen tkVar identifier tkRoundClose 
         {
             var isTypeCheck = $1 as typecast_node;
             var typeDef = isTypeCheck.type_def;
-            var pattern = new type_pattern($3, typeDef, typeDef.source_context); 
+            var pattern = new type_pattern($4, typeDef, typeDef.source_context); 
             $$ = new is_pattern_expr(isTypeCheck.expr, pattern, @$);
         }
     ;
     
 pattern
-    : simple_or_template_type_reference tkRoundOpen identifier tkRoundClose
+    : simple_or_template_type_reference tkRoundOpen tkVar identifier tkRoundClose
         { 
-            $$ = new type_pattern($3, $1); 
+            $$ = new type_pattern($4, $1); 
         }
     ;
     
