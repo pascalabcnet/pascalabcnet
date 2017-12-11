@@ -11,31 +11,34 @@ namespace SyntaxVisitors.SugarVisitors
     public class MatchWithVisitor : BaseChangeVisitor
     {
         private int _variableCounter = 0;
+        private if_node _previousIf;
+        private statement_list desugaredMatchWith;
 
         public static MatchWithVisitor New => new MatchWithVisitor();
 
         public override void visit(match_with matchWith)
         {
-            var statements = new statement_list();
+            desugaredMatchWith = null;
+            _previousIf = null;
 
             // Преобразование из сахара в известную конструкцию каждого case
             foreach (var patternCase in matchWith.case_list.elements)
             {
                 if (patternCase.pattern is type_pattern)
-                    statements.AddMany(DesugarTypePatternCase(matchWith.expr, patternCase));
+                    DesugarTypePatternCase(matchWith.expr, patternCase);
             }
-
+            
             // Замена выражения match with на новое несахарное поддерево и его обход
-            ReplaceUsingParent(matchWith, statements);
-            visit(statements);
+            ReplaceUsingParent(matchWith, desugaredMatchWith);
+            visit(desugaredMatchWith);
         }
 
-        List<statement> DesugarTypePatternCase(expression matchingExpression, pattern_case patternCase)
+        void DesugarTypePatternCase(expression matchingExpression, pattern_case patternCase)
         {
             Debug.Assert(patternCase.pattern is type_pattern);
 
             // создание фиктивной переменной необходимого типа
-            var result = new List<statement>();
+            var result = new statement_list();
             var pattern = (type_pattern) patternCase.pattern;
             var generatedVariable = GenerateIdent();
             result.Add(new var_statement(generatedVariable, pattern.type));
@@ -45,14 +48,28 @@ namespace SyntaxVisitors.SugarVisitors
             // сгенерированной переменной
             var patternVarDef = new var_statement(pattern.identifier, generatedVariable);
             // Создание тела if из объявления переменной и соттветствующего тела case
-            result.Add(SubtreeCreator.CreateIf(isTest, new statement_list(patternVarDef, patternCase.case_action)));
+            var ifCheck = SubtreeCreator.CreateIf(isTest, new statement_list(patternVarDef, patternCase.case_action));
+            result.Add(ifCheck);
 
-            return result;
+            // Добавляем полученные statements в результат
+            AddDesugaredCaseToResult(result, ifCheck);
         }
 
         private ident GenerateIdent()
         {
             return  new ident("gen" + _variableCounter++);
+        }
+
+        private void AddDesugaredCaseToResult(statement_list statements, if_node newIf)
+        {
+            // Если результат пустой, значит это первый case
+            if (desugaredMatchWith == null)
+                desugaredMatchWith = statements;
+            else
+                _previousIf.else_body = statements;
+
+            // Запоминаем только что сгенерированный if
+            _previousIf = newIf;
         }
     }
 }
