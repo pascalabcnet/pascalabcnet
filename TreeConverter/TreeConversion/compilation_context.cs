@@ -2677,7 +2677,7 @@ namespace PascalABCCompiler.TreeConverter
                             continue;
                         fn = si.sym_info as function_node;
                         //Сверяем параметры и тип возвращаемого значения
-                        if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                        if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) /*&& fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract*/)
                         {
                             //Нашли нужную функцию
                             common_method_node fn_common = fn as common_method_node;
