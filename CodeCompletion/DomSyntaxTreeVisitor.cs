@@ -1257,7 +1257,7 @@ namespace CodeCompletion
             ProcRealization pr = null;
             location loc = get_location(_function_header);
             returned_scope = null;
-            if (_function_header.return_type != null && !(_function_header.return_type is enum_type_definition && _function_header.template_args.Count > 0))
+            if (_function_header.return_type != null && !(_function_header.return_type is enum_type_definition && _function_header.template_args != null && _function_header.template_args.Count > 0))
                 _function_header.return_type.visit(this);
             if (returned_scope != null)
             {

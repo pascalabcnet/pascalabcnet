@@ -2551,8 +2551,9 @@ namespace PascalABCCompiler.TreeConverter
 					{
 						AddError(((common_parameter)def.parameters[param_num]).loc,
                             "DIFFERENT_PARAMETER_NAME_IN_FUNCTION_DEFINITION_{0}_AND_PREDEFINITION_{1}",
-							((common_parameter)predef.parameters[param_num]).name,
-							((common_parameter)def.parameters[param_num]).name);
+                            ((common_parameter)def.parameters[param_num]).name,
+                            ((common_parameter)predef.parameters[param_num]).name
+							);
 					}
                     if(predef.parameters[param_num].parameter_type!=def.parameters[param_num].parameter_type)
                         AddError(def.loc, "FUNCTION_DEFINITION_HAVE_DIFFERENT_PARAMS_WITH_PREDEFINITION");
@@ -2676,7 +2677,7 @@ namespace PascalABCCompiler.TreeConverter
                             continue;
                         fn = si.sym_info as function_node;
                         //Сверяем параметры и тип возвращаемого значения
-                        if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) && fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract)
+                        if (convertion_data_and_alghoritms.function_eq_params_and_result(meth, fn, true) /*&& fn.polymorphic_state != SemanticTree.polymorphic_state.ps_virtual_abstract*/)
                         {
                             //Нашли нужную функцию
                             common_method_node fn_common = fn as common_method_node;

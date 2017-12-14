@@ -3825,7 +3825,7 @@ namespace CodeCompletion
                 TypeScope gen_arg = gen_args[i];
                 if (gen_arg.instances != null && gen_arg.original_type != null)
                 {
-                    if (gen_arg.original_type.generic_params != null)
+                    if (gen_arg.original_type.generic_params != null && this.generic_params != null)
                     for (int j=0; j < gen_arg.original_type.generic_params.Count; j++)
                     {
                         if (string.Compare(gen_arg.original_type.generic_params[j], this.generic_params[j], true) == 0)
