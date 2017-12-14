@@ -385,6 +385,8 @@ procedure Println(params args: array of object);
 
 procedure Print(s: string);
 procedure Println(s: string);
+procedure Print(c: char);
+procedure Println(c: char);
 
 // == Версия 4.15. Конец дополнений ==
 
@@ -1721,15 +1723,10 @@ end;
 
 // == Версия 4.15. Дополнения ==
 
-procedure Print(s: string);
-begin
-  write(s);
-end;
-
-procedure Println(s: string);
-begin
-  write(s);
-end;
+procedure Print(s: string) := Write(s);
+procedure Println(s: string) := Write(s);
+procedure Print(c: char) := Write(c);
+procedure Println(c: char) := Write(c);
 
 // == Версия 4.15. Конец дополнений ==
 

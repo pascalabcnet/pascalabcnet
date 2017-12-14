@@ -1123,6 +1123,7 @@ namespace VisualPascalABCPlugins
         public override void visit(function_lambda_definition node)
         {
             prepare_node(node.formal_parameters, "formal_parameters");
+            prepare_node(node.proc_body, "proc_body");
             prepare_node(node.return_type, "return_type");
         }
         public override void visit(function_lambda_call node)

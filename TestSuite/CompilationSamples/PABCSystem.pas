@@ -9683,6 +9683,12 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+/// Возвращает True если значение находится между двумя другими
+function InRange(Self: integer; a,b: integer): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
 
 // Дополнения февраль 2016: IsEven, IsOdd
 
@@ -9738,6 +9744,11 @@ end;
 // -----------------------------------------------------
 /// Возвращает True если значение находится между двумя другими
 function Between(Self: real; a,b: real): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
+function InRange(Self: real; a,b: real): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
@@ -9798,6 +9809,12 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+/// Возвращает True если значение находится между двумя другими
+function InRange(Self: char; a,b: char): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
 /// Предыдущий символ
 function Pred(Self: char); extensionmethod := PABCSystem.Pred(Self);
 
@@ -9853,6 +9870,12 @@ end;
 //------------------------------------------------------------------------------
 /// Возвращает True если значение находится между двумя другими
 function Between(Self: string; a,b: string): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
+/// Возвращает True если значение находится между двумя другими
+function InRange(Self: string; a,b: string): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
