@@ -2135,7 +2135,9 @@ type
       ls.Points := CreatePoints;
       Result := ls;
     end;
-
+    
+  protected
+    function CreateObject: Object3D; override := new PrismTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   public 
     function Points: Point3DCollection; virtual;
     begin
@@ -2145,7 +2147,6 @@ type
 
       Result := pc;
     end;
-    
 
     constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor);
     begin
@@ -2160,6 +2161,8 @@ type
   end;
   
   PyramidTWireframe = class(PrismTWireframe)
+  protected
+    function CreateObject: Object3D; override := new PyramidTWireframe(X, Y, Z, N, Radius, Height, (model as LinesVisual3D).Thickness, (model as LinesVisual3D).Color);
   private
     function CreatePoints: Point3DCollection; override;
     begin
@@ -2196,6 +2199,8 @@ type
     function GetP: array of Point3D; virtual := Invoke&<array of Point3D>(GetPP);
     procedure SetPP(pp: array of Point3D) := Model.Points := new Point3DCollection(pp);
     procedure SetP(pp: array of Point3D) := Invoke(SetPP,pp);
+  protected
+    function CreateObject: Object3D; override := new SegmentsT(Points, Thickness, Color);
   public 
     constructor(points: sequence of Point3D; thickness: real; c: GColor);
     begin

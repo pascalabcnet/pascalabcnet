@@ -4847,7 +4847,7 @@ namespace PascalABCCompiler.TreeConverter
                         else
                         {
                             sil = context.find(id.name);
-                            if (templ_args_count != 0)
+                            if (templ_args_count != 0 && sil != null)
                             {
                                 SymbolInfo conv = ConvertTypeToInstance(sil.First(), iwt.template_params.params_list, get_location(id));
                                 if (conv != null)
