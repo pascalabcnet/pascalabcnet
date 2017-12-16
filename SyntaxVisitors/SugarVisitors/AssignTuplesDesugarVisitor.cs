@@ -63,7 +63,8 @@ namespace SyntaxVisitors.SugarVisitors
         public override void visit(assign_var_tuple assvartup)
         {
             var tname = "#temp_var" + UniqueNumStr();
-            if (assvartup.Parent is declarations ds)
+            var ds = assvartup.Parent as declarations;
+            if (ds != null)
             {
                 var ld = new List<declaration>();
                 ld.Add(new semantic_check_sugared_statement_node(typeof(assign_var_tuple), new List<syntax_tree_node> { assvartup.idents, assvartup.expr }, assvartup.source_context)); // Это нужно для проверок на этапе преобразования в семантику

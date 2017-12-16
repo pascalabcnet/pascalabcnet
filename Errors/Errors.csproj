@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Configuration\GlobalAssemblyInfo.cs">
-      <Link>Config\globalassemblyinfo.cs</Link>
+      <Link>Config\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Config\AssemblyInfo.cs" />
     <Compile Include="Errors.cs" />
