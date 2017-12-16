@@ -442,6 +442,11 @@ type
     end;
   
   public 
+    constructor(model: Visual3D);
+    begin
+      CreateBase0(model, 0, 0, 0);
+    end;
+
     property X: real read GetX write SetX;
     property Y: real read GetY write SetY;
     property Z: real read GetZ write SetZ;
@@ -540,6 +545,18 @@ type
     function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds);
     function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): MyAnimation;
     function Clone: Object3D := Invoke&<Object3D>(CloneT);
+    
+    procedure SaveP(fname: string);
+    begin
+      var f := new System.IO.StreamWriter(fname);
+      XamlWriter.Save(Model,f);
+      f.Close()
+    end;
+    procedure Save(fname: string); virtual := Invoke(SaveP,fname); // надо её сделать виртуальной!
+    class function Load(fname: string): Object3D := Invoke&<Object3D>(()->begin
+        var m := XamlReader.Load(new System.IO.FileStream(fname,System.IO.FileMode.Open)) as Visual3D;
+        Result := new Object3D(m);
+      end);
   end;
   
   ObjectWithChildren3D = class(Object3D) // model is ModelVisual3D
@@ -1247,6 +1264,11 @@ type
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
   public 
+    constructor();
+    begin
+      CreateBase(NewVisualObject(1), 0, 0, 0, Colors.Blue);
+    end;
+  
     constructor(x, y, z, r: real; m: Gmaterial);
     begin
       CreateBase(NewVisualObject(r), x, y, z, m);
@@ -1421,6 +1443,26 @@ type
     property TopRadius: real read GetTR write SetTR;
     property Topcap: boolean read GetTC write SetTC;
     function Clone := (inherited Clone) as TruncatedConeT;
+  end;
+  
+  CylinderT = class(TruncatedConeT)
+  private
+    procedure SetR(r: real);
+    begin
+      BaseRadius := r;
+      TopRadius := r;
+    end;
+    function GetR: real := Radius;
+  protected  
+    function CreateObject: Object3D; override := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
+  public 
+    constructor(x, y, z, h, r: real; ThetaDiv: integer; topcap: boolean; m: GMaterial);
+    begin
+      var a := NewVisualObject(h, r, r, ThetaDiv, topcap);
+      CreateBase(a, x, y, z, m);
+    end;
+    function Clone := (inherited Clone) as CylinderT;
+    property Radius: real read GetR write SetR;
   end;
   
   TeapotT = class(ObjectWithMaterial3D)
@@ -2349,13 +2391,17 @@ function TruncatedConeAux(x, y, z, height, baseradius, topradius: real; sides: i
 
 const maxsides = 37;
 
-function TruncatedCone(x, y, z, height, baseradius, topradius: real; topcap: boolean; c: Material) := TruncatedConeAux(x, y, z, height, baseradius, topradius, maxsides, topcap, c); 
+///--
+function TruncatedCone(x, y, z, height, baseradius, topradius: real; topcap: boolean; c: Material): TruncatedConeT := TruncatedConeAux(x, y, z, height, baseradius, topradius, maxsides, topcap, c); 
 function TruncatedCone(x, y, z, height, baseradius, topradius: real; c: Material) := TruncatedCone(x, y, z, height, baseradius, topradius, True, c);
+///--
 function TruncatedCone(p: Point3D; height, baseradius, topradius: real; topcap: boolean; c: Material) := TruncatedCone(p.x, p.y, p.z, height, baseradius, topradius, topcap, c);
 function TruncatedCone(p: Point3D; height, baseradius, topradius: real; c: Material) := TruncatedCone(p.x, p.y, p.z, height, baseradius, topradius, True, c);
 
-function Cylinder(x, y, z, height, radius: real; topcap: boolean; c: Material): TruncatedConeT := TruncatedCone(x, y, z, height, radius, radius, topcap, c);
+///--
+function Cylinder(x, y, z, height, radius: real; topcap: boolean; c: Material): CylinderT := Invoke&<CylinderT>(()->CylinderT.Create(x, y, z, height, radius, maxsides, topcap, c));
 function Cylinder(x, y, z, height, radius: real; c: Material) := Cylinder(x, y, z, height, radius, True, c);
+///--
 function Cylinder(p: Point3D; height, radius: real; topcap: boolean; c: Material) := Cylinder(p.x, p.y, p.z, height, radius, topcap, c);
 function Cylinder(p: Point3D; height, radius: real; c: Material) := Cylinder(p.x, p.y, p.z, height, radius, True, c);
 
@@ -2368,10 +2414,8 @@ function Cone(p: Point3D; height, radius: real; c: Material) := TruncatedCone(p.
 function Teapot(x, y, z: real; c: Material): TeapotT := Invoke&<TeapotT>(()->TeapotT.Create(x, y, z, c));
 function Teapot(p: Point3D; c: Material) := Teapot(p.x, p.y, p.z, c);
 
-function BillboardText(x, y, z: real; text: string; fontsize: real): BillboardTextT := Invoke&<BillboardTextT>(()->BillboardTextT.Create(x, y, z, text, fontsize));
-function BillboardText(p: Point3D; text: string; fontsize: real) := BillboardText(P.x, p.y, p.z, text, fontsize);
-function BillboardText(x, y, z: real; text: string) := BillboardText(x, y, z, text, 12);
-function BillboardText(p: Point3D; text: string) := BillboardText(P.x, p.y, p.z, text, 12);
+function BillboardText(x, y, z: real; text: string; fontsize: real := 12): BillboardTextT := Invoke&<BillboardTextT>(()->BillboardTextT.Create(x, y, z, text, fontsize));
+function BillboardText(p: Point3D; text: string; fontsize: real := 12) := BillboardText(P.x, p.y, p.z, text, fontsize);
 
 function CoordinateSystem(arrowslength, diameter: real): CoordinateSystemT := Invoke&<CoordinateSystemT>(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
 function CoordinateSystem(arrowslength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
@@ -2385,10 +2429,10 @@ function Text3D(p: Point3D; text: string; height: real) := Text3D(p.x, p.y, p.z,
 
 function Rectangle3D(x, y, z, l, w: real; normal, lendirection: Vector3D; c: Material) := Invoke&<RectangleT>(()->RectangleT.Create(x, y, z, l, w, normal, lendirection, c));
 function Rectangle3D(p: Point3D; l, w: real; normal, lendirection: Vector3D; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, normal, lendirection, c);
-function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; c: Material) := Rectangle3D(x, y, z, l, w, normal, v3d(1, 0, 0), c); 
-function Rectangle3D(x, y, z, l, w: real; c: Material) := Rectangle3D(x, y, z, l, w, v3d(0, 0, 1), v3d(1, 0, 0), c); 
-function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, normal, v3d(1, 0, 0), c); 
-function Rectangle3D(p: Point3D; l, w: real; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, v3d(0, 0, 1), v3d(1, 0, 0), c); 
+function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; c: Material) := Rectangle3D(x, y, z, l, w, normal, OrtX, c); 
+function Rectangle3D(x, y, z, l, w: real; c: Material) := Rectangle3D(x, y, z, l, w, OrtZ, OrtX, c); 
+function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, normal, OrtX, c); 
+function Rectangle3D(p: Point3D; l, w: real; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, OrtZ, OrtX, c); 
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
 function FileModel3D(x, y, z: real; fname: string) := Invoke&<FileModelT>(()->FileModelT.Create(x, y, z, fname));
@@ -2437,12 +2481,12 @@ begin
   //var m := MaterialHelper.CreateMaterial(Brushes.Green,100,100);
   //m.AmbientColor := Colors.Red;
   //m.Color := Colors.Green;
-  var bi := new System.Windows.Media.Imaging.BitmapImage(new System.Uri('dog.png',System.UriKind.Relative));
-  var b := new ImageBrush(bi);
+  //var bi := new System.Windows.Media.Imaging.BitmapImage(new System.Uri('dog.png',System.UriKind.Relative));
+  //var b := new ImageBrush(bi);
   //b.ViewportUnits := BrushMappingMode.Absolute;
-  b.Viewport := Rect(0,0,0.2,0.3);
-  b.TileMode := System.Windows.Media.TileMode.Tile;
-  Cube(6,-4,0,4,MaterialHelper.CreateMaterial(b));
+  //b.Viewport := Rect(0,0,0.2,0.3);
+  //b.TileMode := System.Windows.Media.TileMode.Tile;
+  //Cube(6,-4,0,4,MaterialHelper.CreateMaterial(b));
   Sphere(2,-4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.4,100,255));
   Sphere(-2,-4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.6,100,255));
   Sphere(-6,-4,0,2,MaterialHelper.CreateMaterial(Brushes.Green,0.8,100,0));
@@ -2459,6 +2503,27 @@ begin
   //var g := hvp.Children[1] as DefaultLights;
 end;
 procedure Proba := Invoke(ProbaP);
+
+procedure ProbaP2;
+begin
+  //var c := new CubeVisual3D();
+  //var c := new IcosahedronVisual3D();
+  //c.Length := 1;
+  //c.Material := Colors.Green;
+  //hvp.Children.Add(c);
+  //var ex := new HelixToolkit.Wpf.XamlExporter();
+  //ex.Export(c,new System.IO.FileStream('cube.xaml',System.IO.FileMode.Create));
+  
+  //XamlWriter.Save(c,new System.IO.StreamWriter('www1.xaml'));
+  var c1 := XamlReader.Load(new System.IO.FileStream('cube.xaml',System.IO.FileMode.Open)) as CubeVisual3D;
+  hvp.Children.Add(c1);
+  
+  {var imp := new HelixToolkit.Wpf.ModelImporter();
+  imp.Load('a.xaml',nil,False);}
+end;
+
+procedure Proba2 := Invoke(ProbaP2);
+
 
 procedure WindowTypeSetLeftP(l: real) := MainWindow.Left := l;
 
