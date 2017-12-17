@@ -3169,7 +3169,7 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            if (!is_dynamic_arr) return base.IsEqual(ts);
+            if (!is_dynamic_arr && !is_multi_dyn_arr) return base.IsEqual(ts);
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
             ArrayScope arrs = ts as ArrayScope;
@@ -3177,11 +3177,20 @@ namespace CodeCompletion
             {
                 return this.elementType.IsEqual(ts.GetElementType());
             }
-            if (arrs == null || !arrs.is_dynamic_arr)
-                if (ts is TypeSynonim) return this.IsEqual((ts as TypeSynonim).actType);
-                else return false;
+            if (arrs == null || !arrs.is_dynamic_arr && !arrs.is_multi_dyn_arr)
+                if (ts is TypeSynonim)
+                    return this.IsEqual((ts as TypeSynonim).actType);
+                else
+                    return false;
             if (arrs.elementType == null) return true;
-            if (!this.elementType.IsEqual(arrs.elementType)) return false;
+            if (!this.elementType.IsEqual(arrs.elementType))
+                return false;
+            if (is_multi_dyn_arr && !arrs.is_multi_dyn_arr)
+                return false;
+            if (!is_multi_dyn_arr && arrs.is_multi_dyn_arr)
+                return false;
+            if (is_multi_dyn_arr && arrs.is_multi_dyn_arr)
+                return this.indexes.Length == arrs.indexes.Length;
             return true;
             
         }
