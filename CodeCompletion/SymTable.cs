@@ -4363,9 +4363,11 @@ namespace CodeCompletion
         public override SymScope FindNameOnlyInType(string name)
         {
             SymScope sc = null;
-            if (original_type != null)
-                return original_type.FindNameOnlyInType(name);
-            if (name != null) sc = internal_find(name, false);//ht[name] as SymScope;
+            if (name != null)
+                sc = internal_find(name, false);
+            if (sc != null)
+                return sc;
+            
             if (sc == null && baseScope != null)
                 sc = baseScope.FindNameOnlyInType(name);
             if (sc == null && implemented_interfaces != null)
@@ -4375,6 +4377,8 @@ namespace CodeCompletion
                     if (sc != null)
                         break;
                 }
+            if (sc == null && original_type != null)
+                return original_type.FindNameOnlyInType(name);
             return sc;
         }
 
