@@ -4750,7 +4750,7 @@ namespace PascalABCCompiler.TreeConverter
         internal void visit_method_call(SyntaxTree.method_call _method_call)
         {
             // frninja 01/03/16 - for iterator capturing (yield)
-            if (_method_call.dereferencing_value is yield_unknown_ident)
+             if (_method_call.dereferencing_value is yield_unknown_ident)
             {
                 var nodeToVisit = new method_call(ProcessUnknownIdent(_method_call.dereferencing_value as yield_unknown_ident), _method_call.parameters);
                 visit(nodeToVisit);
@@ -4847,7 +4847,7 @@ namespace PascalABCCompiler.TreeConverter
                         else
                         {
                             sil = context.find(id.name);
-                            if (templ_args_count != 0)
+                            if (templ_args_count != 0 && sil != null)
                             {
                                 SymbolInfo conv = ConvertTypeToInstance(sil.First(), iwt.template_params.params_list, get_location(id));
                                 if (conv != null)
@@ -15208,6 +15208,7 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     MaybeConvertFunctionLambdaDefinitionToProcedureLambdaDefinition(fld1);
                     LambdaHelper.InferTypesFromVarStmt(tn, fld1, this);  //lroman//
+                    fld1.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing; //SSM 12.2017
                 }
 
                 ref_type_node rt = tn as ref_type_node;
@@ -15234,7 +15235,8 @@ namespace PascalABCCompiler.TreeConverter
                     else
                     {
                 	    _var_def_statement.inital_value = get_possible_array_const(_var_def_statement.inital_value,tn);
-                	    inital_value = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value), tn);
+                        var ivc = convert_strong(_var_def_statement.inital_value);
+                        inital_value = convert_strong_to_constant_or_function_call_for_varinit(ivc, tn);
                     }
             }
             else
