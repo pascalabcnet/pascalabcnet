@@ -5496,6 +5496,7 @@ namespace PascalABCCompiler.TreeConverter
                                                 {
                                                     exprCounter++;
                                                 }
+                                                List<expression_node> params_exprs = new List<expression_node>();
                                                 foreach (SyntaxTree.expression en in _method_call.parameters.expressions)
                                                 {
                                                     if (!(en is SyntaxTree.function_lambda_definition))
@@ -5506,13 +5507,37 @@ namespace PascalABCCompiler.TreeConverter
                                                     else
                                                     {
                                                         var enLambda = (SyntaxTree.function_lambda_definition)en;
-                                                        LambdaHelper.InferTypesFromVarStmt(ffn.parameters[exprCounter].type, enLambda, this);
-                                                        enLambda.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
-                                                        exprs[exprCounter] = convert_strong(en);
-                                                        enLambda.lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
+                                                        if (ffn.parameters[Math.Min(exprCounter, ffn.parameters.Count - 1)].is_params)
+                                                        {
+                                                            LambdaHelper.InferTypesFromVarStmt(ffn.parameters[Math.Min(exprCounter, ffn.parameters.Count - 1)].type.element_type, enLambda, this);
+                                                            enLambda.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
+                                                            if (exprCounter <= ffn.parameters.Count - 1)
+                                                                exprs[exprCounter] = convert_strong(en);
+                                                            else
+                                                                exprs.AddElement(convert_strong(en));
+                                                            enLambda.lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
+                                                        }
+                                                        else
+                                                        {
+                                                            LambdaHelper.InferTypesFromVarStmt(ffn.parameters[exprCounter].type, enLambda, this);
+                                                            enLambda.lambda_visit_mode = LambdaVisitMode.VisitForAdvancedMethodCallProcessing;
+                                                            exprs[exprCounter] = convert_strong(en);
+                                                            enLambda.lambda_visit_mode = LambdaVisitMode.VisitForInitialMethodCallProcessing;
+
+                                                        }
                                                         exprCounter++;
                                                     }
                                                 }
+                                                /*if (params_exprs.Count > 0)
+                                                {
+                                                    location loc = get_location(_method_call);
+                                                    typeof_operator to = new typeof_operator(params_exprs[0].type, loc);
+                                                    expression_node retv = convertion_data_and_alghoritms.create_simple_function_call(SystemLibrary.SystemLibInitializer.NewArrayProcedureDecl, loc, to, new int_const_node(params_exprs.Count, loc));
+                                                    base_function_call cnfc = retv as base_function_call;
+                                                    foreach (expression_node e in params_exprs)
+                                                        cnfc.parameters.AddElement(e);
+                                                    exprs[exprCounter] = cnfc;
+                                                }*/
                                             }
                                             catch (SeveralFunctionsCanBeCalled sf)
                                             {

@@ -179,20 +179,29 @@ namespace CodeCompletion
         public SymScope(SymInfo si, SymScope topScope)
         {
             this.si = si;
-            //si.describe = "unit "+si.name;
             si.IsUnitNamespace = true;
             this.topScope = topScope;
-            //this.ht = new Hashtable(CaseInsensitiveHashCodeProvider.Default,CaseInsensitiveComparer.Default);
             this.used_units = new List<SymScope>();
             members = new List<SymScope>();
         }
 
         public virtual void Clear()
         {
-            if (members != null) members.Clear();
-            if (symbol_table != null) symbol_table.Clear();
-            if (used_units != null) used_units.Clear();
-            
+            if (members != null)
+                members.Clear();
+            if (symbol_table != null)
+                symbol_table.Clear();
+            if (used_units != null)
+                used_units.Clear();
+            if (extension_methods != null)
+            {
+                foreach (TypeScope ts in extension_methods.Keys)
+                {
+                    List<ProcScope> meths = extension_methods[ts];
+                    foreach (ProcScope meth in meths)
+                        ts.RemoveExtensionMethod(ts, meth);
+                }
+            }
             declaringUnit = null;
             topScope = null;
         }
@@ -315,6 +324,16 @@ namespace CodeCompletion
                 extension_methods.Add(ts, meth_list);
             }
             meth_list.Add(meth);
+        }
+
+        public void RemoveExtensionMethod(TypeScope ts, ProcScope meth)
+        {
+            List<ProcScope> meth_list = null;
+            if (extension_methods != null && extension_methods.TryGetValue(ts, out meth_list))
+            {
+                if (meth_list.Contains(meth))
+                    meth_list.Remove(meth);
+            }
         }
 
         public SymInfo[] GetSymInfosForExtensionMethods(TypeScope ts)
@@ -1019,7 +1038,8 @@ namespace CodeCompletion
         public override void Clear()
         {
             base.Clear();
-            if (ref_assms != null) ref_assms.Clear();
+            if (ref_assms != null)
+                ref_assms.Clear();
         }
 
         public override bool IsAssembliesChanged()
@@ -3169,7 +3189,7 @@ namespace CodeCompletion
 
         public override bool IsEqual(SymScope ts)
         {
-            if (!is_dynamic_arr) return base.IsEqual(ts);
+            if (!is_dynamic_arr && !is_multi_dyn_arr) return base.IsEqual(ts);
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
             ArrayScope arrs = ts as ArrayScope;
@@ -3177,11 +3197,20 @@ namespace CodeCompletion
             {
                 return this.elementType.IsEqual(ts.GetElementType());
             }
-            if (arrs == null || !arrs.is_dynamic_arr)
-                if (ts is TypeSynonim) return this.IsEqual((ts as TypeSynonim).actType);
-                else return false;
+            if (arrs == null || !arrs.is_dynamic_arr && !arrs.is_multi_dyn_arr)
+                if (ts is TypeSynonim)
+                    return this.IsEqual((ts as TypeSynonim).actType);
+                else
+                    return false;
             if (arrs.elementType == null) return true;
-            if (!this.elementType.IsEqual(arrs.elementType)) return false;
+            if (!this.elementType.IsEqual(arrs.elementType))
+                return false;
+            if (is_multi_dyn_arr && !arrs.is_multi_dyn_arr)
+                return false;
+            if (!is_multi_dyn_arr && arrs.is_multi_dyn_arr)
+                return false;
+            if (is_multi_dyn_arr && arrs.is_multi_dyn_arr)
+                return this.indexes.Length == arrs.indexes.Length;
             return true;
             
         }
@@ -4334,9 +4363,11 @@ namespace CodeCompletion
         public override SymScope FindNameOnlyInType(string name)
         {
             SymScope sc = null;
-            if (original_type != null)
-                return original_type.FindNameOnlyInType(name);
-            if (name != null) sc = internal_find(name, false);//ht[name] as SymScope;
+            if (name != null)
+                sc = internal_find(name, false);
+            if (sc != null)
+                return sc;
+            
             if (sc == null && baseScope != null)
                 sc = baseScope.FindNameOnlyInType(name);
             if (sc == null && implemented_interfaces != null)
@@ -4346,6 +4377,8 @@ namespace CodeCompletion
                     if (sc != null)
                         break;
                 }
+            if (sc == null && original_type != null)
+                return original_type.FindNameOnlyInType(name);
             return sc;
         }
 
