@@ -1096,7 +1096,7 @@ type
       var el: Object3D := Element;
       sb.Completed += (o, e) -> begin
         rottransform.Rotation := new AxisAngleRotation3D();
-        el.RotateAt(rot.Axis, angle, center); // переходит в основную матрицу
+        el.RotateAt(rot.Axis, angle, center); // переходит в основную матрицу. Проблема - оно должно переходить не после всей анимации, а после данной. Потому и ошибка!!!
       end;
       
       da := AddDoubleAnimByName(sb, angle, seconds, ttname, AxisAngleRotation3D.AngleProperty, wait);
