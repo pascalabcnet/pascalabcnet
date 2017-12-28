@@ -103,6 +103,7 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("continue", "continue"); keys.Add("continue");
             keywords.Add("default", "default"); keys.Add("default");
             keywords.Add("label", "label"); keys.Add("label");
+            keywords.Add("property", "property"); keys.Add("property");
             //keywords.Add("typeof", "typeof"); keys.Add("typeof");
             //keywords.Add("sizeof", "sizeof"); keys.Add("sizeof");
             keywords_array = keys.ToArray();
