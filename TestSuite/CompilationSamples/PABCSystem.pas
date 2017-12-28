@@ -104,6 +104,9 @@ type
   
   /// Представляет произвольно большое целое число
   BigInteger = System.Numerics.BigInteger;
+
+  /// Представляет дату и время
+  DateTime = System.DateTime;
   
   /// Представляет комплексное число
   Complex = System.Numerics.Complex;
@@ -3251,7 +3254,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//          Operations for String
+//          Операции для string и char
 //------------------------------------------------------------------------------
 procedure string.operator+=(var left: string; right: string);
 begin
@@ -3343,6 +3346,13 @@ begin
 end;
 
 function string.operator in(substr: string; str: string) := str.Contains(substr);
+
+procedure operator+=(var left: StringBuilder; right: string); extensionmethod := left.Append(right);
+
+function operator implicit(s: string): StringBuilder; extensionmethod;
+begin
+  Result := new StringBuilder(s);
+end;
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -3663,50 +3673,23 @@ function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 //------------------------------------------------------------------------------
 //          Операции для Complex
 //------------------------------------------------------------------------------
-function operator-(Self: Complex): Complex; extensionmethod;
-begin
-  Result := Complex.Negate(Self);
-end;
+function operator-(Self: Complex): Complex; extensionmethod := Complex.Negate(Self);
 
-function operator implicit(c: (real,real)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (real,real)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-function operator implicit(c: (real,integer)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (real,integer)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-function operator implicit(c: (integer,real)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (integer,real)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-function operator implicit(c: (integer,integer)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (integer,integer)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-procedure operator+=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c + x;
-end;
+procedure operator+=(var c: Complex; x: Complex); extensionmethod := c := c + x;
 
-procedure operator*=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c * x;
-end;
+procedure operator*=(var c: Complex; x: Complex); extensionmethod := c := c * x;
 
-procedure operator-=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c - x;
-end;
+procedure operator-=(var c: Complex; x: Complex); extensionmethod := c := c - x;
 
-procedure operator/=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c / x;
-end;
+procedure operator/=(var c: Complex; x: Complex); extensionmethod := c := c / x;
 
 //------------------------------------------------------------------------------
 //          Операции для sequence of T

@@ -13619,6 +13619,9 @@ namespace PascalABCCompiler.TreeConverter
                         case semantic_node_type.basic_function_call:
                             constant = new basic_function_call_as_constant(exprc as basic_function_call, loc);
                             break;
+                        case semantic_node_type.common_namespace_function_call:
+                            constant = new common_namespace_function_call_as_constant(exprc as common_namespace_function_call, loc);
+                            break;
                         default: 
                             constant = exprc as constant_node;
                             break;
