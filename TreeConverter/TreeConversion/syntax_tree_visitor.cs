@@ -16278,12 +16278,14 @@ namespace PascalABCCompiler.TreeConverter
                         var cfr = to as class_field_reference;
                         cfr.field.type = from.type;
                         cfr.type = from.type;
+                        cfr.field.inital_value = context.GetInitalValueForVariable(cfr.field, cfr.field.inital_value);
                     }
                     else if (to is local_block_variable_reference)
                     {
                         var lvr = to as local_block_variable_reference;
                         lvr.var.type = from.type;
                         lvr.type = from.type;
+                        lvr.var.inital_value = context.GetInitalValueForVariable(lvr.var, lvr.var.inital_value);
                     }
                     else AddError(to.location, "Не могу вывести тип при наличии yield: "+ to.type.full_name);
                     //to.type = from.type; // и без всякого real_type!
