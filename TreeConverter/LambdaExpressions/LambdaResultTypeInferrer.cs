@@ -78,6 +78,12 @@ namespace TreeConverter.LambdaExpressions
                 to.name.ToLower() == RESULT_KEY_WORD)
             {
                 var converted = syntaxTreeVisitor.convert_strong(from);
+                if (converted is typed_expression)
+                {
+                    delegated_methods dm = converted.type as delegated_methods;
+                    if (dm.empty_param_method != null)
+                        converted = syntaxTreeVisitor.convert_typed_expression_to_function_call(converted as typed_expression);
+                }
                 resultExpressionsTypes.Add(new Tuple<type_node, expression, expression_node>(converted.type, from, converted));
             }
         }
