@@ -15345,7 +15345,7 @@ namespace PascalABCCompiler.TreeConverter
         	else if (right.type_special_kind == SemanticTree.type_special_kind.array_kind || right.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
         		CheckForCircularityInPointers(left,right.element_type,loc);
         }
-        
+
         private void CheckForCircuralInRecord(type_node tn, location loc)
         {
             if (tn == context.converted_type || tn.original_generic == context.converted_type)
@@ -15358,12 +15358,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (ctn.is_value_type)
                 {
                     foreach (class_field fld in ctn.fields)
-                        CheckForCircuralInRecord(fld.type, loc);
+                        if (fld.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                            CheckForCircuralInRecord(fld.type, loc);
                 }
                 else
                 {
                     foreach (class_field fld in ctn.fields)
-                        if (fld.type is simple_array) CheckForCircuralInRecord((fld.type as simple_array).element_type, loc);
+                        if (fld.polymorphic_state != SemanticTree.polymorphic_state.ps_static && fld.type is simple_array)
+                            CheckForCircuralInRecord((fld.type as simple_array).element_type, loc);
                 }
             }
         }
