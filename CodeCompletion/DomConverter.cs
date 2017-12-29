@@ -867,9 +867,9 @@ namespace CodeCompletion
                     ExpressionVisitor ev = new ExpressionVisitor(expr, ss, visitor);
                     ss = ev.GetScopeOfExpression();
                 }
-                while (ss != null && ss is ProcScope && (ss as ProcScope).proc_realization != null && (ss as ProcScope).proc_realization.loc != null)
+                while (ss != null && ss is ProcScope && (ss as ProcScope).procRealization != null && (ss as ProcScope).procRealization.loc != null)
                 {
-                    ProcRealization pr = (ss as ProcScope).proc_realization;
+                    ProcRealization pr = (ss as ProcScope).procRealization;
                     pos.line = pr.loc.begin_line_num;
                     pos.column = pr.loc.begin_column_num;
                     pos.file_name = pr.loc.doc.file_name;

@@ -1424,7 +1424,7 @@ namespace CodeCompletion
         {
             this.def_proc = def_proc;
             this.top_mod_scope = top_mod_scope;
-            def_proc.proc_realization = this;
+            def_proc.procRealization = this;
             if (def_proc != null)
                 this.topScope = def_proc.topScope;
             this.si = new SymInfo(def_proc.si.name, def_proc.si.kind, def_proc.si.description);
@@ -1777,7 +1777,7 @@ namespace CodeCompletion
         public bool is_constructor;
         public bool is_forward = false;
         public bool already_defined = false;//sush. li realizacija
-        public ProcRealization proc_realization;//ssylka na realizaciju 
+        public ProcRealization procRealization;//ssylka na realizaciju 
         public List<string> template_parameters;
         public TypeScope declaringType;
         public bool is_extension = false;
@@ -1924,7 +1924,7 @@ namespace CodeCompletion
         {
             get
             {
-                return proc_realization;
+                return procRealization;
             }
         }
 
@@ -2034,8 +2034,8 @@ namespace CodeCompletion
             if (sc != null) return sc;
             if (topScope != null) sc = topScope.FindName(name);
             if (sc != null) return sc;
-            if (proc_realization != null && proc_realization.top_mod_scope != null)
-                return proc_realization.top_mod_scope.FindName(name);
+            if (procRealization != null && procRealization.top_mod_scope != null)
+                return procRealization.top_mod_scope.FindName(name);
             return null;
         }
 
@@ -2044,8 +2044,8 @@ namespace CodeCompletion
             List<SymScope> names = internal_find_overloads(name, true);
             if (topScope != null)
                 names.AddRange(topScope.FindOverloadNames(name));
-            if (proc_realization != null && proc_realization.top_mod_scope != null)
-                names.AddRange(proc_realization.top_mod_scope.FindOverloadNames(name));
+            if (procRealization != null && procRealization.top_mod_scope != null)
+                names.AddRange(procRealization.top_mod_scope.FindOverloadNames(name));
             return names;
         }
 
@@ -2105,8 +2105,8 @@ namespace CodeCompletion
                 }
             if (topScope != null)
                 lst.AddRange(topScope.GetNamesInAllTopScopes(all_names, ev, this.is_static));
-            if (proc_realization != null)
-                lst.AddRange(proc_realization.GetNamesInAllTopScopes(all_names, ev, this.is_static));
+            if (procRealization != null)
+                lst.AddRange(procRealization.GetNamesInAllTopScopes(all_names, ev, this.is_static));
             //if (proc_realization != null && proc_realization.top_mod_scope != null) lst.AddRange(proc_realization.top_mod_scope.GetNamesInAllTopScopes(all_names,ev,is_static));
             return lst.ToArray();
         }
