@@ -44,7 +44,7 @@
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
 %token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams tkNamespace
-%token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
+%token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkStarStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
 %token <stn> tkStringLiteral tkAsciiChar
@@ -80,7 +80,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -144,7 +144,7 @@
 %type <stn> simple_prim_property_definition simple_property_definition
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
-%type <ex> as_is_expr as_is_constexpr  
+%type <ex> as_is_expr as_is_constexpr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
@@ -761,13 +761,21 @@ as_is_constexpr
 		}
     ;
 
+power_constexpr
+    : const_factor tkStarStar const_factor { $$ = new bin_expr($1, $3, $2.type, @$); }
+    ;
+    
 const_term
     : const_factor
 		{ $$ = $1; }
     | as_is_constexpr
 		{ $$ = $1; }
+    | power_constexpr
+		{ $$ = $1; }
     | const_term const_mulop const_factor                  
         { $$ = new bin_expr($1, $3, $2.type, @$); }
+    | const_term const_mulop power_constexpr                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
     ;
 
 const_mulop
@@ -3010,12 +3018,26 @@ as_is_expr
         }
 	;
 
+simple_term
+    : factor
+		{ $$ = $1; }
+    ;
+    
+power_expr
+    : simple_term tkStarStar factor
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    ;
+    
 term
     : factor
 		{ $$ = $1; }
     | new_expr
 		{ $$ = $1; }
+    | power_expr
+        { $$ = $1; }
     | term mulop factor                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | term mulop power_expr                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | as_is_expr
 		{ $$ = $1; }
@@ -3599,6 +3621,8 @@ overload_operator
     | tkExplicit
 		{ $$ = $1; }
     | assign_operator
+		{ $$ = $1; }
+    | tkStarStar
 		{ $$ = $1; }
     ;
 

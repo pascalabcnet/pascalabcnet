@@ -40,7 +40,8 @@ namespace PascalABCCompiler.TreeConverter
             ht.Add(((int)(SyntaxTree.Operators.In)), compiler_string_consts.in_name);
 			ht.Add(((int)(SyntaxTree.Operators.Implicit)), compiler_string_consts.implicit_operator_name);
 			ht.Add(((int)(SyntaxTree.Operators.Explicit)), compiler_string_consts.explicit_operator_name);
-			
+            ht.Add(((int)(SyntaxTree.Operators.Power)), compiler_string_consts.power_name);
+
             pc.Add(compiler_string_consts.and_name,         2);
             pc.Add(compiler_string_consts.div_name,         2);
             pc.Add(compiler_string_consts.idiv_name,        2);
@@ -65,6 +66,7 @@ namespace PascalABCCompiler.TreeConverter
             pc.Add(compiler_string_consts.divassign_name,   2);
             pc.Add(compiler_string_consts.assign_name,      2);
             pc.Add(compiler_string_consts.in_name,          2);
+            pc.Add(compiler_string_consts.power_name, 2);
             pc.Add(compiler_string_consts.implicit_operator_name, 1);
             pc.Add(compiler_string_consts.explicit_operator_name, 1);
         }
