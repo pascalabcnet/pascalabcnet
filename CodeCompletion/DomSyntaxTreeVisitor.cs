@@ -253,11 +253,20 @@ namespace CodeCompletion
                     RetValue tmp = cnst_val;
                     string name = PascalABCCompiler.TreeConverter.name_reflector.get_name(_bin_expr.operation_type);
                     List<SymScope> lst = tleft.FindOverloadNamesOnlyInType(name);
+                    List<SymScope> lst_right = tright.FindOverloadNamesOnlyInType(name);
+                    if (lst.Count == 0 && !char.IsLetter(name[0]))
+                        lst = tleft.FindOverloadNamesOnlyInType("operator" + name);
+                    if (lst_right.Count == 0 && !char.IsLetter(name[0]))
+                        lst_right = tright.FindOverloadNamesOnlyInType("operator" + name);
                     if (!char.IsLetter(name[0]))
                         name = "operator" + name;
                     else
                         name = "operator " + name;
                     List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
+                    foreach (ProcScope meth in meths)
+                        lst.Add(meth);
+                    lst.AddRange(lst_right);
+                    meths = entry_scope.GetExtensionMethods(name, tright);
                     foreach (ProcScope meth in meths)
                         lst.Add(meth);
                     ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, false, _bin_expr.left, _bin_expr.right);
