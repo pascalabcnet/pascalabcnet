@@ -1452,9 +1452,12 @@ type
       BaseRadius := r;
       TopRadius := r;
     end;
-    function GetR: real := Radius;
+    function GetR: real := BaseRadius;
   protected  
-    function CreateObject: Object3D; override := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
+    function CreateObject: Object3D; override;
+    begin
+      Result := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
+    end;  
   public 
     constructor(x, y, z, h, r: real; ThetaDiv: integer; topcap: boolean; m: GMaterial);
     begin
@@ -2515,8 +2518,30 @@ begin
   //ex.Export(c,new System.IO.FileStream('cube.xaml',System.IO.FileMode.Create));
   
   //XamlWriter.Save(c,new System.IO.StreamWriter('www1.xaml'));
-  var c1 := XamlReader.Load(new System.IO.FileStream('cube.xaml',System.IO.FileMode.Open)) as CubeVisual3D;
-  hvp.Children.Add(c1);
+  //var c1 := XamlReader.Load(new System.IO.FileStream('cube.xaml',System.IO.FileMode.Open)) as CubeVisual3D;
+  //hvp.Children.Add(c1);
+  
+  var off := new offreader(nil);
+  var s := System.IO.File.OpenRead('boxcube.off');
+  off.Load(s);
+  
+  //var mmm := new ModelVisual3D;
+  //mmm.Model := off.CreateMeshGeometry3D;
+  
+  var m1 := new MeshVisual3D();
+  m1.FaceMaterial := Colors.Green;
+  m1.EdgeDiameter := 0;
+  m1.VertexRadius := 0;
+  m1.Mesh := off.CreateMesh;
+  hvp.Children.Add(m1);
+  
+  {var m1 := new MeshGeometryVisual3D();
+  m1.MeshGeometry := off.CreateMeshGeometry3D;
+  hvp.Children.Add(m1);}
+  
+  {var m1 := new ModelVisual3D();
+  m1.Content := off.CreateModel3D;
+  hvp.Children.Add(m1);}
   
   {var imp := new HelixToolkit.Wpf.ModelImporter();
   imp.Load('a.xaml',nil,False);}
@@ -2632,7 +2657,7 @@ begin
   hvp.Children.Add(new DefaultLights);
   //hvp.Children.Add(new ThreePointLights);
   
-  var dl := new DirectionalLight(GrayColor(50), new Vector3D(-1.0, -1.0, -1.0));
+  //var dl := new DirectionalLight(GrayColor(50), new Vector3D(-1.0, -1.0, -1.0));
   var mv := new ModelVisual3D;
   LightsGroup := new Model3DGroup;
   //LightsGroup.Children.Add(dl);
