@@ -3352,8 +3352,7 @@ procedure operator+=(var left: StringBuilder; right: string); extensionmethod :=
 function operator implicit(s: string): StringBuilder; extensionmethod;
 begin
   Result := new StringBuilder(s);
-end; 
-
+end;
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
