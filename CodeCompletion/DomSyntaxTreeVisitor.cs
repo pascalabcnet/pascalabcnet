@@ -231,6 +231,9 @@ namespace CodeCompletion
                         case Operators.LogicalAND: ev.EvalAnd(); break;
                         case Operators.LogicalOR: ev.EvalOr(); break;
                         case Operators.ModulusRemainder: ev.EvalRem(); break;
+                        default:
+                            ev.eval_stack.Clear();
+                            break;
                     }
                     if (ev.eval_stack.Count > 0)
                     {
@@ -1556,7 +1559,7 @@ namespace CodeCompletion
             if (_function_header.parameters != null)
                 add_parameters(ps, _function_header.parameters);
             cur_scope = tmp;
-            if (ps.procRealization == null)
+            if (ps.procRealization == null || ps.return_type == null)
                 ps.return_type = return_type;
             //cur_scope = ps;
             if (cur_scope is TypeScope && !ps.is_static)
@@ -4312,6 +4315,7 @@ namespace CodeCompletion
         		case Operators.Implicit : return "implicit";
         		case Operators.Explicit : return "explicit";
                 case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
+                case Operators.Power: return PascalABCCompiler.TreeConverter.compiler_string_consts.power_name;
             }
         	return "";
         }

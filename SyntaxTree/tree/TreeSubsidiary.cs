@@ -74,7 +74,8 @@ namespace PascalABCCompiler.SyntaxTree
         Member,                 //  .       .
         Implicit,
         Explicit,
-        Deref                   // ^ SSM 3.02.12
+        Deref,                   // ^ SSM 3.02.12
+        Power
     };
 
     public class OperatorServices
@@ -122,7 +123,8 @@ namespace PascalABCCompiler.SyntaxTree
                     case Operators.Assignment: return ":=";          
                     case Operators.In: return "in";                  
                     case Operators.Is: return "is";                  
-                    case Operators.As: return "as";                  
+                    case Operators.As: return "as"; 
+                    case Operators.Power: return "**";
                 }
             }
             else
