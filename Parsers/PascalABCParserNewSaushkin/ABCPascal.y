@@ -115,6 +115,8 @@
 %type <op> const_relop const_addop assign_operator const_mulop relop addop mulop sign overload_operator
 %type <ob> typecast_op  
 %type <stn> property_specifiers
+%type <stn> write_property_specifiers
+%type <stn> read_property_specifiers
 %type <stn> array_defaultproperty 
 %type <stn> meth_modificators optional_method_modificators optional_method_modificators1  
 %type <id> meth_modificator property_modificator 
@@ -1857,16 +1859,31 @@ optional_identifier
 
 property_specifiers
     :
-    | tkRead optional_identifier property_specifiers   
+    | tkRead optional_identifier write_property_specifiers   
         { 
 			$$ = NewPropertySpecifiersRead($1, $2, $3 as property_accessors, @$);
         }
-    | tkWrite optional_identifier property_specifiers     
+    | tkWrite optional_identifier read_property_specifiers     
         { 
 			$$ = NewPropertySpecifiersWrite($1, $2, $3 as property_accessors, @$);
         }
     ;
-
+write_property_specifiers
+    :
+    |  tkWrite optional_identifier     
+       { 
+			$$ = NewPropertySpecifiersWrite($1, $2, null, @$);
+       }
+    ;
+    
+read_property_specifiers
+    :
+    |  tkRead optional_identifier     
+       { 
+			$$ = NewPropertySpecifiersRead($1, $2, null, @$);
+       }      
+    ;
+    
 var_decl
     : var_decl_part tkSemiColon              
         { $$ = $1; }
