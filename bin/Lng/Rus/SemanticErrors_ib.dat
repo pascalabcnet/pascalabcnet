@@ -127,6 +127,7 @@ TYPE_PREDEFINITION_NOT_ALLOWED=Предописание типов в прост
 NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES=В пространство имен можно описывать только классы, записи, перечислимые и процедурные типы
 NAMESPACE_REDECLARATION=Пространства имен не должны совпадать с именами модулей и пространств .NET
 OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS=Нельзя использовать override в коротких функциях без явно опредленного типа возвращаемого значения
+RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED=Тип возвращаемого значения в операторах implicit и explicit должен указываться явно
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

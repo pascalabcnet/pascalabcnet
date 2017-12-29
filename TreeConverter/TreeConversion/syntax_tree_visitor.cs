@@ -12185,7 +12185,9 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                         {
-                            AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
+                            if (_function_header.return_type.source_context == null)
+                                AddError(get_location(_function_header), "RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED");
+                            AddError(get_location(_function_header), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
                         }
                         else if (convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.parameters[0].type))
                         {
