@@ -231,6 +231,9 @@ namespace CodeCompletion
                         case Operators.LogicalAND: ev.EvalAnd(); break;
                         case Operators.LogicalOR: ev.EvalOr(); break;
                         case Operators.ModulusRemainder: ev.EvalRem(); break;
+                        default:
+                            ev.eval_stack.Clear();
+                            break;
                     }
                     if (ev.eval_stack.Count > 0)
                     {
@@ -253,11 +256,20 @@ namespace CodeCompletion
                     RetValue tmp = cnst_val;
                     string name = PascalABCCompiler.TreeConverter.name_reflector.get_name(_bin_expr.operation_type);
                     List<SymScope> lst = tleft.FindOverloadNamesOnlyInType(name);
+                    List<SymScope> lst_right = tright.FindOverloadNamesOnlyInType(name);
+                    if (lst.Count == 0 && !char.IsLetter(name[0]))
+                        lst = tleft.FindOverloadNamesOnlyInType("operator" + name);
+                    if (lst_right.Count == 0 && !char.IsLetter(name[0]))
+                        lst_right = tright.FindOverloadNamesOnlyInType("operator" + name);
                     if (!char.IsLetter(name[0]))
                         name = "operator" + name;
                     else
                         name = "operator " + name;
                     List<ProcScope> meths = entry_scope.GetExtensionMethods(name, tleft);
+                    foreach (ProcScope meth in meths)
+                        lst.Add(meth);
+                    lst.AddRange(lst_right);
+                    meths = entry_scope.GetExtensionMethods(name, tright);
                     foreach (ProcScope meth in meths)
                         lst.Add(meth);
                     ProcScope ps = select_method(lst.ToArray(), tleft, tright, null, false, _bin_expr.left, _bin_expr.right);
@@ -1547,7 +1559,8 @@ namespace CodeCompletion
             if (_function_header.parameters != null)
                 add_parameters(ps, _function_header.parameters);
             cur_scope = tmp;
-            ps.return_type = return_type;
+            if (ps.procRealization == null || ps.return_type == null)
+                ps.return_type = return_type;
             //cur_scope = ps;
             if (cur_scope is TypeScope && !ps.is_static)
                 ps.AddName("self", new ElementScope(new SymInfo("self", SymbolKind.Parameter, "self"), cur_scope, ps));
@@ -1609,7 +1622,7 @@ namespace CodeCompletion
                 if (_procedure_definition.proc_header is function_header && (_procedure_definition.proc_header as function_header).return_type == null)
                 {
                     var fh = (_procedure_definition.proc_header as function_header);
-                    if (fh != null && fh.return_type == null)
+                    if (fh != null && fh.return_type == null && !(returned_scope is ProcScope && (returned_scope as ProcScope).procRealization != null))
                     {
                         var bl = _procedure_definition.proc_body as block;
                         if (bl != null && bl.program_code != null)
@@ -1655,7 +1668,7 @@ namespace CodeCompletion
             	    
                 if (cur_scope != null && cur_scope is ProcScope)
                 {
-                    ProcRealization pr = (cur_scope as ProcScope).proc_realization;
+                    ProcRealization pr = (cur_scope as ProcScope).procRealization;
                     if (pr == null)
                         cur_scope.body_loc = get_location(_procedure_definition.proc_body);
                     else
@@ -3419,7 +3432,7 @@ namespace CodeCompletion
                         {
                             ProcRealization pr = new ProcRealization(ps, cur_scope);
                             pr.already_defined = true;
-                            ps.proc_realization = pr;
+                            ps.procRealization = pr;
                             pr.loc = cur_loc;
                             pr.head_loc = loc;
                             is_realization = true;
@@ -3429,7 +3442,7 @@ namespace CodeCompletion
                         {
                             ProcRealization pr = new ProcRealization(ps, impl_scope);
                             pr.already_defined = true;
-                            ps.proc_realization = pr;
+                            ps.procRealization = pr;
                             pr.loc = cur_loc;
                             pr.head_loc = loc;
                             is_realization = true;
@@ -4302,6 +4315,7 @@ namespace CodeCompletion
         		case Operators.Implicit : return "implicit";
         		case Operators.Explicit : return "explicit";
                 case Operators.In: return PascalABCCompiler.TreeConverter.compiler_string_consts.in_name;
+                case Operators.Power: return PascalABCCompiler.TreeConverter.compiler_string_consts.power_name;
             }
         	return "";
         }

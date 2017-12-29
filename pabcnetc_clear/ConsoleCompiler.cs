@@ -65,6 +65,8 @@ namespace PascalABCCompiler
             outputType = CompilerOptions.OutputType.ConsoleApplicaton;
 
             CompilerOptions co = new CompilerOptions(FileName, outputType);
+            if (FileName.ToLower().EndsWith(".pabcproj"))
+                co.ProjectCompiled = true;
             if (args.Length==1)
                 co.OutputDirectory = "";
             else co.OutputDirectory = args[1];

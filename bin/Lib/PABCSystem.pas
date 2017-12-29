@@ -3628,6 +3628,30 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//          **
+//------------------------------------------------------------------------------
+
+function operator**(x, y: integer): real; extensionmethod;
+begin
+  Result := Power(x, y);
+end;
+
+function operator**(x, y: real): real; extensionmethod;
+begin
+  Result := Power(x, y);
+end;
+
+function operator**(x, y: Complex): Complex; extensionmethod;
+begin
+  Result := Power(x, y);
+end;
+
+function operator**(x: BigInteger; y: integer): BigInteger; extensionmethod;
+begin
+  Result := Power(x, y);
+end;
+
+//------------------------------------------------------------------------------
 //          Операции для BigInteger
 //------------------------------------------------------------------------------
 function BigInteger.operator/(p: BigInteger; q: real) := real(p)/q;

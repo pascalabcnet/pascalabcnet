@@ -12185,7 +12185,9 @@ namespace PascalABCCompiler.TreeConverter
                     {
                         if (!convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.comperehensive_type as type_node) && !convertion_data_and_alghoritms.eq_type_nodes(cmmn.comperehensive_type as type_node, cmmn.parameters[0].type))
                         {
-                            AddError(get_location(_function_header.return_type), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
+                            if (_function_header.return_type.source_context == null)
+                                AddError(get_location(_function_header), "RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED");
+                            AddError(get_location(_function_header), "RETURN_VALUE_SHOULD_HAVE_TYPE_{0}", (cmmn.comperehensive_type as type_node).PrintableName);
                         }
                         else if (convertion_data_and_alghoritms.eq_type_nodes(tn, cmmn.parameters[0].type))
                         {
@@ -15343,7 +15345,7 @@ namespace PascalABCCompiler.TreeConverter
         	else if (right.type_special_kind == SemanticTree.type_special_kind.array_kind || right.type_special_kind == SemanticTree.type_special_kind.array_wrapper)
         		CheckForCircularityInPointers(left,right.element_type,loc);
         }
-        
+
         private void CheckForCircuralInRecord(type_node tn, location loc)
         {
             if (tn == context.converted_type || tn.original_generic == context.converted_type)
@@ -15356,12 +15358,14 @@ namespace PascalABCCompiler.TreeConverter
                 if (ctn.is_value_type)
                 {
                     foreach (class_field fld in ctn.fields)
-                        CheckForCircuralInRecord(fld.type, loc);
+                        if (fld.polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                            CheckForCircuralInRecord(fld.type, loc);
                 }
                 else
                 {
                     foreach (class_field fld in ctn.fields)
-                        if (fld.type is simple_array) CheckForCircuralInRecord((fld.type as simple_array).element_type, loc);
+                        if (fld.polymorphic_state != SemanticTree.polymorphic_state.ps_static && fld.type is simple_array)
+                            CheckForCircuralInRecord((fld.type as simple_array).element_type, loc);
                 }
             }
         }
