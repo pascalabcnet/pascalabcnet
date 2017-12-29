@@ -411,6 +411,8 @@ namespace PascalABCCompiler.TreeConverter
                 throw new SimpleSemanticError(loc, "FUNCTION_EXPECTED_PROCEDURE_{0}_MEET", fn.name);
             }
 
+            if (fn.return_value_type is undefined_type)
+                throw new SimpleSemanticError(loc, "RETURN_TYPE_UNDEFINED_{0}", fn.name);
             expression_node expr_node = null;
             switch (fn.semantic_node_type)
             {

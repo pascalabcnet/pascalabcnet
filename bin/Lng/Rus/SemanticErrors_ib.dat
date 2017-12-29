@@ -128,6 +128,7 @@ NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES=В пространство имен мож
 NAMESPACE_REDECLARATION=Пространства имен не должны совпадать с именами модулей и пространств .NET
 OVERRIDE_NOT_ALLOWED_FOR_SHORT_FUNCTIONS=Нельзя использовать override в коротких функциях без явно опредленного типа возвращаемого значения
 RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED=Тип возвращаемого значения в операторах implicit и explicit должен указываться явно
+RETURN_TYPE_UNDEFINED_{0}=Тип возвращаемого значения функции {0} не определен и не может быть выведен в данный момент. Укажите тип явно.
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'
