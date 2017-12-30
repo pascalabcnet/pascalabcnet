@@ -2522,7 +2522,7 @@ namespace PascalABCCompiler
 
             if (System.IO.File.Exists(FileName)) // для отладки с *.inc файлами
             {
-                return FileName;//.ToLower();//? а надо ли tolover?
+                return Path.Combine(Environment.CurrentDirectory, FileName);//.ToLower();//? а надо ли tolover?
             }
             else
             {
