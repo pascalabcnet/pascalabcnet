@@ -63,7 +63,7 @@ namespace CodeCompletion
 #if DEBUG
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
-                throw e;
+                //throw e;
             	//System.Diagnostics.Debug.WriteLine(e.StackTrace);
             }
         }
@@ -1971,9 +1971,7 @@ namespace CodeCompletion
             if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_unit_module.unit_name))
         		cur_scope.AddDocumentation(this.converter.controller.docs[_unit_module.unit_name]);
             entry_scope = cur_scope;
-            //add_standart_types();
             if (_unit_module.unit_name.idunit_name.name == this.converter.controller.Parser.LanguageInformation.SystemUnitName)
-            //add_system_unit();
             {
             	is_system_unit = true;
             	add_standart_types(entry_scope);
@@ -1993,8 +1991,6 @@ namespace CodeCompletion
                   ns_cache[s] = s;
             	}
             }
-            //if (parse_only_interface)
-            //    return;
             if (_unit_module.implementation_part != null)
                 _unit_module.implementation_part.visit(this);
             if (_unit_module.initialization_part != null)
@@ -2003,11 +1999,6 @@ namespace CodeCompletion
             	SymScope stmt_scope = new BlockScope(cur_scope);
         		cur_scope.AddName("$block_scope",stmt_scope);
         		stmt_scope.loc = get_location(_unit_module.initialization_part);
-        		/*if (_unit_module.implementation_part != null)
-        		{
-        			cur_scope.loc.end_line_num = entry_scope.loc.end_line_num;
-        			cur_scope.loc.end_column_num = entry_scope.loc.end_column_num;
-        		}*/
         		cur_scope = stmt_scope;
             	_unit_module.initialization_part.visit(this);
             	cur_scope = tmp;
@@ -2018,11 +2009,6 @@ namespace CodeCompletion
             	SymScope stmt_scope = new BlockScope(cur_scope);
         		cur_scope.AddName("$block_scope",stmt_scope);
         		stmt_scope.loc = get_location(_unit_module.finalization_part);
-        		/*if (_unit_module.implementation_part != null)
-        		{
-        			cur_scope.loc.end_line_num = entry_scope.loc.end_line_num;
-        			cur_scope.loc.end_column_num =entry_scope.loc.end_column_num;
-        		}*/
         		cur_scope = stmt_scope;
             	_unit_module.finalization_part.visit(this);
             	cur_scope = tmp;

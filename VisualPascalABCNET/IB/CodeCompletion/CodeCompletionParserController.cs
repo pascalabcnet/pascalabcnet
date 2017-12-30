@@ -244,7 +244,7 @@ namespace VisualPascalABC
                         }
                     }
                 }
-                if (is_comp && Environment.WorkingSet > 60000000 /*&& mem_delta > 10000000*/)
+                if (is_comp && mem_delta > 20000000 /*&& mem_delta > 10000000*/)
                 //postavil delta dlja pamjati, posle kototoj delaetsja sborka musora
                 {
                     mem_delta = 0;
