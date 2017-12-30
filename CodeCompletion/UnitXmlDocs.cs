@@ -360,6 +360,11 @@ namespace CodeCompletion
 		{
 			elem_cache.Add(value);
 		}
+
+        public static void RemoveItem(SymScope item)
+        {
+            elem_cache.Remove(item);
+        }
 	}
 }
 

@@ -1127,6 +1127,11 @@ namespace CodeCompletion
             if (tmp_cur_used_assemblies != null)
                 PascalABCCompiler.NetHelper.NetHelper.cur_used_assemblies = tmp_cur_used_assemblies;
         }
+
+        ~DomConverter()
+        {
+
+        }
     }
 
 }

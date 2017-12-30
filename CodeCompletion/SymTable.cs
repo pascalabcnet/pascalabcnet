@@ -201,7 +201,9 @@ namespace CodeCompletion
                     foreach (ProcScope meth in meths)
                         ts.RemoveExtensionMethod(ts, meth);
                 }
+                extension_methods.Clear();
             }
+            UnitDocCache.RemoveItem(this);
             declaringUnit = null;
             topScope = null;
         }
@@ -1018,6 +1020,11 @@ namespace CodeCompletion
             UnitDocCache.AddDescribeToComplete(this);
             this.symbol_table = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
             si.description = this.ToString();
+        }
+
+        ~InterfaceUnitScope()
+        {
+
         }
 
         IImplementationUnitScope IInterfaceUnitScope.ImplementationUnitScope
