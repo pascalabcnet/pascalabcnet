@@ -400,7 +400,12 @@ namespace GPPGParserScanner
 			var op = new op_type_node(Operators.Assignment);
 			//_op_type_node.source_context = parsertools.GetTokenSourceContext();
 			var ass = new assign(id, expr_l1, op.type);
-			parsertools.create_source_context(ass, id, expr_l1);
+			parsertools.create_source_context(ass, id, expr_l1); // дурацкая функция - если хотя бы у одного sc=null, то возвращает null
+            if (ass.source_context == null)
+                if (expr_l1.source_context != null)
+                    ass.source_context = expr_l1.source_context;
+                else if (id.source_context != null)
+                    ass.source_context = id.source_context;
             sl.subnodes.Add(ass);
             sl.source_context = loc;
 			return sl;

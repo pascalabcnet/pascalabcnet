@@ -1811,7 +1811,7 @@ namespace PascalABCCompiler.TreeConverter
 
             if (set_of_possible_functions.Count == 0 && indefinits.Count == 0)
             {
-                return AddError<function_node>(new NoFunctionWithSameParametresNum(loc, is_alone_method_defined, first_function));
+                return AddError<function_node>(new NoFunctionWithSameArguments(loc, is_alone_method_defined));
             }
 
             //(ssyy) Инициализируем is_alone_defined

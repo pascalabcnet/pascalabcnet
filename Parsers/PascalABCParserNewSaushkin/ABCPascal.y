@@ -1946,8 +1946,8 @@ typed_var_init_expression
     | identifier tkArrow lambda_function_body
 		{  
 			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
@@ -1968,7 +1968,7 @@ typed_var_init_expression
 				idList.idents.Add(el.expressions[j] as ident);
 			}	
 				
-			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);	
+			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2);	
 				
 			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
@@ -3643,8 +3643,8 @@ func_decl_lambda
 	: identifier tkArrow lambda_function_body
 		{
 			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{
