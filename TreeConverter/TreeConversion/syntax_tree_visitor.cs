@@ -16668,22 +16668,20 @@ namespace PascalABCCompiler.TreeConverter
                 try
                 {
                     statement_node semantic_statement = convert_strong(syntax_statement);
-                    bool lambda_init_code = false;
-                    if (semantic_statement is basic_function_call)
-                    {
-                        base_function_call bfc = semantic_statement as basic_function_call;
-                        if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class"))
-                            lambda_init_code = true;
-                    }
                     if (semantic_statement != null)
                     {
-                        if (context.allow_inherited_ctor_call && !lambda_init_code)
-                            stl.statements.AddElementFirst(semantic_statement);
+                        if (stl.statements.Count > 0 && stl.statements[0] is basic_function_call)
+                        {
+                            base_function_call bfc = stl.statements[0] as basic_function_call;
+                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call) )
+                                stl.statements.AddElementFirst(semantic_statement);
+                            else
+                                stl.statements.AddElement(semantic_statement);
+                        }
                         else
                             stl.statements.AddElement(semantic_statement);
                     }
-                    if (!lambda_init_code)
-                        context.allow_inherited_ctor_call = false;
+                    context.allow_inherited_ctor_call = false;
                 }
                 catch (Errors.Error ex)
                 {
