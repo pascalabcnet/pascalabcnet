@@ -95,7 +95,7 @@ namespace PascalABCCompiler.TreeConverter
             SavedContext.compiled_tn = _compiled_tn;
             SavedContext.last_created_function = last_created_function;
             SavedContext.cycles_stack = _cycles_stack;
-            SavedContext.num_of_for_cycles = num_of_for_cycles;
+            //SavedContext.num_of_for_cycles = num_of_for_cycles; // num_of_for_cycles вычисляется и провоцирует ошибки!
             SavedContext._fal = _fal;
             SavedContext.member_decls = member_decls;
             SavedContext.types_predefined = _types_predefined;
@@ -155,7 +155,7 @@ namespace PascalABCCompiler.TreeConverter
             _compiled_tn = SavedContext.compiled_tn;
             last_created_function = SavedContext.last_created_function;
             _cycles_stack = SavedContext.cycles_stack;
-            _num_of_for_cycles = SavedContext.num_of_for_cycles;
+            //_num_of_for_cycles = SavedContext.num_of_for_cycles; // ssm 31/12/17 отключил! num_of_for_cycles вычисляется и провоцирует ошибки!
             _fal = SavedContext._fal;
             member_decls = SavedContext.member_decls;
             _types_predefined = SavedContext.types_predefined;
@@ -1801,8 +1801,9 @@ namespace PascalABCCompiler.TreeConverter
 					case block_type.type_block:
 					{
 						throw new CompilerInternalError("For cycle in class body");
-					}
-				}
+                        //return 0;
+                    }
+                }
 				throw new CompilerInternalError("Invalid block type");
 			}
 			set

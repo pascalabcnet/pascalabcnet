@@ -15403,7 +15403,8 @@ namespace PascalABCCompiler.TreeConverter
 
         public override void visit(SyntaxTree.named_type_reference _named_type_reference)
         {
-            type_node tn = find_type(_named_type_reference, get_location(_named_type_reference));
+            var loc = get_location(_named_type_reference);
+            type_node tn = find_type(_named_type_reference, loc);
             return_value(tn);
         }
 
