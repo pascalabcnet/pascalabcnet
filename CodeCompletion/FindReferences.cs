@@ -1545,6 +1545,8 @@ namespace CodeCompletion
             IBaseScope ss = entry_scope.FindScopeByLocation(_name_assign_expr.name.source_context.begin_position.line_num, _name_assign_expr.name.source_context.begin_position.column_num);
             if (ss != null && ss.IsEqual(founded_scope))
                 pos_list.Add(get_position(_name_assign_expr.name));
+            if (_name_assign_expr.expr == null)
+                _name_assign_expr.expr = new ident(_name_assign_expr.name.name, _name_assign_expr.name.source_context);
             _name_assign_expr.expr.visit(this);
         }
         public override void visit(name_assign_expr_list _name_assign_expr_list) // SSM 27.06.13
