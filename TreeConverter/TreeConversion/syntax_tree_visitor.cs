@@ -16084,6 +16084,8 @@ namespace PascalABCCompiler.TreeConverter
             expression_node left = convert_strong(_bin_expr.left);
             expression_node right = convert_strong(_bin_expr.right);
             expression_node res = find_operator(_bin_expr.operation_type, left, right, get_location(_bin_expr));
+            if (res.type is undefined_type)
+                AddError(get_location(_bin_expr), "OPERATOR_RETURN_TYPE_UNDEFINED_{0}", name_reflector.get_name(_bin_expr.operation_type));
             if (res.type.type_special_kind == SemanticTree.type_special_kind.base_set_type)
             {
                 if (left.type.element_type == right.type.element_type)
