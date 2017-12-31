@@ -4652,10 +4652,17 @@ namespace CodeCompletion
         public override void visit(name_assign_expr _name_assign_expr) // SSM 27.06.13
         {
             returned_scope = null;
+            if (_name_assign_expr.expr == null)
+                _name_assign_expr.expr = new ident(_name_assign_expr.name.name);
             _name_assign_expr.expr.visit(this);
             if (returned_scope != null)
             {
                 ElementScope es = new ElementScope(new SymInfo(_name_assign_expr.name.name, SymbolKind.Property, ""), returned_scope, cur_scope);
+                cur_scope.AddName(_name_assign_expr.name.name, es);
+            }
+            else
+            {
+                ElementScope es = new ElementScope(new SymInfo(_name_assign_expr.name.name, SymbolKind.Property, ""), new UnknownScope(new SymInfo("",SymbolKind.Type,"")), cur_scope);
                 cur_scope.AddName(_name_assign_expr.name.name, es);
             }
         }
@@ -4668,7 +4675,7 @@ namespace CodeCompletion
         {
             SymScope tmp = cur_scope;
             TypeScope ts = null;
-            cur_scope = ts = new TypeScope(SymbolKind.Class, entry_scope, null);
+            cur_scope = ts = new TypeScope(SymbolKind.Class, cur_scope, null);
             tmp.AddName("class", cur_scope);
             ts.loc = get_location(_unnamed_type_object);
             ts.si = new SymInfo("class", SymbolKind.Class, "");
