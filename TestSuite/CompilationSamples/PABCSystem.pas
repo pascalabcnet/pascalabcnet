@@ -1211,8 +1211,10 @@ function Sqr(x: uint64): uint64;
 function Sqr(x: real): real;
 /// Возвращает x в степени y
 function Power(x, y: real): real;
-/// Возвращает x в степени y
-function Power(x, y: integer): real;
+// Возвращает x в степени y
+//function Power(x, y: integer): real;
+/// Возвращает x в целой степени n
+function Power(x: real; n: integer): real;
 /// Возвращает x в степени y
 function Power(x: BigInteger; y: integer): BigInteger;
 /// Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми, 
@@ -3631,25 +3633,15 @@ end;
 //          **
 //------------------------------------------------------------------------------
 
-function operator**(x, y: integer): real; extensionmethod;
-begin
-  Result := Power(x, y);
-end;
+function operator**(x: real; n: integer): real; extensionmethod := Power(x, n);
 
-function operator**(x, y: real): real; extensionmethod;
-begin
-  Result := Power(x, y);
-end;
+function operator**(x, y: integer): real; extensionmethod := Power(real(x), y);
 
-function operator**(x, y: Complex): Complex; extensionmethod;
-begin
-  Result := Power(x, y);
-end;
+function operator**(x, y: real): real; extensionmethod := Power(x, y);
 
-function operator**(x: BigInteger; y: integer): BigInteger; extensionmethod;
-begin
-  Result := Power(x, y);
-end;
+function operator**(x, y: Complex): Complex; extensionmethod := Power(x, y);
+
+function operator**(x: BigInteger; y: integer): BigInteger; extensionmethod := Power(x, y);
 
 //------------------------------------------------------------------------------
 //          Операции для BigInteger
@@ -6853,7 +6845,36 @@ function Sqr(x: real): real := x * x;
 
 function Power(x, y: real): real := Math.Pow(x, y);
 
-function Power(x, y: integer): real := Math.Pow(x, y);
+//function Power(x, y: integer): real := Math.Pow(x, y);
+
+function Power(x: real; n: integer): real;
+begin
+  case n of
+  0: Result := 1;
+  1: Result := x;
+  2: Result := x*x;
+  3: Result := x*x*x;
+  4: Result := x*x*x*x;
+  5: Result := x*x*x*x*x;
+  6: Result := x*x*x*x*x*x;
+  else
+  if n<0 then
+    Result := 1/Power(x,-n)
+  else  
+    begin
+      var z := x;
+      var r := 1.0;
+      while n > 0 do
+      begin
+        if n and 1 = 1 then
+          r := r * z;
+        z := z * z;
+        n := n shr 1;
+      end;
+      Result := r;
+    end;
+  end;
+end;
 
 function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 

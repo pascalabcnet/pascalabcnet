@@ -416,7 +416,7 @@ function ColorPen(c: Color) := new GPen(ColorBrush(c),Pen.Width);
 
 procedure InvokeVisual(d: System.Delegate; params args: array of object);
 begin
-  if CountVisuals <= 1000 then
+  if CountVisuals <= 1000000 then
     app.Dispatcher.Invoke(d,args)
   else
   begin
