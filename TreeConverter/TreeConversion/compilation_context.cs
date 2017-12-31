@@ -287,7 +287,8 @@ namespace PascalABCCompiler.TreeConverter
             if (lst.statements[0] is basic_function_call)
             {
                 base_function_call bfc = lst.statements[0] as basic_function_call;
-                
+                if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class"))
+                    return true;
             }
             return false;
         }
