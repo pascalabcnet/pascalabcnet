@@ -16670,10 +16670,11 @@ namespace PascalABCCompiler.TreeConverter
                     statement_node semantic_statement = convert_strong(syntax_statement);
                     if (semantic_statement != null)
                     {
-                        if (stl.statements.Count > 0 && stl.statements[0] is basic_function_call)
+                        if (stl.statements.Count > 0 && stl.statements[0] is basic_function_call && i == 2)
                         {
                             base_function_call bfc = stl.statements[0] as basic_function_call;
-                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call) )
+                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call) 
+                                && !context.converted_func_stack.Empty && context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).is_constructor)
                                 stl.statements.AddElementFirst(semantic_statement);
                             else
                                 stl.statements.AddElement(semantic_statement);
