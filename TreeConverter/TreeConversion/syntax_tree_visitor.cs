@@ -16649,12 +16649,12 @@ namespace PascalABCCompiler.TreeConverter
                     }
                     else //уже генерируем одну из веток
                         if (CurrentParallelPosition == ParallelPosition.InsideParallel)
-                        {
-                            isGenerateParallel = true;
-                            isGenerateSequential = false;
-                        }
-                        //else
-                        //флаг isGenerateParallel не установлен, параллельная ветка не сгенерируется
+                    {
+                        isGenerateParallel = true;
+                        isGenerateSequential = false;
+                    }
+                    //else
+                    //флаг isGenerateParallel не установлен, параллельная ветка не сгенерируется
                 }
             #endregion
 
@@ -16662,18 +16662,27 @@ namespace PascalABCCompiler.TreeConverter
             statements_list stl = new statements_list(get_location(_statement_list), get_location_with_check(_statement_list.left_logical_bracket), get_location_with_check(_statement_list.right_logical_bracket));
             convertion_data_and_alghoritms.statement_list_stack_push(stl);
 
-            for (var i=0; i< _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
+            for (var i = 0; i < _statement_list.subnodes.Count; i++) // SSM 13.10.16 - поменял т.к. собираюсь менять узлы в процессе обхода
             {
                 statement syntax_statement = _statement_list.subnodes[i];
                 try
                 {
-                        statement_node semantic_statement = convert_strong(syntax_statement);
-                        if (semantic_statement != null)
+                    statement_node semantic_statement = convert_strong(syntax_statement);
+                    if (semantic_statement != null)
+                    {
+                        if (stl.statements.Count > 0 && stl.statements[0] is basic_function_call && i == 2)
                         {
-                            stl.statements.AddElement(semantic_statement);
+                            base_function_call bfc = stl.statements[0] as basic_function_call;
+                            if (bfc.type != null && bfc.type.name.Contains("<>local_variables_class") && (semantic_statement is compiled_constructor_call || semantic_statement is common_constructor_call) 
+                                && !context.converted_func_stack.Empty && context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).is_constructor)
+                                stl.statements.AddElementFirst(semantic_statement);
+                            else
+                                stl.statements.AddElement(semantic_statement);
                         }
-
-                        context.allow_inherited_ctor_call = false;
+                        else
+                            stl.statements.AddElement(semantic_statement);
+                    }
+                    context.allow_inherited_ctor_call = false;
                 }
                 catch (Errors.Error ex)
                 {
