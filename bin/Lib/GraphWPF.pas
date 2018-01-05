@@ -1,6 +1,6 @@
 ﻿// Copyright (©) Ivan Bondarev, Stanislav Mihalkovich (for details please see \doc\copyright.txt)
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
-///Основной модуль графики
+///Модуль графики
 unit GraphWPF;
 
 interface
@@ -11,8 +11,9 @@ interface
 
 {$apptype windows}
 
-uses System.Windows.Controls;
 uses System.Windows; 
+uses System.Windows.Controls;
+uses System.Windows.Controls.Primitives;
 uses System.Windows.Input; 
 uses System.Windows.Media; 
 uses System.Windows.Media.Animation; 
@@ -28,6 +29,10 @@ var app: Application;
 var CountVisuals := 0;
 
 procedure Invoke(d: System.Delegate; params args: array of object);
+procedure Invoke(d: ()->());
+function Invoke<T>(d: Func0<T>): T;
+function InvokeReal(f: ()->real): real;
+function InvokeString(f: ()->string): string;
 
 type 
   /// Тип клавиши
@@ -127,50 +132,71 @@ type
     procedure SetCaption(c: string);
     function GetCaption: string;
   public 
-    /// Отступ графического окна от левого края экрана 
+    /// Отступ главного окна от левого края экрана 
     property Left: real read GetLeft write SetLeft;
-    /// Отступ графического окна от верхнего края экрана 
+    /// Отступ главного окна от верхнего края экрана 
     property Top: real read GetTop write SetTop;
-    /// Ширина клиентской части графического окна
+    /// Ширина клиентской части главного окна
     property Width: real read GetWidth write SetWidth;
-    /// Высота клиентской части графического окна
+    /// Высота клиентской части главного окна
     property Height: real read GetHeight write SetHeight;
-    /// Заголовок графического окна
+    /// Заголовок окна
     property Caption: string read GetCaption write SetCaption;
-    /// Заголовок графического окна
+    /// Заголовок окна
     property Title: string read GetCaption write SetCaption;
     /// Очищает графическое окно белым цветом
     procedure Clear;
     /// Очищает графическое окно цветом c
     procedure Clear(c: Color);
-    /// Устанавливает размеры клиентской части графического окна 
+    /// Устанавливает размеры клиентской части главного окна 
     procedure SetSize(w, h: real);
-    /// Устанавливает отступ графического окна от левого верхнего края экрана 
+    /// Устанавливает отступ главного окна от левого верхнего края экрана 
     procedure SetPos(l, t: real);
+    /// Закрывает главное окно и завершает приложение
+    procedure Close;
+    /// Сворачивает главное окно
+    procedure Minimize;
+    /// Максимизирует главное окно
+    procedure Maximize;
+    /// Возвращает главное окно к нормальному размеру
+    procedure Normalize;
+    /// Центрирует главное окно по центру экрана
+    procedure CenterOnScreen;
+    /// Возвращает центр главного окна
+    function Center: Point;
+    /// Возвращает прямоугольник клиентской области окна
+    function ClientRect: GRect;
+    /// Сохраняет содержимое графического окна в файл с именем fname
+    procedure Save(fname: string);
+    /// Восстанавливает содержимое графического окна из файла с именем fname
+    procedure Load(fname: string);
+  end;
+  
+  GraphWindowType = class
+  private
+    function GetTop: real;
+    function GetLeft: real;
+    function GetWidth: real;
+    function GetHeight: real;
+  public  
+    /// Отступ графического окна от левого края главного окна  
+    property Left: real read GetLeft;
+    /// Отступ графического окна от верхнего края главного окна   
+    property Top: real read GetTop;
+    /// Ширина графического окна
+    property Width: real read GetWidth;
+    /// Высота графического окна
+    property Height: real read GetHeight;
     /// Сохраняет содержимое графического окна в файл с именем fname
     procedure Save(fname: string);
     /// Восстанавливает содержимое графического окна из файла с именем fname
     procedure Load(fname: string);
     /// Заполняет содержимое графического окна обоями из файла с именем fname
     procedure Fill(fname: string);
-    /// Закрывает графическое окно и завершает приложение
-    procedure Close;
-    /// Сворачивает графическое окно
-    procedure Minimize;
-    /// Максимизирует графическое окно
-    procedure Maximize;
-    /// Возвращает графическое окно к нормальному размеру
-    procedure Normalize;
-    /// Центрирует графическое окно по центру экрана
-    procedure CenterOnScreen;
-    /// Возвращает центр графического окна
-    function Center: Point;
-    /// Возвращает прямоугольник клиентской области окна
-    function ClientRect: GRect;
   end;
   
   /// Виды системы координат
-  CoordType = (MathematicalCoords,ScreenCoords);
+  CoordType = (MathematicalCoords,StandardCoords);
   /// Константы выравнивания текста относительно точки
   Alignment = (LeftTop,CenterTop,RightTop,LeftCenter,Center,RightCenter,LeftBottom,CenterBottom,RightBottom);
 
@@ -220,6 +246,8 @@ procedure Arc(x, y, r, angle1, angle2: real; c: Color);
 
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure Sector(x, y, r, angle1, angle2: real);
+/// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенный между двумя лучами, образующими углы angle1 и angle2 с осью OX
+procedure Pie(x, y, r, angle1, angle2: real);
 /// Рисует контур сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX
 procedure DrawSector(x, y, r, angle1, angle2: real);
 /// Рисует внутренность сектора окружности с центром в точке (x,y) и радиусом r, заключенного между двумя лучами, образующими углы angle1 и angle2 с осью OX
@@ -295,8 +323,10 @@ var Brush: BrushType;
 var Pen: PenType;
 /// Текущий шрифт
 var Font: FontType;
-/// Текущее окно
+/// Главное окно
 var Window: WindowType;
+/// Графическое окно
+var GraphWindow: GraphWindowType;
 
 var
   /// Событие нажатия на кнопку мыши. (x,y) - координаты курсора мыши в момент наступления события, mousebutton = 1, если нажата левая кнопка мыши, и 2, если нажата правая кнопка мыши
@@ -311,6 +341,8 @@ var
   OnKeyUp: procedure(k: Key);
   /// Событие нажатия символьной клавиши
   OnKeyPress: procedure(ch: char);
+  /// Событие изменения размера графического окна
+  OnResize: procedure;
 
 /// Возвращает цвет по красной, зеленой и синей составляющей (в диапазоне 0..255)
 function RGB(r,g,b: byte): Color;
@@ -394,6 +426,7 @@ procedure DrawGraph(f: real -> real);
 procedure SetMathematicCoords(x1: real := -10; x2: real := 10; drawcoords: boolean := true);
 procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean := true);
 procedure SetStandardCoords(scale: real := 1.0; x0: real := 0; y0: real := 0);
+procedure SetStandardCoordsSharpLines(x0: real := 0; y0: real := 0);
 procedure DrawGrid;
 
 function XMin: real;
@@ -401,7 +434,14 @@ function XMax: real;
 function YMin: real;
 function YMax: real;
 
-//procedure ProbaAnim;
+{procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
+procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
+procedure AddTopPanel(Height: real := 100; c: Color := Colors.LightGray);
+procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
+
+procedure AddStatusBar(Height: real := 24);}
+
+function MainDockPanel: DockPanel;
 
 implementation
 
@@ -428,7 +468,10 @@ end;
 
 procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d,args);
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
-function Invoke<T>(d: Func0<T>) := app.Dispatcher.Invoke&<T>(d);
+function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
+function InvokeReal(f: ()->real): real := Invoke&<Real>(f);
+function InvokeString(f: ()->string): string := Invoke&<string>(f);
+
 
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
@@ -452,7 +495,7 @@ begin
   Canvas.SetTop(Self,t);
 end;}
 type 
-  MyVisualHost = class(FrameworkElement)
+  MyVisualHost = class(Canvas) // мб Canvas - тогда можно размещать другие элементы!
   public  
     children: VisualCollection;
   protected 
@@ -479,7 +522,7 @@ var
   XOrigin := 0.0;
   YOrigin := 0.0;
   GlobalScale := 1.0;
-  CurrentCoordType: CoordType := ScreenCoords;
+  CurrentCoordType: CoordType := StandardCoords;
 
 {procedure ProbaAnimP;
 begin
@@ -608,7 +651,7 @@ end;
 procedure TextPFull(x,y: real; text: string);
 begin
   var dc: DrawingContext;
-  if CurrentCoordType = ScreenCoords then
+  if CurrentCoordType = StandardCoords then
   begin
     dc := GetDC();
     dc.DrawText(FormText(text),new Point(x,y));
@@ -627,7 +670,7 @@ end;
 procedure TextPFull(x,y: real; text: string; c: Color);
 begin
   var dc: DrawingContext;
-  if CurrentCoordType = ScreenCoords then
+  if CurrentCoordType = StandardCoords then
   begin
     dc := GetDC();
     dc.DrawText(FormTextC(text,c),new Point(x,y));
@@ -839,6 +882,7 @@ procedure Arc(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(ArcPC,x,
 
 /// Рисует сектор окружности с центром в точке (x,y) и радиусом r, заключенной между двумя лучами, образующими углы angle1 и angle2 с осью OX (angle1 и angle2 – вещественные, задаются в градусах и отсчитываются против часовой стрелки)
 procedure Sector(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, angle1, angle2);
+procedure Pie(x, y, r, angle1, angle2: real) := InvokeVisual(SectorP,x, y, r, angle1, angle2);
 procedure DrawSector(x, y, r, angle1, angle2: real) := InvokeVisual(DrawSectorP,x, y, r, angle1, angle2);
 procedure FillSector(x, y, r, angle1, angle2: real) := InvokeVisual(FillSectorP,x, y, r, angle1, angle2);
 procedure Sector(x, y, r, angle1, angle2: real; c: GColor) := InvokeVisual(SectorPC,x, y, r, angle1, angle2, c);
@@ -875,9 +919,9 @@ procedure DrawImageUnscaled(x,y: real; fname: string) := InvokeVisual(DrawImageU
 procedure DrawVideo(x,y: real; fname: string) := InvokeVisual(DrawVideoP,x,y,fname);
 
 /// Ширина текста при выводе
-function TextWidth(text: string) := Invoke&<real>(TextV.Create(text).TextWidth);
+function TextWidth(text: string) := InvokeReal(TextV.Create(text).TextWidth);
 /// Высота текста при выводе
-function TextHeight(text: string) := Invoke&<real>(TextV.Create(text).TextHeight);
+function TextHeight(text: string) := InvokeReal(TextV.Create(text).TextHeight);
 /// Размер текста при выводе
 function TextSize(text: string): Size := Invoke&<Size>(TextV.Create(text).TextSize);
 
@@ -902,7 +946,7 @@ begin
   end;
   var sz := TextSize(text);
   var dw,dh: real;
-  if CurrentCoordType = ScreenCoords then
+  if CurrentCoordType = StandardCoords then
     (dw,dh) := ((w-sz.Width)/2,(h-sz.Height)/2)
   else 
   begin
@@ -1084,25 +1128,25 @@ procedure WindowTypeSetLeftP(l: real) := MainWindow.Left := l;
 procedure WindowType.SetLeft(l: real) := Invoke(WindowTypeSetLeftP,l);
 
 function WindowTypeGetLeftP := MainWindow.Left;
-function WindowType.GetLeft := Invoke&<real>(WindowTypeGetLeftP);
+function WindowType.GetLeft := InvokeReal(WindowTypeGetLeftP);
 
 procedure WindowTypeSetTopP(t: real) := MainWindow.Top := t;
 procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP,t);
 
 function WindowTypeGetTopP := MainWindow.Top;
-function WindowType.GetTop := Invoke&<real>(WindowTypeGetTopP);
+function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
 
 procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
 procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP,w);
 
 function WindowTypeGetWidthP := MainWindow.Width - wplus;
-function WindowType.GetWidth := Invoke&<real>(WindowTypeGetWidthP);
+function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
 
 procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
 procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP,h);
 
 function WindowTypeGetHeightP := MainWindow.Height - hplus;
-function WindowType.GetHeight := Invoke&<real>(WindowTypeGetHeightP);
+function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
 
 procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
 procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP,c);
@@ -1132,11 +1176,91 @@ begin
 end;
 procedure WindowType.SetPos(l, t: real) := Invoke(WindowTypeSetPosP,l,t);
 
+procedure WindowType.Close := Invoke(MainWindow.Close);
+
+procedure WindowTypeMinimizeP := MainWindow.WindowState := WindowState.Minimized;
+procedure WindowType.Minimize := Invoke(WindowTypeMinimizeP);
+
+procedure WindowTypeMaximizeP := MainWindow.WindowState := WindowState.Maximized;
+procedure WindowType.Maximize := Invoke(WindowTypeMaximizeP);
+
+procedure WindowTypeNormalizeP := MainWindow.WindowState := WindowState.Normal;
+procedure WindowType.Normalize := Invoke(WindowTypeNormalizeP);
+
+procedure WindowTypeCenterOnScreenP := MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
+procedure WindowType.CenterOnScreen := Invoke(WindowTypeCenterOnScreenP);
+
+function WindowType.Center := Pnt(Width/2,Height/2);
+
+function WindowType.ClientRect := Rect(0,0,Window.Width,Window.Height);
+
+function GraphWindowTypeGetLeftP: real;
+begin
+  Result := 0;
+  foreach var p in MainDockPanel.Children do
+    if (p is FrameworkElement) and (p<>host) then
+    begin
+      var d := DockPanel.GetDock(FrameworkElement(p));
+      if d=Dock.Left then
+        Result += FrameworkElement(p).Width;
+    end;
+end;
+
+function GraphWindowTypeGetTopP: real;
+begin
+  Result := 0;
+  foreach var p in MainDockPanel.Children do
+    if (p is FrameworkElement) and (p<>host) then
+    begin
+      var d := DockPanel.GetDock(FrameworkElement(p));
+      if d=Dock.Top then
+        Result += FrameworkElement(p).Height;
+    end;
+end;
+
+function GraphWindowType.GetLeft := InvokeReal(GraphWindowTypeGetLeftP);
+function GraphWindowType.GetTop := InvokeReal(GraphWindowTypeGetTopP);
+
+function GraphWindowTypeGetWidthP: real;
+begin
+  {if host.DataContext = nil then
+    Result := 0
+  else Result := Size(host.DataContext).Width;}
+  Result := Window.Width;
+  foreach var p in MainDockPanel.Children do
+    if (p is FrameworkElement) and (p<>host) then
+    begin
+      var d := DockPanel.GetDock(FrameworkElement(p));
+      if (d=Dock.Left) or (d=Dock.Right) then
+        Result -= FrameworkElement(p).Width;
+    end;
+end;
+function GraphWindowType.GetWidth := InvokeReal(GraphWindowTypeGetWidthP);
+
+function GraphWindowTypeGetHeightP: real;
+begin
+  {if host.DataContext = nil then
+    Result := 0
+  else Result := Size(host.DataContext).Height;}
+  Result := Window.Height;
+  foreach var p in MainDockPanel.Children do
+    if (p is FrameworkElement) and (p<>host) then
+    begin
+      var d := DockPanel.GetDock(FrameworkElement(p));
+      if (d=Dock.Top) or (d=Dock.Bottom) then
+        Result -= FrameworkElement(p).Height;
+    end;
+end;
+function GraphWindowType.GetHeight := InvokeReal(GraphWindowTypeGetHeightP);
+
 procedure SaveWindowP(canvas: FrameworkElement; filename: string);
 begin
   var (scalex,scaley) := ScaleToDevice;
   var (dpiX,dpiY) := (scalex * 96, scaley * 96);
-  var bmp := new RenderTargetBitmap(Round(Window.Width*scalex), Round(Window.Height*scaley), dpiX, dpiY, PixelFormats.Pbgra32);
+  
+  var sz := Size(host.DataContext);
+  
+  var bmp := new RenderTargetBitmap(Round(sz.Width*scalex), Round(sz.Height*scaley), dpiX, dpiY, PixelFormats.Pbgra32);
   
   bmp.Render(canvas);
   
@@ -1158,32 +1282,18 @@ begin
   fil.Close();
 end;
 
-procedure WindowType.Save(fname: string) := Invoke(SaveWindowP,host,fname);
+procedure GraphWindowType.Save(fname: string) := Invoke(SaveWindowP,host,fname);
 
-procedure WindowType.Load(fname: string) := DrawImageUnscaled(0,0,fname);
+procedure GraphWindowType.Load(fname: string) := DrawImageUnscaled(0,0,fname);
 
-procedure WindowType.Fill(fname: string);
+procedure GraphWindowType.Fill(fname: string);
 begin
   //FillWindow(fname);
 end;
 
-procedure WindowType.Close := Invoke(MainWindow.Close);
+procedure WindowType.Save(fname: string) := GraphWindow.Save(fname);
 
-procedure WindowTypeMinimizeP := MainWindow.WindowState := WindowState.Minimized;
-procedure WindowType.Minimize := Invoke(WindowTypeMinimizeP);
-
-procedure WindowTypeMaximizeP := MainWindow.WindowState := WindowState.Maximized;
-procedure WindowType.Maximize := Invoke(WindowTypeMaximizeP);
-
-procedure WindowTypeNormalizeP := MainWindow.WindowState := WindowState.Normal;
-procedure WindowType.Normalize := Invoke(WindowTypeNormalizeP);
-
-procedure WindowTypeCenterOnScreenP := MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-procedure WindowType.CenterOnScreen := Invoke(WindowTypeCenterOnScreenP);
-
-function WindowType.Center := Pnt(Width/2,Height/2);
-
-function WindowType.ClientRect := Rect(0,0,Window.Width,Window.Height);
+procedure WindowType.Load(fname: string) := GraphWindow.Load(fname);
 
 function XMin := -XOrigin/GlobalScale;
 function XMax := (Window.Width-XOrigin)/GlobalScale;
@@ -1192,7 +1302,7 @@ function YMax := YOrigin/GlobalScale;
 
 procedure DrawGridP;
 begin
-  if CurrentCoordType = ScreenCoords then
+  if CurrentCoordType = StandardCoords then
     raise new Exception('Рисование координатной сетки возможно только в математическом режиме');
   
   var xfrom := Round(XMin);
@@ -1210,20 +1320,26 @@ begin
 end;
 procedure DrawGrid := Invoke(DrawGridP);
 
+var StandardCoordsPenWidthSave: real;
+
 procedure SetMathematicCoordsScaleP(x0,y0,scale: real);
 begin
+  if CurrentCoordType = StandardCoords then
+    StandardCoordsPenWidthSave := Pen.Width;
   CurrentCoordType := MathematicalCoords;
   XOrigin := x0;
   YOrigin := y0;
   GlobalScale := scale;
   var m: Transform := new MatrixTransform(scale,0,0,-scale,x0,y0);
   Host.RenderTransform := m;
-  Pen.Width := Pen.Width / scale;
+  Pen.Width := StandardCoordsPenWidthSave / scale; 
 end;
 procedure SetMathematicCoordsScale(x0,y0,scale: real) := Invoke(SetMathematicCoordsScaleP,x0,y0,scale);
 
 procedure SetMathematicCoordsP(x1,x2: real; drawcoords: boolean);
 begin
+  if CurrentCoordType = StandardCoords then
+    StandardCoordsPenWidthSave := Pen.Width;
   Window.Clear;
   CurrentCoordType := MathematicalCoords;
   // x1 0 x2
@@ -1237,6 +1353,8 @@ begin
 end;
 procedure SetMathematicCoordsP1(x1,x2,ymin: real; drawcoords: boolean);
 begin
+  if CurrentCoordType = StandardCoords then
+    StandardCoordsPenWidthSave := Pen.Width;
   Window.Clear;
   CurrentCoordType := MathematicalCoords;
   // x1 0 x2
@@ -1256,16 +1374,25 @@ procedure SetMathematicCoords(x1,x2,ymin: real; drawcoords: boolean) := Invoke(S
 procedure SetStandardCoordsP(scale: real := 1.0; x0: real := 0; y0: real := 0);
 begin
   Window.Clear;
-  CurrentCoordType := ScreenCoords;
-  XOrigin := 0;
-  YOrigin := 0;
+  if CurrentCoordType = MathematicalCoords then
+    Pen.Width := StandardCoordsPenWidthSave;
+  CurrentCoordType := StandardCoords;
+  XOrigin := x0;
+  YOrigin := y0;
   GlobalScale := scale;
   var m: Transform := new MatrixTransform(scale,0,0,scale,x0,y0);
   Host.RenderTransform := m;
-  Pen.Width := Pen.Width * scale; // нет!
+  //Pen.Width := Pen.Width * scale; // нет!
 end;
 procedure SetStandardCoords(scale,x0,y0: real) := Invoke(SetStandardCoordsP,scale,x0,y0);
-
+procedure SetStandardCoordsSharpLinesP(x0,y0: real);
+begin
+  var (sx,sy) := ScaleToDevice;
+  if Round(Pen.Width) mod 2 = 1 then
+    SetStandardCoordsP(1/sx,(x0+0.5)/sx,(y0+0.5)/sy)
+  else SetStandardCoordsP(1/sx,x0/sx,y0/sy) 
+end; 
+procedure SetStandardCoordsSharpLines(x0,y0: real) := Invoke(SetStandardCoordsSharpLinesP,x0,y0);
 
 /// --- SystemMouseEvents
 procedure SystemOnMouseDown(sender: Object; e: MouseButtonEventArgs);
@@ -1312,6 +1439,10 @@ procedure SystemOnKeyDown(sender: Object; e: KeyEventArgs) :=
 procedure SystemOnKeyUp(sender: Object; e: KeyEventArgs) := 
   if OnKeyUp<>nil then
     OnKeyUp(e.Key);
+    
+procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) := 
+  if OnResize<>nil then
+    OnResize();
 
 ///----------------------------------------------------------------------
 
@@ -1373,6 +1504,23 @@ begin
   FrameRate := 60;
 end;  
 
+var MainDockPanelF: DockPanel;
+  
+function MainDockPanel: DockPanel := MainDockPanelF;
+
+procedure AddGraphWindow;
+begin
+  host := new MyVisualHost();
+  host.ClipToBounds := True;
+  host.SizeChanged += (s,e) ->
+  begin
+    var sz := e.NewSize;
+    host.DataContext := e.NewSize;
+  end;
+  // Всегда последнее
+  MainDockPanelF.children.Add(host);
+end;
+
 procedure InitForm0;
 begin
   app := new Application();
@@ -1382,13 +1530,21 @@ begin
     halt; 
   end;
   MainWindow := new GWindow;
-  host := new MyVisualHost();
-  MainWindow.Content := host;
   
+  MainDockPanelF := new DockPanel;
+  MainDockPanelF.LastChildFill := True;
+  MainWindow.Content := MainDockPanelF; 
+
+  AddGraphWindow;
+  
+  {host := new MyVisualHost();
+  MainWindow.Content := host;}
+
   Brush := new BrushType;
   Pen := new PenType;
   Font := new FontType;
   Window := new WindowType;
+  GraphWindow := new GraphWindowType;
 
   MainWindow.Title := 'Графика WPF';
   var (w,h) := (800,600);
@@ -1403,6 +1559,7 @@ begin
   MainWindow.MouseMove += SystemOnMouseMove;
   MainWindow.KeyDown += SystemOnKeyDown;
   MainWindow.KeyUp += SystemOnKeyUp;
+  MainWindow.SizeChanged += SystemOnResize;
   
   CompositionTarget.Rendering += RenderFrame;
   

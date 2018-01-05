@@ -1617,22 +1617,67 @@ type
     function Clone := (inherited Clone) as RectangleT;
   end;
   
-  FileModelT = class(Object3D)
+  FileModelT = class(ObjectWithChildren3D)
   private
+    fn: string;
+    procedure SetMP(mat: GMaterial) := (model as MeshVisual3D).FaceMaterial := mat;
+    procedure SetMaterial(mat: GMaterial) := Invoke(SetMP, mat);
+    function GetMaterial: GMaterial := Invoke&<GMaterial>(()->(model as MeshVisual3D).FaceMaterial);
+  public 
+    //property Color: GColor write SetColor;
+    property Material: GMaterial read GetMaterial write SetMaterial; // не работает почему-то на запись
+
     {procedure SetVP(v: boolean) := (model as FileModelVisual3D).Visibility := v;
     procedure SetV(v: boolean) := Invoke(SetVP, v);
     function GetV: boolean := Invoke&<boolean>(()->(model as FileModelVisual3D).Visibility);}
   protected  
-    function CreateObject: Object3D; override := new FileModelT(X, Y, Z, (model as FileModelVisual3D).Source);
+    function CreateObject: Object3D; override := new FileModelT(X, Y, Z, fn, Material.Clone);
   public 
-    constructor(x, y, z: real; fname: string);
+    constructor(x, y, z: real; fname: string; mat: GMaterial);
     begin
-      var a := new FileModelVisual3D;
-      a.Source := fname;
-      CreateBase0(a, x, y, z);
+      model := new MeshVisual3D();
+    
+      var fs := System.IO.File.OpenRead(fname);
+      fn := fname;
+
+    	var ext := System.IO.Path.GetExtension(fname);
+      ext := ext?.ToLower;
+      
+      var r: ModelReader;
+      
+      case ext of
+    '.off': begin
+        r := new offreader(nil);
+        (model as MeshVisual3D).FaceMaterial := mat;
+        (model as MeshVisual3D).EdgeDiameter := 0;
+        (model as MeshVisual3D).VertexRadius := 0;
+      end;
+    '.3ds': r := new studioreader(nil);
+    '.lwo': r := new lworeader(nil);
+    '.stl': r := new stlreader(nil);
+    '.obj','.objx': r := new objreader(nil);
+      end;
+
+      r.DefaultMaterial := mat;
+      //r.DefaultMaterial := Colors.Gray;
+      if ext = '.off' then
+      begin
+        (r as offreader).Load(fs);
+        (model as MeshVisual3D).Mesh := (r as offreader).CreateMesh;
+      end
+      else 
+      begin
+        var md := r.Read(fs);
+        (model as MeshVisual3D).Content := md;
+      end;
+      
+      fs.Close;
+      
+      {var a := new FileModelVisual3D;
+      a.Source := fname;}
+      CreateBase0(model, x, y, z);
     end;
     
-    //property Visible: boolean read GetV write SetV;
     function Clone := (inherited Clone) as FileModelT;
   end;
   
@@ -2430,16 +2475,16 @@ function Text3D(p: Point3D; text: string; height: real; c: Color) := Text3D(p.x,
 function Text3D(x, y, z: real; text: string; height: real) := Text3D(x, y, z, text, height, 'Arial', Colors.Black);
 function Text3D(p: Point3D; text: string; height: real) := Text3D(p.x, p.y, p.z, text, height, 'Arial', Colors.Black);
 
-function Rectangle3D(x, y, z, l, w: real; normal, lendirection: Vector3D; c: Material) := Invoke&<RectangleT>(()->RectangleT.Create(x, y, z, l, w, normal, lendirection, c));
-function Rectangle3D(p: Point3D; l, w: real; normal, lendirection: Vector3D; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, normal, lendirection, c);
-function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; c: Material) := Rectangle3D(x, y, z, l, w, normal, OrtX, c); 
-function Rectangle3D(x, y, z, l, w: real; c: Material) := Rectangle3D(x, y, z, l, w, OrtZ, OrtX, c); 
-function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, normal, OrtX, c); 
-function Rectangle3D(p: Point3D; l, w: real; c: Material) := Rectangle3D(p.x, p.y, p.z, l, w, OrtZ, OrtX, c); 
+function Rectangle3D(x, y, z, l, w: real; normal, lendirection: Vector3D; c: Material): RectangleT := Invoke&<RectangleT>(()->RectangleT.Create(x, y, z, l, w, normal, lendirection, c));
+function Rectangle3D(p: Point3D; l, w: real; normal, lendirection: Vector3D; c: Material): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, lendirection, c);
+function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; c: Material): RectangleT := Rectangle3D(x, y, z, l, w, normal, OrtX, c); 
+function Rectangle3D(x, y, z, l, w: real; c: Material): RectangleT := Rectangle3D(x, y, z, l, w, OrtZ, OrtX, c); 
+function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; c: Material): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, OrtX, c); 
+function Rectangle3D(p: Point3D; l, w: real; c: Material): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, OrtZ, OrtX, c); 
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
-function FileModel3D(x, y, z: real; fname: string) := Invoke&<FileModelT>(()->FileModelT.Create(x, y, z, fname));
-function FileModel3D(p: Point3D; fname: string) := FileModel3D(p.x, p.y, p.z, fname);
+function FileModel3D(x, y, z: real; fname: string; c: Material): FileModelT := Invoke&<FileModelT>(()->FileModelT.Create(x, y, z, fname, c));
+function FileModel3D(p: Point3D; fname: string; c: Material): FileModelT := FileModel3D(p.x, p.y, p.z, fname, c);
 
 function Prism(x, y, z: real; Sides: integer; Radius, Height: real; c: Material): PrismT := Invoke&<PrismT>(()->PrismT.Create(x, y, z, Sides, Radius, Height, c));
 function Prism(p: Point3D; Sides: integer; Radius, Height: real; c: Material): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, c);
@@ -2524,9 +2569,6 @@ begin
   var off := new offreader(nil);
   var s := System.IO.File.OpenRead('boxcube.off');
   off.Load(s);
-  
-  //var mmm := new ModelVisual3D;
-  //mmm.Model := off.CreateMeshGeometry3D;
   
   var m1 := new MeshVisual3D();
   m1.FaceMaterial := Colors.Green;
