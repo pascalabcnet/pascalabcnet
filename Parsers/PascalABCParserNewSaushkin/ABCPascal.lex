@@ -110,6 +110,11 @@ UNICODEARROW \x890
 		if (!Defines.Contains(directiveparam))
 			Defines.Add(directiveparam);
 	}
+	else if (directivename == "UNDEF")
+	{
+		if (Defines.Contains(directiveparam))
+			Defines.Remove(directiveparam);
+	}
 }
 
 <EXCLUDETEXT>{OneLineCmnt} {
