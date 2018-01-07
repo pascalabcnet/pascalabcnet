@@ -4877,6 +4877,9 @@ namespace PascalABCCompiler.TreeConverter
                                     expression_node exp = (expression_node)sn;
                                     if (exp is typed_expression)
                                         try_convert_typed_expression_to_function_call(ref exp);
+                                    location subloc = get_location(id_right);
+                                    if (exp is typed_expression)
+                                        AddError(new UndefinedNameReference(id_right.name, subloc));
                                     SyntaxTree.operator_name_ident oni_right = id_right as SyntaxTree.operator_name_ident;
                                     if (oni_right != null)
                                     {
@@ -4890,12 +4893,6 @@ namespace PascalABCCompiler.TreeConverter
                                             BasePCUReader.RestoreSymbols(sil, id_right.name);
                                         }
                                     }
-
-
-                                    //definition_node ddn=check_name_node_type(id_right.name,si,get_location(id_right),
-                                    //	general_node_type.function_node,general_node_type.variable_node);
-
-                                    location subloc = get_location(id_right);
 
                                     if (sil == null)
                                     {
@@ -9253,6 +9250,10 @@ namespace PascalABCCompiler.TreeConverter
         {
             if (en is typed_expression)
                 try_convert_typed_expression_to_function_call(ref en);
+            if (en is typed_expression)
+            {
+                AddError(new MemberIsNotDeclaredInType(id_right, get_location(id_right), en.type));
+            }
             SymbolInfoList sil = en.type.find_in_type(id_right.name, context.CurrentScope);
             if (sil == null)
             {
@@ -9260,7 +9261,7 @@ namespace PascalABCCompiler.TreeConverter
             }
 
             try_convert_typed_expression_to_function_call(ref en);
-
+            
             switch (mot)
             {
                 case motivation.address_reciving:
