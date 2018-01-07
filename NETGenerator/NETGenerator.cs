@@ -9837,14 +9837,20 @@ namespace PascalABCCompiler.NETGenerator
         {
             Label EndLabel = il.DefineLabel();
             Label FalseLabel = il.DefineLabel();
-
+            bool tmp_is_dot_expr = is_dot_expr;
+            bool tmp_is_addr = is_addr;
+            is_dot_expr = false;//don't box the condition expression
+            is_addr = false;
             value.condition.visit(this);
+            is_dot_expr = tmp_is_dot_expr;
+            is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
             value.ret_if_true.visit(this);
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(FalseLabel);
             value.ret_if_false.visit(this);
             il.MarkLabel(EndLabel);
+            
         }
 
         private Hashtable range_stmts_labels = new Hashtable();
