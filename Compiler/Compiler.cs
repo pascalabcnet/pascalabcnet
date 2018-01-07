@@ -2866,6 +2866,7 @@ namespace PascalABCCompiler
                         directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\WindowsBase.dll", null));
                         directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\PresentationCore.dll", null));
                         directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.Wpf.dll", null));
+                        directives.Add(new TreeRealization.compiler_directive("reference", "%GAC%\\HelixToolkit.dll", null));
                     }
                 }
             }

@@ -1620,9 +1620,9 @@ type
   FileModelT = class(ObjectWithChildren3D)
   private
     fn: string;
-    procedure SetMP(mat: GMaterial) := (model as MeshVisual3D).FaceMaterial := mat;
+    procedure SetMP(mat: GMaterial) := (model as FileModelVisual3D).DefaultMaterial := mat;
     procedure SetMaterial(mat: GMaterial) := Invoke(SetMP, mat);
-    function GetMaterial: GMaterial := Invoke&<GMaterial>(()->(model as MeshVisual3D).FaceMaterial);
+    function GetMaterial: GMaterial := Invoke&<GMaterial>(()->(model as FileModelVisual3D).DefaultMaterial);
   public 
     //property Color: GColor write SetColor;
     property Material: GMaterial read GetMaterial write SetMaterial; // не работает почему-то на запись
@@ -1635,7 +1635,7 @@ type
   public 
     constructor(x, y, z: real; fname: string; mat: GMaterial);
     begin
-      model := new MeshVisual3D();
+      {model := new MeshVisual3D();
     
       var fs := System.IO.File.OpenRead(fname);
       fn := fname;
@@ -1671,11 +1671,12 @@ type
         (model as MeshVisual3D).Content := md;
       end;
       
-      fs.Close;
+      fs.Close;}
       
-      {var a := new FileModelVisual3D;
-      a.Source := fname;}
-      CreateBase0(model, x, y, z);
+      var a := new FileModelVisual3D;
+      a.DefaultMaterial := mat;
+      a.Source := fname;
+      CreateBase0(a, x, y, z);
     end;
     
     function Clone := (inherited Clone) as FileModelT;

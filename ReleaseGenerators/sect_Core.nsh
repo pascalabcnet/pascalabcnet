@@ -111,6 +111,7 @@
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\PABCRtl32.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
+    File ..\bin\Lib\HelixToolkit.dll
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
@@ -162,6 +163,7 @@
     ${AddFile} "Speech.pcu"
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
+    ${AddFile} "HelixToolkit.dll"
     ${AddFile} "PABCRtl.pdb"
 
     SetOutPath "$INSTDIR\Doc"
@@ -172,6 +174,8 @@
     Push "Lib\PABCRtl.dll"
     Call NGEN
     Push "Lib\HelixToolkit.Wpf.dll"
+    Call NGEN
+    Push "Lib\HelixToolkit.dll"
     Call NGEN
 	
     SetOutPath "$INSTDIR\LibSource"
