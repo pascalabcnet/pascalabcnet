@@ -1005,7 +1005,7 @@ namespace CodeCompletion
                             ps = new ProcScope(meth_name, topScope);
                             ps.head_loc = loc;
                             bool ext = false;
-                            if (topScope is CompiledScope || topScope is ArrayScope || topScope is TypeSynonim && ((topScope as TypeSynonim).actType is CompiledScope || (topScope as TypeSynonim).actType is ArrayScope || (topScope as TypeSynonim).actType is DiapasonScope))
+                            if (topScope is CompiledScope || topScope is ArrayScope || topScope is TypeSynonim /*&& ((topScope as TypeSynonim).actType is CompiledScope || (topScope as TypeSynonim).actType is ArrayScope || (topScope as TypeSynonim).actType is DiapasonScope)*/)
                                 ext = true;
                             else if (!(topScope is TypeSynonim) && !(topScope is PointerScope) && !(topScope is SetScope) && !(topScope is FileScope))
                                 ext = true;
@@ -1019,7 +1019,7 @@ namespace CodeCompletion
                                 if (topScope is TypeSynonim)
                                     ts = (ts as TypeSynonim).actType;
                                 this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
-                                topScope.AddExtensionMethod(meth_name, ps, ts);
+                                ts.AddExtensionMethod(meth_name, ps, ts);
                             }
                         }
                         //while (ps != null && ps.already_defined) ps = ps.nextProc;
@@ -1307,7 +1307,7 @@ namespace CodeCompletion
 
                             ps.head_loc = loc;
                             bool ext = false;
-                            if (topScope is CompiledScope || topScope is ArrayScope || topScope is TypeSynonim && ((topScope as TypeSynonim).actType is CompiledScope || (topScope as TypeSynonim).actType is ArrayScope || (topScope as TypeSynonim).actType is DiapasonScope))
+                            if (topScope is CompiledScope || topScope is ArrayScope || topScope is TypeSynonim /*&& ((topScope as TypeSynonim).actType is CompiledScope || (topScope as TypeSynonim).actType is ArrayScope || (topScope as TypeSynonim).actType is DiapasonScope)*/)
                                 ext = true;
                             else if (!(topScope is TypeSynonim) && !(topScope is PointerScope) && !(topScope is SetScope) && !(topScope is FileScope))
                                 ext = true;
@@ -1321,7 +1321,7 @@ namespace CodeCompletion
                                 if (topScope is TypeSynonim)
                                     ts = (ts as TypeSynonim).actType;
                                 this.entry_scope.AddExtensionMethod(meth_name, ps, ts);
-                                topScope.AddExtensionMethod(meth_name, ps, ts);
+                                ts.AddExtensionMethod(meth_name, ps, ts);
                             }
                         }
                         else

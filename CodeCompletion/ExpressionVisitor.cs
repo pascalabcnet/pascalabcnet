@@ -931,6 +931,11 @@ namespace CodeCompletion
                 {
                     for (int i = 0; i < good_procs.Count; i++)
                     {
+                        if (good_procs[i].parameters.Count == 0)
+                        {
+                            ind = i;
+                            break;
+                        }
                         TypeScope param_type = good_procs[i].parameters[0].sc as TypeScope;
                         if (param_type.original_type != null)
                             param_type = param_type.original_type;
