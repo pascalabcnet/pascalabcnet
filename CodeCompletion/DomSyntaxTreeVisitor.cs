@@ -402,23 +402,26 @@ namespace CodeCompletion
                 else
                     if (returned_scope is ProcScope)
                 {
-                    if ((returned_scope as ProcScope).parameters.Count == 0)
+                    ProcScope ps = returned_scope as ProcScope;
+                    if (ps.parameters.Count == 0 || ps.parameters[0].param_kind == parametr_kind.params_parametr || ps.parameters[0].cnst_val != null)
                     {
-                        if ((returned_scope as ProcScope).return_type != null)
-                            returned_scope = (returned_scope as ProcScope).return_type;
+                        if (ps.return_type != null)
+                            returned_scope = ps.return_type;
                         else
-                            returned_scope = new ProcType(returned_scope as ProcScope);
+                            returned_scope = new ProcType(ps);
                     }
                     else
                     {
                         returned_scopes = cur_scope.FindOverloadNames(_ident.name);
-                        returned_scope = returned_scopes.Find(x => x is ProcScope && (x as ProcScope).parameters.Count == 0);
+                        returned_scope = returned_scopes.Find(x => x is ProcScope && ((x as ProcScope).parameters.Count == 0 || (x as ProcScope).parameters[0].param_kind == parametr_kind.params_parametr || (x as ProcScope).parameters[0].cnst_val != null));
                         if (returned_scope == null)
                         {
                             returned_scope = returned_scopes[0];
                             if (returned_scope is ProcScope && (returned_scope as ProcScope).return_type == null)
                                 returned_scope = new ProcType(returned_scope as ProcScope);
                         }
+                        else if (returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
+                            returned_scope = (returned_scope as ProcScope).return_type;
                         else if (returned_scopes.Count > 0 && returned_scopes[0] is ProcScope && (returned_scopes[0] as ProcScope).return_type == null)
                             returned_scope = new ProcType(returned_scopes[0] as ProcScope);
                     }
@@ -520,13 +523,13 @@ namespace CodeCompletion
 
         public override void visit(var_def_statement _var_def_statement)
         {
-        	try
-        	{
-        		returned_scope = null;
-        		if (_var_def_statement.vars_type != null)
-        			_var_def_statement.vars_type.visit(this);
-        		if (_var_def_statement.vars_type == null && _var_def_statement.inital_value != null || _var_def_statement.inital_value is function_lambda_definition)
-        		{
+            try
+            {
+                returned_scope = null;
+                if (_var_def_statement.vars_type != null)
+                    _var_def_statement.vars_type.visit(this);
+                if (_var_def_statement.vars_type == null && _var_def_statement.inital_value != null || _var_def_statement.inital_value is function_lambda_definition)
+                {
                     SymScope tmp_scope = returned_scope;
                     TypeScope tmp_awaitedProcType = awaitedProcType;
                     if (_var_def_statement.inital_value is function_lambda_definition)
@@ -535,42 +538,39 @@ namespace CodeCompletion
                             tmp_scope = new ProcType(tmp_scope as ProcScope);
                         awaitedProcType = tmp_scope as TypeScope;
                     }
-                        
-        			_var_def_statement.inital_value.visit(this);
+
+                    _var_def_statement.inital_value.visit(this);
                     awaitedProcType = tmp_awaitedProcType;
                     if (tmp_scope != null && _var_def_statement.inital_value is function_lambda_definition)
                         returned_scope = tmp_scope;
                 }
-           		// if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
-           
-            	if (returned_scope == null) return;
+                // if (si == null) dn = compiled_type_node.get_type_node(PascalABCCompiler.NetHelper.NetHelper.FindType((_var_def_statement.vars_type as named_type_reference).names[0].name,unl));
+
+                if (returned_scope == null) return;
                 if (returned_scope is ProcScope)
                 {
-                    if (_var_def_statement.vars_type != null)
-                        returned_scope = new ProcType(returned_scope as ProcScope);
-                    else
-                        returned_scope = (returned_scope as ProcScope).return_type;
+                    returned_scope = new ProcType(returned_scope as ProcScope);
                 }
 
-            	if (_var_def_statement.vars != null)
-            	foreach (ident s in _var_def_statement.vars.idents)
-            	{
-           			SymInfo si = new SymInfo(s.name, SymbolKind.Variable,s.name);
-           			if (cur_scope is TypeScope) si.kind = SymbolKind.Field;
-           			if (_var_def_statement.is_event) si.kind = SymbolKind.Event;
-           			ElementScope es = new ElementScope(si, returned_scope,cur_scope);
-           			if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_var_def_statement))
-           			es.AddDocumentation(this.converter.controller.docs[_var_def_statement]);
-           			es.acc_mod = cur_access_mod;
-           			es.is_static = _var_def_statement.var_attr == definition_attribute.Static;
-           			es.si.acc_mod = cur_access_mod;
-           			es.loc = get_location(s);
-           			cur_scope.AddName(s.name,es);
-           			es.declaringUnit = cur_scope;
-            	}
-        	}
-        	catch(Exception e)
-        	{
+                if (_var_def_statement.vars != null)
+                    foreach (ident s in _var_def_statement.vars.idents)
+                    {
+                        SymInfo si = new SymInfo(s.name, SymbolKind.Variable, s.name);
+                        if (cur_scope is TypeScope) si.kind = SymbolKind.Field;
+                        if (_var_def_statement.is_event) si.kind = SymbolKind.Event;
+                        ElementScope es = new ElementScope(si, returned_scope, cur_scope);
+                        if (add_doc_from_text && this.converter.controller.docs != null && this.converter.controller.docs.ContainsKey(_var_def_statement))
+                            es.AddDocumentation(this.converter.controller.docs[_var_def_statement]);
+                        es.acc_mod = cur_access_mod;
+                        es.is_static = _var_def_statement.var_attr == definition_attribute.Static;
+                        es.si.acc_mod = cur_access_mod;
+                        es.loc = get_location(s);
+                        cur_scope.AddName(s.name, es);
+                        es.declaringUnit = cur_scope;
+                    }
+            }
+            catch (Exception e)
+            {
 #if DEBUG
                 File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
 #endif
