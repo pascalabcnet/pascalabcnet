@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("PascalABC.NET Compiler")]
-[assembly: AssemblyCopyright("Copyright © 2005-2017 by Ivan Bondarev, Stanislav Mihalkovich")]
+[assembly: AssemblyCopyright("Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 [assembly: AssemblyVersion(RevisionClass.FullVersion)]
@@ -15,7 +15,7 @@ internal static class RevisionClass
 	public const string Major = "3";
 	public const string Minor = "3";
 	public const string Build = "0";
-	public const string Revision = "1611";
+	public const string Revision = "1612";
 
         public const string MainVersion = Major + "." + Minor;
 	public const string FullVersion = Major + "." + Minor + "." + Build + "." + Revision;
