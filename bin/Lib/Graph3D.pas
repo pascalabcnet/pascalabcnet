@@ -117,7 +117,11 @@ procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispat
 
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
 
-function Invoke<T>(d: Func0<T>) := app.Dispatcher.Invoke&<T>(d);
+function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
+function InvokeString(d: Func0<string>): string := Invoke&<string>(d);
+function InvokeReal(d: Func0<real>): real := Invoke&<real>(d);
+function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);
+function InvokeInteger(d: Func0<integer>): integer := Invoke&<integer>(d);
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
 
@@ -239,27 +243,27 @@ type
   private
     procedure SetSCSP(v: boolean) := hvp.ShowCoordinateSystem := v;
     procedure SetSCS(v: boolean) := Invoke(SetSCSP, v);
-    function GetSCS: boolean := Invoke&<boolean>(()->hvp.ShowCoordinateSystem);
+    function GetSCS: boolean := InvokeBoolean(()->hvp.ShowCoordinateSystem);
     
     procedure SetSGLP(v: boolean) := gvl.Visible := v;
     procedure SetSGL(v: boolean) := Invoke(SetSGLP, v);
-    function GetSGL: boolean := Invoke&<boolean>(()->gvl.Visible);
+    function GetSGL: boolean := InvokeBoolean(()->gvl.Visible);
     
     procedure SetSCIP(v: boolean) := hvp.ShowCameraInfo := v;
     procedure SetSCI(v: boolean) := Invoke(SetSCIP, v);
-    function GetSCI: boolean := Invoke&<boolean>(()->hvp.ShowCameraInfo);
+    function GetSCI: boolean := InvokeBoolean(()->hvp.ShowCameraInfo);
     
     procedure SetSVCP(v: boolean) := hvp.ShowViewCube := v;
     procedure SetSVC(v: boolean) := Invoke(SetSVCP, v);
-    function GetSVC: boolean := Invoke&<boolean>(()->hvp.ShowViewCube);
+    function GetSVC: boolean := InvokeBoolean(()->hvp.ShowViewCube);
     
     procedure SetTP(v: string) := hvp.Title := v;
     procedure SetT(v: string) := Invoke(SetTP, v);
-    function GetT: string := Invoke&<string>(()->hvp.Title);
+    function GetT: string := InvokeString(()->hvp.Title);
     
     procedure SetSTP(v: string) := hvp.SubTitle := v;
     procedure SetST(v: string) := Invoke(SetSTP, v);
-    function GetST: string := Invoke&<string>(()->hvp.SubTitle);
+    function GetST: string := InvokeString(()->hvp.SubTitle);
     
     procedure SetCMP(v: HelixToolkit.Wpf.CameraMode) := hvp.CameraMode := v;
     procedure SetCM(v: HelixToolkit.Wpf.CameraMode) := Invoke(SetCMP, v);
@@ -348,7 +352,7 @@ type
     end;
     
     procedure SetD(d: real) := Invoke(SetDP, d);
-    function GetD: real := Invoke&<real>(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
+    function GetD: real := InvokeReal(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
   public 
     property Position: Point3D read GetP write SetP;
     property LookDirection: Vector3D read GetLD write SetLD;
@@ -414,11 +418,11 @@ type
     end;
     
     procedure SetX(xx: real) := Invoke(()->begin transltransform.OffsetX := xx; end); 
-    function GetX: real := Invoke&<real>(()->transltransform.OffsetX);
+    function GetX: real := InvokeReal(()->transltransform.OffsetX);
     procedure SetY(yy: real) := Invoke(()->begin transltransform.OffsetY := yy; end);
-    function GetY: real := Invoke&<real>(()->transltransform.OffsetY);
+    function GetY: real := InvokeReal(()->transltransform.OffsetY);
     procedure SetZ(zz: real) := Invoke(()->begin transltransform.OffsetZ := zz; end);
-    function GetZ: real := Invoke&<real>(()->transltransform.OffsetZ);
+    function GetZ: real := InvokeReal(()->transltransform.OffsetZ);
     function GetPos: Point3D := Invoke&<Point3D>(()->P3D(transltransform.OffsetX, transltransform.OffsetY, transltransform.OffsetZ));
 
   protected 
@@ -648,57 +652,10 @@ type
   end;
   
   GroupT = class(ObjectWithChildren3D)
-    //l := new List<Object3D>;
-  private 
-    {procedure AddT(obj: Object3D);
-    begin
-      var p: Object3D := Self;
-      while p <> nil do
-      begin
-        if obj = p then
-          raise new System.ArgumentException('Group.Add: Нельзя в дочерние элементы группы добавить себя или своего предка');
-        p := p.Parent
-      end;
-      if obj.Parent = Self then
-        exit;
-      if obj.Parent = nil then
-        hvp.Children.Remove(obj.model)
-      else 
-      begin
-        var q := obj.Parent.model as MeshVisual3D;
-        q.Children.Remove(obj.model);
-        obj.Parent.l.Remove(obj);
-      end;
-      (model as ModelVisual3D).Children.Add(obj.model);
-      l.Add(obj);  
-      obj.Parent := Self;
-    end;
-    
-    procedure RemoveT(obj: Object3D);
-    begin
-      var b := (model as MeshVisual3D).Children.Remove(obj.model);
-      if not b then exit;
-      l.Remove(obj);
-      hvp.Children.Add(obj.model);
-      obj.Parent := nil;
-    end;
-    
-    function GetObj(i: integer): Object3D := l[i];
-    function CountT: integer := (model as ModelVisual3D).Children.Count;}
   protected 
-    function CreateObject: Object3D; override;
-    begin
-      var g := new GroupT(X, Y, Z);
-      {foreach var xx in l do
-        g.AddChild(xx.Clone);}
-      Result := g;  
-    end;
-  
+    function CreateObject: Object3D; override := new GroupT(X, Y, Z);
   public 
-    constructor(x, y, z: real);
-    begin
-      CreateBase0(new ModelVisual3D, x, y, z);
-    end;
+    constructor(x, y, z: real) := CreateBase0(new ModelVisual3D, x, y, z);
     
     constructor(x, y, z: real; lst: sequence of Object3D);
     begin
@@ -706,16 +663,6 @@ type
       foreach var xx in lst do
         AddChild(xx);
     end;
-    
-    {function Add(obj: Object3D): GroupT;
-    begin
-      Invoke(AddT, obj);
-      Result := Self
-    end;
-    
-    function Count: integer := Invoke&<integer>(CountT);
-    procedure Remove(obj: Object3D) := Invoke(RemoveT, obj);}
-    //property Items[i: integer]: Object3D read GetObj; default;
     function Clone := (inherited Clone) as GroupT;
   end;
   
@@ -746,28 +693,32 @@ type
     begin
     end;
   
-  protected 
-    sb: StoryBoard;
-    class function AddDoubleAnimByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+  private
+    class function AddDoubleAnimRemainderHelper(d: DoubleAnimationBase; sb: StoryBoard; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
-      var d := new DoubleAnimation(toValue, new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds)));
-      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
-      StoryBoard.SetTargetName(d, ttname);
-      StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
-      sb.Children.Add(d);
-      Result := d;
-    end;
-    
-    class function AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
-    begin
-      var d := new DoubleAnimation();
-      d.By := toValue;
       d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
       d.BeginTime := System.TimeSpan.FromSeconds(waittime);
       StoryBoard.SetTargetName(d, ttname);
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
       Result := d;
+    end;
+  
+  protected 
+    sb: StoryBoard;
+    
+    class function AddDoubleAnimByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+    begin
+      var d := new DoubleAnimation();
+      d.To := toValue;
+      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
+    end;
+    
+    class function AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+    begin
+      var d := new DoubleAnimation();
+      d.By := toValue;
+      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
     end;
     
     class function AddDoubleAnimByNameUsingKeyframes(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
@@ -776,15 +727,10 @@ type
       d.KeyFrames := new DoubleKeyFrameCollection;
       foreach var x in a do
         d.KeyFrames.Add(new LinearDoubleKeyFrame(x)); // не указываем keytime - надеемся, что по секунде
-      d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
-      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
-      StoryBoard.SetTargetName(d, ttname);
-      StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
-      sb.Children.Add(d);
-      Result := d;
+      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
     end;
     
-    class function AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+    {class function AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimationUsingKeyframes;
       d.KeyFrames := new DoubleKeyFrameCollection;
@@ -796,7 +742,7 @@ type
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
       Result := d;
-    end;
+    end;}
     
     function RegisterName(sb: StoryBoard; element: Object; ttname: string): boolean;
     begin
@@ -829,11 +775,7 @@ type
     end;
   
   public 
-    constructor(e: Object3D; sec: real);
-    begin
-      Element := e;
-      Seconds := sec;
-    end;
+    constructor(e: Object3D; sec: real) := (Element,Seconds) := (e,sec); 
     
     function WhenCompleted(act: procedure): MyAnimation;
     begin

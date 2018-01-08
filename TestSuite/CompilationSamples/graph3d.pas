@@ -610,6 +610,13 @@ type
     property Items[i: integer]: Object3D read GetObj; default;
 
     function Count: integer := Invoke&<integer>(CountT);
+    
+    procedure DestroyP;
+    begin
+      hvp.Children.Remove(model);
+      model := nil;
+    end;
+    procedure Destroy := Invoke(DestroyP);
   end;
   
   ObjectWithMaterial3D = class(ObjectWithChildren3D) // model is MeshElement3D
@@ -1549,6 +1556,10 @@ type
     procedure SetFS(r: real) := Invoke(SetFS, r); 
     function GetFS: real := Invoke&<real>(()->(model as TextVisual3D).Height);
     
+    procedure SetUP(v: Vector3D) := (model as TextVisual3D).UpDirection := v;
+    procedure SetU(v: Vector3D) := Invoke(SetUP, v); 
+    function GetU: Vector3D := Invoke&<Vector3D>(()->(model as TextVisual3D).UpDirection);
+
     procedure SetNP(fontname: string) := (model as TextVisual3D).FontFamily := new FontFamily(fontname);
     procedure SetN(fontname: string) := Invoke(SetTP, fontname); 
     function GetN: string := Invoke&<string>(()->fontname);
@@ -1562,6 +1573,7 @@ type
     constructor(x, y, z: real; text: string; height: real; fontname: string; c: Color);
     begin
       var a := new TextVisual3D;
+      //a.UpDirection := V3D(0,-1,0);
       a.Position := p3D(0, 0, 0);
       a.Text := text;
       a.Height := height;
@@ -1575,6 +1587,7 @@ type
     property Text: string read GetT write SetT;
     property Height: real read GetFS write SetFS;
     property Name: string read GetN write SetN;
+    property UpDirection: Vector3D read GetU write SetU;
     property Color: GColor read GetColor write SetColor;
     function Clone := (inherited Clone) as TextT;
   end;
