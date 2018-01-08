@@ -16,7 +16,7 @@ namespace PascalABCCompiler.Parsers
 		protected IParser parser;
 		protected string[] type_keywords_array;
 		protected string[] keywords_array;
-		protected Hashtable keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
+		protected Dictionary<string, string> keywords = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable ignored_keywords = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		protected Hashtable keyword_kinds = new Hashtable(StringComparer.CurrentCultureIgnoreCase);
 		
@@ -105,9 +105,30 @@ namespace PascalABCCompiler.Parsers
             keywords.Add("label", "label"); keys.Add("label");
             keywords.Add("property", "property"); keys.Add("property");
             keywords.Add("auto", "auto"); keys.Add("auto");
-            //keywords.Add("typeof", "typeof"); keys.Add("typeof");
-            //keywords.Add("sizeof", "sizeof"); keys.Add("sizeof");
-            keywords_array = keys.ToArray();
+            keywords.Add("external", "external"); keys.Add("external");
+            keywords.Add("lock", "lock"); keys.Add("lock");
+            keywords.Add("where", "where"); keys.Add("where");
+            keywords.Add("library", "library"); keys.Add("library");
+            keywords.Add("div", "div"); keys.Add("div");
+            keywords.Add("mod", "mod"); keys.Add("mod");
+            keywords.Add("shl", "shl"); keys.Add("shl");
+            keywords.Add("shr", "shr"); keys.Add("shr");
+            keywords.Add("not", "not"); keys.Add("not");
+            keywords.Add("as", "as"); keys.Add("as");
+            keywords.Add("is", "is"); keys.Add("is");
+            keywords.Add("on", "on"); keys.Add("on");
+            keywords.Add("goto", "goto"); keys.Add("goto");
+            keywords.Add("overload", "overload"); keys.Add("overload");
+            keywords.Add("internal", "internal"); keys.Add("internal");
+            keywords.Add("template", "template"); keys.Add("template");
+            keywords.Add("namespace", "namespace"); keys.Add("namespace");
+            keywords.Add("exit", "exit"); keys.Add("exit");
+            //keywords.Add("typeof", "typeof"); //keys.Add("typeof");
+            //keywords.Add("sizeof", "sizeof"); //keys.Add("sizeof");
+            keywords_array = new string[keywords.Count + 2];
+            keywords_array[0] = "typeof";
+            keywords_array[1] = "sizeof";
+            keywords.Values.CopyTo(keywords_array, 2);
             type_keywords_array = type_keys.ToArray();
 		}
 
