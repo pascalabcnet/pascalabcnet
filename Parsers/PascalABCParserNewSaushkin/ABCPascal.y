@@ -1996,6 +1996,13 @@ inclass_constr_destr_decl
         { 
 			$$ = new procedure_definition($1 as procedure_header, $2 as block, @$);
         }
+    | tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+        { 
+   			if ($5 is empty_statement)
+				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
+            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,@$);
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
+        }
     ;
 	
 proc_func_decl
