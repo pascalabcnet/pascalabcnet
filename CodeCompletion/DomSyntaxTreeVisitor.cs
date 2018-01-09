@@ -865,7 +865,11 @@ namespace CodeCompletion
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_virtual)
                     ps.is_virtual = true;
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_abstract)
+                {
                     ps.is_abstract = true;
+                    if (ps.topScope is TypeScope)
+                        (ps.topScope as TypeScope).is_abstract = true;
+                }  
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_override)
                     ps.is_override = true;
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_reintroduce)
@@ -1464,7 +1468,8 @@ namespace CodeCompletion
                                         ps.head_loc = loc;
                                         if (ps.topScope == ss.topScope)
                                         {
-                                            while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
+                                            while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope)
+                                                ss = (ss as ProcScope).nextProc;
                                             ProcScope tmp_ps = (ss as ProcScope).nextProc;
                                             (ss as ProcScope).nextProc = ps;
                                             ps.nextProc = tmp_ps;
