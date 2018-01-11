@@ -90,8 +90,8 @@ namespace VisualPascalABC
             {
                 if (CodeCompletion.CodeCompletionController.CurrentParser == null)
                     return false;
-                if (!string.IsNullOrEmpty(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectedText))
-                    return false;
+                //if (!string.IsNullOrEmpty(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectedText))
+                //    return false;
                 if (WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
                 {
                     completionDataProvider = new CodeCompletionProvider();
