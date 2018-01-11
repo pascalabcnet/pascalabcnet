@@ -3154,7 +3154,10 @@ namespace CodeCompletion
                             var_def_statement vds = decl as var_def_statement;
                             if (vds == null)
                                 continue;
-                            vds.vars_type.visit(this);
+                            if (vds.vars_type != null)
+                                vds.vars_type.visit(this);
+                            else
+                                vds.inital_value.visit(this);
                             foreach (ident id in vds.vars.list)
                             {
                                 ps.parameters.Add(new ElementScope(new SymInfo(id.name, SymbolKind.Parameter, id.name), returned_scope, ps));
