@@ -53,7 +53,8 @@ namespace VisualPascalABC
 
         void CaretPositionChangedEventHandler(object sender, EventArgs e)
         {
-            if (!VisualPABCSingleton.MainForm.UserOptions.HighlightOperatorBrackets || WorkbenchServiceFactory.DebuggerManager.IsRunning) return;
+            if (!VisualPABCSingleton.MainForm.UserOptions.HighlightOperatorBrackets || WorkbenchServiceFactory.DebuggerManager.IsRunning)
+                return;
             CodeCompletionHighlighter.Highlight(editor.ActiveTextAreaControl.TextArea);
         }
 
@@ -62,7 +63,8 @@ namespace VisualPascalABC
         /// </summary>
         bool TextAreaKeyEventHandler(char key)
         {
-            if (!WorkbenchServiceFactory.Workbench.UserOptions.AllowCodeCompletion || !VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded) return false;
+            if (!WorkbenchServiceFactory.Workbench.UserOptions.AllowCodeCompletion || !VisualPABCSingleton.MainForm.VisualEnvironmentCompiler.compilerLoaded)
+                return false;
             if (CodeCompletion.CodeCompletionController.CurrentParser == null) return false;
             if (codeCompletionWindow != null)
             {
@@ -90,8 +92,12 @@ namespace VisualPascalABC
             {
                 if (CodeCompletion.CodeCompletionController.CurrentParser == null)
                     return false;
-                //if (!string.IsNullOrEmpty(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectedText))
-                //    return false;
+                if (!string.IsNullOrEmpty(WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectedText))
+                {
+                    WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.Caret.Position = WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.SelectionCollection[0].StartPosition;
+                    WorkbenchServiceFactory.DocumentService.CurrentCodeFileDocument.TextEditor.ActiveTextAreaControl.SelectionManager.RemoveSelectedText();
+                }
+                    
                 if (WorkbenchServiceFactory.Workbench.UserOptions.CodeCompletionDot)
                 {
                     completionDataProvider = new CodeCompletionProvider();
