@@ -142,7 +142,13 @@ namespace CodeCompletion
                     SymInfo[] syms = si.GetNamesAsInObject(ev);
                     SymInfo[] ext_syms = null;
                     if (si is ElementScope)
-                        ext_syms = visitor.cur_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
+                    {
+                        SymScope root_scope = visitor.cur_scope;
+                        if (root_scope is ImplementationUnitScope)
+                            root_scope = root_scope.topScope;
+                        ext_syms = root_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
+                    }
+                        
                     List<SymInfo> lst = new List<SymInfo>();
                     lst.AddRange(syms);
                     if (ext_syms != null)

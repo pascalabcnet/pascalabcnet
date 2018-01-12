@@ -865,7 +865,11 @@ namespace CodeCompletion
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_virtual)
                     ps.is_virtual = true;
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_abstract)
+                {
                     ps.is_abstract = true;
+                    if (ps.topScope is TypeScope)
+                        (ps.topScope as TypeScope).is_abstract = true;
+                }  
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_override)
                     ps.is_override = true;
                 else if (attrs.proc_attributes[i].attribute_type == proc_attribute.attr_reintroduce)
@@ -1464,7 +1468,8 @@ namespace CodeCompletion
                                         ps.head_loc = loc;
                                         if (ps.topScope == ss.topScope)
                                         {
-                                            while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope) ss = (ss as ProcScope).nextProc;
+                                            while ((ss as ProcScope).nextProc != null && (ss as ProcScope).nextProc.topScope == ps.topScope)
+                                                ss = (ss as ProcScope).nextProc;
                                             ProcScope tmp_ps = (ss as ProcScope).nextProc;
                                             (ss as ProcScope).nextProc = ps;
                                             ps.nextProc = tmp_ps;
@@ -1720,6 +1725,8 @@ namespace CodeCompletion
                             key = "auto " + key;
                         else if (cl_def.attribute == class_attribute.Abstract)
                             key = "abstract " + key;
+                        else if (cl_def.attribute == class_attribute.Sealed)
+                            key = "sealed " + key;
                         if (key != null && returned_scope.body_loc != null)
                         {
                             returned_scope.head_loc = new location(returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num, returned_scope.body_loc.begin_line_num, returned_scope.body_loc.begin_column_num + key.Length, doc);
@@ -3147,7 +3154,10 @@ namespace CodeCompletion
                             var_def_statement vds = decl as var_def_statement;
                             if (vds == null)
                                 continue;
-                            vds.vars_type.visit(this);
+                            if (vds.vars_type != null)
+                                vds.vars_type.visit(this);
+                            else
+                                vds.inital_value.visit(this);
                             foreach (ident id in vds.vars.list)
                             {
                                 ps.parameters.Add(new ElementScope(new SymInfo(id.name, SymbolKind.Parameter, id.name), returned_scope, ps));
