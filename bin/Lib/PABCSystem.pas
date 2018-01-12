@@ -3255,6 +3255,16 @@ begin
   Result := sb.ToString;
 end;
 
+
+//------------------------------------------------------------------------------
+//          Методы для object (экспериментально)
+//------------------------------------------------------------------------------
+/// Выводит значение объекта на экран, после чего выводит пробел
+procedure Print(Self: object); extensionmethod := Print(Self);
+
+/// Выводит значение объекта на экран и переходит на следующую строку
+procedure Println(Self: object); extensionmethod := Println(Self);
+
 //------------------------------------------------------------------------------
 //          Операции для string и char
 //------------------------------------------------------------------------------
@@ -3351,10 +3361,7 @@ function string.operator in(substr: string; str: string) := str.Contains(substr)
 
 procedure operator+=(var left: StringBuilder; right: string); extensionmethod := left.Append(right);
 
-function operator implicit(s: string): StringBuilder; extensionmethod;
-begin
-  Result := new StringBuilder(s);
-end;
+function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
