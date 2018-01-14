@@ -117,7 +117,11 @@ procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispat
 
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
 
-function Invoke<T>(d: Func0<T>) := app.Dispatcher.Invoke&<T>(d);
+function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
+function InvokeString(d: Func0<string>): string := Invoke&<String>(d);
+function InvokeReal(d: Func0<real>): real := Invoke&<Real>(d);
+function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);
+function InvokeInteger(d: Func0<integer>): integer := Invoke&<integer>(d);
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
 
@@ -239,27 +243,27 @@ type
   private
     procedure SetSCSP(v: boolean) := hvp.ShowCoordinateSystem := v;
     procedure SetSCS(v: boolean) := Invoke(SetSCSP, v);
-    function GetSCS: boolean := Invoke&<boolean>(()->hvp.ShowCoordinateSystem);
+    function GetSCS: boolean := InvokeBoolean(()->hvp.ShowCoordinateSystem);
     
     procedure SetSGLP(v: boolean) := gvl.Visible := v;
     procedure SetSGL(v: boolean) := Invoke(SetSGLP, v);
-    function GetSGL: boolean := Invoke&<boolean>(()->gvl.Visible);
+    function GetSGL: boolean := InvokeBoolean(()->gvl.Visible);
     
     procedure SetSCIP(v: boolean) := hvp.ShowCameraInfo := v;
     procedure SetSCI(v: boolean) := Invoke(SetSCIP, v);
-    function GetSCI: boolean := Invoke&<boolean>(()->hvp.ShowCameraInfo);
+    function GetSCI: boolean := InvokeBoolean(()->hvp.ShowCameraInfo);
     
     procedure SetSVCP(v: boolean) := hvp.ShowViewCube := v;
     procedure SetSVC(v: boolean) := Invoke(SetSVCP, v);
-    function GetSVC: boolean := Invoke&<boolean>(()->hvp.ShowViewCube);
+    function GetSVC: boolean := InvokeBoolean(()->hvp.ShowViewCube);
     
     procedure SetTP(v: string) := hvp.Title := v;
     procedure SetT(v: string) := Invoke(SetTP, v);
-    function GetT: string := Invoke&<string>(()->hvp.Title);
+    function GetT: string := InvokeString(()->hvp.Title);
     
     procedure SetSTP(v: string) := hvp.SubTitle := v;
     procedure SetST(v: string) := Invoke(SetSTP, v);
-    function GetST: string := Invoke&<string>(()->hvp.SubTitle);
+    function GetST: string := InvokeString(()->hvp.SubTitle);
     
     procedure SetCMP(v: HelixToolkit.Wpf.CameraMode) := hvp.CameraMode := v;
     procedure SetCM(v: HelixToolkit.Wpf.CameraMode) := Invoke(SetCMP, v);
@@ -348,7 +352,7 @@ type
     end;
     
     procedure SetD(d: real) := Invoke(SetDP, d);
-    function GetD: real := Invoke&<real>(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
+    function GetD: real := InvokeReal(()->Cam.Position.DistanceTo(P3D(0, 0, 0)));
   public 
     property Position: Point3D read GetP write SetP;
     property LookDirection: Vector3D read GetLD write SetLD;
@@ -414,11 +418,11 @@ type
     end;
     
     procedure SetX(xx: real) := Invoke(()->begin transltransform.OffsetX := xx; end); 
-    function GetX: real := Invoke&<real>(()->transltransform.OffsetX);
+    function GetX: real := InvokeReal(()->transltransform.OffsetX);
     procedure SetY(yy: real) := Invoke(()->begin transltransform.OffsetY := yy; end);
-    function GetY: real := Invoke&<real>(()->transltransform.OffsetY);
+    function GetY: real := InvokeReal(()->transltransform.OffsetY);
     procedure SetZ(zz: real) := Invoke(()->begin transltransform.OffsetZ := zz; end);
-    function GetZ: real := Invoke&<real>(()->transltransform.OffsetZ);
+    function GetZ: real := InvokeReal(()->transltransform.OffsetZ);
     function GetPos: Point3D := Invoke&<Point3D>(()->P3D(transltransform.OffsetX, transltransform.OffsetY, transltransform.OffsetZ));
 
   protected 
@@ -648,57 +652,10 @@ type
   end;
   
   GroupT = class(ObjectWithChildren3D)
-    //l := new List<Object3D>;
-  private 
-    {procedure AddT(obj: Object3D);
-    begin
-      var p: Object3D := Self;
-      while p <> nil do
-      begin
-        if obj = p then
-          raise new System.ArgumentException('Group.Add: Нельзя в дочерние элементы группы добавить себя или своего предка');
-        p := p.Parent
-      end;
-      if obj.Parent = Self then
-        exit;
-      if obj.Parent = nil then
-        hvp.Children.Remove(obj.model)
-      else 
-      begin
-        var q := obj.Parent.model as MeshVisual3D;
-        q.Children.Remove(obj.model);
-        obj.Parent.l.Remove(obj);
-      end;
-      (model as ModelVisual3D).Children.Add(obj.model);
-      l.Add(obj);  
-      obj.Parent := Self;
-    end;
-    
-    procedure RemoveT(obj: Object3D);
-    begin
-      var b := (model as MeshVisual3D).Children.Remove(obj.model);
-      if not b then exit;
-      l.Remove(obj);
-      hvp.Children.Add(obj.model);
-      obj.Parent := nil;
-    end;
-    
-    function GetObj(i: integer): Object3D := l[i];
-    function CountT: integer := (model as ModelVisual3D).Children.Count;}
   protected 
-    function CreateObject: Object3D; override;
-    begin
-      var g := new GroupT(X, Y, Z);
-      {foreach var xx in l do
-        g.AddChild(xx.Clone);}
-      Result := g;  
-    end;
-  
+    function CreateObject: Object3D; override := new GroupT(X, Y, Z);
   public 
-    constructor(x, y, z: real);
-    begin
-      CreateBase0(new ModelVisual3D, x, y, z);
-    end;
+    constructor(x, y, z: real) := CreateBase0(new ModelVisual3D, x, y, z);
     
     constructor(x, y, z: real; lst: sequence of Object3D);
     begin
@@ -706,16 +663,6 @@ type
       foreach var xx in lst do
         AddChild(xx);
     end;
-    
-    {function Add(obj: Object3D): GroupT;
-    begin
-      Invoke(AddT, obj);
-      Result := Self
-    end;
-    
-    function Count: integer := Invoke&<integer>(CountT);
-    procedure Remove(obj: Object3D) := Invoke(RemoveT, obj);}
-    //property Items[i: integer]: Object3D read GetObj; default;
     function Clone := (inherited Clone) as GroupT;
   end;
   
@@ -746,28 +693,32 @@ type
     begin
     end;
   
-  protected 
-    sb: StoryBoard;
-    class function AddDoubleAnimByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+  private
+    class function AddDoubleAnimRemainderHelper(d: DoubleAnimationBase; sb: StoryBoard; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
-      var d := new DoubleAnimation(toValue, new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds)));
-      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
-      StoryBoard.SetTargetName(d, ttname);
-      StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
-      sb.Children.Add(d);
-      Result := d;
-    end;
-    
-    class function AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
-    begin
-      var d := new DoubleAnimation();
-      d.By := toValue;
       d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
       d.BeginTime := System.TimeSpan.FromSeconds(waittime);
       StoryBoard.SetTargetName(d, ttname);
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
       Result := d;
+    end;
+  
+  protected 
+    sb: StoryBoard;
+    
+    class function AddDoubleAnimByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+    begin
+      var d := new DoubleAnimation();
+      d.To := toValue;
+      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
+    end;
+    
+    class function AddDoubleAnimOnByName(sb: StoryBoard; toValue, seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+    begin
+      var d := new DoubleAnimation();
+      d.By := toValue;
+      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
     end;
     
     class function AddDoubleAnimByNameUsingKeyframes(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
@@ -776,15 +727,10 @@ type
       d.KeyFrames := new DoubleKeyFrameCollection;
       foreach var x in a do
         d.KeyFrames.Add(new LinearDoubleKeyFrame(x)); // не указываем keytime - надеемся, что по секунде
-      d.Duration := new System.Windows.Duration(System.TimeSpan.FromSeconds(seconds));
-      d.BeginTime := System.TimeSpan.FromSeconds(waittime);
-      StoryBoard.SetTargetName(d, ttname);
-      StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
-      sb.Children.Add(d);
-      Result := d;
+      Result := AddDoubleAnimRemainderHelper(d,sb,seconds,ttname,prop,waittime);
     end;
     
-    class function AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
+    {class function AddDoubleAnimByNameUsingTrajectory(sb: StoryBoard; a: sequence of real; seconds: real; ttname: string; prop: Object; waittime: real := 0.0): DoubleAnimationBase;
     begin
       var d := new DoubleAnimationUsingKeyframes;
       d.KeyFrames := new DoubleKeyFrameCollection;
@@ -796,7 +742,7 @@ type
       StoryBoard.SetTargetProperty(d, new PropertyPath(prop));
       sb.Children.Add(d);
       Result := d;
-    end;
+    end;}
     
     function RegisterName(sb: StoryBoard; element: Object; ttname: string): boolean;
     begin
@@ -829,11 +775,7 @@ type
     end;
   
   public 
-    constructor(e: Object3D; sec: real);
-    begin
-      Element := e;
-      Seconds := sec;
-    end;
+    constructor(e: Object3D; sec: real) := (Element,Seconds) := (e,sec); 
     
     function WhenCompleted(act: procedure): MyAnimation;
     begin
@@ -1133,15 +1075,9 @@ type
     end;
   
   public 
-    constructor(params l: array of MyAnimation);
-    begin
-      ll := Lst(l);
-    end;
+    constructor(params l: array of MyAnimation) := ll := Lst(l);
     
-    constructor(l: List<MyAnimation>);
-    begin
-      ll := l;
-    end;
+    constructor(l: List<MyAnimation>) := ll := l;
     
     function Duration: real; override := ll.Select(l -> l.Duration).Max;
     {function AutoReverse: MyAnimation; override;
@@ -1190,15 +1126,8 @@ type
         l.ApplyAllDecorators;
     end;
   public 
-    constructor(params l: array of MyAnimation);
-    begin
-      ll := Lst(l);
-    end;
-    
-    constructor(l: List<MyAnimation>);
-    begin
-      ll := l;
-    end;
+    constructor(params l: array of MyAnimation) := ll := Lst(l);
+    constructor(l: List<MyAnimation>) := ll := l;
     
     function Duration: real; override := ll.Sum(l -> l.Duration);
 
@@ -1260,7 +1189,7 @@ type
       Invoke(()->begin m.Radius := r end);
     end;  
     
-    function GetR: real := Invoke&<real>(()->(model as SphereVisual3D).Radius);
+    function GetR: real := InvokeReal(()->(model as SphereVisual3D).Radius);
     function NewVisualObject(r: real): SphereVisual3D;
     begin
       var sph := new SphereVisual3D;
@@ -1271,15 +1200,8 @@ type
   protected 
     function CreateObject: Object3D; override := new SphereT(X, Y, Z, Radius, Material.Clone);
   public 
-    constructor();
-    begin
-      CreateBase(NewVisualObject(1), 0, 0, 0, Colors.Blue);
-    end;
-  
-    constructor(x, y, z, r: real; m: Gmaterial);
-    begin
-      CreateBase(NewVisualObject(r), x, y, z, m);
-    end;
+    constructor := CreateBase(NewVisualObject(1), 0, 0, 0, Colors.Blue);
+    constructor(x, y, z, r: real; m: Gmaterial) := CreateBase(NewVisualObject(r), x, y, z, m);
     
     property Radius: real read GetR write SetR;
     function Clone := (inherited Clone) as SphereT;
@@ -1290,13 +1212,13 @@ type
     function Model := inherited model as EllipsoidVisual3D;
     procedure SetRXP(r: real) := Model.RadiusX := r;
     procedure SetRX(r: real) := Invoke(SetRXP, x);
-    function GetRX: real := Invoke&<real>(()->Model.RadiusX);
+    function GetRX: real := InvokeReal(()->Model.RadiusX);
     procedure SetRYP(r: real) := Model.RadiusY := r;
     procedure SetRY(r: real) := Invoke(SetRYP, x);
-    function GetRY: real := Invoke&<real>(()->Model.RadiusY);
+    function GetRY: real := InvokeReal(()->Model.RadiusY);
     procedure SetRZP(r: real) := Model.RadiusZ := r;
     procedure SetRZ(r: real) := Invoke(SetRZP, x);
-    function GetRZ: real := Invoke&<real>(()->Model.RadiusZ);
+    function GetRZ: real := InvokeReal(()->Model.RadiusZ);
     function NewVisualObject(rx, ry, rz: real): HelixToolkit.Wpf.EllipsoidVisual3D;
     begin
       var ell := new EllipsoidVisual3D;
@@ -1309,10 +1231,7 @@ type
   protected
     function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material);
   public 
-    constructor(x, y, z, rx, ry, rz: real; m: GMaterial);
-    begin
-      CreateBase(NewVisualObject(rx, ry, rz), x, y, z, m);
-    end;
+    constructor(x, y, z, rx, ry, rz: real; m: GMaterial) := CreateBase(NewVisualObject(rx, ry, rz), x, y, z, m);
     
     property RadiusX: real read GetRX write SetRX;
     property RadiusY: real read GetRY write SetRY;
@@ -1322,26 +1241,23 @@ type
   
   BoxT = class(ObjectWithMaterial3D)
   private
-    procedure SetWP(r: real) := (model as BoxVisual3D).Width := r;
+    function model := inherited model as BoxVisual3D;
+    procedure SetWP(r: real) := model.Width := r;
     procedure SetW(r: real) := Invoke(SetWP, r);
-    function GetW: real := Invoke&<real>(()->(model as BoxVisual3D).Width);
+    function GetW: real := InvokeReal(()->model.Width);
     
-    procedure SetHP(r: real) := (model as BoxVisual3D).Height := r;
+    procedure SetHP(r: real) := model.Height := r;
     procedure SetH(r: real) := Invoke(SetHP, r); 
-    function GetH: real := Invoke&<real>(()->(model as BoxVisual3D).Height);
+    function GetH: real := InvokeReal(()->model.Height);
     
-    procedure SetLP(r: real) := (model as BoxVisual3D).Length := r;
+    procedure SetLP(r: real) := model.Length := r;
     procedure SetL(r: real) := Invoke(SetLP, r);
-    function GetL: real := Invoke&<real>(()->(model as BoxVisual3D).Length);
+    function GetL: real := InvokeReal(()->model.Length);
     
-    procedure SetSzP(r: Size3D);
-    begin
-      var mmm := model as BoxVisual3D;
-      (mmm.Length, mmm.Width, mmm.Height) := (r.X, r.Y, r.Z);
-    end;
+    procedure SetSzP(r: Size3D) := (model.Length, model.Width, model.Height) := (r.X, r.Y, r.Z);
     
     procedure SetSz(r: Size3D) := Invoke(SetSzP, r);
-    function GetSz: Size3D := Invoke&<Size3D>(()->begin var mmm := model as BoxVisual3D;Result := Sz3D(mmm.Length, mmm.Width, mmm.Height) end);
+    function GetSz: Size3D := Invoke&<Size3D>(()->begin Result := Sz3D(model.Length, model.Width, model.Height) end);
   private 
     function NewVisualObject(l, w, h: real): BoxVisual3D;
     begin
@@ -1350,14 +1266,10 @@ type
       (bx.Width, bx.Height, bx.Length) := (w, h, l);
       Result := bx;
     end;
-  
   protected  
     function CreateObject: Object3D; override := new BoxT(X, Y, Z, Length, Width, Height, Material.Clone);
   public 
-    constructor(x, y, z, l, w, h: real; m: GMaterial);
-    begin
-      CreateBase(NewVisualObject(l, w, h), x, y, z, m);
-    end;
+    constructor(x, y, z, l, w, h: real; m: GMaterial) := CreateBase(NewVisualObject(l, w, h), x, y, z, m);
     
     property Length: real read GetL write SetL;
     property Width: real read GetW write SetW;
@@ -1368,17 +1280,19 @@ type
   
   ArrowT = class(ObjectWithMaterial3D)
   private
-    procedure SetDP(r: real) := (model as ArrowVisual3D).Diameter := r;
+    function model := inherited model as ArrowVisual3D;
+    
+    procedure SetDP(r: real) := model.Diameter := r;
     procedure SetD(r: real) := Invoke(SetDP, r);
-    function GetD: real := Invoke&<real>(()->(model as ArrowVisual3D).Diameter);
+    function GetD: real := InvokeReal(()->model.Diameter);
     
-    procedure SetLP(r: real) := (model as ArrowVisual3D).HeadLength := r;
+    procedure SetLP(r: real) := model.HeadLength := r;
     procedure SetL(r: real) := Invoke(SetLP, r);
-    function GetL: real := Invoke&<real>(()->(model as ArrowVisual3D).HeadLength);
+    function GetL: real := InvokeReal(()->model.HeadLength);
     
-    procedure SetDirP(r: Vector3D) := (model as ArrowVisual3D).Direction := r;
+    procedure SetDirP(r: Vector3D) := model.Direction := r;
     procedure SetDir(r: Vector3D) := Invoke(SetDirP, r);
-    function GetDir: Vector3D := Invoke&<Vector3D>(()->(model as ArrowVisual3D).Direction);
+    function GetDir: Vector3D := Invoke&<Vector3D>(()->model.Direction);
   private 
     function NewVisualObject(dx, dy, dz, d, hl: real): ArrowVisual3D;
     begin
@@ -1388,7 +1302,6 @@ type
       a.Origin := P3D(0, 0, 0);
       Result := a;
     end;
-  
   protected  
     function CreateObject: Object3D; override := new ArrowT(X, Y, Z, Direction.X, Direction.Y, Direction.Z, Diameter, HeadLength, Material.Clone);
   public 
@@ -1409,15 +1322,15 @@ type
   private
     procedure SetHP(r: real) := (model as TruncatedConeVisual3D).Height := r;
     procedure SetH(r: real) := Invoke(SetHP, r); 
-    function GetH: real := Invoke&<real>(()->(model as TruncatedConeVisual3D).Height);
+    function GetH: real := InvokeReal(()->(model as TruncatedConeVisual3D).Height);
     
     procedure SetBRP(r: real) := (model as TruncatedConeVisual3D).BaseRadius := r;
     procedure SetBR(r: real) := Invoke(SetBRP, r); 
-    function GetBR: real := Invoke&<real>(()->(model as TruncatedConeVisual3D).BaseRadius);
+    function GetBR: real := InvokeReal(()->(model as TruncatedConeVisual3D).BaseRadius);
     
     procedure SetTRP(r: real) := (model as TruncatedConeVisual3D).TopRadius := r;
     procedure SetTR(r: real) := Invoke(SetTRP, r); 
-    function GetTR: real := Invoke&<real>(()->(model as TruncatedConeVisual3D).TopRadius);
+    function GetTR: real := InvokeReal(()->(model as TruncatedConeVisual3D).TopRadius);
     
     procedure SetTCP(r: boolean) := (model as TruncatedConeVisual3D).TopCap := r;
     procedure SetTC(r: boolean) := Invoke(SetTCP, r); 
@@ -1461,10 +1374,7 @@ type
     end;
     function GetR: real := BaseRadius;
   protected  
-    function CreateObject: Object3D; override;
-    begin
-      Result := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
-    end;  
+    function CreateObject: Object3D; override := new CylinderT(X, Y, Z, Height, Radius, (model as TruncatedConeVisual3D).ThetaDiv - 1, Topcap, Material.Clone);
   public 
     constructor(x, y, z, h, r: real; ThetaDiv: integer; topcap: boolean; m: GMaterial);
     begin
@@ -1498,8 +1408,8 @@ type
   private
     procedure SetALP(r: real) := (model as CoordinateSystemVisual3D).ArrowLengths := r;
     procedure SetAL(r: real) := Invoke(SetALP, r); 
-    function GetAL: real := Invoke&<real>(()->(model as CoordinateSystemVisual3D).ArrowLengths);
-    function GetD: real := Invoke&<real>(()->((model as CoordinateSystemVisual3D).Children[0] as ArrowVisual3D).Diameter);
+    function GetAL: real := InvokeReal(()->(model as CoordinateSystemVisual3D).ArrowLengths);
+    function GetD: real := InvokeReal(()->((model as CoordinateSystemVisual3D).Children[0] as ArrowVisual3D).Diameter);
   protected  
     function CreateObject: Object3D; override := new CoordinateSystemT(X, Y, Z, ArrowLengths, Diameter);
   public 
@@ -1521,13 +1431,15 @@ type
   
   BillboardTextT = class(ObjectWithChildren3D)
   private
-    procedure SetTP(r: string) := (model as BillboardTextVisual3D).Text := r;
+    function model := inherited model as BillboardTextVisual3D;
+
+    procedure SetTP(r: string) := model.Text := r;
     procedure SetT(r: string) := Invoke(SetTP, r); 
-    function GetT: string := Invoke&<string>(()->(model as BillboardTextVisual3D).Text);
+    function GetT: string := InvokeString(()->model.Text);
     
-    procedure SetFSP(r: real) := (model as BillboardTextVisual3D).FontSize := r;
+    procedure SetFSP(r: real) := model.FontSize := r;
     procedure SetFS(r: real) := Invoke(SetFS, r); 
-    function GetFS: real := Invoke&<real>(()->(model as BillboardTextVisual3D).FontSize);
+    function GetFS: real := InvokeReal(()->model.FontSize);
   protected  
     function CreateObject: Object3D; override := new BillboardTextT(X, Y, Z, Text, FontSize);
   public 
@@ -1548,32 +1460,33 @@ type
   TextT = class(ObjectWithChildren3D)
   private 
     fontname: string;
-    procedure SetTP(r: string) := (model as TextVisual3D).Text := r;
+    function model := inherited model as TextVisual3D;
+  
+    procedure SetTP(r: string) := model.Text := r;
     procedure SetT(r: string) := Invoke(SetTP, r); 
-    function GetT: string := Invoke&<string>(()->(model as TextVisual3D).Text);
+    function GetT: string := InvokeString(()->model.Text);
     
-    procedure SetFSP(r: real) := (model as TextVisual3D).Height := r;
+    procedure SetFSP(r: real) := model.Height := r;
     procedure SetFS(r: real) := Invoke(SetFS, r); 
-    function GetFS: real := Invoke&<real>(()->(model as TextVisual3D).Height);
+    function GetFS: real := InvokeReal(()->model.Height);
     
-    procedure SetUP(v: Vector3D) := (model as TextVisual3D).UpDirection := v;
+    procedure SetUP(v: Vector3D) := model.UpDirection := v;
     procedure SetU(v: Vector3D) := Invoke(SetUP, v); 
-    function GetU: Vector3D := Invoke&<Vector3D>(()->(model as TextVisual3D).UpDirection);
+    function GetU: Vector3D := Invoke&<Vector3D>(()->model.UpDirection);
 
-    procedure SetNP(fontname: string) := (model as TextVisual3D).FontFamily := new FontFamily(fontname);
+    procedure SetNP(fontname: string) := model.FontFamily := new FontFamily(fontname);
     procedure SetN(fontname: string) := Invoke(SetTP, fontname); 
-    function GetN: string := Invoke&<string>(()->fontname);
+    function GetN: string := InvokeString(()->fontname);
     
-    procedure SetColorP(c: GColor) := (model as TextVisual3D).Foreground := new SolidColorBrush(c);
+    procedure SetColorP(c: GColor) := model.Foreground := new SolidColorBrush(c);
     procedure SetColor(c: GColor) := Invoke(SetColorP, c); 
-    function GetColor: GColor := Invoke&<GColor>(()->((model as TextVisual3D).Foreground as SolidColorBrush).Color);
+    function GetColor: GColor := Invoke&<GColor>(()->(model.Foreground as SolidColorBrush).Color);
   protected  
     function CreateObject: Object3D; override := new TextT(X, Y, Z, Text, Height, Name, Color);
   public 
     constructor(x, y, z: real; text: string; height: real; fontname: string; c: Color);
     begin
       var a := new TextVisual3D;
-      //a.UpDirection := V3D(0,-1,0);
       a.Position := p3D(0, 0, 0);
       a.Text := text;
       a.Height := height;
@@ -1594,21 +1507,22 @@ type
   
   RectangleT = class(ObjectWithMaterial3D)
   private
-    procedure SetWP(r: real) := (model as RectangleVisual3D).Width := r;
+    function model := inherited model as RectangleVisual3D;
+    procedure SetWP(r: real) := model.Width := r;
     procedure SetW(r: real) := Invoke(SetWP, r);
-    function GetW: real := Invoke&<real>(()->(model as RectangleVisual3D).Width);
+    function GetW: real := InvokeReal(()->model.Width);
     
-    procedure SetLP(r: real) := (model as RectangleVisual3D).Length := r;
+    procedure SetLP(r: real) := model.Length := r;
     procedure SetL(r: real) := Invoke(SetLP, r);
-    function GetL: real := Invoke&<real>(()->(model as RectangleVisual3D).Length);
+    function GetL: real := InvokeReal(()->model.Length);
     
-    procedure SetLDP(r: Vector3D) := (model as RectangleVisual3D).LengthDirection := r;
+    procedure SetLDP(r: Vector3D) := model.LengthDirection := r;
     procedure SetLD(r: Vector3D) := Invoke(SetLDP, r);
-    function GetLD: Vector3D := Invoke&<Vector3D>(()->(model as RectangleVisual3D).LengthDirection);
+    function GetLD: Vector3D := Invoke&<Vector3D>(()->model.LengthDirection);
     
-    procedure SetNP(r: Vector3D) := (model as RectangleVisual3D).Normal := r;
+    procedure SetNP(r: Vector3D) := model.Normal := r;
     procedure SetN(r: Vector3D) := Invoke(SetNP, r);
-    function GetN: Vector3D := Invoke&<Vector3D>(()->(model as RectangleVisual3D).Normal);
+    function GetN: Vector3D := Invoke&<Vector3D>(()->model.Normal);
   protected  
     function CreateObject: Object3D; override := new RectangleT(X, Y, Z, Length, Width, Normal, LengthDirection, Material);
   public 
@@ -1697,17 +1611,18 @@ type
   
   PipeT = class(ObjectWithMaterial3D)
   private
-    procedure SetDP(r: real) := (model as PipeVisual3D).Diameter := r * 2;
+    function model := inherited model as PipeVisual3D;
+    procedure SetDP(r: real) := model.Diameter := r * 2;
     procedure SetD(r: real) := Invoke(SetDP, r); 
-    function GetD: real := Invoke&<real>(()->(model as PipeVisual3D).Diameter / 2);
+    function GetD: real := InvokeReal(()->model.Diameter / 2);
     
-    procedure SetIDP(r: real) := (model as PipeVisual3D).InnerDiameter := r * 2;
+    procedure SetIDP(r: real) := model.InnerDiameter := r * 2;
     procedure SetID(r: real) := Invoke(SetIDP, r); 
-    function GetID: real := Invoke&<real>(()->(model as PipeVisual3D).InnerDiameter / 2);
+    function GetID: real := InvokeReal(()->model.InnerDiameter / 2);
     
-    procedure SetHP(r: real) := (model as PipeVisual3D).Point2 := P3D(0, 0, r);
+    procedure SetHP(r: real) := model.Point2 := P3D(0, 0, r);
     procedure SetH(r: real) := Invoke(SetHP, r); 
-    function GetH: real := Invoke&<real>(()->(model as PipeVisual3D).Point2.Z);
+    function GetH: real := InvokeReal(()->model.Point2.Z);
   protected  
     function CreateObject: Object3D; override := new PipeT(X, Y, Z, Height, Radius, InnerRadius, Material);
   public 
@@ -1809,17 +1724,18 @@ type
 type
   LegoT = class(ObjectWithMaterial3D)
   private
-    procedure SetWP(r: integer) := (model as LegoVisual3D).Rows := r;
+    function model := inherited model as LegoVisual3D;
+    procedure SetWP(r: integer) := model.Rows := r;
     procedure SetW(r: integer) := Invoke(SetWP, r);
-    function GetW: integer := Invoke&<integer>(()->(model as LegoVisual3D).Rows);
+    function GetW: integer := InvokeInteger(()->model.Rows);
     
-    procedure SetHP(r: integer) := (model as LegoVisual3D).Height := r;
+    procedure SetHP(r: integer) := model.Height := r;
     procedure SetH(r: integer) := Invoke(SetHP, r); 
-    function GetH: integer := Invoke&<integer>(()->(model as LegoVisual3D).Height);
+    function GetH: integer := InvokeInteger(()->model.Height);
     
-    procedure SetLP(r: integer) := (model as LegoVisual3D).Columns := r;
+    procedure SetLP(r: integer) := model.Columns := r;
     procedure SetL(r: integer) := Invoke(SetLP, r);
-    function GetL: integer := Invoke&<integer>(()->(model as LegoVisual3D).Columns);
+    function GetL: integer := InvokeInteger(()->model.Columns);
   
     {procedure SetSzP(r: Size3D);
     begin
@@ -2033,7 +1949,7 @@ type
   private
     procedure SetLengthP(r: real) := (model as PlatonicAbstractVisual3D).Length := r;
     procedure SetLength(r: real) := Invoke(SetLengthP, r); 
-    function GetLength: real := Invoke&<real>(()->(model as PlatonicAbstractVisual3D).Length);
+    function GetLength: real := InvokeReal(()->(model as PlatonicAbstractVisual3D).Length);
   public 
     property Length: real read GetLength write SetLength;
   end;
@@ -2042,10 +1958,7 @@ type
   protected  
     function CreateObject: Object3D; override := new IcosahedronT(X, Y, Z, Length, Material);
   public 
-    constructor(x, y, z, Length: real; m: GMaterial);
-    begin
-      CreateBase(new IcosahedronVisual3D(Length), x, y, z, m);
-    end;
+    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new IcosahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as IcosahedronT;
   end;
   
@@ -2053,10 +1966,7 @@ type
   protected  
     function CreateObject: Object3D; override := new DodecahedronT(X, Y, Z, Length, Material);
   public 
-    constructor(x, y, z, Length: real; m: GMaterial);
-    begin
-      CreateBase(new DodecahedronVisual3D(Length), x, y, z, m);
-    end;
+    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new DodecahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as DodecahedronT;
   end;
   
@@ -2064,10 +1974,7 @@ type
   protected  
     function CreateObject: Object3D; override := new TetrahedronT(X, Y, Z, Length, Material);
   public 
-    constructor(x, y, z, Length: real; m: GMaterial);
-    begin
-      CreateBase(new TetrahedronVisual3D(Length), x, y, z, m);
-    end;
+    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new TetrahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as TetrahedronT;
   end;
   
@@ -2075,10 +1982,7 @@ type
   protected  
     function CreateObject: Object3D; override := new OctahedronT(X, Y, Z, Length, Material);
   public 
-    constructor(x, y, z, Length: real; m: GMaterial);
-    begin
-      CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
-    end;
+    constructor(x, y, z, Length: real; m: GMaterial) := CreateBase(new OctahedronVisual3D(Length), x, y, z, m);
     function Clone := (inherited Clone) as OctahedronT;
   end;
   
@@ -2137,18 +2041,15 @@ type
   private
     function Model := inherited model as PrismVisual3D;
     procedure SetR(r: real) := Invoke(procedure(r: real)->model.Radius := r, r);
-    function  GetR: real := Invoke&<real>(()->model.Radius);
+    function  GetR: real := InvokeReal(()->model.Radius);
     procedure SetH(r: real) := Invoke(procedure(r: real)->model.Height := r, r);
-    function  GetH: real := Invoke&<real>(()->model.Height);
+    function  GetH: real := InvokeReal(()->model.Height);
     procedure SetN(n: integer) := Invoke(procedure(n: integer)->model.N := n, n);
-    function  GetN: integer := Invoke&<integer>(()->model.N);
+    function  GetN: integer := InvokeInteger(()->model.N);
   protected
     function CreateObject: Object3D; override := new PrismT(X, Y, Z, N, Radius, Height, Material.Clone);
   public 
-    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial);
-    begin
-      CreateBase(new PrismVisual3D(N, r, h), x, y, z, m);
-    end;
+    constructor(x, y, z: real; N: integer; r, h: real; m: Gmaterial) := CreateBase(new PrismVisual3D(N, r, h), x, y, z, m);
     property Radius: real read GetR write SetR;
     property Height: real read GetH write SetH;
     property N: integer read GetN write SetN;
@@ -2160,10 +2061,7 @@ type
   protected
     function CreateObject: Object3D; override := new PyramidT(X, Y, Z, N, Radius, Height, Material.Clone);
   public 
-    constructor(x, y, z: real; N: integer; r, h: real; m: GMaterial);
-    begin
-      CreateBase(new PyramidVisual3D(N, r, h), x, y, z, m);
-    end;
+    constructor(x, y, z: real; N: integer; r, h: real; m: GMaterial) := CreateBase(new PyramidVisual3D(N, r, h), x, y, z, m);
     function Clone := (inherited Clone) as PyramidT;
   end;
   
@@ -2178,7 +2076,7 @@ type
     function GetC: GColor := Invoke&<GColor>(()->Model.Color);
     procedure SetTP(th: real) := Model.Thickness := th;
     procedure SetT(th: real) := Invoke(SetTP, th);
-    function GetT: real := Invoke&<real>(()->Model.Thickness);
+    function GetT: real := InvokeReal(()->Model.Thickness);
 
     procedure SetRP(value: real); 
     begin 
@@ -2252,10 +2150,8 @@ type
       Result := pc;
     end;
 
-    constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor);
-    begin
+    constructor(x, y, z: real; N: integer; Radius, Height: real; Thickness: real; c: GColor) := 
       CreateBase0(NewVisualObject(N,Radius,Height,Thickness,c), x, y, z);
-    end;
     
     property Height: real read fh write SetH;
     property Radius: real read fr write SetR;
@@ -2294,7 +2190,7 @@ type
   private
     function Model := inherited model as LinesVisual3D;
     function GetTP: real := Model.Thickness;
-    function GetT: real := Invoke&<real>(GetTP);
+    function GetT: real := InvokeReal(GetTP);
     procedure SetT(t: real) := Invoke(procedure(t: real)->Model.Thickness := t, t);
     function GetCP: GColor := Model.Color;
     function GetC: GColor := Invoke&<GColor>(GetCP);
@@ -2325,9 +2221,9 @@ type
   private
     function Model := inherited model as TorusVisual3D;
     procedure SetD(d: real) := Invoke(procedure(d: real)->model.TorusDiameter := d, d);
-    function  GetD: real := Invoke&<real>(()->model.TorusDiameter);
+    function  GetD: real := InvokeReal(()->model.TorusDiameter);
     procedure SetTD(d: real) := Invoke(procedure(d: real)->model.TubeDiameter := d, d);
-    function  GetTD: real := Invoke&<real>(()->model.TubeDiameter);
+    function  GetTD: real := InvokeReal(()->model.TubeDiameter);
   protected
     function CreateObject: Object3D; override := new TorusT(X, Y, Z, Diameter, TubeDiameter, Material.Clone);
   public 
@@ -2342,7 +2238,6 @@ type
     property TubeDiameter: real read GetTD write SetTD;
     function Clone := (inherited Clone) as PrismT;
   end;
-  
   
   MyAnyT = class(PlatonicAbstractT)
   protected  
@@ -2612,7 +2507,7 @@ procedure WindowType.SetLeft(l: real) := Invoke(WindowTypeSetLeftP, l);
 
 function WindowTypeGetLeftP := MainWindow.Left;
 
-function WindowType.GetLeft := Invoke&<real>(WindowTypeGetLeftP);
+function WindowType.GetLeft := InvokeReal(WindowTypeGetLeftP);
 
 procedure WindowTypeSetTopP(t: real) := MainWindow.Top := t;
 
@@ -2620,7 +2515,7 @@ procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP, t);
 
 function WindowTypeGetTopP := MainWindow.Top;
 
-function WindowType.GetTop := Invoke&<real>(WindowTypeGetTopP);
+function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
 
 procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
 
@@ -2628,7 +2523,7 @@ procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP, w);
 
 function WindowTypeGetWidthP := MainWindow.Width - wplus;
 
-function WindowType.GetWidth := Invoke&<real>(WindowTypeGetWidthP);
+function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
 
 procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
 
@@ -2636,7 +2531,7 @@ procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP, h);
 
 function WindowTypeGetHeightP := MainWindow.Height - hplus;
 
-function WindowType.GetHeight := Invoke&<real>(WindowTypeGetHeightP);
+function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
 
 procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
 
@@ -2644,7 +2539,7 @@ procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP, c);
 
 function WindowTypeGetCaptionP := MainWindow.Title;
 
-function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
+function WindowType.GetCaption := InvokeString(WindowTypeGetCaptionP);
 
 procedure WindowTypeSetSizeP(w, h: real);
 begin
