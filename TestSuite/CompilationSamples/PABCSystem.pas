@@ -481,6 +481,10 @@ type
     procedure Write(params vals: array of object);
     /// Устанавливает файловый указатель на начало файла
     procedure Reset;
+    /// Возвращает имя файла
+    function Name: string;
+    /// Возвращает полное имя файла
+    function FullName: string;
   end;
 
   // Class for typed files
@@ -3351,10 +3355,7 @@ function string.operator in(substr: string; str: string) := str.Contains(substr)
 
 procedure operator+=(var left: StringBuilder; right: string); extensionmethod := left.Append(right);
 
-function operator implicit(s: string): StringBuilder; extensionmethod;
-begin
-  Result := new StringBuilder(s);
-end;
+function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -5355,6 +5356,18 @@ procedure AbstractBinaryFile.Reset;
 begin
   PABCSystem.Reset(Self);
 end;
+
+function AbstractBinaryFile.Name: string;
+begin
+  Result := fi.Name  
+end;
+
+function AbstractBinaryFile.FullName: string;
+begin
+  Result := fi.FullName  
+end;
+
+
 
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods

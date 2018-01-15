@@ -481,6 +481,10 @@ type
     procedure Write(params vals: array of object);
     /// Устанавливает файловый указатель на начало файла
     procedure Reset;
+    /// Возвращает имя файла
+    function Name: string;
+    /// Возвращает полное имя файла
+    function FullName: string;
   end;
 
   // Class for typed files
@@ -3255,16 +3259,6 @@ begin
   Result := sb.ToString;
 end;
 
-
-//------------------------------------------------------------------------------
-//          Методы для object (экспериментально)
-//------------------------------------------------------------------------------
-/// Выводит значение объекта на экран, после чего выводит пробел
-procedure Print(Self: object); extensionmethod := Print(Self);
-
-/// Выводит значение объекта на экран и переходит на следующую строку
-procedure Println(Self: object); extensionmethod := Println(Self);
-
 //------------------------------------------------------------------------------
 //          Операции для string и char
 //------------------------------------------------------------------------------
@@ -5362,6 +5356,18 @@ procedure AbstractBinaryFile.Reset;
 begin
   PABCSystem.Reset(Self);
 end;
+
+function AbstractBinaryFile.Name: string;
+begin
+  Result := fi.Name  
+end;
+
+function AbstractBinaryFile.FullName: string;
+begin
+  Result := fi.FullName  
+end;
+
+
 
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods

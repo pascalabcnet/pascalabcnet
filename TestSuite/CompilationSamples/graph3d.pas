@@ -2036,7 +2036,7 @@ type
       Result := pmb.ToMeshGeometry3D
     end;
   end;
-  
+
   PrismT = class(ObjectWithMaterial3D)
   private
     function Model := inherited model as PrismVisual3D;
@@ -2265,6 +2265,17 @@ type
     end;
   end;
 
+  My13D = class(MeshElement3D)
+    public function Tessellate(): MeshGeometry3D; override;
+    begin
+      var tm := new MeshBuilder(false, false);
+      tm.AddRevolvedGeometry(Arr(Pnt(0,0),Pnt(0,1),Pnt(0.3,1),Pnt(0.5,0.3),Pnt(2,1),Pnt(3,0)),nil,Origin,OrtZ,80);
+      Result := tm.ToMesh(false);
+    end;
+  end;
+  
+
+
 type
   AnyT = class(ObjectWithMaterial3D)
     constructor(x, y, z: real; c: GColor);
@@ -2277,10 +2288,14 @@ type
       //var a := new TerrainVisual3D;
       //a.Content := (new SphereVisual3D()).Model;
       //a.Text := 'PascalABC';
-      var a := new LinesVisual3D;
-      a.Thickness := 1.99;
-      //a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
-      a.Color := c;
+      //var a := new LinesVisual3D;
+      {a.Thickness := 1.99;
+      a.Points := Arr(P3D(0, 0, 0), P3D(3, 0, 0), P3D(3, 0, 0), P3D(3, 3, 0), P3D(3, 3, 0), P3D(3, 3, 3));
+      a.Color := c;}
+      
+      var a := new My13D;
+      a.Material := c;
+      
       
       {var aa := 1;
       var b := 80;
@@ -2475,7 +2490,7 @@ begin
   //var c1 := XamlReader.Load(new System.IO.FileStream('cube.xaml',System.IO.FileMode.Open)) as CubeVisual3D;
   //hvp.Children.Add(c1);
   
-  var off := new offreader(nil);
+  {var off := new offreader(nil);
   var s := System.IO.File.OpenRead('boxcube.off');
   off.Load(s);
   
@@ -2484,18 +2499,14 @@ begin
   m1.EdgeDiameter := 0;
   m1.VertexRadius := 0;
   m1.Mesh := off.CreateMesh;
-  hvp.Children.Add(m1);
-  
-  {var m1 := new MeshGeometryVisual3D();
-  m1.MeshGeometry := off.CreateMeshGeometry3D;
   hvp.Children.Add(m1);}
+
+  var ex := new ExtrudedVisual3D();
+  ex.BackMaterial := Colors.Green;
+  ex.Diameters := new DoubleCollection(Arr(1.0,1.5,1.2));
+  ex.Path := new Point3DCollection(Arr(P3D(0,0,0),P3D(0,1,0),P3D(0,1,1),P3D(1,1,1)));
+  hvp.Children.Add(ex);
   
-  {var m1 := new ModelVisual3D();
-  m1.Content := off.CreateModel3D;
-  hvp.Children.Add(m1);}
-  
-  {var imp := new HelixToolkit.Wpf.ModelImporter();
-  imp.Load('a.xaml',nil,False);}
 end;
 
 procedure Proba2 := Invoke(ProbaP2);
