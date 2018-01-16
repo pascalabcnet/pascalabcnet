@@ -885,14 +885,15 @@ namespace PascalABCCompiler.TreeRealization
                     }
 
                     foreach (var formal_delegate in formal_delegates)
-                        //Перебираем все полученные формальные параемтры, соотвтетсвующие фактическим лямбдам
+                    // Перебираем все полученные формальные параметры, соответствующие фактическим лямбдам
                     {
                         var lambda_syntax_node = lambda_syntax_nodes[formal_delegate.Key];
                         Exception on_lambda_body_compile_exception;
-                            // Исключение которое может возникнуть в результате компиляции тела лямбды если мы выберем неправильные типы параметров
-                        if (!TryToDeduceTypesInLambda(lambda_syntax_node, formal_delegate.Value, deduced, nils,
-                                                      out on_lambda_body_compile_exception))
-                            //Пробуем вычислить типы из лямбд
+                        // Исключение которое может возникнуть в результате компиляции тела лямбды если мы выберем неправильные типы параметров
+                        var b = TryToDeduceTypesInLambda(lambda_syntax_node, formal_delegate.Value, deduced, nils,
+                                                      out on_lambda_body_compile_exception);
+                        if (!b)
+                            // Пробуем вычислить типы из лямбд
                         {
                             RestoreLambdasStates(lambda_syntax_nodes.Values.ToList(), saved_lambdas_states);
 
