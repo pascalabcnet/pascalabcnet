@@ -503,8 +503,6 @@ type
     function FilePos: int64;
     /// Возвращает количество элементов в типизированном файле
     function FileSize: int64;
-    /// Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n  
-    procedure Seek(n: int64);
   end;
   
   // Class for binary files
@@ -5382,11 +5380,6 @@ begin
   Result := PABCSystem.FileSize(Self);
 end;
 
-procedure TypedFile.Seek(n: int64);
-begin
-  PABCSystem.Seek(Self, n);
-end;
-
 function BinaryFile.FilePos: int64;
 begin
   Result := PABCSystem.FilePos(Self);
@@ -8168,6 +8161,71 @@ type
       end;  
     end;
   end;
+
+//------------------------------------------------------------------------------
+//>>     Метод расширения Print для элементарных типов
+//------------------------------------------------------------------------------
+function Print(Self: integer): integer; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: real): real; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: char): char; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: boolean): boolean; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: BigInteger): BigInteger; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Println(Self: integer): integer; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: real): real; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: char): char; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: boolean): boolean; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: BigInteger): BigInteger; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+
 
 //------------------------------------------------------------------------------
 //>>     Методы расширения для sequence of T # Extension methods for sequence of T
