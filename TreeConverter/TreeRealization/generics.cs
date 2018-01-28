@@ -649,13 +649,13 @@ namespace PascalABCCompiler.TreeRealization
             var result = true;
             exception_on_body_compilation = null;
 
-            if (lambda_syntax_node.formal_parameters == null
+            /*if (lambda_syntax_node.formal_parameters == null
                 || lambda_syntax_node.formal_parameters.params_list == null
                 || lambda_syntax_node.formal_parameters.params_list.Count == 0)
             {
                 return false;
-            }
-            
+            }*/
+            if (lambda_syntax_node.formal_parameters != null)
             foreach (var t in lambda_syntax_node.formal_parameters.params_list)
             {
                 var lambdaInfType = t.vars_type as lambda_inferred_type;
