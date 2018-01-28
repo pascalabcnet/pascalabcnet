@@ -9747,6 +9747,80 @@ namespace PascalABCCompiler.TreeConverter
             return scn;
         }
 
+        private long_const_node convert_long_const_to_switch(expression_node switch_expr, location loc)
+        {
+            convertion_data_and_alghoritms.convert_type(switch_expr, SystemLibrary.SystemLibrary.int64_type, loc);
+            if (switch_expr is long_const_node)
+                return switch_expr as long_const_node;
+            //switch_expr = convertion_data_and_alghoritms.create_simple_function_call(oti.value_to_int,
+            //    loc, switch_expr);
+            long_const_node icn = null;//switch_expr as constant_node;
+
+            if (switch_expr is byte_const_node)
+                icn = new long_const_node((switch_expr as byte_const_node).constant_value, loc);
+            else if (switch_expr is sbyte_const_node)
+                icn = new long_const_node((long)((switch_expr as sbyte_const_node).constant_value), loc);
+            else if (switch_expr is short_const_node)
+                icn = new long_const_node((long)((switch_expr as short_const_node).constant_value), loc);
+            else if (switch_expr is ushort_const_node)
+                icn = new long_const_node((long)((switch_expr as ushort_const_node).constant_value), loc);
+            else if (switch_expr is uint_const_node)
+                icn = new long_const_node((long)((switch_expr as uint_const_node).constant_value),loc);
+            else if (switch_expr is int_const_node)
+                icn = new long_const_node((long)((switch_expr as int_const_node).constant_value),loc);
+            else if (switch_expr is ulong_const_node)
+                icn = new long_const_node((long)((switch_expr as ulong_const_node).constant_value), loc);
+            else if (switch_expr is enum_const_node)
+                icn = new long_const_node((switch_expr as enum_const_node).constant_value, loc);
+            else if (switch_expr is static_compiled_variable_reference && (switch_expr as static_compiled_variable_reference).var.compiled_field.IsLiteral)
+                icn = new long_const_node((long)(switch_expr as static_compiled_variable_reference).var.compiled_field.GetRawConstantValue(), loc);
+            //учти здесь модет быть и long!
+            //-DarkStar Add
+            if (icn == null)
+            {
+                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+            }
+            return icn;
+        }
+
+        private ulong_const_node convert_ulong_const_to_switch(expression_node switch_expr, location loc)
+        {
+            convertion_data_and_alghoritms.convert_type(switch_expr, SystemLibrary.SystemLibrary.uint64_type, loc);
+            if (switch_expr is ulong_const_node)
+                return switch_expr as ulong_const_node;
+            //switch_expr = convertion_data_and_alghoritms.create_simple_function_call(oti.value_to_int,
+            //    loc, switch_expr);
+            ulong_const_node icn = null;//switch_expr as constant_node;
+
+            if (switch_expr is byte_const_node)
+                icn = new ulong_const_node((switch_expr as byte_const_node).constant_value, loc);
+            else if (switch_expr is sbyte_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as sbyte_const_node).constant_value), loc);
+            else if (switch_expr is short_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as short_const_node).constant_value), loc);
+            else if (switch_expr is ushort_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as ushort_const_node).constant_value), loc);
+            else if (switch_expr is int_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as int_const_node).constant_value),loc);
+            else if (switch_expr is uint_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as uint_const_node).constant_value), loc);
+            else if (switch_expr is long_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as long_const_node).constant_value),loc);
+            else if (switch_expr is char_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as char_const_node).constant_value), loc);
+            else if (switch_expr is enum_const_node)
+                icn = new ulong_const_node((ulong)((switch_expr as enum_const_node).constant_value), loc);
+            else if (switch_expr is static_compiled_variable_reference && (switch_expr as static_compiled_variable_reference).var.compiled_field.IsLiteral)
+                icn = new ulong_const_node((ulong)(switch_expr as static_compiled_variable_reference).var.compiled_field.GetRawConstantValue(), loc);
+            //учти здесь модет быть и long!
+            //-DarkStar Add
+            if (icn == null)
+            {
+                AddError(loc, "CONSTANT_EXPRESSION_EXPECTED");
+            }
+            return icn;
+        }
+
         private int_const_node convert_const_to_switch(expression_node switch_expr,
             ordinal_type_interface oti, type_node case_expr_type, location loc)
         {
@@ -9765,12 +9839,6 @@ namespace PascalABCCompiler.TreeConverter
                 icn = new int_const_node(Convert.ToInt32((switch_expr as short_const_node).constant_value), loc);
             else if (switch_expr is ushort_const_node)
                 icn = new int_const_node(Convert.ToInt32((switch_expr as ushort_const_node).constant_value), loc);
-            /*else if (switch_expr is uint_const_node)
-                icn = new int_const_node(Convert.ToInt32((switch_expr as uint_const_node).constant_value),loc);
-            else if (switch_expr is long_const_node)
-                icn = new int_const_node(Convert.ToInt32((switch_expr as long_const_node).constant_value),loc);
-            else if (switch_expr is ulong_const_node)
-                icn = new int_const_node(Convert.ToInt32((switch_expr as ulong_const_node).constant_value),loc);*/
             else if (switch_expr is bool_const_node)
                 icn = new int_const_node(Convert.ToInt32((switch_expr as bool_const_node).constant_value), loc);
             else if (switch_expr is char_const_node)
@@ -9779,7 +9847,6 @@ namespace PascalABCCompiler.TreeConverter
                 icn = new int_const_node((switch_expr as enum_const_node).constant_value, loc);
             else if (switch_expr is static_compiled_variable_reference && (switch_expr as static_compiled_variable_reference).var.compiled_field.IsLiteral)
                 icn = new int_const_node((int)(switch_expr as static_compiled_variable_reference).var.compiled_field.GetRawConstantValue(), loc);
-
             //учти здесь модет быть и long!
             //-DarkStar Add
             if (icn == null)
@@ -9803,7 +9870,7 @@ namespace PascalABCCompiler.TreeConverter
             {
                 AddError(new OrdinalOrStringTypeExpected(en.location));
             }
-            if (ii != null)
+            if (ii != null && en.type != SystemLibrary.SystemLibrary.int64_type && en.type != SystemLibrary.SystemLibrary.uint64_type)
             {
                 ordinal_type_interface oti = (ordinal_type_interface)ii;
                 en = convertion_data_and_alghoritms.create_simple_function_call(oti.value_to_int, en.location, en);
@@ -9859,7 +9926,7 @@ namespace PascalABCCompiler.TreeConverter
                 sn.default_statement = else_statement;
                 return_value(sn);
             }
-            else
+            else if (en.type == SystemLibrary.SystemLibrary.string_type)
             {
                 if_node main_ifn = null;
                 if_node ifn = null;
@@ -9887,6 +9954,179 @@ namespace PascalABCCompiler.TreeConverter
                         eq_calls.Add(eq_call);
                     }
                     foreach (compiled_static_method_call eq_call in eq_calls)
+                    {
+                        if (eq_node == null)
+                            eq_node = eq_call;
+                        else
+                            eq_node = new basic_function_call(SystemLibrary.SystemLibrary.bool_or as basic_function_node, null, eq_node, eq_call);
+                    }
+                    context.enter_code_block_with_bind();
+                    CheckToEmbeddedStatementCannotBeADeclaration(cv.exec_if_true);
+                    statement_node stmn = convert_strong(cv.exec_if_true);
+                    context.leave_code_block();
+                    if (ifn != null)
+                    {
+                        ifn.else_body = new if_node(eq_node, stmn, null, loc);
+                        ifn = ifn.else_body as if_node;
+                    }
+                    else
+                        ifn = new if_node(eq_node, stmn, null, loc);
+                    if (main_ifn == null)
+                        main_ifn = ifn;
+                }
+                context.enter_code_block_with_bind();
+                CheckToEmbeddedStatementCannotBeADeclaration(_case_node.else_statement);
+                statement_node else_statement = convert_weak(_case_node.else_statement);
+                context.leave_code_block();
+                if (ifn == null)
+                {
+                    ifn = new if_node(en, new statements_list(null), null, get_location(_case_node));
+                    main_ifn = ifn;
+                }
+                ifn.else_body = else_statement;
+                return_value(main_ifn);
+            }
+            else if (en.type == SystemLibrary.SystemLibrary.int64_type)
+            {
+                if_node main_ifn = null;
+                if_node ifn = null;
+                basic_function_node int64_eq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type("=", true).sym_info as basic_function_node;
+                
+                Dictionary<long, long> case_constants = new Dictionary<long, long>();
+                foreach (SyntaxTree.case_variant cv in _case_node.conditions.variants)
+                {
+                    convertion_data_and_alghoritms.check_node_parser_error(cv);
+                    location loc = get_location(cv);
+                    expression_node eq_node = null;
+                    List<basic_function_call> eq_calls = new List<basic_function_call>();
+                    foreach (SyntaxTree.expression expr in cv.conditions.expressions)
+                    {
+                        SyntaxTree.diapason_expr diap = expr as SyntaxTree.diapason_expr;
+                        if (diap == null)
+                        {
+                            expression_node cn = convert_strong(expr);
+                            long_const_node scn = convert_long_const_to_switch(cn, cn.location);
+                            if (!case_constants.ContainsKey(scn.constant_value))
+                                case_constants.Add(scn.constant_value, scn.constant_value);
+                            else
+                                AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
+                            basic_function_call eq_call = new basic_function_call(int64_eq_meth, cn.location);
+                            eq_call.parameters.AddElement(en);
+                            eq_call.parameters.AddElement(cn);
+                            eq_calls.Add(eq_call);
+                        }
+                        else
+                        {
+                            expression_node left_cn = convert_strong(diap.left);
+                            expression_node right_cn = convert_strong(diap.right);
+                            long_const_node left_scn = convert_long_const_to_switch(left_cn, left_cn.location);
+                            long_const_node right_scn = convert_long_const_to_switch(right_cn, right_cn.location);
+                            if (left_scn.constant_value > right_scn.constant_value)
+                            {
+                                AddError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
+                            }
+                            basic_function_node int64_greq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type(">=", true).sym_info as basic_function_node;
+                            basic_function_node int64_leq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
+                            basic_function_call greq_call = new basic_function_call(int64_greq_meth, left_cn.location);
+                            greq_call.parameters.AddElement(en);
+                            greq_call.parameters.AddElement(left_cn);
+                            basic_function_call leq_call = new basic_function_call(int64_leq_meth, right_cn.location);
+                            leq_call.parameters.AddElement(en);
+                            leq_call.parameters.AddElement(right_cn);
+                            basic_function_node in_diap_meth = SystemLibrary.SystemLibrary.bool_type.find_first_in_type("and", true).sym_info as basic_function_node;
+                            basic_function_call in_diap_call = new basic_function_call(in_diap_meth, left_cn.location);
+                            in_diap_call.parameters.AddElement(greq_call);
+                            in_diap_call.parameters.AddElement(leq_call);
+                            eq_calls.Add(in_diap_call);
+                        }
+                    }
+                    foreach (basic_function_call eq_call in eq_calls)
+                    {
+                        if (eq_node == null)
+                            eq_node = eq_call;
+                        else
+                            eq_node = new basic_function_call(SystemLibrary.SystemLibrary.bool_or as basic_function_node, null, eq_node, eq_call);
+                    }
+                    context.enter_code_block_with_bind();
+                    CheckToEmbeddedStatementCannotBeADeclaration(cv.exec_if_true);
+                    statement_node stmn = convert_strong(cv.exec_if_true);
+                    context.leave_code_block();
+                    if (ifn != null)
+                    {
+                        ifn.else_body = new if_node(eq_node, stmn, null, loc);
+                        ifn = ifn.else_body as if_node;
+                    }
+                    else
+                        ifn = new if_node(eq_node, stmn, null, loc);
+                    if (main_ifn == null)
+                        main_ifn = ifn;
+                }
+                context.enter_code_block_with_bind();
+                CheckToEmbeddedStatementCannotBeADeclaration(_case_node.else_statement);
+                statement_node else_statement = convert_weak(_case_node.else_statement);
+                context.leave_code_block();
+                if (ifn == null)
+                {
+                    ifn = new if_node(en, new statements_list(null), null, get_location(_case_node));
+                    main_ifn = ifn;
+                }
+                ifn.else_body = else_statement;
+                return_value(main_ifn);
+            }
+            else
+            {
+                if_node main_ifn = null;
+                if_node ifn = null;
+                basic_function_node uint64_eq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type("=", true).sym_info as basic_function_node;
+                Dictionary<ulong, ulong> case_constants = new Dictionary<ulong, ulong>();
+                foreach (SyntaxTree.case_variant cv in _case_node.conditions.variants)
+                {
+                    convertion_data_and_alghoritms.check_node_parser_error(cv);
+                    location loc = get_location(cv);
+                    expression_node eq_node = null;
+                    List<basic_function_call> eq_calls = new List<basic_function_call>();
+                    foreach (SyntaxTree.expression expr in cv.conditions.expressions)
+                    {
+                        SyntaxTree.diapason_expr diap = expr as SyntaxTree.diapason_expr;
+                        if (diap == null)
+                        {
+                            expression_node cn = convert_strong(expr);
+                            ulong_const_node scn = convert_ulong_const_to_switch(cn, cn.location);
+                            if (!case_constants.ContainsKey(scn.constant_value))
+                                case_constants.Add(scn.constant_value, scn.constant_value);
+                            else
+                                AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
+                            basic_function_call eq_call = new basic_function_call(uint64_eq_meth, cn.location);
+                            eq_call.parameters.AddElement(en);
+                            eq_call.parameters.AddElement(cn);
+                            eq_calls.Add(eq_call);
+                        }
+                        else
+                        {
+                            expression_node left_cn = convert_strong(diap.left);
+                            expression_node right_cn = convert_strong(diap.right);
+                            ulong_const_node left_scn = convert_ulong_const_to_switch(left_cn, left_cn.location);
+                            ulong_const_node right_scn = convert_ulong_const_to_switch(right_cn, right_cn.location);
+                            if (left_scn.constant_value > right_scn.constant_value)
+                            {
+                                AddError(get_location(diap.right), "LEFT_RANGE_GREATER_THEN_RIGHT");
+                            }
+                            basic_function_node uint64_greq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type(">=", true).sym_info as basic_function_node;
+                            basic_function_node uint64_leq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
+                            basic_function_call greq_call = new basic_function_call(uint64_greq_meth, left_cn.location);
+                            greq_call.parameters.AddElement(en);
+                            greq_call.parameters.AddElement(left_cn);
+                            basic_function_call leq_call = new basic_function_call(uint64_leq_meth, right_cn.location);
+                            leq_call.parameters.AddElement(en);
+                            leq_call.parameters.AddElement(right_cn);
+                            basic_function_node in_diap_meth = SystemLibrary.SystemLibrary.bool_type.find_first_in_type("and", true).sym_info as basic_function_node;
+                            basic_function_call in_diap_call = new basic_function_call(in_diap_meth, left_cn.location);
+                            in_diap_call.parameters.AddElement(greq_call);
+                            in_diap_call.parameters.AddElement(leq_call);
+                            eq_calls.Add(in_diap_call);
+                        }
+                    }
+                    foreach (basic_function_call eq_call in eq_calls)
                     {
                         if (eq_node == null)
                             eq_node = eq_call;

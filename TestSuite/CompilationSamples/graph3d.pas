@@ -122,6 +122,7 @@ function InvokeString(d: Func0<string>): string := Invoke&<String>(d);
 function InvokeReal(d: Func0<real>): real := Invoke&<Real>(d);
 function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);
 function InvokeInteger(d: Func0<integer>): integer := Invoke&<integer>(d);
+function Inv<T>(p: ()->T): T := Invoke&<T>(p); // Теперь это работает!
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
 
@@ -426,7 +427,7 @@ type
     function GetPos: Point3D := Invoke&<Point3D>(()->P3D(transltransform.OffsetX, transltransform.OffsetY, transltransform.OffsetZ));
 
   protected 
-    function CreateObject: Object3D; virtual;
+    function CreateObject: Object3D; virtual; // нужно для клонирования
     begin
       Result := nil;
     end;
@@ -629,6 +630,8 @@ type
     begin
       CreateBase0(m, x, y, z);
       m.Material := mat;
+      //MaterialHelper.ChangeOpacity(mat,0.1);
+      //MaterialHelper.ChangeOpacity(BackMaterial,0.1);
       //m.BackMaterial := nil;
     end;
     
@@ -1183,17 +1186,14 @@ function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
 type
   SphereT = class(ObjectWithMaterial3D)
   private 
-    procedure SetR(r: real);
-    begin
-      var m := model as SphereVisual3D;
-      Invoke(()->begin m.Radius := r end);
-    end;  
-    
-    function GetR: real := InvokeReal(()->(model as SphereVisual3D).Radius);
+    function Model := inherited model as SphereVisual3D;
+    procedure SetRP(r: real) := Model.Radius := r;
+    procedure SetR(r: real) := Invoke(SetRP,r);
+    function GetR: real := InvokeReal(()->Model.Radius);
     function NewVisualObject(r: real): SphereVisual3D;
     begin
       var sph := new SphereVisual3D;
-      sph.Center := P3D(0, 0, 0);
+      sph.Center := Origin;
       sph.Radius := r;
       Result := sph;
     end;
@@ -1211,25 +1211,25 @@ type
   private
     function Model := inherited model as EllipsoidVisual3D;
     procedure SetRXP(r: real) := Model.RadiusX := r;
-    procedure SetRX(r: real) := Invoke(SetRXP, x);
+    procedure SetRX(r: real) := Invoke(SetRXP, r);
     function GetRX: real := InvokeReal(()->Model.RadiusX);
     procedure SetRYP(r: real) := Model.RadiusY := r;
-    procedure SetRY(r: real) := Invoke(SetRYP, x);
+    procedure SetRY(r: real) := Invoke(SetRYP, r);
     function GetRY: real := InvokeReal(()->Model.RadiusY);
     procedure SetRZP(r: real) := Model.RadiusZ := r;
-    procedure SetRZ(r: real) := Invoke(SetRZP, x);
+    procedure SetRZ(r: real) := Invoke(SetRZP, r);
     function GetRZ: real := InvokeReal(()->Model.RadiusZ);
-    function NewVisualObject(rx, ry, rz: real): HelixToolkit.Wpf.EllipsoidVisual3D;
+    function NewVisualObject(rx, ry, rz: real): EllipsoidVisual3D;
     begin
       var ell := new EllipsoidVisual3D;
-      ell.Center := P3D(0, 0, 0);
+      ell.Center := Origin;
       ell.RadiusX := rx;
       ell.RadiusY := ry;
       ell.RadiusZ := rz;
       Result := ell;
     end;
   protected
-    function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material);
+    function CreateObject: Object3D; override := new EllipsoidT(X, Y, Z, RadiusX, RadiusY, RadiusZ, Material.Clone);
   public 
     constructor(x, y, z, rx, ry, rz: real; m: GMaterial) := CreateBase(NewVisualObject(rx, ry, rz), x, y, z, m);
     
@@ -1239,6 +1239,29 @@ type
     function Clone := (inherited Clone) as EllipsoidT;
   end;
   
+  CubeT = class(ObjectWithMaterial3D)
+  private
+    function model := inherited model as CubeVisual3D;
+    procedure SetWP(r: real) := model.SideLength := r;
+    procedure SetW(r: real) := Invoke(SetWP, r);
+    function GetW: real := InvokeReal(()->model.SideLength);
+  private 
+    function NewVisualObject(w: real): CubeVisual3D;
+    begin
+      var bx := new CubeVisual3D;
+      bx.Center := Origin;
+      bx.SideLength := w;
+      Result := bx;
+    end;
+  protected  
+    function CreateObject: Object3D; override := new CubeT(X, Y, Z, SideLength, Material.Clone);
+  public 
+    constructor(x, y, z, w: real; m: GMaterial) := CreateBase(NewVisualObject(w), x, y, z, m);
+    
+    property SideLength: real read GetW write SetW;
+    function Clone := (inherited Clone) as CubeT;
+  end;
+
   BoxT = class(ObjectWithMaterial3D)
   private
     function model := inherited model as BoxVisual3D;
@@ -1255,14 +1278,13 @@ type
     function GetL: real := InvokeReal(()->model.Length);
     
     procedure SetSzP(r: Size3D) := (model.Length, model.Width, model.Height) := (r.X, r.Y, r.Z);
-    
     procedure SetSz(r: Size3D) := Invoke(SetSzP, r);
-    function GetSz: Size3D := Invoke&<Size3D>(()->begin Result := Sz3D(model.Length, model.Width, model.Height) end);
+    function GetSz: Size3D := Inv(()->Sz3D(model.Length, model.Width, model.Height));
   private 
     function NewVisualObject(l, w, h: real): BoxVisual3D;
     begin
       var bx := new BoxVisual3D;
-      bx.Center := P3D(0, 0, 0);
+      bx.Center := Origin;
       (bx.Width, bx.Height, bx.Length) := (w, h, l);
       Result := bx;
     end;
@@ -2330,124 +2352,120 @@ type
     end;
   end;
 
-// function Inv<T>(p: ()->T): T := Invoke&<T>(p); // посмотреть, почему не выводится!
-
-var DefaultMaterialColor := Colors.Red;
+function DefaultMaterialColor := RandomColor;
 function DefaultMaterial := MaterialHelper.CreateMaterial(DefaultMaterialColor);
 
-function Group(x, y, z: integer): GroupT := Invoke&<GroupT>(()->GroupT.Create(x, y, z));
-function Group(p: Point3D): GroupT := Invoke&<GroupT>(()->GroupT.Create(p.x, p.y, p.z));
-function Group: GroupT := Invoke&<GroupT>(()->GroupT.Create(0, 0, 0));
-function Group(params lst: array of Object3D): GroupT := Invoke&<GroupT>(()->GroupT.Create(0, 0, 0, lst));
-function Group(en: sequence of Object3D): GroupT := Invoke&<GroupT>(()->GroupT.Create(0, 0, 0, en));
+function Group(x, y, z: integer): GroupT := Inv(()->GroupT.Create(x, y, z));
+function Group(p: Point3D): GroupT := Inv(()->GroupT.Create(p.x, p.y, p.z));
+function Group: GroupT := Inv(()->GroupT.Create(0, 0, 0));
+function Group(params lst: array of Object3D): GroupT := Inv(()->GroupT.Create(0, 0, 0, lst));
+function Group(en: sequence of Object3D): GroupT := Inv(()->GroupT.Create(0, 0, 0, en));
 
-function Sphere(x, y, z, r: real; m: Material := DefaultMaterial): SphereT := Invoke&<SphereT>(()->SphereT.Create(x, y, z, r, m));
-function Sphere(center: Point3D; r: real; m: Material := DefaultMaterial) := Sphere(center.x, center.y, center.z, r, m);
+function Sphere(x, y, z, Radius: real; m: Material := DefaultMaterial): SphereT := Inv(()->SphereT.Create(x, y, z, Radius, m));
+function Sphere(center: Point3D; Radius: real; m: Material := DefaultMaterial) := Sphere(center.x, center.y, center.z, Radius, m);
 
-function Ellipsoid(x, y, z, rx, ry, rz: real; m: Material := DefaultMaterial): EllipsoidT := Invoke&<EllipsoidT>(()->EllipsoidT.Create(x, y, z, rx, ry, rz, m));
-function Ellipsoid(center: Point3D; rx, ry, rz: real; m: Material := DefaultMaterial): EllipsoidT := Ellipsoid(center.x, center.y, center.z, rx, ry, rz, m);
+function Ellipsoid(x, y, z, RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial): EllipsoidT := Inv(()->EllipsoidT.Create(x, y, z, RadiusX, RadiusY, RadiusZ, m));
+function Ellipsoid(center: Point3D; RadiusX, RadiusY, RadiusZ: real; m: Material := DefaultMaterial) := Ellipsoid(center.x, center.y, center.z, RadiusX, RadiusY, RadiusZ, m);
 
-function Box(x, y, z, l, w, h: real; m: Material := DefaultMaterial): BoxT := Invoke&<BoxT>(()->BoxT.Create(x, y, z, l, w, h, m));
-function Box(center: Point3D; sz: Size3D; m: Material := DefaultMaterial): BoxT := Invoke&<BoxT>(()->BoxT.Create(center.x, center.y, center.z, sz.X, sz.Y, sz.z, m));
+function Cube(x, y, z, SideLength: real; m: Material := DefaultMaterial): CubeT := Inv(()->CubeT.Create(x, y, z, SideLength, m));
+function Cube(center: Point3D; SideLength: real; m: Material := DefaultMaterial): CubeT := Cube(center.x, center.y, center.z, SideLength, m);
 
-function Cube(x, y, z, w: real; m: Material := DefaultMaterial): BoxT := Box(x, y, z, w, w, w, m);
-function Cube(center: Point3D; w: real; m: Material := DefaultMaterial): BoxT := Box(center.x, center.y, center.z, w, w, w, m);
+function Box(x, y, z, SizeX, SizeY, SizeZ: real; m: Material := DefaultMaterial): BoxT := Inv(()->BoxT.Create(x, y, z, SizeX, SizeY, SizeZ, m));
+function Box(center: Point3D; sz: Size3D; m: Material := DefaultMaterial): BoxT := Inv(()->BoxT.Create(center.x, center.y, center.z, sz.X, sz.Y, sz.z, m));
 
-const
-  arhl = 3;
-  ard = 0.2;
+const arhl = 3; ard = 0.2;
 
-function Arrow(x, y, z, vx, vy, vz, diameter, hl: real; c: Material := DefaultMaterial): ArrowT := Invoke&<ArrowT>(()->ArrowT.Create(x, y, z, vx, vy, vz, diameter, hl, c));
-function Arrow(x, y, z, vx, vy, vz, diameter: real; c: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, diameter, arhl, c);
-function Arrow(x, y, z, vx, vy, vz: real; c: Material := DefaultMaterial): ArrowT := Arrow(x, y, z, vx, vy, vz, ard, arhl, c);
-function Arrow(p: Point3D; v: Vector3D; diameter, hl: real; c: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, hl, c);
-function Arrow(p: Point3D; v: Vector3D; diameter: real; c: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, arhl, c);
-function Arrow(p: Point3D; v: Vector3D; c: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, ard, arhl, c);
+function Arrow(x, y, z, vx, vy, vz, diameter, hl: real; m: Material := DefaultMaterial): ArrowT := Inv(()->ArrowT.Create(x, y, z, vx, vy, vz, diameter, hl, m));
+function Arrow(x, y, z, vx, vy, vz, diameter: real; m: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, diameter, arhl, m);
+function Arrow(x, y, z, vx, vy, vz: real; m: Material := DefaultMaterial) := Arrow(x, y, z, vx, vy, vz, ard, arhl, m);
+function Arrow(p: Point3D; v: Vector3D; diameter, hl: real; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, hl, m);
+function Arrow(p: Point3D; v: Vector3D; diameter: real; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, diameter, arhl, m);
+function Arrow(p: Point3D; v: Vector3D; m: Material := DefaultMaterial) := Arrow(p.x, p.y, p.z, v.X, v.Y, v.Z, ard, arhl, m);
 
-function TruncatedConeAux(x, y, z, height, baseradius, topradius: real; sides: integer; topcap: boolean; c: Material) := Invoke&<TruncatedConeT>(()->TruncatedConeT.Create(x, y, z, height, baseradius, topradius, sides, topcap, c));
+function TruncatedConeAux(x, y, z, Height, Radius, TopRadius: real; sides: integer; topcap: boolean; c: Material) := Inv(()->TruncatedConeT.Create(x, y, z, Height, Radius, TopRadius, sides, topcap, c));
 
 const maxsides = 37;
 
 ///--
-function TruncatedCone(x, y, z, height, baseradius, topradius: real; topcap: boolean; c: Material := DefaultMaterial): TruncatedConeT := TruncatedConeAux(x, y, z, height, baseradius, topradius, maxsides, topcap, c); 
-function TruncatedCone(x, y, z, height, baseradius, topradius: real; c: Material := DefaultMaterial) := TruncatedCone(x, y, z, height, baseradius, topradius, True, c);
+function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial): TruncatedConeT := TruncatedConeAux(x, y, z, Height, Radius, TopRadius, maxsides, topcap, m); 
+function TruncatedCone(x, y, z, Height, Radius, TopRadius: real; m: Material := DefaultMaterial) := TruncatedCone(x, y, z, Height, Radius, TopRadius, True, m);
 ///--
-function TruncatedCone(p: Point3D; height, baseradius, topradius: real; topcap: boolean; c: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, height, baseradius, topradius, topcap, c);
-function TruncatedCone(p: Point3D; height, baseradius, topradius: real; c: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, height, baseradius, topradius, True, c);
+function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; topcap: boolean; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, topcap, m);
+function TruncatedCone(p: Point3D; Height, Radius, TopRadius: real; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, TopRadius, True, m);
 
 ///--
-function Cylinder(x, y, z, height, radius: real; topcap: boolean; c: Material := DefaultMaterial): CylinderT := Invoke&<CylinderT>(()->CylinderT.Create(x, y, z, height, radius, maxsides, topcap, c));
-function Cylinder(x, y, z, height, radius: real; c: Material := DefaultMaterial) := Cylinder(x, y, z, height, radius, True, c);
+function Cylinder(x, y, z, Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial): CylinderT := Inv(()->CylinderT.Create(x, y, z, Height, Radius, maxsides, topcap, m));
+function Cylinder(x, y, z, Height, Radius: real; m: Material := DefaultMaterial) := Cylinder(x, y, z, Height, Radius, True, m);
 ///--
-function Cylinder(p: Point3D; height, radius: real; topcap: boolean; c: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, height, radius, topcap, c);
-function Cylinder(p: Point3D; height, radius: real; c: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, height, radius, True, c);
+function Cylinder(p: Point3D; Height, Radius: real; topcap: boolean; m: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, Height, Radius, topcap, m);
+function Cylinder(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial) := Cylinder(p.x, p.y, p.z, Height, Radius, True, m);
 
-function Tube(x, y, z, height, radius, innerradius: real; c: Material := DefaultMaterial): PipeT := Invoke&<PipeT>(()->PipeT.Create(x, y, z, height, radius, innerradius, c));
-function Tube(p: Point3D; height, radius, innerradius: real; c: Material := DefaultMaterial) := Tube(p.x, p.y, p.z, height, radius, innerradius, c);
+function Tube(x, y, z, Height, Radius, InnerRadius: real; m: Material := DefaultMaterial): PipeT := Inv(()->PipeT.Create(x, y, z, Height, Radius, InnerRadius, m));
+function Tube(p: Point3D; Height, Radius, InnerRadius: real; m: Material := DefaultMaterial) := Tube(p.x, p.y, p.z, Height, Radius, InnerRadius, m);
 
-function Cone(x, y, z, height, radius: real; c: Material := DefaultMaterial): TruncatedConeT := TruncatedCone(x, y, z, height, radius, 0, True, c);
-function Cone(p: Point3D; height, radius: real; c: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, height, radius, 0, True, c);
+function Cone(x, y, z, Height, Radius: real; m: Material := DefaultMaterial): TruncatedConeT := TruncatedCone(x, y, z, Height, Radius, 0, True, m);
+function Cone(p: Point3D; Height, Radius: real; m: Material := DefaultMaterial) := TruncatedCone(p.x, p.y, p.z, Height, Radius, 0, True, m);
 
-function Teapot(x, y, z: real; c: Material := DefaultMaterial): TeapotT := Invoke&<TeapotT>(()->TeapotT.Create(x, y, z, c));
+function Teapot(x, y, z: real; c: Material := DefaultMaterial): TeapotT := Inv(()->TeapotT.Create(x, y, z, c));
 function Teapot(p: Point3D; c: Material := DefaultMaterial) := Teapot(p.x, p.y, p.z, c);
 
-function BillboardText(x, y, z: real; text: string; fontsize: real := 12): BillboardTextT := Invoke&<BillboardTextT>(()->BillboardTextT.Create(x, y, z, text, fontsize));
-function BillboardText(p: Point3D; text: string; fontsize: real := 12) := BillboardText(P.x, p.y, p.z, text, fontsize);
+function BillboardText(x, y, z: real; Text: string; Fontsize: real := 12): BillboardTextT := Inv(()->BillboardTextT.Create(x, y, z, text, fontsize));
+function BillboardText(p: Point3D; Text: string; Fontsize: real := 12) := BillboardText(P.x, p.y, p.z, text, fontsize);
 
-function CoordinateSystem(arrowslength, diameter: real): CoordinateSystemT := Invoke&<CoordinateSystemT>(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
-function CoordinateSystem(arrowslength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
+function CoordinateSystem(ArrowsLength, Diameter: real): CoordinateSystemT := Inv(()->CoordinateSystemT.Create(0, 0, 0, arrowslength, diameter));
+function CoordinateSystem(ArrowsLength: real) := CoordinateSystem(arrowslength, arrowslength / 10);
 
-function Text3D(x, y, z: real; text: string; height: real; fontname: string := 'Arial'; c: Color := Colors.Black): TextT := Invoke&<TextT>(()->TextT.Create(x, y, z, text, height, fontname, c));
-function Text3D(p: Point3D; text: string; height: real; fontname: string := 'Arial'; c: Color := Colors.Black) := Text3D(P.x, p.y, p.z, text, height, fontname, c);
-function Text3D(x, y, z: real; text: string; height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
-function Text3D(p: Point3D; text: string; height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
+function Text3D(x, y, z: real; Text: string; Height: real; fontname: string := 'Arial'; c: Color := Colors.Black): TextT := Inv(()->TextT.Create(x, y, z, text, height, fontname, c));
+function Text3D(p: Point3D; Text: string; Height: real; fontname: string := 'Arial'; c: Color := Colors.Black) := Text3D(P.x, p.y, p.z, text, height, fontname, c);
+function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
+function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
 
-function Rectangle3D(x, y, z, l, w: real; normal, lendirection: Vector3D; c: Material := DefaultMaterial): RectangleT := Invoke&<RectangleT>(()->RectangleT.Create(x, y, z, l, w, normal, lendirection, c));
-function Rectangle3D(p: Point3D; l, w: real; normal, lendirection: Vector3D; c: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, lendirection, c);
-function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; c: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, l, w, normal, OrtX, c); 
-function Rectangle3D(x, y, z, l, w: real; c: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, l, w, OrtZ, OrtX, c); 
-function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; c: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, OrtX, c); 
-function Rectangle3D(p: Point3D; l, w: real; c: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, OrtZ, OrtX, c); 
+function Rectangle3D(x, y, z, l, w: real; normal, lendirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, l, w, normal, lendirection, m));
+function Rectangle3D(p: Point3D; l, w: real; normal, lendirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, lendirection, m);
+function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, l, w, normal, OrtX, m); 
+function Rectangle3D(x, y, z, l, w: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, l, w, OrtZ, OrtX, m); 
+function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, OrtX, m); 
+function Rectangle3D(p: Point3D; l, w: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, OrtZ, OrtX, m); 
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
-function FileModel3D(x, y, z: real; fname: string; c: Material): FileModelT := Invoke&<FileModelT>(()->FileModelT.Create(x, y, z, fname, c));
-function FileModel3D(p: Point3D; fname: string; c: Material): FileModelT := FileModel3D(p.x, p.y, p.z, fname, c);
+function FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT := Inv(()->FileModelT.Create(x, y, z, fname, m));
+function FileModel3D(p: Point3D; fname: string; m: Material): FileModelT := FileModel3D(p.x, p.y, p.z, fname, m);
 
-function Prism(x, y, z: real; Sides: integer; Radius, Height: real; c: Material := DefaultMaterial): PrismT := Invoke&<PrismT>(()->PrismT.Create(x, y, z, Sides, Radius, Height, c));
-function Prism(p: Point3D; Sides: integer; Radius, Height: real; c: Material := DefaultMaterial): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, c);
+function Prism(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT := Inv(()->PrismT.Create(x, y, z, Sides, Radius, Height, m));
+function Prism(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PrismT := Prism(p.X, p.Y, p.Z, Sides, Radius, Height, m);
 
-function PrismWireFrame(x, y, z: real; Sides: integer; Radius, Height: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := Invoke&<PrismTWireFrame>(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
-function PrismWireFrame(p: Point3D; Sides: integer; Radius, Height: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PrismWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := Inv(()->PrismTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
+function PrismWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PrismTWireFrame := PrismWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
 
-function Pyramid(x, y, z: real; Sides: integer; Radius, Height: real; c: Material := DefaultMaterial): PyramidT := Invoke&<PyramidT>(()->PyramidT.Create(x, y, z, Sides, Radius, Height, c));
-function Pyramid(p: Point3D; Sides: integer; Radius, Height: real; c: Material := DefaultMaterial): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, c);
+function Pyramid(x, y, z: real; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT := Inv(()->PyramidT.Create(x, y, z, Sides, Radius, Height, m));
+function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material := DefaultMaterial): PyramidT := Pyramid(p.X, p.Y, p.Z, Sides, Radius, Height, m);
 
-function PyramidWireFrame(x, y, z: real; Sides: integer; Radius, Height: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := Invoke&<PyramidTWireFrame>(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
-function PyramidWireFrame(p: Point3D; Sides: integer; Radius, Height: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
+function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
+function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
 
-function Lego(x, y, z: real; col, r, h: integer; c: Material := DefaultMaterial): LegoT := Invoke&<LegoT>(()->LegoT.Create(x, y, z, col, r, h, c));
+function Lego(x, y, z: real; col, r, h: integer; m: Material := DefaultMaterial): LegoT := Inv(()->LegoT.Create(x, y, z, col, r, h, m));
 
-function Icosahedron(x, y, z, R: real; c: Material := DefaultMaterial): IcosahedronT := Invoke&<IcosahedronT>(()->IcosahedronT.Create(x, y, z, 4*R/Sqrt(2)/Sqrt(5+Sqrt(5)), c));
-function Dodecahedron(x, y, z, R: real; c: Material := DefaultMaterial): DodecahedronT := Invoke&<DodecahedronT>(()->DodecahedronT.Create(x, y, z, R*4/Sqrt(3)/(1+Sqrt(5)), c));
-function Tetrahedron(x, y, z, R: real; c: Material := DefaultMaterial): TetrahedronT := Invoke&<TetrahedronT>(()->TetrahedronT.Create(x, y, z, 4*R/Sqrt(6), c));
-function Octahedron(x, y, z, R: real; c: Material := DefaultMaterial): OctahedronT := Invoke&<OctahedronT>(()->OctahedronT.Create(x, y, z, R*Sqrt(2), c));
-function Icosahedron(p: Point3D; R: real; c: Material := DefaultMaterial): IcosahedronT := Icosahedron(p.X,p.Y,p.Z,R,c);
-function Dodecahedron(p: Point3D; R: real; c: Material := DefaultMaterial): DodecahedronT := Dodecahedron(p.X,p.Y,p.Z,R,c);
-function Tetrahedron(p: Point3D; R: real; c: Material := DefaultMaterial): TetrahedronT := Tetrahedron(p.X,p.Y,p.Z,R,c);
-function Octahedron(p: Point3D; R: real; c: Material := DefaultMaterial): OctahedronT := Octahedron(p.X,p.Y,p.Z,R,c);
+function Icosahedron(x, y, z, r: real; m: Material := DefaultMaterial): IcosahedronT := Inv(()->IcosahedronT.Create(x, y, z, 4*R/Sqrt(2)/Sqrt(5+Sqrt(5)), m));
+function Dodecahedron(x, y, z, r: real; m: Material := DefaultMaterial): DodecahedronT := Inv(()->DodecahedronT.Create(x, y, z, R*4/Sqrt(3)/(1+Sqrt(5)), m));
+function Tetrahedron(x, y, z, r: real; m: Material := DefaultMaterial): TetrahedronT := Inv(()->TetrahedronT.Create(x, y, z, 4*R/Sqrt(6), m));
+function Octahedron(x, y, z, r: real; m: Material := DefaultMaterial): OctahedronT := Inv(()->OctahedronT.Create(x, y, z, R*Sqrt(2), m));
+function Icosahedron(p: Point3D; r: real; m: Material := DefaultMaterial): IcosahedronT := Icosahedron(p.X,p.Y,p.Z,R,m);
+function Dodecahedron(p: Point3D; r: real; m: Material := DefaultMaterial): DodecahedronT := Dodecahedron(p.X,p.Y,p.Z,R,m);
+function Tetrahedron(p: Point3D; r: real; m: Material := DefaultMaterial): TetrahedronT := Tetrahedron(p.X,p.Y,p.Z,R,m);
+function Octahedron(p: Point3D; r: real; m: Material := DefaultMaterial): OctahedronT := Octahedron(p.X,p.Y,p.Z,R,m);
 
-function Segments3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Invoke&<SegmentsT>(()->SegmentsT.Create(points, thickness, c));
-function Polyline3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Invoke&<SegmentsT>(()->SegmentsT.Create(points.Pairwise.SelectMany(x->Seq(x[0],x[1])), thickness, c));
-function Polygon3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Invoke&<SegmentsT>(()->SegmentsT.Create((points+points.First).Pairwise.SelectMany(x->Seq(x[0],x[1])), thickness, c));
-function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Invoke&<SegmentsT>(()->SegmentsT.Create(Seq(p1,p2), thickness, c));
+function Segments3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points, thickness, c));
+function Polyline3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(points.Pairwise.SelectMany(x->Seq(x[0],x[1])), thickness, c));
+function Polygon3D(points: sequence of Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create((points+points.First).Pairwise.SelectMany(x->Seq(x[0],x[1])), thickness, c));
+function Segment3D(p1, p2: Point3D; thickness: real := 1.2; c: Color := GrayColor(64)): SegmentsT := Inv(()->SegmentsT.Create(Seq(p1,p2), thickness, c));
 
-function Torus(x, y, z, Diameter, TubeDianeter: real; c: Material := DefaultMaterial): TorusT := Invoke&<TorusT>(()->TorusT.Create(x,y,z,Diameter, TubeDianeter, c));
-function Torus(p: Point3D; Diameter, TubeDianeter: real; c: Material := DefaultMaterial): TorusT := Torus(p.x,p.y,p.z,Diameter,TubeDianeter,c);
+function Torus(x, y, z, Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Inv(()->TorusT.Create(x,y,z,Diameter, TubeDiameter, m));
+function Torus(p: Point3D; Diameter, TubeDiameter: real; m: Material := DefaultMaterial): TorusT := Torus(p.x,p.y,p.z,Diameter,TubeDiameter,m);
 
-function MyH(x, y, z, Length: real; c: Color): MyAnyT := Invoke&<MyAnyT>(()->MyAnyT.Create(x, y, z, Length, c));
-function MyH(x, y, z, Length: real; c: Material): MyAnyT := Invoke&<MyAnyT>(()->MyAnyT.Create(x, y, z, Length, c));
+function MyH(x, y, z, Length: real; c: Color): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
+function MyH(x, y, z, Length: real; c: Material): MyAnyT := Inv(()->MyAnyT.Create(x, y, z, Length, c));
 
-function Any(x, y, z: real; c: Color): AnyT := Invoke&<AnyT>(()->AnyT.Create(x, y, z, c));
+function Any(x, y, z: real; c: Color): AnyT := Inv(()->AnyT.Create(x, y, z, c));
 
 procedure ProbaP;
 begin
