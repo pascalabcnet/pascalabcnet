@@ -125,6 +125,8 @@ namespace VisualPascalABC
             ccp = new CodeCompletionProvider();
             string full_expr;
             string expressionResult = FindFullExpression(textContent, textArea, out ccp.keyword, out full_expr);
+            if (ccp.keyword == KeywordKind.CommonKeyword)
+                return new List<Position>();
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
             if (poses == null)
                 poses = ccp.GetDefinition(expressionResult, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
