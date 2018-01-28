@@ -53,34 +53,76 @@ begin
   Result := CreateFile&<real>(fname);
 end;
 
-/// Возвращает последовательность элементов открытого типизированного файла
-function Elements<T>(Self: file of T): sequence of T; extensionmethod;
+/// Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n
+function Seek<T>(Self: file of T; n: int64): file of T; extensionmethod;
+begin
+  PABCSystem.Seek(Self, n);
+  Result := Self;
+end;
+
+/// Считывает и возвращает следующий элемент типизированного файла
+function Read<T>(Self: file of T): T; extensionmethod;
+begin
+  PABCSystem.Read(Self, Result);
+end;
+
+/// Считывает и возвращает два следующих элемента типизированного файла в виде кортежа
+function Read2<T>(Self: file of T): (T,T); extensionmethod;
+begin
+  var a,b: T;
+  PABCSystem.Read(Self, a);
+  PABCSystem.Read(Self, b);
+  Result := (a,b);
+end;
+
+/// Считывает и возвращает три следующих элемента типизированного файла в виде кортежа
+function Read3<T>(Self: file of T): (T,T,T); extensionmethod;
+begin
+  var a,b,c: T;
+  PABCSystem.Read(Self, a);
+  PABCSystem.Read(Self, b);
+  PABCSystem.Read(Self, c);
+  Result := (a,b,c);
+end;
+
+/// Возвращает последовательность элементов открытого типизированного файла от текущего элемента до конечного
+function ReadElements<T>(Self: file of T): sequence of T; extensionmethod;
 begin
   while not Self.Eof do
   begin
-    var x: T;
-    read(Self,x);
+    var x := Self.Read;
     yield x;
   end;
 end;
 
-/// Считывает и возвращает следующий элемент типизированного файла
-function ReadElement<T>(Self: file of T): T; extensionmethod;
-begin
-  Read(Self, Result);
-end;
-
-/// Открывает типизированный файл, возвращает последовательность элементов и закрывает его
+/// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
 function ReadElements<T>(fname: string): sequence of T;
 begin
   var f := OpenBinary&<T>(fname);
   while not f.Eof do
   begin
-    var x := f.ReadElement;
+    var x := f.Read;
     yield x;
   end;
   f.Close
 end;
+
+/// Открывает типизированный файл, возвращает последовательность его элементов и закрывает его
+procedure WriteElements<T>(fname: string; ss: sequence of T);
+begin
+  var f := CreateBinary&<T>(fname);
+  foreach var x in ss do
+    f.Write(x);
+  f.Close
+end;
+
+/// Записывает данные в типизированный файл
+procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
+begin
+  foreach var x in vals do
+    PABCSystem.Write(Self, x);
+end;
+
 
 //------------------------------------------------------------------------------
 //          Операции для procedure
@@ -95,12 +137,6 @@ end;
 function operator*(n: integer; p: procedure): procedure; extensionmethod;
 begin
   Result := () -> for var i:=1 to n do p
-end;
-
-procedure Write<T>(Self: file of T; params vals: array of T); extensionmethod;
-begin
-  foreach var x in vals do
-    PABCSystem.Write(Self, x);
 end;
 
 var __initialized: boolean;

@@ -1704,7 +1704,22 @@ namespace PascalABCCompiler.TreeConverter
 			SystemLibrary.SystemLibrary.init_reference_type(ctn);
 		}
 
-		//Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
+        /// <summary>
+        ///  Получение compiled_type_node из либо compiled_type_node либо compiled_generic_instance_type_node. Используется ниже локально
+        /// </summary>
+        private compiled_type_node get_compiled_type_node(type_node t)
+        {
+            var ctn = t as compiled_type_node;
+            if (ctn == null)
+            {
+                var cgn = t as compiled_generic_instance_type_node;
+                if (cgn != null)
+                    ctn = cgn.original_generic as compiled_type_node;
+            }
+            return ctn;
+        }
+
+        //Первый параметр - выходной. Он содержит выражения с необходимыми преобразованиями типов.
         public function_node select_function(expressions_list parameters, SymbolInfoList functions, location loc, List<SyntaxTree.expression> syntax_nodes_parameters = null)
         {
             if (functions == null)
@@ -2105,6 +2120,119 @@ namespace PascalABCCompiler.TreeConverter
                     convert_function_call_expressions(funcs[0], parameters, tcl);
                     return funcs[0];
                 }
+
+                Func<Type, bool> IsFunc = t => t.IsGenericType && t.FullName.StartsWith("System.Func");
+                Func<type_node, Type> get_type = tt =>
+                {
+                    var ct = get_compiled_type_node(tt);
+                    return ct?.compiled_type;
+                };
+                Func<type_node, bool> IsFuncT = tt =>
+                {
+                    var ct = get_compiled_type_node(tt);
+                    if (ct == null)
+                        return false;
+                    Type t = ct.compiled_type;
+                    return IsFunc(t);
+                };
+                  
+
+                var ParamsCount = funcs[0].parameters.Count;
+                var b = funcs.All(f => f.parameters.Count == ParamsCount);
+                if (!b) break;
+
+                var bools = Enumerable.Range(1, funcs.Count()).Select(x => true).ToList();
+
+                var AllOK = true;
+                for (var i=0; i < ParamsCount; i++)
+                {
+                    // Хочу взять проекцию всех функций на i-тый параметр
+                    var parsi = funcs.Select(f => f.parameters[i].type);
+                    if (parsi.Any(p => !IsFuncT(p))) // Если какой-то параметр не функция, то пробросим его
+                        continue;
+
+                    var argss = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()).ToArray(); // последовательность массивов параметров Func
+                    var cnts = argss.Select(a => a.Count());
+
+                    var fpi = funcs[0].parameters[i];
+                    var cnt = get_type(fpi.type).GetGenericArguments().Count();
+                    // Проверю, что у остальных функций столько же параметров
+                    if (cnts.Any(c => c != cnts.First())) // если нет, то - всё - это ошибка - многозначность. Хотя тут уже не должно быть
+                    {
+                        AllOK = false;
+                        break;
+                    }
+
+                    // Цикл по параметрам Func кроме последнего
+                    for (var k = 0; k < cnt - 1; k++)
+                    {
+                        var kpars = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()[k]);
+                        Type p0 = kpars.First();
+                        bool bb = kpars.All(p => p.Equals(p0));
+                        if (!bb)
+                        {
+                            AllOK = false;
+                            break;
+                        }
+                    }
+                    if (!AllOK)
+                        break;
+
+                    var kres = funcs.Select(f => get_type(f.parameters[i].type).GetGenericArguments()[cnt - 1]).ToArray();
+
+                    //if (funcs[0].is_extension_method)
+                    var fldiResType = funcs[0].is_extension_method ? // странно, но всегда кво параметров в syntax_nodes_parameters на 1 меньше. Иначе падает
+                        ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition).RealSemTypeOfResult as compiled_type_node).compiled_type :
+                        ((syntax_nodes_parameters[i - 1] as SyntaxTree.function_lambda_definition).RealSemTypeOfResult as compiled_type_node).compiled_type;
+
+                    for (int n = 0; n < bools.Count; n++)
+                    {
+                        if (!fldiResType.Equals(kres[n]))
+                            bools[n] = false;
+                    }
+                //var rettype_i = 
+                }
+                if (AllOK)
+                    if (bools.Count(x=>x==true) == 1) // урра! нашлась ровно одна функция! мы победили!
+                    {
+                        var ind = bools.IndexOf(true);
+                        return funcs[ind];
+                    }
+
+                /// Проба 15.01.18 - потом удалить
+                /*{
+                    var f1 = funcs[0];
+                    var f2 = funcs[1];
+                    for (int i = 0; i < parameters.Count; i++)
+                    {
+                        type_node f1i = f1.parameters[i].type;
+                        type_node f2i = f2.parameters[i].type;
+                        var f1ic = get_compiled_type_node(f1i);
+                        var f2ic = get_compiled_type_node(f2i);
+                        if (f1ic == null || f2ic == null)
+                            break;
+                        Type ct1 = f1ic.compiled_type;
+                        Type ct2 = f2ic.compiled_type;
+                        if (IsFunc(ct1) && IsFunc(ct2))
+                        {
+                            var l1 = ct1.GetGenericArguments()[0];
+                            var l2 = ct2.GetGenericArguments()[0];
+                            var b = l1.Equals(l2);
+                            var b1 = l1 == l2;
+                        }
+                        //var p = syntax_nodes_parameters[i];
+                    }
+
+                }*/
+
+                // Вот здесь нужен анализ всех оставшихся функций. 
+                // Если они отличаются только функциональными параметрами и у этих параметров
+                // одинаковый тип параметров (они уже инстанцированы!), то надо еще раз 
+                // вызвать то, что вызывается в DeduceFunction чтобы установить, каков тип возвращаемого значения лямбды, после чего
+                // выбрать либо функцию из оставшихся с ровно совпадающим типом лямбды либо с ближайшим 
+                // (остались только те, к которым можно преобразовать)
+                // Некоторая проблема будет если лямбд останется несколько и расстояния до результата будут разными и ненулевыми везде
+
                 if (funcs.Count == 2) // SSM - это ужасный способ устранения бага #236 Range(1,10).Sum(e -> e); Для хорошего способа весь код выбора версий функций для делегатов надо переписывать
                 {
                     var f1 = funcs[0];
@@ -2156,6 +2284,7 @@ namespace PascalABCCompiler.TreeConverter
                                     return f1;
                             }
                         }
+
                         /*if (f1.return_value_type != null && f2.return_value_type != null)
                         {
                             var p1 = f1.return_value_type;

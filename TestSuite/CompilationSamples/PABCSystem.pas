@@ -481,6 +481,10 @@ type
     procedure Write(params vals: array of object);
     /// Устанавливает файловый указатель на начало файла
     procedure Reset;
+    /// Возвращает имя файла
+    function Name: string;
+    /// Возвращает полное имя файла
+    function FullName: string;
   end;
 
   // Class for typed files
@@ -499,8 +503,6 @@ type
     function FilePos: int64;
     /// Возвращает количество элементов в типизированном файле
     function FileSize: int64;
-    /// Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n  
-    procedure Seek(n: int64);
   end;
   
   // Class for binary files
@@ -3351,10 +3353,7 @@ function string.operator in(substr: string; str: string) := str.Contains(substr)
 
 procedure operator+=(var left: StringBuilder; right: string); extensionmethod := left.Append(right);
 
-function operator implicit(s: string): StringBuilder; extensionmethod;
-begin
-  Result := new StringBuilder(s);
-end;
+function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -5356,6 +5355,18 @@ begin
   PABCSystem.Reset(Self);
 end;
 
+function AbstractBinaryFile.Name: string;
+begin
+  Result := fi.Name  
+end;
+
+function AbstractBinaryFile.FullName: string;
+begin
+  Result := fi.FullName  
+end;
+
+
+
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods
 // -----------------------------------------------------
@@ -5367,11 +5378,6 @@ end;
 function TypedFile.FileSize: int64;
 begin
   Result := PABCSystem.FileSize(Self);
-end;
-
-procedure TypedFile.Seek(n: int64);
-begin
-  PABCSystem.Seek(Self, n);
 end;
 
 function BinaryFile.FilePos: int64;
@@ -8155,6 +8161,71 @@ type
       end;  
     end;
   end;
+
+//------------------------------------------------------------------------------
+//>>     Метод расширения Print для элементарных типов
+//------------------------------------------------------------------------------
+function Print(Self: integer): integer; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: real): real; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: char): char; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: boolean): boolean; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: BigInteger): BigInteger; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Println(Self: integer): integer; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: real): real; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: char): char; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: boolean): boolean; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: BigInteger): BigInteger; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+
 
 //------------------------------------------------------------------------------
 //>>     Методы расширения для sequence of T # Extension methods for sequence of T
