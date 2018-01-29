@@ -1088,6 +1088,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            if (name == "+" && right_type == SystemLibrary.SystemLibrary.char_type && left_type != SystemLibrary.SystemLibrary.string_type)
+                no_search_in_extension_methods = false;
             SymbolInfoList sil = left_type.find_in_type(name, left_type.Scope, no_search_in_extension_methods);
             int added_symbols = -1;
             SymbolInfoList sil2 = null;
@@ -1096,6 +1098,8 @@ namespace PascalABCCompiler.TreeConverter
                 //SymbolInfo si2 = right_type.find(name, context.CurrentScope);
                 if (sil != null)
                     sil = sil.copy();
+                if (name == "+" && right_type != SystemLibrary.SystemLibrary.string_type && left_type == SystemLibrary.SystemLibrary.char_type)
+                    no_search_in_extension_methods = false;
                 sil2 = right_type.find_in_type(name, right_type.Scope, no_search_in_extension_methods);
                 if ((sil != null) && (sil2 != null))
                 {
