@@ -10032,7 +10032,7 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                             basic_function_call eq_call = new basic_function_call(int64_eq_meth, cn.location);
                             eq_call.parameters.AddElement(en);
-                            eq_call.parameters.AddElement(cn);
+                            eq_call.parameters.AddElement(scn);
                             eq_calls.Add(eq_call);
                         }
                         else
@@ -10049,10 +10049,10 @@ namespace PascalABCCompiler.TreeConverter
                             basic_function_node int64_leq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
                             basic_function_call greq_call = new basic_function_call(int64_greq_meth, left_cn.location);
                             greq_call.parameters.AddElement(en);
-                            greq_call.parameters.AddElement(left_cn);
+                            greq_call.parameters.AddElement(left_scn);
                             basic_function_call leq_call = new basic_function_call(int64_leq_meth, right_cn.location);
                             leq_call.parameters.AddElement(en);
-                            leq_call.parameters.AddElement(right_cn);
+                            leq_call.parameters.AddElement(right_scn);
                             basic_function_node in_diap_meth = SystemLibrary.SystemLibrary.bool_type.find_first_in_type("and", true).sym_info as basic_function_node;
                             basic_function_call in_diap_call = new basic_function_call(in_diap_meth, left_cn.location);
                             in_diap_call.parameters.AddElement(greq_call);
@@ -10118,7 +10118,7 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                             basic_function_call eq_call = new basic_function_call(uint64_eq_meth, cn.location);
                             eq_call.parameters.AddElement(en);
-                            eq_call.parameters.AddElement(cn);
+                            eq_call.parameters.AddElement(scn);
                             eq_calls.Add(eq_call);
                         }
                         else
@@ -10135,10 +10135,10 @@ namespace PascalABCCompiler.TreeConverter
                             basic_function_node uint64_leq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
                             basic_function_call greq_call = new basic_function_call(uint64_greq_meth, left_cn.location);
                             greq_call.parameters.AddElement(en);
-                            greq_call.parameters.AddElement(left_cn);
+                            greq_call.parameters.AddElement(left_scn);
                             basic_function_call leq_call = new basic_function_call(uint64_leq_meth, right_cn.location);
                             leq_call.parameters.AddElement(en);
-                            leq_call.parameters.AddElement(right_cn);
+                            leq_call.parameters.AddElement(right_scn);
                             basic_function_node in_diap_meth = SystemLibrary.SystemLibrary.bool_type.find_first_in_type("and", true).sym_info as basic_function_node;
                             basic_function_call in_diap_call = new basic_function_call(in_diap_meth, left_cn.location);
                             in_diap_call.parameters.AddElement(greq_call);
