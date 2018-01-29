@@ -3575,6 +3575,22 @@ namespace PascalABCCompiler.TreeConverter
                                 if (tn.IsPointer)
                                     AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_POINTERS");
                             }
+                            if (_class_definition.body != null)
+                            foreach (class_members cl_mem in _class_definition.body.class_def_blocks)
+                            {
+                                foreach (declaration decl in cl_mem.members)
+                                {
+                                    if (decl is var_def_statement)
+                                    {
+                                        type_definition type = (decl as var_def_statement).vars_type;
+                                        SyntaxTree.array_type arr = type as SyntaxTree.array_type;
+                                        if (type is SyntaxTree.class_definition || (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
+                                        {
+                                            AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS");
+                                        }
+                                    }
+                                }
+                            }
                         }
                         //if (!SemanticRules.OrderIndependedNames)
 
