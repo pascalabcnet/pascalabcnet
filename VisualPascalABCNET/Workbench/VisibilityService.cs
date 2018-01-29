@@ -148,7 +148,10 @@ namespace VisualPascalABC
                     if (VisibleBottomContent.Count > 0)
                     {
                         foreach (DockContent dc in VisibleBottomContent)
+                        {
                             dc.Show();
+                        }
+                            
                         VisibleBottomContent.Clear();
                     }
                     else
@@ -160,7 +163,7 @@ namespace VisualPascalABC
                     VisibleBottomContent.Clear();
                     DockContent dca = BottomDockContent[0].Pane.ActiveContent as DockContent;
                     foreach (DockContent dc in BottomDockContent)
-                        if (!dc.IsHidden)
+                        if (!dc.IsHidden && !BottomPane.IsAutoHide)
                         {
                             if (dc != dca)
                                 VisibleBottomContent.Add(dc);

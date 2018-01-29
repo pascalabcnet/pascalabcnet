@@ -1,6 +1,6 @@
 uses 
    PABCSystem, PABCExtensions, __RedirectIOMode, __RunMode, ABCButtons, ABCHouse, ABCObjects,
-   ABCSprites, Colors, CRT, DMCollect, DMTaskMaker, DMZadan, Drawman, 
+   ABCSprites, CRT, DMCollect, DMTaskMaker, DMZadan, Drawman, 
    DrawManField, Events, FilesOperations, GraphABC, 
    GraphABCHelper, 
    Graph3D,

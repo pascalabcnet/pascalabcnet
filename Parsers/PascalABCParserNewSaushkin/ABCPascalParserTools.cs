@@ -95,6 +95,7 @@ namespace PascalABCSavParser
             tokenNum["tkArrow"]="'->'";
             tokenNum["tkAddressOf"]="'@'";
             tokenNum["tkDeref"]="'^'";
+            tokenNum["tkStarStar"]="'**'";
         }
 
         public PT()

@@ -123,14 +123,19 @@ namespace VisualPascalABC
                     string[] delimer = new string[1];
                     delimer[0] = Environment.NewLine;
                     string[] StackItemsData = StackTraceData.Split(delimer, StringSplitOptions.RemoveEmptyEntries);
-                    foreach (string StackItemData in StackItemsData)
+
+                    try
                     {
-                        StackTraceItem StackTraceItem = new StackTraceItem();
+                        foreach (string StackItemData in StackItemsData)
+                    {
+                            StackTraceItem StackTraceItem = new StackTraceItem();
                         string str = StackItemData.TrimStart(' ');
                         int beg = str.IndexOf(' ');
                         int end = str.IndexOf(") ");
                         if (end == -1)
                             end = str.IndexOf(")");
+                        if (end == -1)
+                            end = str.Length-1;
                         StackTraceItem.FunctionName = str.Substring(beg + 1, end - beg);
                         if (end + 1 < str.Length)
                         {
@@ -156,6 +161,15 @@ namespace VisualPascalABC
                         }
                         StackTrace.Add(StackTraceItem);
                     }
+                    }
+                    catch (Exception e)
+                    {
+                        StackTraceItem StackTraceItem = new StackTraceItem();
+                        StackTraceItem.FunctionName = "Исключение при формировании стека исключений. Проверьте код RunManager.cs";
+                        StackTrace.Add(StackTraceItem);
+                        //e = e;
+                    }
+
                     RunnerManagerUnhanledRuntimeException(id, ExceptionType, ExceptionMessage, StackTraceData, StackTrace);
                     waitSpecialMessageText = "";
                     return true;
@@ -282,8 +296,11 @@ namespace VisualPascalABC
                     EventedStreamReaderList.Add(PRunner.process.StandardError, ErrorStreamId + fileName, InputEncoding);
                 }
             }
-            catch(Exception)
+            catch(Exception e)
             {
+#if DEBUG
+                File.AppendAllText("logRun.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                 RemoveFromTables(fileName);
                 throw;
             }

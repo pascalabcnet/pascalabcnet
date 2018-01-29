@@ -1,7 +1,7 @@
-uses GraphWPF;
+ï»¿uses GraphWPF;
 
 begin
-  Window.Title := 'Ðèñîâàíèå ìûøüþ';
+  Window.Title := 'Ð Ð¸ÑÐ¾Ð²Ð°Ð½Ð¸Ðµ Ð¼Ñ‹ÑˆÑŒÑŽ';
   Pen.Color := Colors.Blue;
   Pen.Width := 3;
   OnMouseDown := (x,y,mb) -> MoveTo(x,y);

@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Отражение шарика. Вещественное направление движения';
+  Window.Title := 'РћС‚СЂР°Р¶РµРЅРёРµ С€Р°СЂРёРєР°. Р’РµС‰РµСЃС‚РІРµРЅРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ РґРІРёР¶РµРЅРёСЏ';
   Brush.Color := Colors.Beige;
   var x := 400.0;
   var y := 300.0;
@@ -20,6 +20,6 @@ begin
       dy := -dy;
     Circle(x,y,20);
     if Milliseconds>2000 then
-      Window.Title := 'Секунды: ' + (Milliseconds div 100)/10;
+      Window.Title := 'РЎРµРєСѓРЅРґС‹: ' + (Milliseconds div 100)/10;
   end;
 end.

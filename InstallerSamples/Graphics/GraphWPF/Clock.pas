@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Цифровые часы';
+  Window.Title := 'Р¦РёС„СЂРѕРІС‹Рµ С‡Р°СЃС‹';
   Font.Size := 180;
   while True do
   begin

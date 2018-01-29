@@ -1,7 +1,7 @@
-uses GraphWPF;
+ï»¿uses GraphWPF;
 
 begin
-  Window.Title := 'Ãðàôèêè ôóíêöèé';
+  Window.Title := 'Ð“Ñ€Ð°Ñ„Ð¸ÐºÐ¸ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¹';
   var ww := Window.Width / 2;
   var hh := Window.Height / 2;
   DrawGraph(x -> sin(4 * x) + cos(3 * x), -5, 5, 0, 0, ww, hh);

@@ -2333,6 +2333,11 @@ namespace PascalABCCompiler.PCU
                 }
                 return rez;
             }
+            internal_interface ii = tn.get_internal_interface(internal_interface_kind.unsized_array_interface);
+            if (ii != null)
+            {
+                return sizeof(byte) + 4 * 4 + GetSizeOfReference(tn.element_type) + 4;
+            }
             return sizeof(byte) + sizeof(int);
         }
 
@@ -3098,7 +3103,10 @@ namespace PascalABCCompiler.PCU
 		{
 			SavePosition(p);
 			bw.Write((byte)p.semantic_node_type);
-			bw.Write(p.name);
+            if (p.name == null)
+                bw.Write("");
+            else
+			    bw.Write(p.name);
 			WriteTypeReference(p.type);
 			bw.Write((byte)p.concrete_parameter_type);
 			bw.Write(p.is_used_as_unlocal);

@@ -79,7 +79,7 @@ namespace VisualPascalABC
     	{
     		if (!dict.ContainsKey(si))
     		    dict[si] = data;
-            if (!dict2.ContainsKey(si.description))
+            if (!string.IsNullOrEmpty(si.description) && !dict2.ContainsKey(si.description))
                 dict2[si.description] = data;
     	}
 

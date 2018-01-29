@@ -1,4 +1,4 @@
-Uses System,System.Net,System.Threading.Tasks;
+﻿Uses System,System.Net,System.Threading.Tasks;
 
 begin
   Parallel.Invoke (

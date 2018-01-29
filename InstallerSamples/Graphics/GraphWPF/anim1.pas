@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Простая анимация';
+  Window.Title := 'РџСЂРѕСЃС‚Р°СЏ Р°РЅРёРјР°С†РёСЏ';
   var x := 30;
   Brush.Color := Colors.Beige;
   Circle(x,50,20);

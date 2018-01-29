@@ -539,7 +539,7 @@ namespace PascalABCCompiler.NETGenerator
                     }
                     else
                         doc = first_doc;
-                    if (!sym_docs.ContainsKey(cnns_document_file_name))
+                    if (cnns_document_file_name != null && !sym_docs.ContainsKey(cnns_document_file_name))
                         sym_docs.Add(cnns_document_file_name, doc);//сохраняем его в таблице документов
                 }
                 first_doc = sym_docs[cnns[0].Location == null ? SourceFileName : cnns[0].Location.document.file_name];
@@ -1338,7 +1338,7 @@ namespace PascalABCCompiler.NETGenerator
             {
                 ITypeNode ctn = fld.type;
                 TypeInfo ti = helper.GetTypeReference(ctn);
-                if (ctn is ICommonTypeNode && ti.tp.IsValueType && ti.tp is TypeBuilder)
+                if (ctn is ICommonTypeNode && ti.tp.IsValueType && ti.tp is TypeBuilder && tb != ti.tp)
                 {
                     BuildCloseTypeOrder((ICommonTypeNode)ctn, (TypeBuilder)ti.tp);
                 }
@@ -1724,7 +1724,7 @@ namespace PascalABCCompiler.NETGenerator
                     cfn.type.type_special_kind == type_special_kind.binary_file ||
                     cfn.type.type_special_kind == type_special_kind.set_type))
                     return true;
-                if (cfn.type.type_special_kind == type_special_kind.record && cfn.type is ICommonTypeNode)
+                if (cfn.polymorphic_state != polymorphic_state.ps_static && cfn.type.type_special_kind == type_special_kind.record && cfn.type is ICommonTypeNode)
                     if (NeedAddCloneMethods(cfn.type as ICommonTypeNode))
                         return true;
             }
@@ -4620,16 +4620,6 @@ namespace PascalABCCompiler.NETGenerator
                 FieldBuilder fb = cur_type.DefineField(value.name, type, fattr);
                 helper.AddField(value, fb);
                 MakeAttribute(value);
-                //временно для поддержки событий
-                //cur_ti.fields[fb.Name] = fb;
-                //для массива выделяем память
-                /*if (ti.is_arr == true)
-                    CreateArray(cur_ti.init_meth.GetILGenerator(), fb, ti, value.inital_value as IArrayConstantNode);
-                else
-                    if (value.type.is_value_type || value.inital_value is IConstantNode)
-                        AddInitCall(fb, cur_ti.init_meth, ti.init_meth, ti.def_cnstr, value.inital_value as IConstantNode);
-                GenerateInitCode(value.inital_value,cur_ti.init_meth.GetILGenerator());
-                 */
                 if (cur_type.IsValueType && cur_ti.clone_meth != null)
                 {
                     NETGeneratorTools.CloneField(cur_ti.clone_meth as MethodBuilder, fb, ti);
@@ -7550,11 +7540,11 @@ namespace PascalABCCompiler.NETGenerator
         private void BoxAssignToParameter(IExpressionNode to, IExpressionNode from)
         {
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
-            else if (from.conversion_type != null && (from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            else if (from.conversion_type != null && (from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
             	il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
@@ -7940,11 +7930,15 @@ namespace PascalABCCompiler.NETGenerator
                 return;
             }
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
-            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            else if ((from.type.is_value_type || from.type.is_generic_parameter) && to.type.IsInterface)
+            {
+                il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
+            }
+            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
@@ -7977,11 +7971,11 @@ namespace PascalABCCompiler.NETGenerator
             }
             //ICompiledTypeNode ctn = from.type as ICompiledTypeNode;
             ICompiledTypeNode ctn2 = to.type as ICompiledTypeNode;
-            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            if ((from.type.is_value_type || from.type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface)))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.type).tp);
             }
-            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType)
+            else if (from.conversion_type != null && (from.conversion_type.is_value_type || from.conversion_type.is_generic_parameter) && ctn2 != null && (ctn2.compiled_type == TypeFactory.ObjectType || ctn2.compiled_type.IsInterface))
             {
                 il.Emit(OpCodes.Box, helper.GetTypeReference(from.conversion_type).tp);
             }
@@ -9843,14 +9837,20 @@ namespace PascalABCCompiler.NETGenerator
         {
             Label EndLabel = il.DefineLabel();
             Label FalseLabel = il.DefineLabel();
-
+            bool tmp_is_dot_expr = is_dot_expr;
+            bool tmp_is_addr = is_addr;
+            is_dot_expr = false;//don't box the condition expression
+            is_addr = false;
             value.condition.visit(this);
+            is_dot_expr = tmp_is_dot_expr;
+            is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
             value.ret_if_true.visit(this);
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(FalseLabel);
             value.ret_if_false.visit(this);
             il.MarkLabel(EndLabel);
+            
         }
 
         private Hashtable range_stmts_labels = new Hashtable();
@@ -10188,12 +10188,14 @@ namespace PascalABCCompiler.NETGenerator
             FieldBuilder fb = null;
             if (value.type is ICompiledTypeNode && (value.type as ICompiledTypeNode).compiled_type.IsEnum)
                 fb = cur_type.DefineField(value.name, TypeFactory.Int32Type, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
-            else
+            else if (value.constant_value.value != null)
                 fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Literal | ConvertFALToFieldAttributes(value.field_access_level));
+            else
+                fb = cur_type.DefineField(value.name, helper.GetTypeReference(value.type).tp, FieldAttributes.Static | ConvertFALToFieldAttributes(value.field_access_level));
             if (value.constant_value.value != null)
                 fb.SetConstant(value.constant_value.value);
-            else
-                throw new Errors.CompilerInternalError("NetGenerator", new Exception("Invalid constant value in IClassConstantDefinitionNode"));
+            //else
+            //    throw new Errors.CompilerInternalError("NetGenerator", new Exception("Invalid constant value in IClassConstantDefinitionNode"));
         }
 
         public override void visit(ICompiledStaticMethodCallNodeAsConstant value)

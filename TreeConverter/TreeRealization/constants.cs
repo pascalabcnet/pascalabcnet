@@ -48,7 +48,7 @@ namespace PascalABCCompiler.TreeRealization
 		
         public virtual constant_node get_constant_copy(location loc)
         {
-        	return null;
+        	return this;
         }
         
         public override type_node type

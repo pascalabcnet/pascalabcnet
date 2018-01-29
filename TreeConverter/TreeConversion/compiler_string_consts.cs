@@ -128,7 +128,7 @@ namespace PascalABCCompiler.TreeConverter
         public static readonly string minusassign_name = "-=";
         public static readonly string multassign_name = "*=";
         public static readonly string divassign_name = "/=";
-
+        public static readonly string power_name = "**";
         public static readonly string gr_name = ">";
         public static readonly string sm_name = "<";
         public static readonly string greq_name = ">=";

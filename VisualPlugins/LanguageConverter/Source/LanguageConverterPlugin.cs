@@ -33,7 +33,7 @@ namespace VisualPascalABCPlugins
         {
             get
             {
-                return "Copyright © 2005-2017 by Ivan Bondarev, Stanislav Mihalkovich";
+                return "Copyright © 2005-2018 by Ivan Bondarev, Stanislav Mihalkovich";
             }
         }
 
@@ -62,7 +62,8 @@ namespace VisualPascalABCPlugins
         public LanguageConverter_VisualPascalABCPlugin(IWorkbench Workbench)
         {
             Languages = LoadLanguages();
-            currentLanguage = Languages[0];
+            if (Languages.Count>0)
+                currentLanguage = Languages[0];
             this.VisualEnvironmentCompiler = Workbench.VisualEnvironmentCompiler;
             //TextFormatter = new TextFormatter();
             TextFormatterForm = new TextFormatterForm();

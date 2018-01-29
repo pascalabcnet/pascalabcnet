@@ -69,7 +69,7 @@
     File ..\bin\Lib\ABCObjects.pcu
     File ..\bin\Lib\ABCSprites.pcu
     File ..\bin\Lib\Arrays.pcu
-    File ..\bin\Lib\Colors.pcu
+    ;File ..\bin\Lib\Colors.pcu
     File ..\bin\Lib\CRT.pcu
     File ..\bin\Lib\DMCollect.pcu
     File ..\bin\Lib\DMTaskMaker.pcu
@@ -81,7 +81,6 @@
     File ..\bin\Lib\FormsABC.pcu
     File ..\bin\Lib\GraphABC.pcu
     File ..\bin\Lib\NumLibABC.pcu
-    File ..\bin\Lib\NumLibABC.pdf
     File ..\bin\Lib\GraphWPF.pcu
     File ..\bin\Lib\Graph3D.pcu
     File ..\bin\Lib\GraphABCHelper.pcu
@@ -112,6 +111,7 @@
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\PABCRtl32.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
+    File ..\bin\Lib\HelixToolkit.dll
 	
     ${AddFile} "__RedirectIOMode.pcu"
     ${AddFile} "__RunMode.pcu"
@@ -121,7 +121,7 @@
     ${AddFile} "ABCSprites.pcu"
     ${AddFile} "Arrays.pcu"
     ${AddFile} "BFSystem.pcu"
-    ${AddFile} "Colors.pcu"
+    ;${AddFile} "Colors.pcu"
     ${AddFile} "CRT.pcu"
     ${AddFile} "DMCollect.pcu"
     ${AddFile} "DMTaskMaker.pcu"
@@ -134,7 +134,6 @@
     ${AddFile} "GOLDParserEngine.pcu"
     ${AddFile} "GraphABC.pcu"
     ${AddFile} "NumLibABC.pcu"
-    ${AddFile} "NumLibABC.pdf"
     ${AddFile} "GraphWPF.pcu"
     ${AddFile} "Graph3D.pcu"
     ${AddFile} "GraphABCHelper.pcu"
@@ -164,10 +163,19 @@
     ${AddFile} "Speech.pcu"
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
+    ${AddFile} "HelixToolkit.dll"
     ${AddFile} "PABCRtl.pdb"
+
+    SetOutPath "$INSTDIR\Doc"
+    File ..\doc\NumLibABC.pdf
+    ${AddFile} "NumLibABC.pdf"
+
+
     Push "Lib\PABCRtl.dll"
     Call NGEN
     Push "Lib\HelixToolkit.Wpf.dll"
+    Call NGEN
+    Push "Lib\HelixToolkit.dll"
     Call NGEN
 	
     SetOutPath "$INSTDIR\LibSource"
@@ -178,7 +186,7 @@
     File ..\bin\Lib\ABCObjects.pas
     File ..\bin\Lib\ABCSprites.pas
     File ..\bin\Lib\Arrays.pas
-    File ..\bin\Lib\Colors.pas
+    ;File ..\bin\Lib\Colors.pas
     File ..\bin\Lib\CRT.pas
     File ..\bin\Lib\DMCollect.pas
     File ..\bin\Lib\DMTaskMaker.pas
@@ -228,7 +236,7 @@
     ${AddFile} "ABCObjects.pas"
     ${AddFile} "ABCSprites.pas"
     ${AddFile} "Arrays.pas"
-    ${AddFile} "Colors.pas"
+    ;${AddFile} "Colors.pas"
     ${AddFile} "CRT.pas"
     ${AddFile} "DMCollect.pas"
     ${AddFile} "DMTaskMaker.pas"

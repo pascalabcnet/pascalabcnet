@@ -228,9 +228,9 @@ namespace VisualPascalABC
             this.panel3.ResumeLayout(false);
             this.panel3.PerformLayout();
             this.ResumeLayout(false);
-
+            this.outputTextBox.KeyUp += OutputTextBox_KeyUp;
+            this.InputTextBox.KeyUp += InputTextBox_KeyUp;
         }
-
         #endregion
 
         private System.Windows.Forms.Panel panel2;

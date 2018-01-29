@@ -1,15 +1,15 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Система координат';
+  Window.Title := 'РЎРёСЃС‚РµРјР° РєРѕРѕСЂРґРёРЅР°С‚';
   Font.Size := 20;
 
-  // SetMathematicCoords; // так тоже можно
-  // SetMathematicCoords(-10,10); // так тоже можно
+  // SetMathematicCoords; // С‚Р°Рє С‚РѕР¶Рµ РјРѕР¶РЅРѕ
+  // SetMathematicCoords(-10,10); // С‚Р°Рє С‚РѕР¶Рµ РјРѕР¶РЅРѕ
   SetMathematicCoords(-10,10,-9.2);
   DrawGrid;
  
-  Print('Видимые координаты:',XMin,XMax,YMin,YMax);
+  Print('Р’РёРґРёРјС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹:',XMin,XMax,YMin,YMax);
   
   Polygon(Arr((-3,2),(2,1),(-2,-4)),ARGB(100,255,228,196));
   TextOut(-3,2,'A(-3,2)',Alignment.RightBottom);

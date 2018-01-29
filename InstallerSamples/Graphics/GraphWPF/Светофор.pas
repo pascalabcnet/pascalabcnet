@@ -1,6 +1,6 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
-procedure Светофор(x,y,r: real);
+procedure РЎРІРµС‚РѕС„РѕСЂ(x,y,r: real);
 begin
   Rectangle(x,y,4*r,10*r,Colors.LightGray);
   x += 2*r;
@@ -14,6 +14,6 @@ end;
 
 begin
   Pen.Width := 2;
-  Window.Title := 'Светофор';
-  Светофор(150,40,50);
+  Window.Title := 'РЎРІРµС‚РѕС„РѕСЂ';
+  РЎРІРµС‚РѕС„РѕСЂ(150,40,50);
 end.

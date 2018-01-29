@@ -44,7 +44,7 @@
 %token <ti> tkAsmBody tkILCode tkError INVISIBLE
 %token <ti> tkRepeat tkUntil tkDo tkComma tkFinally tkTry
 %token <ti> tkInitialization tkFinalization tkUnit tkLibrary tkExternal tkParams tkNamespace
-%token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
+%token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkStarStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
 %token <stn> tkStringLiteral tkAsciiChar
@@ -80,7 +80,7 @@
 %type <stn> typed_const_list1 typed_const_list optional_expr_list elem_list optional_expr_list_with_bracket expr_list const_elem_list1 const_func_expr_list case_label_list const_elem_list optional_const_func_expr_list elem_list1  
 %type <stn> enumeration_id expr_l1_list 
 %type <stn> enumeration_id_list  
-%type <ex> const_simple_expr term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr double_question_expr expr_l1 simple_expr range_term range_factor 
+%type <ex> const_simple_expr term simple_term typed_const typed_const_plus typed_var_init_expression expr expr_with_func_decl_lambda const_expr elem range_expr const_elem array_const factor relop_expr expr_dq expr_l1 simple_expr range_term range_factor 
 %type <ex> external_directive_ident init_const_expr case_label variable var_reference simple_expr_or_nothing var_question_point
 %type <ob> for_cycle_type  
 %type <ex> format_expr  
@@ -115,6 +115,8 @@
 %type <op> const_relop const_addop assign_operator const_mulop relop addop mulop sign overload_operator
 %type <ob> typecast_op  
 %type <stn> property_specifiers
+%type <stn> write_property_specifiers
+%type <stn> read_property_specifiers
 %type <stn> array_defaultproperty 
 %type <stn> meth_modificators optional_method_modificators optional_method_modificators1  
 %type <id> meth_modificator property_modificator 
@@ -142,7 +144,7 @@
 %type <stn> simple_prim_property_definition simple_property_definition
 %type <stn> stmt_or_expression unlabelled_stmt stmt case_item
 %type <td> set_type  
-%type <ex> as_is_expr as_is_constexpr  
+%type <ex> as_is_expr as_is_constexpr power_expr power_constexpr
 %type <td> unsized_array_type simple_type_or_ simple_type array_name_for_new_expr foreach_stmt_ident_dype_opt fptype type_ref fptype_noproctype array_type 
 %type <td> template_param structured_type unpacked_structured_type simple_or_template_type_reference type_ref_or_secific for_stmt_decl_or_assign type_decl_type
 %type <stn> type_ref_and_secific_list  
@@ -650,14 +652,12 @@ var_decl_sect
         { 
 			$$ = ($1 as variable_definitions).Add($2 as var_def_statement, @$);
 		} 
-/*    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr tkSemiColon
+    | tkVar tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 tkSemiColon
 	    {
-			if ($7.type != Operators.Assignment)
-			    parsertools.AddErrorFromResource("ONLY_BASE_ASSIGNMENT_FOR_TUPLE",@6);
 			($5 as ident_list).Insert(0,$3);
 			$5.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
 			$$ = new assign_var_tuple($5 as ident_list, $8, @$);
-	    }*/
+	    }
     ;
 
 const_decl
@@ -761,13 +761,21 @@ as_is_constexpr
 		}
     ;
 
+power_constexpr
+    : const_factor tkStarStar const_factor { $$ = new bin_expr($1, $3, $2.type, @$); }
+    ;
+    
 const_term
     : const_factor
 		{ $$ = $1; }
     | as_is_constexpr
 		{ $$ = $1; }
+    | power_constexpr
+		{ $$ = $1; }
     | const_term const_mulop const_factor                  
         { $$ = new bin_expr($1, $3, $2.type, @$); }
+    | const_term const_mulop power_constexpr                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
     ;
 
 const_mulop
@@ -817,6 +825,8 @@ const_factor
         { 
 			$$ = new un_expr($2, $1.type, @$); 
 		}
+    | new_expr
+		{ $$ = $1; }
     | tkDeref const_factor              
         { 
 			$$ = new roof_dereference($2 as addressed_value, @$);
@@ -1087,11 +1097,18 @@ type_ref
     : simple_type
 		{ $$ = $1; }
 	| simple_type tkQuestion
-		{ 	
-			var l = new List<ident>();
-			l.Add(new ident("System"));
-            l.Add(new ident("Nullable"));
-			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+            }
 		}
     | string_type
 		{ $$ = $1; }
@@ -1135,11 +1152,18 @@ template_param
     : simple_type
 		{ $$ = $1; }
     | simple_type tkQuestion
-		{ 	
-			var l = new List<ident>();
-			l.Add(new ident("System"));
-            l.Add(new ident("Nullable"));
-			$$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+		{
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1;
+            }
+            else
+            {
+                var l = new List<ident>();
+                l.Add(new ident("System"));
+                l.Add(new ident("Nullable"));
+                $$ = new template_type_reference(new named_type_reference(l), new template_param_list($1), @$);
+            }
 		}
     | structured_type
 		{ $$ = $1; }
@@ -1843,16 +1867,31 @@ optional_identifier
 
 property_specifiers
     :
-    | tkRead optional_identifier property_specifiers   
+    | tkRead optional_identifier write_property_specifiers   
         { 
 			$$ = NewPropertySpecifiersRead($1, $2, $3 as property_accessors, @$);
         }
-    | tkWrite optional_identifier property_specifiers     
+    | tkWrite optional_identifier read_property_specifiers     
         { 
 			$$ = NewPropertySpecifiersWrite($1, $2, $3 as property_accessors, @$);
         }
     ;
-
+write_property_specifiers
+    :
+    |  tkWrite optional_identifier     
+       { 
+			$$ = NewPropertySpecifiersWrite($1, $2, null, @$);
+       }
+    ;
+    
+read_property_specifiers
+    :
+    |  tkRead optional_identifier     
+       { 
+			$$ = NewPropertySpecifiersRead($1, $2, null, @$);
+       }      
+    ;
+    
 var_decl
     : var_decl_part tkSemiColon              
         { $$ = $1; }
@@ -1891,6 +1930,12 @@ var_decl_part
         { 
 			$$ = new var_def_statement($1 as ident_list, $3, $5, definition_attribute.None, false, @$); 
 		}
+	/*| tkRoundOpen identifier tkComma ident_list tkRoundClose tkAssign expr_l1 
+	    {
+			($4 as ident_list).Insert(0,$2);
+			$4.source_context = LexLocation.MergeAll(@1,@2,@3,@4,@5,@6);
+			$$ = new assign_var_tuple($4 as ident_list, $7, @$);
+	    }*/
     ;
 
 typed_var_init_expression
@@ -1901,8 +1946,8 @@ typed_var_init_expression
     | identifier tkArrow lambda_function_body
 		{  
 			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref tkArrow lambda_function_body
 		{
@@ -1923,7 +1968,7 @@ typed_var_init_expression
 				idList.idents.Add(el.expressions[j] as ident);
 			}	
 				
-			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null);	
+			var any = new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @2);	
 				
 			var formalPars = new formal_parameters(new typed_parameters(idList, any, parametr_kind.none, null, @2), @2);
 			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, any, $5 as statement_list, @$);
@@ -1933,8 +1978,8 @@ typed_var_init_expression
 typed_const_plus
     : typed_const
 		{ $$ = $1; }
-    | new_expr
-		{ $$ = $1; }
+    /*| new_expr
+		{ $$ = $1; }*/
     | default_expr
 		{ $$ = $1; }
     ;
@@ -1944,12 +1989,26 @@ constr_destr_decl
         { 
 			$$ = new procedure_definition($1 as procedure_header, $2 as block, @$);
         }
+    | tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+        { 
+   			if ($5 is empty_statement)
+				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
+            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,@$);
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
+        }
     ;
 
 inclass_constr_destr_decl
     : constr_destr_header inclass_block        
         { 
 			$$ = new procedure_definition($1 as procedure_header, $2 as block, @$);
+        }
+    | tkConstructor optional_proc_name fp_list tkAssign unlabelled_stmt tkSemiColon         
+        { 
+   			if ($5 is empty_statement)
+				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
+            var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3));
+            $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
         }
     ;
 	
@@ -2729,16 +2788,16 @@ expr
     ;
 
 expr_l1
-    : double_question_expr
+    : expr_dq
 		{ $$ = $1; }
     | question_expr
 		{ $$ = $1; }
     ;
 	
-double_question_expr
+expr_dq
 	: relop_expr
 		{ $$ = $1; }
-	| double_question_expr tkDoubleQuestion relop_expr
+	| expr_dq tkDoubleQuestion relop_expr
 		{ $$ = new double_question_node($1 as expression, $3 as expression, @$);}
 	;
     
@@ -2893,7 +2952,7 @@ simple_expr_or_nothing
 	}
 	|
 	{
-		$$ = new int32_const(int.MaxValue);
+		$$ = null;
 	}
 	;
 
@@ -2904,7 +2963,7 @@ format_expr
 		}
     | tkColon simple_expr_or_nothing                        
         { 
-			$$ = new format_expr(new int32_const(int.MaxValue), $2, null, @$); 
+			$$ = new format_expr(null, $2, null, @$); 
 		}
     | simple_expr tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
@@ -2912,7 +2971,7 @@ format_expr
 		}
     | tkColon simple_expr_or_nothing tkColon simple_expr   
         { 
-			$$ = new format_expr(new int32_const(int.MaxValue), $2, $4, @$); 
+			$$ = new format_expr(null, $2, $4, @$); 
 		}
     ;
 
@@ -2973,12 +3032,26 @@ as_is_expr
         }
 	;
 
+simple_term
+    : factor
+		{ $$ = $1; }
+    ;
+    
+power_expr
+    : simple_term tkStarStar factor
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    ;
+    
 term
     : factor
 		{ $$ = $1; }
     | new_expr
 		{ $$ = $1; }
+    | power_expr
+        { $$ = $1; }
     | term mulop factor                             
+        { $$ = new bin_expr($1,$3,($2).type, @$); }
+    | term mulop power_expr                             
         { $$ = new bin_expr($1,$3,($2).type, @$); }
     | as_is_expr
 		{ $$ = $1; }
@@ -3149,6 +3222,10 @@ variable
         	if (el.Count==1 && el.expressions[0] is format_expr) 
         	{
         		var fe = el.expressions[0] as format_expr;
+        		if (fe.expr == null)
+        			fe.expr = new int32_const(int.MaxValue,@3);
+        		if (fe.format1 == null)
+        			fe.format1 = new int32_const(int.MaxValue,@3);
         		$$ = new slice_expr($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
 			}   
 			else $$ = new indexer($1 as addressed_value,el, @$);
@@ -3156,6 +3233,10 @@ variable
     | variable tkQuestionSquareOpen format_expr tkSquareClose                
         {
         	var fe = $3 as format_expr; // SSM 9/01/17
+    		if (fe.expr == null)
+    			fe.expr = new int32_const(int.MaxValue,@3);
+    		if (fe.format1 == null)
+    			fe.format1 = new int32_const(int.MaxValue,@3);
       		$$ = new slice_expr_question($1 as addressed_value,fe.expr,fe.format1,fe.format2,@$);
         }
     | variable tkRoundOpen optional_expr_list tkRoundClose                
@@ -3555,6 +3636,8 @@ overload_operator
 		{ $$ = $1; }
     | assign_operator
 		{ $$ = $1; }
+    | tkStarStar
+		{ $$ = $1; }
     ;
 
 assign_operator
@@ -3574,8 +3657,8 @@ func_decl_lambda
 	: identifier tkArrow lambda_function_body
 		{
 			var idList = new ident_list($1, @1); 
-			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), parametr_kind.none, null, @1), @1);
-			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), null), $3 as statement_list, @$);
+			var formalPars = new formal_parameters(new typed_parameters(idList, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), parametr_kind.none, null, @1), @1);
+			$$ = new function_lambda_definition(lambdaHelper.CreateLambdaName(), formalPars, new lambda_inferred_type(new PascalABCCompiler.TreeRealization.lambda_any_type_node(), @1), $3 as statement_list, @$);
 		}
     | tkRoundOpen tkRoundClose lambda_type_ref_noproctype tkArrow lambda_function_body
 		{

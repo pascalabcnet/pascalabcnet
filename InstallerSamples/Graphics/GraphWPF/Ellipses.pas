@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Рисование эллипсов';
+  Window.Title := 'Р РёСЃРѕРІР°РЅРёРµ СЌР»Р»РёРїСЃРѕРІ';
   Pen.Width := 1;
   var n := 20000;
   for var i:=1 to n do

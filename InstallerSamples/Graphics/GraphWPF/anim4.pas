@@ -1,4 +1,4 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 function RandomReal(a,b: real): real := Random*(b-a)+a;
 
@@ -31,7 +31,7 @@ type
   end;
 
 begin
-  Window.Title := 'Отражение шариков. Анимация на основе кадра';
+  Window.Title := 'РћС‚СЂР°Р¶РµРЅРёРµ С€Р°СЂРёРєРѕРІ. РђРЅРёРјР°С†РёСЏ РЅР° РѕСЃРЅРѕРІРµ РєР°РґСЂР°';
   
   var n := 1000;
   var a := BallInfo.CreateRandomBallArray(n);

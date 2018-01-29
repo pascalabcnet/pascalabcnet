@@ -96,12 +96,12 @@ namespace PascalABCCompiler.TreeRealization
         {
             get
             {
-                TreeConverter.SymbolInfoList si = namespaces[0].findOnlyInNamespace(TreeConverter.compiler_string_consts.system_unit_marker);
+                TreeConverter.SymbolInfo si = namespaces[0].findFirstOnlyInNamespace(TreeConverter.compiler_string_consts.system_unit_marker);
                 if (si == null)
                     return false;
-                if (si.First().sym_info is constant_definition_node)
-                    if ((si.First().sym_info as constant_definition_node).const_value is bool_const_node)
-                        return ((si.First().sym_info as constant_definition_node).const_value as bool_const_node).constant_value;
+                if (si.sym_info is constant_definition_node)
+                    if ((si.sym_info as constant_definition_node).const_value is bool_const_node)
+                        return ((si.sym_info as constant_definition_node).const_value as bool_const_node).constant_value;
                 return false;
             }
         }
@@ -146,7 +146,7 @@ namespace PascalABCCompiler.TreeRealization
 
         public void add_unit_name_to_namespace()
         {
-            this.scope.AddSymbol(unit_name, new TreeConverter.SymbolInfoUnit(this));
+            this.scope.AddSymbol(unit_name, new TreeConverter.SymbolInfo(this));
         }
 
         public string unit_name

@@ -15,6 +15,7 @@ namespace TreeConverter.LambdaExpressions.Closure
 {
     internal class SubstitutionKey
     {
+        public override string ToString() => _variableName;
         private readonly string _variableName;
         private readonly syntax_tree_node _syntaxTreeNodeWhereVaribleIsDeclared;
         private readonly syntax_tree_node _syntaxTreeUnderSubstitution;
@@ -145,7 +146,7 @@ namespace TreeConverter.LambdaExpressions.Closure
                         pn.internal_get_function = readFunction;
                         pn.internal_set_function = writeFunction;
 
-                        _visitor.context._ctn.Scope.AddSymbol(name, new SymbolInfoUnit(pn));
+                        _visitor.context._ctn.Scope.AddSymbol(name, new SymbolInfo(pn));
                         _visitor.context._ctn.properties.AddElement(pn);
                     }
                 }
@@ -746,8 +747,10 @@ namespace TreeConverter.LambdaExpressions.Closure
                 {
                     nodesToAdd.Add(generatedClass.AssignNodeForUpperClassFieldInitialization);
                 }
-
-                statementList.subnodes.InsertRange(0, nodesToAdd);
+                int ind = 0;
+                if (statementList.subnodes.Count > 0 && statementList.subnodes[0] is procedure_call && (statementList.subnodes[0] as procedure_call).func_name is inherited_ident)
+                    ind = 1;
+                statementList.subnodes.InsertRange(ind, nodesToAdd);
             }
         }
 

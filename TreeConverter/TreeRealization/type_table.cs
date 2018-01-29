@@ -774,9 +774,9 @@ namespace PascalABCCompiler.TreeRealization
                 null_const_node ncn = new null_const_node(_to, call_location);
                 null_const_node ncn2 = new null_const_node(_to, call_location);
 
-                PascalABCCompiler.TreeConverter.SymbolInfoList si = pr.type.find_in_type(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name);
+                PascalABCCompiler.TreeConverter.SymbolInfo si = pr.type.find_first_in_type(PascalABCCompiler.TreeConverter.compiler_string_consts.eq_name);
 
-                basic_function_node fn = si.First().sym_info as basic_function_node;
+                basic_function_node fn = si.sym_info as basic_function_node;
                 expression_node condition = null;
                 if (fn != null)
                 {
@@ -785,9 +785,9 @@ namespace PascalABCCompiler.TreeRealization
                     condition_bfc.parameters.AddElement(ncn);
                     condition = condition_bfc;
                 }
-                else if (si.First().sym_info is compiled_function_node)
+                else if (si.sym_info is compiled_function_node)
                 {
-                    compiled_static_method_call condition_cfc = new compiled_static_method_call(si.First().sym_info as compiled_function_node, call_location);
+                    compiled_static_method_call condition_cfc = new compiled_static_method_call(si.sym_info as compiled_function_node, call_location);
                     condition_cfc.parameters.AddElement(pr);
                     condition_cfc.parameters.AddElement(ncn);
                     condition = condition_cfc;

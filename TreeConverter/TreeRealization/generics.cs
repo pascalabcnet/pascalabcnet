@@ -54,7 +54,7 @@ namespace PascalABCCompiler.TreeRealization
                 SemanticTree.field_access_level.fal_public, null);
             cnode.is_constructor = true;
             param.methods.AddElement(cnode);
-            param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfoUnit(cnode));
+            param.add_name(compiler_string_consts.default_constructor_name, new SymbolInfo(cnode));
             param.has_default_constructor = true;
         }
 
@@ -649,13 +649,13 @@ namespace PascalABCCompiler.TreeRealization
             var result = true;
             exception_on_body_compilation = null;
 
-            if (lambda_syntax_node.formal_parameters == null
+            /*if (lambda_syntax_node.formal_parameters == null
                 || lambda_syntax_node.formal_parameters.params_list == null
                 || lambda_syntax_node.formal_parameters.params_list.Count == 0)
             {
                 return false;
-            }
-            
+            }*/
+            if (lambda_syntax_node.formal_parameters != null)
             foreach (var t in lambda_syntax_node.formal_parameters.params_list)
             {
                 var lambdaInfType = t.vars_type as lambda_inferred_type;
@@ -885,14 +885,15 @@ namespace PascalABCCompiler.TreeRealization
                     }
 
                     foreach (var formal_delegate in formal_delegates)
-                        //Перебираем все полученные формальные параемтры, соотвтетсвующие фактическим лямбдам
+                    // Перебираем все полученные формальные параметры, соответствующие фактическим лямбдам
                     {
                         var lambda_syntax_node = lambda_syntax_nodes[formal_delegate.Key];
                         Exception on_lambda_body_compile_exception;
-                            // Исключение которое может возникунть в результате компиляции тела лямбды если мы выберем неправильные типы параметров
-                        if (!TryToDeduceTypesInLambda(lambda_syntax_node, formal_delegate.Value, deduced, nils,
-                                                      out on_lambda_body_compile_exception))
-                            //Пробуем вычислить типы из лямбд
+                        // Исключение которое может возникнуть в результате компиляции тела лямбды если мы выберем неправильные типы параметров
+                        var b = TryToDeduceTypesInLambda(lambda_syntax_node, formal_delegate.Value, deduced, nils,
+                                                      out on_lambda_body_compile_exception);
+                        if (!b)
+                            // Пробуем вычислить типы из лямбд
                         {
                             RestoreLambdasStates(lambda_syntax_nodes.Values.ToList(), saved_lambdas_states);
 
@@ -1254,12 +1255,12 @@ namespace PascalABCCompiler.TreeRealization
 
         public static bool type_has_default_ctor(type_node tn, bool find_protected_ctors)
         {
-            SymbolInfoList si = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
-            if (si != null)
+            SymbolInfoList sil = tn.find_in_type(compiler_string_consts.default_constructor_name, tn.Scope);
+            if (sil != null)
             {
-                foreach (SymbolInfoUnit si_unit in si.InfoUnitList)
+                foreach (SymbolInfo si in sil.list)
                 {
-                    function_node fn = si_unit.sym_info as function_node;
+                    function_node fn = si.sym_info as function_node;
                     if (find_protected_ctors ||
                         fn.field_access_level == PascalABCCompiler.SemanticTree.field_access_level.fal_public)
                     {
@@ -1407,9 +1408,9 @@ namespace PascalABCCompiler.TreeRealization
             }
         }
 
-        private List<SymbolInfoUnit> temp_names = new List<SymbolInfoUnit>(3);
+        private List<SymbolInfo> temp_names = new List<SymbolInfo>(3);
 
-        public override void add_name(string name, SymbolInfoUnit si)
+        public override void add_name(string name, SymbolInfo si)
         {
             temp_names.Add(si);
         }
@@ -1730,13 +1731,13 @@ namespace PascalABCCompiler.TreeRealization
         public SymbolInfoList ConvertSymbolInfo(SymbolInfoList start)
         {
             SymbolInfoList rez_start = null;
-            SymbolInfoUnit rez_si = null;
+            SymbolInfo rez_si = null;
             if (start != null)
             {
-                foreach (SymbolInfoUnit si_unit in start.InfoUnitList)
+                foreach (SymbolInfo si in start.list)
                 {
-                    definition_node dnode = ConvertMember(si_unit.sym_info);
-                    rez_si = new SymbolInfoUnit(dnode, si_unit.access_level, si_unit.symbol_kind);
+                    definition_node dnode = ConvertMember(si.sym_info);
+                    rez_si = new SymbolInfo(dnode, si.access_level, si.symbol_kind);
                     //Дополняем список SymbolInfo преобразованным значением
                     if (rez_start == null)
                     {
@@ -1760,22 +1761,22 @@ namespace PascalABCCompiler.TreeRealization
 
         public override SymbolInfoList find_in_type(string name, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList si = _original_generic.find_in_type(name);
-            si = ConvertSymbolInfo(si);
-            return si;
+            SymbolInfoList sil = _original_generic.find_in_type(name);
+            sil = ConvertSymbolInfo(sil);
+            return sil;
         }
 
         public override SymbolInfoList find_in_type(string name, SymbolTable.Scope CurrentScope, bool no_search_in_extension_methods = false)
         {
-            SymbolInfoList si = _original_generic.find_in_type(name, CurrentScope);
-            si = ConvertSymbolInfo(si);
-            return si;
+            SymbolInfoList sil = _original_generic.find_in_type(name, CurrentScope);
+            sil = ConvertSymbolInfo(sil);
+            return sil;
         }
 
         private void conform_basic_function(string name, int base_func_num)
         {
-            SymbolInfoList si1 = _original_generic.find_in_type(name, true);
-            AddMember(si1.First().sym_info, temp_names[base_func_num].sym_info);
+            SymbolInfo si1 = _original_generic.find_first_in_type(name, true);
+            AddMember(si1.sym_info, temp_names[base_func_num].sym_info);
         }
 
         public void conform_basic_functions()

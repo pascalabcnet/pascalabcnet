@@ -43,9 +43,9 @@ namespace SyntaxVisitors
             var methods = cd.body.class_def_blocks.SelectMany(cm => cm.members.Select(decl1 => 
                 {
                     if (decl1 is procedure_header)
-                        return (decl1 as procedure_header).name.meth_name;
+                        return (decl1 as procedure_header).name?.meth_name;
                     else if (decl1 is procedure_definition)
-                        return (decl1 as procedure_definition).proc_header.name.meth_name;
+                        return (decl1 as procedure_definition).proc_header.name?.meth_name;
                     return null;
                 }).Where(name => (object)name != null));
 

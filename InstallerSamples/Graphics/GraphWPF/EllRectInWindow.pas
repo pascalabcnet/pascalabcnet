@@ -1,4 +1,4 @@
-uses GraphWPF;
+﻿uses GraphWPF;
 
 begin
   Pen.Width := 1;

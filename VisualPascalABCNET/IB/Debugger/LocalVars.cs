@@ -763,6 +763,7 @@ namespace VisualPascalABC
             [HandleProcessCorruptedStateExceptionsAttribute]
             get
             {
+                return false;
             	try
             	{
             		if (!failed)

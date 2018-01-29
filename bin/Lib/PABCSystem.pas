@@ -104,6 +104,9 @@ type
   
   /// Представляет произвольно большое целое число
   BigInteger = System.Numerics.BigInteger;
+
+  /// Представляет дату и время
+  DateTime = System.DateTime;
   
   /// Представляет комплексное число
   Complex = System.Numerics.Complex;
@@ -478,6 +481,10 @@ type
     procedure Write(params vals: array of object);
     /// Устанавливает файловый указатель на начало файла
     procedure Reset;
+    /// Возвращает имя файла
+    function Name: string;
+    /// Возвращает полное имя файла
+    function FullName: string;
   end;
 
   // Class for typed files
@@ -496,8 +503,6 @@ type
     function FilePos: int64;
     /// Возвращает количество элементов в типизированном файле
     function FileSize: int64;
-    /// Устанавливает текущую позицию файлового указателя в типизированном файле на элемент с номером n  
-    procedure Seek(n: int64);
   end;
   
   // Class for binary files
@@ -1208,8 +1213,10 @@ function Sqr(x: uint64): uint64;
 function Sqr(x: real): real;
 /// Возвращает x в степени y
 function Power(x, y: real): real;
-/// Возвращает x в степени y
-function Power(x, y: integer): real;
+// Возвращает x в степени y
+//function Power(x, y: integer): real;
+/// Возвращает x в целой степени n
+function Power(x: real; n: integer): real;
 /// Возвращает x в степени y
 function Power(x: BigInteger; y: integer): BigInteger;
 /// Возвращает x, округленное до ближайшего целого. Если вещественное находится посередине между двумя целыми, 
@@ -3251,7 +3258,7 @@ begin
 end;
 
 //------------------------------------------------------------------------------
-//          Operations for String
+//          Операции для string и char
 //------------------------------------------------------------------------------
 procedure string.operator+=(var left: string; right: string);
 begin
@@ -3343,6 +3350,10 @@ begin
 end;
 
 function string.operator in(substr: string; str: string) := str.Contains(substr);
+
+procedure operator+=(var left: StringBuilder; right: string); extensionmethod := left.Append(right);
+
+function operator implicit(s: string): StringBuilder; extensionmethod := new StringBuilder(s);
 
 //------------------------------------------------------------------------------
 //          Операции для array of T
@@ -3458,9 +3469,18 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: HashSet<T>); extensionmethod := x.SetEquals(y);
+function operator=<T>(x,y: HashSet<T>): boolean; extensionmethod;
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.SetEquals(y);
+end;   
 
-function operator<><T>(x,y: HashSet<T>); extensionmethod := not x.SetEquals(y);
+function operator<><T>(x,y: HashSet<T>); extensionmethod := not (x=y);
 
 function operator-<T>(x,y: HashSet<T>): HashSet<T>; extensionmethod;
 begin
@@ -3534,7 +3554,16 @@ begin
   Result := Self;
 end;
 
-function operator=<T>(x,y: SortedSet<T>); extensionmethod := x.SetEquals(y);
+function operator=<T>(x,y: SortedSet<T>): boolean; extensionmethod;
+begin
+  var xn := Object.ReferenceEquals(x,nil);
+  var yn := Object.ReferenceEquals(y,nil);
+  if xn then
+    Result := yn
+  else if yn then 
+    Result := xn
+  else Result := x.SetEquals(y);
+end;   
 
 function operator<><T>(x,y: SortedSet<T>); extensionmethod := not x.SetEquals(y);
 
@@ -3600,165 +3629,82 @@ begin
 end;
 
 //------------------------------------------------------------------------------
+//          **
+//------------------------------------------------------------------------------
+
+function operator**(x: real; n: integer): real; extensionmethod := Power(x, n);
+
+function operator**(x, y: integer): real; extensionmethod := Power(real(x), y);
+
+function operator**(x, y: real): real; extensionmethod := Power(x, y);
+
+function operator**(x, y: Complex): Complex; extensionmethod := Power(x, y);
+
+function operator**(x: BigInteger; y: integer): BigInteger; extensionmethod := Power(x, y);
+
+//------------------------------------------------------------------------------
 //          Операции для BigInteger
 //------------------------------------------------------------------------------
-function BigInteger.operator/(p: BigInteger; q: real): real;
-begin
-  Result := real(p)/q;
-end;
+function BigInteger.operator/(p: BigInteger; q: real) := real(p)/q;
 
-function BigInteger.operator/(q: real; p: BigInteger): real;
-begin
-  Result := q/real(p);
-end;
+function BigInteger.operator/(q: real; p: BigInteger) := q/real(p);
 
-function BigInteger.operator>(p: BigInteger; q: integer): boolean;
-begin
-  Result := p > BigInteger.Create(q);
-end;
+function BigInteger.operator>(p: BigInteger; q: integer) := p > BigInteger.Create(q);
 
-function BigInteger.operator>(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) > q;
-end;
+function BigInteger.operator>(p: integer; q: BigInteger) := BigInteger.Create(p) > q;
 
-function BigInteger.operator<(p: BigInteger; q: integer): boolean;
-begin
-  Result := p < BigInteger.Create(q);
-end;
+function BigInteger.operator<(p: BigInteger; q: integer) := p < BigInteger.Create(q);
 
-function BigInteger.operator<(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) < q;
-end;
+function BigInteger.operator<(p: integer; q: BigInteger) := BigInteger.Create(p) < q;
 
-function BigInteger.operator>=(p: BigInteger; q: integer): boolean;
-begin
-  Result := p >= BigInteger.Create(q);
-end;
+function BigInteger.operator>=(p: BigInteger; q: integer) := p >= BigInteger.Create(q);
 
-function BigInteger.operator>=(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) >= q;
-end;
+function BigInteger.operator>=(p: integer; q: BigInteger) := BigInteger.Create(p) >= q;
 
-function BigInteger.operator<=(p: BigInteger; q: integer): boolean;
-begin
-  Result := p <= BigInteger.Create(q);
-end;
+function BigInteger.operator<=(p: BigInteger; q: integer) := p <= BigInteger.Create(q);
 
-function BigInteger.operator<=(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) <= q;
-end;
+function BigInteger.operator<=(p: integer; q: BigInteger) := BigInteger.Create(p) <= q;
 
-function BigInteger.operator=(p: BigInteger; q: integer): boolean;
-begin
-  Result := p = BigInteger.Create(q);
-end;
+function BigInteger.operator=(p: BigInteger; q: integer) := p = BigInteger.Create(q);
 
-function BigInteger.operator=(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) = q;
-end;
+function BigInteger.operator=(p: integer; q: BigInteger) := BigInteger.Create(p) = q;
 
-function BigInteger.operator<>(p: BigInteger; q: integer): boolean;
-begin
-  Result := p <> BigInteger.Create(q);
-end;
+function BigInteger.operator<>(p: BigInteger; q: integer) := p <> BigInteger.Create(q);
 
-function BigInteger.operator<>(p: integer; q: BigInteger): boolean;
-begin
-  Result := BigInteger.Create(p) <> q;
-end;
+function BigInteger.operator<>(p: integer; q: BigInteger) := BigInteger.Create(p) <> q;
 
-procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger);
-begin
-  p := p + q;
-end;
+procedure BigInteger.operator+=(var p: BigInteger; q: BigInteger) := p := p + q;
 
-procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger);
-begin
-  p := p * q;
-end;
+procedure BigInteger.operator*=(var p: BigInteger; q: BigInteger) := p := p * q;
 
-procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger);
-begin
-  p := p - q;
-end;
+procedure BigInteger.operator-=(var p: BigInteger; q: BigInteger) := p := p - q;
 
-function BigInteger.operator div(p,q: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Divide(p,q);
-end;
+function BigInteger.operator div(p,q: BigInteger) := BigInteger.Divide(p,q);
 
-function BigInteger.operator mod(p,q: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Remainder(p,q);
-end;
+function BigInteger.operator mod(p,q: BigInteger) := BigInteger.Remainder(p,q);
 
-function BigInteger.operator-(p: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Negate(p)
-end;
-
-{function BigInteger.operator+(p: BigInteger): BigInteger;
-begin
-  Result := p
-end;
-
-function BigInteger.operator+(p,q: BigInteger): BigInteger;
-begin
-  Result := BigInteger.Add(p,q);
-end;}
+function BigInteger.operator-(p: BigInteger) := BigInteger.Negate(p);
 
 //------------------------------------------------------------------------------
 //          Операции для Complex
 //------------------------------------------------------------------------------
-function operator-(Self: Complex): Complex; extensionmethod;
-begin
-  Result := Complex.Negate(Self);
-end;
+function operator-(Self: Complex): Complex; extensionmethod := Complex.Negate(Self);
 
-function operator implicit(c: (real,real)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (real,real)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-function operator implicit(c: (real,integer)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (real,integer)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-function operator implicit(c: (integer,real)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (integer,real)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-function operator implicit(c: (integer,integer)): Complex; extensionmethod;
-begin
-  Result := Cplx(c[0],c[1]);
-end;
+function operator implicit(c: (integer,integer)): Complex; extensionmethod := Cplx(c[0],c[1]);
 
-procedure operator+=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c + x;
-end;
+procedure operator+=(var c: Complex; x: Complex); extensionmethod := c := c + x;
 
-procedure operator*=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c * x;
-end;
+procedure operator*=(var c: Complex; x: Complex); extensionmethod := c := c * x;
 
-procedure operator-=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c - x;
-end;
+procedure operator-=(var c: Complex; x: Complex); extensionmethod := c := c - x;
 
-procedure operator/=(var c: Complex; x: Complex); extensionmethod;
-begin
-  c := c / x;
-end;
+procedure operator/=(var c: Complex; x: Complex); extensionmethod := c := c / x;
 
 //------------------------------------------------------------------------------
 //          Операции для sequence of T
@@ -4295,7 +4241,6 @@ function read_lexem(f: Text): string;
 var
   c: char;
   i: integer;
-  sb: System.Text.StringBuilder;
 begin
   if f.fi = nil then
     raise new System.IO.IOException(GetTranslation(FILE_NOT_ASSIGNED));
@@ -4305,7 +4250,7 @@ begin
     i := f.sr.Read();
   until not char.IsWhiteSpace(char(i)); // pass spaces
   c := char(i);
-  sb := System.Text.StringBuilder.Create;
+  var sb := System.Text.StringBuilder.Create;
   repeat
     sb.Append(c);
     i := f.sr.Peek();
@@ -4461,15 +4406,15 @@ begin
   else raise new System.FormatException('Входная строка имела неверный формат');
 end;
 
-procedure IOStandardSystem.readln;
+procedure IOStandardSystem.readln; // SSM 4.11.17 - проверять правку, потенциально могут быть ошибки
 begin
-  while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do;
-  {while True do
+  // while CurrentIOSystem.read_symbol <> END_OF_LINE_SYMBOL do; // было
+  while True do
   begin
     var sym := CurrentIOSystem.read_symbol;
     if (sym = END_OF_LINE_SYMBOL) or (sym = char(-1)) then
       exit;
-  end;}
+  end;
 end;
 
 procedure IOStandardSystem.write(obj: object);
@@ -4500,11 +4445,11 @@ end;
 // -----------------------------------------------------
 //     Read - Readln
 // -----------------------------------------------------
-procedure read;
+procedure Read;
 begin
 end;
 
-procedure readln;
+procedure Readln;
 begin
   if input.sr <> nil then
     input.sr.ReadLine
@@ -5410,6 +5355,18 @@ begin
   PABCSystem.Reset(Self);
 end;
 
+function AbstractBinaryFile.Name: string;
+begin
+  Result := fi.Name  
+end;
+
+function AbstractBinaryFile.FullName: string;
+begin
+  Result := fi.FullName  
+end;
+
+
+
 // -----------------------------------------------------
 //                TypedFile & BinaryFile methods
 // -----------------------------------------------------
@@ -5421,11 +5378,6 @@ end;
 function TypedFile.FileSize: int64;
 begin
   Result := PABCSystem.FileSize(Self);
-end;
-
-procedure TypedFile.Seek(n: int64);
-begin
-  PABCSystem.Seek(Self, n);
 end;
 
 function BinaryFile.FilePos: int64;
@@ -6899,7 +6851,36 @@ function Sqr(x: real): real := x * x;
 
 function Power(x, y: real): real := Math.Pow(x, y);
 
-function Power(x, y: integer): real := Math.Pow(x, y);
+//function Power(x, y: integer): real := Math.Pow(x, y);
+
+function Power(x: real; n: integer): real;
+begin
+  case n of
+  0: Result := 1;
+  1: Result := x;
+  2: Result := x*x;
+  3: Result := x*x*x;
+  4: Result := x*x*x*x;
+  5: Result := x*x*x*x*x;
+  6: Result := x*x*x*x*x*x;
+  else
+  if n<0 then
+    Result := 1/Power(x,-n)
+  else  
+    begin
+      var z := x;
+      var r := 1.0;
+      while n > 0 do
+      begin
+        if n and 1 = 1 then
+          r := r * z;
+        z := z * z;
+        n := n shr 1;
+      end;
+      Result := r;
+    end;
+  end;
+end;
 
 function Power(x: BigInteger; y: integer) := BigInteger.Pow(x, y);
 
@@ -8182,6 +8163,71 @@ type
   end;
 
 //------------------------------------------------------------------------------
+//>>     Метод расширения Print для элементарных типов
+//------------------------------------------------------------------------------
+function Print(Self: integer): integer; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: real): real; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: char): char; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: boolean): boolean; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Print(Self: BigInteger): BigInteger; extensionmethod;
+begin
+  PABCSystem.Print(Self);
+  Result := Self;
+end;
+
+function Println(Self: integer): integer; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: real): real; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: char): char; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: boolean): boolean; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+function Println(Self: BigInteger): BigInteger; extensionmethod;
+begin
+  PABCSystem.Println(Self);
+  Result := Self;
+end;
+
+
+
+//------------------------------------------------------------------------------
 //>>     Методы расширения для sequence of T # Extension methods for sequence of T
 //------------------------------------------------------------------------------
 /// Выводит последовательность на экран, используя delim в качестве разделителя
@@ -8189,12 +8235,12 @@ function Print<T>(Self: sequence of T; delim: string): sequence of T; extensionm
 begin
   var g := Self.GetEnumerator();
   if g.MoveNext() then
-    write(g.Current);
+    Write(g.Current);
   while g.MoveNext() do
     if delim<>'' then
-      write(delim, g.Current)
-    else write(g.Current);
-  Result := Self;  
+      Write(delim, g.Current)
+    else Write(g.Current);
+  Result := Self; 
 end;
 
 /// Выводит последовательность на экран, используя пробел в качестве разделителя
@@ -8227,6 +8273,13 @@ end;
 function WriteLines(Self: sequence of string; fname: string): sequence of string; extensionmethod;
 begin
   WriteLines(fname,Self);
+  Result := Self
+end;
+
+/// Выводит последовательность, каждый элемент выводится на новой строке
+function PrintLines<T>(Self: sequence of T): sequence of T; extensionmethod;
+begin
+  Self.Println(NewLine);
   Result := Self
 end;
 
@@ -8697,12 +8750,12 @@ begin
   end
 end;
 
-/// Группирует одинаковые подряд идущие элементы, получая последовательность последовательностей 
-function AdjacentGroup<T>(Self: sequence of T): sequence of sequence of T; extensionmethod;
+/// Группирует одинаковые подряд идущие элементы, получая последовательность массивов 
+function AdjacentGroup<T>(Self: sequence of T): sequence of array of T; extensionmethod;
 begin
   var c := new AdjGroupClass<T>(Self);
   while c.fin do
-    yield c.TakeGroup();
+    yield c.TakeGroup().ToArray;
 end;
 
 // ToDo Сделать AdjacentGroup с функцией сравнения
@@ -8939,7 +8992,7 @@ begin
     if from<0 then
       from += (step - from - 1) div step * step;
     // from может оказаться > Len - 1
-    var m := min(Len,&to);
+    var m := Min(Len,&to);
     if from >= m then 
       Result := 0
     else Result := (m - from - 1) div step + 1  
@@ -8949,7 +9002,7 @@ begin
     if from > Len - 1 then
       from -= (from - Len - step) div step * step;
     // from может оказаться < 0   
-    var m := max(&to,-1);
+    var m := Max(&to,-1);
     if from <= m then
       Result := 0
     else Result := (from - m - 1) div (-step) + 1
@@ -9729,6 +9782,12 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+/// Возвращает True если значение находится между двумя другими
+function InRange(Self: integer; a,b: integer): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
 
 // Дополнения февраль 2016: IsEven, IsOdd
 
@@ -9784,6 +9843,11 @@ end;
 // -----------------------------------------------------
 /// Возвращает True если значение находится между двумя другими
 function Between(Self: real; a,b: real): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
+function InRange(Self: real; a,b: real): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
@@ -9844,6 +9908,12 @@ begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
 
+/// Возвращает True если значение находится между двумя другими
+function InRange(Self: char; a,b: char): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
 /// Предыдущий символ
 function Pred(Self: char); extensionmethod := PABCSystem.Pred(Self);
 
@@ -9899,6 +9969,12 @@ end;
 //------------------------------------------------------------------------------
 /// Возвращает True если значение находится между двумя другими
 function Between(Self: string; a,b: string): boolean; extensionmethod;
+begin
+  Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
+end;
+
+/// Возвращает True если значение находится между двумя другими
+function InRange(Self: string; a,b: string): boolean; extensionmethod;
 begin
   Result := (a <= Self) and (Self <= b) or (b <= Self) and (Self <= a);
 end;
@@ -10200,7 +10276,7 @@ begin
 end;
 
 ///--
-function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Object.ReferenceEquals(Self,v) ? True: Self.Equals( v ) ;
+function operator=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
 ///--
 function operator<><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := not (Self = v);
 ///--
@@ -10215,7 +10291,7 @@ function operator><T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := Compa
 function operator>=<T1, T2> (Self: (T1,T2); v: (T1,T2)); extensionmethod := CompareToTup2(Self,v) >= 0;
 
 ///--
-function operator=<T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := Object.ReferenceEquals(Self,v) ? True: Self.Equals( v ) ;
+function operator=<T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
 ///--
 function operator<><T1, T2, T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := not (Self = v);
 ///--
@@ -10230,7 +10306,7 @@ function operator><T1,T2,T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod 
 function operator>=<T1,T2,T3> (Self: (T1,T2,T3); v: (T1,T2,T3)); extensionmethod := CompareToTup3(Self,v) >= 0;
 
 ///--
-function operator=<T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := Object.ReferenceEquals(Self,v) ? True: Self.Equals( v ) ;
+function operator=<T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := Object.ReferenceEquals(Self,nil) ? Object.ReferenceEquals(v,nil): Self.Equals(v);
 ///--
 function operator<><T1, T2, T3, T4> (Self: (T1,T2,T3,T4); v: (T1,T2,T3,T4)); extensionmethod := not (Self = v);
 ///--

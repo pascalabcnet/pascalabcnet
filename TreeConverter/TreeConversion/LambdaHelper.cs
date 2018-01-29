@@ -163,7 +163,7 @@ namespace PascalABCCompiler.TreeConverter
         public static void Reset()
         {
             CurrentLambdaScopeNum = -1;
-            capturedVariables = new List<SymbolInfoUnit>();
+            capturedVariables = new List<SymbolInfo>();
             captureCheck = false;
             processingLambdaParametersForTypeInference = 0;
             StatementListStackStack.Clear();
@@ -172,7 +172,7 @@ namespace PascalABCCompiler.TreeConverter
             auxVarCounter = 0;
         }
         public static bool captureCheck = false;
-        public static List<SymbolInfoUnit> capturedVariables = new List<SymbolInfoUnit>();
+        public static List<SymbolInfo> capturedVariables = new List<SymbolInfo>();
         public static int CurrentLambdaScopeNum = -1;
         /// <summary>
         /// Фиктивный блок, представляющий лямбда-выражение. Используется для обхода с целью получения списка захватываемых переменных

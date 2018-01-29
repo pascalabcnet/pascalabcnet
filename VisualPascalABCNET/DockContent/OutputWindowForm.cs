@@ -37,6 +37,18 @@ namespace VisualPascalABC
             
         }
 
+        private void OutputTextBox_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+                outputTextBox.Copy();
+        }
+
+        private void InputTextBox_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+                InputTextBox.Copy();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             WorkbenchServiceFactory.RunService.SendInputTextToProcess();

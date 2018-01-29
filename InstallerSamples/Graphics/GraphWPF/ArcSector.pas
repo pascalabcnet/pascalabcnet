@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Дуги и секторы';
+  Window.Title := 'Р”СѓРіРё Рё СЃРµРєС‚РѕСЂС‹';
   var (x,y) := (200,Window.Height/2);
   Circle(x,y,5);
   for var i:=1 to 18*2 do

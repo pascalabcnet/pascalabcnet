@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Таблица умножения';
+  Window.Title := 'РўР°Р±Р»РёС†Р° СѓРјРЅРѕР¶РµРЅРёСЏ';
   Font.Size := 16;
   var n := 9;
   var w := 40;

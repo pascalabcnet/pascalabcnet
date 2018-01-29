@@ -1,12 +1,13 @@
 ## Building PascalABC.NET in Windows
+***Run _RegisterHelix.bat on first use to install the HelixToolkit.dll and HelixToolkit.Wpf.dll in GAC***
+
 _RebuildReleaseAndRunTests.bat builds the project in Release-mode, rebuilds the pas-units and runs tests (run with administrative privileges!).
 
 _GenerateAllSetups.bat builds the project in Release-mode, rebuilds the pas-units, runs tests and creates the install package (run with administrative privileges!).
 
 _ReBuildRelease.bat builds the project in Release-mode.
 
-_ReBuildDebug.bat builds the project in Debug-mode.
-
+_ReBuildDebug.bat builds the project in Debug-mode. 
 
 PascalABC is being developed in Visual Studio Community 2017.
 
@@ -48,6 +49,8 @@ Tests are located in the directory "TestSuite". To run the tests execute the fil
 -----------------------------------------------------------------------------------------------------
 
 ## Сборка проекта в Windows
+***Перед первой компиляцией необходимо запустить _RegisterHelix.bat с правами администратора***
+
 _RebuildReleaseAndRunTests.bat собирает проект в Release-режиме, перекомпилирует pas-модули и прогоняет все тесты (запускать с правами администратора).
 
 _GenerateAllSetups.bat собирает инсталлят (запускать с правами администратора).

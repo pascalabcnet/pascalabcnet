@@ -451,7 +451,13 @@ namespace VisualPascalABC
                     if (new_space)
                         mis = dconv.GetTypes(e, line, col, out sel_si);
                     else if (keyw == PascalABCCompiler.Parsers.KeywordKind.Uses && mis == null)
-                        mis = dconv.GetNamespaces();
+                    {
+                        if (WorkbenchServiceFactory.Workbench.UserOptions.EnableSmartIntellisense)
+                            mis = dconv.GetNamespaces();
+                        else
+                            mis = CodeCompletion.DomConverter.standard_units;
+                    }
+                        
                     else
                         if (!ctrl_space)
                         {

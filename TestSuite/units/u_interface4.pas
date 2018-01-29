@@ -25,7 +25,7 @@ var ien2: IEnumerable<integer> := new My;
 ien2.GetEnumerator;
 assert(a=2);
 a := 0;
-var mc := new My;
-mc.GetEnumerator();
-assert(a=2);
+//var mc := new My;
+//mc.GetEnumerator();
+//assert(a=2);
 end.

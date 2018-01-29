@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Всякая Курья Мурья';
+  Window.Title := 'Р’СЃСЏРєР°СЏ РљСѓСЂСЊСЏ РњСѓСЂСЊСЏ';
   Pen.Width := 0.5;
   Brush.Color := RGB(128,200,100);
   Ellipse(100,100,30,20);
@@ -23,14 +23,14 @@ begin
   Font.Color := Colors.Blue;
   Font.Name := 'Times New Roman';
   Font.Style := FontStyle.BoldItalic;
-  TextOut(200,0,'Привет'); 
+  TextOut(200,0,'РџСЂРёРІРµС‚'); 
   Sleep(1000);
   Window.Save('1.png');
-  Window.Title := 'Сохранили';
+  Window.Title := 'РЎРѕС…СЂР°РЅРёР»Рё';
   Sleep(1000);
   Window.Clear;
-  Window.Title := 'Очистили';
+  Window.Title := 'РћС‡РёСЃС‚РёР»Рё';
   Sleep(1000);
   Window.Load('1.png');
-  Window.Title := 'Загрузили';
+  Window.Title := 'Р—Р°РіСЂСѓР·РёР»Рё';
 end.

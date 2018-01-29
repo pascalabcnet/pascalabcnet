@@ -1,7 +1,7 @@
-uses GraphWPF;
+п»їuses GraphWPF;
 
 begin
-  Window.Title := 'Выравнивание шрифта';
+  Window.Title := 'Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ С€СЂРёС„С‚Р°';
   Font.Size := 20;
   
   var sc := 40;
@@ -19,7 +19,7 @@ begin
   DrawText(x,y,w,h,'RightTop',Alignment.RightTop);
   DrawText(x,y,w,h,'RightCenter',Alignment.RightCenter);
   DrawText(x,y,w,h,'RightBottom',Alignment.RightBottom);
-  // Выравнивание относительно точки
+  // Р’С‹СЂР°РІРЅРёРІР°РЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С‚РѕС‡РєРё
   TextOut(-5,5,'PointRightBottom',Alignment.RightBottom);
   TextOut(-5,5,'PointRightTop',Alignment.RightTop);
   TextOut(-5,5,'PointLeftTop',Alignment.LeftTop);

@@ -170,6 +170,7 @@ namespace TreeConverter.LambdaExpressions.Closure
         private void VisitCapturedVar(CapturedVariablesTreeNode scope, CapturedVariablesTreeNode.CapturedSymbolInfo symbolInfo)
         {
             var varName = ((IVAriableDefinitionNode)symbolInfo.SymbolInfo.sym_info).name.ToLower();
+            var ff = symbolInfo.SymbolInfo.sym_info.GetType();
             var isSelfWordInClass = scope is CapturedVariablesTreeNodeClassScope && varName == compiler_string_consts.self_word;
 
             foreach (var referencingLambda in symbolInfo.ReferencingLambdas.OrderByDescending(rl => rl.ScopeIndex))
@@ -195,11 +196,17 @@ namespace TreeConverter.LambdaExpressions.Closure
                     var upperScopeWhereVarsAreCaptured = scope;
                     var upperScopeWhereVarsAreCapturedClass =
                         _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex].ClassDeclaration;
+                    var ClassName = upperScopeWhereVarsAreCapturedClass.type_name;
+                    var ClassField = symbolInfo.SymbolInfo.sym_info as class_field;
 
                     var substKey = new SubstitutionKey(varName, symbolInfo.SyntaxTreeNodeWithVarDeclaration,
                                                        scope.CorrespondingSyntaxTreeNode);
                     if (!_substitutions.ContainsKey(substKey))
                     {
+                        // SSM 22.10.17 Тут ошибка в случае захвата классовых полей - первый параметр должен быть не self, а имя класса
+                        if (ClassField != null && ClassField.IsStatic)
+                            _substitutions.Add(substKey, new dot_node(ClassName, new ident(varName)));// sc не заполнен, что плохо!
+                        else
                         _substitutions.Add(substKey,
                                            new dot_node(
                                                new ident(
@@ -368,7 +375,10 @@ namespace TreeConverter.LambdaExpressions.Closure
 
                             if (!_substitutions.ContainsKey(substKey))
                             {
-                                _substitutions.Add(substKey, dot);
+                                if (ClassField != null && ClassField.IsStatic)
+                                    _substitutions.Add(substKey, new dot_node(ClassName, new ident(varName)));// sc не заполнен, что плохо!
+                                else
+                                    _substitutions.Add(substKey, dot);
                             }
 
                             upperScopeWhereVarsAreCaptured = nextNodeWhereVarsAreCaptured;

@@ -110,6 +110,11 @@ UNICODEARROW \x890
 		if (!Defines.Contains(directiveparam))
 			Defines.Add(directiveparam);
 	}
+	else if (directivename == "UNDEF")
+	{
+		if (Defines.Contains(directiveparam))
+			Defines.Remove(directiveparam);
+	}
 }
 
 <EXCLUDETEXT>{OneLineCmnt} {
@@ -198,6 +203,7 @@ UNICODEARROW \x890
 "+"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Plus); return (int)Tokens.tkPlus; }
 "/"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Division); return (int)Tokens.tkSlash; }
 "*"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Multiplication); return (int)Tokens.tkStar; }
+"**"            { yylval = new Union(); yylval.op = new op_type_node(Operators.Power); return (int)Tokens.tkStarStar; }
 "="             { yylval = new Union(); yylval.op = new op_type_node(Operators.Equal); return (int)Tokens.tkEqual; }
 ">"             { yylval = new Union(); yylval.op = new op_type_node(Operators.Greater); return (int)Tokens.tkGreater; }
 ">="            { yylval = new Union(); yylval.op = new op_type_node(Operators.GreaterEqual); return (int)Tokens.tkGreaterEqual; }
