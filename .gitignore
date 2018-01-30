@@ -35,6 +35,9 @@ TestSuite/CompilationSamples/PT4MakerNetX.pas
 TestSuite/CompilationSamples/Speech.pas
 TestSuite/CompilationSamples/Робот.pas
 TestSuite/CompilationSamples/Чертежник.pas
+TestSuite/CompilationSamples/Controls.pas
+TestSuite/CompilationSamples/GraphWPF.pas
+TestSuite/CompilationSamples/NumLibABC.pas
 bin/PascalABCNET.exe
 bin/System.Data.dll.txt
 bin/System.Xml.dll.txt
