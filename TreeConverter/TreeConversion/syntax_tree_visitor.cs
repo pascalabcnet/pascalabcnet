@@ -1088,6 +1088,8 @@ namespace PascalABCCompiler.TreeConverter
                     }
                 }
             }
+            if (name == "+" && right_type == SystemLibrary.SystemLibrary.char_type && left_type != SystemLibrary.SystemLibrary.string_type)
+                no_search_in_extension_methods = false;
             SymbolInfoList sil = left_type.find_in_type(name, left_type.Scope, no_search_in_extension_methods);
             int added_symbols = -1;
             SymbolInfoList sil2 = null;
@@ -1096,6 +1098,8 @@ namespace PascalABCCompiler.TreeConverter
                 //SymbolInfo si2 = right_type.find(name, context.CurrentScope);
                 if (sil != null)
                     sil = sil.copy();
+                if (name == "+" && right_type != SystemLibrary.SystemLibrary.string_type && left_type == SystemLibrary.SystemLibrary.char_type)
+                    no_search_in_extension_methods = false;
                 sil2 = right_type.find_in_type(name, right_type.Scope, no_search_in_extension_methods);
                 if ((sil != null) && (sil2 != null))
                 {
@@ -3574,6 +3578,22 @@ namespace PascalABCCompiler.TreeConverter
                                 type_node tn = convert_strong(types[i]); 
                                 if (tn.IsPointer)
                                     AddError(get_location(types[i]), "AUTO_CLASS_MUST_NOT_HAVE_POINTERS");
+                            }
+                            if (_class_definition.body != null)
+                            foreach (class_members cl_mem in _class_definition.body.class_def_blocks)
+                            {
+                                foreach (declaration decl in cl_mem.members)
+                                {
+                                    if (decl is var_def_statement)
+                                    {
+                                        type_definition type = (decl as var_def_statement).vars_type;
+                                        SyntaxTree.array_type arr = type as SyntaxTree.array_type;
+                                        if (type is SyntaxTree.class_definition || (arr != null && arr.indexers != null && arr.indexers.indexers.Count > 0 && arr.indexers.indexers[0] != null))
+                                        {
+                                            AddError(get_location(type), "STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS");
+                                        }
+                                    }
+                                }
                             }
                         }
                         //if (!SemanticRules.OrderIndependedNames)
@@ -10012,7 +10032,7 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                             basic_function_call eq_call = new basic_function_call(int64_eq_meth, cn.location);
                             eq_call.parameters.AddElement(en);
-                            eq_call.parameters.AddElement(cn);
+                            eq_call.parameters.AddElement(scn);
                             eq_calls.Add(eq_call);
                         }
                         else
@@ -10029,10 +10049,10 @@ namespace PascalABCCompiler.TreeConverter
                             basic_function_node int64_leq_meth = SystemLibrary.SystemLibrary.int64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
                             basic_function_call greq_call = new basic_function_call(int64_greq_meth, left_cn.location);
                             greq_call.parameters.AddElement(en);
-                            greq_call.parameters.AddElement(left_cn);
+                            greq_call.parameters.AddElement(left_scn);
                             basic_function_call leq_call = new basic_function_call(int64_leq_meth, right_cn.location);
                             leq_call.parameters.AddElement(en);
-                            leq_call.parameters.AddElement(right_cn);
+                            leq_call.parameters.AddElement(right_scn);
                             basic_function_node in_diap_meth = SystemLibrary.SystemLibrary.bool_type.find_first_in_type("and", true).sym_info as basic_function_node;
                             basic_function_call in_diap_call = new basic_function_call(in_diap_meth, left_cn.location);
                             in_diap_call.parameters.AddElement(greq_call);
@@ -10098,7 +10118,7 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(cn.location, "CASE_CONSTANT_VARIANT_COINCIDE_WITH_ANOTHER");
                             basic_function_call eq_call = new basic_function_call(uint64_eq_meth, cn.location);
                             eq_call.parameters.AddElement(en);
-                            eq_call.parameters.AddElement(cn);
+                            eq_call.parameters.AddElement(scn);
                             eq_calls.Add(eq_call);
                         }
                         else
@@ -10115,10 +10135,10 @@ namespace PascalABCCompiler.TreeConverter
                             basic_function_node uint64_leq_meth = SystemLibrary.SystemLibrary.uint64_type.find_first_in_type("<=", true).sym_info as basic_function_node;
                             basic_function_call greq_call = new basic_function_call(uint64_greq_meth, left_cn.location);
                             greq_call.parameters.AddElement(en);
-                            greq_call.parameters.AddElement(left_cn);
+                            greq_call.parameters.AddElement(left_scn);
                             basic_function_call leq_call = new basic_function_call(uint64_leq_meth, right_cn.location);
                             leq_call.parameters.AddElement(en);
-                            leq_call.parameters.AddElement(right_cn);
+                            leq_call.parameters.AddElement(right_scn);
                             basic_function_node in_diap_meth = SystemLibrary.SystemLibrary.bool_type.find_first_in_type("and", true).sym_info as basic_function_node;
                             basic_function_call in_diap_call = new basic_function_call(in_diap_meth, left_cn.location);
                             in_diap_call.parameters.AddElement(greq_call);

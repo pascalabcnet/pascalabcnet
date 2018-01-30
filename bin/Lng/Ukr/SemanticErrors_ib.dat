@@ -128,6 +128,7 @@ NAMESPACE_SHOULD_CONTAINS_ONLY_TYPES=В пространство имен мож
 RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED=Тип возвращаемого значения в операторах implicit и explicit должен указываться явно
 RETURN_TYPE_UNDEFINED_{0}=Тип возвращаемого значения функции {0} не определен и не может быть выведен в данный момент. Укажите тип явно.
 OPERATOR_RETURN_TYPE_UNDEFINED_{0}=Тип возвращаемого значения оператора {0} не определен и не может быть выведен в данный момент. Укажите тип явно.
+STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS=Типы полей авто-класса не могут быть описанием записи или описанием массива с границами
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Очікувався модуль, а зустріли бібліотеку
 ASSEMBLY_{0}_READING_ERROR=Помилка при читанні збірки '{0}'
