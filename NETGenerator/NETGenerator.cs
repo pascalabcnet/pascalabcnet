@@ -9846,9 +9846,15 @@ namespace PascalABCCompiler.NETGenerator
             is_addr = tmp_is_addr;
             il.Emit(OpCodes.Brfalse, FalseLabel);
             value.ret_if_true.visit(this);
+            var ti = helper.GetTypeReference(value.ret_if_true.type);
+            if (ti != null)
+                EmitBox(value.ret_if_true, ti.tp);
             il.Emit(OpCodes.Br, EndLabel);
             il.MarkLabel(FalseLabel);
             value.ret_if_false.visit(this);
+            ti = helper.GetTypeReference(value.ret_if_false.type);
+            if (ti != null)
+                EmitBox(value.ret_if_false, ti.tp);
             il.MarkLabel(EndLabel);
             
         }
