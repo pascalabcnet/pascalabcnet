@@ -32,6 +32,7 @@ namespace CodeFormatters
         private StringBuilder sb = new StringBuilder();
         private int tab = 2;//tabulacija
         private int off = 0;//tekushij otstup
+        private Stack<int> region_offsets = new Stack<int>();
         private bool in_procedure = false;//flag, v procedure li my
         private bool attr_on_new_line = true;
         private bool in_class = false;
@@ -373,7 +374,20 @@ namespace CodeFormatters
                             }
                             else
                                 addit_pos_for_multiline = 0;
-                            if (i < lines.Length - 1)
+                            string ln = lines[i].TrimStart(' ', '\t');
+                            if (ln.StartsWith("{$region"))
+                            {
+                                region_offsets.Push(off);
+                                lines[i] = new string(' ', off) + ln;
+                            }
+                            else if (ln.StartsWith("{$endregion"))
+                            {
+                                int region_off = off;
+                                if (region_offsets.Count != 0)
+                                    region_off = region_offsets.Pop();
+                                lines[i] = new string(' ', region_off) + ln;
+                            }
+                            else if (i < lines.Length - 1)
                             {
                                 if (lines[i].Trim() != "")
                                     lines[i] = new string(' ', min_off) + lines[i];
