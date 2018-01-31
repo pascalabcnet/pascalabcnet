@@ -1406,6 +1406,11 @@ namespace CodeCompletion
             return sc.GetNamesAsInObject();
         }
 
+        public override SymInfo[] GetNamesInAllTopScopes(bool all_names, ExpressionVisitor ev, bool is_static)
+        {
+            return topScope.GetNamesInAllTopScopes(all_names, ev, is_static);
+        }
+
         public override bool IsEqual(SymScope ts)
         {
             /*ElementScope es = ts as ElementScope;
