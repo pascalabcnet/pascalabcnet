@@ -344,6 +344,9 @@ UPDATE_CHECK_ERROR=Не вдалося перевірити оновлення
 UPDATE_CHECK=Перевірка оновлення
 PABC_DOWNLOAD_PAGE=http://pascalabc.net/ssyilki-dlya-skachivaniya
 M_CHECKUPDATES=Перевірити оновлення
+FRAMEWORK_DOWNLOAD_PAGE=https://www.microsoft.com/ru-RU/download/details.aspx?id=56116
+DOTNET_UPDATE_CHECK=Перевірка оновлення .NET Framework
+DOTNET_AVAILABLE=Доступна нова версія .NET Framework (.NET Framework 4.7.1). Перейти на сторінку завантаження?
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=Загальні

@@ -337,14 +337,18 @@ PRJ_NAMESPACE=Пространство имен
 NUGET_PACKAGE=Идентификатор пакета
 NUGET_INSTALL=Установить пакет
 NUGET_LOG=Лог
-VERSION_IS_UP_TO_DATE=Вы используете актуальную версию
+VERSION_IS_UP_TO_DATE=Вы используете актуальную версию PascalABC.NET
 UPDATE_AVAILABLE=Доступна новая версия PascalABC.NET. Перейти на страницу скачивания?
 UPDATE_AVAILABLE_CURRENT_VESION{0}=Установленная версия: {0}
 UPDATE_AVAILABLE_NEW_VESION{0}=Доступная версия: {0}
 UPDATE_CHECK_ERROR=Ошибка при проверке обновлений
-UPDATE_CHECK=Проверка обновлений
+UPDATE_CHECK=Проверка обновлений PascalABC.NET
 PABC_DOWNLOAD_PAGE=http://pascalabc.net/ssyilki-dlya-skachivaniya
 M_CHECKUPDATES=Проверить обновления
+FRAMEWORK_DOWNLOAD_PAGE=https://www.microsoft.com/ru-RU/download/details.aspx?id=56116
+DOTNET_UPDATE_CHECK=Проверка обновлений .NET Framework
+DOTNET_AVAILABLE=Доступна новая версия .NET Framework (.NET Framework 4.7.1). Перейти на страницу скачивания?
+
 //Options
 %PREFIX%=VP_OC_VIEWOPTIONS_
 NAME=Общие

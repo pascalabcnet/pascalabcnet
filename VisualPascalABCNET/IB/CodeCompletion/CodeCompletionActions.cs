@@ -127,7 +127,7 @@ namespace VisualPascalABC
             string expressionResult = FindFullExpression(textContent, textArea, out ccp.keyword, out full_expr);
             if (expressionResult != null)
                 expressionResult = expressionResult.Trim();
-            if (ccp.keyword == KeywordKind.CommonKeyword && !expressionResult.Contains(" "))
+            if (expressionResult != full_expr && full_expr.StartsWith("("))
                 return new List<Position>();
             List<Position> poses = ccp.GetDefinition(full_expr, textArea.MotherTextEditorControl.FileName, textArea.Caret.Line, textArea.Caret.Column, only_check);
             if (poses == null)
