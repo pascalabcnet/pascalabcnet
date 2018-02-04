@@ -3801,6 +3801,16 @@ namespace CodeCompletion
             return procs;
         }
 
+        public virtual List<ProcScope> GetMethods()
+        {
+            List<ProcScope> procs = new List<ProcScope>();
+            if (members != null)
+                foreach (SymScope ss in members)
+                    if (ss is ProcScope)
+                        procs.Add(ss as ProcScope);
+            return procs;
+        }
+
         private TypeScope internalInstance(TypeScope ts, List<TypeScope> gen_args)
         {
             if (ts is TemplateParameterScope || ts is UnknownScope)

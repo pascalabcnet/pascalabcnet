@@ -2273,7 +2273,9 @@ namespace CodeCompletion
                     }
                     catch (Exception e)
                     {
-
+#if DEBUG
+                        File.AppendAllText("log.txt", e.Message + Environment.NewLine + e.StackTrace + Environment.NewLine);
+#endif
                     }
                 }
 
@@ -3169,10 +3171,37 @@ namespace CodeCompletion
                     ss.AddName("Create", ps);
                 }
             }
-
+            mark_as_possible_abstract(ss);
             cur_type_name = tmp_name;
             returned_scope = ss;
             cur_scope = tmp;
+        }
+
+        private void mark_as_possible_abstract(TypeScope ts)
+        {
+            if (ts.is_abstract)
+                return;
+            if (ts.baseScope == null || !ts.baseScope.is_abstract)
+                return;
+            List<ProcScope> meths = ts.baseScope.GetAbstractMethods();
+            foreach (ProcScope abstr_meth in meths)
+            {
+                bool has_override = false;
+                foreach (ProcScope meth in ts.GetMethods())
+                {
+                    if (meth.name == abstr_meth.name && meth.IsParamsEquals(abstr_meth))
+                    {
+                        has_override = true;
+                        break;
+                    }
+                }
+                if (!has_override)
+                {
+                    ts.is_abstract = true;
+                    break;
+                }
+                    
+            }
         }
 
         public override void visit(default_indexer_property_node _default_indexer_property_node)
