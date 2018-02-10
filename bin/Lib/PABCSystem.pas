@@ -2069,7 +2069,7 @@ function DQNToNullable(v: integer): Nullable<integer>;
 implementation
 
 var
-  rnd: System.Random;
+  rnd := new System.Random;
   //  ENCultureInfo: System.Globalization.CultureInfo;
   nfi: System.Globalization.NumberFormatInfo;
   LastReadChar := #0;
@@ -10930,7 +10930,7 @@ begin
   nfi := new System.Globalization.NumberFormatInfo();
   nfi.NumberGroupSeparator := '.';
   //  System.Threading.Thread.CurrentThread.CurrentCulture := new System.Globalization.CultureInfo('en-US');
-  rnd := new System.Random;
+  //rnd := new System.Random;
   StartTime := DateTime.Now;
   output := new TextFile();
   input := new TextFile();
