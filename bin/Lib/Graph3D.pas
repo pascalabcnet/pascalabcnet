@@ -361,6 +361,7 @@ type
     property Distanse: real read GetD write SetD;
   end;
 
+  ///!#
   LightsType = class
   private 
     function GetC: integer := Invoke&<integer>(()->LightsGroup.Children.Count);
@@ -381,11 +382,33 @@ type
     end;
   end;
 
+  ///!#
+  GridLinesType = class
+  private 
+    procedure SetW(r: real) := Invoke(procedure(r: real)->gvl.Width := r, r);
+    function GetW: real := InvokeReal(()->gvl.Width);
+    procedure SetL(r: real) := Invoke(procedure(r: real)->gvl.Length := r, r);
+    function GetL: real := InvokeReal(()->gvl.Length);
+    procedure SetMj(r: real) := Invoke(procedure(r: real)->gvl.MajorDistance := r, r);
+    function GetMj: real := InvokeReal(()->gvl.MajorDistance);
+    procedure SetMn(r: real) := Invoke(procedure(r: real)->gvl.MinorDistance := r, r);
+    function GetMn: real := InvokeReal(()->gvl.MinorDistance);
+    procedure SetN(r: Vector3D) := Invoke(procedure(r: Vector3D)->gvl.Normal := r, r);
+    function GetN: Vector3D := Inv(()->gvl.Normal);
+  public 
+    property Width: real read GetW write SetW;
+    property Length: real read GetL write SetL;
+    property Normal: Vector3D read GetN write SetN;
+    property MajorDistance: real read GetMj write SetMj;
+    property MinorDistance: real read GetMn write SetMn;
+  end;
+
 var
   View3D: View3DT;
   Window: WindowType;
   Camera: CameraType;
   Lights: LightsType;
+  GridLines: GridLinesType; 
   
 function operator implicit(c: GColor): GMaterial; extensionmethod := Materialhelper.CreateMaterial(c);
 
@@ -2421,9 +2444,12 @@ function Text3D(p: Point3D; Text: string; Height: real; fontname: string := 'Ari
 function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
 function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
 
-function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, lengthdirection, m));
-function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D := OrtZ; LengthDirection: Vector3D := OrtX; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, normal, lengthdirection, m);
-function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, normal, OrtX, m); 
+
+function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, LengthDirection, m));
+function Rectangle3D(p: Point3D; Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, LengthDirection, m);
+function Rectangle3D(x, y, z, Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, Length, Width, Normal, OrtX, m); 
+function Rectangle3D(x, y, z, Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, Length, Width, OrtZ, OrtX, m); 
+function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, Normal, OrtX, m); 
 function Rectangle3D(p: Point3D; Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, OrtZ, OrtX, m); 
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
@@ -2625,6 +2651,7 @@ begin
   Window := new WindowType;
   Camera := new CameraType;
   Lights := new LightsType;
+  GridLines := new GridLinesType;
   
   var g := new Grid;
   MainWindow.Content := g;
@@ -2648,6 +2675,7 @@ begin
   gvl := new GridLinesVisual3D();
   gvl.Width := 12;
   gvl.Length := 12;
+  gvl.Normal := OrtZ;
   gvl.MinorDistance := 1;
   gvl.MajorDistance := 1;
   gvl.Thickness := 0.02;
