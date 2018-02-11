@@ -82,11 +82,11 @@ function Sz3D(x, y, z: real) := new Size3D(x, y, z);
 function Pnt(x, y: real) := new Point(x, y);
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
 
-var
-  OrtX := V3D(1, 0, 0);
-  OrtY := V3D(0, 1, 0);
-  OrtZ := V3D(0, 0, 1);
-  Origin: Point3D := P3D(0, 0, 0);
+const
+  OrtX = V3D(1, 0, 0);
+  OrtY = V3D(0, 1, 0);
+  OrtZ = V3D(0, 0, 1);
+  Origin: Point3D = P3D(0, 0, 0);
 
 function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
 
@@ -1321,7 +1321,7 @@ type
       var a := new ArrowVisual3D;
       a.HeadLength := hl;
       a.Diameter := d;
-      a.Origin := P3D(0, 0, 0);
+      a.Origin := Origin;
       Result := a;
     end;
   protected  
@@ -1342,26 +1342,27 @@ type
   
   TruncatedConeT = class(ObjectWithMaterial3D)
   private
-    procedure SetHP(r: real) := (model as TruncatedConeVisual3D).Height := r;
-    procedure SetH(r: real) := Invoke(SetHP, r); 
-    function GetH: real := InvokeReal(()->(model as TruncatedConeVisual3D).Height);
+    function model := inherited model as TruncatedConeVisual3D;
+
+    procedure SetH(r: real) := Invoke(procedure(r: real)->model.Height := r, r); 
+    function GetH: real := InvokeReal(()->model.Height);
     
-    procedure SetBRP(r: real) := (model as TruncatedConeVisual3D).BaseRadius := r;
+    procedure SetBRP(r: real) := model.BaseRadius := r;
     procedure SetBR(r: real) := Invoke(SetBRP, r); 
-    function GetBR: real := InvokeReal(()->(model as TruncatedConeVisual3D).BaseRadius);
+    function GetBR: real := InvokeReal(()->model.BaseRadius);
     
-    procedure SetTRP(r: real) := (model as TruncatedConeVisual3D).TopRadius := r;
+    procedure SetTRP(r: real) := model.TopRadius := r;
     procedure SetTR(r: real) := Invoke(SetTRP, r); 
-    function GetTR: real := InvokeReal(()->(model as TruncatedConeVisual3D).TopRadius);
+    function GetTR: real := InvokeReal(()->model.TopRadius);
     
-    procedure SetTCP(r: boolean) := (model as TruncatedConeVisual3D).TopCap := r;
+    procedure SetTCP(r: boolean) := model.TopCap := r;
     procedure SetTC(r: boolean) := Invoke(SetTCP, r); 
-    function GetTC: boolean := Invoke&<boolean>(()->(model as TruncatedConeVisual3D).TopCap);
+    function GetTC: boolean := Invoke&<boolean>(()->model.TopCap);
   private 
     function NewVisualObject(h, baser, topr: real; sides: integer; topcap: boolean): TruncatedConeVisual3D;
     begin
       var a := new TruncatedConeVisual3D;
-      a.Origin := p3D(0, 0, 0);
+      a.Origin := Origin;
       a.BaseRadius := baser;
       a.TopRadius := topr;
       a.Height := h;
@@ -1548,13 +1549,13 @@ type
   protected  
     function CreateObject: Object3D; override := new RectangleT(X, Y, Z, Length, Width, Normal, LengthDirection, Material);
   public 
-    constructor(x, y, z, l, w: real; normal, lendirection: Vector3D; m: GMaterial);
+    constructor(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: GMaterial);
     begin
       var a := new RectangleVisual3D;
       a.Origin := P3D(0, 0, 0);
-      a.Width := w;
-      a.Length := l;
-      a.LengthDirection := lendirection;
+      a.Width := Width;
+      a.Length := Length;
+      a.LengthDirection := lengthdirection;
       a.Normal := normal;
       CreateBase(a, x, y, z, m);
     end;
@@ -1769,10 +1770,10 @@ type
   protected  
     function CreateObject: Object3D; override := new LegoT(X, Y, Z, Columns, Rows, Height, Material);
   public 
-    constructor(x, y, z: real; col, r, h: integer; m: GMaterial);
+    constructor(x, y, z: real; Rows, Columns, Height: integer; m: GMaterial);
     begin
       var bx := new LegoVisual3D;
-      (bx.Rows, bx.Height, bx.Columns) := (r, h, col);
+      (bx.Rows, bx.Height, bx.Columns) := (Rows, Height, Columns);
       CreateBase(bx, x, y, z, m);
     end;
     
@@ -2420,12 +2421,10 @@ function Text3D(p: Point3D; Text: string; Height: real; fontname: string := 'Ari
 function Text3D(x, y, z: real; Text: string; Height: real; c: Color) := Text3D(x, y, z, text, height, 'Arial', c);
 function Text3D(p: Point3D; Text: string; Height: real; c: Color) := Text3D(p.x, p.y, p.z, text, height, 'Arial', c);
 
-function Rectangle3D(x, y, z, l, w: real; normal, lendirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, l, w, normal, lendirection, m));
-function Rectangle3D(p: Point3D; l, w: real; normal, lendirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, lendirection, m);
-function Rectangle3D(x, y, z, l, w: real; normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, l, w, normal, OrtX, m); 
-function Rectangle3D(x, y, z, l, w: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(x, y, z, l, w, OrtZ, OrtX, m); 
-function Rectangle3D(p: Point3D; l, w: real; normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, normal, OrtX, m); 
-function Rectangle3D(p: Point3D; l, w: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, l, w, OrtZ, OrtX, m); 
+function Rectangle3D(x, y, z, Length, Width: real; Normal, LengthDirection: Vector3D; m: Material := DefaultMaterial): RectangleT := Inv(()->RectangleT.Create(x, y, z, Length, Width, normal, lengthdirection, m));
+function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D := OrtZ; LengthDirection: Vector3D := OrtX; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, normal, lengthdirection, m);
+function Rectangle3D(p: Point3D; Length, Width: real; Normal: Vector3D; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, normal, OrtX, m); 
+function Rectangle3D(p: Point3D; Length, Width: real; m: Material := DefaultMaterial): RectangleT := Rectangle3D(p.x, p.y, p.z, Length, Width, OrtZ, OrtX, m); 
 
 /// Загружает модель из файла .obj, .3ds, .lwo, .objz, .stl, .off
 function FileModel3D(x, y, z: real; fname: string; m: Material): FileModelT := Inv(()->FileModelT.Create(x, y, z, fname, m));
@@ -2443,7 +2442,7 @@ function Pyramid(p: Point3D; Sides: integer; Height, Radius: real; m: Material :
 function PyramidWireFrame(x, y, z: real; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := Inv(()->PyramidTWireFrame.Create(x, y, z, Sides, Radius, Height, thickness, c));
 function PyramidWireFrame(p: Point3D; Sides: integer; Height, Radius: real; Thickness: real := 1.2; c: Color := GrayColor(64)): PyramidTWireFrame := PyramidWireFrame(p.x, p.y, p.z, Sides, Radius, Height, thickness, c);
 
-function Lego(x, y, z: real; col, r, h: integer; m: Material := DefaultMaterial): LegoT := Inv(()->LegoT.Create(x, y, z, col, r, h, m));
+function Lego(x, y, z: real; Rows, Columns, Height: integer; m: Material := DefaultMaterial): LegoT := Inv(()->LegoT.Create(x, y, z, Rows, Columns, Height, m));
 
 function Icosahedron(x, y, z, r: real; m: Material := DefaultMaterial): IcosahedronT := Inv(()->IcosahedronT.Create(x, y, z, 4*R/Sqrt(2)/Sqrt(5+Sqrt(5)), m));
 function Dodecahedron(x, y, z, r: real; m: Material := DefaultMaterial): DodecahedronT := Inv(()->DodecahedronT.Create(x, y, z, R*4/Sqrt(3)/(1+Sqrt(5)), m));

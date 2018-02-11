@@ -5290,7 +5290,7 @@ namespace PascalABCCompiler.TreeConverter
                                                         ThrowCompilationError = true;
                                                         throw LastError();
                                                     }
-                                                    RemoveLastError();
+                                                    Errors.Error last_err = LastError();
                                                     skip_first_parameter = false;
                                                     sil = tmp_sil;
                                                     exprs.remove_at(0);
@@ -5298,7 +5298,8 @@ namespace PascalABCCompiler.TreeConverter
                                                     if (fn == null)
                                                     {
                                                         ThrowCompilationError = true;
-                                                        throw LastError();
+                                                        RemoveLastError();
+                                                        throw last_err;
                                                     }
                                                 }
                                                 else if (fn != null && skip_first_parameter && sil.Count() > 1 && !sil.HasOnlyExtensionMethods())
