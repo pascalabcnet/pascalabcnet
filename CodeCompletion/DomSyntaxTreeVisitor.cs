@@ -2517,8 +2517,9 @@ namespace CodeCompletion
                         }
                         if (returned_scope != null && returned_scope is ProcScope && (returned_scope as ProcScope).return_type != null)
 						{
-							if ((returned_scope as ProcScope).parameters.Count == 0)
-                                returned_scope = (returned_scope as ProcScope).return_type;
+                            ProcScope ps = returned_scope as ProcScope;
+                            if (ps.parameters.Count == 0 || ps.is_extension || ps.parameters[0].param_kind == parametr_kind.params_parametr || ps.parameters[0].cnst_val != null)
+                                returned_scope = ps.return_type;
 							return;
 						}
 						else if (returned_scope is ElementScope)
