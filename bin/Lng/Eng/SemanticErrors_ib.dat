@@ -136,6 +136,7 @@ RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED=Can not declare implicit and explicit op
 RETURN_TYPE_UNDEFINED_{0}=Return type of function {0} is not defined and cannot be deduced. Declare the return type explicitly.
 OPERATOR_RETURN_TYPE_UNDEFINED_{0}=Return type of operator {0} is not defined and cannot be deduced. Declare the return type explicitly.
 STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS=Field types in auto classes cannot be record or array definition
+EXTERNAL_METHOD_SHOULD_BE_STATIC=external-methods should be static
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Unit expected, library found
 ASSEMBLY_{0}_READING_ERROR=Error by reading assembly '{0}'

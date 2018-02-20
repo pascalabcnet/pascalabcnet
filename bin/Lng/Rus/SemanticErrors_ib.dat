@@ -131,6 +131,7 @@ RETURN_VALUE_IMPLICIT_EXPLICIT_EXPECTED=Тип возвращаемого зна
 RETURN_TYPE_UNDEFINED_{0}=Тип возвращаемого значения функции {0} не определен и не может быть выведен в данный момент. Укажите тип явно.
 OPERATOR_RETURN_TYPE_UNDEFINED_{0}=Тип возвращаемого значения оператора {0} не определен и не может быть выведен в данный момент. Укажите тип явно.
 STRUCT_TYPE_DEFINITION_IN_AUTO_CLASS=Типы полей авто-класса не могут быть описанием записи или описанием массива с границами
+EXTERNAL_METHOD_SHOULD_BE_STATIC=external-методы должны быть статическими
 %PREFIX%=COMPILATIONERROR_
 UNIT_MODULE_EXPECTED_LIBRARY_FOUND=Ожидался модуль, а встречена библиотека
 ASSEMBLY_{0}_READING_ERROR=Ошибка при чтении сборки '{0}'

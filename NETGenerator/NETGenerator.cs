@@ -2021,8 +2021,8 @@ namespace PascalABCCompiler.NETGenerator
                     if (func.return_value_type == null)
                         ret_type = null;//typeof(void);
                     else
-                        ret_type = helper.GetTypeReference(funcs[i].return_value_type).tp;
-                    Type[] param_types = GetParamTypes(funcs[i]);//получаем параметры процедуры
+                        ret_type = helper.GetTypeReference(func.return_value_type).tp;
+                    Type[] param_types = GetParamTypes(func);//получаем параметры процедуры
 
                     IExternalStatementNode esn = (IExternalStatementNode)statements[0];
                     string module_name = Tools.ReplaceAllKeys(esn.module_name, StandartDirectories);
@@ -2031,8 +2031,8 @@ namespace PascalABCCompiler.NETGenerator
                                                                        CallingConventions.Standard, ret_type, param_types, CallingConvention.Winapi,
                                                                        CharSet.Ansi);//определяем PInvoke-метод
                     methb.SetImplementationFlags(MethodImplAttributes.PreserveSig);
-                    helper.AddMethod(funcs[i], methb);
-                    IParameterNode[] parameters = funcs[i].parameters;
+                    helper.AddMethod(func, methb);
+                    IParameterNode[] parameters = func.parameters;
                     //определяем параметры с указанием имени
                     for (int j = 0; j < parameters.Length; j++)
                     {
@@ -5857,6 +5857,13 @@ namespace PascalABCCompiler.NETGenerator
                 ConvertConstructorBody(value);
                 return;
             }
+            if (value.function_code is IStatementsListNode)
+            {
+                IStatementNode[] statements = (value.function_code as IStatementsListNode).statements;
+                if (statements.Length > 0 && statements[0] is IExternalStatementNode)
+                    return;
+            }
+            
             num_scope++;
             MakeAttribute(value);
             MethodBuilder methb = helper.GetMethodBuilder(value);
@@ -6357,6 +6364,38 @@ namespace PascalABCCompiler.NETGenerator
             return comp_opt.target == TargetType.Dll && prop_accessors.ContainsKey(value);
         }
 
+        private void ConvertExternalMethod(SemanticTree.ICommonMethodNode meth)
+        {
+            IStatementsListNode sl = (IStatementsListNode)meth.function_code;
+            IStatementNode[] statements = sl.statements;
+            //функция импортируется из dll
+            Type ret_type = null;
+            //получаем тип возвр. значения
+            if (meth.return_value_type == null)
+                ret_type = null;//typeof(void);
+            else
+                ret_type = helper.GetTypeReference(meth.return_value_type).tp;
+            Type[] param_types = GetParamTypes(meth);//получаем параметры процедуры
+
+            IExternalStatementNode esn = (IExternalStatementNode)statements[0];
+            string module_name = Tools.ReplaceAllKeys(esn.module_name, StandartDirectories);
+            MethodBuilder methb = cur_type.DefinePInvokeMethod(meth.name, module_name, esn.name,
+                                                               MethodAttributes.Public | MethodAttributes.Static | MethodAttributes.PinvokeImpl | MethodAttributes.HideBySig,
+                                                               CallingConventions.Standard, ret_type, param_types, CallingConvention.Winapi,
+                                                               CharSet.Ansi);//определяем PInvoke-метод
+            methb.SetImplementationFlags(MethodImplAttributes.PreserveSig);
+            helper.AddMethod(meth, methb);
+            IParameterNode[] parameters = meth.parameters;
+            //определяем параметры с указанием имени
+            for (int j = 0; j < parameters.Length; j++)
+            {
+                ParameterAttributes pars = ParameterAttributes.None;
+                //if (func.parameters[j].parameter_type == parameter_type.var)
+                //  pars = ParameterAttributes.Out;
+                methb.DefineParameter(j + 1, pars, parameters[j].name);
+            }
+        }
+
         //перевод заголовка метода
         private void ConvertMethodHeader(SemanticTree.ICommonMethodNode value)
         {
@@ -6366,8 +6405,18 @@ namespace PascalABCCompiler.NETGenerator
                 return;
             }
 
-            if (helper.GetMethod(value) != null) return;
-
+            if (helper.GetMethod(value) != null)
+                return;
+            if (value.function_code is IStatementsListNode)
+            {
+                IStatementsListNode sl = (IStatementsListNode)value.function_code;
+                IStatementNode[] statements = sl.statements;
+                if (statements.Length > 0 && statements[0] is IExternalStatementNode)
+                {
+                    ConvertExternalMethod(value);
+                    return;
+                }
+            }
             MethodBuilder methb = null;
             bool is_prop_acc = IsPropertyAccessor(value);
             MethodAttributes attrs = GetMethodAttributes(value, is_prop_acc);

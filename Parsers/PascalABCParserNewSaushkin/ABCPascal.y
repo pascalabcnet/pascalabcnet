@@ -2058,7 +2058,9 @@ proc_func_decl_noclass
 
 inclass_proc_func_decl
     : inclass_proc_func_decl_noclass
-		{ $$ = $1; }
+		{ 
+            $$ = $1; 
+        }
     | tkClass inclass_proc_func_decl_noclass         
         { 
 		    if (($2 as procedure_definition).proc_header != null)
@@ -2215,6 +2217,8 @@ inclass_block
         { 
 			$$ = new block($1 as declarations, $2 as statement_list, @$); 
 		}
+    | external_block
+		{ $$ = $1; }
     ;
 
 fp_list

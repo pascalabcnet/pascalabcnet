@@ -16432,6 +16432,8 @@ namespace PascalABCCompiler.TreeConverter
         {
             string module_name = "";
             string name = "";
+            if (context.converted_func_stack.top() is common_method_node && (context.converted_func_stack.top() as common_method_node).polymorphic_state != SemanticTree.polymorphic_state.ps_static)
+                AddError(context.top_function.loc, "EXTERNAL_METHOD_SHOULD_BE_STATIC");
             if (_external_directive.modulename == null)
             {
             	if (!has_dll_import_attribute(context.top_function))
