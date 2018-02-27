@@ -18,7 +18,7 @@ procedure AddStatusBar(Height: real := 24);
 
 var 
   ActivePanel: Panel;
-  GlobalMargin := 5;
+  GlobalMargin := 0;
 
 type
   GButton = System.Windows.Controls.Button;
@@ -44,7 +44,7 @@ type
     property Margin: real read GetM write SetM;
   end;
   ///!#
-  Button = class(CommonControl)
+  ButtonT = class(CommonControl)
   protected
     function b: GButton := element as GButton;
     procedure BClick(sender: Object; e: RoutedEventArgs);
@@ -58,7 +58,8 @@ type
     procedure CreateP(Txt: string);
     begin
       element := new GButton;
-      Margin := GlobalMargin;
+      element.Margin := new Thickness(0,0,0,8);
+      //Margin := GlobalMargin;
       Text := Txt;
       b.Click += BClick;
       ActivePanel.Children.Add(b);
@@ -72,7 +73,7 @@ type
     property Text: string read GetText write SetText;
   end;
   ///!#
-  TextBlock = class(CommonControl)
+  TextBlockT = class(CommonControl)
   protected
     function b: GTextBlock := element as GTextBlock;
     function GetText: string := InvokeString(()->b.Text);
@@ -81,7 +82,8 @@ type
     procedure CreateP(Txt: string);
     begin
       element := new GTextBlock;
-      element.Margin := new Thickness(5,5,5,0);
+      //element.Margin := new Thickness(0,0,0,8);
+      //element.Margin := new Thickness(5,5,5,0);
       Text := Txt;
       ActivePanel.Children.Add(b);
     end;
@@ -93,7 +95,7 @@ type
     property Text: string read GetText write SetText;
   end;
   ///!#
-  TextBox = class(CommonControl)
+  TextBoxT = class(CommonControl)
   protected
     function tb: GTextBox := element as GTextBox;
     procedure BTextChanged(sender: Object; e: TextChangedEventArgs);
@@ -104,25 +106,107 @@ type
     function GetText: string := InvokeString(()->tb.Text);
     procedure SetTextP(t: string) := tb.Text := t;
     procedure SetText(t: string) := Invoke(SetTextP,t);
-    procedure CreateP(Txt: string);
+    procedure CreateP(Txt: string; w: real);
     begin
       element := new GTextBox;
-      element.HorizontalAlignment := HorizontalAlignment.Left;
-      element.Margin := new Thickness(5,0,5,5);
-      //Margin := GlobalMargin;
+      element.HorizontalAlignment := HorizontalAlignment.Stretch;
+      element.Margin := new Thickness(0,0,0,8);
       Text := Txt;
+      if w > 0 then
+        Width := w;
       tb.TextChanged += BTextChanged;
       ActivePanel.Children.Add(tb);
     end;
   public 
     event Click: procedure;
-    constructor Create(Txt: string);
+    constructor Create(Txt: string := ''; w: real := 0);
     begin
-      Invoke(CreateP,Txt);
+      Invoke(CreateP,Txt,w);
     end;
     property Text: string read GetText write SetText;
   end;
+  
+  IntegerBoxT = class(TextBoxT)
+    function GetValue: integer;
+    begin
+      if Trim(Text) = '' then
+        Result := 0
+      else Result := integer.Parse(Text);
+    end;
 
+    procedure SetValue(x: integer) := Text := x.ToString;
+  public 
+    constructor Create(w: real := 0);
+    begin
+      inherited Create('',w);
+      var tb := element as GTextBox;
+      tb.KeyDown += procedure (o,e) -> begin
+        var s := e.Key.ToString;
+        if (s[1] = 'D') and (s.Length = 2) then
+        else
+          e.Handled := True;
+        {if (e. = #8) or (e.Key = '-') then 
+          exit;}
+        //if not Char.IsDigit(e.Key) then
+        //  e.Handled := True;
+      end;
+      tb.TextInput += procedure (o,e) -> begin
+        Print(e.Text);
+        {if (e. = #8) or (e.Key = '-') then 
+          exit;}
+        //if not Char.IsDigit(e.Key) then
+        //  e.Handled := True;
+      end;
+    end;
+    property Value: integer read GetValue write SetValue;
+  end;
+  
+  TextBoxWithLabelT = class(CommonControl)
+  protected
+    function tb: GTextBox := (element as StackPanel).Children[1] as GTextBox;
+    procedure BTextChanged(sender: Object; e: TextChangedEventArgs);
+    begin
+      if Click <> nil then
+        Click;
+    end;
+    function GetText: string := InvokeString(()->tb.Text);
+    procedure SetTextP(t: string) := tb.Text := t;
+    procedure SetText(t: string) := Invoke(SetTextP,t);
+    procedure CreateP(LabelTxt,Txt: string; w: real);
+    begin
+      var sp := new StackPanel;
+      element := sp;
+      sp.Orientation := Orientation.Horizontal;
+      sp.HorizontalAlignment := HorizontalAlignment.Stretch;
+      var l := new TextBlock();
+      l.Text := LabelTxt;
+      sp.Children.Add(l);
+      var tb := new GTextBox;
+      tb.Width := 100;
+      tb.VerticalAlignment := VerticalAlignment.Stretch;
+      tb.Margin := new Thickness(0,0,0,8);
+      sp.Children.Add(tb);
+      Text := Txt;
+      if w > 0 then
+        Width := w;
+      tb.TextChanged += BTextChanged;
+      ActivePanel.Children.Add(sp);
+    end;
+  public 
+    event Click: procedure;
+    constructor Create(LabelTxt: string; Txt: string := ''; w: real := 0);
+    begin
+      Invoke(CreateP,LabelTxt,Txt,w);
+    end;
+    property Text: string read GetText write SetText;
+  end;
+  
+  function Button(Txt: string): ButtonT;
+  function TextBlock(Txt: string): TextBlockT;
+  function TextBox(Txt: string := ''; w: real := 0): TextBoxT;
+  function IntegerBox(w: real := 0): IntegerBoxT;
+  
+  procedure EmptyBlock(sz: integer := 16);
 
 implementation
 
@@ -139,21 +223,26 @@ procedure AddPanel(var pp: StackPanel; wh: real; d: Dock; c: Color);
 begin
   if pp<>nil then
     exit;
+  var bb := new Border();  
+  bb.Background := new SolidColorBrush(c);
   var p := new StackPanel;
+  bb.Child := p;
+  //bb.Children.Add(p);
+  p.Margin := new System.Windows.Thickness(20);
   if (d = Dock.Left) or (d = Dock.Right) then
   begin
     p.Orientation := Orientation.Vertical;
-    p.Width := wh;
+    bb.Width := wh;
   end
   else
   begin
     p.Orientation := Orientation.Horizontal;
-    p.Height := wh;
+    bb.Height := wh;
   end;
   p.Background := new SolidColorBrush(c);
   DockPanel.SetDock(p,d);
   // Всегда добавлять предпоследним
-  MainDockPanel.children.Insert(MainDockPanel.children.Count-1,p);
+  MainDockPanel.children.Insert(MainDockPanel.children.Count-1,bb);
   pp := p;
   ActivePanel := p;
 end;
@@ -181,6 +270,19 @@ begin
   sb.Items.Add(sbi);}
 end;
 procedure AddStatusBar(Height: real) := Invoke(AddStatusBarP,Height);
+
+function Button(Txt: string): ButtonT := ButtonT.Create(Txt);
+function TextBlock(Txt: string): TextBlockT := TextBlockT.Create(Txt);
+function TextBox(Txt: string; w: real): TextBoxT := TextBoxT.Create(Txt,w);
+function IntegerBox(w: real): IntegerBoxT := IntegerBoxT.Create(w);
+
+procedure EmptyBlock(sz: integer);
+begin
+  var e := TextBlock('');
+  e.Height:= sz;
+  e.Width:= sz;
+end;
+
 
 begin
 end.

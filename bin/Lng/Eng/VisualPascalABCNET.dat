@@ -163,7 +163,7 @@ M_COMPILEROPTIONS=Compiler Options
 M_VIEWOPTIONS=View
 
 MR_HELP=Help
-M_HELP=Contens
+M_HELP=Contents
 M_DOTNET_HELP=.NET Framework Help (MSDN)
 M_EXAMPLES=Examples
 M_MAINFEATURES=Main Features
