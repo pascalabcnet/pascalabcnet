@@ -17,7 +17,7 @@ namespace VisualPascalABC
         public PropertiesForm()
         {
             InitializeComponent();
-            TabText = PascalABCCompiler.StringResources.Get("VP_MF_M_PROPERTIES");
+            TabText = "M_PROPERTIES";
         }
 
         private void PropertiesForm_Load(object sender, EventArgs e)
