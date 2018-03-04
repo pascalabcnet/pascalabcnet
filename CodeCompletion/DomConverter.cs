@@ -143,9 +143,9 @@ namespace CodeCompletion
                     SymInfo[] ext_syms = null;
                     if (si is ElementScope)
                     {
-                        SymScope root_scope = visitor.cur_scope;
-                        if (root_scope is ImplementationUnitScope)
-                            root_scope = root_scope.topScope;
+                        SymScope root_scope = visitor.entry_scope;
+                        //if (root_scope is ImplementationUnitScope || root_scope is BlockScope)
+                        //    root_scope = root_scope.topScope;
                         ext_syms = root_scope.GetSymInfosForExtensionMethods((si as ElementScope).sc as TypeScope);
                     }
                         
