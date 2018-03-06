@@ -4590,7 +4590,7 @@ namespace CodeCompletion
         public override void visit(ident_with_templateparams node)
         {
             node.name.visit(this);
-            if (returned_scopes.Count > 0 && returned_scopes[0] is ProcScope)
+            if (search_all && returned_scopes.Count > 0 && returned_scopes[0] is ProcScope)
             {
                 ProcScope ps = returned_scopes[0] as ProcScope;
                 List<TypeScope> template_params = new List<TypeScope>();
@@ -4622,6 +4622,23 @@ namespace CodeCompletion
                     }
                 }
                 returned_scope = ps.GetInstance(template_params);
+            }
+            else if (returned_scope is TypeScope)
+            {
+                TypeScope ts = returned_scope as TypeScope;
+                List<TypeScope> template_params = new List<TypeScope>();
+                foreach (type_definition td in node.template_params.params_list)
+                {
+                    td.visit(this);
+                    if (returned_scope is TypeScope)
+                        template_params.Add(returned_scope as TypeScope);
+                    else
+                    {
+                        returned_scope = ts;
+                        return;
+                    }
+                }
+                returned_scope = ts.GetInstance(template_params);
             }
         }
 		public override void visit(bracket_expr _bracket_expr)
