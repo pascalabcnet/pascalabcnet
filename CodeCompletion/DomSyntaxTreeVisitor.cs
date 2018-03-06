@@ -3140,8 +3140,10 @@ namespace CodeCompletion
             else
                 ss.baseScope = returned_scope as TypeScope;
             int num = 0;
-            if (_class_definition.keyword != class_keyword.Interface) num = 1;
-            else ss.baseScope = null;
+            if (_class_definition.keyword != class_keyword.Interface)
+                num = 1;
+            else
+                ss.baseScope = null;
             if (_class_definition.class_parents != null && _class_definition.class_parents.types.Count > num)
             {
                 for (int i = num; i < _class_definition.class_parents.types.Count; i++)
@@ -3153,9 +3155,13 @@ namespace CodeCompletion
                         ss.AddImplementedInterface(returned_scope as TypeScope);
                 }
             }
-            if (has_cyclic_inheritance(ss)) ss.baseScope = null;
+            if (has_cyclic_inheritance(ss))
+                ss.baseScope = null;
+            if (ss.loc != null)
+                ss.predef_loc = ss.loc;
             ss.loc = get_location(_class_definition);
             cur_scope = ss;
+            
             if (_class_definition.template_args != null)
             {
                 foreach (ident id in _class_definition.template_args.idents)

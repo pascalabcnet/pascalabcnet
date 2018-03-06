@@ -669,6 +669,9 @@ namespace CodeCompletion
             //if (loc != null && loc.begin_line_num <= line && loc.end_line_num >= line && loc.begin_column_num <= column && loc.end_column_num >= column)
             if (IsInScope(loc, line, column))
                 res = this;
+            TypeScope ts = this as TypeScope;
+            if (res == null && ts != null && ts.predef_loc != null && IsInScope(ts.predef_loc, line, column))
+                res = this;
             foreach (SymScope ss in members)
                 if (this != ss && ss.loc != null && (loc == null || loc != null && loc.doc != null && ss.loc.doc.file_name == loc.doc.file_name))
                 {
@@ -759,6 +762,7 @@ namespace CodeCompletion
             List<SymInfo> lst = new List<SymInfo>();
             foreach (SymScope ss in members)
             {
+                TypeScope ts = ss as TypeScope;
                 if (ss != this && !ss.si.name.StartsWith("$"))
                 {
                     if (ss.loc != null && loc != null)
@@ -766,6 +770,10 @@ namespace CodeCompletion
                         if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0)
                         {
                             if (IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                            {
+                                lst.Add(ss.si);
+                            }
+                            else if (ts != null && ts.predef_loc != null && IsAfterDefinition(ts.predef_loc.begin_line_num, ts.predef_loc.begin_column_num))
                             {
                                 lst.Add(ss.si);
                             }
@@ -828,6 +836,7 @@ namespace CodeCompletion
                         }
                     }
                 if (ss == null) return null;
+                TypeScope ts = ss as TypeScope;
                 if (CodeCompletionController.CurrentParser.LanguageInformation.CaseSensitive)
                     if (ss.si.name != name)
                         return null;
@@ -835,7 +844,8 @@ namespace CodeCompletion
                 {
                     if (string.Compare(ss.loc.doc.file_name, loc.doc.file_name, true) == 0 && this != ss)
                     {
-                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num))
+                        if (IsClassMember(ss) || IsAfterDefinition(ss.loc.begin_line_num, ss.loc.begin_column_num) ||
+                            ts != null && ts.predef_loc != null && IsAfterDefinition(ts.predef_loc.begin_line_num, ts.predef_loc.begin_column_num))
                         {
                             return ss;
                         }
@@ -3595,6 +3605,7 @@ namespace CodeCompletion
         public SymbolKind kind;
         public TypeScope baseScope;
         public location real_body_loc;
+        public location predef_loc;
         public string name;
         //public List<SymScope> members;
         public TypeScope elementType;
