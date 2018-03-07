@@ -83,7 +83,11 @@ namespace VisualPascalABC
                     if (key != ' ')
                         ccw.ProcessKeyEvent(key);
                     else
+                    {
                         ccw.ProcessKeyEvent('_');
+                        ccw.Close();
+                    }
+                        
                 }
                 else if (ccw != null && ccw.ProcessKeyEvent(key))
                     return true;
