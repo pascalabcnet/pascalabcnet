@@ -3214,6 +3214,8 @@ namespace CodeCompletion
         {
             if (ts is NullTypeScope && is_dynamic_arr)
                 return true;
+            if (ts is CompiledScope && (ts as CompiledScope).ctn == PascalABCCompiler.NetHelper.NetHelper.ArrayType)
+                return true;
             if (!is_dynamic_arr && !IsMultiDynArray)
                 return base.IsConvertable(ts);
             ArrayScope arrs = ts as ArrayScope;
@@ -5059,7 +5061,7 @@ namespace CodeCompletion
                         List<TypeScope> lst = new List<TypeScope>();
                         lst.Add(gen_args[Math.Min(i, gen_args.Count - 1)]);
                         if (lst[0].instances != null && lst[0].instances.Count > 0)
-                            lst[0] = lst[0].instances[0];
+                            lst[0] = lst[0].instances[Math.Min(i, lst[0].instances.Count - 1)];
                         sc.instances.Add(this.instances[i].GetInstance(lst));
                         if (i < gen_args.Count)
                             sc.generic_params.Add(gen_args[i].si.name);

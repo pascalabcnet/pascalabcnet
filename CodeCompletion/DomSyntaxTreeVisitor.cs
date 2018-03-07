@@ -2889,7 +2889,13 @@ namespace CodeCompletion
             {
                 if (ps.return_type != null)
                 {
-                    returned_scope = ps.return_type;
+                    if (ps.name == "Copy" && ps.return_type.Name == "Array" && _method_call.parameters.expressions.Count > 0)
+                    {
+                        _method_call.parameters.expressions[0].visit(this);
+                        
+                    }
+                    else
+                        returned_scope = ps.return_type;
                 }
                 else
                     returned_scope = null;
