@@ -4097,26 +4097,27 @@ namespace CodeCompletion
         public override void visit(exception_handler _exception_handler)
         {
             SymScope tmp = cur_scope;
-        	SymScope stmt_scope = new BlockScope(cur_scope);
-        	cur_scope.AddName("$block_scope",stmt_scope);
-        	stmt_scope.loc = get_location(_exception_handler);
-        	stmt_scope.loc = new location(stmt_scope.loc.begin_line_num,stmt_scope.loc.begin_column_num,
-        	                              _exception_handler.statements.source_context.end_position.line_num,
-        	                              _exception_handler.statements.source_context.end_position.column_num,stmt_scope.loc.doc);
-        	returned_scope = null;
-        	if (_exception_handler.variable == null) return;
-        	if (_exception_handler.type_name != null)
-        	_exception_handler.type_name.visit(this);
-        	else returned_scope = cur_scope.FindName(_exception_handler.variable.name);
-        	if (returned_scope != null)
-        	{
-        		cur_scope = stmt_scope;
-        		ElementScope es = new ElementScope(new SymInfo(_exception_handler.variable.name, SymbolKind.Variable,_exception_handler.variable.name),returned_scope,cur_scope);
-        		es.loc = get_location(_exception_handler.variable);
-        		stmt_scope.AddName(_exception_handler.variable.name,es);
-        	}
-        	_exception_handler.statements.visit(this);
-        	cur_scope = tmp;
+            SymScope stmt_scope = new BlockScope(cur_scope);
+            cur_scope.AddName("$block_scope", stmt_scope);
+            stmt_scope.loc = get_location(_exception_handler);
+            if (_exception_handler.statements.source_context != null)
+                stmt_scope.loc = new location(stmt_scope.loc.begin_line_num, stmt_scope.loc.begin_column_num,
+                                              _exception_handler.statements.source_context.end_position.line_num,
+                                              _exception_handler.statements.source_context.end_position.column_num, stmt_scope.loc.doc);
+            returned_scope = null;
+            if (_exception_handler.variable == null) return;
+            if (_exception_handler.type_name != null)
+                _exception_handler.type_name.visit(this);
+            else returned_scope = cur_scope.FindName(_exception_handler.variable.name);
+            if (returned_scope != null)
+            {
+                cur_scope = stmt_scope;
+                ElementScope es = new ElementScope(new SymInfo(_exception_handler.variable.name, SymbolKind.Variable, _exception_handler.variable.name), returned_scope, cur_scope);
+                es.loc = get_location(_exception_handler.variable);
+                stmt_scope.AddName(_exception_handler.variable.name, es);
+            }
+            _exception_handler.statements.visit(this);
+            cur_scope = tmp;
         }
 
         public override void visit(exception_ident _exception_ident)
