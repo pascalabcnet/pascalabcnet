@@ -3007,6 +3007,10 @@ namespace PascalABCCompiler.TreeConverter
                 {
                     si_list = _compiled_tn.find_in_type(fn.name);
                 }
+                else if (fn is common_namespace_function_node && (fn as common_namespace_function_node).ConnectedToType != null)
+                {
+                    si_list = (fn as common_namespace_function_node).ConnectedToType.find_in_type(fn.name);
+                }
                 else
                 {
                     in_unit = true;
