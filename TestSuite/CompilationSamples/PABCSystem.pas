@@ -1041,7 +1041,7 @@ function GetCurrentDir: string;
 function RemoveDir(s: string): boolean;
 /// Переименовывает файл name, давая ему новое имя newname. Возвращает True, если файл успешно переименован
 function RenameFile(name, newname: string): boolean;
-/// Устанавивает текущий каталог. Возвращает True, если каталог успешно удален
+/// Устанавливает текущий каталог. Возвращает True, если каталог успешно удален
 function SetCurrentDir(s: string): boolean;
 
 /// Изменяет расширение файла с именем name на newext
@@ -1213,8 +1213,6 @@ function Sqr(x: uint64): uint64;
 function Sqr(x: real): real;
 /// Возвращает x в степени y
 function Power(x, y: real): real;
-// Возвращает x в степени y
-//function Power(x, y: integer): real;
 /// Возвращает x в целой степени n
 function Power(x: real; n: integer): real;
 /// Возвращает x в степени y
@@ -6501,7 +6499,8 @@ begin
     end;
   end
   else
-    System.Diagnostics.Debug.Assert(cond);
+    //System.Diagnostics.Debug.Assert(cond);
+    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
 end;
 
 procedure Assert(cond: boolean; message: string; sourceFile: string; line: integer);
@@ -6525,7 +6524,8 @@ begin
     end;
   end
   else
-    System.Diagnostics.Debug.Assert(cond, message);
+    //System.Diagnostics.Debug.Assert(cond, message);
+    System.Diagnostics.Contracts.Contract.Assert(cond,'Файл '+sourceFile+', строка '+line.ToString())
 end;
 
 function DiskFree(diskname: string): int64;
@@ -8163,7 +8163,7 @@ type
   end;
 
 //------------------------------------------------------------------------------
-//>>     Метод расширения Print для элементарных типов
+//>>     Метод расширения Print для элементарных типов # Print for elementary types
 //------------------------------------------------------------------------------
 function Print(Self: integer): integer; extensionmethod;
 begin
