@@ -512,6 +512,7 @@ namespace PascalABCCompiler.NETGenerator {
 	
 	public class Helper {
 		private Hashtable defs=new Hashtable();
+        private Hashtable processing_types = new Hashtable();
 		private MethodInfo arr_mi=null;
 		private Hashtable pas_defs = new Hashtable();
 		
@@ -850,6 +851,16 @@ namespace PascalABCCompiler.NETGenerator {
                 }
             }
             return TypeFactory.IEnumerableType.GetMethod("GetEnumerator", Type.EmptyTypes);
+        }
+
+        public void SetAsProcessing(ICommonTypeNode type)
+        {
+            processing_types[type] = true;
+        }
+
+        public bool IsProcessing(ICommonTypeNode type)
+        {
+            return processing_types[type] != null;
         }
 
         //получение типа

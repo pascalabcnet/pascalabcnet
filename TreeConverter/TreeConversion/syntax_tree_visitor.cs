@@ -12472,6 +12472,8 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_1_PARAMETER"));
                             else AddError(new SimpleSemanticError(cmmn.loc, "OPERATOR_SHOULD_HAVE_2_PARAMETERS"));
                         }
+                        if (cmmn.cont_type.IsDelegate && (cmmn.name == "+" || cmmn.name == "-" || cmmn.name == "+=" || cmmn.name == "-="))
+                            AddError(cmmn.loc, "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
                         bool has_types = false;
                         foreach (parameter p in cmmn.parameters)
                         {
@@ -12533,6 +12535,8 @@ namespace PascalABCCompiler.TreeConverter
                             AddError(new SimpleSemanticError(cnfn.loc, "OPERATOR_SHOULD_BE_EXTENSION_METHOD"));
                         if (!has_types)
                             AddError(new SimpleSemanticError(cnfn.loc, "LEAST_ONE_PARAMETER_TYPE_SHOULD_EQ_DECLARING_TYPE_{0}",cnfn.ConnectedToType.name));
+                        if (cnfn.ConnectedToType.IsDelegate && (cnfn.name == "+" || cnfn.name == "-" || cnfn.name == "+=" || cnfn.name == "-="))
+                            AddError(cnfn.loc, "CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE");
                     }
                 }
             }
@@ -13018,6 +13022,7 @@ namespace PascalABCCompiler.TreeConverter
                                 AddError(context.top_function.loc, "FIRST_PARAMETER_SHOULDBE_ONLY_VALUE_PARAMETER");
                             if (!context.top_function.IsOperator && context.top_function.parameters[0].name.ToLower() != compiler_string_consts.self_word)
                                 AddError(context.top_function.loc,"FIRST_PARAMETER_MUST_HAVE_NAME_SELF");
+                            
                             common_namespace_function_node top_function = context.top_function as common_namespace_function_node;
                             top_function.ConnectedToType = context.top_function.parameters[0].type;
                             if (top_function.ConnectedToType.Scope == null && top_function.ConnectedToType is compiled_type_node)
@@ -13036,7 +13041,7 @@ namespace PascalABCCompiler.TreeConverter
                             else if (top_function.ConnectedToType is compiled_generic_instance_type_node && top_function.ConnectedToType.original_generic.Scope != null)
                                 top_function.ConnectedToType.original_generic.Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             else if (top_function.ConnectedToType.IsDelegate && top_function.ConnectedToType.base_type.IsDelegate)
-                                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
+                                compiled_type_node.get_type_node(typeof(Delegate)).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));   
                             else if (top_function.ConnectedToType.type_special_kind == SemanticTree.type_special_kind.typed_file && top_function.ConnectedToType.element_type.is_generic_parameter && SystemLibrary.SystemLibInitializer.TypedFileType.sym_info != null)
                                 (SystemLibrary.SystemLibInitializer.TypedFileType.sym_info as type_node).Scope.AddSymbol(top_function.name, new SymbolInfo(context.top_function));
                             if (top_function.ConnectedToType.IsDelegate && context.top_function.IsOperator && (context.top_function.name == "+" || context.top_function.name == "-" || context.top_function.name == "+=" || context.top_function.name == "-="))

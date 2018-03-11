@@ -1161,7 +1161,7 @@ namespace PascalABCCompiler.Parsers
                     sb.Append(parameters[0] + "->" + parameters[1]);
                 else if (parameters.Count == 1)
                 {
-                    if (t.Name == "Predicate`1")
+                    if (t.FullName == "System.Predicate`1")
                         sb.Append(parameters[0] + "->boolean");
                     else
                         sb.Append("()->" + parameters[0]);
@@ -1170,7 +1170,9 @@ namespace PascalABCCompiler.Parsers
             }
             else if (parameters.Count > 0)
             {
-                if (parameters.Count > 1)
+                if (t.FullName == "System.Predicate`1")
+                    sb.Append(parameters[0] + "->boolean");
+                else if (parameters.Count > 1)
                     sb.Append("(" + string.Join(",", parameters.ToArray()) + ")->()");
                 else
                     sb.Append(parameters[0] + "->()");

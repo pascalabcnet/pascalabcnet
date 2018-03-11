@@ -115,7 +115,7 @@ CLASS_NOT_IMPLEMENT_THIS_INTERFACE=Класс не реализует данны
 INTERFACE_EXPECTED=Ожидался интерфейс
 IMPLICIT_EXPLICIT_OPERATOR_EXTENSION_ONLY_FOR_COMPILED_CLASSES_ALLOWED=extension-операторы преобразования типов допустимы только для классов из других сборок .NET
 EXTENSIONMETHOD_KEYWORD_NOT_ALLOWED=Атрибут extensionmethod недопустим в данном контексте
-CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Нельзя раширять операции +,+=,-,-= для делегатов
+CANNOT_EXTEND_STANDARD_OPERATORS_FOR_DELEGATE=Нельзя расширять операции +,+=,-,-= для делегатов
 FORWARD_EXTENSION_METHODS_NOT_ALLOWED=Атрибут forward недопустим для методов расширения
 WHERE_SECTION_NOT_ALLOWED=Секция where недопустима в данном контексте
 GENERIC_PARAMETERS_MISMATCH=Generic-параметры не совпадают с generic-параметрами в предописании типа
