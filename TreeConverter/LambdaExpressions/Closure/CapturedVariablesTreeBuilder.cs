@@ -165,7 +165,8 @@ namespace TreeConverter.LambdaExpressions.Closure
             var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.class_field;
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field ||
+                                    si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit";
 
             if (!(acceptableVarType) && InLambdaContext) 
             {
