@@ -713,7 +713,9 @@ namespace PascalABCCompiler
         {
             get
             {
-                return RevisionClass.MainVersion;
+                if (RevisionClass.Build == "0")
+                    return RevisionClass.MainVersion;
+                else return RevisionClass.MainVersion + "." + RevisionClass.Build;
             }
         }
         public static DateTime VersionDateTime
