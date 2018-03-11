@@ -403,6 +403,8 @@ namespace PascalABCCompiler.NETGenerator
 
         private void AddTypeInstanceToFunction(ICommonFunctionNode func, IGenericTypeInstance gti)
         {
+            if (func == null)
+                return;
             List<IGenericTypeInstance> instances;
             //if (func == null) // SSM 3.07.16 Это решает проблему с оставшимся после перевода в сем. дерево узлом IEnumerable<UnknownType>, но очень грубо - пробую найти ошибку раньше
             //    return;
@@ -1205,8 +1207,9 @@ namespace PascalABCCompiler.NETGenerator
                     }
                 }
 
-            if (helper.GetTypeReference(t) != null && !t.is_generic_parameter) return;
-
+            if (helper.GetTypeReference(t) != null && !t.is_generic_parameter)
+                return;
+            helper.SetAsProcessing(t);
             if (t.is_generic_parameter)
             {
                 //ConvertTypeHeaderInSpecialOrder(t.generic_container);
@@ -1222,12 +1225,15 @@ namespace PascalABCCompiler.NETGenerator
             {
                 if (gti.original_generic is ICommonTypeNode)
                 {
+                    
                     ConvertTypeHeaderInSpecialOrder((ICommonTypeNode)gti.original_generic);
                 }
+                
                 foreach (ITypeNode itn in gti.generic_parameters)
                 {
-                    if (itn is ICommonTypeNode && !itn.is_generic_parameter)
+                    if (itn is ICommonTypeNode && !itn.is_generic_parameter && !helper.IsProcessing(itn as ICommonTypeNode))
                     {
+                        
                         ConvertTypeHeaderInSpecialOrder((ICommonTypeNode)itn);
                     }
                 }
