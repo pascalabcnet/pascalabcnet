@@ -427,6 +427,9 @@ type
     scaletransform := new ScaleTransform3D;
     transltransform: TranslateTransform3D;
     
+    procedure AddToObject3DList;
+    procedure DeleteFromObject3DList;
+    
     procedure CreateBase0(m: Visual3D; x, y, z: real);
     begin
       model := m;
@@ -439,6 +442,12 @@ type
       transfgroup.Children.Add(transltransform);
       model.Transform := transfgroup;
       hvp.Children.Add(model);
+      AddToObject3DList;
+    end;
+    
+    procedure Destroy();
+    begin
+      DeleteFromObject3DList;
     end;
     
     procedure SetX(xx: real) := Invoke(()->begin transltransform.OffsetX := xx; end); 
@@ -448,7 +457,12 @@ type
     procedure SetZ(zz: real) := Invoke(()->begin transltransform.OffsetZ := zz; end);
     function GetZ: real := InvokeReal(()->transltransform.OffsetZ);
     function GetPos: Point3D := Invoke&<Point3D>(()->P3D(transltransform.OffsetX, transltransform.OffsetY, transltransform.OffsetZ));
-
+    
+    function FindVisual(v: Visual3D): Object3D; virtual;
+    begin
+      if model = v then
+        Result := Self
+    end;
   protected 
     function CreateObject: Object3D; virtual; // нужно для клонирования
     begin
@@ -625,6 +639,19 @@ type
     end;
     function GetObj(i: integer): Object3D := l[i];
     function CountT: integer := (model as ModelVisual3D).Children.Count;
+    function FindVisual(v: Visual3D): Object3D; override;
+    begin
+      Result := nil;
+      if model = v then
+        Result := Self
+      else
+        foreach var x in l do
+        begin
+          Result := x.FindVisual(v);
+          if Result<>nil then
+            exit;
+        end;
+    end;
   protected  
     procedure CloneChildren(from: Object3D); override;
     begin
@@ -1185,6 +1212,17 @@ function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real) := new RotateAtAn
 
 function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center);
 
+var Object3DList := new List<Object3D>;
+
+procedure Object3D.AddToObject3DList;
+begin
+  Object3DList.Add(Self)  
+end;
+
+procedure Object3D.DeleteFromObject3DList;
+begin
+  Object3DList.Remove(Self)  
+end;
 
 type
   Animate = class
@@ -1205,6 +1243,7 @@ function operator*(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.G
 function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
 
 //------------------------------ End Animation -------------------------------
+
 
 type
   SphereT = class(ObjectWithMaterial3D)
@@ -2376,6 +2415,15 @@ type
     end;
   end;
 
+function FindObject3D(x,y: real): Object3D;
+begin
+  Result := nil;
+  var v := hvp.FindNearestVisual(new Point(x,y));
+  foreach var obj in Object3DList do
+    if obj.model = v then
+      Result := obj
+end;
+
 function DefaultMaterialColor := RandomColor;
 function DefaultMaterial := MaterialHelper.CreateMaterial(DefaultMaterialColor);
 
@@ -2687,26 +2735,28 @@ begin
   MainWindow.Width := 640;
   MainWindow.Height := 480;
   MainWindow.Closed += procedure(sender, e) -> begin Halt; end;
-  //MainWindow.KeyDown += SystemOnKeyDown;
-  
-  MainWindow.KeyUp += SystemOnKeyUp;
   
   View3D := new View3DT;
   
   MainWindow.PreviewKeyDown += (o,e)-> begin 
-    {if hvp.CameraController<>nil then 
-    begin
-      hvp.CameraController.IsRotationEnabled := False;
-      hvp.CameraController.IsManipulationEnabled := False;
-      hvp.CameraController.IsMoveEnabled := False;
-      hvp.CameraController.IsPanEnabled := False;
-    end;}
     if OnKeyDown<>nil then 
     begin
       OnKeyDown(e.Key);
-      e.Handled := True;
     end;
+    e.Handled := True;
   end;
+
+  MainWindow.PreviewKeyUp += (o,e)-> begin 
+    if OnKeyUp<>nil then 
+    begin
+      OnKeyUp(e.Key);
+    end;
+    e.Handled := True;
+  end;
+  
+  MainWindow.PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
+  MainWindow.PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
+  MainWindow.PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
 
   mre.Set();
   
