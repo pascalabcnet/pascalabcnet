@@ -157,7 +157,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                 si.sym_info.semantic_node_type == semantic_node_type.basic_interface_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.common_unit_node ||
                 si.sym_info.semantic_node_type == semantic_node_type.compiled_unit_node ||
-                si.sym_info.semantic_node_type == semantic_node_type.template_type)
+                si.sym_info.semantic_node_type == semantic_node_type.template_type ||
+                si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit")
             {
                 return;
             }
@@ -165,8 +166,8 @@ namespace TreeConverter.LambdaExpressions.Closure
             var acceptableVarType = si.sym_info.semantic_node_type == semantic_node_type.local_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.local_block_variable ||
                                     si.sym_info.semantic_node_type == semantic_node_type.common_parameter ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.class_field ||
-                                    si.sym_info.semantic_node_type == semantic_node_type.basic_function_node && idName == "exit";
+                                    si.sym_info.semantic_node_type == semantic_node_type.class_field
+                                    ;
 
             if (!(acceptableVarType) && InLambdaContext) 
             {
