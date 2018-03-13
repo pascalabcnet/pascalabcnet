@@ -151,6 +151,7 @@ namespace PascalABCCompiler.NETGenerator
 
         private Dictionary<TypeBuilder, TypeBuilder> marked_with_extension_attribute = new Dictionary<TypeBuilder, TypeBuilder>();
 
+        private LocalBuilder current_index_lb;
         private bool has_dereferences = false;
         private bool safe_block = false;
         private int cur_line = 0;
@@ -7890,18 +7891,21 @@ namespace PascalABCCompiler.NETGenerator
             else
                 elem_type = ti.tp.GetElementType();
             value.array.visit(this);
-            if (elem_ti != null)
-            {
-                //il.Emit(OpCodes.Ldarg_0);
-                //il.Emit(OpCodes.Ldfld, ti.arr_fld);
-            }
-            //else
             MethodInfo get_meth = null;
             MethodInfo addr_meth = null;
             MethodInfo set_meth = null;
+            LocalBuilder index_lb = null;
             if (value.indices == null)
             {
                 value.index.visit(this);
+                if (from is IBasicFunctionCallNode && (from as IBasicFunctionCallNode).real_parameters[0] == to)
+                {
+                    index_lb = il.DeclareLocal(helper.GetTypeReference(value.index.type).tp);
+                    il.Emit(OpCodes.Stloc, index_lb);
+                    il.Emit(OpCodes.Ldloc, index_lb);
+                    current_index_lb = index_lb;
+
+                }
             }
             else
             {
@@ -9055,7 +9059,13 @@ namespace PascalABCCompiler.NETGenerator
                 elem_type = ti.tp.GetElementType();
             if (indices == null)
             {
-                value.index.visit(this);
+                if (current_index_lb == null)
+                    value.index.visit(this);
+                else
+                {
+                    il.Emit(OpCodes.Ldloc, current_index_lb);
+                    current_index_lb = null;
+                }
                 if (string_getter)
                 {
                     Label except_lbl = il.DefineLabel();
