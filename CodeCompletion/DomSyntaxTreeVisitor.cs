@@ -1627,7 +1627,7 @@ namespace CodeCompletion
                 if (_procedure_definition.proc_header is function_header && (_procedure_definition.proc_header as function_header).return_type == null)
                 {
                     var fh = (_procedure_definition.proc_header as function_header);
-                    if (fh != null && fh.return_type == null && !(returned_scope is ProcScope && (returned_scope as ProcScope).procRealization != null))
+                    if (fh != null && fh.return_type == null && !(returned_scope is ProcScope && (returned_scope as ProcScope).procRealization != null && !(returned_scope as ProcScope).is_extension))
                     {
                         var bl = _procedure_definition.proc_body as block;
                         if (bl != null && bl.program_code != null)
