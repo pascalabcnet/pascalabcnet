@@ -1349,13 +1349,11 @@ namespace PascalABCCompiler.TreeRealization
 
         protected type_node _original_generic;
 
-        //public SymbolTable.GenericTypeInstanceScope _scope;
-
         public override SymbolTable.Scope Scope
         {
             get
             {
-                return original_generic.Scope;//_scope;
+                return _original_generic.Scope;
             }
         }
 
