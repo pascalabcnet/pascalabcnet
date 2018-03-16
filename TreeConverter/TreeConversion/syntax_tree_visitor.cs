@@ -8253,6 +8253,8 @@ namespace PascalABCCompiler.TreeConverter
                 if (expr is typed_expression) expr = convert_typed_expression_to_function_call(expr as typed_expression);
                 if (expr != null)
                 {
+                    if (expr.type is generic_instance_type_node)
+                        AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
                 	variable_reference vr = expr as variable_reference;
                 	if (expr.type == null)
                         AddError(get_location(s_expr), "UNEXPECTED_EXPRESSION_IN_WITH");
