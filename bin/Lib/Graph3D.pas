@@ -767,15 +767,6 @@ type
         d();
     end;
     
-    procedure BeginT;
-    begin
-      sb := CreateStoryboard;
-      InitAnim(sb);
-      ApplyAllDecorators;
-      sb.Completed += procedure (o, e) -> sb.Children.Clear;
-      sb.Begin;
-    end;
-    
     procedure InitAnimWait(sb: StoryBoard; waittime: real); virtual;
     begin
     end;
@@ -870,15 +861,50 @@ type
       Result := Self;
     end;
     
+  private
+    procedure BeginT;
+    begin
+      sb := CreateStoryboard;
+      InitAnim(sb);
+      ApplyAllDecorators;
+      sb.Completed += procedure (o, e) -> sb.Children.Clear;
+      sb.Begin;
+    end;
+    procedure RemoveT := begin
+      sb.Pause;
+      sb := new Storyboard;
+    end;
+    procedure ChangeT(a: MyAnimation);
+    begin
+      sb := CreateStoryboard;
+      Print(a.sb);
+      foreach var d in a.sb.Children do
+        sb.Children.Add(d);
+      Print(2);
+    end;
+  public 
     procedure &Begin; virtual := Invoke(BeginT);
-    procedure Pause := sb.Pause;
-    procedure Resume := sb.Resume;
+    procedure Remove := Invoke(RemoveT);
+    procedure Change(a: MyAnimation) := Invoke(ChangeT,a);
+    procedure Pause := if sb<>nil then sb.Pause;
+    procedure Resume := if sb<>nil then sb.Resume;
+
     function Duration: real; virtual := seconds;
     function &Then(second: MyAnimation): MyAnimation;
     function Forever: MyAnimation; virtual := Self;
     function AutoReverse: MyAnimation; virtual := Self;
     function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; virtual := Self;
   end;
+  
+  EmptyAnimation = class(MyAnimation)
+  public
+    constructor(wait: real);
+    begin
+      Self.Seconds := wait;
+    end;
+    procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb, Seconds);
+  end;
+  
   
   Double1AnimationBase = class(MyAnimation)
   private 
@@ -1278,6 +1304,8 @@ function operator+(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.S
 function operator*(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a, b);
 
 function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
+
+function EmptyAnim(sec: real) := EmptyAnimation.Create(sec);
 
 //------------------------------ End Animation -------------------------------
 
