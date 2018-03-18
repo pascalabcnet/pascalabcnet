@@ -1778,7 +1778,7 @@ namespace CodeFormatters
             }
             if (_class_definition.body != null)
             {
-                if (!((_class_definition.body.class_def_blocks.Count == 0 || _class_definition.body.class_def_blocks[0].members != null && _class_definition.body.class_def_blocks[0].members.Count == 0) && _class_definition.class_parents == null))
+                if (!((_class_definition.body.class_def_blocks.Count == 0 || _class_definition.body.class_def_blocks[0].members != null && _class_definition.body.class_def_blocks[0].members.Count == 0) && _class_definition.class_parents == null && _class_definition.where_section == null))
                 {
                     class_pred = false;
                     visit_node(_class_definition.body);
