@@ -2,7 +2,7 @@
 
 // GPPG version 1.3.6
 // Machine:  IVAN-PC
-// DateTime: 19.02.2018 20:41:22
+// DateTime: 18.03.2018 11:46:46
 // UserName: Ivan
 // Input file <ABCPascal.y>
 
@@ -4098,6 +4098,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,false,null,null,CurrentLocationSpan);
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), CurrentLocationSpan);
+            if (parsertools.build_tree_for_formatter)
+				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
       case 397: // inclass_constr_destr_decl -> constr_destr_header, inclass_block
@@ -4112,6 +4114,8 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",LocationStack[LocationStack.Depth-1]);
             var tmp = new constructor(null,ValueStack[ValueStack.Depth-4].stn as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),CurrentLocationSpan),ValueStack[ValueStack.Depth-5].stn as method_name,false,false,null,null,LexLocation.MergeAll(LocationStack[LocationStack.Depth-6],LocationStack[LocationStack.Depth-5],LocationStack[LocationStack.Depth-4]));
             CurrentSemanticValue.stn = new procedure_definition(tmp as procedure_header, new block(null,new statement_list(ValueStack[ValueStack.Depth-2].stn as statement,LocationStack[LocationStack.Depth-2]),LocationStack[LocationStack.Depth-2]), CurrentLocationSpan);
+            if (parsertools.build_tree_for_formatter)
+				CurrentSemanticValue.stn = new short_func_definition(CurrentSemanticValue.stn as procedure_definition);
         }
         break;
       case 399: // proc_func_decl -> proc_func_decl_noclass
@@ -4172,7 +4176,9 @@ public partial class GPPGParser: ShiftReduceParser<PascalABCSavParser.Union, Lex
 		}
         break;
       case 408: // inclass_proc_func_decl -> inclass_proc_func_decl_noclass
-{ CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; }
+{ 
+            CurrentSemanticValue.stn = ValueStack[ValueStack.Depth-1].stn; 
+        }
         break;
       case 409: // inclass_proc_func_decl -> tkClass, inclass_proc_func_decl_noclass
 { 
