@@ -4865,6 +4865,14 @@ namespace CodeCompletion
             }
         }
 
+        public ICompiledTypeScope[] GetCompiledGenericArguments()
+        {
+            List<ICompiledTypeScope> types = new List<ICompiledTypeScope>();
+            foreach (Type t in ctn.GetGenericArguments())
+                types.Add(TypeTable.get_compiled_type(t));
+            return types.ToArray();
+        }
+       
         internal static TypeScope get_type_instance(Type t, List<TypeScope> generic_args)
         {
             if (t.IsGenericParameter)
