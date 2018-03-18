@@ -108,6 +108,7 @@
     File ..\bin\Lib\OpenGL.pcu
     File ..\bin\Lib\PT4MakerNetX.pcu
     File ..\bin\Lib\Speech.pcu
+    File ..\bin\Lib\Sounds.pcu
     File ..\bin\Lib\PABCRtl.dll
     File ..\bin\Lib\PABCRtl32.dll
     File ..\bin\Lib\HelixToolkit.Wpf.dll
@@ -161,6 +162,7 @@
     ${AddFile} "OpenGL.pcu"
     ${AddFile} "PT4MakerNetX.pcu"
     ${AddFile} "Speech.pcu"
+    ${AddFile} "Sounds.pcu"
     ${AddFile} "PABCRtl.dll"
     ${AddFile} "HelixToolkit.Wpf.dll"
     ${AddFile} "HelixToolkit.dll"
@@ -225,6 +227,7 @@
     File ..\bin\Lib\OpenGL.pas
     File ..\bin\Lib\PT4MakerNetX.pas
     File ..\bin\Lib\Speech.pas
+    File ..\bin\Lib\Sounds.pas
 	File ..\bin\Lib\__RedirectIOMode.vb
 	File ..\bin\Lib\VBSystem.vb
 	
@@ -275,6 +278,7 @@
     ${AddFile} "OpenGL.pas"
     ${AddFile} "PT4MakerNetX.pas"
     ${AddFile} "Speech.pas"
+    ${AddFile} "Sounds.pas"
 	${AddFile} "__RedirectIOMode.vb"
     ${AddFile} "VBSystem.vb"
 	

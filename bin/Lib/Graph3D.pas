@@ -87,6 +87,7 @@ const
   OrtY = V3D(0, 1, 0);
   OrtZ = V3D(0, 0, 1);
   Origin: Point3D = P3D(0, 0, 0);
+  EmptyColor = ARGB(0,0,0,0);
 
 function ChangeOpacity(Self: GColor; value: integer); extensionmethod := ARGB(value, Self.R, Self.G, Self.B);
 
@@ -445,11 +446,6 @@ type
       AddToObject3DList;
     end;
     
-    procedure Destroy();
-    begin
-      DeleteFromObject3DList;
-    end;
-    
     procedure SetX(xx: real) := Invoke(()->begin transltransform.OffsetX := xx; end); 
     function GetX: real := InvokeReal(()->transltransform.OffsetX);
     procedure SetY(yy: real) := Invoke(()->begin transltransform.OffsetY := yy; end);
@@ -463,6 +459,10 @@ type
       if model = v then
         Result := Self
     end;
+    function GetColor: GColor := EmptyColor;
+    procedure SetColor(c: GColor); 
+    begin end;
+    
   protected 
     function CreateObject: Object3D; virtual; // нужно для клонирования
     begin
@@ -506,6 +506,7 @@ type
     function MoveOnX(dx: real) := MoveOn(dx, 0, 0);
     function MoveOnY(dy: real) := MoveOn(0, dy, 0);
     function MoveOnZ(dz: real) := MoveOn(0, 0, dz);
+    property Color: GColor read GetColor write SetColor; virtual;
   private
     procedure MoveToProp(p: Point3D) := MoveTo(p);
   
@@ -599,12 +600,20 @@ type
         var m := XamlReader.Load(new System.IO.FileStream(fname,System.IO.FileMode.Open)) as Visual3D;
         Result := new Object3D(m);
       end);
+    procedure Destroy(); virtual;
+    begin
+      DeleteFromObject3DList;
+    end;
   end;
   
   ObjectWithChildren3D = class(Object3D) // model is ModelVisual3D
   private
     l := new List<Object3D>;
     
+    procedure DestroyT;
+    begin
+      
+    end;
     procedure AddT(obj: Object3D);
     begin
       var p := Self;
@@ -616,6 +625,7 @@ type
       end;
       if obj.Parent = Self then
         exit;
+        
       if obj.Parent = nil then
         hvp.Children.Remove(obj.model)
       else 
@@ -624,6 +634,7 @@ type
         q.Children.Remove(obj.model);
         obj.Parent.l.Remove(obj);
       end;
+      
       (model as ModelVisual3D).Children.Add(obj.model);
       l.Add(obj);  
       obj.Parent := Self;
@@ -668,10 +679,21 @@ type
     
     procedure DestroyP;
     begin
-      hvp.Children.Remove(model);
+      if Parent = nil then
+        hvp.Children.Remove(model)
+      else 
+      begin
+        var q := Parent.model as ModelVisual3D;
+        q.Children.Remove(model);
+        Parent.l.Remove(Self);
+      end;
       model := nil;
     end;
-    procedure Destroy := Invoke(DestroyP);
+    procedure Destroy; override;
+    begin
+      inherited Destroy;
+      Invoke(DestroyP);
+    end;
   end;
   
   ObjectWithMaterial3D = class(ObjectWithChildren3D) // model is MeshElement3D
@@ -685,6 +707,18 @@ type
       //m.BackMaterial := nil;
     end;
     
+    function GetColorP: GColor;
+    begin
+      Result := EmptyColor;
+      var g := Material as System.Windows.Media.Media3D.MaterialGroup;
+      if g=nil then exit;      
+      var t := g.Children[0] as System.Windows.Media.Media3D.DiffuseMaterial;
+      if t=nil then exit;
+      var v := t.Brush as System.Windows.Media.SolidColorBrush;
+      if v=nil then exit;
+      Result := v.Color; 
+    end;
+    function GetColor: GColor := Invoke&<GColor>(GetColorP);
     procedure SetColorP(c: GColor) := (model as MeshElement3D).Material := MaterialHelper.CreateMaterial(c);
     procedure SetColor(c: GColor) := Invoke(SetColorP, c); 
     procedure SetVP(v: boolean) := (model as MeshElement3D).Visible := v;
@@ -698,7 +732,7 @@ type
     procedure SetBMaterial(mat: GMaterial) := Invoke(SetBMP, mat);
     function GetBMaterial: GMaterial := Invoke&<GMaterial>(()->(model as MeshElement3D).BackMaterial);
   public 
-    property Color: GColor write SetColor;
+    property Color: GColor read GetColor write SetColor; override;
     property Material: GMaterial read GetMaterial write SetMaterial;
     property BackMaterial: GMaterial read GetBMaterial write SetBMaterial;
     property Visible: boolean read GetV write SetV;
@@ -731,15 +765,6 @@ type
     begin
       foreach var d in ApplyDecorators do
         d();
-    end;
-    
-    procedure BeginT;
-    begin
-      sb := CreateStoryboard;
-      InitAnim(sb);
-      ApplyAllDecorators;
-      sb.Completed += procedure (o, e) -> sb.Children.Clear;
-      sb.Begin;
     end;
     
     procedure InitAnimWait(sb: StoryBoard; waittime: real); virtual;
@@ -836,15 +861,50 @@ type
       Result := Self;
     end;
     
+  private
+    procedure BeginT;
+    begin
+      sb := CreateStoryboard;
+      InitAnim(sb);
+      ApplyAllDecorators;
+      sb.Completed += procedure (o, e) -> sb.Children.Clear;
+      sb.Begin;
+    end;
+    procedure RemoveT := begin
+      sb.Pause;
+      sb := new Storyboard;
+    end;
+    procedure ChangeT(a: MyAnimation);
+    begin
+      sb := CreateStoryboard;
+      Print(a.sb);
+      foreach var d in a.sb.Children do
+        sb.Children.Add(d);
+      Print(2);
+    end;
+  public 
     procedure &Begin; virtual := Invoke(BeginT);
-    procedure Pause := sb.Pause;
-    procedure Resume := sb.Resume;
+    procedure Remove := Invoke(RemoveT);
+    procedure Change(a: MyAnimation) := Invoke(ChangeT,a);
+    procedure Pause := if sb<>nil then sb.Pause;
+    procedure Resume := if sb<>nil then sb.Resume;
+
     function Duration: real; virtual := seconds;
     function &Then(second: MyAnimation): MyAnimation;
     function Forever: MyAnimation; virtual := Self;
     function AutoReverse: MyAnimation; virtual := Self;
     function AccelerationRatio(acceleration: real; deceleration: real := 0): MyAnimation; virtual := Self;
   end;
+  
+  EmptyAnimation = class(MyAnimation)
+  public
+    constructor(wait: real);
+    begin
+      Self.Seconds := wait;
+    end;
+    procedure InitAnim(sb: StoryBoard); virtual := InitAnimWait(sb, Seconds);
+  end;
+  
   
   Double1AnimationBase = class(MyAnimation)
   private 
@@ -1221,6 +1281,9 @@ end;
 
 procedure Object3D.DeleteFromObject3DList;
 begin
+  var oc := Self as ObjectWithChildren3D;
+  foreach var c in oc.l do
+    c.DeleteFromObject3DList;
   Object3DList.Remove(Self)  
 end;
 
@@ -1241,6 +1304,8 @@ function operator+(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.S
 function operator*(a, b: MyAnimation): MyAnimation; extensionmethod := Animate.Group(a, b);
 
 function MyAnimation.&Then(second: MyAnimation): MyAnimation := Self + second;
+
+function EmptyAnim(sec: real) := EmptyAnimation.Create(sec);
 
 //------------------------------ End Animation -------------------------------
 
@@ -1569,7 +1634,7 @@ type
   protected  
     function CreateObject: Object3D; override := new TextT(X, Y, Z, Text, Height, Name, Color);
   public 
-    constructor(x, y, z: real; text: string; height: real; fontname: string; c: Color);
+    constructor(x, y, z: real; text: string; height: real; fontname: string; c: GColor);
     begin
       var a := new TextVisual3D;
       a.Position := p3D(0, 0, 0);
@@ -1586,7 +1651,7 @@ type
     property Height: real read GetFS write SetFS;
     property Name: string read GetN write SetN;
     property UpDirection: Vector3D read GetU write SetU;
-    property Color: GColor read GetColor write SetColor;
+    property Color: GColor read GetColor write SetColor; override;
     function Clone := (inherited Clone) as TextT;
   end;
   
@@ -2241,7 +2306,7 @@ type
     property Height: real read fh write SetH;
     property Radius: real read fr write SetR;
     property N: integer read fn write SetN;
-    property Color: GColor read GetC write SetC;
+    property Color: GColor read GetC write SetC; override;
     property Thickness: real read GetT write SetT;
   end;
   
@@ -2297,7 +2362,7 @@ type
     end;
     
     property Thickness: real read GetT write SetT;
-    property Color: GColor read GetC write SetC;
+    property Color: GColor read GetC write SetC; override;
     property Points: array of Point3D read GetP write SetP;
     function Clone := (inherited Clone) as SegmentsT;
   end;
