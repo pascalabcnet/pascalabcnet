@@ -826,7 +826,8 @@ namespace PascalABCCompiler.TreeConverter
             //\ssyy
             expression_node en = ret.visit(expr);
             //expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
-
+            if (en == null)
+                AddError(get_location(expr), "EXPRESSION_EXPECTED");
             //en.loc=get_location(expr);
 
             return en;
@@ -15338,7 +15339,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (is_event)
                     AddError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
-                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
+                var ex = convert_strong(_var_def_statement.inital_value);
+                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(ex);
                 if (cn is constant_node)
                     (cn as constant_node).SetType(DeduceType(cn.type, get_location(_var_def_statement.inital_value)));
                 inital_value = cn;
