@@ -4879,6 +4879,10 @@ namespace PascalABCCompiler.TreeConverter
                                     iwt = null;
                                 }
                             }
+                            if (sil != null && id.name.ToLower() == "reset" && sil.First().sym_info is common_method_node && (sil.First().sym_info as common_method_node).cont_type.name.Contains("clyield#") && _method_call.ParametersCount > 0)
+                            {
+                                sil = context.converted_namespace.find(id.name);
+                            }
                         }
                     }
                 }
