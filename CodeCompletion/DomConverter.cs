@@ -450,6 +450,7 @@ namespace CodeCompletion
                 if (si == null)
                     si = visitor.cur_scope;
             }
+
             SymInfo[] elems = null;
             if (si == null) return null;
             if (pattern == null || pattern == "")

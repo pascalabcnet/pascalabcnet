@@ -1782,7 +1782,16 @@ namespace PascalABCCompiler.Parsers
                             if (!class_generic_table.ContainsKey(class_generic_args[i].Name))
                                 class_generic_table.Add(class_generic_args[i].Name, j);
                             if (scope.GenericArgs != null && scope.GenericArgs.Count > j)
-                                generic_param_args[class_generic_args[i].Name] = GetSimpleDescription(scope.DeclaringType.GenericInstances[0]);
+                            {
+                                if (scope.DeclaringType.GenericInstances.Length > 0)
+                                    generic_param_args[class_generic_args[i].Name] = GetSimpleDescription(scope.DeclaringType.GenericInstances[0]);
+                                else if (scope.DeclaringType is ICompiledTypeScope)
+                                {
+                                    Type ctn = (scope.DeclaringType as ICompiledTypeScope).CompiledType;
+                                    if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
+                                        generic_param_args[class_generic_args[i].Name] = GetSimpleDescriptionForCompiledType((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[0]);
+                                }
+                            }
                             else if (scope.DeclaringType.TemplateArguments != null && scope.DeclaringType.TemplateArguments.Length > j)
                                 generic_param_args[class_generic_args[i].Name] = scope.DeclaringType.TemplateArguments[j];
                         }
@@ -1809,9 +1818,22 @@ namespace PascalABCCompiler.Parsers
                         int ind = class_generic_table[tt[i].Name];
                         if (scope.GenericArgs != null && scope.GenericArgs.Count > ind)
                         {
-                            sb.Append(GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
-                            if (!generic_param_args.ContainsKey(tt[i].Name))
-                                generic_param_args.Add(tt[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                            if (scope.DeclaringType.GenericInstances.Length > ind)
+                            {
+                                sb.Append(GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                                if (!generic_param_args.ContainsKey(tt[i].Name))
+                                    generic_param_args.Add(tt[i].Name, GetSimpleDescription(scope.DeclaringType.GenericInstances[ind]));
+                            }
+                            else if (scope.DeclaringType is ICompiledTypeScope)
+                            {
+                                Type ctn = (scope.DeclaringType as ICompiledTypeScope).CompiledType;
+                                if (ctn.IsGenericType && !ctn.IsGenericTypeDefinition)
+                                {
+                                    sb.Append(GetSimpleDescription((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[ind]));
+                                    if (!generic_param_args.ContainsKey(tt[i].Name))
+                                        generic_param_args.Add(tt[i].Name, GetSimpleDescription((scope.DeclaringType as ICompiledTypeScope).GetCompiledGenericArguments()[ind]));
+                                }
+                            }
                         }
                     }
                     else

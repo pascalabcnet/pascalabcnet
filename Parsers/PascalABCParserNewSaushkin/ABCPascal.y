@@ -1995,6 +1995,8 @@ constr_destr_decl
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
             var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,@$);
             $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
+            if (parsertools.build_tree_for_formatter)
+				$$ = new short_func_definition($$ as procedure_definition);
         }
     ;
 
@@ -2009,6 +2011,8 @@ inclass_constr_destr_decl
 				parsertools.AddErrorFromResource("EMPTY_STATEMENT_IN_SHORT_PROC_DEFINITION",@6);
             var tmp = new constructor(null,$3 as formal_parameters,new procedure_attributes_list(new List<procedure_attribute>(),@$),$2 as method_name,false,false,null,null,LexLocation.MergeAll(@1,@2,@3));
             $$ = new procedure_definition(tmp as procedure_header, new block(null,new statement_list($5 as statement,@5),@5), @$);
+            if (parsertools.build_tree_for_formatter)
+				$$ = new short_func_definition($$ as procedure_definition);
         }
     ;
 	

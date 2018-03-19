@@ -7846,8 +7846,10 @@ namespace PascalABCCompiler.NETGenerator
                 il.Emit(OpCodes.Call, ti.assign_meth);
                 return;
             }
-            
-            EmitBox(from, fi.FieldType);
+            if (ti != null)
+                EmitBox(from, ti.tp);
+            else
+                EmitBox(from, fi.FieldType);
             CheckArrayAssign(to, from, il);
             il.Emit(OpCodes.Stsfld, fi);
         }

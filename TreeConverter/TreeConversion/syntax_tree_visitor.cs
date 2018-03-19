@@ -826,7 +826,8 @@ namespace PascalABCCompiler.TreeConverter
             //\ssyy
             expression_node en = ret.visit(expr);
             //expr.semantic_ex = en; // SSM 3.1.17 кешируем для последующего обращения
-
+            if (en == null)
+                AddError(get_location(expr), "EXPRESSION_EXPECTED");
             //en.loc=get_location(expr);
 
             return en;
@@ -3472,6 +3473,9 @@ namespace PascalABCCompiler.TreeConverter
                 if (_class_definition.keyword == SyntaxTree.class_keyword.Interface || _class_definition.keyword == SyntaxTree.class_keyword.TemplateInterface)
                     ErrorsList.Add(new SimpleSemanticError(get_location(_class_definition), "INTERFACE_CANNOT_BE_SEALED"));
             }
+            if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract &&
+                (_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Sealed) == SyntaxTree.class_attribute.Sealed)
+                AddError(get_location(_class_definition), "ABSTRACT_CLASS_CANNOT_BE_SEALED");
             if ((_class_definition.attribute & PascalABCCompiler.SyntaxTree.class_attribute.Abstract) == SyntaxTree.class_attribute.Abstract)
             {
                 context.converted_type.SetIsAbstract(true);
@@ -4875,6 +4879,10 @@ namespace PascalABCCompiler.TreeConverter
                                     sil = new SymbolInfoList(conv);
                                     iwt = null;
                                 }
+                            }
+                            if (sil != null && id.name.ToLower() == "reset" && sil.First().sym_info is common_method_node && (sil.First().sym_info as common_method_node).cont_type.name.Contains("clyield#") && _method_call.ParametersCount > 0)
+                            {
+                                sil = context.converted_namespace.find(id.name);
                             }
                         }
                     }
@@ -15331,7 +15339,8 @@ namespace PascalABCCompiler.TreeConverter
             {
             	if (is_event)
                     AddError(get_location(_var_def_statement), "EVENT_MUST_HAVE_TYPE");
-                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(convert_strong(_var_def_statement.inital_value));
+                var ex = convert_strong(_var_def_statement.inital_value);
+                expression_node cn = convert_strong_to_constant_or_function_call_for_varinit(ex);
                 if (cn is constant_node)
                     (cn as constant_node).SetType(DeduceType(cn.type, get_location(_var_def_statement.inital_value)));
                 inital_value = cn;

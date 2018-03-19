@@ -674,6 +674,8 @@ namespace PascalABCCompiler.Parsers
     	{
     		get;
     	}
+
+        ICompiledTypeScope[] GetCompiledGenericArguments();
     }
     
     public interface ICompiledMethodScope : IProcScope
