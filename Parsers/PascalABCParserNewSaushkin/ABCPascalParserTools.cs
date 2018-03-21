@@ -411,7 +411,16 @@ namespace PascalABCSavParser
             lt.source_context = sc;
             return lt;
         }
-        
+
+        public literal create_format_string_const(string text, SourceContext sc)
+        {
+            literal lt;
+            text = ReplaceSpecialSymbols(text.Substring(2, text.Length - 3));
+            lt = new string_const(text);
+            lt.source_context = sc;
+            return lt;
+        }
+
         public procedure_definition lambda(function_lambda_definition _function_lambda_definition)
         {
             procedure_definition _func_def = new procedure_definition();

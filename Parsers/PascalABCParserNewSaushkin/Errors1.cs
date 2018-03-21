@@ -64,6 +64,13 @@ namespace PascalABCCompiler.Errors
         {
         }
     }
+    public class bad_format_string : SyntaxError
+    {
+        public bad_format_string(string _file_name, SourceContext _source_context, syntax_tree_node _node) :
+            base(PascalABCSavParser.StringResources.Get("BAD_FORMAT_STRING"), _file_name, _source_context, _node)
+        {
+        }
+    }
     public class PABCNETUnexpectedToken : SyntaxError
     {
         private string _message;

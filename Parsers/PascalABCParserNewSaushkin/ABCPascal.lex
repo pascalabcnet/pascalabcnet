@@ -35,6 +35,7 @@ INTNUM {Digit}+
 FLOATNUM {INTNUM}\.{INTNUM}
 EXPNUM ({INTNUM}\.)?{INTNUM}[eE][+\-]?{INTNUM}
 STRINGNUM \'([^\'\n]|\'\')*\'
+FORMATSTRINGNUM \$\'([^\'\n]|\'\')*\'
 HEXNUM ${HexDigit}+
 SHARPCHARNUM #{Digit}+
 OLDDIRECTIVE #{ID}
@@ -446,6 +447,13 @@ UNICODEARROW \x890
   currentLexLocation = CurrentLexLocation;
   yylval.stn = parsertools.create_string_const(yytext,currentLexLocation); 
   return (int)Tokens.tkStringLiteral; 
+}
+
+{FORMATSTRINGNUM} { 
+  yylval = new Union();
+  currentLexLocation = CurrentLexLocation;
+  yylval.stn = parsertools.create_format_string_const(yytext,currentLexLocation); 
+  return (int)Tokens.tkFormatStringLiteral; 
 }
 
 {SHARPCHARNUM} {
