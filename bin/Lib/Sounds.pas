@@ -5,7 +5,7 @@
 procedure PlaySound(fname: string);
 begin
   var fsound := new System.Windows.Media.MediaPlayer;
-  fsound.Open(new System.Uri(fname));
+  fsound.Open(new System.Uri(fname,System.UriKind.RelativeOrAbsolute));
   fsound.Play;
 end;
 
@@ -16,7 +16,7 @@ public
   begin
     Open(fname);
   end;
-  procedure Open(fname: string) := fsound.Open(new System.Uri(fname));
+  procedure Open(fname: string) := fsound.Open(new System.Uri(fname,System.UriKind.RelativeOrAbsolute));
   procedure Play := fsound.Play;
   procedure Stop := fsound.Stop;
   procedure Pause := fsound.Pause;
