@@ -382,6 +382,29 @@ namespace GPPGParserScanner
 			return lcl;
         }
         
+        public expression ParseExpression(string Text, int line, int col)
+        {
+            PT parsertools = new PT(); // контекст сканера и парсера
+            parsertools.errors = new List<Error>();
+            parsertools.warnings = new List<CompilerWarning>();
+            parsertools.CurrentFileName = System.IO.Path.GetFullPath(this.parsertools.CurrentFileName);
+            parsertools.build_tree_for_format_strings = true;
+            Scanner scanner = new Scanner();
+            scanner.SetSource("<<expression>>"+Text, 0);
+            scanner.parsertools = parsertools;// передали parsertools в объект сканера
+            GPPGParser parser = new GPPGParser(scanner);
+            parsertools.build_tree_for_formatter = false;
+            parser.parsertools = parsertools;
+            if (!parser.Parse())
+                if (parsertools.errors.Count == 0)
+                    parsertools.AddError("Неопознанная синтаксическая ошибка!", null);
+            foreach (Error err in parsertools.errors)
+            {
+                this.parsertools.errors.Add(err);
+            }
+            return parser.root as expression;
+        }
+
         public expression NewFormatString(string_const str)
         {
             try
@@ -389,8 +412,10 @@ namespace GPPGParserScanner
                 method_call mc = new method_call();
                 mc.dereferencing_value = new dot_node(new ident("string", str.source_context), new ident("Format", str.source_context), str.source_context);
                 mc.parameters = new expression_list();
-                string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
-                Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
+                //string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
+                //Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
+                string[] arr = Regex.Split(str.Value, @"\{[^\}]+\}");
+                Match match = Regex.Match(str.Value, @"\{[^\}]+\}");
                 List<string> vars = new List<string>();
                 Dictionary<string, int> var_offsets = new Dictionary<string, int>();
                 while (match.Success)
@@ -416,40 +441,10 @@ namespace GPPGParserScanner
                 mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
                 foreach (string s in vars)
                 {
-                    SourceContext sc = new SourceContext(str.source_context);
-                    sc.begin_position.column_num += var_offsets[s] + 2;
-                    sc.end_position.column_num = sc.begin_position.column_num + s.Length;
-                    string[] words = s.Split('.');
-                    dot_node dn = null;
-                    ident id = null;
-                    int offset = 0;
-                    foreach (string word in words)
-                    {
-                        if (string.IsNullOrEmpty(word) || char.IsDigit(word[0]))
-                        {
-                            parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
-                            return str;
-                        }
-                        if (id == null)
-                        {
-                            id = new ident(word, sc);
-                        }
-                        else
-                        {
-                            if (dn == null)
-                            {
-                                dn = new dot_node(id, new ident(word, sc), sc);
-                            }
-                            else
-                            {
-                                dn = new dot_node(dn, new ident(word, sc), sc);
-                            }
-                        }
-                    }
-                    if (dn != null)
-                        mc.parameters.Add(dn, sc);
-                    else
-                        mc.parameters.Add(id, sc);
+                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num-1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[s] + 2) + s, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[s] + 2);
+                    expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
+                    expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
+                    mc.parameters.Add(expr);
                 }
 
                 mc.source_context = str.source_context;

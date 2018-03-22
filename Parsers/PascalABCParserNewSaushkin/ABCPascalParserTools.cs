@@ -43,8 +43,8 @@ namespace PascalABCSavParser
         public List<Error> errors;
         public List<CompilerWarning> warnings;
         public System.Collections.Stack NodesStack; // SSM: для каких-то вспомогательных целей в двух правилах
-        public bool build_tree_for_formatter = false; 
-
+        public bool build_tree_for_formatter = false;
+        public bool build_tree_for_format_strings = false;
         public string CurrentFileName;
 
         int lambda_num = 0;
@@ -180,7 +180,9 @@ namespace PascalABCSavParser
             string prefix = "";
             if (yytext != "")
                 prefix = StringResources.Get("FOUND{0}");
-            else prefix = StringResources.Get("FOUNDEOF");
+            else
+                prefix = StringResources.Get("FOUNDEOF");
+
 
             // Преобразовали в список строк - хорошо
             List<string> tokens = new List<string>(args.Skip(1).Cast<string>());
@@ -221,7 +223,8 @@ namespace PascalABCSavParser
 
             if (MaxTok.Equals("tkStatement") || MaxTok.Equals("tkIdentifier"))
                 ExpectedString = StringResources.Get("EXPECTEDR{1}");
-
+            if ((MaxTok == "EOF" || MaxTok == "EOF1" || MaxTok == "FOUNDEOF") && this.build_tree_for_format_strings)
+                MaxTok = "}";
             var MaxTokHuman = ConvertToHumanName(MaxTok);
 
             // string w = string.Join(" или ", tokens.Select(s => ConvertToHumanName((string)s)));
