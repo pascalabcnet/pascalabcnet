@@ -47,7 +47,7 @@
 %token <op> tkAssign tkPlusEqual tkMinusEqual tkMultEqual tkDivEqual tkMinus tkPlus tkSlash tkStar tkStarStar tkEqual tkGreater tkGreaterEqual tkLower tkLowerEqual 
 %token <op> tkNotEqual tkCSharpStyleOr tkArrow tkOr tkXor tkAnd tkDiv tkMod tkShl tkShr tkNot tkAs tkIn tkIs tkImplicit tkExplicit tkAddressOf tkDeref
 %token <id> tkDirectiveName tkIdentifier 
-%token <stn> tkStringLiteral tkAsciiChar
+%token <stn> tkStringLiteral tkFormatStringLiteral tkAsciiChar
 %token <id> tkAbstract tkForward tkOverload tkReintroduce tkOverride tkVirtual tkExtensionMethod 
 %token <ex> tkInteger tkFloat tkHex 
 
@@ -3316,6 +3316,17 @@ literal
     :literal_list                      
         { 
 			$$ = NewLiteral($1 as literal_const_line);
+        }
+    | tkFormatStringLiteral
+        {
+            if (parsertools.build_tree_for_formatter)
+   			{
+                $$ = $1 as string_const;
+            }
+            else
+            {
+                $$ = NewFormatString($1 as string_const);
+            }
         }
 	;
 	

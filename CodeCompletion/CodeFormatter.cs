@@ -927,6 +927,9 @@ namespace CodeFormatters
 
         public override void visit(string_const _string_const)
         {
+            int pos = GetPosition(_string_const.source_context.begin_position.line_num, _string_const.source_context.begin_position.column_num);
+            if (Text[pos] == '$')
+                sb.Append('$');
             sb.Append("'");
             sb.Append(_string_const.Value.Replace("'","''"));
             sb.Append("'");

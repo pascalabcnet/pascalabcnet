@@ -9,6 +9,7 @@ using PascalABCCompiler.SyntaxTree;
 using PascalABCSavParser;
 using PascalABCCompiler.ParserTools;
 using PascalABCCompiler.Errors;
+using System.Text.RegularExpressions;
 
 namespace GPPGParserScanner
 {
@@ -379,6 +380,86 @@ namespace GPPGParserScanner
 			if (lcl.literals.Count == 1) 
 				return lcl.literals[0];
 			return lcl;
+        }
+        
+        public expression NewFormatString(string_const str)
+        {
+            try
+            {
+                method_call mc = new method_call();
+                mc.dereferencing_value = new dot_node(new ident("string", str.source_context), new ident("Format", str.source_context), str.source_context);
+                mc.parameters = new expression_list();
+                string[] arr = Regex.Split(str.Value, @"\{[\w\d._]+\}");
+                Match match = Regex.Match(str.Value, @"\{[\w\d._]+\}");
+                List<string> vars = new List<string>();
+                Dictionary<string, int> var_offsets = new Dictionary<string, int>();
+                while (match.Success)
+                {
+                    string s = match.Value.Replace("{", "").Replace("}", "");
+                    vars.Add(s);
+                    var_offsets.Add(s, match.Index);
+                    match = match.NextMatch();
+                }
+                if (vars.Count == 0)
+                {
+                    parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                    return str;
+                }
+                    
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    sb.Append(arr[i]);
+                    if (i < arr.Length - 1)
+                        sb.Append("{" + i + "}");
+                }
+                mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
+                foreach (string s in vars)
+                {
+                    SourceContext sc = new SourceContext(str.source_context);
+                    sc.begin_position.column_num += var_offsets[s] + 2;
+                    sc.end_position.column_num = sc.begin_position.column_num + s.Length;
+                    string[] words = s.Split('.');
+                    dot_node dn = null;
+                    ident id = null;
+                    int offset = 0;
+                    foreach (string word in words)
+                    {
+                        if (string.IsNullOrEmpty(word) || char.IsDigit(word[0]))
+                        {
+                            parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+                            return str;
+                        }
+                        if (id == null)
+                        {
+                            id = new ident(word, sc);
+                        }
+                        else
+                        {
+                            if (dn == null)
+                            {
+                                dn = new dot_node(id, new ident(word, sc), sc);
+                            }
+                            else
+                            {
+                                dn = new dot_node(dn, new ident(word, sc), sc);
+                            }
+                        }
+                    }
+                    if (dn != null)
+                        mc.parameters.Add(dn, sc);
+                    else
+                        mc.parameters.Add(id, sc);
+                }
+
+                mc.source_context = str.source_context;
+                return mc;
+            }
+            catch (Exception ex)
+            {
+                parsertools.errors.Add(new bad_format_string(parsertools.CurrentFileName, str.source_context, str));
+            }
+            return str;
         }
 
         public var_def_statement NewVarOrIdentifier(ident identifier, named_type_reference fptype, LexLocation loc)

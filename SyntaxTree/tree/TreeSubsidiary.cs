@@ -210,6 +210,10 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				return _line_num;
 			}
+            set
+            {
+                _line_num = value;
+            }
 		}
 
 		public int column_num
@@ -218,6 +222,10 @@ namespace PascalABCCompiler.SyntaxTree
 			{
 				return _column_num;
 			}
+            set
+            {
+                _column_num = value;
+            }
 		}
 
 	}

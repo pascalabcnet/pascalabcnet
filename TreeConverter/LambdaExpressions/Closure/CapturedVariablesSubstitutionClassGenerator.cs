@@ -392,7 +392,11 @@ namespace TreeConverter.LambdaExpressions.Closure
                     {
                         if (upperScopeWhereVarsAreCaptured != scope)
                         {
-                            var dotnode1 = new dot_node(
+                            dot_node dotnode1 = null;
+                            if (ClassField != null && ClassField.IsStatic)
+                                dotnode1 = new dot_node(ClassName, new ident(varName));
+                            else
+                                dotnode1 = new dot_node(
                                 new ident(compiler_string_consts.self_word),
                                 new ident(
                                     _capturedVarsClassDefs[upperScopeWhereVarsAreCaptured.ScopeIndex]
@@ -429,7 +433,8 @@ namespace TreeConverter.LambdaExpressions.Closure
                                     }
                                     else
                                     {
-                                        dotnode1 = new dot_node(dotnode1, new ident(varName));
+                                        if (!(ClassField != null && ClassField.IsStatic))
+                                            dotnode1 = new dot_node(dotnode1, new ident(varName));
                                     }
                                 }
                                 else
