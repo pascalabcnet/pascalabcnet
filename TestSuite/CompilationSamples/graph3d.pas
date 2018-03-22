@@ -40,6 +40,7 @@ type
   TupleInt3 = (integer, integer, integer);
   TupleReal3 = (real, real, real);
   Point3D = Point3D;
+  Point = System.Windows.Point;
   
   {MyWindow = class(GWindow)
   public
