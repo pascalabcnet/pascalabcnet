@@ -417,12 +417,13 @@ namespace GPPGParserScanner
                 string[] arr = Regex.Split(str.Value, @"\{[^\}]+\}");
                 Match match = Regex.Match(str.Value, @"\{[^\}]+\}");
                 List<string> vars = new List<string>();
-                Dictionary<string, int> var_offsets = new Dictionary<string, int>();
+                //Dictionary<string, int> var_offsets = new Dictionary<string, int>();
+                List<int> var_offsets = new List<int>();
                 while (match.Success)
                 {
                     string s = match.Value.Replace("{", "").Replace("}", "");
                     vars.Add(s);
-                    var_offsets.Add(s, match.Index);
+                    var_offsets.Add(match.Index);
                     match = match.NextMatch();
                 }
                 if (vars.Count == 0)
@@ -439,9 +440,10 @@ namespace GPPGParserScanner
                         sb.Append("{" + i + "}");
                 }
                 mc.parameters.Add(new string_const(sb.ToString(), str.source_context), str.source_context);
-                foreach (string s in vars)
+                for (int i = 0; i < vars.Count; i++)
                 {
-                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num-1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[s] + 2) + s, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[s] + 2);
+                    string s = vars[i];
+                    var expr = ParseExpression(new string('\n', str.source_context.begin_position.line_num - 1) + new string(' ', str.source_context.begin_position.column_num + var_offsets[i] + 2) + s, str.source_context.begin_position.line_num, str.source_context.begin_position.column_num + var_offsets[i] + 2);
                     expr.source_context.begin_position.line_num = str.source_context.begin_position.line_num;
                     expr.source_context.end_position.line_num = str.source_context.end_position.line_num;
                     mc.parameters.Add(expr);
