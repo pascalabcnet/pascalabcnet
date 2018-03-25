@@ -858,6 +858,10 @@ const_variable
         {
 			$$ = NewConstVariable($1, $2, @$);
         }
+    | const_variable tkAmpersend template_type_params                
+        {
+			$$ = new ident_with_templateparams($1 as addressed_value, $3 as template_param_list, @$);
+        }
     ;
 
 const_variable_2
