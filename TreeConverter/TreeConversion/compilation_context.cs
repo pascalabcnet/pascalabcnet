@@ -2564,6 +2564,10 @@ namespace PascalABCCompiler.TreeConverter
 			}
 			if (error_on_false)
 			{
+                if (def is common_namespace_function_node && (def as common_namespace_function_node).ConnectedToType != null && predef is common_method_node)
+                {
+                    return false;
+                }
                 AddError(def.loc, "FUNCTION_DEFINITION_HAVE_DIFFERENT_PARAMS_WITH_PREDEFINITION");
 			}
 			return false;
