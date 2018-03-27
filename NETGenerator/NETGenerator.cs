@@ -9337,50 +9337,18 @@ namespace PascalABCCompiler.NETGenerator
             bool need_fee = false;
             bool is_comp_gen = false;
             EmitArguments(parameters, real_parameters);
-            /*for (int i = 0; i < real_parameters.Length; i++)
-            {
-                if (parameters[i].parameter_type == parameter_type.var)
-                    is_addr = true;
-                //ssyy добавил
-                //Мне плохо понятно, как это работает; написал по аналогии с кодом
-                //метода visit(ICommonMethodCall).
-                ITypeNode i_tn = real_parameters[i].type;
-                TypeInfo ti = null;
-
-                //(ssyy) moved up
-                ITypeNode tn2 = parameters[i].type;
-                ICompiledTypeNode ctn2 = tn2 as ICompiledTypeNode;
-                ITypeNode ctn3 = real_parameters[i].type;
-                //(ssyy) 07.12.2007 При боксировке нужно вызывать Ldsfld вместо Ldsflda.
-                //Дополнительная проверка введена именно для этого.
-                bool box_awaited =
-                    (ctn2 != null && ctn2.compiled_type == TypeFactory.ObjectType || tn2.IsInterface) && value.type != null && (ctn3.is_value_type || ctn3.is_generic_parameter) && !(real_parameters[i] is SemanticTree.INullConstantNode);
-
-                if (!(real_parameters[i] is INullConstantNode))
-                {
-                    ti = helper.GetTypeReference(i_tn);
-                    if (ti.clone_meth != null && ti.tp != null && ti.tp.IsValueType && !box_awaited && !parameters[i].is_const)
-                        is_dot_expr = true;
-                }
-                is_comp_gen = CheckForCompilerGenerated(real_parameters[i]);
-                //if (save_debug_info) MarkSequencePoint(il, 0xFeeFee, 1, 0xFeeFee, 1);
-                if (is_comp_gen) need_fee = true;
-                value.real_parameters[i].visit(this);
-                is_dot_expr = false;
-                ICommonTypeNode ctn = real_parameters[i].type as ICommonTypeNode;
-                CallCloneIfNeed(il, parameters[i], real_parameters[i]);
-                //(ssyy) изменил условие
-                if (box_awaited)
-                    il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
-                is_addr = false;
-            }*/
-            /*if (save_debug_info && need_fee)
-            {
-                MarkSequencePoint(il, value.Location);
-            }*/
             if (value.new_obj_awaited())
             {
                 il.Emit(OpCodes.Newobj, cnstr);
+                var ti = helper.GetTypeReference(value.common_type);
+                if (ti != null && ti.init_meth != null && value.common_type.is_value_type)
+                {
+                    LocalBuilder lb = il.DeclareLocal(ti.tp);
+                    il.Emit(OpCodes.Stloc, lb);
+                    il.Emit(OpCodes.Ldloca, lb);
+                    il.Emit(OpCodes.Call, ti.init_meth);
+                    il.Emit(OpCodes.Ldloc, lb);
+                }
             }
             else
             {
@@ -9454,17 +9422,6 @@ namespace PascalABCCompiler.NETGenerator
             is_dot_expr = false;
             
             EmitArguments(parameters, real_parameters);
-            /*for (int i = 0; i < real_parameters.Length; i++)
-            {
-                if (parameters[i].parameter_type == parameter_type.var)
-                    is_addr = true;
-                real_parameters[i].visit(this);
-                ICompiledTypeNode ctn2 = parameters[i].type as ICompiledTypeNode;
-                ITypeNode ctn3 = real_parameters[i].type;
-                if (ctn2 != null && !(real_parameters[i] is SemanticTree.INullConstantNode) && value.type != null && (ctn3.is_value_type || ctn3.is_generic_parameter) && ctn2.compiled_type == TypeFactory.ObjectType)
-                    il.Emit(OpCodes.Box, helper.GetTypeReference(ctn3).tp);
-                is_addr = false;
-            }*/
             //ssyy изменил
             if (value.new_obj_awaited())
             {

@@ -4597,7 +4597,7 @@ namespace CodeCompletion
         public override void visit(ident_with_templateparams node)
         {
             node.name.visit(this);
-            if (search_all && returned_scopes.Count > 0 && returned_scopes[0] is ProcScope)
+            if ((search_all || returned_scope == null) && returned_scopes.Count > 0 && returned_scopes[0] is ProcScope)
             {
                 ProcScope ps = returned_scopes[0] as ProcScope;
                 List<TypeScope> template_params = new List<TypeScope>();
