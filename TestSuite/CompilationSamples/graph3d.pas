@@ -572,22 +572,22 @@ type
         transfgroup.Children[0] := new MatrixTransform3D(m);
         Result := Self;
       end);
-    function AnimMoveTo(x, y, z: real; seconds: real := 1): MyAnimation;
-    function AnimMoveTo(p: Point3D; seconds: real := 1) := AnimMoveTo(p.x, p.y, p.z, seconds);
-    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1): MyAnimation;
+    function AnimMoveTo(x, y, z: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveTo(p: Point3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveTo(p.x, p.y, p.z, seconds, Completed);
+    function AnimMoveTrajectory(a: sequence of Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
     //function AnimMoveToP3D(x,y,z: real; seconds: real := 1): MyAnimation; - не получилось! Свойство не анимируется!
-    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1): MyAnimation;
-    function AnimMoveOn(v: Vector3D; seconds: real := 1) := AnimMoveOn(v.x, v.y, v.z, seconds);
-    function AnimMoveOnX(dx: real; seconds: real := 1) := AnimMoveOn(dx, 0, 0, seconds);
-    function AnimMoveOnY(dy: real; seconds: real := 1) := AnimMoveOn(0, dy, 0, seconds);
-    function AnimMoveOnZ(dz: real; seconds: real := 1) := AnimMoveOn(0, 0, dz, seconds);
-    function AnimScale(sc: real; seconds: real := 1): MyAnimation;
-    function AnimScaleX(sc: real; seconds: real := 1): MyAnimation;
-    function AnimScaleY(sc: real; seconds: real := 1): MyAnimation;
-    function AnimScaleZ(sc: real; seconds: real := 1): MyAnimation;
-    function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1): MyAnimation;
-    function AnimRotate(v: Vector3D; angle: real; seconds: real := 1) := AnimRotate(v.x, v.y, v.z, angle, seconds);
-    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1): MyAnimation;
+    function AnimMoveOn(dx, dy, dz: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimMoveOn(v: Vector3D; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(v.x, v.y, v.z, seconds, Completed);
+    function AnimMoveOnX(dx: real; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(dx, 0, 0, seconds, Completed);
+    function AnimMoveOnY(dy: real; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(0, dy, 0, seconds, Completed);
+    function AnimMoveOnZ(dz: real; seconds: real := 1; Completed: procedure := nil) := AnimMoveOn(0, 0, dz, seconds, Completed);
+    function AnimScale(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimScaleX(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimScaleY(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimScaleZ(sc: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimRotate(vx, vy, vz, angle: real; seconds: real := 1; Completed: procedure := nil): MyAnimation;
+    function AnimRotate(v: Vector3D; angle: real; seconds: real := 1; Completed: procedure := nil) := AnimRotate(v.x, v.y, v.z, angle, seconds, Completed);
+    function AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real := 1; Completed: procedure := nil): MyAnimation;
     function Clone: Object3D := Invoke&<Object3D>(CloneT);
     
     procedure SaveP(fname: string);
@@ -760,6 +760,10 @@ type
   private 
     Element: Object3D;
     Seconds: real;
+    // Completed - действие при завершении элементарной (не составной) анимации (имеющей единую продолжительность). 
+    // Не учитывается составными анимациями - у них есть AnimationCompleted. Работает точнее чем sb.Completed.
+    Completed: procedure; 
+    // AnimationCompleted - фигурирует только в WhenCompleted. Неточна. После неё индивидуальные анимации делают ещё один шаг
     AnimationCompleted: procedure;
     ApplyDecorators := new List<Action0>;
     procedure ApplyAllDecorators; virtual;
@@ -850,11 +854,16 @@ type
         if an <> nil then
           an;
       end;
+
       Result := sb;
     end;
   
   public 
-    constructor(e: Object3D; sec: real) := (Element,Seconds) := (e,sec); 
+    constructor(e: Object3D; sec: real; Completed: procedure := nil);
+    begin
+      Self.Completed := Completed;
+      (Element,Seconds) := (e,sec);
+    end;  
     
     function WhenCompleted(act: procedure): MyAnimation;
     begin
@@ -867,8 +876,9 @@ type
     begin
       sb := CreateStoryboard;
       InitAnim(sb);
+      
       ApplyAllDecorators;
-      sb.Completed += procedure (o, e) -> sb.Children.Clear;
+      sb.Completed += procedure (o, e) -> begin sb.Children.Clear; end;
       sb.Begin;
     end;
     procedure RemoveT := begin
@@ -878,10 +888,8 @@ type
     procedure ChangeT(a: MyAnimation);
     begin
       sb := CreateStoryboard;
-      Print(a.sb);
       foreach var d in a.sb.Children do
         sb.Children.Add(d);
-      Print(2);
     end;
   public 
     procedure &Begin; virtual := Invoke(BeginT);
@@ -912,9 +920,9 @@ type
     v: real;
     da: DoubleAnimationBase;
   public  
-    constructor(e: Object3D; sec: real; value: real);
+    constructor(e: Object3D; sec: real; value: real; Completed: procedure := nil);
     begin
-      inherited Create(e, sec);
+      inherited Create(e, sec, Completed);
       v := value;
     end;
     function AutoReverse: MyAnimation; override;
@@ -955,9 +963,9 @@ type
     x, y, z: real;
     dax,day,daz: DoubleAnimationBase;
   public  
-    constructor(e: Object3D; sec: real; xx, yy, zz: real);
+    constructor(e: Object3D; sec: real; xx, yy, zz: real; Completed: procedure := nil);
     begin
-      inherited Create(e, sec);
+      inherited Create(e, sec, Completed);
       (x, y, z) := (xx, yy, zz);
     end;
     function AutoReverse: MyAnimation; override;
@@ -1011,6 +1019,7 @@ type
       dax := AddDoubleAnimByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
       day := AddDoubleAnimByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
       daz := AddDoubleAnimByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
+      daz.Completed += (o,e) -> if Completed<>nil then Completed(); // только на последнюю! Надо выполнить один раз!
     end;
   end;
   
@@ -1024,6 +1033,7 @@ type
       dax := AddDoubleAnimOnByName(sb, x, seconds, ttname, TranslateTransform3D.OffsetXProperty, waittime);
       day := AddDoubleAnimOnByName(sb, y, seconds, ttname, TranslateTransform3D.OffsetYProperty, waittime);
       daz := AddDoubleAnimOnByName(sb, z, seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
+      daz.Completed += (o,e) -> if Completed<>nil then Completed(); // только на первую! Надо выполнить один раз!
     end;
   public 
   end;
@@ -1041,9 +1051,9 @@ type
       daz := AddDoubleAnimByNameUsingKeyframes(sb, a.Select(p -> p.z), seconds, ttname, TranslateTransform3D.OffsetZProperty, waittime);
     end;
   public 
-    constructor(e: Object3D; sec: real; aa: sequence of Point3D);
+    constructor(e: Object3D; sec: real; aa: sequence of Point3D; Completed: procedure := nil);
     begin
-      inherited Create(e, sec);
+      inherited Create(e, sec, Completed);
       a := aa;
     end;
   end;
@@ -1062,9 +1072,9 @@ type
     end;
   
   public 
-    constructor(e: Object3D; sec: real; sc: real);
+    constructor(e: Object3D; sec: real; sc: real; Completed: procedure := nil);
     begin
-      inherited Create(e, sec);
+      inherited Create(e, sec, Completed);
       scale := sc;
     end;
   end;
@@ -1080,9 +1090,9 @@ type
       da := AddDoubleAnimByName(sb, scale, seconds, ttname, ScaleTransform3D.ScaleXProperty, wait);
     end;
   public 
-    constructor(e: Object3D; sec: real; sc: real);
+    constructor(e: Object3D; sec: real; sc: real; Completed: procedure := nil);
     begin
-      inherited Create(e, sec);
+      inherited Create(e, sec, Completed);
       scale := sc;
     end;
   end;
@@ -1166,9 +1176,9 @@ type
     end;
   
   public 
-    constructor(e: Object3D; sec: real; vvx, vvy, vvz, a: real; c: Point3D);
+    constructor(e: Object3D; sec: real; vvx, vvy, vvz, a: real; c: Point3D; Completed: procedure := nil);
     begin
-      inherited Create(e, sec);
+      inherited Create(e, sec, Completed);
       (vx, vy, vz, angle, center) := (vvx, vvy, vvz, a, c)
     end;
   end;
@@ -1258,20 +1268,20 @@ type
     end;
   end;
 
-function Object3D.AnimMoveTo(x, y, z, seconds: real) := new OffsetAnimation(Self, seconds, x, y, z);
+function Object3D.AnimMoveTo(x, y, z, seconds: real; Completed: procedure) := new OffsetAnimation(Self, seconds, x, y, z, Completed);
 
-function Object3D.AnimMoveTrajectory(a: sequence of Point3D; seconds: real) := new OffsetAnimationUsingKeyframes(Self, seconds, a);
+function Object3D.AnimMoveTrajectory(a: sequence of Point3D; seconds: real; Completed: procedure) := new OffsetAnimationUsingKeyframes(Self, seconds, a, Completed);
 
-function Object3D.AnimMoveOn(dx, dy, dz, seconds: real) := new OffsetAnimationOn(Self, seconds, dx, dy, dz);
+function Object3D.AnimMoveOn(dx, dy, dz, seconds: real; Completed: procedure) := new OffsetAnimationOn(Self, seconds, dx, dy, dz, Completed);
 
-function Object3D.AnimScale(sc, seconds: real) := new ScaleAnimation(Self, seconds, sc);
-function Object3D.AnimScaleX(sc, seconds: real) := new ScaleXAnimation(Self, seconds, sc);
-function Object3D.AnimScaleY(sc, seconds: real) := new ScaleYAnimation(Self, seconds, sc);
-function Object3D.AnimScaleZ(sc, seconds: real) := new ScaleZAnimation(Self, seconds, sc);
+function Object3D.AnimScale(sc, seconds: real; Completed: procedure) := new ScaleAnimation(Self, seconds, sc, Completed);
+function Object3D.AnimScaleX(sc, seconds: real; Completed: procedure) := new ScaleXAnimation(Self, seconds, sc, Completed);
+function Object3D.AnimScaleY(sc, seconds: real; Completed: procedure) := new ScaleYAnimation(Self, seconds, sc, Completed);
+function Object3D.AnimScaleZ(sc, seconds: real; Completed: procedure) := new ScaleZAnimation(Self, seconds, sc, Completed);
 
-function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0,0,0));
+function Object3D.AnimRotate(vx, vy, vz, angle, seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, vx, vy, vz, angle, P3D(0,0,0), Completed);
 
-function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center);
+function Object3D.AnimRotateAt(axis: Vector3D; angle: real; center: Point3D; seconds: real; Completed: procedure) := new RotateAtAnimation(Self, seconds, axis.X, axis.y, axis.z, angle, center, Completed);
 
 var Object3DList := new List<Object3D>;
 

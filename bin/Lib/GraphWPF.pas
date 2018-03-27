@@ -5,11 +5,7 @@ unit GraphWPF;
 
 interface
 
-{$reference 'PresentationFramework.dll'}
-{$reference 'WindowsBase.dll'}
-{$reference 'PresentationCore.dll'}
-
-{$apptype windows}
+uses GraphWPFBase;
 
 uses System.Windows; 
 uses System.Windows.Controls;
@@ -45,7 +41,7 @@ type
   GColor = System.Windows.Media.Color;
   /// Тип прямоугольника
   GRect = System.Windows.Rect;
-  GWindow = Window;
+  GWindow = System.Windows.Window;
   GPen = System.Windows.Media.Pen;
   GPoint = System.Windows.Point;
   GBrush = System.Windows.Media.Brush;
@@ -1155,7 +1151,7 @@ function WindowTypeGetCaptionP := MainWindow.Title;
 function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
 
 procedure WindowTypeClearP := begin Host.children.Clear; CountVisuals := 0; end;
-procedure WindowType.Clear := app.Dispatcher.Invoke(WindowTypeClearP);
+procedure WindowType.Clear := Invoke(WindowTypeClearP);
 
 procedure WindowType.Clear(c: Color);
 begin
@@ -1518,7 +1514,7 @@ begin
     host.DataContext := e.NewSize;
   end;
   // Всегда последнее
-  MainDockPanelF.children.Add(host);
+  MainDockPanel.children.Add(host);
 end;
 
 procedure InitForm0;
