@@ -21,14 +21,13 @@ uses System.Threading;
 uses System.Windows.Shapes;
 uses System.Windows.Threading;
 
-var app: Application;
 var CountVisuals := 0;
 
-procedure Invoke(d: System.Delegate; params args: array of object);
+{procedure Invoke(d: System.Delegate; params args: array of object);
 procedure Invoke(d: ()->());
 function Invoke<T>(d: Func0<T>): T;
 function InvokeReal(f: ()->real): real;
-function InvokeString(f: ()->string): string;
+function InvokeString(f: ()->string): string;}
 
 type 
   /// Тип клавиши
@@ -437,8 +436,6 @@ procedure AddBottomPanel(Height: real := 100; c: Color := Colors.LightGray);
 
 procedure AddStatusBar(Height: real := 24);}
 
-function MainDockPanel: DockPanel;
-
 implementation
 
 function RGB(r,g,b: byte) := Color.Fromrgb(r, g, b);
@@ -461,13 +458,6 @@ begin
     Sleep(10);    
   end;
 end;
-
-procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d,args);
-procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
-function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
-function InvokeReal(f: ()->real): real := Invoke&<Real>(f);
-function InvokeString(f: ()->string): string := Invoke&<string>(f);
-
 
 function operator implicit(Self: (integer, integer)): Point; extensionmethod := new Point(Self[0], Self[1]);
 function operator implicit(Self: (integer, real)): Point; extensionmethod := new Point(Self[0], Self[1]);
@@ -511,8 +501,6 @@ type
   end;
 
 var Host: MyVisualHost;
-//var LeftPanel: StackPanel;
-var MainWindow: GWindow;
 
 var 
   XOrigin := 0.0;
@@ -1446,8 +1434,6 @@ procedure SystemOnResize(sender: Object; e: SizeChangedEventArgs) :=
 begin
 end;}
 
-var mre := new ManualResetEvent(false);
-
 var OnDraw: procedure := nil;
 var OnDraw1: procedure(frame: integer) := nil;
 
@@ -1500,10 +1486,6 @@ begin
   FrameRate := 60;
 end;  
 
-var MainDockPanelF: DockPanel;
-  
-function MainDockPanel: DockPanel := MainDockPanelF;
-
 procedure AddGraphWindow;
 begin
   host := new MyVisualHost();
@@ -1511,13 +1493,130 @@ begin
   host.SizeChanged += (s,e) ->
   begin
     var sz := e.NewSize;
-    host.DataContext := e.NewSize;
+    host.DataContext := sz;
   end;
   // Всегда последнее
   MainDockPanel.children.Add(host);
 end;
 
-procedure InitForm0;
+var mre := new ManualResetEvent(false);
+
+type 
+GraphWPFWindow = class(GMainWindow)
+public
+  procedure InitMainGraphControl; override;
+  begin
+    host := new MyVisualHost();
+    host.ClipToBounds := True;
+    host.SizeChanged += (s,e) ->
+    begin
+      var sz := e.NewSize;
+      host.DataContext := sz;
+    end;
+    // Всегда последнее
+    var g := Content as DockPanel;
+    g.children.Add(host);
+  end;
+
+  procedure InitWindowProperties; override;
+  begin
+    Title := 'Графика WPF';
+    var (w,h) := (800,600);
+    
+    (Width, Height) := (w + wplus, h + hplus);
+    WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
+  end;
+
+  procedure InitGlobals; override;
+  begin
+    Brush := new BrushType;
+    Pen := new PenType;
+    Font := new FontType;
+    Window := new WindowType;
+    GraphWindow := new GraphWindowType;
+  end;
+  
+  procedure InitHandlers; override;
+  begin
+    Closed += procedure(sender,e) -> begin Halt; end;
+    MouseDown += SystemOnMouseDown;
+    MouseUp += SystemOnMouseUp;
+    MouseMove += SystemOnMouseMove;
+    KeyDown += SystemOnKeyDown;
+    KeyUp += SystemOnKeyUp;
+    SizeChanged += SystemOnResize;
+    
+    CompositionTarget.Rendering += RenderFrame;
+    
+    Loaded += (o,e) -> mre.Set();
+
+    {PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
+    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
+    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
+  
+    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
+    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
+
+    Closed += procedure(sender, e) -> begin Halt; end;}
+  end;
+
+
+  /// --- SystemKeyEvents
+  procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
+  begin
+    if GraphWPF.OnKeyDown <> nil then
+      GraphWPF.OnKeyDown(e.Key);
+    e.Handled := True;
+  end;
+  
+  procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs);
+  begin
+    if GraphWPF.OnKeyUp <> nil then
+      GraphWPF.OnKeyUp(e.Key);
+    e.Handled := True;
+  end;    
+  
+  /// --- SystemMouseEvents
+  procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(nil{hvp});
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if GraphWPF.OnMouseDown <> nil then  
+     GraphWPF.OnMouseDown(p.x, p.y, mb);
+  end;
+  
+  procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(nil{hvp});
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if GraphWPF.OnMouseUp <> nil then  
+      GraphWPF.OnMouseUp(p.x, p.y, mb);
+  end;
+  
+  procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(nil{hvp});
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if GraphWPF.OnMouseMove <> nil then  
+      GraphWPF.OnMouseMove(p.x, p.y, mb);
+  end;
+  
+end;
+
+
+{procedure InitApp1;
 begin
   app := new Application();
   
@@ -1533,8 +1632,8 @@ begin
 
   AddGraphWindow;
   
-  {host := new MyVisualHost();
-  MainWindow.Content := host;}
+  host := new MyVisualHost();
+  MainWindow.Content := host;
 
   Brush := new BrushType;
   Pen := new PenType;
@@ -1562,14 +1661,69 @@ begin
   MainWindow.Loaded += (o,e) -> mre.Set();
 
   app.Run(MainWindow);
+end;}
+
+procedure InitApp;
+begin
+  app := new Application;
+  
+  app.Dispatcher.UnhandledException += (o, e) -> begin
+    Println(e.Exception.Message); 
+    if e.Exception.InnerException<>nil then
+      Println(e.Exception.InnerException.Message); 
+    halt; 
+  end;
+  
+  MainWindow := new GraphWPFWindow;
+
+  mre.Set();
+  
+  app.Run(MainWindow);
 end;
 
-var MainFormThread: Thread;
-
+procedure InitMainThread;
 begin
-  MainFormThread := new System.Threading.Thread(InitForm0);
+  var MainFormThread := new System.Threading.Thread(InitApp);
   MainFormThread.SetApartmentState(ApartmentState.STA);
   MainFormThread.Start;
   
   mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
-end.
+end;
+
+var
+  ///--
+  __initialized := false;
+
+var
+  ///--
+  __finalized := false;
+
+procedure __InitModule;
+begin
+  InitMainThread;
+end;
+
+///--
+procedure __InitModule__;
+begin
+  if not __initialized then
+  begin
+    __initialized := true;
+    __InitModule;
+  end;
+end;
+
+///--
+procedure __FinalizeModule__;
+begin
+  if not __finalized then
+  begin
+    __finalized := true;
+  end;
+end;
+
+initialization
+  __InitModule;
+
+finalization  
+end. 

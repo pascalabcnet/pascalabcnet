@@ -2715,7 +2715,7 @@ public
 
   procedure InitWindowProperties; override;
   begin
-    (Width,Height) := (640,480);
+    (Width,Height) := (800,600);
     Title := '3D графика';
     WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
   end;
@@ -2810,6 +2810,7 @@ begin
   end;
   
   MainWindow := new Graph3DWindow;
+  //MainWindow.MainPanel;
 
   mre.Set();
   

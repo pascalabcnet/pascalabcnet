@@ -5,7 +5,7 @@ unit Controls;
 
 interface
 
-uses GraphWPF;
+uses GraphWPFBase;
 uses System.Windows; 
 uses System.Windows.Media; 
 uses System.Windows.Controls; 
