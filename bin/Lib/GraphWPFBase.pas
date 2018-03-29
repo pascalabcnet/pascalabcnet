@@ -52,11 +52,16 @@ var
   app: Application;
   MainWindow: GMainWindow;
 
-procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d,args);
+procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
+
 procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
+
 function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
 function InvokeReal(f: ()->real): real := Invoke&<Real>(f);
 function InvokeString(f: ()->string): string := Invoke&<string>(f);
+function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);
+function InvokeInteger(d: Func0<integer>): integer := Invoke&<integer>(d);
+function Inv<T>(p: ()->T): T := Invoke&<T>(p); // Теперь это работает!
 
 function MainDockPanel: DockPanel := MainWindow.MainPanel;
   

@@ -59,6 +59,8 @@ function Sz3D(x, y, z: real) := new Size3D(x, y, z);
 function Pnt(x, y: real) := new Point(x, y);
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
 
+function operator*(p: Point3D; r: real); extensionmethod := P3D(p.x*r,p.y*r,p.z*r);
+
 const
   OrtX = V3D(1, 0, 0);
   OrtY = V3D(0, 1, 0);
@@ -90,17 +92,6 @@ function RandomColor := RGB(Random(256), Random(256), Random(256));
 function GrayColor(b: byte) := RGB(b, b, b);
 
 function RandomSolidBrush := new SolidColorBrush(RandomColor);
-
-procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
-
-procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
-
-function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
-function InvokeString(d: Func0<string>): string := Invoke&<String>(d);
-function InvokeReal(d: Func0<real>): real := Invoke&<Real>(d);
-function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);
-function InvokeInteger(d: Func0<integer>): integer := Invoke&<integer>(d);
-function Inv<T>(p: ()->T): T := Invoke&<T>(p); // Теперь это работает!
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
 

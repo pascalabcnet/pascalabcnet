@@ -2,15 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit Graph3D;
 
-{$reference 'PresentationFramework.dll'}
-{$reference 'WindowsBase.dll'}
-{$reference 'PresentationCore.dll'}
 {$reference System.Xml.dll}
-
 {$reference HelixToolkit.Wpf.dll}
-{reference Petzold.Media3D.dll}
 
-{$apptype windows}
+uses GraphWPFBase;
 
 uses System.Windows;
 uses System.Windows.Controls;
@@ -35,22 +30,13 @@ type
   GMaterial = System.Windows.Media.Media3D.Material;
   GCamera = System.Windows.Media.Media3D.ProjectionCamera;
   GRect = System.Windows.Rect;
-  GWindow = System.Windows.Window;
   CameraMode = HelixToolkit.Wpf.CameraMode;
   TupleInt3 = (integer, integer, integer);
   TupleReal3 = (real, real, real);
   Point3D = Point3D;
   Point = System.Windows.Point;
   
-  {MyWindow = class(GWindow)
-  public
-    procedure OnKeyDown(e: KeyEventArgs); override;
-  end;}
-
 var
-  MainFormThread: Thread; 
-  app: Application;
-  MainWindow: GWindow;
   hvp: HelixViewport3D;
   LightsGroup: Model3DGroup;
   gvl: GridLinesVisual3D;
@@ -65,16 +51,6 @@ var
   /// Событие отжатия клавиши
   OnKeyUp: procedure(k: Key);
   
-{procedure MyWindow.OnKeyDown(e: KeyEventArgs);
-begin
-  inherited OnKeyDown(e);
-  if Graph3D.OnKeyDown<>nil then 
-  begin
-    Graph3D.OnKeyDown(e.Key);
-    e.Handled := True;    
-  end;
-end;}  
-
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
 function P3D(x, y, z: real) := new Point3D(x, y, z);
@@ -189,56 +165,6 @@ type
 
 
 function operator+(a,b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a,b).GroupMaterial);
-
-/// --- SystemKeyEvents
-procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
-begin
-  if OnKeyDown <> nil then
-    OnKeyDown(e.Key);
-end;
-
-procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
-begin
-  if OnKeyUp <> nil then
-    OnKeyUp(e.Key);
-end;    
-
-/// --- SystemMouseEvents
-procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
-begin
-  var mb := 0;
-  var p := e.GetPosition(hvp);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
-  if OnMouseDown <> nil then  
-    OnMouseDown(p.x, p.y, mb);
-end;
-
-procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
-begin
-  var mb := 0;
-  var p := e.GetPosition(hvp);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
-  if OnMouseUp <> nil then  
-    OnMouseUp(p.x, p.y, mb);
-end;
-
-procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
-begin
-  var mb := 0;
-  var p := e.GetPosition(hvp);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
-  if OnMouseMove <> nil then  
-    OnMouseMove(p.x, p.y, mb);
-end;
 
 type
   ///!#
@@ -2758,85 +2684,146 @@ function WindowType.Center := new Point(Width / 2, Height / 2);
 
 function WindowType.ClientRect := Rect(0, 0, Window.Width, Window.Height);
 
-var
-  mre := new ManualResetEvent(false);
+type 
+Graph3DWindow = class(GMainWindow)
+public
+  procedure InitMainGraphControl; override;
+  begin
+    var g := Content as DockPanel;
+    hvp := new HelixViewport3D();
+    g.Children.Add(hvp);
 
-procedure InitWPF0;
+    hvp.ZoomExtentsWhenLoaded := True;
+    hvp.ShowCoordinateSystem := True;
+    
+    hvp.Children.Add(new DefaultLights);
+
+    var mv := new ModelVisual3D;
+    LightsGroup := new Model3DGroup;
+    mv.Content := LightsGroup;
+    hvp.Children.Add(mv);
+    
+    gvl := new GridLinesVisual3D();
+    gvl.Width := 12;
+    gvl.Length := 12;
+    gvl.Normal := OrtZ;
+    gvl.MinorDistance := 1;
+    gvl.MajorDistance := 1;
+    gvl.Thickness := 0.02;
+    hvp.Children.Add(gvl);
+  end;
+
+  procedure InitWindowProperties; override;
+  begin
+    (Width,Height) := (800,600);
+    Title := '3D графика';
+    WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
+  end;
+
+  procedure InitGlobals; override;
+  begin
+    Window := new WindowType;
+    Camera := new CameraType;
+    Lights := new LightsType;
+    GridLines := new GridLinesType;
+    View3D := new View3DT;
+
+    NameScope.SetNameScope(Self, new NameScope());
+  end;
+
+  /// --- SystemKeyEvents
+  procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
+  begin
+    if Graph3D.OnKeyDown <> nil then
+      Graph3D.OnKeyDown(e.Key);
+    e.Handled := True;
+  end;
+  
+  procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
+  begin
+    if Graph3D.OnKeyUp <> nil then
+      Graph3D.OnKeyUp(e.Key);
+    e.Handled := True;
+  end;    
+  
+  /// --- SystemMouseEvents
+  procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(hvp);
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if Graph3D.OnMouseDown <> nil then  
+     Graph3D.OnMouseDown(p.x, p.y, mb);
+  end;
+  
+  procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(hvp);
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if Graph3D.OnMouseUp <> nil then  
+      Graph3D.OnMouseUp(p.x, p.y, mb);
+  end;
+  
+  procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(hvp);
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if Graph3D.OnMouseMove <> nil then  
+      Graph3D.OnMouseMove(p.x, p.y, mb);
+  end;
+  
+  procedure InitHandlers; override;
+  begin
+    PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
+    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
+    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
+  
+    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
+    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
+
+    Closed += procedure(sender, e) -> begin Halt; end;
+  end;
+end;
+
+var mre := new ManualResetEvent(false);
+
+procedure InitApp;
 begin
   app := new Application;
+  
   app.Dispatcher.UnhandledException += (o, e) -> begin
     Println(e.Exception.Message); 
     if e.Exception.InnerException<>nil then
       Println(e.Exception.InnerException.Message); 
     halt; 
   end;
-  MainWindow := new GWindow;
   
-  Window := new WindowType;
-  Camera := new CameraType;
-  Lights := new LightsType;
-  GridLines := new GridLinesType;
-  
-  var g := new Grid;
-  MainWindow.Content := g;
-  hvp := new HelixViewport3D();
-  g.Children.Add(hvp);
-  hvp.ZoomExtentsWhenLoaded := True;
-  
-  hvp.ShowCoordinateSystem := True;
-  
-  hvp.Children.Add(new DefaultLights);
-  //hvp.Children.Add(new ThreePointLights);
-  
-  //var dl := new DirectionalLight(GrayColor(50), new Vector3D(-1.0, -1.0, -1.0));
-  var mv := new ModelVisual3D;
-  LightsGroup := new Model3DGroup;
-  //LightsGroup.Children.Add(dl);
-  mv.Content := LightsGroup;
-  
-  hvp.Children.Add(mv);
-  
-  gvl := new GridLinesVisual3D();
-  gvl.Width := 12;
-  gvl.Length := 12;
-  gvl.Normal := OrtZ;
-  gvl.MinorDistance := 1;
-  gvl.MajorDistance := 1;
-  gvl.Thickness := 0.02;
-  hvp.Children.Add(gvl);
-  
-  NameScope.SetNameScope(MainWindow, new NameScope());
-  MainWindow.Title := '3D графика';
-  MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-  MainWindow.Width := 640;
-  MainWindow.Height := 480;
-  MainWindow.Closed += procedure(sender, e) -> begin Halt; end;
-  
-  View3D := new View3DT;
-  
-  MainWindow.PreviewKeyDown += (o,e)-> begin 
-    if OnKeyDown<>nil then 
-    begin
-      OnKeyDown(e.Key);
-    end;
-    e.Handled := True;
-  end;
-
-  MainWindow.PreviewKeyUp += (o,e)-> begin 
-    if OnKeyUp<>nil then 
-    begin
-      OnKeyUp(e.Key);
-    end;
-    e.Handled := True;
-  end;
-  
-  MainWindow.PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-  MainWindow.PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-  MainWindow.PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
+  MainWindow := new Graph3DWindow;
+  //MainWindow.MainPanel;
 
   mre.Set();
   
   app.Run(MainWindow);
+end;
+
+procedure InitMainThread;
+begin
+  var MainFormThread := new System.Threading.Thread(InitApp);
+  MainFormThread.SetApartmentState(ApartmentState.STA);
+  MainFormThread.Start;
+  
+  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
 end;
 
 var
@@ -2849,11 +2836,7 @@ var
 
 procedure __InitModule;
 begin
-  MainFormThread := new System.Threading.Thread(InitWPF0);
-  MainFormThread.SetApartmentState(ApartmentState.STA);
-  MainFormThread.Start;
-  
-  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
+  InitMainThread;
 end;
 
 ///--
