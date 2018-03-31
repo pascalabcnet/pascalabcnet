@@ -1,0 +1,418 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Microsoft.CSharp</name>
+  </assembly>
+  <members>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.BinaryOperation(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Linq.Expressions.ExpressionType,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель бинарной операции CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="operation">
+                Вид бинарной операции.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> , Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для выполнения этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель бинарной операции CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.Convert(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Type,System.Type)">
+      <summary>
+              Инициализирует новый связыватель преобразования CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="type">
+                Целевой тип преобразования.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> , Указывающее, где используется эта операция.
+              </param>
+      <returns>
+              Возвращает новый связыватель преобразования CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.GetIndex(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель получения индекса CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель получения индекса CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.GetMember(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.String,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель получения члена CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="name">
+                Имя члена, который требуется получить.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель получения члена CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.Invoke(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель вызова CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель вызова CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.InvokeConstructor(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель вызова конструктора CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель вызова конструктора CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.InvokeMember(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.String,System.Collections.Generic.IEnumerable{System.Type},System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель вызова члена CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="name">
+                Имя вызываемого члена.
+              </param>
+      <param name="typeArguments">
+                Список аргументов типа, указанных для данного вызова.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель вызова члена CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.IsEvent(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.String,System.Type)">
+      <summary>
+              Инициализирует новый связыватель — привязки событий.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="name">
+                Имя события для поиска.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <returns>
+              Возвращает новый связыватель, привязки событий.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.SetIndex(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель задания индекса CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель задания индекса CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.SetMember(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.String,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель задания члена CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="name">
+                Имя члена.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель задания члена CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.Binder.UnaryOperation(Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags,System.Linq.Expressions.ExpressionType,System.Type,System.Collections.Generic.IEnumerable{Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo})">
+      <summary>
+              Инициализирует новый связыватель унарной операции CSharp.
+            </summary>
+      <param name="flags">
+                Флаги, с помощью которого выполняется инициализация связывателя.
+              </param>
+      <param name="operation">
+                Вид унарной операции.
+              </param>
+      <param name="context">
+                <see cref="T:System.Type" /> Указывающее, где используется эта операция.
+              </param>
+      <param name="argumentInfo">
+                Последовательность <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" /> экземпляры аргументов для этой операции.
+              </param>
+      <returns>
+              Возвращает новый связыватель унарной операции CSharp.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo.Create(Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags,System.String)">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" />.
+            </summary>
+      <param name="flags">
+                Флаги для аргумента.
+              </param>
+      <param name="name">
+                Имя аргумента, если имя; в противном случае значение null.
+              </param>
+      <returns>
+              Новый экземпляр класса <see cref="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo" />.
+            </returns>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException" />.
+            </summary>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException" /> класс, который сериализованные данные.
+            </summary>
+      <param name="info">
+                Объект, содержащий сериализованные данные объекта о возникающем исключении...
+              </param>
+      <param name="context">
+                Контекстные сведения об источнике или назначении.
+              </param>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException.#ctor(System.String)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException" /> класс, имеющий указанное сообщение об ошибке.
+            </summary>
+      <param name="message">
+                Сообщение с описанием исключения.
+                 Код, вызывающий этот конструктор, должен обеспечить локализацию данной строки в соответствии с текущим языком и региональными параметрами системы.
+              </param>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException.#ctor(System.String,System.Exception)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException" /> класс, имеющий указанное сообщение об ошибке и ссылкой на внутреннее исключение, которое стало причиной данного исключения.
+            </summary>
+      <param name="message">
+                Сообщение об ошибке, указывающее причину создания исключения.
+              </param>
+      <param name="innerException">
+                Исключение, вызвавшее текущее исключение, или пустая ссылка, если нет внутреннее исключение не задано.
+              </param>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException" /> системным сообщением, содержащим описание ошибки.
+            </summary>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException" /> с сериализованными данными.
+            </summary>
+      <param name="info">
+                Объект <see cref="T:System.Runtime.Serialization.SerializationInfo" />, содержащий сериализованные данные объекта о созданном исключении.
+              </param>
+      <param name="context">
+                Объект <see cref="T:System.Runtime.Serialization.StreamingContext" />, содержащий контекстные сведения об источнике или назначении.
+              </param>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException.#ctor(System.String)">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException" /> с использованием заданного сообщения, содержащего описание ошибки.
+            </summary>
+      <param name="message">
+                Сообщение с описанием исключения.
+                 Код, вызывающий этот конструктор, должен обеспечить локализацию данной строки в соответствии с текущим языком и региональными параметрами системы.
+              </param>
+    </member>
+    <member name="M:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException.#ctor(System.String,System.Exception)">
+      <summary>
+              Инициализирует новый экземпляр <see cref="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException" /> класс, имеющий указанное сообщение об ошибке и ссылкой на внутреннее исключение, которое стало причиной данного исключения.
+            </summary>
+      <param name="message">
+                Сообщение об ошибке, указывающее причину создания исключения.
+              </param>
+      <param name="innerException">
+                Исключение, вызвавшее текущее исключение, или пустая ссылка, если нет внутреннее исключение не задано.
+              </param>
+    </member>
+    <member name="T:Microsoft.CSharp.RuntimeBinder.Binder">
+      <summary>
+              Содержит фабричные методы для создания динамического вызова связывателей для c#.
+            </summary>
+    </member>
+    <member name="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfo">
+      <summary>
+              Представляет сведения о динамических операциях C#, которые относятся к определенным аргументам в месте вызова.
+               Экземпляры этого класса создаются компилятором C#.
+            </summary>
+    </member>
+    <member name="T:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags">
+      <summary>
+              Представляет сведения о динамических операциях C#, которые относятся к определенным аргументам в месте вызова.
+               Экземпляры этого класса создаются компилятором C#.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.None">
+      <summary>
+              Дополнительные сведения не для представления.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.UseCompileTimeType">
+      <summary>
+              Тип аргумента во время компиляции следует рассматривать во время привязки.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.Constant">
+      <summary>
+              Аргумент является константой.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.NamedArgument">
+      <summary>
+              Аргумент является именованный аргумент.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.IsRef">
+      <summary>
+              Аргумент, переданный в параметр ref.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.IsOut">
+      <summary>
+              Аргумент, переданный в параметр out.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags.IsStaticType">
+      <summary>
+              Аргумент является <see cref="T:System.Type" /> , указывающее фактический тип, используемый в источнике.
+               Используется только для целевых объектов в статических вызовах.
+            </summary>
+    </member>
+    <member name="T:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags">
+      <summary>
+              Представляет сведения о динамических операциях C#, которые не относятся к определенным аргументам в месте вызова.
+               Экземпляры этого класса создаются компилятором C#.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.None">
+      <summary>
+              Нет дополнительных сведений о необходимых для этой привязки.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.CheckedContext">
+      <summary>
+              Оценка данного связывателя происходит в проверяемом контексте.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.InvokeSimpleName">
+      <summary>
+              Связыватель представляет вызов по простому имени.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.InvokeSpecialName">
+      <summary>
+              Связыватель представляет вызов по специальному имени.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.BinaryOperationLogical">
+      <summary>
+              Связыватель представляет логическое и или логического или который является частью оценки условного логического оператора.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.ConvertExplicit">
+      <summary>
+              Связыватель представляет явное преобразование.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.ConvertArrayIndex">
+      <summary>
+              Связыватель представляет неявное преобразование для использования в выражение создания массива.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.ResultIndexed">
+      <summary>
+              Результатом любой привязки будет индексированный метод получения задания или получения индекса CSharp.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.ValueFromCompoundAssignment">
+      <summary>
+              Значение в данном наборе индекса или членом набора берется составной оператор присваивания.
+            </summary>
+    </member>
+    <member name="F:Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags.ResultDiscarded">
+      <summary>
+              В позиции, требующей результата и таким образом можно привязать к void возвращение метод, используется связыватель по.
+            </summary>
+    </member>
+    <member name="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderException">
+      <summary>
+              Представляет ошибку, которая возникает при обработке динамической привязки в модуле привязки времени выполнения C#.
+            </summary>
+    </member>
+    <member name="T:Microsoft.CSharp.RuntimeBinder.RuntimeBinderInternalCompilerException">
+      <summary>
+              Представляет ошибку, которая возникает при обработке динамической привязки в модуле привязки времени выполнения C#.
+            </summary>
+    </member>
+  </members>
+</doc>

@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>System.Windows.Presentation</name>
+  </assembly>
+  <members>
+    <member name="M:System.AddIn.Pipeline.FrameworkElementAdapters.ContractToViewAdapter(System.AddIn.Contract.INativeHandleContract)">
+      <summary>
+              Возвращает <see cref="T:System.Windows.FrameworkElement" /> преобразованные из <see cref="T:System.AddIn.Contract.INativeHandleContract" />.
+            </summary>
+      <param name="nativeHandleContract">
+                <see cref="T:System.AddIn.Contract.INativeHandleContract" /> Переданные через границы изоляции между ведущим приложением и надстройкой.
+              </param>
+      <returns>
+              A <see cref="T:System.Windows.FrameworkElement" /> отображается из ведущего приложения или надстройки, в зависимости от того, направление, в котором ИП передается между ними.
+            </returns>
+    </member>
+    <member name="M:System.AddIn.Pipeline.FrameworkElementAdapters.ViewToContractAdapter(System.Windows.FrameworkElement)">
+      <summary>
+              Возвращает <see cref="T:System.AddIn.Contract.INativeHandleContract" /> преобразованные из <see cref="T:System.Windows.FrameworkElement" />.
+            </summary>
+      <param name="root">
+                <see cref="T:System.Windows.FrameworkElement" /> Будет передан через границы изоляции между ведущим приложением и надстройкой.
+              </param>
+      <returns>
+              <see cref="T:System.AddIn.Contract.INativeHandleContract" /> Передается из ведущего приложения или надстройки, в зависимости от того, направление, в котором ИП передается между ними.
+            </returns>
+      <exception cref="T:System.InvalidOperationException">
+                  <paramref name="root" /> не является корневым элементом дерева элементов.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.DispatcherExtensions.BeginInvoke(System.Windows.Threading.Dispatcher,System.Action)">
+      <summary>
+              Выполняет указанный делегат асинхронно с обычным приоритетом потока, указанного <see cref="T:System.Windows.Threading.Dispatcher" /> был создан.
+            </summary>
+      <param name="dispatcher">
+                Диспетчер, который выполняет делегат.
+              </param>
+      <param name="action">
+                Делегат для выполнения, который не принимает аргументов и не возвращает значение.
+              </param>
+      <returns>
+              <see cref="T:System.IAsyncResult" /> Объект, который представляет результат <see cref="M:System.Windows.Threading.DispatcherExtensions.BeginInvoke(System.Windows.Threading.Dispatcher,System.Action)" /> операции.
+            </returns>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="action" /> имеет значение <see langword="null" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.DispatcherExtensions.BeginInvoke(System.Windows.Threading.Dispatcher,System.Action,System.Windows.Threading.DispatcherPriority)">
+      <summary>
+              Выполняет указанный делегат асинхронно с указанным приоритетом в потоке, указанный <see cref="T:System.Windows.Threading.Dispatcher" /> был создан.
+            </summary>
+      <param name="dispatcher">
+                Диспетчер, который выполняет делегат.
+              </param>
+      <param name="action">
+                Делегат для выполнения, который не принимает аргументов и не возвращает значение.
+              </param>
+      <param name="priority">
+                Приоритет выполнения делегата относительно других отложенных операций в <see cref="T:System.Windows.Threading.Dispatcher" /> очередь событий.
+              </param>
+      <returns>
+              <see cref="T:System.IAsyncResult" /> Объект, который представляет результат <see cref="M:System.Windows.Threading.DispatcherExtensions.BeginInvoke(System.Windows.Threading.Dispatcher,System.Action,System.Windows.Threading.DispatcherPriority)" /> операции.
+            </returns>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="action" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
+                  <paramref name="priority" /> не является допустимым <see cref="T:System.Windows.Threading.DispatcherPriority" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.DispatcherExtensions.Invoke(System.Windows.Threading.Dispatcher,System.Action)">
+      <summary>
+              Выполняет указанный делегат синхронно с обычным приоритетом потока, указанного <see cref="T:System.Windows.Threading.Dispatcher" /> был создан.
+            </summary>
+      <param name="dispatcher">
+                Диспетчер, который выполняет делегат.
+              </param>
+      <param name="action">
+                Делегат для выполнения, который не принимает аргументов и не возвращает значение.
+              </param>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="action" /> имеет значение <see langword="null" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.DispatcherExtensions.Invoke(System.Windows.Threading.Dispatcher,System.Action,System.TimeSpan)">
+      <summary>
+              Выполняет указанный делегат синхронно в потоке, указанный <see cref="T:System.Windows.Threading.Dispatcher" /> был создан и прекращает выполнение по истечении указанного времени ожидания.
+            </summary>
+      <param name="dispatcher">
+                Диспетчер, который выполняет делегат.
+              </param>
+      <param name="action">
+                Делегат для выполнения, который не принимает аргументов и не возвращает значение.
+              </param>
+      <param name="timeout">
+                Максимальное время ожидания завершения операции.
+              </param>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="action" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ArgumentException">
+                  <paramref name="priority" /> равно <see cref="F:System.Windows.Threading.DispatcherPriority.Inactive" />.
+                </exception>
+      <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
+                  <paramref name="priority" /> не является допустимым <see cref="T:System.Windows.Threading.DispatcherPriority" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.DispatcherExtensions.Invoke(System.Windows.Threading.Dispatcher,System.Action,System.TimeSpan,System.Windows.Threading.DispatcherPriority)">
+      <summary>
+              Выполняет указанный делегат синхронно, с заданным приоритетом в потоке, указанный <see cref="T:System.Windows.Threading.Dispatcher" /> был создан и прекращает выполнение по истечении указанного времени ожидания.
+            </summary>
+      <param name="dispatcher">
+                Диспетчер, который выполняет делегат.
+              </param>
+      <param name="action">
+                Делегат для выполнения, который не принимает аргументов и не возвращает значение.
+              </param>
+      <param name="timeout">
+                Максимальное время ожидания завершения операции.
+              </param>
+      <param name="priority">
+                Приоритет выполнения делегата относительно других отложенных операций в <see cref="T:System.Windows.Threading.Dispatcher" /> очередь событий.
+              </param>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="action" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ArgumentException">
+                  <paramref name="priority" /> равно <see cref="F:System.Windows.Threading.DispatcherPriority.Inactive" />.
+                </exception>
+      <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
+                  <paramref name="priority" /> не является допустимым <see cref="T:System.Windows.Threading.DispatcherPriority" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.DispatcherExtensions.Invoke(System.Windows.Threading.Dispatcher,System.Action,System.Windows.Threading.DispatcherPriority)">
+      <summary>
+              Выполняет указанный делегат синхронно, с заданным приоритетом в потоке, указанный <see cref="T:System.Windows.Threading.Dispatcher" /> был создан.
+            </summary>
+      <param name="dispatcher">
+                Диспетчер, который выполняет делегат.
+              </param>
+      <param name="action">
+                Делегат для выполнения, который не принимает аргументов и не возвращает значение.
+              </param>
+      <param name="priority">
+                Приоритет выполнения делегата относительно других отложенных операций в <see cref="T:System.Windows.Threading.Dispatcher" /> очередь событий.
+              </param>
+      <exception cref="T:System.ArgumentNullException">
+                  Свойство <paramref name="action" /> имеет значение <see langword="null" />.
+                </exception>
+      <exception cref="T:System.ArgumentException">
+                  <paramref name="priority" /> равно <see cref="F:System.Windows.Threading.DispatcherPriority.Inactive" />.
+                </exception>
+      <exception cref="T:System.ComponentModel.InvalidEnumArgumentException">
+                  <paramref name="priority" /> не является допустимым <see cref="T:System.Windows.Threading.DispatcherPriority" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.TaskExtensions.DispatcherOperationWait(System.Threading.Tasks.Task)">
+      <summary>
+              Означает неограниченное время ожидания для базового <see cref="T:System.Windows.Threading.DispatcherOperation" /> для завершения.
+            </summary>
+      <param name="this">
+                <see cref="T:System.Threading.Tasks.Task" /> Связанный с <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+              </param>
+      <returns>
+              Состояние базового <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+            </returns>
+      <exception cref="T:System.NotSupportedException">
+                  <see cref="T:System.Threading.Tasks.Task" /> Не связан с <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.TaskExtensions.DispatcherOperationWait(System.Threading.Tasks.Task,System.TimeSpan)">
+      <summary>
+              Ожидает в течение заданного периода времени для базового <see cref="T:System.Windows.Threading.DispatcherOperation" /> для завершения.
+            </summary>
+      <param name="this">
+                <see cref="T:System.Threading.Tasks.Task" /> Связанный с <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+              </param>
+      <param name="timeout">
+                Объем времени ожидания.
+              </param>
+      <returns>
+              Состояние базового <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+            </returns>
+      <exception cref="T:System.NotSupportedException">
+                  <see cref="T:System.Threading.Tasks.Task" /> Не связан с <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Threading.TaskExtensions.IsDispatcherOperationTask(System.Threading.Tasks.Task)">
+      <summary>
+              Возвращает значение, указывающее, является ли это <see cref="T:System.Threading.Tasks.Task" /> связанных с <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+            </summary>
+      <param name="this">
+                Проверяемый элемент <see cref="T:System.Threading.Tasks.Task" />.
+              </param>
+      <returns>
+              Состояние базового <see cref="T:System.Windows.Threading.DispatcherOperation" />.
+            </returns>
+    </member>
+    <member name="T:System.AddIn.Pipeline.FrameworkElementAdapters">
+      <summary>
+              <see cref="T:System.AddIn.Pipeline.FrameworkElementAdapters" /> используется Windows Presentation Foundation (WPF) надстройки для преобразования между <see cref="T:System.Windows.FrameworkElement" /> и <see cref="T:System.AddIn.Contract.INativeHandleContract" />.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Threading.DispatcherExtensions">
+      <summary>
+              Предоставляет набор <see langword="static" /> методы, расширяющие <see cref="T:System.Windows.Threading.Dispatcher" /> класса.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Threading.TaskExtensions">
+      <summary>
+              Предоставляет набор <see langword="static" /> методы, расширяющие <see cref="T:System.Threading.Tasks.Task" /> класса.
+            </summary>
+    </member>
+  </members>
+</doc>

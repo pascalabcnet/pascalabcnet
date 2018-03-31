@@ -1,0 +1,743 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>System.Windows.Input.Manipulations</name>
+  </assembly>
+  <members>
+    <member name="E:System.Windows.Input.Manipulations.InertiaProcessor2D.Completed">
+      <summary>
+              Происходит при завершении экстраполяции.
+            </summary>
+    </member>
+    <member name="E:System.Windows.Input.Manipulations.InertiaProcessor2D.Delta">
+      <summary>
+              Происходит при изменении источника экстраполяции или после перемещения, масштабирования или поворота.
+            </summary>
+    </member>
+    <member name="E:System.Windows.Input.Manipulations.ManipulationProcessor2D.Completed">
+      <summary>
+              Происходит при завершении манипуляции.
+            </summary>
+    </member>
+    <member name="E:System.Windows.Input.Manipulations.ManipulationProcessor2D.Delta">
+      <summary>
+              Происходит при изменении источника манипуляции или после перемещения, масштабирования или поворота.
+            </summary>
+    </member>
+    <member name="E:System.Windows.Input.Manipulations.ManipulationProcessor2D.Started">
+      <summary>
+              Возникает при запуске нового манипуляции.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.ManipulationVelocities2D.Zero">
+      <summary>
+              Возвращает <see cref="T:System.Windows.Input.Manipulations.ManipulationVelocities2D" /> со всех скоростей, имеет нулевое значение.
+            </summary>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D" />.
+            </summary>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaProcessor2D.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:System.Windows.Input.Manipulations.InertiaProcessor2D" />.
+            </summary>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaProcessor2D.Complete(System.Int64)">
+      <summary>
+              Завершает последнюю экстраполяцию с помощью указанной метки времени и вызывает событие <see cref="E:System.Windows.Input.Manipulations.InertiaProcessor2D.Completed" />.
+            </summary>
+      <param name="timestamp">
+                Метка времени для завершения экстраполяции (за 100 наносекундных тактов).
+              </param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  Значение параметра метки времени меньше значения изначальной или предыдущей метки.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaProcessor2D.Process(System.Int64)">
+      <summary>
+              Экстраполирует позицию, ориентацию и средний радиус манипуляции за указанное время.
+            </summary>
+      <param name="timestamp">
+                Отметка времени для выполнения экстраполяции (за 100-наносекундных тактов).
+              </param>
+      <returns>
+              Позиция, ориентация и средний радиус манипуляции за указанное время.
+              <see langword="true" />, если экстраполяция выполняется. В противном случае — <see langword="false" />, если экстраполяция завершена.
+            </returns>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  Значение параметра метки времени меньше значения изначальной или предыдущей метки.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaProcessor2D.SetParameters(System.Windows.Input.Manipulations.InertiaParameters2D)">
+      <summary>
+              Задает параметры процессора инерции.
+            </summary>
+      <param name="parameters">
+                Параметры для установки.
+              </param>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaRotationBehavior2D.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:System.Windows.Input.Manipulations.InertiaRotationBehavior2D" />.
+            </summary>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D" />.
+            </summary>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.ManipulationPivot2D.#ctor">
+      <summary>
+              Инициализирует новый экземпляр класса <see cref="T:System.Windows.Input.Manipulations.ManipulationPivot2D" />.
+            </summary>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.ManipulationProcessor2D.#ctor(System.Windows.Input.Manipulations.Manipulations2D)">
+      <summary>
+              Создает новый объект <see cref="T:System.Windows.Input.Manipulations.ManipulationProcessor2D" />.
+            </summary>
+      <param name="supportedManipulations">
+                Начальный набор поддерживаемых манипуляций.
+              </param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  <paramref name="supportedManipulations" /> Параметр не является допустимой комбинацией <see cref="T:System.Windows.Input.Manipulations.Manipulations2D" /> значений перечисления.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.ManipulationProcessor2D.#ctor(System.Windows.Input.Manipulations.Manipulations2D,System.Windows.Input.Manipulations.ManipulationPivot2D)">
+      <summary>
+              Создает новый объект <see cref="T:System.Windows.Input.Manipulations.ManipulationProcessor2D" />.
+            </summary>
+      <param name="supportedManipulations">
+                Начальный набор поддерживаемых манипуляций.
+              </param>
+      <param name="pivot">
+                Данные точки вращения для поворотов с одиночным манипулятором.
+              </param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  <paramref name="supportedManipulations" /> Параметр не является допустимой комбинацией <see cref="T:System.Windows.Input.Manipulations.Manipulations2D" /> значений перечисления.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.ManipulationProcessor2D.CompleteManipulation(System.Int64)">
+      <summary>
+              Вызывает принудительное текущей манипуляции для выполнения и вызывает <see cref="E:System.Windows.Input.Manipulations.ManipulationProcessor2D.Completed" /> события.
+            </summary>
+      <param name="timestamp">
+                Отметка времени завершения манипуляции в 100-наносекундных тактов.
+              </param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  Отметка времени меньше, чем предыдущая отметка для текущей обработки.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.ManipulationProcessor2D.ProcessManipulators(System.Int64,System.Collections.Generic.IEnumerable{System.Windows.Input.Manipulations.Manipulator2D})">
+      <summary>
+              Обрабатывает заданные манипуляторы как действие одного пакета.
+            </summary>
+      <param name="timestamp">
+                Отметка времени для пакета в 100-наносекундных тактов.
+              </param>
+      <param name="manipulators">
+                Набор манипуляторов, которые в настоящее время находятся в области.
+              </param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  Отметка времени меньше, чем предыдущая отметка для текущей обработки.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.ManipulationProcessor2D.SetParameters(System.Windows.Input.Manipulations.ManipulationParameters2D)">
+      <summary>
+              Задает параметры процессора манипуляции.
+            </summary>
+      <param name="parameters">
+                Параметры для установки.
+              </param>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.Manipulator2D.#ctor(System.Int32,System.Single,System.Single)">
+      <summary>
+              Создает новый <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта с заданными свойствами.
+            </summary>
+      <param name="id">
+                Уникальный идентификатор данного манипулятора.
+              </param>
+      <param name="x">
+                Координата x манипулятора.
+              </param>
+      <param name="y">
+                Координата y манипулятора.
+              </param>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  <paramref name="x" />-Координации или <paramref name="y" />-координат являются <see langword="float.NaN" />, <see langword="float.PositiveInfinity" />, или <see langword="float.NegativeInfinity" />.
+                   Все эти значения недопустимы.
+                </exception>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.Manipulator2D.Equals(System.Object)">
+      <summary>
+              Определяет, имеет ли этот объект <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> то же значение, что и указанный объект <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />.
+            </summary>
+      <param name="obj">
+                Объект <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />, который требуется сравнить с этим объектом.
+              </param>
+      <returns>
+              Значение <see langword="true" />, если два объекта <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> относятся к одному типу и представляют одинаковые значения. В противном случае — значение <see langword="false" />.
+            </returns>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.Manipulator2D.GetHashCode">
+      <summary>
+              Возвращает хэш-код данного экземпляра.
+            </summary>
+      <returns>
+              Хэш-код данного экземпляра.
+            </returns>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.Manipulator2D.op_Equality(System.Windows.Input.Manipulations.Manipulator2D,System.Windows.Input.Manipulations.Manipulator2D)">
+      <summary>
+              Определяет, совпадают ли значения двух указанных объектов <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />.
+            </summary>
+      <param name="manipulator1">
+                Первый из сравниваемых объектов <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />.
+              </param>
+      <param name="manipulator2">
+                Второй из сравниваемых объектов <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />.
+              </param>
+      <returns>
+              <see langword="true" /> Если два <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объектов имеют одинаковое значение; в противном случае — <see langword="false" />.
+            </returns>
+    </member>
+    <member name="M:System.Windows.Input.Manipulations.Manipulator2D.op_Inequality(System.Windows.Input.Manipulations.Manipulator2D,System.Windows.Input.Manipulations.Manipulator2D)">
+      <summary>
+              Определяет, являются ли два заданных <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекты имеют разные значения.
+            </summary>
+      <param name="manipulator1">
+                Первый из сравниваемых объектов <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />.
+              </param>
+      <param name="manipulator2">
+                Второй из сравниваемых объектов <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" />.
+              </param>
+      <returns>
+              <see langword="true" /> Если два <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекты имеют разные значения; в противном случае — <see langword="false" />.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.DesiredDeceleration">
+      <summary>
+              Возвращает или задает требуемое расширение замедление, в единицах координат на миллисекунду в квадрате.
+            </summary>
+      <returns>
+              Требуемое расширение замедление в единицах координат на миллисекунду в квадрате.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.DesiredExpansionX">
+      <summary>
+              Возвращает или задает требуемое расширение по оси x, в единицах координат.
+            </summary>
+      <returns>
+              Требуемое расширение по оси x, в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.DesiredExpansionY">
+      <summary>
+              Возвращает или задает требуемое расширение по оси y, в единицах координат.
+            </summary>
+      <returns>
+              Требуемое расширение по оси y в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.InitialRadius">
+      <summary>
+              Возвращает или задает начальный средний радиус в единицах координат.
+            </summary>
+      <returns>
+              Начальный средний радиус, в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.InitialVelocityX">
+      <summary>
+              Возвращает или задает начальную скорость расширения по оси x, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Начальная скорость расширения по оси x, в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D.InitialVelocityY">
+      <summary>
+              Возвращает или задает начальную скорость расширения по оси y, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Начальная скорость расширения по оси y в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaProcessor2D.ExpansionBehavior">
+      <summary>
+              Возвращает или задает поведение расширения для процессора инерции.
+            </summary>
+      <returns>
+              Поведение расширения для процессора инерции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaProcessor2D.InitialOriginX">
+      <summary>
+              Возвращает или задает координату x исходного начала координат в единицах координат.
+            </summary>
+      <returns>
+              Координата x исходного начала координат в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaProcessor2D.InitialOriginY">
+      <summary>
+              Возвращает или задает координату y исходного начала координат в единицах координат.
+            </summary>
+      <returns>
+              Координата y исходного начала координат в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaProcessor2D.IsRunning">
+      <summary>
+              Получает значение, указывающее инерции в данный момент выполняется.
+            </summary>
+      <returns>
+              Логическое значение, указывающее, является ли инерции в настоящее время выполняется.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaProcessor2D.RotationBehavior">
+      <summary>
+              Возвращает или задает поведение поворота для процессора инерции.
+            </summary>
+      <returns>
+              Поведение поворота для процессора инерции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaProcessor2D.TranslationBehavior">
+      <summary>
+              Возвращает или задает поведение перемещения для процессора инерции.
+            </summary>
+      <returns>
+              Поведение перемещения для процессора инерции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaRotationBehavior2D.DesiredDeceleration">
+      <summary>
+              Возвращает или задает требуемое угловое замедление (в радианах) в миллисекунду в квадрате.
+            </summary>
+      <returns>
+              Требуемое угловое замедление (в радианах) в миллисекунду в квадрате.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaRotationBehavior2D.DesiredRotation">
+      <summary>
+              Возвращает или задает требуемый угол поворота в радианах.
+            </summary>
+      <returns>
+              Требуемый угол поворота, в радианах.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaRotationBehavior2D.InitialVelocity">
+      <summary>
+              Возвращает или задает начальную скорость вращения в радианах на миллисекунду.
+            </summary>
+      <returns>
+              Начальная скорость вращения, в радианах на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D.DesiredDeceleration">
+      <summary>
+              Возвращает или задает требуемое замедление в единицах координат на миллисекунду в квадрате.
+            </summary>
+      <returns>
+              Требуемое замедление в единицах координат на миллисекунду в квадрате.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D.DesiredDisplacement">
+      <summary>
+              Возвращает или задает абсолютное расстояние, которое объекту нужно пройти вдоль вектора скорости, в единицах координат.
+            </summary>
+      <returns>
+              Абсолютное расстояние, которое объекту нужно пройти вдоль вектора скорости, в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D.InitialVelocityX">
+      <summary>
+              Возвращает или задает начальную скорость по оси x, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Начальная скорость по оси x, в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D.InitialVelocityY">
+      <summary>
+              Возвращает или задает начальную скорость по оси y, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Начальная скорость по оси y в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DCompletedEventArgs.OriginX">
+      <summary>
+              Возвращает координату x составной позиции манипуляции в новый.
+            </summary>
+      <returns>
+              Новый Координата x составной позиции манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DCompletedEventArgs.OriginY">
+      <summary>
+              Возвращает новый координату y составной позиции манипуляции.
+            </summary>
+      <returns>
+              Новый Координата y составной позиции манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DCompletedEventArgs.Total">
+      <summary>
+              Возвращает общее количество изменений с начала манипуляции.
+            </summary>
+      <returns>
+              Общий объем изменений с начала манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DCompletedEventArgs.Velocities">
+      <summary>
+              Получает текущие скорости манипуляции.
+            </summary>
+      <returns>
+              Текущие скорости манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DDeltaEventArgs.Cumulative">
+      <summary>
+              Возвращает общее количество изменений с начала манипуляции.
+            </summary>
+      <returns>
+              Общий объем изменений с начала манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DDeltaEventArgs.Delta">
+      <summary>
+              Возвращает количество изменений с момента последнего события.
+            </summary>
+      <returns>
+              Объем изменений с момента последнего события.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DDeltaEventArgs.OriginX">
+      <summary>
+              Возвращает координату x составной позиции манипуляции в новый.
+            </summary>
+      <returns>
+              Новый Координата x составной позиции манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DDeltaEventArgs.OriginY">
+      <summary>
+              Возвращает новый координату y составной позиции манипуляции.
+            </summary>
+      <returns>
+              Новый Координата y составной позиции манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DDeltaEventArgs.Velocities">
+      <summary>
+              Получает текущие скорости манипуляции.
+            </summary>
+      <returns>
+              Текущие скорости манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DStartedEventArgs.OriginX">
+      <summary>
+              Возвращает координату по оси x начала координат.
+            </summary>
+      <returns>
+              Координата x начала координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulation2DStartedEventArgs.OriginY">
+      <summary>
+              Возвращает координату по оси y для начала координат.
+            </summary>
+      <returns>
+              Координата y начала координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.ExpansionX">
+      <summary>
+              Получает степень расширения по оси x, в единицах координат.
+            </summary>
+      <returns>
+              Степень расширения по оси x, в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.ExpansionY">
+      <summary>
+              Получает степень расширения по оси y, в единицах координат.
+            </summary>
+      <returns>
+              Степень расширения по оси y в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.Rotation">
+      <summary>
+              Возвращает угол поворота, в радианах.
+            </summary>
+      <returns>
+              Значение поворота (в радианах).
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.ScaleX">
+      <summary>
+              Получает коэффициент масштабирования по оси x.
+            </summary>
+      <returns>
+              Коэффициент масштабирования по оси X.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.ScaleY">
+      <summary>
+              Получает коэффициент масштабирования по оси y.
+            </summary>
+      <returns>
+              Коэффициент масштабирования по оси y.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.TranslationX">
+      <summary>
+              Получает перемещение по оси x, в единицах координат.
+            </summary>
+      <returns>
+              Перемещение по оси x, в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationDelta2D.TranslationY">
+      <summary>
+              Получает перемещение по оси y, в единицах координат.
+            </summary>
+      <returns>
+              Перемещение по оси y в единицах координат.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationPivot2D.Radius">
+      <summary>
+              Возвращает или задает расстояние от точки вращения до края манипулируемой области.
+            </summary>
+      <returns>
+              Расстояние от точки вращения до края манипулируемой области.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationPivot2D.X">
+      <summary>
+              Возвращает или задает позицию X точки вращения.
+            </summary>
+      <returns>
+              Позиция X точки вращения.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationPivot2D.Y">
+      <summary>
+              Возвращает или задает позицию Y точки вращения.
+            </summary>
+      <returns>
+              Координата Y точки вращения.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationProcessor2D.MinimumScaleRotateRadius">
+      <summary>
+              Возвращает или задает минимальный радиус в единицах координат, необходимые для участия манипулятора в масштабировании и повороте.
+            </summary>
+      <returns>
+              Минимальный радиус в единицах координат, необходимые для участия манипулятора в масштабировании и повороте.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationProcessor2D.Pivot">
+      <summary>
+              Возвращает или задает данные точки вращения для процессора манипуляции.
+            </summary>
+      <returns>
+              Данные точки вращения для процессора манипуляции.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationProcessor2D.SupportedManipulations">
+      <summary>
+              Возвращает или задает текущий набор поддерживаемых манипуляций.
+            </summary>
+      <returns>
+              Текущий набор поддерживаемых манипуляций.
+            </returns>
+      <exception cref="T:System.ArgumentOutOfRangeException">
+                  Свойство пытается установить значение, не является допустимой комбинацией <see cref="T:System.Windows.Input.Manipulations.Manipulations2D" />
+                
+                  значения перечисления.
+                </exception>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationVelocities2D.AngularVelocity">
+      <summary>
+              Получает угловую скорость (в радианах) в миллисекунду.
+            </summary>
+      <returns>
+              Скорость вращения в радианах на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationVelocities2D.ExpansionVelocityX">
+      <summary>
+              Получает скорость расширения по оси x, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Скорость расширения по оси x, в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationVelocities2D.ExpansionVelocityY">
+      <summary>
+              Получает скорость расширения по оси y, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Скорость расширения по оси y в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationVelocities2D.LinearVelocityX">
+      <summary>
+              Получает скорость по оси x, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Скорость по оси x, в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.ManipulationVelocities2D.LinearVelocityY">
+      <summary>
+              Получает скорость по оси y, в единицах координат на миллисекунду.
+            </summary>
+      <returns>
+              Скорость по оси y в единицах координат на миллисекунду.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulator2D.Id">
+      <summary>
+              Возвращает или задает уникальный идентификатор для этого <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта.
+            </summary>
+      <returns>
+              Уникальный идентификатор для этого <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulator2D.X">
+      <summary>
+              Возвращает или задает координату x <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта.
+            </summary>
+      <returns>
+              Координата x <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта.
+            </returns>
+    </member>
+    <member name="P:System.Windows.Input.Manipulations.Manipulator2D.Y">
+      <summary>
+              Возвращает или задает координату y <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта.
+            </summary>
+      <returns>
+              Координата y <see cref="T:System.Windows.Input.Manipulations.Manipulator2D" /> объекта.
+            </returns>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.InertiaExpansionBehavior2D">
+      <summary>
+              Описывает требуемое поведение расширения для процессора инерции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.InertiaParameters2D">
+      <summary>
+              Базовый класс, от которой все инерции наследуются классы параметров.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.InertiaProcessor2D">
+      <summary>
+              Реализует экстраполяцию позиции, ориентацию и средний радиус манипуляции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.InertiaRotationBehavior2D">
+      <summary>
+              Описывает требуемое поведение поворота для процессора инерции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.InertiaTranslationBehavior2D">
+      <summary>
+              Описывает поведение нужное преобразование для процессора инерции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.Manipulation2DCompletedEventArgs">
+      <summary>
+              Представляет данные, отправленные с ManipulationProcessor2D.Completed событий или InertiaProcessor2D.Completed событий.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.Manipulation2DDeltaEventArgs">
+      <summary>
+              Представляет данные, отправленные с <see cref="E:System.Windows.Input.Manipulations.ManipulationProcessor2D.Delta" /> событий или <see cref="E:System.Windows.Input.Manipulations.InertiaProcessor2D.Delta" /> события.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.Manipulation2DStartedEventArgs">
+      <summary>
+              Представляет данные, отправленные с <see cref="E:System.Windows.Input.Manipulations.ManipulationProcessor2D.Started" /> событий.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.ManipulationDelta2D">
+      <summary>
+              Представляет результат двухмерной манипуляции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.ManipulationParameters2D">
+      <summary>
+              Базовый класс, производными от которых все операции являются классы параметров.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.ManipulationPivot2D">
+      <summary>
+              Представляет сводные данные, используемые процессором манипуляции для поворотов с одиночным манипулятором.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.ManipulationProcessor2D">
+      <summary>
+              Реализует несколькими входами и одним выходом компоновщиком двумерных преобразований (2-D) в общем пространстве координат.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.Manipulations2D">
+      <summary>
+              Представляет возможные аффинных двумерных манипуляции (2-D).
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.None">
+      <summary>
+              Нет манипуляций.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.TranslateX">
+      <summary>
+              Перемещение по оси x.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.TranslateY">
+      <summary>
+              Перемещение по оси y.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.Translate">
+      <summary>
+              Перевод в x и y осей.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.Scale">
+      <summary>
+              Масштабирование в обоих направлениях.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.Rotate">
+      <summary>
+              Угол поворота.
+            </summary>
+    </member>
+    <member name="F:System.Windows.Input.Manipulations.Manipulations2D.All">
+      <summary>
+              Все доступные манипуляции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.ManipulationVelocities2D">
+      <summary>
+              Представляет набор скоростей вычисляется обработчиками манипуляции и инерции.
+            </summary>
+    </member>
+    <member name="T:System.Windows.Input.Manipulations.Manipulator2D">
+      <summary>
+              Представляет двухмерный манипулятор в некоторый момент времени.
+            </summary>
+    </member>
+  </members>
+</doc>
