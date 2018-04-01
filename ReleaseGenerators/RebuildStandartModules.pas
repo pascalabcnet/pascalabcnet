@@ -1,8 +1,9 @@
-uses 
+﻿uses 
    PABCSystem, PABCExtensions, __RedirectIOMode, __RunMode, ABCButtons, ABCHouse, ABCObjects,
    ABCSprites, CRT, DMCollect, DMTaskMaker, DMZadan, Drawman, 
    DrawManField, Events, FilesOperations, GraphABC, 
    GraphABCHelper, 
+   GraphWPFBase,
    Graph3D,
    GraphWPF,
    NumLibABC,

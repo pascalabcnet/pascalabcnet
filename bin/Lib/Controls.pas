@@ -24,7 +24,7 @@ type
   GButton = System.Windows.Controls.Button;
   GTextBlock = System.Windows.Controls.TextBlock;
   GTextBox = System.Windows.Controls.TextBox;
-  
+  Key = System.Windows.Input.Key;  
   ///!#
   CommonControl = class
   protected 
@@ -140,25 +140,23 @@ type
   public 
     constructor Create(w: real := 0);
     begin
-      inherited Create('',w);
+      inherited Create('0',w);
       var tb := element as GTextBox;
+      tb.MouseWheel += procedure (o,e) -> begin
+        if e.Delta>0 then
+          SetValue(GetValue+1)
+        else if e.Delta<0 then
+          SetValue(GetValue-1)
+      end;
       tb.KeyDown += procedure (o,e) -> begin
-        var s := e.Key.ToString;
-        if (s[1] = 'D') and (s.Length = 2) then
-        else
+        if not ((e.Key>=Key.D0) and (e.Key<=Key.D9)) then
           e.Handled := True;
-        {if (e. = #8) or (e.Key = '-') then 
-          exit;}
-        //if not Char.IsDigit(e.Key) then
-        //  e.Handled := True;
       end;
-      tb.TextInput += procedure (o,e) -> begin
+      {tb.TextInput += procedure (o,e) -> begin
         Print(e.Text);
-        {if (e. = #8) or (e.Key = '-') then 
-          exit;}
-        //if not Char.IsDigit(e.Key) then
-        //  e.Handled := True;
-      end;
+        if not ((e.Key>=Key.D0) and (e.Key<=Key.D9)) then
+          e.Handled := True;
+      end;}
     end;
     property Value: integer read GetValue write SetValue;
   end;

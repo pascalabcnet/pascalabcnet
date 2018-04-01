@@ -207,52 +207,6 @@ type
   end;
   
   ///!#
-  WindowType = class
-  private 
-    procedure SetLeft(l: real);
-    function GetLeft: real;
-    procedure SetTop(t: real);
-    function GetTop: real;
-    procedure SetWidth(w: real);
-    function GetWidth: real;
-    procedure SetHeight(h: real);
-    function GetHeight: real;
-    procedure SetCaption(c: string);
-    function GetCaption: string;
-  public 
-    /// Отступ графического окна от левого края экрана в пикселах
-    property Left: real read GetLeft write SetLeft;
-    /// Отступ графического окна от верхнего края экрана в пикселах
-    property Top: real read GetTop write SetTop;
-    /// Ширина клиентской части графического окна в пикселах
-    property Width: real read GetWidth write SetWidth;
-    /// Высота клиентской части графического окна в пикселах
-    property Height: real read GetHeight write SetHeight;
-    /// Заголовок графического окна
-    property Caption: string read GetCaption write SetCaption;
-    /// Заголовок графического окна
-    property Title: string read GetCaption write SetCaption;
-    /// Устанавливает размеры клиентской части графического окна в пикселах
-    procedure SetSize(w, h: real);
-    /// Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
-    procedure SetPos(l, t: real);
-    /// Закрывает графическое окно и завершает приложение
-    procedure Close;
-    /// Сворачивает графическое окно
-    procedure Minimize;
-    /// Максимизирует графическое окно
-    procedure Maximize;
-    /// Возвращает графическое окно к нормальному размеру
-    procedure Normalize;
-    /// Центрирует графическое окно по центру экрана
-    procedure CenterOnScreen;
-    /// Возвращает центр графического окна
-    function Center: Point;
-    /// Возвращает прямоугольник клиентской области окна
-    function ClientRect: GRect;
-  end;
-
-  ///!#
   CameraType = class
   private 
     function Cam: GCamera := hvp.Camera;
@@ -2586,94 +2540,46 @@ begin
   m1.Mesh := off.CreateMesh;
   hvp.Children.Add(m1);}
 
-  var ex := new ExtrudedVisual3D();
+  {var ex := new ExtrudedVisual3D();
   ex.BackMaterial := Colors.Green;
   ex.Diameters := new DoubleCollection(Arr(1.0,1.5,1.2));
   ex.Path := new Point3DCollection(Arr(P3D(0,0,0),P3D(0,1,0),P3D(0,1,1),P3D(1,1,1)));
-  hvp.Children.Add(ex);
+  hvp.Children.Add(ex);}
+  
+  var m := new SphereVisual3D();
+  m.Radius := 0.5;
+  hvp.Children.Add(m);
+  
+  var t :=  new TranslateManipulator();
+  t.Color := Colors.Green;
+  //t.Offset := v3D(2,3,4);
+  t.Length := 2;
+  t.Diameter := 0.15;
+  t.Direction := V3D(1,2,0);
+  t.Value := 5;
+  
+  var b := new System.Windows.Data.Binding('Transform');
+  b.Source := m;
+
+  var b1 := new System.Windows.Data.Binding('Transform');
+  b1.Source := m;
+  
+  System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TargetTransformProperty, b);
+	System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TransformProperty, b);  
+	
+  //t.Bind(m);
+  hvp.Children.Add(t);
+  
+  {var l := Lst(P3D(0,1,0),P3D(1,0,0),P3D(0,-1,0),P3D(-1,0,0),P3D(0,1,0));
+  
+  var l1 := CanonicalSplineHelper.CreateSpline(l,0.5);
+  Polyline3D(l1);}
   
 end;
 
 procedure Proba2 := Invoke(ProbaP2);
 
 
-procedure WindowTypeSetLeftP(l: real) := MainWindow.Left := l;
-
-procedure WindowType.SetLeft(l: real) := Invoke(WindowTypeSetLeftP, l);
-
-function WindowTypeGetLeftP := MainWindow.Left;
-
-function WindowType.GetLeft := InvokeReal(WindowTypeGetLeftP);
-
-procedure WindowTypeSetTopP(t: real) := MainWindow.Top := t;
-
-procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP, t);
-
-function WindowTypeGetTopP := MainWindow.Top;
-
-function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
-
-procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
-
-procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP, w);
-
-function WindowTypeGetWidthP := MainWindow.Width - wplus;
-
-function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
-
-procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
-
-procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP, h);
-
-function WindowTypeGetHeightP := MainWindow.Height - hplus;
-
-function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
-
-procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
-
-procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP, c);
-
-function WindowTypeGetCaptionP := MainWindow.Title;
-
-function WindowType.GetCaption := InvokeString(WindowTypeGetCaptionP);
-
-procedure WindowTypeSetSizeP(w, h: real);
-begin
-  WindowTypeSetWidthP(w);
-  WindowTypeSetHeightP(h);
-end;
-
-procedure WindowType.SetSize(w, h: real) := Invoke(WindowTypeSetSizeP, w, h);
-
-procedure WindowTypeSetPosP(l, t: real);
-begin
-  WindowTypeSetLeftP(l);
-  WindowTypeSetTopP(t);
-end;
-
-procedure WindowType.SetPos(l, t: real) := Invoke(WindowTypeSetPosP, l, t);
-
-procedure WindowType.Close := Invoke(MainWindow.Close);
-
-procedure WindowTypeMinimizeP := MainWindow.WindowState := WindowState.Minimized;
-
-procedure WindowType.Minimize := Invoke(WindowTypeMinimizeP);
-
-procedure WindowTypeMaximizeP := MainWindow.WindowState := WindowState.Maximized;
-
-procedure WindowType.Maximize := Invoke(WindowTypeMaximizeP);
-
-procedure WindowTypeNormalizeP := MainWindow.WindowState := WindowState.Normal;
-
-procedure WindowType.Normalize := Invoke(WindowTypeNormalizeP);
-
-procedure WindowTypeCenterOnScreenP := MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-
-procedure WindowType.CenterOnScreen := Invoke(WindowTypeCenterOnScreenP);
-
-function WindowType.Center := new Point(Width / 2, Height / 2);
-
-function WindowType.ClientRect := Rect(0, 0, Window.Width, Window.Height);
 
 type 
 Graph3DWindow = class(GMainWindow)
@@ -2776,13 +2682,14 @@ public
   
   procedure InitHandlers; override;
   begin
-    PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-    PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-    PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
+    hvp.PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
+    hvp.PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
+    hvp.PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
   
-    PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
-    PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
-
+    hvp.PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
+    hvp.PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
+    
+    hvp.Focus();
     Closed += procedure(sender, e) -> begin Halt; end;
   end;
 end;
