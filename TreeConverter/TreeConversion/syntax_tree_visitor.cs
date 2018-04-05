@@ -16777,7 +16777,8 @@ namespace PascalABCCompiler.TreeConverter
             condition = convertion_data_and_alghoritms.convert_type(condition, SystemLibrary.SystemLibrary.bool_type);
             expression_node left = convert_strong(node.ret_if_true);
             expression_node right = convert_strong(node.ret_if_false);
-
+            try_convert_typed_expression_to_function_call(ref left);
+            try_convert_typed_expression_to_function_call(ref right);
             /*var typeComparisonResult = type_table.compare_types(left.type, right.type);
             if (typeComparisonResult == type_compare.greater_type)
                 right = convertion_data_and_alghoritms.convert_type(right, left.type);
