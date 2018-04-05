@@ -10,10 +10,10 @@ uses System.Windows;
 uses System.Windows.Media; 
 uses System.Windows.Controls; 
 
-procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray);
-procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray);
-procedure AddTopPanel(Height: real := 70; c: Color := Colors.LightGray);
-procedure AddBottomPanel(Height: real := 70; c: Color := Colors.LightGray);
+procedure AddRightPanel(Width: real := 200; c: Color := Colors.LightGray; Margin: real := 10);
+procedure AddLeftPanel(Width: real := 200; c: Color := Colors.LightGray; Margin: real := 10);
+procedure AddTopPanel(Height: real := 70; c: Color := Colors.LightGray; Margin: real := 10);
+procedure AddBottomPanel(Height: real := 70; c: Color := Colors.LightGray; Margin: real := 10);
 procedure AddStatusBar(Height: real := 24);
 
 var 
@@ -24,7 +24,7 @@ type
   GButton = System.Windows.Controls.Button;
   GTextBlock = System.Windows.Controls.TextBlock;
   GTextBox = System.Windows.Controls.TextBox;
-  
+  Key = System.Windows.Input.Key;  
   ///!#
   CommonControl = class
   protected 
@@ -72,8 +72,9 @@ type
     end;
     property Text: string read GetText write SetText;
   end;
+  
   ///!#
-  TextBlockT = class(CommonControl)
+  TextLabelT = class(CommonControl)
   protected
     function b: GTextBlock := element as GTextBlock;
     function GetText: string := InvokeString(()->b.Text);
@@ -94,6 +95,7 @@ type
     end;
     property Text: string read GetText write SetText;
   end;
+  
   ///!#
   TextBoxT = class(CommonControl)
   protected
@@ -138,25 +140,23 @@ type
   public 
     constructor Create(w: real := 0);
     begin
-      inherited Create('',w);
+      inherited Create('0',w);
       var tb := element as GTextBox;
+      tb.MouseWheel += procedure (o,e) -> begin
+        if e.Delta>0 then
+          SetValue(GetValue+1)
+        else if e.Delta<0 then
+          SetValue(GetValue-1)
+      end;
       tb.KeyDown += procedure (o,e) -> begin
-        var s := e.Key.ToString;
-        if (s[1] = 'D') and (s.Length = 2) then
-        else
+        if not ((e.Key>=Key.D0) and (e.Key<=Key.D9)) then
           e.Handled := True;
-        {if (e. = #8) or (e.Key = '-') then 
-          exit;}
-        //if not Char.IsDigit(e.Key) then
-        //  e.Handled := True;
       end;
-      tb.TextInput += procedure (o,e) -> begin
+      {tb.TextInput += procedure (o,e) -> begin
         Print(e.Text);
-        {if (e. = #8) or (e.Key = '-') then 
-          exit;}
-        //if not Char.IsDigit(e.Key) then
-        //  e.Handled := True;
-      end;
+        if not ((e.Key>=Key.D0) and (e.Key<=Key.D9)) then
+          e.Handled := True;
+      end;}
     end;
     property Value: integer read GetValue write SetValue;
   end;
@@ -200,11 +200,51 @@ type
     end;
     property Text: string read GetText write SetText;
   end;
+
+  SliderT = class(CommonControl)
+  private
+    function sl: Slider := element as Slider;
+    function GetMinimum: real := InvokeReal(()->sl.Minimum);
+    procedure SetMinimumP(r: real) := sl.Minimum := r;
+    procedure SetMinimum(r: real) := Invoke(SetMinimumP,r);
+    function GetMaximum: real := InvokeReal(()->sl.Maximum);
+    procedure SetMaximumP(r: real) := sl.Maximum := r;
+    procedure SetMaximum(r: real) := Invoke(SetMaximumP,r);
+    function GetValue: real := InvokeReal(()->sl.Value);
+    procedure SetValueP(r: real) := sl.Value := r;
+    procedure SetValue(r: real) := Invoke(SetValueP,r);
+    function GetFrequency: real := InvokeReal(()->sl.TickFrequency);
+    procedure SetFrequencyP(r: real) := sl.TickFrequency := r;
+    procedure SetFrequency(r: real) := Invoke(SetFrequencyP,r);
+  protected
+    procedure CreateP(min,max,val: real);
+    begin
+      element := new Slider;
+      sl.ValueChanged += procedure(o,e) -> ValueChangedP;
+      sl.Minimum := min;
+      sl.Maximum := max;
+      sl.Value := val;
+      ActivePanel.Children.Add(sl);
+    end;
+    procedure ValueChangedP := if ValueChanged<>nil then ValueChanged;
+  public 
+    event ValueChanged: procedure;
+    constructor Create(min,max,val: real);
+    begin
+      Invoke(CreateP,min,max,val);
+    end;
+    property Minimum: real read GetMinimum write SetMinimum;
+    property Maximum: real read GetMaximum write SetMaximum;
+    property Value: real read GetValue write SetValue;
+    property Frequency: real read GetFrequency write SetFrequency;
+  end;
+
   
   function Button(Txt: string): ButtonT;
-  function TextBlock(Txt: string): TextBlockT;
+  function TextLabel(Txt: string): TextLabelT;
   function TextBox(Txt: string := ''; w: real := 0): TextBoxT;
   function IntegerBox(w: real := 0): IntegerBoxT;
+  function Slider(min: real := 0; max: real := 10; val: real := 0): SliderT;
   
   procedure EmptyBlock(sz: integer := 16);
 
@@ -219,7 +259,7 @@ var
   StatusBarPanel: StatusBar;
   LeftPanel,RightPanel,TopPanel,BottomPanel: Panel;
 
-procedure AddPanel(var pp: StackPanel; wh: real; d: Dock; c: Color);
+procedure AddPanel(var pp: StackPanel; wh: real; d: Dock; c: Color; Margin: real := 10);
 begin
   if pp<>nil then
     exit;
@@ -228,7 +268,7 @@ begin
   var p := new StackPanel;
   bb.Child := p;
   //bb.Children.Add(p);
-  p.Margin := new System.Windows.Thickness(20);
+  p.Margin := new System.Windows.Thickness(Margin);
   if (d = Dock.Left) or (d = Dock.Right) then
   begin
     p.Orientation := Orientation.Vertical;
@@ -240,17 +280,17 @@ begin
     bb.Height := wh;
   end;
   p.Background := new SolidColorBrush(c);
-  DockPanel.SetDock(p,d);
+  DockPanel.SetDock(bb,d);
   // Всегда добавлять предпоследним
   MainDockPanel.children.Insert(MainDockPanel.children.Count-1,bb);
   pp := p;
   ActivePanel := p;
 end;
 
-procedure AddRightPanel(Width: real; c: Color) := Invoke(AddPanel,RightPanel,Width,Dock.Right,c);
-procedure AddLeftPanel(Width: real; c: Color) := Invoke(AddPanel,LeftPanel,Width,Dock.Left,c);
-procedure AddTopPanel(Height: real; c: Color) := Invoke(AddPanel,TopPanel,Height,Dock.Top,c);
-procedure AddBottomPanel(Height: real; c: Color) := Invoke(AddPanel,BottomPanel,Height,Dock.Bottom,c);
+procedure AddRightPanel(Width: real; c: Color; Margin: real) := Invoke(AddPanel,RightPanel,Width,Dock.Right,c,Margin);
+procedure AddLeftPanel(Width: real; c: Color; Margin: real) := Invoke(AddPanel,LeftPanel,Width,Dock.Left,c,Margin);
+procedure AddTopPanel(Height: real; c: Color; Margin: real) := Invoke(AddPanel,TopPanel,Height,Dock.Top,c,Margin);
+procedure AddBottomPanel(Height: real; c: Color; Margin: real) := Invoke(AddPanel,BottomPanel,Height,Dock.Bottom,c,Margin);
 
 procedure AddStatusBarP(Height: real);
 begin
@@ -272,13 +312,14 @@ end;
 procedure AddStatusBar(Height: real) := Invoke(AddStatusBarP,Height);
 
 function Button(Txt: string): ButtonT := ButtonT.Create(Txt);
-function TextBlock(Txt: string): TextBlockT := TextBlockT.Create(Txt);
+function TextLabel(Txt: string): TextLabelT := TextLabelT.Create(Txt);
 function TextBox(Txt: string; w: real): TextBoxT := TextBoxT.Create(Txt,w);
 function IntegerBox(w: real): IntegerBoxT := IntegerBoxT.Create(w);
+function Slider(min,max,val: real): SliderT := SliderT.Create(min,max,val);
 
 procedure EmptyBlock(sz: integer);
 begin
-  var e := TextBlock('');
+  var e := TextLabel('');
   e.Height:= sz;
   e.Width:= sz;
 end;

@@ -2,15 +2,10 @@
 // This code is distributed under the GNU LGPL (for details please see \doc\license.txt)
 unit Graph3D;
 
-{$reference 'PresentationFramework.dll'}
-{$reference 'WindowsBase.dll'}
-{$reference 'PresentationCore.dll'}
 {$reference System.Xml.dll}
-
 {$reference HelixToolkit.Wpf.dll}
-{reference Petzold.Media3D.dll}
 
-{$apptype windows}
+uses GraphWPFBase;
 
 uses System.Windows;
 uses System.Windows.Controls;
@@ -35,22 +30,13 @@ type
   GMaterial = System.Windows.Media.Media3D.Material;
   GCamera = System.Windows.Media.Media3D.ProjectionCamera;
   GRect = System.Windows.Rect;
-  GWindow = System.Windows.Window;
   CameraMode = HelixToolkit.Wpf.CameraMode;
   TupleInt3 = (integer, integer, integer);
   TupleReal3 = (real, real, real);
   Point3D = Point3D;
   Point = System.Windows.Point;
   
-  {MyWindow = class(GWindow)
-  public
-    procedure OnKeyDown(e: KeyEventArgs); override;
-  end;}
-
 var
-  MainFormThread: Thread; 
-  app: Application;
-  MainWindow: GWindow;
   hvp: HelixViewport3D;
   LightsGroup: Model3DGroup;
   gvl: GridLinesVisual3D;
@@ -65,16 +51,6 @@ var
   /// Событие отжатия клавиши
   OnKeyUp: procedure(k: Key);
   
-{procedure MyWindow.OnKeyDown(e: KeyEventArgs);
-begin
-  inherited OnKeyDown(e);
-  if Graph3D.OnKeyDown<>nil then 
-  begin
-    Graph3D.OnKeyDown(e.Key);
-    e.Handled := True;    
-  end;
-end;}  
-
 function RGB(r, g, b: byte) := Color.Fromrgb(r, g, b);
 function ARGB(a, r, g, b: byte) := Color.FromArgb(a, r, g, b);
 function P3D(x, y, z: real) := new Point3D(x, y, z);
@@ -82,6 +58,8 @@ function V3D(x, y, z: real) := new Vector3D(x, y, z);
 function Sz3D(x, y, z: real) := new Size3D(x, y, z);
 function Pnt(x, y: real) := new Point(x, y);
 function Rect(x, y, w, h: real) := new System.Windows.Rect(x, y, w, h);
+
+function operator*(p: Point3D; r: real); extensionmethod := P3D(p.x*r,p.y*r,p.z*r);
 
 const
   OrtX = V3D(1, 0, 0);
@@ -114,17 +92,6 @@ function RandomColor := RGB(Random(256), Random(256), Random(256));
 function GrayColor(b: byte) := RGB(b, b, b);
 
 function RandomSolidBrush := new SolidColorBrush(RandomColor);
-
-procedure Invoke(d: System.Delegate; params args: array of object) := app.Dispatcher.Invoke(d, args);
-
-procedure Invoke(d: ()->()) := app.Dispatcher.Invoke(d);
-
-function Invoke<T>(d: Func0<T>): T := app.Dispatcher.Invoke&<T>(d);
-function InvokeString(d: Func0<string>): string := Invoke&<String>(d);
-function InvokeReal(d: Func0<real>): real := Invoke&<Real>(d);
-function InvokeBoolean(d: Func0<boolean>): boolean := Invoke&<boolean>(d);
-function InvokeInteger(d: Func0<integer>): integer := Invoke&<integer>(d);
-function Inv<T>(p: ()->T): T := Invoke&<T>(p); // Теперь это работает!
 
 function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
 
@@ -190,56 +157,6 @@ type
 
 function operator+(a,b: Material): Material; extensionmethod := Invoke&<Material>(GMHelper.Create(a,b).GroupMaterial);
 
-/// --- SystemKeyEvents
-procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
-begin
-  if OnKeyDown <> nil then
-    OnKeyDown(e.Key);
-end;
-
-procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
-begin
-  if OnKeyUp <> nil then
-    OnKeyUp(e.Key);
-end;    
-
-/// --- SystemMouseEvents
-procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
-begin
-  var mb := 0;
-  var p := e.GetPosition(hvp);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
-  if OnMouseDown <> nil then  
-    OnMouseDown(p.x, p.y, mb);
-end;
-
-procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
-begin
-  var mb := 0;
-  var p := e.GetPosition(hvp);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
-  if OnMouseUp <> nil then  
-    OnMouseUp(p.x, p.y, mb);
-end;
-
-procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
-begin
-  var mb := 0;
-  var p := e.GetPosition(hvp);
-  if e.LeftButton = MouseButtonState.Pressed then
-    mb := 1
-  else if e.RightButton = MouseButtonState.Pressed then
-    mb := 2;
-  if OnMouseMove <> nil then  
-    OnMouseMove(p.x, p.y, mb);
-end;
-
 type
   ///!#
   View3DT = class
@@ -289,52 +206,6 @@ type
     procedure Save(fname: string) := Invoke(ExportP, fname);
   end;
   
-  ///!#
-  WindowType = class
-  private 
-    procedure SetLeft(l: real);
-    function GetLeft: real;
-    procedure SetTop(t: real);
-    function GetTop: real;
-    procedure SetWidth(w: real);
-    function GetWidth: real;
-    procedure SetHeight(h: real);
-    function GetHeight: real;
-    procedure SetCaption(c: string);
-    function GetCaption: string;
-  public 
-    /// Отступ графического окна от левого края экрана в пикселах
-    property Left: real read GetLeft write SetLeft;
-    /// Отступ графического окна от верхнего края экрана в пикселах
-    property Top: real read GetTop write SetTop;
-    /// Ширина клиентской части графического окна в пикселах
-    property Width: real read GetWidth write SetWidth;
-    /// Высота клиентской части графического окна в пикселах
-    property Height: real read GetHeight write SetHeight;
-    /// Заголовок графического окна
-    property Caption: string read GetCaption write SetCaption;
-    /// Заголовок графического окна
-    property Title: string read GetCaption write SetCaption;
-    /// Устанавливает размеры клиентской части графического окна в пикселах
-    procedure SetSize(w, h: real);
-    /// Устанавливает отступ графического окна от левого верхнего края экрана в пикселах
-    procedure SetPos(l, t: real);
-    /// Закрывает графическое окно и завершает приложение
-    procedure Close;
-    /// Сворачивает графическое окно
-    procedure Minimize;
-    /// Максимизирует графическое окно
-    procedure Maximize;
-    /// Возвращает графическое окно к нормальному размеру
-    procedure Normalize;
-    /// Центрирует графическое окно по центру экрана
-    procedure CenterOnScreen;
-    /// Возвращает центр графического окна
-    function Center: Point;
-    /// Возвращает прямоугольник клиентской области окна
-    function ClientRect: GRect;
-  end;
-
   ///!#
   CameraType = class
   private 
@@ -2669,174 +2540,188 @@ begin
   m1.Mesh := off.CreateMesh;
   hvp.Children.Add(m1);}
 
-  var ex := new ExtrudedVisual3D();
+  {var ex := new ExtrudedVisual3D();
   ex.BackMaterial := Colors.Green;
   ex.Diameters := new DoubleCollection(Arr(1.0,1.5,1.2));
   ex.Path := new Point3DCollection(Arr(P3D(0,0,0),P3D(0,1,0),P3D(0,1,1),P3D(1,1,1)));
-  hvp.Children.Add(ex);
+  hvp.Children.Add(ex);}
+  
+  var m := new SphereVisual3D();
+  m.Radius := 0.5;
+  hvp.Children.Add(m);
+  
+  var t :=  new TranslateManipulator();
+  t.Color := Colors.Green;
+  //t.Offset := v3D(2,3,4);
+  t.Length := 2;
+  t.Diameter := 0.15;
+  t.Direction := V3D(1,2,0);
+  t.Value := 5;
+  
+  var b := new System.Windows.Data.Binding('Transform');
+  b.Source := m;
+
+  var b1 := new System.Windows.Data.Binding('Transform');
+  b1.Source := m;
+  
+  System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TargetTransformProperty, b);
+	System.Windows.Data.BindingOperations.SetBinding(t, Manipulator.TransformProperty, b);  
+	
+  //t.Bind(m);
+  hvp.Children.Add(t);
+  
+  {var l := Lst(P3D(0,1,0),P3D(1,0,0),P3D(0,-1,0),P3D(-1,0,0),P3D(0,1,0));
+  
+  var l1 := CanonicalSplineHelper.CreateSpline(l,0.5);
+  Polyline3D(l1);}
   
 end;
 
 procedure Proba2 := Invoke(ProbaP2);
 
 
-procedure WindowTypeSetLeftP(l: real) := MainWindow.Left := l;
 
-procedure WindowType.SetLeft(l: real) := Invoke(WindowTypeSetLeftP, l);
+type 
+Graph3DWindow = class(GMainWindow)
+public
+  procedure InitMainGraphControl; override;
+  begin
+    var g := Content as DockPanel;
+    hvp := new HelixViewport3D();
+    g.Children.Add(hvp);
 
-function WindowTypeGetLeftP := MainWindow.Left;
+    hvp.ZoomExtentsWhenLoaded := True;
+    hvp.ShowCoordinateSystem := True;
+    
+    hvp.Children.Add(new DefaultLights);
 
-function WindowType.GetLeft := InvokeReal(WindowTypeGetLeftP);
+    var mv := new ModelVisual3D;
+    LightsGroup := new Model3DGroup;
+    mv.Content := LightsGroup;
+    hvp.Children.Add(mv);
+    
+    gvl := new GridLinesVisual3D();
+    gvl.Width := 12;
+    gvl.Length := 12;
+    gvl.Normal := OrtZ;
+    gvl.MinorDistance := 1;
+    gvl.MajorDistance := 1;
+    gvl.Thickness := 0.02;
+    hvp.Children.Add(gvl);
+  end;
 
-procedure WindowTypeSetTopP(t: real) := MainWindow.Top := t;
+  procedure InitWindowProperties; override;
+  begin
+    (Width,Height) := (800,600);
+    Title := '3D графика';
+    WindowStartupLocation := System.Windows.WindowStartupLocation.CenterScreen;
+  end;
 
-procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP, t);
+  procedure InitGlobals; override;
+  begin
+    Window := new WindowType;
+    Camera := new CameraType;
+    Lights := new LightsType;
+    GridLines := new GridLinesType;
+    View3D := new View3DT;
 
-function WindowTypeGetTopP := MainWindow.Top;
+    NameScope.SetNameScope(Self, new NameScope());
+  end;
 
-function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
-
-procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
-
-procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP, w);
-
-function WindowTypeGetWidthP := MainWindow.Width - wplus;
-
-function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
-
-procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
-
-procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP, h);
-
-function WindowTypeGetHeightP := MainWindow.Height - hplus;
-
-function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
-
-procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
-
-procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP, c);
-
-function WindowTypeGetCaptionP := MainWindow.Title;
-
-function WindowType.GetCaption := InvokeString(WindowTypeGetCaptionP);
-
-procedure WindowTypeSetSizeP(w, h: real);
-begin
-  WindowTypeSetWidthP(w);
-  WindowTypeSetHeightP(h);
+  /// --- SystemKeyEvents
+  procedure SystemOnKeyDown(sender: Object; e: System.Windows.Input.KeyEventArgs);
+  begin
+    if Graph3D.OnKeyDown <> nil then
+      Graph3D.OnKeyDown(e.Key);
+    e.Handled := True;
+  end;
+  
+  procedure SystemOnKeyUp(sender: Object; e: System.Windows.Input.KeyEventArgs) := 
+  begin
+    if Graph3D.OnKeyUp <> nil then
+      Graph3D.OnKeyUp(e.Key);
+    e.Handled := True;
+  end;    
+  
+  /// --- SystemMouseEvents
+  procedure SystemOnMouseDown(sender: Object; e: System.Windows.Input.MouseButtonEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(hvp);
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if Graph3D.OnMouseDown <> nil then  
+     Graph3D.OnMouseDown(p.x, p.y, mb);
+  end;
+  
+  procedure SystemOnMouseUp(sender: Object; e: MouseButtonEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(hvp);
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if Graph3D.OnMouseUp <> nil then  
+      Graph3D.OnMouseUp(p.x, p.y, mb);
+  end;
+  
+  procedure SystemOnMouseMove(sender: Object; e: MouseEventArgs);
+  begin
+    var mb := 0;
+    var p := e.GetPosition(hvp);
+    if e.LeftButton = MouseButtonState.Pressed then
+      mb := 1
+    else if e.RightButton = MouseButtonState.Pressed then
+      mb := 2;
+    if Graph3D.OnMouseMove <> nil then  
+      Graph3D.OnMouseMove(p.x, p.y, mb);
+  end;
+  
+  procedure InitHandlers; override;
+  begin
+    hvp.PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
+    hvp.PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
+    hvp.PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
+  
+    hvp.PreviewKeyDown += (o,e)-> SystemOnKeyDown(o,e);
+    hvp.PreviewKeyUp += (o,e)-> SystemOnKeyUp(o,e);
+    
+    hvp.Focus();
+    Closed += procedure(sender, e) -> begin Halt; end;
+  end;
 end;
 
-procedure WindowType.SetSize(w, h: real) := Invoke(WindowTypeSetSizeP, w, h);
+var mre := new ManualResetEvent(false);
 
-procedure WindowTypeSetPosP(l, t: real);
-begin
-  WindowTypeSetLeftP(l);
-  WindowTypeSetTopP(t);
-end;
-
-procedure WindowType.SetPos(l, t: real) := Invoke(WindowTypeSetPosP, l, t);
-
-procedure WindowType.Close := Invoke(MainWindow.Close);
-
-procedure WindowTypeMinimizeP := MainWindow.WindowState := WindowState.Minimized;
-
-procedure WindowType.Minimize := Invoke(WindowTypeMinimizeP);
-
-procedure WindowTypeMaximizeP := MainWindow.WindowState := WindowState.Maximized;
-
-procedure WindowType.Maximize := Invoke(WindowTypeMaximizeP);
-
-procedure WindowTypeNormalizeP := MainWindow.WindowState := WindowState.Normal;
-
-procedure WindowType.Normalize := Invoke(WindowTypeNormalizeP);
-
-procedure WindowTypeCenterOnScreenP := MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-
-procedure WindowType.CenterOnScreen := Invoke(WindowTypeCenterOnScreenP);
-
-function WindowType.Center := new Point(Width / 2, Height / 2);
-
-function WindowType.ClientRect := Rect(0, 0, Window.Width, Window.Height);
-
-var
-  mre := new ManualResetEvent(false);
-
-procedure InitWPF0;
+procedure InitApp;
 begin
   app := new Application;
+  
   app.Dispatcher.UnhandledException += (o, e) -> begin
     Println(e.Exception.Message); 
     if e.Exception.InnerException<>nil then
       Println(e.Exception.InnerException.Message); 
     halt; 
   end;
-  MainWindow := new GWindow;
   
-  Window := new WindowType;
-  Camera := new CameraType;
-  Lights := new LightsType;
-  GridLines := new GridLinesType;
-  
-  var g := new Grid;
-  MainWindow.Content := g;
-  hvp := new HelixViewport3D();
-  g.Children.Add(hvp);
-  hvp.ZoomExtentsWhenLoaded := True;
-  
-  hvp.ShowCoordinateSystem := True;
-  
-  hvp.Children.Add(new DefaultLights);
-  //hvp.Children.Add(new ThreePointLights);
-  
-  //var dl := new DirectionalLight(GrayColor(50), new Vector3D(-1.0, -1.0, -1.0));
-  var mv := new ModelVisual3D;
-  LightsGroup := new Model3DGroup;
-  //LightsGroup.Children.Add(dl);
-  mv.Content := LightsGroup;
-  
-  hvp.Children.Add(mv);
-  
-  gvl := new GridLinesVisual3D();
-  gvl.Width := 12;
-  gvl.Length := 12;
-  gvl.Normal := OrtZ;
-  gvl.MinorDistance := 1;
-  gvl.MajorDistance := 1;
-  gvl.Thickness := 0.02;
-  hvp.Children.Add(gvl);
-  
-  NameScope.SetNameScope(MainWindow, new NameScope());
-  MainWindow.Title := '3D графика';
-  MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-  MainWindow.Width := 640;
-  MainWindow.Height := 480;
-  MainWindow.Closed += procedure(sender, e) -> begin Halt; end;
-  
-  View3D := new View3DT;
-  
-  MainWindow.PreviewKeyDown += (o,e)-> begin 
-    if OnKeyDown<>nil then 
-    begin
-      OnKeyDown(e.Key);
-    end;
-    e.Handled := True;
-  end;
-
-  MainWindow.PreviewKeyUp += (o,e)-> begin 
-    if OnKeyUp<>nil then 
-    begin
-      OnKeyUp(e.Key);
-    end;
-    e.Handled := True;
-  end;
-  
-  MainWindow.PreviewMouseDown += (o,e) -> SystemOnMouseDown(o,e);  
-  MainWindow.PreviewMouseUp += (o,e) -> SystemOnMouseUp(o,e);  
-  MainWindow.PreviewMouseMove += (o,e) -> SystemOnMouseMove(o,e);  
+  MainWindow := new Graph3DWindow;
+  //MainWindow.MainPanel;
 
   mre.Set();
   
   app.Run(MainWindow);
+end;
+
+procedure InitMainThread;
+begin
+  var MainFormThread := new System.Threading.Thread(InitApp);
+  MainFormThread.SetApartmentState(ApartmentState.STA);
+  MainFormThread.Start;
+  
+  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
 end;
 
 var
@@ -2849,11 +2734,7 @@ var
 
 procedure __InitModule;
 begin
-  MainFormThread := new System.Threading.Thread(InitWPF0);
-  MainFormThread.SetApartmentState(ApartmentState.STA);
-  MainFormThread.Start;
-  
-  mre.WaitOne; // Основная программа не начнется пока не будут инициализированы все компоненты приложения
+  InitMainThread;
 end;
 
 ///--

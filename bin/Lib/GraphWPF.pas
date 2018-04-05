@@ -113,60 +113,6 @@ type
     property Style: FontStyle write SetFS;
   end;
   
-  ///!#
-  WindowType = class
-  private 
-    procedure SetLeft(l: real);
-    function GetLeft: real;
-    procedure SetTop(t: real);
-    function GetTop: real;
-    procedure SetWidth(w: real);
-    function GetWidth: real;
-    procedure SetHeight(h: real);
-    function GetHeight: real;
-    procedure SetCaption(c: string);
-    function GetCaption: string;
-  public 
-    /// Отступ главного окна от левого края экрана 
-    property Left: real read GetLeft write SetLeft;
-    /// Отступ главного окна от верхнего края экрана 
-    property Top: real read GetTop write SetTop;
-    /// Ширина клиентской части главного окна
-    property Width: real read GetWidth write SetWidth;
-    /// Высота клиентской части главного окна
-    property Height: real read GetHeight write SetHeight;
-    /// Заголовок окна
-    property Caption: string read GetCaption write SetCaption;
-    /// Заголовок окна
-    property Title: string read GetCaption write SetCaption;
-    /// Очищает графическое окно белым цветом
-    procedure Clear;
-    /// Очищает графическое окно цветом c
-    procedure Clear(c: Color);
-    /// Устанавливает размеры клиентской части главного окна 
-    procedure SetSize(w, h: real);
-    /// Устанавливает отступ главного окна от левого верхнего края экрана 
-    procedure SetPos(l, t: real);
-    /// Закрывает главное окно и завершает приложение
-    procedure Close;
-    /// Сворачивает главное окно
-    procedure Minimize;
-    /// Максимизирует главное окно
-    procedure Maximize;
-    /// Возвращает главное окно к нормальному размеру
-    procedure Normalize;
-    /// Центрирует главное окно по центру экрана
-    procedure CenterOnScreen;
-    /// Возвращает центр главного окна
-    function Center: Point;
-    /// Возвращает прямоугольник клиентской области окна
-    function ClientRect: GRect;
-    /// Сохраняет содержимое графического окна в файл с именем fname
-    procedure Save(fname: string);
-    /// Восстанавливает содержимое графического окна из файла с именем fname
-    procedure Load(fname: string);
-  end;
-  
   GraphWindowType = class
   private
     function GetTop: real;
@@ -189,6 +135,18 @@ type
     /// Заполняет содержимое графического окна обоями из файла с именем fname
     procedure Fill(fname: string);
   end;
+  
+  // Специфический тип окна для модуля GraphWPF
+  WindowTypeWPF = class(WindowType)
+  public
+    /// Сохраняет содержимое графического окна в файл с именем fname
+    procedure Save(fname: string);
+    /// Восстанавливает содержимое графического окна из файла с именем fname
+    procedure Load(fname: string);
+    /// Очищает графическое окно белым цветом
+    procedure Clear; override;
+  end;
+
   
   /// Виды системы координат
   CoordType = (MathematicalCoords,StandardCoords);
@@ -319,7 +277,7 @@ var Pen: PenType;
 /// Текущий шрифт
 var Font: FontType;
 /// Главное окно
-var Window: WindowType;
+var Window: WindowTypeWPF;
 /// Графическое окно
 var GraphWindow: GraphWindowType;
 
@@ -558,8 +516,6 @@ begin
   Result := (m.M11,m.M22);
 end;
 
-function wplus := SystemParameters.WindowResizeBorderThickness.Left + SystemParameters.WindowResizeBorderThickness.Right;
-function hplus := SystemParameters.WindowCaptionHeight + SystemParameters.WindowResizeBorderThickness.Top + SystemParameters.WindowResizeBorderThickness.Bottom;
 
 //procedure SetBrushColorP(c: Color) := Brush.br := new SolidColorBrush(c); // hook
 
@@ -1106,78 +1062,6 @@ procedure DrawGraph(f: real -> real; a, b: real) := DrawGraph(f, a, b, 0, 0, Win
 
 procedure DrawGraph(f: real -> real) := DrawGraph(f, -5, 5);
 
-///---- Window -----
-
-procedure WindowTypeSetLeftP(l: real) := MainWindow.Left := l;
-procedure WindowType.SetLeft(l: real) := Invoke(WindowTypeSetLeftP,l);
-
-function WindowTypeGetLeftP := MainWindow.Left;
-function WindowType.GetLeft := InvokeReal(WindowTypeGetLeftP);
-
-procedure WindowTypeSetTopP(t: real) := MainWindow.Top := t;
-procedure WindowType.SetTop(t: real) := Invoke(WindowTypeSetTopP,t);
-
-function WindowTypeGetTopP := MainWindow.Top;
-function WindowType.GetTop := InvokeReal(WindowTypeGetTopP);
-
-procedure WindowTypeSetWidthP(w: real) := MainWindow.Width := w + wplus;
-procedure WindowType.SetWidth(w: real) := Invoke(WindowTypeSetWidthP,w);
-
-function WindowTypeGetWidthP := MainWindow.Width - wplus;
-function WindowType.GetWidth := InvokeReal(WindowTypeGetWidthP);
-
-procedure WindowTypeSetHeightP(h: real) := MainWindow.Height := h + hplus;
-procedure WindowType.SetHeight(h: real) := Invoke(WindowTypeSetHeightP,h);
-
-function WindowTypeGetHeightP := MainWindow.Height - hplus;
-function WindowType.GetHeight := InvokeReal(WindowTypeGetHeightP);
-
-procedure WindowTypeSetCaptionP(c: string) := MainWindow.Title := c;
-procedure WindowType.SetCaption(c: string) := Invoke(WindowTypeSetCaptionP,c);
-
-function WindowTypeGetCaptionP := MainWindow.Title;
-function WindowType.GetCaption := Invoke&<string>(WindowTypeGetCaptionP);
-
-procedure WindowTypeClearP := begin Host.children.Clear; CountVisuals := 0; end;
-procedure WindowType.Clear := Invoke(WindowTypeClearP);
-
-procedure WindowType.Clear(c: Color);
-begin
-  raise new System.NotImplementedException('WindowType.Clear(c) пока не реализовано. Честное слово - в будущем!')
-end;
-
-procedure WindowTypeSetSizeP(w, h: real);
-begin
-  WindowTypeSetWidthP(w);
-  WindowTypeSetHeightP(h);
-end;
-procedure WindowType.SetSize(w, h: real) := Invoke(WindowTypeSetSizeP,w,h);
-
-procedure WindowTypeSetPosP(l, t: real);
-begin
-  WindowTypeSetLeftP(l);
-  WindowTypeSetTopP(t);
-end;
-procedure WindowType.SetPos(l, t: real) := Invoke(WindowTypeSetPosP,l,t);
-
-procedure WindowType.Close := Invoke(MainWindow.Close);
-
-procedure WindowTypeMinimizeP := MainWindow.WindowState := WindowState.Minimized;
-procedure WindowType.Minimize := Invoke(WindowTypeMinimizeP);
-
-procedure WindowTypeMaximizeP := MainWindow.WindowState := WindowState.Maximized;
-procedure WindowType.Maximize := Invoke(WindowTypeMaximizeP);
-
-procedure WindowTypeNormalizeP := MainWindow.WindowState := WindowState.Normal;
-procedure WindowType.Normalize := Invoke(WindowTypeNormalizeP);
-
-procedure WindowTypeCenterOnScreenP := MainWindow.WindowStartupLocation := WindowStartupLocation.CenterScreen;
-procedure WindowType.CenterOnScreen := Invoke(WindowTypeCenterOnScreenP);
-
-function WindowType.Center := Pnt(Width/2,Height/2);
-
-function WindowType.ClientRect := Rect(0,0,Window.Width,Window.Height);
-
 function GraphWindowTypeGetLeftP: real;
 begin
   Result := 0;
@@ -1275,9 +1159,12 @@ begin
   //FillWindow(fname);
 end;
 
-procedure WindowType.Save(fname: string) := GraphWindow.Save(fname);
+procedure WindowTypeWPF.Save(fname: string) := GraphWindow.Save(fname);
 
-procedure WindowType.Load(fname: string) := GraphWindow.Load(fname);
+procedure WindowTypeWPF.Load(fname: string) := GraphWindow.Load(fname);
+
+procedure WindowTypeClearP := begin Host.children.Clear; CountVisuals := 0; end;
+procedure WindowTypeWPF.Clear := Invoke(WindowTypeClearP);
 
 function XMin := -XOrigin/GlobalScale;
 function XMax := (Window.Width-XOrigin)/GlobalScale;
@@ -1486,7 +1373,7 @@ begin
   FrameRate := 60;
 end;  
 
-procedure AddGraphWindow;
+{procedure AddGraphWindow;
 begin
   host := new MyVisualHost();
   host.ClipToBounds := True;
@@ -1497,7 +1384,7 @@ begin
   end;
   // Всегда последнее
   MainDockPanel.children.Add(host);
-end;
+end;}
 
 var mre := new ManualResetEvent(false);
 
@@ -1507,7 +1394,7 @@ public
   procedure InitMainGraphControl; override;
   begin
     host := new MyVisualHost();
-    host.ClipToBounds := True;
+    //host.ClipToBounds := True;
     host.SizeChanged += (s,e) ->
     begin
       var sz := e.NewSize;
@@ -1532,7 +1419,7 @@ public
     Brush := new BrushType;
     Pen := new PenType;
     Font := new FontType;
-    Window := new WindowType;
+    Window := new WindowTypeWPF;
     GraphWindow := new GraphWindowType;
   end;
   
